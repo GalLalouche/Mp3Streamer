@@ -1,0 +1,33 @@
+@CHARSET "windows-1255";
+
+/* mine
+.poster {
+	width: 480px !important; 
+	height: 480px !important; 
+}
+
+ */
+.poster {
+	margin-left: 55px;
+	background-color: transparent !important;
+}
+body {
+	background-color: #eee;
+}
+
+.jp-video,.jstree {
+	width: 720px !important;
+}
+
+.jstree {
+	position: absolute;
+	left: 720px;
+	float: left;
+}
+
+.jp-currently-playing {
+	font-size: 0.8em !important;
+	margin-left: 100px;
+	margin-right: auto;
+	width: 500px !important;
+}
