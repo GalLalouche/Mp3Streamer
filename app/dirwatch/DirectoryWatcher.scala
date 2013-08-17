@@ -33,17 +33,20 @@ import akka.actor.Props
 import akka.actor.ActorDSL
 import akka.actor.ActorSystem
 
-class DirectoryWatcher(listener: ActorRef, val dir: Directory) extends Actor with Debug {
+class DirectoryWatcher(listener: ActorRef, val dir: Option[Directory]) extends Actor with Debug {
+	def this(listener: ActorRef) = this(listener, None)
+	def this(listener: ActorRef, dir: Directory) = this(listener, Some(dir))
 	require(listener != null)
 	require(dir != null)
 
-	private lazy val watchService = Paths.get(dir.path).getFileSystem.newWatchService
+	private lazy val watchService = Paths.get(dir.getOrElse(Directory("C:/")).path).getFileSystem.newWatchService
 
 	private val keys = HashMap[WatchKey, Directory]()
 	private val trace = false
 
 	override def preStart {
-		registerAll(dir)
+		if (dir.isDefined)
+			registerAll(dir.get)
 	}
 
 	/**
@@ -71,7 +74,7 @@ class DirectoryWatcher(listener: ActorRef, val dir: Directory) extends Actor wit
 		}
 
 	}
-	
+
 	/**
 	  *  Recursively register directories
 	  */
