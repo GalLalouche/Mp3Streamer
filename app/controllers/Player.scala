@@ -71,16 +71,16 @@ object Player extends Controller with Debug {
 		songs = musicFinder.getSongs.map(new File(_))
 		musicTree = treeFinder.getTree
 		lastUpdated = System.currentTimeMillis
-		TreeSocket ! "Update"
+		TreeSocket.updateTree
 	}
 
-//	val updater = ActorDSL.actor(new Act {
-//		become {
-//			case _ => updatingMusic()
-//		}
-//	})
-//
-//	val watcher = ActorDSL.actor(new DirectoryWatcher(updater))
+	//	val updater = ActorDSL.actor(new Act {
+	//		become {
+	//			case _ => updatingMusic()
+	//		}
+	//	})
+	//
+	//	val watcher = ActorDSL.actor(new DirectoryWatcher(updater))
 
 	var musicTree: ValueTree[File] = null
 	var lastUpdated: Long = 0

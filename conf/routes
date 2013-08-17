@@ -22,4 +22,5 @@ GET   /posters/*path           controllers.Posters.image(path)
 GET   /assets/*file            controllers.Assets.at(path="/public", file)
 
 # Web sockets
-GET   /ws/tree                 websockets.TreeSocket.tree
+GET   /ws/tree                 websockets.TreeSocket.accept
+GET   /ws/console              websockets.ConsoleSocket.accept

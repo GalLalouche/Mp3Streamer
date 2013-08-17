@@ -13,6 +13,5 @@ object Global extends GlobalSettings {
 	override def onStop(app: Application) {
 		Logger.info("Application shutdown")
 		KillableActors.system.shutdown
-		TreeSocket ! Exit
 	}
 }
