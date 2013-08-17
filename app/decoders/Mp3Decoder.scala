@@ -1,8 +1,10 @@
 package decoders;
 
 import java.io.File
-import common.Directory
-import common.Path.richPath
+
+import common.path.Path._
+import common.path._
+
 /**
   * Decodes audio files files to mp3.
   * Also handles caching
@@ -22,10 +24,9 @@ trait Mp3Decoder {
 	  * @throws IOException
 	  */
 	def decode(file: File) = {
-		import common.Path._
 		require(file != null)
 		require(file.isDirectory == false)
-		val outputFileName = file.path.replaceAll("[\\s\\/\\\\\\-\\:]", "").toLowerCase +".mp3";
+		val outputFileName = file.path.replaceAll("[\\s\\/\\\\\\-\\:]", "").toLowerCase + ".mp3";
 		outputDir.files.find(_.name == outputFileName).getOrElse({
 			val outputFile = outputDir.addFile(outputFileName)
 			codec.decode(file, outputFile, CodecType.Mp3, List("-V 2", "-b 320"));

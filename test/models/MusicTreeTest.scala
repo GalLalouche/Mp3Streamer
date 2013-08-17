@@ -6,8 +6,7 @@ import org.apache.commons.io.FileDeleteStrategy
 import scala.reflect.io.Path.string2path
 import org.junit.runner.RunWith
 import java.io.File
-import common.Directory
-import common.TempDirectory
+import common.path.Directory
 import org.scalatest.FlatSpec
 import org.scalatest.BeforeAndAfter
 import org.scalatest.matchers.ShouldMatchers

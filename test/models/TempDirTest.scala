@@ -3,7 +3,7 @@ package models
 import java.io.File
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import common.TempDirectory
+import common.path.TempDirectory
 import org.specs2.mutable.SpecificationLike
 import common.Debug
 

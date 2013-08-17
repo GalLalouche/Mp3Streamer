@@ -1,7 +1,7 @@
 package controllers
 
 import decoders.DbPowerampCodec
-import common.Directory
+import common.path.Directory
 import decoders.Mp3Decoder
 import models.Decoder
 import play.api.mvc.Action

@@ -26,7 +26,7 @@ import akka.actor.Actor
 import akka.actor.PoisonPill
 import akka.actor.ReceiveTimeout
 import common.Debug
-import common.Directory
+import common.path.Directory
 import scala.concurrent.duration._
 import akka.actor.ActorRef
 import akka.actor.Props

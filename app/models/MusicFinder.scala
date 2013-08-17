@@ -1,7 +1,7 @@
 package models
 
-import common.Directory
-import common.Path._
+import common.path.Directory
+import common.path.Path._
 import java.io.File
 import scala.collection.parallel.ForkJoinTaskSupport
 

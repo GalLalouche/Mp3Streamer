@@ -2,7 +2,7 @@ package models
 
 import decoders.Mp3Decoder
 import java.io.File
-import common.Path._
+import common.path.Path._
 
 trait Decoder {
 	val decoder: Mp3Decoder

@@ -1,9 +1,10 @@
-package common
+package common.path
 
 import java.io.File
 
 /**
-  * Helper class for Directory methods
+  * Helper climport common.path.RichFile
+ass for Directory methods
   */
 class Directory(val dir: File) extends Path(dir) {
 	require(dir != null)

@@ -13,8 +13,8 @@ import play.api.libs.json.JsNumber
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsBoolean
 import play.api.libs.json.JsValue
-import common.Path._
-import common.RichFile
+import common.path.Path._
+import common.path.RichFile
 /**
   * Handles parsing mp3 data
   */

@@ -1,7 +1,7 @@
 package models
 
 import java.io.File
-import common.Directory
+import common.path.Directory
 import common.ValueTree
 import play.api.libs.json.Json
 import play.api.libs.json.JsObject
@@ -29,7 +29,7 @@ object MusicTree {
 	}
 
 	def jsonify(tree: ValueTree[File]): JsObject = {
-		import common.Path._
+		import common.path.Path._
 		//		import common.Jsoner._ 
 		tree match {
 			case _ if (tree.isLeaf) =>

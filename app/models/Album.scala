@@ -13,9 +13,9 @@ import play.api.libs.json.JsNumber
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsBoolean
 import play.api.libs.json.JsValue
-import common.Path._
-import common.RichFile
-import common.Directory
+import common.path.Path._
+import common.path.RichFile
+import common.path.Directory
 import common.Jsoner
 import play.api.libs.json.JsArray
 /**

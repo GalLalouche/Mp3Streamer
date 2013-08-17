@@ -1,12 +1,13 @@
 package decoders;
 
 import java.io.File
-import scala.sys.process.ProcessLogger
-import decoders.CodecType._
-import common.Path.richPath
-import common.Debug
-import java.io.File
+
 import scala.sys.process.Process
+import scala.sys.process.ProcessLogger
+
+import common.Debug
+import common.path.Path.richPath
+import decoders.CodecType.CodecType
 /**
   * An implementation of a codec using dBpoweramp appliocation
   *
