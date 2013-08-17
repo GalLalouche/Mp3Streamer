@@ -36,7 +36,9 @@ trait Debug {
 		throw new AssertionError
 	}
 	
-	def lineNumber(depth: Int) = Thread.currentThread.getStackTrace()(3 + 2*depth).getLineNumber;
 	
-	def echoLineNumber = println("Echo: " + lineNumber(1))
+	def echoLocation = {
+		val trace = Thread.currentThread.getStackTrace()(3);
+		println(trace.getClassName() + "@" + trace.getLineNumber())
+	}
 }

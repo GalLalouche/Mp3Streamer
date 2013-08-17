@@ -85,4 +85,5 @@ object Directory {
 	def apply(f: File): Directory = new Directory(f)
 	def apply(s: String): Directory = Directory(new File(s))
 	def apply(p: Path): Directory = Directory(p.p)
+	def apply(p: java.nio.file.Path): Directory = Directory(p.toFile)
 }

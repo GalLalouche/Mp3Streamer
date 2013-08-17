@@ -13,7 +13,10 @@ private[websockets] trait WebSocketController extends Controller {
 
 	implicit val system = models.KillableActors.system
 	val name = getClass.getSimpleName
-	val lazyActor = ActorDSL.actor(new WebSocketController.DisconnectingActor(out._2, name))
+	def receive: PartialFunction[Any, Unit] = {
+		case _ => ()
+	}
+	lazy val actor = ActorDSL.actor(new WebSocketController.DisconnectingActor(receive, out._2, name))
 	def accept = WebSocket.async[String] { r =>
 		{
 			val i = Iteratee.foreach[String] {
@@ -25,10 +28,8 @@ private[websockets] trait WebSocketController extends Controller {
 }
 
 object WebSocketController {
-	class DisconnectingActor(channel: play.api.libs.iteratee.Concurrent.Channel[String], name: String) extends Actor {
-		override def receive = {
-			case _ => ()
-		}
+	class DisconnectingActor(_receive: PartialFunction[Any, Unit], channel: play.api.libs.iteratee.Concurrent.Channel[_], name: String) extends Actor {
+		override def receive = _receive
 		override def postStop {
 			loggers.CompositeLogger.trace("Ending " + name + " socket connection")
 			channel.eofAndEnd

@@ -13,9 +13,10 @@ class Path protected (val p: File) {
 		val f = new File(path + "/" + s)
 		if (f isDirectory) Directory(f) else new RichFile(f)
 	}
+	def \(s: String) = new File(path + "\\" + s)
 
 	def / = new Directory(p)
-
+	def \ = new File(path + "\\")
 	override def toString = name
 
 	lazy val extension = {
@@ -25,7 +26,7 @@ class Path protected (val p: File) {
 
 	override def hashCode = p.hashCode
 	override def equals(o: Any): Boolean = if (o.isInstanceOf[Path]) return p.equals(o.asInstanceOf[Path].p) else false
-
+	lazy val parent = Directory(p.getParentFile())
 }
 
 object Path {

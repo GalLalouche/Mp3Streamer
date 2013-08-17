@@ -23,6 +23,8 @@ import play.api.mvc.Controller
 import websockets.TreeSocket
 import java.net.URLDecoder
 import common.path.Path._
+import dirwatch.DirectoryWatcher
+import websockets.NewFolderSocket
 
 /**
   * Handles fetch requests of JSON information
@@ -71,16 +73,18 @@ object Player extends Controller with Debug {
 		songs = musicFinder.getSongs.map(new File(_))
 		musicTree = treeFinder.getTree
 		lastUpdated = System.currentTimeMillis
-		TreeSocket.updateTree
+		TreeSocket.actor ! TreeSocket.Update
 	}
 
-	//	val updater = ActorDSL.actor(new Act {
-	//		become {
-	//			case _ => updatingMusic()
-	//		}
-	//	})
-	//
-	//	val watcher = ActorDSL.actor(new DirectoryWatcher(updater))
+	val updater = ActorDSL.actor(new Act {
+		become {
+			case DirectoryWatcher.DirectoryCreated(d) =>
+				NewFolderSocket.actor ! d; updatingMusic()
+			case DirectoryWatcher.DirectoryDeleted(_) => updatingMusic()
+		}
+	})
+
+	val watcher = ActorDSL.actor(new DirectoryWatcher(updater, musicFinder.genreDirs))
 
 	var musicTree: ValueTree[File] = null
 	var lastUpdated: Long = 0

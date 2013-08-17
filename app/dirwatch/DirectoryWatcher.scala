@@ -27,26 +27,33 @@ import akka.actor.PoisonPill
 import akka.actor.ReceiveTimeout
 import common.Debug
 import common.path.Directory
+import common.path.Path._
 import scala.concurrent.duration._
 import akka.actor.ActorRef
 import akka.actor.Props
 import akka.actor.ActorDSL
 import akka.actor.ActorSystem
+import DirectoryWatcher._
+import java.io.File
+import scala.collection.mutable.HashSet
 
-class DirectoryWatcher(listener: ActorRef, val dir: Option[Directory]) extends Actor with Debug {
+class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) extends Actor with Debug {
 	def this(listener: ActorRef) = this(listener, None)
-	def this(listener: ActorRef, dir: Directory) = this(listener, Some(dir))
+	def this(listener: ActorRef, dir: Directory) = this(listener, Some(List(dir)))
+	def this(listener: ActorRef, dirs: List[Directory]) = this(listener, Some(dirs))
 	require(listener != null)
-	require(dir != null)
+	require(dirs != null)
 
-	private lazy val watchService = Paths.get(dir.getOrElse(Directory("C:/")).path).getFileSystem.newWatchService
+	private lazy val watchService = Paths.get(dirs.getOrElse(List(Directory("C:/")))(0).path).getFileSystem.newWatchService
 
 	private val keys = HashMap[WatchKey, Directory]()
+	private val folders = HashSet[String]()
 	private val trace = false
 
 	override def preStart {
-		if (dir.isDefined)
-			registerAll(dir.get)
+		if (dirs.isDefined)
+			dirs.get.foreach(registerAll)
+		listener ! Started
 	}
 
 	/**
@@ -57,7 +64,7 @@ class DirectoryWatcher(listener: ActorRef, val dir: Option[Directory]) extends A
 		trySleep(5) {
 			val key = Paths.get(dir.path).register(watchService,
 				StandardWatchEventKinds.ENTRY_CREATE,
-				StandardWatchEventKinds.ENTRY_MODIFY,
+//				StandardWatchEventKinds.ENTRY_MODIFY,
 				StandardWatchEventKinds.ENTRY_DELETE)
 			if (trace) {
 				val prev = keys.getOrElse(key, null)
@@ -70,6 +77,7 @@ class DirectoryWatcher(listener: ActorRef, val dir: Option[Directory]) extends A
 				}
 			}
 
+			folders += dir.getAbsolutePath
 			keys(key) = dir
 		}
 
@@ -92,24 +100,36 @@ class DirectoryWatcher(listener: ActorRef, val dir: Option[Directory]) extends A
 		case _ => waitForChange
 	}
 
+	private def handleEvent(p: Path, e: java.nio.file.WatchEvent[_]) = {
+		val path = p.resolve(e.context().asInstanceOf[Path])
+		val file = path.toFile
+		val isDirectory = Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)
+		e.kind match {
+			case StandardWatchEventKinds.ENTRY_DELETE if (folders(file.getAbsolutePath)) =>  {folders -= file.getAbsolutePath; DirectoryDeleted(file)}
+			case StandardWatchEventKinds.ENTRY_CREATE if (isDirectory) => DirectoryCreated(Directory(path))
+			case _ => OtherChange
+		}
+	}
+
 	private def waitForChange = {
 		val key = watchService.take()
 		val dir = keys(key)
-		key.pollEvents().asScala.filterNot(_.kind == StandardWatchEventKinds.OVERFLOW).
+		val event = key.pollEvents().asScala;
+		event.filterNot(_.kind == StandardWatchEventKinds.OVERFLOW).
 			filter(_.kind == StandardWatchEventKinds.ENTRY_CREATE).foreach(event => {
 				val child = Paths.get(dir.path).resolve(event.context().asInstanceOf[Path])
 				if (Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS)) {
-					listener ! DirectoryWatcher.FolderCreated
-					registerAll(Directory(child.toAbsolutePath.toFile));
+					val dir = Directory(child.toAbsolutePath.toFile)
+					registerAll(dir);
 				}
-			})
+			});
+
+		event.foreach(e => listener ! handleEvent(Paths.get(dir.path), e))
 
 		if (key.reset() == false) {
 			keys.remove(key);
 			if (keys.isEmpty) break // nothing left watch
 		}
-
-		listener ! DirectoryWatcher.OtherChange
 	}
 
 	override def postStop {
@@ -118,6 +138,10 @@ class DirectoryWatcher(listener: ActorRef, val dir: Option[Directory]) extends A
 }
 
 object DirectoryWatcher {
-	case object FolderCreated
+	case class DirectoryCreated(d: Directory)
+	case class DirectoryDeleted(f: File) // can't be directory because it doesn't exist anymore, D'oh
+	case class FileDeleted(f: File)
+	case class FileCreated(f: File)
 	case object OtherChange
+	case object Started
 }
