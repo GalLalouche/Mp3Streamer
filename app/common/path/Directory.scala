@@ -1,10 +1,11 @@
 package common.path
 
 import java.io.File
+import scala.annotation.tailrec
 
 /**
   * Helper climport common.path.RichFile
-ass for Directory methods
+  * ass for Directory methods
   */
 class Directory(val dir: File) extends Path(dir) {
 	require(dir != null)
@@ -69,14 +70,14 @@ class Directory(val dir: File) extends Path(dir) {
 	/**
 	  * @return all files that are not dirs nested inside this dir (in any given depth)
 	  */
-	def deepFiles: List[File] = {
+	final def deepFiles: List[File] = {
 		files ++ dirs.flatMap(_.deepFiles)
 	}
-	def deepDirs: List[Directory] = {
-		dirs.flatMap(_.deepDirs)
+	final def deepDirs: List[Directory] = {
+		dirs ++ dirs.flatMap(_.deepDirs)
 	}
 	def deepPaths: List[Path] = {
-		files.map(new RichFile(_)) ++ dirs.flatMap(_.deepPaths)
+		files.map(new RichFile(_)) ++ dirs ++  dirs.flatMap(_.deepPaths)
 	}
 }
 

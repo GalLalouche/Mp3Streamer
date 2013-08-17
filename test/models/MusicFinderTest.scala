@@ -54,12 +54,15 @@ class MusicFinderTest extends TempDirTest {
 				$.getSongs should be empty
 			}
 		}
-		"Find song in" >>
-			new MusicDir {
-				withDirs("a")
-				tempDir.addSubDir("a").addSubDir("b").addFile("foo.mp3")
-				val x =
-					$.getSongs should contain((tempDir / """a/b/foo.mp3""").path)
-			}
+		"Find song in" >> new MusicDir {
+			withDirs("a")
+			tempDir.addSubDir("a").addSubDir("b").addFile("foo.mp3")
+			val x =
+				$.getSongs should contain((tempDir / """a/b/foo.mp3""").path)
+		}
 	}
+//	"real test" >> {
+//		timed { println(real.getSongs.length) }
+//		1 === 1
+//	}
 }

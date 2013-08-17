@@ -22,8 +22,13 @@ class Path protected (val p: File) {
 		val i = p.getName.lastIndexOf('.')
 		p.getName.substring(i + 1).toLowerCase
 	}
+
+	override def hashCode = p.hashCode
+	override def equals(o: Any): Boolean = if (o.isInstanceOf[Path]) return p.equals(o.asInstanceOf[Path].p) else false
+
 }
 
 object Path {
 	implicit def richPath(f: File) = if (f isDirectory) new Directory(f.getAbsoluteFile) else new RichFile(f)
+	implicit def poorPath(p: Path): File = p.p
 }

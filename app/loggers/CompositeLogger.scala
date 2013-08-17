@@ -10,7 +10,10 @@ object CompositeLogger extends Logger {
 			def error(s: String, e: Exception) = l error (s, e)
 		}
 	}
-	private val loggers: Seq[Logger] = List(aLoggerAdapter(new play.Logger.ALogger(play.api.Logger("Mp3Streamer"))))
+	private val loggers: Seq[Logger] = List(
+		aLoggerAdapter(new play.Logger.ALogger(play.api.Logger("Mp3Streamer"))),
+		new ConsoleLogger
+	)
 
 	override def trace(s: String) = loggers.foreach(_.trace(s))
 	override def debug(s: String) = loggers.foreach(_.debug(s))
