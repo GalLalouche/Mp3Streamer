@@ -4,23 +4,14 @@ import java.io.File
 
 class Path protected (val p: File) {
 	require(p != null)
-
-	/**
-	  * The dir's path
-	  */
+	require(p exists)
 	protected def getPath = p.getAbsolutePath
 	lazy val path = getPath
 	val name = p.getName
 
 	def /(s: String): Path = {
 		val f = new File(path + "/" + s)
-		if (f exists)
-			if (f isDirectory)
-				Directory(f)
-			else 
-				new RichFile(f)
-		else
-			new Path(f)
+		if (f isDirectory) Directory(f) else new RichFile(f)
 	}
 
 	def / = new Directory(p)
