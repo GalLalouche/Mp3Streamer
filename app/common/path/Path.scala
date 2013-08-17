@@ -20,7 +20,7 @@ class Path protected (val p: File) {
 
 	lazy val extension = {
 		val i = p.getName.lastIndexOf('.')
-		p.getName.substring(i + 1).toLowerCase
+		if (i == -1) "" else p.getName.substring(i + 1).toLowerCase
 	}
 
 	override def hashCode = p.hashCode
