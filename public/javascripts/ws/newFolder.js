@@ -5,10 +5,11 @@ $(function() {
 			console.log("New Folder connection opened");
 		};
 		treeConnection.onmessage = function(msg) {
-			console.log("new album found " + msg.data)
-			$.get("/music/albums/" + msg.path, function(data) {
-				playlist.add(data, false);
-			});
+			if (window
+					.confirm("Found new folder, would you like to add it to the playlist?"))
+				$.get("/music/albums/" + msg.data, function(data) {
+					playlist.add(data, false);
+				});
 		};
 		treeConnection.onclose = function() {
 			console.log("New Folder connection closed, attempting reopen...");
