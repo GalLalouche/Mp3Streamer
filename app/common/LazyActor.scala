@@ -11,7 +11,7 @@ class LazyActor(sleepTime: Int = 10) extends Actor {
 	val timer = new Timer("LazyActor timer")
 	var actions = Set[Function0[_]]()
 	override def receive = {
-		case f: Function0[_] if (actions.contains(f) == false) => {
+		case f: Function0[Any] if (actions.contains(f) == false) => {
 			actions.add(f)
 			timer.schedule(new TimerTask() {
 				def run = synchronized {

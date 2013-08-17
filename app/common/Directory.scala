@@ -7,7 +7,7 @@ import java.io.File
   */
 class Directory(val dir: File) extends Path(dir) {
 	require(dir != null)
-	require(dir.isDirectory)
+	require(dir isDirectory)
 
 	override def getPath = if ((super.getPath.endsWith("/") || super.getPath.endsWith("\\"))) super.getPath else super.getPath + "\\"
 
@@ -82,4 +82,5 @@ class Directory(val dir: File) extends Path(dir) {
 object Directory {
 	def apply(f: File): Directory = new Directory(f)
 	def apply(s: String): Directory = Directory(new File(s))
+	def apply(p: Path): Directory = Directory(p.p)
 }

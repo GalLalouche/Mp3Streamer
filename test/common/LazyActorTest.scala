@@ -10,6 +10,9 @@ import akka.actor.ActorSystem
 import akka.actor.actorRef2Scala
 import org.specs2.specification.AfterExample
 import org.specs2.specification.Scope
+import org.specs2.mock.Mockito
+import akka.testkit.TestActorRef
+import akka.testkit.TestProbe
 
 /**
   * Add your spec here.
@@ -18,48 +21,34 @@ import org.specs2.specification.Scope
   */
 @RunWith(classOf[JUnitRunner])
 class LazyActorTest extends Specification {
-	val sleepTime = 3
-	// too lazy to hook up mocikto :\
-			val $ = ActorDSL.actor(ActorSystem("migration-system"))(new LazyActor(1))
+	implicit val x = ActorSystem("test")
 	class Context extends Scope {
-		var count = 0
+		val $ = TestActorRef(new LazyActor(1))
+		val probe = TestProbe()
 		val f = () => {
-			count += 1
+			probe.ref ! "Hi"
 		}
 	}
 
-	def sleep = Thread.sleep(sleepTime)
-
 	"Lazy actor" >> {
 
-		"call f" >> {
-
-			"at least once" >> new Context {
-				$ ! f
-				sleep
-				println("end")
-				count should be >= 1
-			}
-
-			"exactly once" >> new Context {
-				$ ! f
-				$ ! f
-				sleep
-				count === 1
-			}
+		"call f at least once" >> new Context {
+			$ ! f
+			probe expectMsg ("Hi")
 		}
 		"handle different calls" >> new Context {
 			$ ! f
 			$ ! { f() }
-			sleep
-			count === 2
+			probe expectMsg ("Hi")
+			probe expectMsg ("Hi")
 		}
-		"do the same action after some time has passed" >> new Context {
+		"repeat action after some time has passed" >> new Context {
 			$ ! f
-			sleep
+			Thread.sleep(10)
 			$ ! f
-			sleep
-			count === 2
+			Thread.sleep(10)
+			probe expectMsg ("Hi")
+			probe expectMsg ("Hi")
 		}
 	}
 }

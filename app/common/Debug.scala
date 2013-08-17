@@ -29,10 +29,14 @@ trait Debug {
 			} catch {
 				case _: Exception if (numTries < maxTries) => {
 					numTries += 1
-					Thread.sleep(10)
+					Thread.sleep(1)
 				}
 			}
 		}
 		throw new AssertionError
 	}
+	
+	def lineNumber(depth: Int) = Thread.currentThread.getStackTrace()(3 + 2*depth).getLineNumber;
+	
+	def echoLineNumber = println("Echo: " + lineNumber(1))
 }

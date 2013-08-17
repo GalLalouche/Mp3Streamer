@@ -11,7 +11,7 @@ import common.LazyActor
 import common.Path.richPath
 import common.ValueTree
 import models.Album
-import models.DirectoryWatcher
+import dirwatch.DirectoryWatcher
 import models.MusicFinder
 import models.MusicTree
 import models.Poster
@@ -70,9 +70,9 @@ object Player extends Controller with Debug {
 		lastUpdated = System.currentTimeMillis
 		TreeSocket ! "Update"
 	}}
-	val watcher = ActorDSL.actor(new DirectoryWatcher(musicFinder, () => {
-		lazyActor ! updatingMusic
-	}))
+//	val watcher = ActorDSL.actor(new DirectoryWatcher(musicFinder, () => {
+//		lazyActor ! updatingMusic
+//	}))
 	
 	var musicTree: ValueTree[File] = null
 	var lastUpdated: Long = 0 

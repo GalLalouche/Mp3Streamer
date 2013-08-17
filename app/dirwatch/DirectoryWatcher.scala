@@ -8,8 +8,7 @@
   * @author Chris Eberle <eberle1080@gmail.com>
   * @version 0.1
   */
-package models
-
+package dirwatch
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
 import java.nio.file.LinkOption
@@ -24,27 +23,33 @@ import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection.mutable.HashMap
 import scala.util.control.Breaks.break
 import akka.actor.Actor
-import akka.actor.ActorDSL
 import akka.actor.PoisonPill
+import akka.actor.ReceiveTimeout
 import common.Debug
 import common.Directory
-import akka.actor.ReceiveTimeout
+import scala.concurrent.duration._
+import akka.actor.ActorRef
+import akka.actor.Props
+import akka.actor.ActorDSL
+import akka.actor.ActorSystem
 
-class DirectoryWatcher(val mf: MusicFinder, listener: () => Unit) extends Actor with Debug {
-	require(mf != null)
+class DirectoryWatcher(listener: ActorRef, val dir: Directory) extends Actor with Debug {
 	require(listener != null)
-	val watchService = Paths.get(mf.dir.path).getFileSystem.newWatchService
-	
-	private val keys = new HashMap[WatchKey, Directory]
+	require(dir != null)
+
+	private lazy val watchService = Paths.get(dir.path).getFileSystem.newWatchService
+
+	private val keys = HashMap[WatchKey, Directory]()
 	private val trace = false
-	
+
 	override def preStart {
-		mf.genreDirs.foreach(registerAll)
+		registerAll(dir)
 	}
+
 	/**
 	  * Register a particular file or directory to be watched
 	  */
-	def register(dir: Directory): Unit = {
+	private def register(dir: Directory) {
 		import resource._
 		trySleep(5) {
 			val key = Paths.get(dir.path).register(watchService,
@@ -66,21 +71,11 @@ class DirectoryWatcher(val mf: MusicFinder, listener: () => Unit) extends Actor 
 		}
 
 	}
-
-	/**
-	  * Makes it easier to walk a file tree
-	  */
-	implicit def makeDirVisitor(f: (Path) => Unit) = new SimpleFileVisitor[Path] {
-		override def preVisitDirectory(p: Path, attrs: BasicFileAttributes) = {
-			f(p)
-			FileVisitResult.CONTINUE
-		}
-	}
-
+	
 	/**
 	  *  Recursively register directories
 	  */
-	def registerAll(dir: Directory): Unit = {
+	private def registerAll(dir: Directory) {
 		register(dir)
 		dir.dirs.foreach(registerAll(_))
 	}
@@ -88,15 +83,10 @@ class DirectoryWatcher(val mf: MusicFinder, listener: () => Unit) extends Actor 
 	/**
 	  * The main directory watching thread
 	  */
-	import scala.concurrent.duration._
 	context.setReceiveTimeout(0 milliseconds)
 	override def receive = {
-		case ReceiveTimeout  => waitForChange
 		case PoisonPill => context.stop(self)
-	}
-	
-	override def postStop {
-		loggers.CompositeLogger.debug("DirectoryWatcher has left the building")
+		case _ => waitForChange
 	}
 
 	private def waitForChange = {
@@ -105,14 +95,26 @@ class DirectoryWatcher(val mf: MusicFinder, listener: () => Unit) extends Actor 
 		key.pollEvents().asScala.filterNot(_.kind == StandardWatchEventKinds.OVERFLOW).
 			filter(_.kind == StandardWatchEventKinds.ENTRY_CREATE).foreach(event => {
 				val child = Paths.get(dir.path).resolve(event.context().asInstanceOf[Path])
-				if (Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS))
+				if (Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS)) {
+					listener ! DirectoryWatcher.FolderCreated
 					registerAll(Directory(child.toAbsolutePath.toFile));
+				}
 			})
 
 		if (key.reset() == false) {
 			keys.remove(key);
 			if (keys.isEmpty) break // nothing left watch
 		}
-		listener()
+
+		listener ! DirectoryWatcher.OtherChange
 	}
+
+	override def postStop {
+		loggers.CompositeLogger.debug("DirectoryWatcher has left the building")
+	}
+}
+
+object DirectoryWatcher {
+	case object FolderCreated
+	case object OtherChange
 }
