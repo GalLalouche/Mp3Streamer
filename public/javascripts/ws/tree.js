@@ -34,22 +34,8 @@ $(function() {
 			ifModified: true,
 		})
 	};
-	function openConnection() {
-		var treeConnection = new WebSocket("ws://" + window.location.host + "/ws/tree")
-		treeConnection.onopen = function () {
-			console.log("Tree connection opened");
-			getTree();
-		};
-		treeConnection.onmessage = function (msg) {
-			if (msg.data == "tree")
-				getTree();
-		}
-		treeConnection.onclose = function() {
-			console.log("Tree connection closed, attempting reopen...");
-			openConnection(); // reopen connection if server has reloaded
-		}
-	}
-	openConnection();
+	openConnection("tree", function(msg) {if (msg.data == "tree") getTree()}).onmessage({data: "tree"})
+	
 });
 	
 	
