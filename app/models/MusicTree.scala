@@ -6,7 +6,7 @@ import common.ValueTree
 import play.api.libs.json.Json
 import play.api.libs.json.JsObject
 
-abstract class MusicTree extends MusicFinder {
+trait MusicTree extends MusicFinder {
 	collection.parallel.ForkJoinTasks
 	private def buildNode(d: Directory, depth: Int = 0): ValueTree[File] = {
 		val leaves = d.files.filter(extensions.contains(_))

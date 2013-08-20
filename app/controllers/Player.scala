@@ -29,13 +29,10 @@ import websockets.NewFolderSocket
 /**
   * Handles fetch requests of JSON information
   */
-object Player extends Controller with Debug {
-	val musicFinder = new MusicFinder {
-		val dir = Directory("d:/media/music")
-		val subDirs = List("Metal", "Rock", "New Age", "Classical")
-		val extensions = List("mp3", "flac")
-	}
-	val treeFinder = MusicTree(musicFinder)
+object Player extends Controller with MusicFinder with MusicTree with Debug {
+	val dir = Directory("d:/media/music")
+	val subDirs = List("Metal", "Rock", "New Age", "Classical")
+	val extensions = List("mp3", "flac")
 	val random = new Random
 	var songs: GenSeq[File] = null
 
@@ -70,8 +67,8 @@ object Player extends Controller with Debug {
 	import akka.actor.ActorDSL._
 	val lazyActor = ActorDSL.actor(new LazyActor(1000))
 	val updatingMusic = () => timed("Updating music") {
-		songs = musicFinder.getSongs.map(new File(_))
-		musicTree = treeFinder.getTree
+		songs = getSongs.map(new File(_))
+		musicTree = getTree
 		lastUpdated = System.currentTimeMillis
 		TreeSocket.actor ! TreeSocket.Update
 	}
@@ -84,7 +81,7 @@ object Player extends Controller with Debug {
 		}
 	})
 
-	val watcher = ActorDSL.actor(new DirectoryWatcher(updater, musicFinder.genreDirs))
+	val watcher = ActorDSL.actor(new DirectoryWatcher(updater, genreDirs))
 
 	var musicTree: ValueTree[File] = null
 	var lastUpdated: Long = 0
