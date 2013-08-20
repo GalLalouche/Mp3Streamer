@@ -2,20 +2,20 @@ package dirwatch
 
 import java.io.File
 import java.util.concurrent.TimeUnit
+
 import scala.concurrent.duration.FiniteDuration
+
 import org.junit.runner.RunWith
 import org.specs2.mock.Mockito
 import org.specs2.runner.JUnitRunner
 import org.specs2.time.Duration
-import akka.actor.ActorSystem
-import akka.testkit.DefaultTimeout
-import akka.testkit.ImplicitSender
-import akka.testkit.TestProbe
+
+import akka.actor.{ActorDSL, ActorSystem}
+import akka.testkit.{DefaultTimeout, ImplicitSender, TestProbe}
 import akka.util.Timeout._
 import akka.util.Timeout
 import dirwatch.DirectoryWatcher._
 import models.TempDirTest
-import akka.actor.ActorDSL
 
 @RunWith(classOf[JUnitRunner])
 class DirectoryWatcherTest extends TempDirTest with Mockito {

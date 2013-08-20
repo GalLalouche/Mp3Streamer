@@ -9,33 +9,29 @@
   * @version 0.1
   */
 package dirwatch
-import java.nio.file.FileVisitResult
+
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.LinkOption
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.SimpleFileVisitor
 import java.nio.file.StandardWatchEventKinds
 import java.nio.file.WatchKey
-import java.nio.file.WatchService
-import java.nio.file.attribute.BasicFileAttributes
+
 import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection.mutable.HashMap
+import scala.collection.mutable.HashSet
+import scala.concurrent.duration.DurationInt
 import scala.util.control.Breaks.break
+
 import akka.actor.Actor
+import akka.actor.ActorRef
 import akka.actor.PoisonPill
-import akka.actor.ReceiveTimeout
+import akka.actor.actorRef2Scala
 import common.Debug
 import common.path.Directory
-import common.path.Path._
-import scala.concurrent.duration._
-import akka.actor.ActorRef
-import akka.actor.Props
-import akka.actor.ActorDSL
-import akka.actor.ActorSystem
+import common.path.Path.poorPath
 import DirectoryWatcher._
-import java.io.File
-import scala.collection.mutable.HashSet
 
 class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) extends Actor with Debug {
 	def this(listener: ActorRef) = this(listener, None)
@@ -143,5 +139,5 @@ object DirectoryWatcher {
 	case class FileDeleted(f: File)
 	case class FileCreated(f: File)
 	case object OtherChange
-	case object Started
+	case object Started // for testing - letting the user of the actor know that the class has started
 }

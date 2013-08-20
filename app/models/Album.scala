@@ -1,22 +1,9 @@
 package models
 
 import java.io.File
-import scala.annotation.implicitNotFound
-import scala.reflect.runtime.{ universe => ru }
-import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.tag.FieldKey
-import play.api.libs.json.JsString
-import play.api.libs.json.Json
-import play.api.libs.json.Writes
-import play.api.libs.json.JsNumber
-import play.api.libs.json.JsNumber
-import play.api.libs.json.JsArray
-import play.api.libs.json.JsBoolean
-import play.api.libs.json.JsValue
-import common.path.Path._
-import common.path.RichFile
+
 import common.path.Directory
-import common.Jsoner
+import common.path.Path.richPath
 import play.api.libs.json.JsArray
 /**
   * Handles parsing mp3 data

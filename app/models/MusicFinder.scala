@@ -1,9 +1,7 @@
 package models
 
 import common.path.Directory
-import common.path.Path._
-import java.io.File
-import scala.collection.parallel.ForkJoinTaskSupport
+import common.path.Path.richPath
 
 
 trait MusicFinder {

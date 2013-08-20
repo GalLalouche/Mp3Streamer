@@ -1,6 +1,6 @@
 package models
 
-import common.path.Path._
+import common.path.Path.richPath
 /**
  * Handles cover art
  */

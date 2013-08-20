@@ -1,14 +1,5 @@
 package websockets
 
-import scala.actors.Actor
-import scala.actors.Exit
-import scala.concurrent.Future
-
-import play.api.libs.iteratee.Concurrent
-import play.api.libs.iteratee.Iteratee
-import play.api.mvc.Controller
-import play.api.mvc.WebSocket
-
 /**
   * Sends console information to the listeners
   */

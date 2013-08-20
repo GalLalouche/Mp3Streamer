@@ -1,8 +1,10 @@
 package controllers
 
-import play.api.mvc._
 import java.io.File
 import java.net.URLDecoder
+
+import play.api.mvc.Action
+import play.api.mvc.Controller
 
 object Posters extends Controller {
 	def image(path: String) = Action {

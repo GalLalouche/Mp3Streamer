@@ -1,18 +1,11 @@
 package common
 
 import org.junit.runner.RunWith
-import org.scalatest.BeforeAndAfter
-import org.scalatest.FlatSpec
 import org.specs2.mutable.Specification
-import org.specs2.runner.JUnitRunner
-import akka.actor.ActorDSL
-import akka.actor.ActorSystem
-import akka.actor.actorRef2Scala
-import org.specs2.specification.AfterExample
 import org.specs2.specification.Scope
-import org.specs2.mock.Mockito
-import akka.testkit.TestActorRef
-import akka.testkit.TestProbe
+import akka.actor.{ActorSystem, actorRef2Scala}
+import akka.testkit.{TestActorRef, TestProbe}
+import org.specs2.runner.JUnitRunner
 
 /**
   * Add your spec here.

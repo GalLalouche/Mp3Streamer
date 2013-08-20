@@ -3,9 +3,6 @@ package models
 import org.junit.runner.RunWith
 import common.path.Directory
 import org.specs2.runner.JUnitRunner
-import org.specs2.matcher.ShouldMatchers
-import org.specs2.execute.AsResult
-import org.specs2.specification.Example
 
 /**
   * Add your spec here.

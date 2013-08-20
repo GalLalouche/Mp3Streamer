@@ -1,7 +1,5 @@
 package common
 
-import play.libs.Time
-import java.io.IOException
 import loggers.Logger
 
 trait Debug {
@@ -29,7 +27,7 @@ trait Debug {
 			} catch {
 				case _: Exception if (numTries < maxTries) => {
 					numTries += 1
-					Thread.sleep(1)
+					Thread.sleep(100)
 				}
 			}
 		}

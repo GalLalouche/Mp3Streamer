@@ -1,15 +1,22 @@
 package controllers
 
 import java.io.File
-import scala.annotation.implicitNotFound
+import java.net.URLDecoder
+
 import scala.collection.GenSeq
 import scala.util.Random
+
 import org.joda.time.format.DateTimeFormat
+
 import akka.actor.ActorDSL
+import akka.actor.ActorDSL.Act
+import akka.actor.actorRef2Scala
 import common.Debug
-import common.path.Directory
 import common.LazyActor
 import common.ValueTree
+import common.path.Directory
+import common.path.Path.richPath
+import dirwatch.DirectoryWatcher
 import models.Album
 import models.MusicFinder
 import models.MusicTree
@@ -20,11 +27,8 @@ import play.api.libs.json.JsArray
 import play.api.libs.json.JsString
 import play.api.mvc.Action
 import play.api.mvc.Controller
-import websockets.TreeSocket
-import java.net.URLDecoder
-import common.path.Path._
-import dirwatch.DirectoryWatcher
 import websockets.NewFolderSocket
+import websockets.TreeSocket
 
 /**
   * Handles fetch requests of JSON information

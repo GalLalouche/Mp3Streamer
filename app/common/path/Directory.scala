@@ -1,11 +1,9 @@
 package common.path
 
 import java.io.File
-import scala.annotation.tailrec
 
 /**
-  * Helper climport common.path.RichFile
-  * ass for Directory methods
+  * Helper class for Directory methods
   */
 class Directory(val dir: File) extends Path(dir) {
 	require(dir != null)

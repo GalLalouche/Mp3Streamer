@@ -1,7 +1,17 @@
 package common
 
-import play.api.libs.json._
+import scala.math.BigDecimal.double2bigDecimal
+import scala.math.BigDecimal.int2bigDecimal
+import scala.math.BigDecimal.long2bigDecimal
+
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsBoolean
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsString
+import play.api.libs.json.JsValue
 import play.api.libs.json.Json.JsValueWrapper
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import play.api.libs.json.Writes
 
 /**
  * Because play's default json library is stupid and doesn't handle type Any

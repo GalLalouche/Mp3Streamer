@@ -2,8 +2,6 @@ import models.KillableActors
 import play.api.Application
 import play.api.GlobalSettings
 import play.api.Logger
-import websockets.TreeSocket
-import scala.actors.Exit
 
 object Global extends GlobalSettings {
 
