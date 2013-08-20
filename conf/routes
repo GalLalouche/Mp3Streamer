@@ -3,7 +3,8 @@
 # ~~~~
 
 # Home page
-GET   /                        controllers.Application.index
+GET   /                        controllers.Application.index(anna:Boolean = false)
+GET   /anna                    controllers.Application.index(anna:Boolean = true)
 GET   /test                    controllers.Application.test      
 
 
