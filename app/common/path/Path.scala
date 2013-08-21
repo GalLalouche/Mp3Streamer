@@ -26,7 +26,11 @@ class Path protected (val p: File) {
 
 	override def hashCode = p.hashCode
 	override def equals(o: Any): Boolean = if (o.isInstanceOf[Path]) return p.equals(o.asInstanceOf[Path].p) else false
-	lazy val parent = Directory(p.getParentFile())
+	lazy val parent: Directory = {
+		if (p.getParentFile() == null) 
+			throw new UnsupportedOperationException("File: " + p + " has no parent")
+		Directory(p.getParentFile())
+	}
 }
 
 object Path {

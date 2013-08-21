@@ -126,6 +126,17 @@ class DirectoryTest extends TempDirTest { // yeah yeah, it uses TempDirTest whic
 			$.deleteAll
 			$.dir should not(exist)
 		}
+		"parent" >> {
+			"return all parent dirs" >> new DirTest {
+				val c = tempDir.addSubDir("a").addSubDir("b").addSubDir("c");
+				c.parent === (tempDir / "a" / "b" /)
+				c.parent.parent === (tempDir / "a" /)
+				c.parent.parent.parent === (tempDir)
+			}
+			"return null on root" >> {
+				{ Directory("C:/").parent } should throwA[UnsupportedOperationException]
+			}
+		}
 	}
 
 }
