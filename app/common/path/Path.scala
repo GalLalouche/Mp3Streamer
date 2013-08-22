@@ -4,7 +4,7 @@ import java.io.File
 
 class Path protected (val p: File) {
 	require(p != null)
-	require(p exists)
+	require(p exists, p + " doesn't exist")
 	protected def getPath = p.getAbsolutePath
 	lazy val path = getPath
 	val name = p.getName
