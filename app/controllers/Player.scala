@@ -2,12 +2,9 @@ package controllers
 
 import java.io.File
 import java.net.URLDecoder
-
 import scala.collection.GenSeq
 import scala.util.Random
-
 import org.joda.time.format.DateTimeFormat
-
 import akka.actor.ActorDSL
 import akka.actor.ActorDSL.Act
 import akka.actor.actorRef2Scala
@@ -29,6 +26,7 @@ import play.api.mvc.Action
 import play.api.mvc.Controller
 import websockets.NewFolderSocket
 import websockets.TreeSocket
+import java.net.URLEncoder
 
 /**
   * Handles fetch requests of JSON information
@@ -41,7 +39,7 @@ object Player extends Controller with MusicFinder with MusicTree with Debug {
 	var songs: GenSeq[File] = null
 
 	private def songJsonInformation(song: models.Song): play.api.libs.json.JsObject = {
-		song.jsonify + (("mp3", JsString("/music/songs/" + song.file.path))) +
+		song.jsonify + (("mp3", JsString("/music/songs/" +  URLEncoder.encode(song.file.path, "UTF-8")))) +
 			(("poster", JsString("/posters/" + Poster.getCoverArt(song).path)))
 	}
 
