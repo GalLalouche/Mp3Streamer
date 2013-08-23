@@ -60,7 +60,7 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) ex
 		trySleep(maxTries = 5, sleepTime = 1000) {
 			val key = Paths.get(dir.path).register(watchService,
 				StandardWatchEventKinds.ENTRY_CREATE,
-//				StandardWatchEventKinds.ENTRY_MODIFY,
+//				StandardWatchEventKinds.ENTRY_MODIFY, // ignoring modify because it's called on deletes, and delete is called on modifies :\
 				StandardWatchEventKinds.ENTRY_DELETE)
 			if (trace) {
 				val prev = keys.getOrElse(key, null)
