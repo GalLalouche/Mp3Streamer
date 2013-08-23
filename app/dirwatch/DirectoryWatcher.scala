@@ -57,7 +57,7 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) ex
 	  */
 	private def register(dir: Directory) {
 		import resource._
-		trySleep(5) {
+		trySleep(maxTries = 5, sleepTime = 1000) {
 			val key = Paths.get(dir.path).register(watchService,
 				StandardWatchEventKinds.ENTRY_CREATE,
 //				StandardWatchEventKinds.ENTRY_MODIFY,

@@ -19,7 +19,7 @@ trait Debug {
 	}
 	
 	
-	def trySleep[T](maxTries: Int) (f: => T): T = {
+	def trySleep[T](maxTries: Int = 10, sleepTime:Int = 10) (f: => T): T = {
 		var numTries = 0
 		while (true) {
 			try {
