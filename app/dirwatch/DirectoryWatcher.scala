@@ -11,12 +11,7 @@
 package dirwatch
 
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.LinkOption
-import java.nio.file.Path
-import java.nio.file.Paths
-import java.nio.file.StandardWatchEventKinds
-import java.nio.file.WatchKey
+import java.nio.file._
 
 import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection.mutable.HashMap
@@ -24,10 +19,7 @@ import scala.collection.mutable.HashSet
 import scala.concurrent.duration.DurationInt
 import scala.util.control.Breaks.break
 
-import akka.actor.Actor
-import akka.actor.ActorRef
-import akka.actor.PoisonPill
-import akka.actor.actorRef2Scala
+import akka.actor._
 import common.Debug
 import common.path.Directory
 import common.path.Path.poorPath
@@ -60,17 +52,14 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) ex
 		trySleep(maxTries = 5, sleepTime = 1000) {
 			val key = Paths.get(dir.path).register(watchService,
 				StandardWatchEventKinds.ENTRY_CREATE,
-//				StandardWatchEventKinds.ENTRY_MODIFY, // ignoring modify because it's called on deletes, and delete is called on modifies :\
+				//				StandardWatchEventKinds.ENTRY_MODIFY, // ignoring modify because it's called on deletes, and delete is called on modifies :\
 				StandardWatchEventKinds.ENTRY_DELETE)
 			if (trace) {
 				val prev = keys.getOrElse(key, null)
-				if (prev == null) {
+				if (prev == null)
 					println("register: " + dir)
-				} else {
-					if (!dir.equals(prev)) {
-						println("update: " + prev + " -> " + dir)
-					}
-				}
+				else if (!dir.equals(prev))
+					println("update: " + prev + " -> " + dir)
 			}
 
 			folders += dir.getAbsolutePath
@@ -101,7 +90,7 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) ex
 		val file = path.toFile
 		val isDirectory = Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)
 		e.kind match {
-			case StandardWatchEventKinds.ENTRY_DELETE if (folders(file.getAbsolutePath)) =>  {folders -= file.getAbsolutePath; DirectoryDeleted(file)}
+			case StandardWatchEventKinds.ENTRY_DELETE if (folders(file.getAbsolutePath)) => { folders -= file.getAbsolutePath; DirectoryDeleted(file) }
 			case StandardWatchEventKinds.ENTRY_CREATE if (isDirectory) => DirectoryCreated(Directory(path))
 			case _ => OtherChange
 		}
@@ -111,14 +100,11 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) ex
 		val key = watchService.take()
 		val dir = keys(key)
 		val event = key.pollEvents().asScala;
-		event.filterNot(_.kind == StandardWatchEventKinds.OVERFLOW).
-			filter(_.kind == StandardWatchEventKinds.ENTRY_CREATE).foreach(event => {
-				val child = Paths.get(dir.path).resolve(event.context().asInstanceOf[Path])
-				if (Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS)) {
-					val dir = Directory(child.toAbsolutePath.toFile)
-					registerAll(dir);
-				}
-			});
+		event.filterNot(_.kind == StandardWatchEventKinds.OVERFLOW)
+			.filter(_.kind == StandardWatchEventKinds.ENTRY_CREATE)
+			.map(e => Paths.get(dir.path).resolve(e.context().asInstanceOf[Path]))
+			.filter(Files.isDirectory(_, LinkOption.NOFOLLOW_LINKS))
+			.foreach(c => registerAll(Directory(c.toAbsolutePath.toFile)))
 
 		event.foreach(e => listener ! handleEvent(Paths.get(dir.path), e))
 
