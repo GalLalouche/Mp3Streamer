@@ -10,7 +10,6 @@ GET   /test                    controllers.Application.test
 
 #Player!     
 GET   /music/randomSong        controllers.Player.randomSong
-GET   /music/tree              controllers.Player.tree
 GET   /music/albums/*path      controllers.Player.album(path)
 #Streamer
 GET   /music/songs/*path       controllers.Streamer.download(path)
@@ -21,6 +20,9 @@ GET   /posters/*path           controllers.Posters.image(path)
 
 # Map static resources from the /public folder to the /assets URL path
 GET   /assets/*file            controllers.Assets.at(path="/public", file)
+
+#tree
+GET   /music/tree              websockets.TreeSocket.tree
 
 # Web sockets
 GET   /ws/tree                 websockets.TreeSocket.accept

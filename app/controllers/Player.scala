@@ -31,10 +31,7 @@ import java.net.URLEncoder
 /**
   * Handles fetch requests of JSON information
   */
-object Player extends Controller with MusicFinder with MusicTree with Debug {
-	val dir = Directory("d:/media/music")
-	val subDirs = List("Metal", "Rock", "New Age", "Classical")
-	val extensions = List("mp3", "flac")
+object Player extends Controller with MusicFinder with MusicLocations with Debug {
 	val random = new Random
 	var songs: GenSeq[File] = null
 
@@ -70,8 +67,6 @@ object Player extends Controller with MusicFinder with MusicTree with Debug {
 	val lazyActor = ActorDSL.actor(new LazyActor(1000))
 	val updatingMusic = () => timed("Updating music") {
 		songs = getSongs.map(new File(_))
-		musicTree = getTree
-		lastUpdated = System.currentTimeMillis
 		TreeSocket.actor ! TreeSocket.Update
 	}
 
@@ -84,21 +79,5 @@ object Player extends Controller with MusicFinder with MusicTree with Debug {
 	})
 
 	val watcher = ActorDSL.actor(new DirectoryWatcher(updater, genreDirs))
-
-	var musicTree: ValueTree[File] = null
-	var lastUpdated: Long = 0
 	updatingMusic()
-	private val format = DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyy")
-	def tree = Action { request =>
-		{
-			val dateString = request.headers.get(HeaderNames.IF_MODIFIED_SINCE).getOrElse(format.print(0).toString)
-			val lastModified = format.parseDateTime(dateString).getMillis
-			if (lastUpdated - 1000 < lastModified) // -1000 for one second margin of error
-				NotModified
-			else
-				Ok(MusicTree.jsonify(musicTree)).withHeaders(
-					HeaderNames.LAST_MODIFIED -> format.print(lastUpdated + 1000))
-		}
-	}
-
 }
