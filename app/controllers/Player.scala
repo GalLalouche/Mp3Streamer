@@ -36,7 +36,7 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
 	var songs: GenSeq[File] = null
 
 	private def songJsonInformation(song: models.Song): play.api.libs.json.JsObject = {
-		song.jsonify + (("mp3", JsString("/music/songs/" +  URLEncoder.encode(song.file.path, "UTF-8")))) +
+		song.jsonify + (("mp3", JsString("/music/songs/" + URLEncoder.encode(song.file.path, "UTF-8")))) +
 			(("poster", JsString("/posters/" + Poster.getCoverArt(song).path)))
 	}
 
@@ -56,12 +56,7 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
 	def album(path: String) = Action {
 		Ok(JsArray(Album(new File(URLDecoder.decode(path, "UTF-8"))).songs.map(songJsonInformation)))
 	}
-
-	/**
-	  * ************
-	  * Tree
-	  * ************
-	  */
+	
 	implicit val system = models.KillableActors.system
 	import akka.actor.ActorDSL._
 	val lazyActor = ActorDSL.actor(new LazyActor(1000))
@@ -73,8 +68,8 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
 	val updater = ActorDSL.actor(new Act {
 		become {
 			case DirectoryWatcher.DirectoryCreated(d) =>
-				NewFolderSocket.actor ! d; updatingMusic()
-			case DirectoryWatcher.DirectoryDeleted(_) => updatingMusic()
+				NewFolderSocket.actor ! d; lazyActor ! updatingMusic
+			case DirectoryWatcher.DirectoryDeleted(_) => lazyActor ! updatingMusic
 		}
 	})
 
