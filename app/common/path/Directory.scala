@@ -9,8 +9,6 @@ class Directory(val dir: File) extends Path(dir) {
 	require(dir != null)
 	require(dir isDirectory)
 
-	override def getPath = if ((super.getPath.endsWith("/") || super.getPath.endsWith("\\"))) super.getPath else super.getPath + "\\"
-
 	/**
 	  * Adds a new file under the directory
 	  * @param name The file's name

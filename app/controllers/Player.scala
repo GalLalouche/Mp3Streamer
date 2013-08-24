@@ -67,8 +67,7 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
 
 	val updater = ActorDSL.actor(new Act {
 		become {
-			case DirectoryWatcher.DirectoryCreated(d) =>
-				NewFolderSocket.actor ! d; lazyActor ! updatingMusic
+			case DirectoryWatcher.DirectoryCreated(d) => NewFolderSocket.actor ! d; lazyActor ! updatingMusic
 			case DirectoryWatcher.DirectoryDeleted(_) => lazyActor ! updatingMusic
 		}
 	})

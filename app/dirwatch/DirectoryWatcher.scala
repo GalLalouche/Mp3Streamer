@@ -62,7 +62,7 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) ex
 					println("update: " + prev + " -> " + dir)
 			}
 
-			folders += dir.getAbsolutePath
+			folders += dir.path
 			keys(key) = dir
 		}
 
@@ -100,18 +100,16 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) ex
 		val key = watchService.take()
 		val dir = keys(key)
 		val event = key.pollEvents().asScala;
-		event.filterNot(_.kind == StandardWatchEventKinds.OVERFLOW)
+		event
 			.filter(_.kind == StandardWatchEventKinds.ENTRY_CREATE)
-			.map(e => Paths.get(dir.path).resolve(e.context().asInstanceOf[Path]))
+			.map(e => Paths.get(dir.path).resolve(e.context.asInstanceOf[Path]))
 			.filter(Files.isDirectory(_, LinkOption.NOFOLLOW_LINKS))
 			.foreach(c => registerAll(Directory(c.toAbsolutePath.toFile)))
 
-		event.foreach(e => listener ! handleEvent(Paths.get(dir.path), e))
+		event.foreach(listener ! handleEvent(Paths.get(dir.path), _))
 
-		if (key.reset() == false) {
+		if (key.reset() == false)
 			keys.remove(key);
-			if (keys.isEmpty) break // nothing left watch
-		}
 	}
 
 	override def postStop {

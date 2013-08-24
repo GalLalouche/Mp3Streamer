@@ -5,20 +5,21 @@ import java.io.File
 class Path protected (val p: File) {
 	require(p != null)
 	require(p exists, p + " doesn't exist")
-	protected def getPath = p.getAbsolutePath
-	lazy val path = getPath
+	
+	val path = p.getAbsolutePath
 	val name = p.getName
 
 	def /(s: String): Path = {
 		val f = new File(path + "/" + s)
 		if (f isDirectory) Directory(f) else new RichFile(f)
 	}
-	def \(s: String) = new File(path + "\\" + s)
+	def \(s: String): File = new File(path + "\\" + s)
+	def \(): File = this \ ""
 
 	def / = new Directory(p)
-	def \ = new File(path + "\\")
-	override def toString = name
 
+	override def toString = name
+	
 	lazy val extension = {
 		val i = p.getName.lastIndexOf('.')
 		if (i == -1) "" else p.getName.substring(i + 1).toLowerCase
@@ -26,7 +27,8 @@ class Path protected (val p: File) {
 
 	override def hashCode = p.hashCode
 	override def equals(o: Any): Boolean = if (o.isInstanceOf[Path]) return p.equals(o.asInstanceOf[Path].p) else false
-	lazy val parent: Directory = {
+	
+	lazy val parent: Directory = { // this has to be lazy, to avoid computing entire path to root in construction
 		if (p.getParentFile() == null) 
 			throw new UnsupportedOperationException("File: " + p + " has no parent")
 		Directory(p.getParentFile())
