@@ -25,22 +25,19 @@ import common.path.Directory
 import common.path.Path.poorPath
 import DirectoryWatcher._
 
-class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) extends Actor with Debug {
-	def this(listener: ActorRef) = this(listener, None)
-	def this(listener: ActorRef, dir: Directory) = this(listener, Some(List(dir)))
-	def this(listener: ActorRef, dirs: List[Directory]) = this(listener, Some(dirs))
+class DirectoryWatcher(listener: ActorRef, val dirs: Traversable[Directory]) extends Actor with Debug {
+	def this(listener: ActorRef, dir: Directory, dirs: Directory*) = this(listener, dir :: (dirs.toList))
 	require(listener != null)
 	require(dirs != null)
 
-	private lazy val watchService = Paths.get(dirs.getOrElse(List(Directory("C:/")))(0).path).getFileSystem.newWatchService
+	lazy val watchService = Paths.get(dirs.head.path).getFileSystem.newWatchService
 
-	private val keys = HashMap[WatchKey, Directory]()
+	private val keys = HashMap[WatchKey, Path]()
 	private val folders = HashSet[String]()
 	private val trace = false
 
 	override def preStart {
-		if (dirs.isDefined)
-			dirs.get.foreach(registerAll)
+		dirs.foreach(registerAll)
 		listener ! Started
 	}
 
@@ -48,9 +45,8 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) ex
 	  * Register a particular file or directory to be watched
 	  */
 	private def register(dir: Directory) {
-		import resource._
 		trySleep(maxTries = 5, sleepTime = 1000) {
-			val key = Paths.get(dir.path).register(watchService,
+			val key = dir.register(watchService,
 				StandardWatchEventKinds.ENTRY_CREATE,
 				//				StandardWatchEventKinds.ENTRY_MODIFY, // ignoring modify because it's called on deletes, and delete is called on modifies :\
 				StandardWatchEventKinds.ENTRY_DELETE)
@@ -86,27 +82,26 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) ex
 	}
 
 	private def handleEvent(p: Path, e: java.nio.file.WatchEvent[_]) = {
-		val path = p.resolve(e.context().asInstanceOf[Path])
-		val file = path.toFile
-		val isDirectory = Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)
+		val resolvedPath = p.resolve(e.context().asInstanceOf[Path])
+		val file = resolvedPath.toFile
 		e.kind match {
-			case StandardWatchEventKinds.ENTRY_DELETE if (folders(file.getAbsolutePath)) => { folders -= file.getAbsolutePath; DirectoryDeleted(file) }
-			case StandardWatchEventKinds.ENTRY_CREATE if (isDirectory) => DirectoryCreated(Directory(path))
+			case StandardWatchEventKinds.ENTRY_DELETE if folders(file.getAbsolutePath) => { folders -= file.getAbsolutePath; DirectoryDeleted(file) }
+			case StandardWatchEventKinds.ENTRY_CREATE if file.isDirectory => DirectoryCreated(Directory(resolvedPath))
 			case _ => OtherChange
 		}
 	}
 
 	private def waitForChange = {
 		val key = watchService.take()
-		val dir = keys(key)
+		val publishingPath = keys(key)
 		val event = key.pollEvents().asScala;
 		event
 			.filter(_.kind == StandardWatchEventKinds.ENTRY_CREATE)
-			.map(e => Paths.get(dir.path).resolve(e.context.asInstanceOf[Path]))
+			.map(e => publishingPath.resolve(e.context.asInstanceOf[Path]))
 			.filter(Files.isDirectory(_, LinkOption.NOFOLLOW_LINKS))
 			.foreach(c => registerAll(Directory(c.toAbsolutePath.toFile)))
 
-		event.foreach(listener ! handleEvent(Paths.get(dir.path), _))
+		event.foreach(listener ! handleEvent(publishingPath, _))
 
 		if (key.reset() == false)
 			keys.remove(key);
@@ -118,6 +113,8 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Option[List[Directory]]) ex
 }
 
 object DirectoryWatcher {
+	implicit def dirToPath(d: Directory): Path = Paths.get(d.path)
+	
 	case class DirectoryCreated(d: Directory)
 	case class DirectoryDeleted(f: File) // can't be directory because it doesn't exist anymore, D'oh
 	case class FileDeleted(f: File)
