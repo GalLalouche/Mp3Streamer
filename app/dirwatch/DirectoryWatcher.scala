@@ -41,9 +41,6 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Traversable[Directory]) ext
 		listener ! Started
 	}
 
-	/**
-	  * Register a particular file or directory to be watched
-	  */
 	private def register(dir: Directory) {
 		trySleep(maxTries = 5, sleepTime = 1000) {
 			val key = dir.register(watchService,
@@ -72,9 +69,6 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Traversable[Directory]) ext
 		dir.dirs.foreach(registerAll(_))
 	}
 
-	/**
-	  * The main directory watching thread
-	  */
 	context.setReceiveTimeout(0 milliseconds)
 	override def receive = {
 		case PoisonPill => context.stop(self)
