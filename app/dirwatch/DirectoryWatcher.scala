@@ -33,7 +33,7 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Traversable[Directory]) ext
 	lazy val watchService = Paths.get(dirs.head.path).getFileSystem.newWatchService
 
 	private val keys = HashMap[WatchKey, Path]()
-	private val folders = HashSet[String]()
+	private val folders = HashSet[Path]()
 	private val trace = false
 
 	override def preStart {
@@ -41,7 +41,7 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Traversable[Directory]) ext
 		listener ! Started
 	}
 
-	private def register(dir: Directory) {
+	private def register(dir: Path) {
 		trySleep(maxTries = 5, sleepTime = 1000) {
 			val key = dir.register(watchService,
 				StandardWatchEventKinds.ENTRY_CREATE,
@@ -55,7 +55,7 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Traversable[Directory]) ext
 					println("update: " + prev + " -> " + dir)
 			}
 
-			folders += dir.path
+			folders += dir
 			keys(key) = dir
 		}
 
@@ -79,7 +79,7 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Traversable[Directory]) ext
 		val resolvedPath = p.resolve(e.context().asInstanceOf[Path])
 		val file = resolvedPath.toFile
 		e.kind match {
-			case StandardWatchEventKinds.ENTRY_DELETE if folders(file.getAbsolutePath) => { folders -= file.getAbsolutePath; DirectoryDeleted(file) }
+			case StandardWatchEventKinds.ENTRY_DELETE if folders(p) => { folders -= p; DirectoryDeleted(file) }
 			case StandardWatchEventKinds.ENTRY_CREATE if file.isDirectory => DirectoryCreated(Directory(resolvedPath))
 			case _ => OtherChange
 		}
