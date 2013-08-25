@@ -13,5 +13,5 @@ trait Codec {
 	  * @param otherCommands Any other commands sent to the codec
 	  * @throws IOException
 	  */
-	def decode(srcFile: File, dstFile: File, dstType: CodecType, otherCommands: List[String])
+	protected def decode(srcFile: File, dstFile: File, dstType: CodecType, otherCommands: List[String])
 }

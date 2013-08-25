@@ -11,8 +11,7 @@ import common.path.Path.richPath
   *
   * @author Gal Lalouche
   */
-trait Mp3Decoder {
-	val codec: Codec
+trait Mp3Decoder extends Codec {
 	val outputDir: Directory
 
 	/**
@@ -23,13 +22,14 @@ trait Mp3Decoder {
 	  *         path of the file (with no space) with .mp3
 	  * @throws IOException
 	  */
-	def decode(file: File) = {
+	def decode(file: File): File = {
 		require(file != null)
+		require(file exists)
 		require(file.isDirectory == false)
 		val outputFileName = file.path.replaceAll("[\\s\\/\\\\\\-\\:]", "").toLowerCase + ".mp3";
 		outputDir.files.find(_.name == outputFileName).getOrElse({
 			val outputFile = outputDir.addFile(outputFileName)
-			codec.decode(file, outputFile, CodecType.Mp3, List("-V 2", "-b 320"));
+			decode(file, outputFile, CodecType.Mp3, List("-V 2", "-b 320"));
 			outputFile;
 		})
 	}

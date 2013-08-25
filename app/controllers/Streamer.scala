@@ -13,19 +13,12 @@ import models.Decoder
 import play.api.mvc.Action
 import play.api.mvc.Controller
 
-object Streamer extends Controller {
-	val decoder = new Decoder {
-		val decoder = new Mp3Decoder {
-			val codec = new DbPowerampCodec {
-				val codecPath = "c:/program files (x86)/Illustrate/dBpoweramp/CoreConverter.exe"
-			}
-			val outputDir = Directory("D:/media/streamer/musicOutput")
-		}
-	}
+object Streamer extends Controller with Decoder with DbPowerampCodec {
+	val codecPath = "c:/program files (x86)/Illustrate/dBpoweramp/CoreConverter.exe"
+	val outputDir = Directory("D:/media/streamer/musicOutput")
+	
 	def download(s: String) = Action {
-		val futureFile = Future {
-			decoder.getFile(new File(URLDecoder.decode(s, "UTF-8")))
-		}
+		val futureFile = Future { decodeFileIfNeeded(new File(URLDecoder.decode(s, "UTF-8"))) }  // this ensures this call isn't blocking
 		Async {
 			futureFile.map { file =>
 				loggers.CompositeLogger.trace("Sending file " + file.getAbsolutePath)
