@@ -10,6 +10,7 @@ class RichFile(val f: File) extends Path(f) {
 		if (i == -1) "" else p.getName.substring(i + 1).toLowerCase
 	}
 	
+	//TODO: add tests
 	def write(s: String) {
 		new PrintStream(f).println(s)
 	}

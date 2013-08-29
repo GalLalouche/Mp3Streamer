@@ -16,6 +16,7 @@ import common.Jsoner._
 import common.Jsoner
 import play.api.libs.json.JsObject
 
+//TODO move logic to model
 object Acra extends Controller {
 	val logger = loggers.CompositeLogger
 
