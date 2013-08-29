@@ -32,13 +32,32 @@ import java.net.URLEncoder
   * Handles fetch requests of JSON information
   */
 object Player extends Controller with MusicFinder with MusicLocations with Debug {
-	val random = new Random
-	var songs: GenSeq[File] = null
+	private val random = new Random
+	private var songs: Seq[File] = null
 
 	private def songJsonInformation(song: models.Song): play.api.libs.json.JsObject = {
 		song.jsonify + (("mp3", JsString("/music/songs/" + URLEncoder.encode(song.file.path, "UTF-8")))) +
 			(("poster", JsString("/posters/" + Poster.getCoverArt(song).path)))
 	}
+
+	private implicit val system = models.KillableActors.system
+	import akka.actor.ActorDSL._
+	private val lazyActor = ActorDSL.actor(new LazyActor(1000))
+
+	private val updatingMusic = () => timed("Updating music") {
+		// this cannot be inlined, as it has to be the same function for LazyActor
+		songs = getSongs.map(new File(_))
+		TreeSocket.actor ! TreeSocket.Update
+	}
+
+	private val watcher = ActorDSL.actor(new DirectoryWatcher(ActorDSL.actor(new Act {
+		become {
+			case DirectoryWatcher.DirectoryCreated(d) =>
+				NewFolderSocket.actor ! d; lazyActor ! updatingMusic
+			case DirectoryWatcher.DirectoryDeleted(_) => lazyActor ! updatingMusic
+		}
+	}), genreDirs))
+	updatingMusic()
 
 	def randomSong = {
 		val song = songs(random nextInt (songs length))
@@ -56,22 +75,4 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
 	def album(path: String) = Action {
 		Ok(JsArray(Album(new File(URLDecoder.decode(path, "UTF-8"))).songs.map(songJsonInformation)))
 	}
-	
-	implicit val system = models.KillableActors.system
-	import akka.actor.ActorDSL._
-	val lazyActor = ActorDSL.actor(new LazyActor(1000))
-	val updatingMusic = () => timed("Updating music") {
-		songs = getSongs.map(new File(_))
-		TreeSocket.actor ! TreeSocket.Update
-	}
-
-	val updater = ActorDSL.actor(new Act {
-		become {
-			case DirectoryWatcher.DirectoryCreated(d) => NewFolderSocket.actor ! d; lazyActor ! updatingMusic
-			case DirectoryWatcher.DirectoryDeleted(_) => lazyActor ! updatingMusic
-		}
-	})
-
-	val watcher = ActorDSL.actor(new DirectoryWatcher(updater, genreDirs))
-	updatingMusic()
 }

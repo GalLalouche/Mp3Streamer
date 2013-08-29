@@ -30,7 +30,7 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Traversable[Directory]) ext
 	require(listener != null)
 	require(dirs != null)
 
-	lazy val watchService = dirs.head.getFileSystem.newWatchService
+	private lazy val watchService = dirs.head.getFileSystem.newWatchService
 
 	private val keys = HashMap[WatchKey, Path]()
 	private val folders = HashSet[Path]()
