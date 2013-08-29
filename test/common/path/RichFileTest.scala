@@ -9,7 +9,7 @@ import org.specs2.runner.JUnitRunner
 import Path.richPath
 import Path.poorPath
 import org.specs2.mutable.After
-import common.path.Path._
+import common.path.RichFile._
 /**
   * Add your spec here.
   * You can mock out a whole application including requests, plugins etc.

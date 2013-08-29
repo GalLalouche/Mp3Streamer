@@ -34,12 +34,12 @@ class Directory(val dir: File) extends Path(dir) {
 	  * @return all direct subdirs of this dir
 	  */
 	def dirs = {
-		Option(dir.listFiles).getOrElse(Array()).toList.filter(_.isDirectory).map(Directory(_))
+		Option(dir.listFiles).getOrElse(Array()).toVector.filter(_.isDirectory).map(Directory(_))
 	}
 	/**
 	  * All direct files of this dir
 	  */
-	def files = Option(dir.listFiles).getOrElse(Array()).toList.filterNot(_.isDirectory)
+	def files = Option(dir.listFiles).getOrElse(Array()).toVector.filterNot(_.isDirectory)
 	/**
 	  * Deletes all files and directories in this dir recursively including itself
 	  */
@@ -66,13 +66,13 @@ class Directory(val dir: File) extends Path(dir) {
 	/**
 	  * @return all files that are not dirs nested inside this dir (in any given depth)
 	  */
-	final def deepFiles: List[File] = {
+	final def deepFiles: Seq[File] = {
 		files ++ dirs.flatMap(_.deepFiles)
 	}
-	final def deepDirs: List[Directory] = {
+	final def deepDirs: Seq[Directory] = {
 		dirs ++ dirs.flatMap(_.deepDirs)
 	}
-	def deepPaths: List[Path] = {
+	def deepPaths: Seq[Path] = {
 		files.map(new RichFile(_)) ++ dirs ++  dirs.flatMap(_.deepPaths)
 	}
 }

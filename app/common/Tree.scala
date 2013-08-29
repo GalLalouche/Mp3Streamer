@@ -1,6 +1,6 @@
 package common
 
-class Tree[+T](val leaves: List[T], val sons: List[Tree[T]]) {
+class Tree[+T](val leaves: Seq[T], val sons: Seq[Tree[T]]) {
 	require(leaves != null)
 	require(sons != null)
 	protected def printThis = leaves.mkString("[", ",", "]")
@@ -10,14 +10,14 @@ class Tree[+T](val leaves: List[T], val sons: List[Tree[T]]) {
 	}
 	override def toString = mkStringWithPrefix("")
 
-	val height: Int = ((if (leaves isEmpty) 0 else 1) :: sons.map(_.height + 1)) max
+	val height: Int = ((if (leaves isEmpty) 0 else 1) :: sons.map(_.height + 1).toList) max
 	protected def getSize = sons.map(_.size).sum + leaves.length
 	lazy val size: Int = getSize
 	val isLeaf = height == 0  
 }
 
 object Tree {
-	def apply[T](leaves: List[_ <: T] = List(), sons: List[_ <: Tree[T]] = List()) = new Tree(leaves, sons)
-	def apply[T](leaves: T*) = new Tree(leaves.toList, List())
-	def apply[T](leaves: List[_ <: T], sons: Tree[T]*) = new Tree(leaves, sons.toList)
+	def apply[T](leaves: Seq[T], sons: Seq[Tree[T]] = Vector()) = new Tree(leaves, sons)
+	private [common]def apply[T](leaves: T*) = new Tree(leaves.toVector, Vector())
+	private [common]def apply[T](leaves: List[T], sons: Tree[T]*) = new Tree(leaves, sons.toVector)
 }

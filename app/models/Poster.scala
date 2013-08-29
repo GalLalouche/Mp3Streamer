@@ -3,6 +3,7 @@ package models
 import common.path.Path._
 import common.path.Directory
 import java.io.File
+import common.path.RichFile
 /**
  * Handles cover art
  */

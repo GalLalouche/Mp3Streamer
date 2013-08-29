@@ -3,28 +3,31 @@
 # ~~~~
 
 # Home page
-GET   /                        controllers.Application.index(anna:Boolean = false)
-GET   /anna                    controllers.Application.index(anna:Boolean = true)
-GET   /test                    controllers.Application.test      
+GET    /                        controllers.Application.index(anna:Boolean = false)
+GET    /anna                    controllers.Application.index(anna:Boolean = true)
+GET    /test                    controllers.Application.test      
 
 
 #Player!     
-GET   /music/randomSong        controllers.Player.randomSong
-GET   /music/albums/*path      controllers.Player.album(path)
+GET    /music/randomSong        controllers.Player.randomSong
+GET    /music/albums/*path      controllers.Player.album(path)
 #Streamer
-GET   /music/songs/*path       controllers.Streamer.download(path)
-GET   /play/*path              controllers.Streamer.playSong(path)
+GET    /music/songs/*path       controllers.Streamer.download(path)
+GET    /play/*path              controllers.Streamer.playSong(path)
 # Posters
-GET   /posters/display/*path   controllers.Posters.displayImage(path)
-GET   /posters/*path           controllers.Posters.image(path)
+GET    /posters/display/*path   controllers.Posters.displayImage(path)
+GET    /posters/*path           controllers.Posters.image(path)
 
 # Map static resources from the /public folder to the /assets URL path
-GET   /assets/*file            controllers.Assets.at(path="/public", file)
+GET    /assets/*file            controllers.Assets.at(path="/public", file)
 
 #tree
-GET   /music/tree              websockets.TreeSocket.tree
+GET    /music/tree              websockets.TreeSocket.tree
 
 # Web sockets
-GET   /ws/tree                 websockets.TreeSocket.accept
-GET   /ws/console              websockets.ConsoleSocket.accept
-GET   /ws/newFolder            websockets.NewFolderSocket.accept
+GET    /ws/tree                 websockets.TreeSocket.accept
+GET    /ws/console              websockets.ConsoleSocket.accept
+GET    /ws/newFolder            websockets.NewFolderSocket.accept
+
+#Acra
+POST   /acra                    controllers.Acra.post

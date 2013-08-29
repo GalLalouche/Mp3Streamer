@@ -1,13 +1,13 @@
 package models
 
 import java.io.File
-
 import common.ValueTree
 import common.path.Directory
 import common.path.Path.richPath
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import common.path.RichFile
 
 trait MusicTree extends MusicFinder {
 	collection.parallel.ForkJoinTasks

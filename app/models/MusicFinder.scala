@@ -1,7 +1,7 @@
 package models
 
 import common.path.Directory
-import common.path.Path.richPath
+import common.path.RichFile._
 
 
 trait MusicFinder {

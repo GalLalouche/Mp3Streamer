@@ -19,11 +19,6 @@ class Path protected (val p: File) {
 	def / = new Directory(p)
 
 	override def toString = name
-	
-	lazy val extension = {
-		val i = p.getName.lastIndexOf('.')
-		if (i == -1) "" else p.getName.substring(i + 1).toLowerCase
-	}
 
 	override def hashCode = p.hashCode
 	override def equals(o: Any): Boolean = if (o.isInstanceOf[Path]) return p.equals(o.asInstanceOf[Path].p) else false

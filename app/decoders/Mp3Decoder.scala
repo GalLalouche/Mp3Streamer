@@ -3,7 +3,7 @@ package decoders;
 import java.io.File
 
 import common.path.Directory
-import common.path.Path.richPath
+import common.path.RichFile._
 
 /**
   * Decodes audio files files to mp3.

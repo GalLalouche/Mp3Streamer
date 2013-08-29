@@ -12,7 +12,7 @@ import play.api.libs.json.Json.toJsFieldJsValueWrapper
 /**
   * Handles parsing mp3 data
   */
-class Song(val file: RichFile) {
+class Song(val file: File) {
 	require(file != null)
 	require(file exists)
 	require(file.isDirectory == false)

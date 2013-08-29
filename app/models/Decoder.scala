@@ -2,7 +2,7 @@ package models
 
 import java.io.File
 
-import common.path.Path.richPath
+import common.path.RichFile._
 import decoders.Mp3Decoder
 
 trait Decoder extends Mp3Decoder {
