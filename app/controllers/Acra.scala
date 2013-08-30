@@ -15,30 +15,15 @@ import play.api.libs.json.JsValue
 import common.Jsoner._
 import common.Jsoner
 import play.api.libs.json.JsObject
+import models.LogFileManager
 
-//TODO move logic to model
 object Acra extends Controller {
-	private val logger = loggers.CompositeLogger
-
-	private val directory = Directory(".") / "logs" / "android" /
-	private val lazyActor = ActorDSL.actor(KillableActors.system)(new LazyActor(1000))
-
-	private def getWritingFunction(s: String) = new Function0[Unit] {
-		override def equals(o: Any) = s == o
-		override def hashCode = s.hashCode
-		override def apply = {
-			val name = "ACRA for " + DateTimeFormat.forPattern("dd_MM_yy HH_mm_ss").print(System.currentTimeMillis) + ".txt"
-			logger.info(name)
-			val logFile = directory.addFile(name)
-			logger.info("Caught error from android");
-			logFile.write(s);
-		}
-	}
+	private val logManager = ActorDSL.actor(KillableActors.system)(new LogFileManager(Directory(".") / "logs" / "android" /))
 	
 	def post = Action { request =>
 		val json = request.body.asJson.get.as[JsObject]
 		val stack = "Stack Trace:\n" + (json \ "STACK_TRACE").as[String] + "\n\nOther information:\n"
-		lazyActor ! getWritingFunction(stack + Json.prettyPrint(json - "STACK_TRACE"))
+		logManager ! stack + Json.prettyPrint(json - "STACK_TRACE") 
 		Ok("")
 	}
 }
