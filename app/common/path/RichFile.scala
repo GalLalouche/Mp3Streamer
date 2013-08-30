@@ -10,9 +10,10 @@ class RichFile(val f: File) extends Path(f) {
 		if (i == -1) "" else p.getName.substring(i + 1).toLowerCase
 	}
 	
-	//TODO: add tests
+	import resource._
 	def write(s: String) {
-		new PrintStream(f).println(s)
+		for (ps <- managed(new PrintStream(f)))
+			ps.println(s)
 	}
 }
 
