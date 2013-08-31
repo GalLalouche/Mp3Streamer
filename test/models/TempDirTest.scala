@@ -11,7 +11,6 @@ import common.path.TempDirectory
 trait TempDirTest extends SpecificationLike with Debug {
 
 	class TempDir extends Scope {
-
 		val tempDir: TempDirectory = TempDirectory(locally {
 			val f = File.createTempFile("spec" + getClass.getSimpleName, "temp")
 			f.delete
