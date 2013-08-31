@@ -14,7 +14,6 @@ import common.TestableActor
 import akka.actor.ActorRef
 import scala.util.Random
 
-//TODO add tests
 class LogFileManager (val dir: Directory) extends Actor {
 	import LogFileManager._
 	private val logger = loggers.CompositeLogger

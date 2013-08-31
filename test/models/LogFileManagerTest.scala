@@ -2,24 +2,12 @@
 
 package models
 
-import java.io.File
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
-import javax.servlet.http.{ HttpServlet, HttpServletRequest, HttpServletResponse }
-import play.api.Play
-import play.api.libs.json.Json
-import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.test.FakeApplication
-import org.specs2.runner.JUnitRunner
-import akka.actor._
-import akka.testkit.TestProbe
-import common.LazyActor
-import common.LazyActor
-import common.TestableActor
-import akka.testkit.TestKit
-import akka.testkit.TestKitBase
+import akka.actor.{Actor, ActorSystem}
 import akka.testkit.TestActorRef
-import common.path.RichFile._
+import common.path.RichFile.richFile
+import org.specs2.runner.JUnitRunner
 
 /**
   * Add your spec here.
