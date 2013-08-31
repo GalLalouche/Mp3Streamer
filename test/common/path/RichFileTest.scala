@@ -12,6 +12,7 @@ import org.specs2.mutable.After
 import common.path.RichFile._
 import java.util.Scanner
 import java.io.PrintStream
+import java.util.Random
 /**
   * Add your spec here.
   * You can mock out a whole application including requests, plugins etc.
@@ -31,29 +32,48 @@ class RichFileTest extends TempDirTest { // yeah yeah, it uses TempDirTest which
 		}
 	}
 
-	class TempFile extends TempDir with After {
-		val $ = RichFile(tempDir.addFile("f"))
-
-		override def after = {
-			if ($.exists)
-				$.delete === true
-		}
+	class TempFile extends TempDir {
+		val r = new Random
+		val $ = RichFile(tempDir.addFile("f" + r.nextInt))
 	}
 	import resource._
+	private def checkClosed(f: File) {
+		managed(new PrintStream(f)).acquireAndGet { _.print("foobar2"); }
+	}
 	"Write" >> {
 		"write string" >> new TempFile {
 			$.write("foobar");
-			for (scanner <- managed(new Scanner($))) {
+			managed(new Scanner($)).acquireAndGet { scanner =>
 				scanner.nextLine === "foobar";
 				scanner.hasNext === false
 			}
-			1 === 1
 		}
 		"should close" >> new TempFile {
-			for (ps <- managed(new PrintStream($))) {
-				ps.print("foobar2");
-			}
-			1 === 1
+			$.write("barbar")
+			checkClosed($)
 		}
+	}
+	"ReadAll" >> {
+		"read single line" >> new TempFile {
+			for (ps <- managed(new PrintStream($)))
+				ps.println("foobar!")
+			$.readAll === "foobar!"
+		}
+		"read multiple lines" >> new TempFile {
+			for (ps <- managed(new PrintStream($))) {
+				ps.println("foobar!")
+				ps.println("foobar2!")
+			}
+			$.readAll.matches("foobar!\r?\nfoobar2!") === true
+		}
+		"return an empty string when the file is empty" >> new TempFile {
+			$.readAll === ""
+		}
+		"close" >> new TempFile {
+			$.f.exists === true
+			$.readAll
+			checkClosed($)
+		}
+
 	}
 }

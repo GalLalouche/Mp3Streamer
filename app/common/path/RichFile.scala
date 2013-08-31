@@ -2,6 +2,7 @@ package common.path
 
 import java.io.File
 import java.io.PrintStream
+import java.util.Scanner
 
 class RichFile(val f: File) extends Path(f) {
 
@@ -9,11 +10,17 @@ class RichFile(val f: File) extends Path(f) {
 		val i = p.getName.lastIndexOf('.')
 		if (i == -1) "" else p.getName.substring(i + 1).toLowerCase
 	}
-	
+
 	import resource._
 	def write(s: String) {
 		for (ps <- managed(new PrintStream(f)))
 			ps.println(s)
+	}
+
+	def readAll: String = {
+		managed(new Scanner(f).useDelimiter("\\Z")).acquireAndGet { s =>
+			if (s.hasNext) s.next else ""
+		}
 	}
 }
 
