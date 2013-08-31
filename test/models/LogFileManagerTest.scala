@@ -8,6 +8,7 @@ import akka.actor.{Actor, ActorSystem}
 import akka.testkit.TestActorRef
 import common.path.RichFile.richFile
 import org.specs2.runner.JUnitRunner
+import loggers.Logger
 
 /**
   * Add your spec here.
@@ -19,15 +20,21 @@ class LogFileManagerTest extends Specification with TempDirTest {
 	implicit val x = ActorSystem("system")
 
 	class LogManager extends TempDir {
+		val logger =mock[Logger]
 		val $ = TestActorRef(new LogFileManager(tempDir) {
 			override def buildLazyActor = TestActorRef(new Actor {
 				override def receive = {
 					case f: Function0[_] => f()
 				}
 			})
+			override def buildLogger = logger
 		})
 	}
 	"LogManager" >> {
+		"should update logger" >> new LogManager {
+			$ ! "hello"
+			there was one(logger).info(anyString)
+		}
 		"create a new file" >> new LogManager {
 			$ ! "Hello!"
 			tempDir.files.size === 1
