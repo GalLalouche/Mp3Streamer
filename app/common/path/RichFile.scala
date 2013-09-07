@@ -22,6 +22,17 @@ class RichFile(val f: File) extends Path(f) {
 			if (s.hasNext) s.next else ""
 		}
 	}
+
+	def lines: TraversableOnce[String] = {
+		new Traversable[String] {
+			override def foreach[U](f: String => U): Unit = {
+				managed(new Scanner(RichFile.this.f).useDelimiter(System.getProperty("line.separator"))).acquireAndGet { scanner =>
+					while (scanner.hasNext)
+						f(scanner.next)
+				}
+			}
+		}
+	}
 }
 
 object RichFile {

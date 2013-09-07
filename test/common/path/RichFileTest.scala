@@ -74,6 +74,11 @@ class RichFileTest extends TempDirTest { // yeah yeah, it uses TempDirTest which
 			$.readAll
 			checkClosed($)
 		}
-
+	}
+	"Lines" >> new TempFile {
+		val list = List("foobar!", "barfoo?", "nope, definitely foobar")
+		for (ps <- managed(new PrintStream($)))
+			list.foreach(ps.println(_))
+		$.lines.toList === list
 	}
 }
