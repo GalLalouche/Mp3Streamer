@@ -1,6 +1,6 @@
 package loggers
 
-class ConsoleLogger extends Logger {
+object ConsoleLogger extends Logger {
 	override def trace(s: String) = println("[Trace] " + s)
 	override def debug(s: String) = println("[Debug] " + s)
 	override def info(s: String) = println("[Info] " + s)

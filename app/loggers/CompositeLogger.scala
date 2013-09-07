@@ -14,7 +14,8 @@ object CompositeLogger extends Logger {
 	}
 	private val loggers: Seq[Logger] = List(
 		aLoggerAdapter(new play.Logger.ALogger(play.api.Logger("Mp3Streamer"))),
-		ConsoleSocket
+		ConsoleSocket,
+		ConsoleLogger
 	)
 
 	override def trace(s: String) = loggers.foreach(_.trace(s))
