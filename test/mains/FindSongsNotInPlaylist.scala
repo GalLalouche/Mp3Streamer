@@ -2,8 +2,8 @@ package mains
 
 import models.MusicFinder
 import common.path.Directory
-import common.path.RichFile._
 import java.io.File
+import common.path.RichFile._
 import org.joda.time.DateTime
 import common.Debug
 import loggers.ConsoleLogger
@@ -17,13 +17,14 @@ object FindSongsNotInPlaylist extends App with Debug {
 	}
 	timed(logger = ConsoleLogger) {
 
-		val playlistSongs = new File("""C:\Users\gal\Documents\fagfag.m3u""")
+		val playlistSongs = new File((real.dir / "Playlist.m3u").path)
 			.lines
-			.map(_.toLowerCase)
+			.map(real.dir.path + "/" + _)
+			.map(_.toLowerCase.replaceAll("\\\\", "/"))
 			.toSet
 		println("playlist song |%d|".format(playlistSongs.size))
 		val realSongs = real.getSongs
-			.map(_.toLowerCase)
+			.map(_.toLowerCase.replaceAll("\\\\", "/"))
 			.toSet
 		println("playlist song |%d|".format(realSongs.size))
 
