@@ -13,7 +13,7 @@ object FindSongsNotInPlaylist extends App with Debug {
 	val real = new MusicFinder {
 		val dir = Directory("D:/Media/Music")
 		val subDirs = List("Metal", "Rock", "Classical", "New Age")
-		val extensions = List("mp3", "flac", "ape", "wma", "mp4")
+		val extensions = List("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
 	}
 	timed(logger = ConsoleLogger) {
 
