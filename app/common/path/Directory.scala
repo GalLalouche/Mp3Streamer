@@ -1,6 +1,9 @@
 package common.path
 
 import java.io.File
+import sun.nio.ch.IOUtil
+import org.apache.commons.io.IOUtils
+import org.apache.commons.io.FileUtils
 
 /**
   * Helper class for Directory methods
@@ -74,6 +77,15 @@ class Directory(val dir: File) extends Path(dir) {
 	}
 	def deepPaths: Seq[Path] = {
 		files.map(new RichFile(_)) ++ dirs ++  dirs.flatMap(_.deepPaths)
+	}
+	
+	/**
+	 * Clones the directory, creating a copy of it suffixed with "clone"
+	 */
+	def cloneDir: Directory = {
+		val cloneDir = parent.addSubDir(name + ".clone")
+		FileUtils.copyDirectory(dir, cloneDir)
+		cloneDir
 	}
 }
 

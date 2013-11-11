@@ -28,6 +28,10 @@ class Path protected (val p: File) {
 			throw new UnsupportedOperationException("File: " + p + " has no parent")
 		Directory(p.getParentFile())
 	}
+	
+	def renameTo(newName: String) {
+		p.renameTo(new File(parent, newName))
+	}
 }
 
 object Path {
