@@ -9,6 +9,7 @@ import common.Debug
 import loggers.ConsoleLogger
 import loggers.ConsoleLogger
 
+// finds songs that are in the music directory but are not saved in the playlist file
 object FindSongsNotInPlaylist extends App with Debug {
 	val real = new MusicFinder {
 		val dir = Directory("D:/Media/Music")

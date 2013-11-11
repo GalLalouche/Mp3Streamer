@@ -3,6 +3,9 @@ package common.path
 import java.io.File
 import java.io.PrintStream
 import java.util.Scanner
+import java.io.ByteArrayOutputStream
+import java.io.FileOutputStream
+import java.awt.Desktop
 
 class RichFile(val f: File) extends Path(f) {
 
@@ -15,6 +18,21 @@ class RichFile(val f: File) extends Path(f) {
 	def write(s: String) {
 		for (ps <- managed(new PrintStream(f)))
 			ps.println(s)
+	}
+	
+	def clear() {
+		f.delete
+		f.createNewFile
+	}
+	
+	def write(baos: ByteArrayOutputStream) {
+		for (os <- managed(new FileOutputStream(f)))
+			baos.writeTo(os)
+	}
+	
+	def write(bytes: Array[Byte]) {
+		for (os <- managed(new FileOutputStream(f)))
+			os.write(bytes)
 	}
 
 	def readAll: String = {
@@ -32,6 +50,10 @@ class RichFile(val f: File) extends Path(f) {
 				}
 			}
 		}
+	}
+	
+	def openWithDefaultApplication {
+		Desktop.getDesktop.open(f)
 	}
 }
 

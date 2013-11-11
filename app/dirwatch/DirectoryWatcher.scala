@@ -80,7 +80,7 @@ class DirectoryWatcher(listener: ActorRef, val dirs: Traversable[Directory]) ext
 		val file = resolvedPath.toFile
 		e.kind match {
 			case StandardWatchEventKinds.ENTRY_DELETE if folders(p) => { folders -= p; DirectoryDeleted(file) }
-			case StandardWatchEventKinds.ENTRY_CREATE if file.isDirectory => DirectoryCreated(Directory(resolvedPath))
+			case StandardWatchEventKinds.ENTRY_CREATE if file.isDirectory => DirectoryCreated(Directory(resolvedPath.toFile))
 			case _ => OtherChange
 		}
 	}
