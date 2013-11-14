@@ -37,5 +37,4 @@ object DownloadCover extends App with Debug {
 	println("Downloading from url " + imageUrl)
 	val f = Image(imageUrl).saveAsJpeg(Directory(folder) \ "folder.jpg")
 	Thread.sleep(100)
-	f.openWithDefaultApplication
 }

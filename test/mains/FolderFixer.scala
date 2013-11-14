@@ -24,7 +24,7 @@ import org.jaudiotagger.tag.id3.ID3v24Tag
 
 // downloads from zi internet!
 object FolderFixer extends App with Debug {
-	val folder: String = """D:\Incoming\Bittorrent\Completed\Music\Amon Amarth - Deceiver Of The Gods 2013 Metal 2CD 320kbps CBR MP3 [VX] [P2PDL]\Deceiver of The Gods-Temp"""
-	FixLabels.main(List(folder).toArray)
+	val folder: String = """D:\Incoming\Bittorrent\Completed\Music\Entombed.Discography.1990-2007.FLAC.CUE.Lossless\1991 - Clandestine"""
 	DownloadCover.main(List(folder).toArray)	
+	FixLabels.main(List(folder).toArray)
 }

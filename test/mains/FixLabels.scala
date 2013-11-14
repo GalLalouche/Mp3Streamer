@@ -21,32 +21,41 @@ import models.Song
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 import org.jaudiotagger.tag.id3.ID3v24Tag
+import javax.sound.sampled.AudioInputStream
+import org.jaudiotagger.tag.flac.FlacTag
 
 // downloads from zi internet!
 object FixLabels extends App with Debug {
 	val folder = args(0)
-	val lowerCaseWords = Set("of", "the", "is", "are", "am", "in", "a", "an", "as")
+	val lowerCaseWordsList = List("a", "am", "an", "are", "as", "from", "had", "has", "have", "her",
+		"his", "in", "is", "it", "its", "mine", "my", "of", "on", "our", "the", "their", "this",
+		"to", "was", "were", "will", "your")
+	val lowerCaseWords = lowerCaseWordsList.toSet
+	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
+		println(lowerCaseWords.toList.sorted.map(""""%s"""".format(_)))
+
+	def properTrackString(track: Int): String = if (track < 10) "0" + track else track toString
+
 	def fix(s: String): String = {
-		s.split(" ").drop(0).map(x => if (lowerCaseWords(x)) x.toLowerCase else x).mkString(" ")
+		def upperCaseWord(w: String): String = w(0).toUpper + w.drop(1)
+		def fixWord(w: String): String = if (lowerCaseWords(w)) w toLowerCase else upperCaseWord(w)
+		val split = s.split("\\s+").toList.map(_.toLowerCase)
+		(upperCaseWord(split(0)) :: (split.drop(1).map(fixWord).toList)).mkString(" ")
 	}
 
-	def properTrackString(track: Int): String = if(track < 10) "0" + track else track toString
-	
 	def fix(f: File) {
-		def clearUselessData {
-			val audioFile = AudioFileIO.read(f)
-			val originalTag = audioFile.getTag
-			originalTag.deleteArtworkField
-			val newTag = new ID3v24Tag
-			List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR)
-				.foreach(f => newTag.setField(f, fix(originalTag.getFirst(f))))
-			newTag.setField(FieldKey.TRACK, properTrackString(newTag.getFirst(FieldKey.TRACK).toInt))
-			audioFile.setTag(newTag)
-			audioFile.commit
-		}
-		clearUselessData
+		val audioFile = AudioFileIO.read(f)
+		val originalTag = audioFile.getTag
+		originalTag.deleteArtworkField
+		val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
+		List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR)
+			.foreach(f => newTag.setField(f, fix(originalTag.getFirst(f))))
+		newTag.setField(FieldKey.TRACK, properTrackString(newTag.getFirst(FieldKey.TRACK).toInt))
+		AudioFileIO.delete(audioFile)
+		audioFile.setTag(newTag)
+		audioFile.commit
 	}
-	
+
 	def rename(f: File) {
 		val song = Song(f)
 		f.renameTo("%s - %s.%s".format(properTrackString(song.track), song.title, f.extension))
