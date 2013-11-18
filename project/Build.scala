@@ -16,7 +16,8 @@ object ApplicationBuild extends Build {
 		"org.scala-lang" % "scala-actors" % "2.10.0",
 		"org.mockito" % "mockito-all" % "1.9.5" % "test",
 		"com.typesafe.akka" %% "akka-actor" % "[2.0,)",
-		"com.typesafe.akka" %% "akka-testkit" % "[2.0,)" % "test"
+		"com.typesafe.akka" %% "akka-testkit" % "[2.0,)" % "test",
+		"org.apache.commons" % "commons-io" % "[1.3.2, )"
 	)
 
 	val main = play.Project(appName, appVersion, appDependencies).settings(

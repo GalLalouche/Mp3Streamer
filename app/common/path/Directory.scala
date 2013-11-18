@@ -1,9 +1,8 @@
 package common.path
 
 import java.io.File
-import sun.nio.ch.IOUtil
-import org.apache.commons.io.IOUtils
 import org.apache.commons.io.FileUtils
+import common.path.Path.poorPath
 
 /**
   * Helper class for Directory methods

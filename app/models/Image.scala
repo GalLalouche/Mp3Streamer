@@ -8,7 +8,6 @@ import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.File
 import common.path.Directory
-import common.path.RichFileTest
 import javax.imageio.ImageWriteParam
 import javax.imageio.stream.FileImageOutputStream
 import javax.imageio.IIOImage
