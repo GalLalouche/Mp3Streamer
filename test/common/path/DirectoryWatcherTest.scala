@@ -8,6 +8,7 @@ import models.TempDirTest
 import org.specs2.runner.JUnitRunner
 import Path.richPath
 import Path.poorPath
+import common.path.RichFile._
 import org.specs2.mutable.After
 /**
   * Add your spec here.
@@ -128,6 +129,17 @@ class DirectoryTest extends TempDirTest { // yeah yeah, it uses TempDirTest whic
 		}
 		"parent" >> {
 			"return all parent dirs" >> new DirTest {
+				val c = tempDir.addSubDir("a").addSubDir("b").addSubDir("c");
+				c.parent === (tempDir / "a" / "b" /)
+				c.parent.parent === (tempDir / "a" /)
+				c.parent.parent.parent === (tempDir)
+			}
+			"return null on root" >> {
+				{ Directory("C:/").parent } should throwA[UnsupportedOperationException]
+			}
+		}
+		"Clone dir" >> {
+			"create a new directory" >> new DirTest {
 				val c = tempDir.addSubDir("a").addSubDir("b").addSubDir("c");
 				c.parent === (tempDir / "a" / "b" /)
 				c.parent.parent === (tempDir / "a" /)

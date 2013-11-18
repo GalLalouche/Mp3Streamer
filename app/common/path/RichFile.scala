@@ -55,6 +55,14 @@ class RichFile(val f: File) extends Path(f) {
 	def openWithDefaultApplication {
 		Desktop.getDesktop.open(f)
 	}
+	
+	def readBytes(): Seq[Byte] = {
+		scala.io.Source.fromFile(f).map(_.toByte).toVector
+	}
+	
+	def hasSameContentAs(f: File) = {
+		readBytes == new RichFile(f).readBytes
+	}
 }
 
 object RichFile {

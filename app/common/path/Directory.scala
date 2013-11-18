@@ -3,6 +3,7 @@ package common.path
 import java.io.File
 import org.apache.commons.io.FileUtils
 import common.path.Path.poorPath
+import common.path.RichFile._
 
 /**
   * Helper class for Directory methods

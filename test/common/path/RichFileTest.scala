@@ -81,4 +81,22 @@ class RichFileTest extends TempDirTest { // yeah yeah, it uses TempDirTest which
 			list.foreach(ps.println(_))
 		$.lines.toList === list
 	}
+	"content equals" >> {
+		val bytes1 = Array[Byte](1, 2, 3)
+		val bytes2 = Array[Byte](4, 5, 6)
+		"true for equals" >> {
+			val f1 = new TempFile().$
+			val f2 = new TempFile().$
+			f1.write(bytes1)
+			f2.write(bytes1)
+			f1.hasSameContentAs(f2)
+		}
+		"false for different" >> {
+			val f1 = new TempFile().$
+			val f2 = new TempFile().$
+			f1.write(bytes1)
+			f2.write(bytes2)
+			f1.hasSameContentAs(f2) === false
+		}
+	}
 }
