@@ -12,11 +12,14 @@ import common.path.Directory
 import common.path.RichFile.richFile
 import models.Song
 
+//TODO fix labels after (
+//TODO fix roman numerals
+
 // downloads from zi internet!
 object FixLabels extends App with Debug {
 	val folder = args(0)
-	val lowerCaseWordsList = List("a", "am", "an", "are", "as", "from", "had", "has", "have", "her",
-		"his", "in", "is", "it", "its", "mine", "my", "of", "on", "our", "the", "their", "this",
+	val lowerCaseWordsList = List("a", "am", "an", "are", "as", "at", "by", "from", "had", "has", "have", "her",
+		"his", "in", "is", "it", "its", "mine", "my", "of", "on", "our", "the", "their", "this", "these",
 		"to", "was", "were", "will", "your")
 	val lowerCaseWords = lowerCaseWordsList.toSet
 	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
