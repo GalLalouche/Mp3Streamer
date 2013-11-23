@@ -70,5 +70,6 @@ object RichFile {
 	implicit def richFile(f: File): RichFile = new RichFile(f)
 
 	def apply(f: File) = new RichFile(f)
+	def apply(s: String): RichFile = new RichFile(new File(s))
 }
 

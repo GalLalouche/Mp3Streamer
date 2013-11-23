@@ -11,6 +11,7 @@ import common.path.Directory
 import javax.imageio.ImageWriteParam
 import javax.imageio.stream.FileImageOutputStream
 import javax.imageio.IIOImage
+import java.io.FileInputStream
 
 class Image(is: InputStream) {
 	def saveAsJpeg(f: File): File = {
@@ -34,4 +35,5 @@ class Image(is: InputStream) {
 
 object Image {
 	def apply(url: String) = new Image(new URL(url).openConnection.getInputStream)
+	def apply(f: File) = new Image(new FileInputStream(f))
 }
