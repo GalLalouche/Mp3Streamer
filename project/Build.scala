@@ -24,7 +24,8 @@ object ApplicationBuild extends Build {
 		// Add your own project settings here 
 		//unmanagedBase <<= baseDirectory { base => base / "test" }
 		EclipseKeys.withSource := true,
-		resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+		resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+		resolvers += "Maven Repository" at "http://repo1.maven.org/maven2/"
 	)
 
 }
