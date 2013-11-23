@@ -9,6 +9,6 @@ object FolderFixer extends App {
 		println("Done!")
 		readLine
 	} catch {
-		case e => e.printStackTrace(); readLine
+		case e: Exception => e.printStackTrace(); readLine
 	}
 }
