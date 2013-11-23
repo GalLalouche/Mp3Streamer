@@ -18,9 +18,9 @@ import models.Song
 // downloads from zi internet!
 object FixLabels extends App with Debug {
 	val folder = args(0)
-	val lowerCaseWordsList = List("a", "am", "an", "are", "as", "at", "by", "from", "had", "has", "have", "her",
-		"his", "in", "is", "it", "its", "mine", "my", "of", "on", "our", "the", "their", "this", "these",
-		"to", "was", "were", "will", "your")
+	val lowerCaseWordsList = List("a", "am", "an", "are", "as", "at", "by", "from", "had", "has", "have", "her", "not", "but",
+		"his", "in", "is", "it", "its", "me", "mine", "my", "of", "on", "our", "the", "their", "this","into", "up", "for",
+		"these", "those", "them", "to", "was", "were", "will", "your", "with", "without")
 	val lowerCaseWords = lowerCaseWordsList.toSet
 	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
 		println(lowerCaseWords.toList.sorted.map(""""%s"""".format(_)))
