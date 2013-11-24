@@ -12,7 +12,6 @@ import common.path.Directory
 import common.path.RichFile.richFile
 import models.Song
 
-//TODO fix labels after (
 //TODO fix roman numerals
 
 // downloads from zi internet!
@@ -20,7 +19,7 @@ object FixLabels extends App with Debug {
 	val folder = args(0)
 	val lowerCaseWordsList = List("a", "am", "an", "are", "as", "at", "by", "from", "had", "has", "have", "her", "not", "but",
 		"his", "in", "is", "it", "its", "me", "mine", "my", "of", "on", "our", "the", "their", "this","into", "up", "for",
-		"these", "those", "them", "to", "was", "were", "will", "your", "with", "without")
+		"these", "those", "them", "to", "was", "were", "will", "your", "with", "without", "it's")
 	val lowerCaseWords = lowerCaseWordsList.toSet
 	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
 		println(lowerCaseWords.toList.sorted.map(""""%s"""".format(_)))
@@ -29,7 +28,11 @@ object FixLabels extends App with Debug {
 
 	def fix(s: String): String = {
 		def upperCaseWord(w: String): String = w(0).toUpper + w.drop(1)
-		def fixWord(w: String): String = if (lowerCaseWords(w)) w toLowerCase else upperCaseWord(w)
+		def fixWord(w: String): String = w match {
+			case _ if (lowerCaseWords(w)) => w toLowerCase
+			case _ if (w.startsWith("(")) => "(" + fixWord(w)
+			case _ => w
+		}
 		val split = s.split("\\s+").toList.map(_.toLowerCase)
 		(upperCaseWord(split(0)) :: (split.drop(1).map(fixWord).toList)).mkString(" ")
 	}
