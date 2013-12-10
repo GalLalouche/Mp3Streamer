@@ -16,51 +16,56 @@ import models.Song
 
 // downloads from zi internet!
 object FixLabels extends App with Debug {
-	val folder = args(0)
-	val lowerCaseWordsList = List("a", "am", "an", "are", "as", "at", "by", "from", "had", "has", "have", "her", "not", "but",
-		"his", "in", "is", "it", "its", "me", "mine", "my", "of", "on", "our", "the", "their", "this","into", "up", "for",
-		"these", "those", "them", "to", "was", "were", "will", "your", "with", "without", "it's")
-	val lowerCaseWords = lowerCaseWordsList.toSet
+	private val lowerCaseWordsList = List("a", "am", "an", "and", "are", "as", "at", "but", "by", "can", "can't", "cannot",
+		"do", "don't", "for", "from", "had", "has", "have", "her", "his", "in", "into", "is", "it", "it's", "its",
+		"me", "mine", "my", "not", "of", "on", "or", "our", "that", "the", "their", "them", "these", "this", "those", "to",
+		"up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't", "your")
+	private val lowerCaseWords = lowerCaseWordsList.toSet
 	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
 		println(lowerCaseWords.toList.sorted.map(""""%s"""".format(_)))
 
-	def properTrackString(track: Int): String = if (track < 10) "0" + track else track toString
+	private def properTrackString(track: Int): String = if (track < 10) "0" + track else track toString
 
-	def fix(s: String): String = {
+	private def fixString(s: String): String = {
 		def upperCaseWord(w: String): String = w(0).toUpper + w.drop(1)
 		def fixWord(w: String): String = w match {
 			case _ if (lowerCaseWords(w)) => w toLowerCase
-			case _ if (w.startsWith("(")) => "(" + fixWord(w)
-			case _ => w
+			case _ if (w.startsWith("(")) => "(" + fixWord(w drop 1)
+			case _ => upperCaseWord(w)
 		}
 		val split = s.split("\\s+").toList.map(_.toLowerCase)
 		(upperCaseWord(split(0)) :: (split.drop(1).map(fixWord).toList)).mkString(" ")
 	}
 
-	def fix(f: File) {
+	private def fixFile(f: File) {
 		val audioFile = AudioFileIO.read(f)
 		val originalTag = audioFile.getTag
 		originalTag.deleteArtworkField
 		val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
 		List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR)
-			.foreach(f => newTag.setField(f, fix(originalTag.getFirst(f))))
+			.foreach(f => newTag.setField(f, fixString(originalTag.getFirst(f))))
 		newTag.setField(FieldKey.TRACK, properTrackString(newTag.getFirst(FieldKey.TRACK).toInt))
 		AudioFileIO.delete(audioFile)
 		audioFile.setTag(newTag)
 		audioFile.commit
 	}
 
-	def rename(f: File) {
+	private def rename(f: File) {
 		val song = Song(f)
 		f.renameTo("%s - %s.%s".format(properTrackString(song.track), song.title, f.extension))
 	}
-
-	val d = Directory(folder).cloneDir
-	val files = d
-		.files
-		.filter(f => Set("mp3", "flac").contains(f.extension))
-	files.foreach(fix)
-	files.foreach(rename)
-	val firstSong = Song(d.files(0))
-	d.renameTo("%s %s".format(firstSong.year, firstSong.album))
+	
+	def fix(folder: String): String = {
+		val d = Directory(folder).cloneDir
+		val files = d
+			.files
+			.filter(f => Set("mp3", "flac").contains(f.extension))
+		files.foreach(fixFile)
+		files.foreach(rename)
+		val firstSong = Song(d.files(0))
+		d.renameTo("%s %s".format(firstSong.year, firstSong.album))
+		d.path
+	}
+	
+	fix("""D:\Incoming\Bittorrent\Completed\Music\Elysian - Wires Of Creation - 2012 (320 kbps).clone""")
 }

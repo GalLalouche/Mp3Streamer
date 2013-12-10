@@ -4,8 +4,8 @@ package mains
 object FolderFixer extends App {
 	try {
 		val folder: String = args(0)
-		DownloadCover.main(List(folder).toArray)
-		FixLabels.main(List(folder).toArray)
+		val newFolder = FixLabels.fix(folder)
+		DownloadCover.main(List(newFolder).toArray)
 		println("Done!")
 		readLine
 	} catch {
