@@ -16,11 +16,11 @@ import models.Song
 
 // downloads from zi internet!
 object FixLabels extends App with Debug {
-	private val lowerCaseWordsList = List("a", "am", "an", "and", "are", "as", "at", "but", "by", "can", "can't", "cannot",
+	private lazy val lowerCaseWordsList = List("a", "am", "an", "and", "are", "as", "at", "but", "by", "can", "can't", "cannot",
 		"do", "don't", "for", "from", "had", "has", "have", "her", "his", "in", "into", "is", "it", "it's", "its",
 		"me", "mine", "my", "not", "of", "on", "or", "our", "that", "the", "their", "them", "these", "this", "those", "to",
 		"up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't", "your")
-	private val lowerCaseWords = lowerCaseWordsList.toSet
+	private lazy val lowerCaseWords = lowerCaseWordsList.toSet
 	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
 		println(lowerCaseWords.toList.sorted.map(""""%s"""".format(_)))
 
@@ -29,6 +29,7 @@ object FixLabels extends App with Debug {
 	private def fixString(s: String): String = {
 		def upperCaseWord(w: String): String = w(0).toUpper + w.drop(1)
 		def fixWord(w: String): String = w match {
+			case _ if (w.length == 1) => w
 			case _ if (lowerCaseWords(w)) => w toLowerCase
 			case _ if (w.startsWith("(")) => "(" + fixWord(w drop 1)
 			case _ => upperCaseWord(w)
@@ -67,5 +68,5 @@ object FixLabels extends App with Debug {
 		d.path
 	}
 	
-	fix("""D:\Incoming\Bittorrent\Completed\Music\Elysian - Wires Of Creation - 2012 (320 kbps).clone""")
+	fix("""D:\Incoming\Bittorrent\Completed\Music\Whispered -2010- Thousand Swords""")
 }
