@@ -53,7 +53,7 @@ object FixLabels extends App with Debug {
 
 	private def rename(f: File) {
 		val song = Song(f)
-		f.renameTo("%s - %s.%s".format(properTrackString(song.track), song.title, f.extension))
+		f.renameTo(new File(f.parent, "%s - %s.%s".format(properTrackString(song.track), song.title, f.extension)))
 	}
 	
 	def fix(folder: String): String = {
@@ -64,8 +64,9 @@ object FixLabels extends App with Debug {
 		files.foreach(fixFile)
 		files.foreach(rename)
 		val firstSong = Song(d.files(0))
-		d.renameTo("%s %s".format(firstSong.year, firstSong.album))
-		d.path
+		val renamedFolder = new File(d.parent, "%s %s".format(firstSong.year, firstSong.album))
+		d.dir.renameTo(renamedFolder)
+		renamedFolder.getAbsolutePath
 	}
 	
 	fix("""D:\Incoming\Bittorrent\Completed\Music\Whispered -2010- Thousand Swords""")

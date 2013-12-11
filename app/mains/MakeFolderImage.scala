@@ -12,7 +12,7 @@ object MakeFolderImage extends App {
 		if (file.extension != "jpg")
 			Image(file).saveAsJpeg(new File(file.parent, "folder.jpg"))
 		else
-			file renameTo "folder.jpg"
+			file renameTo new File(file.parent, "folder.jpg")
 	} catch {
 		case e: Exception => e.printStackTrace(); readLine
 	}
