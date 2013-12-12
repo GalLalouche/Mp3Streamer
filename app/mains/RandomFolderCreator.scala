@@ -35,6 +35,7 @@ object RandomFolderCreator extends App {
 				val newFile = new File(outputDir.dir, file.name)
 				FileUtils.copyFile(file, newFile)
 				newFile.renameTo(new File(outputDir.dir, "%02d.%s".format(index,file.extension)))
+				println(s"${100 * index / n}%% done".format())
 		}
 	println("Done!")
 }
