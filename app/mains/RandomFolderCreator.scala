@@ -13,6 +13,9 @@ import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.images.StandardArtwork
 import models.Album
 import models.Poster
+import org.jaudiotagger.audio.exceptions.CannotWriteException
+import scala.util.control.Breaks._
+import org.jaudiotagger.audio.exceptions.UnableToRenameFileException
 
 /**
   * Selects n random songs and puts them in a folder on D
@@ -29,7 +32,7 @@ object RandomFolderCreator extends App {
 	val songs = (new MusicFinder with MusicLocations).getSongs.map(new File(_))
 
 	val random = new Random
-	val n = 10
+	val n = 100
 	(1 to n)
 		.map(index => (index, songs(random nextInt (songs length))))
 		.foreach { case (index, file) =>
@@ -37,7 +40,17 @@ object RandomFolderCreator extends App {
 			FileUtils.copyFile(file, newFile)
 			val x = (AudioFileIO.read(newFile))
 			x.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(Song(file))))
-			x.commit
+			breakable {while (true){
+				try {
+					x.commit
+					break
+				} catch {
+					case _: CannotWriteException => ()
+					case _: UnableToRenameFileException => ()
+				}
+			}}
+			
+			Thread.sleep(100)
 			newFile.renameTo(new File(outputDir.dir, "%02d.%s".format(index, file.extension)))
 			println(s"${100 * index / n}%% done".format())
 		}
