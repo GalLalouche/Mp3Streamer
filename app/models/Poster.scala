@@ -9,7 +9,7 @@ import common.path.RichFile
  */
 object Poster {
 	private def getCoverArt(dir: Directory): File = {
-		val f = dir.files.find(_.name.matches("[fF]older.jpg"))
+		val f = dir.files.find(_.name.toLowerCase.matches("folder.(jpg)|(png)"))
 		f.getOrElse(getCoverArt(dir.parent))
 	}
 	def getCoverArt(s: Song): File = {
