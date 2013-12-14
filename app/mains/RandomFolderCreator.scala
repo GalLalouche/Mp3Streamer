@@ -9,6 +9,10 @@ import models.Song
 import scala.util.Random
 import org.apache.commons.io.IOUtils
 import org.apache.commons.io.FileUtils
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.images.StandardArtwork
+import models.Album
+import models.Poster
 
 /**
   * Selects n random songs and puts them in a folder on D
@@ -22,20 +26,20 @@ object RandomFolderCreator extends App {
 		d.clear
 		d
 	}
-	val songs = {
-		val tree = new MusicFinder with MusicLocations
-		tree.getSongs.map(new File(_))
-	}
-	val random = new Random
+	val songs = (new MusicFinder with MusicLocations).getSongs.map(new File(_))
 
-	val n = 50
+	val random = new Random
+	val n = 10
 	(1 to n)
 		.map(index => (index, songs(random nextInt (songs length))))
 		.foreach { case (index, file) =>
-				val newFile = new File(outputDir.dir, file.name)
-				FileUtils.copyFile(file, newFile)
-				newFile.renameTo(new File(outputDir.dir, "%02d.%s".format(index,file.extension)))
-				println(s"${100 * index / n}%% done".format())
+			val newFile = new File(outputDir.dir, file.name)
+			FileUtils.copyFile(file, newFile)
+			val x = (AudioFileIO.read(newFile))
+			x.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(Song(file))))
+			x.commit
+			newFile.renameTo(new File(outputDir.dir, "%02d.%s".format(index, file.extension)))
+			println(s"${100 * index / n}%% done".format())
 		}
 	println("Done!")
 }
