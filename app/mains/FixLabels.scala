@@ -18,7 +18,7 @@ import models.Song
 object FixLabels extends App with Debug {
 	private lazy val lowerCaseWordsList = List("a", "am", "an", "and", "are", "as", "at", "but", "by", "can", "can't", "cannot",
 		"do", "don't", "for", "from", "had", "has", "have", "her", "his", "in", "into", "is", "it", "it's", "its",
-		"me", "mine", "my", "not", "of", "on", "or", "our", "that", "the", "their", "them", "these", "this", "those", "to",
+		"me", "mine", "my", "not", "of", "on", "or", "our", "that", "the", "their", "them", "these", "this", "those", "to", "too",
 		"up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't", "your")
 	private lazy val lowerCaseWords = lowerCaseWordsList.toSet
 	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
@@ -29,6 +29,7 @@ object FixLabels extends App with Debug {
 	private def fixString(s: String): String = {
 		def upperCaseWord(w: String): String = w(0).toUpper + w.drop(1)
 		def fixWord(w: String): String = w match {
+			case "i" => "I"
 			case _ if (w.length == 1) => w
 			case _ if (lowerCaseWords(w)) => w toLowerCase
 			case _ if (w.startsWith("(")) => "(" + fixWord(w drop 1)
