@@ -13,7 +13,7 @@ import common.path.RichFile.richFile
 import models.Song
 
 //TODO fix roman numerals
-
+//TODO fix discnumber
 // downloads from zi internet!
 object FixLabels extends App with Debug {
 	private lazy val lowerCaseWordsList = List("a", "am", "an", "and", "are", "as", "at", "but", "by", "can", "can't", "cannot",
@@ -44,7 +44,7 @@ object FixLabels extends App with Debug {
 		val originalTag = audioFile.getTag
 		originalTag.deleteArtworkField
 		val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
-		List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR)
+		List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR, FieldKey.DISC_NO)
 			.foreach(f => newTag.setField(f, fixString(originalTag.getFirst(f))))
 		newTag.setField(FieldKey.TRACK, properTrackString(newTag.getFirst(FieldKey.TRACK).toInt))
 		AudioFileIO.delete(audioFile)
@@ -56,7 +56,7 @@ object FixLabels extends App with Debug {
 		val song = Song(f)
 		f.renameTo(new File(f.parent, "%s - %s.%s".format(properTrackString(song.track), song.title, f.extension)))
 	}
-	
+
 	def fix(folder: String): String = {
 		val d = Directory(folder).cloneDir
 		val files = d
@@ -69,6 +69,6 @@ object FixLabels extends App with Debug {
 		d.dir.renameTo(renamedFolder)
 		renamedFolder.getAbsolutePath
 	}
-	
+
 	fix("""D:\Incoming\Bittorrent\Completed\Music\Whispered -2010- Thousand Swords""")
 }
