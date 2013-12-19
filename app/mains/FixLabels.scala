@@ -38,15 +38,26 @@ object FixLabels extends App with Debug {
 		val split = s.split("\\s+").toList.map(_.toLowerCase)
 		(upperCaseWord(split(0)) :: (split.drop(1).map(fixWord).toList)).mkString(" ")
 	}
+	
 
-	private def fixFile(f: File) {
+	private def fixFile(f: File, fixDiscNumber: Boolean) {
 		val audioFile = AudioFileIO.read(f)
 		val originalTag = audioFile.getTag
 		originalTag.deleteArtworkField
 		val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
-		List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR, FieldKey.DISC_NO)
+		List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR) 
 			.foreach(f => newTag.setField(f, fixString(originalTag.getFirst(f))))
 		newTag.setField(FieldKey.TRACK, properTrackString(newTag.getFirst(FieldKey.TRACK).toInt))
+		if (fixDiscNumber)
+			newTag.setField(FieldKey.DISC_NO, """(\d+).*"""
+				.r
+				.findAllIn(originalTag.getFirst(FieldKey.DISC_NO))
+				.matchData
+				.toList(0)
+				.group(1)
+				.toInt
+				.toString)
+			
 		AudioFileIO.delete(audioFile)
 		audioFile.setTag(newTag)
 		audioFile.commit
@@ -62,7 +73,14 @@ object FixLabels extends App with Debug {
 		val files = d
 			.files
 			.filter(f => Set("mp3", "flac").contains(f.extension))
-		files.foreach(fixFile)
+		
+		val hasRealDiscNumber = files
+			.map(AudioFileIO
+					.read(_)
+					.getTag.getFirst(FieldKey.DISC_NO))
+			.toSet
+			.size > 1
+		files.foreach(fixFile(_, hasRealDiscNumber))
 		files.foreach(rename)
 		val firstSong = Song(d.files(0))
 		val renamedFolder = new File(d.parent, "%s %s".format(firstSong.year, firstSong.album))
