@@ -14,6 +14,6 @@ object MakeFolderImage extends App {
 		else
 			file renameTo new File(file.parent, "folder.jpg")
 	} catch {
-		case e: Exception => e.printStackTrace(); readLine
+		case e: Any => e.printStackTrace(); readLine
 	}
 }
