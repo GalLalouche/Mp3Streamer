@@ -6,6 +6,10 @@ import java.util.Scanner
 import java.io.ByteArrayOutputStream
 import java.io.FileOutputStream
 import java.awt.Desktop
+import scala.io.Codec
+import java.nio.charset.CodingErrorAction
+import org.apache.commons.io.IOUtils
+import java.io.FileInputStream
 
 class RichFile(val f: File) extends Path(f) {
 
@@ -19,17 +23,17 @@ class RichFile(val f: File) extends Path(f) {
 		for (ps <- managed(new PrintStream(f)))
 			ps.println(s)
 	}
-	
+
 	def clear() {
 		f.delete
 		f.createNewFile
 	}
-	
+
 	def write(baos: ByteArrayOutputStream) {
 		for (os <- managed(new FileOutputStream(f)))
 			baos.writeTo(os)
 	}
-	
+
 	def write(bytes: Array[Byte]) {
 		for (os <- managed(new FileOutputStream(f)))
 			os.write(bytes)
@@ -51,15 +55,15 @@ class RichFile(val f: File) extends Path(f) {
 			}
 		}
 	}
-	
+
 	def openWithDefaultApplication {
 		Desktop.getDesktop.open(f)
 	}
-	
+
 	def readBytes(): Seq[Byte] = {
-		scala.io.Source.fromFile(f).map(_.toByte).toVector
+		IOUtils.toByteArray(new FileInputStream(f))
 	}
-	
+
 	def hasSameContentAs(f: File) = {
 		readBytes == new RichFile(f).readBytes
 	}
