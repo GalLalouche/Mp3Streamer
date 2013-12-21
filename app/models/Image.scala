@@ -23,14 +23,11 @@ class Image(imageFile: File) {
 }
 
 object Image {
-	def apply(url: String) = {
-		val in = scala.io.Source.fromInputStream(new URL(url).openConnection.getInputStream)
+	def apply(url: String): Image = {
 		val f = File.createTempFile("image", "tempfile")
-		val out = new java.io.PrintWriter(f)
-		try {
-			in.getLines().foreach(out.print(_))
-			new Image(f)
-		} finally { out.close }
+		f.deleteOnExit
+		org.apache.commons.io.IOUtils.copy(new URL(url).openConnection.getInputStream, new FileOutputStream(f))
+		new Image(f)
 	}
-	def apply(f: File) = new Image(f)
+	def apply(f: File): Image = new Image(f)
 }
