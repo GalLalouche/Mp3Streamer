@@ -13,12 +13,11 @@ import common.path.RichFile.richFile
 import models.Song
 
 //TODO fix roman numerals
-//TODO fix discnumber
-// downloads from zi internet!
 object FixLabels extends App with Debug {
+	// if this isn't lazy, it won't be initialized for some reason :\
 	private lazy val lowerCaseWordsList = List("a", "am", "an", "and", "are", "as", "at", "but", "by", "can", "can't", "cannot",
 		"do", "don't", "for", "from", "had", "has", "have", "her", "his", "in", "into", "is", "it", "it's", "its",
-		"me", "mine", "my", "not", "of", "on", "or", "our", "that", "the", "their", "them", "these", "this", "those", "to", "too",
+		"me", "mine", "my", "not", "of", "on", "or", "our", "so", "that", "the", "their", "them", "these", "this", "those", "to", "too",
 		"up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't", "your")
 	private lazy val lowerCaseWords = lowerCaseWordsList.toSet
 	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
@@ -38,14 +37,13 @@ object FixLabels extends App with Debug {
 		val split = s.split("\\s+").toList.map(_.toLowerCase)
 		(upperCaseWord(split(0)) :: (split.drop(1).map(fixWord).toList)).mkString(" ")
 	}
-	
 
 	private def fixFile(f: File, fixDiscNumber: Boolean) {
 		val audioFile = AudioFileIO.read(f)
 		val originalTag = audioFile.getTag
 		originalTag.deleteArtworkField
 		val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
-		List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR) 
+		List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR)
 			.foreach(f => newTag.setField(f, fixString(originalTag.getFirst(f))))
 		newTag.setField(FieldKey.TRACK, properTrackString(newTag.getFirst(FieldKey.TRACK).toInt))
 		if (fixDiscNumber)
@@ -57,7 +55,7 @@ object FixLabels extends App with Debug {
 				.group(1)
 				.toInt
 				.toString)
-			
+
 		AudioFileIO.delete(audioFile)
 		audioFile.setTag(newTag)
 		audioFile.commit
@@ -70,19 +68,24 @@ object FixLabels extends App with Debug {
 
 	def fix(folder: String): String = {
 		val d = Directory(folder).cloneDir
+		d
+			.files
+			.filter(_.extension == "m3u")
+			.foreach(_.delete)
 		val files = d
 			.files
 			.filter(f => Set("mp3", "flac").contains(f.extension))
-		
+
 		val hasRealDiscNumber = files
 			.map(AudioFileIO
-					.read(_)
-					.getTag.getFirst(FieldKey.DISC_NO))
+				.read(_)
+				.getTag
+				.getFirst(FieldKey.DISC_NO))
 			.toSet
 			.size > 1
 		files.foreach(fixFile(_, hasRealDiscNumber))
 		files.foreach(rename)
-		val firstSong = Song(d.files(0))
+		val firstSong = Song(files(0))
 		val renamedFolder = new File(d.parent, "%s %s".format(firstSong.year, firstSong.album))
 		d.dir.renameTo(renamedFolder)
 		renamedFolder.getAbsolutePath
