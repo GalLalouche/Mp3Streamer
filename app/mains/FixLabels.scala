@@ -15,10 +15,10 @@ import models.Song
 //TODO fix roman numerals
 object FixLabels extends App with Debug {
 	// if this isn't lazy, it won't be initialized for some reason :\
-	private lazy val lowerCaseWordsList = List("a", "am", "an", "and", "are", "as", "at", "but", "by", "can", "can't", "cannot",
+	private lazy val lowerCaseWordsList = List("a", "am", "an", "and", "are", "as", "at", "be", "but", "by", "can", "can't", "cannot",
 		"do", "don't", "for", "from", "had", "has", "have", "her", "his", "in", "into", "is", "it", "it's", "its",
-		"me", "mine", "my", "not", "of", "on", "or", "our", "so", "that", "the", "their", "them", "these", "this", "those", "to", "too",
-		"up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't", "your")
+		"me", "mine", "my", "not", "of", "on", "or", "our", "so", "should", "that", "the", "their", "them", "these", "this", "those",
+		"to", "too", "up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't", "your")
 	private lazy val lowerCaseWords = lowerCaseWordsList.toSet
 	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
 		println(lowerCaseWords.toList.sorted.map(""""%s"""".format(_)))
@@ -83,9 +83,9 @@ object FixLabels extends App with Debug {
 				.getFirst(FieldKey.DISC_NO))
 			.toSet
 			.size > 1
+		val firstSong = Song(files(0))
 		files.foreach(fixFile(_, hasRealDiscNumber))
 		files.foreach(rename)
-		val firstSong = Song(files(0))
 		val renamedFolder = new File(d.parent, "%s %s".format(firstSong.year, firstSong.album))
 		d.dir.renameTo(renamedFolder)
 		renamedFolder.getAbsolutePath
