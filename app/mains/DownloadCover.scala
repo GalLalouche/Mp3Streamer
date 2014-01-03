@@ -21,13 +21,13 @@ object DownloadCover extends App with Debug {
 
 	val album = {
 		val song = Song(Directory(folder).files(0))
-		song.year + " " + song.album
+		s"${song.artist} ${song.album}"
 	}
 
 	//	val externalIp: String = new URL("http://api.externalip.net/ip").openStream.readAll
 
 	println("Searching for a cover picture for album " + album)
-	val url = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=%s&rsz=8&imgsz=large".format(("lastfm " + album).replaceAll(" ", "%20"))
+	val url = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=%s&rsz=8&imgsz=large".format(s"lastfm $album").replaceAll(" ", "%20")
 	println(url)
 	val jsonLine = new URL(url)
 		.openConnection

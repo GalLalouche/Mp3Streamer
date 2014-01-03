@@ -18,7 +18,7 @@ object FixLabels extends App with Debug {
 	private lazy val lowerCaseWordsList = List("a", "am", "an", "and", "are", "as", "at", "be", "but", "by", "can", "can't", "cannot",
 		"do", "don't", "for", "from", "had", "has", "have", "her", "his", "in", "into", "is", "it", "it's", "its",
 		"me", "mine", "my", "not", "of", "on", "or", "our", "so", "should", "that", "the", "their", "them", "these", "this", "those",
-		"to", "too", "up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't", "your")
+		"to", "too", "up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't", "your", "upon")
 	private lazy val lowerCaseWords = lowerCaseWordsList.toSet
 	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
 		println(lowerCaseWords.toList.sorted.map(""""%s"""".format(_)))
