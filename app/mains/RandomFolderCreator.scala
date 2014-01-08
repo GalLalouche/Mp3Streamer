@@ -34,7 +34,6 @@ object RandomFolderCreator extends App {
 	def createPlaylistFile: File = {
 		val files = outputDir.files
 		val $ = outputDir.addFile("random.m3u")
-		println(files)
 		files.map(_.name).foreach($.appendLine(_))
 		$
 	}
