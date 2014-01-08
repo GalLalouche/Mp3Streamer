@@ -17,8 +17,8 @@ object FixLabels extends App with Debug {
 	// if this isn't lazy, it won't be initialized for some reason :\
 	private lazy val lowerCaseWordsList = List("a", "am", "an", "and", "are", "as", "at", "be", "but", "by", "can", "can't", "cannot",
 		"do", "don't", "for", "from", "had", "has", "have", "her", "his", "in", "into", "is", "it", "it's", "its",
-		"me", "mine", "my", "not", "of", "on", "or", "our", "so", "should", "that", "the", "their", "them", "these", "this", "those",
-		"to", "too", "up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't", "your", "upon")
+		"me", "mine", "my", "not", "of", "on", "or", "our", "so", "should", "that", "the", "their", "them", "these", "this", "those", "did",
+		"to", "too", "up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't", "your", "upon", "shall", "may", "there")
 	private lazy val lowerCaseWords = lowerCaseWordsList.toSet
 	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
 		println(lowerCaseWords.toList.sorted.map(""""%s"""".format(_)))
@@ -46,15 +46,19 @@ object FixLabels extends App with Debug {
 		List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR)
 			.foreach(f => newTag.setField(f, fixString(originalTag.getFirst(f))))
 		newTag.setField(FieldKey.TRACK, properTrackString(newTag.getFirst(FieldKey.TRACK).toInt))
-		if (fixDiscNumber)
-			newTag.setField(FieldKey.DISC_NO, """(\d+).*"""
-				.r
-				.findAllIn(originalTag.getFirst(FieldKey.DISC_NO))
-				.matchData
-				.toList(0)
-				.group(1)
-				.toInt
-				.toString)
+		try {
+			if (fixDiscNumber)
+				newTag.setField(FieldKey.DISC_NO, """(\d+).*"""
+					.r
+					.findAllIn(originalTag.getFirst(FieldKey.DISC_NO))
+					.matchData
+					.toList(0)
+					.group(1)
+					.toInt
+					.toString)
+		}catch {
+			case e: Exception => () // do nothing	
+		}
 
 		AudioFileIO.delete(audioFile)
 		audioFile.setTag(newTag)

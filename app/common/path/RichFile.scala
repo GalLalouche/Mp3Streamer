@@ -10,6 +10,7 @@ import scala.io.Codec
 import java.nio.charset.CodingErrorAction
 import org.apache.commons.io.IOUtils
 import java.io.FileInputStream
+import java.io.FileWriter
 
 class RichFile(val f: File) extends Path(f) {
 
@@ -19,9 +20,9 @@ class RichFile(val f: File) extends Path(f) {
 	}
 
 	import resource._
-	def write(s: String) {
-		for (ps <- managed(new PrintStream(f)))
-			ps.println(s)
+	def appendLine(s: String) {
+		for (fw <- managed(new FileWriter(f, true)))
+			fw.append(s + "\n")
 	}
 
 	def clear() {

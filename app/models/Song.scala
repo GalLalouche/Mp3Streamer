@@ -1,14 +1,13 @@
 package models
 
 import java.io.File
-
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
-
 import common.path.Path.poorPath
 import common.path.RichFile
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import scala.MatchError
 /**
   * Handles parsing mp3 data
   */
@@ -27,9 +26,14 @@ class Song(val file: File) {
 	val album = tag.getFirst(FieldKey.ALBUM)
 	val track = tag.getFirst(FieldKey.TRACK).toInt
 	val year = {
-		val regexp = ".*(\\d{4}).*".r
-		val regexp(result) = tag.getFirst(FieldKey.YEAR)
-		result.toInt
+		try {
+
+			val regexp = ".*(\\d{4}).*".r
+			val regexp(result) = tag.getFirst(FieldKey.YEAR)
+			result.toInt
+		} catch {
+			case _: MatchError => println(s"No year in $file"); 0
+		}
 	}
 	val bitrate = header.getBitRate()
 	val duration = header.getTrackLength()

@@ -23,7 +23,7 @@ class LogFileManager(val dir: Directory) extends Actor {
 		override def hashCode = s.hashCode
 		override def apply = {
 			logger.info("Caught error from android");
-			dir.addFile(getFileName).write(s);
+			dir.addFile(getFileName).appendLine(s);
 		}
 
 		private def getFileName: String = {

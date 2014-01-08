@@ -42,15 +42,20 @@ class RichFileTest extends TempDirTest { // yeah yeah, it uses TempDirTest which
 	}
 	"Write" >> {
 		"write string" >> new TempFile {
-			$.write("foobar");
+			$.appendLine("foobar");
 			managed(new Scanner($)).acquireAndGet { scanner =>
 				scanner.nextLine === "foobar";
 				scanner.hasNext === false
 			}
 		}
 		"should close" >> new TempFile {
-			$.write("barbar")
-			checkClosed($)
+			$.appendLine("foo")
+			$.appendLine("bar")
+			managed(new Scanner($)).acquireAndGet { scanner =>
+				scanner.nextLine === "foo";
+				scanner.nextLine === "bar";
+				scanner.hasNext === false
+			}
 		}
 	}
 	"ReadAll" >> {
