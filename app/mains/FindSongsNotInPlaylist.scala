@@ -1,13 +1,14 @@
 package mains
 
-import models.MusicFinder
-import common.path.Directory
 import java.io.File
-import common.path.RichFile._
-import org.joda.time.DateTime
+
+import scala.collection.TraversableOnce.MonadOps
+
 import common.Debug
+import common.path.Directory
+import common.path.RichFile.richFile
 import loggers.ConsoleLogger
-import loggers.ConsoleLogger
+import models.MusicFinder
 
 // finds songs that are in the music directory but are not saved in the playlist file
 object FindSongsNotInPlaylist extends App with Debug {
@@ -23,17 +24,17 @@ object FindSongsNotInPlaylist extends App with Debug {
 			.map(real.dir.path + "/" + _)
 			.map(_.toLowerCase.replaceAll("\\\\", "/"))
 			.toSet
-		println("playlist song |%d|".format(playlistSongs.size))
+		println(s"playlist songs |${playlistSongs.size}|")
 		val realSongs = real.getSongs
 			.map(_.toLowerCase.replaceAll("\\\\", "/"))
 			.toSet
-		println("playlist song |%d|".format(realSongs.size))
+		println("actual songs |${realSongs.size}|")
 
 		val playlistMissing = realSongs.diff(playlistSongs).toList.sorted
 		val serverMissing = playlistSongs.diff(realSongs).toList.sorted
-		println("Server is missing %d songs".format(serverMissing.size))
+		println("Server is missing ${serverMissing.size} songs")
 		println(serverMissing.mkString("\n"))
-		println("Playlist is missing %d songs".format(playlistMissing.size))
+		println("Playlist is missing ${playlistMissing.size} songs")
 		println(playlistMissing.mkString("\n"))
 	}
 }
