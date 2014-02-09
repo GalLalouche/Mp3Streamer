@@ -28,14 +28,12 @@ object FixLabels extends App with Debug {
 	private def fixString(s: String): String = {
 		def upperCaseWord(w: String): String = w(0).toUpper + w.drop(1)
 		def fixWord(w: String): String = w match {
-			case s if (s matches "[IVXivx]+") => s toUpperCase
-			case _ if (w.length == 1) => w
-			case _ if (lowerCaseWords(w)) => w toLowerCase
-			case _ if (w.startsWith("(")) => "(" + fixWord(w drop 1)
-			case _ => upperCaseWord(w)
+			case s if (s matches "[IVXivx]+") => s toUpperCase // roman numbers
+			case _ if (w matches """^[(\[].+""") => w(0) + fixWord(w drop 1) // words starting with (
+			case _ => if (lowerCaseWords(w)) w.toLowerCase else upperCaseWord(w) // everything else
 		}
-		val split = s.split("\\s+").toList.map(_.toLowerCase)
-		(upperCaseWord(split(0)) :: (split.drop(1).map(fixWord).toList)).mkString(" ")
+		val split = s split "\\s+" map (_.toLowerCase)
+		(upperCaseWord(split(0)) :: (split drop 1 map fixWord toList)) mkString " "
 	}
 
 	private def fixFile(f: File, fixDiscNumber: Boolean) {
@@ -54,29 +52,29 @@ object FixLabels extends App with Debug {
 					.matchData
 					.toList(0)
 					.group(1)
-					.toInt
+					.toInt // throws an exception if not an int string
 					.toString)
 			} catch {
 				case e: Exception => () // do nothing	
 			}
 
-		AudioFileIO.delete(audioFile)
-		audioFile.setTag(newTag)
-		audioFile.commit
+		AudioFileIO delete audioFile
+		audioFile setTag newTag
+		audioFile commit
 	}
 
 	private def rename(f: File) {
 		val song = Song(f)
-		f.renameTo(new File(f.parent, "%s - %s.%s".format(properTrackString(song.track), song.title, f.extension)))
+		f renameTo new File(f.parent, "%s - %s.%s".format(properTrackString(song.track), song.title, f.extension))
 	}
 
 	def fix(folder: String): String = {
-		val d = Directory(folder).cloneDir
-		d
+		val dir = Directory(folder).cloneDir
+		dir
 			.files
 			.filter(_.extension == "m3u")
 			.foreach(_.delete)
-		val files = d
+		val files = dir
 			.files
 			.filter(f => Set("mp3", "flac").contains(f.extension))
 
@@ -88,12 +86,10 @@ object FixLabels extends App with Debug {
 			.toSet
 			.size > 1
 		val firstSong = Song(files(0))
-		files.foreach(fixFile(_, hasRealDiscNumber))
-		files.foreach(rename)
-		val renamedFolder = new File(d.parent, "%s %s".format(firstSong.year, firstSong.album))
-		d.dir.renameTo(renamedFolder)
-		renamedFolder.getAbsolutePath
+		files foreach(fixFile(_, hasRealDiscNumber))
+		files foreach rename
+		val renamedFolder = new File(dir.parent, "%s %s".format(firstSong.year, firstSong.album))
+		dir.dir renameTo renamedFolder
+		renamedFolder getAbsolutePath
 	}
-
-	fix("""D:\Incoming\Bittorrent\Completed\Music\Whispered -2010- Thousand Swords""")
 }
