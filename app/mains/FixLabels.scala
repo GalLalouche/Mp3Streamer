@@ -28,9 +28,10 @@ object FixLabels extends App with Debug {
 	private def fixString(s: String): String = {
 		def upperCaseWord(w: String): String = w(0).toUpper + w.drop(1)
 		def fixWord(w: String): String = w match {
+			case "a" => "a" // don't know why this needs to be handled explicitly
 			case s if (s matches "[IVXivx]+") => s toUpperCase // roman numbers
 			case _ if (w matches """^[(\[].+""") => w(0) + fixWord(w drop 1) // words starting with (
-			case _ => if (lowerCaseWords(w)) w.toLowerCase else upperCaseWord(w) // everything else
+			case _ => if (lowerCaseWords(w.toLowerCase)) w.toLowerCase else upperCaseWord(w) // everything else
 		}
 		val split = s split "\\s+" map (_.toLowerCase)
 		(upperCaseWord(split(0)) :: (split drop 1 map fixWord toList)) mkString " "
@@ -92,4 +93,6 @@ object FixLabels extends App with Debug {
 		dir.dir renameTo renamedFolder
 		renamedFolder getAbsolutePath
 	}
+	
+	println(fixString("Living on A Nightmare"))
 }
