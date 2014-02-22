@@ -29,11 +29,11 @@ object RandomFolderCreator extends App {
 	}
 	val songs = (new MusicFinder with MusicLocations).getSongs.map(new File(_))
 
-	def createPlaylistFile: File = {
+	def createPlaylistFile(): File = {
 		val files = outputDir.files
-		val $ = outputDir.addFile("random.m3u")
-		files.map(_.name).foreach($.appendLine(_))
-		$
+		val playlistFile = outputDir.addFile("random.m3u")
+		files.map(_.name).foreach(playlistFile.appendLine(_))
+		playlistFile
 	}
 
 	val random = new Random
@@ -63,6 +63,6 @@ object RandomFolderCreator extends App {
 				case e: Exception => println("Failed @ " + file); e.printStackTrace; throw e
 			}
 		}
-	createPlaylistFile
+//	createPlaylistFile
 	println("Done!")
 }
