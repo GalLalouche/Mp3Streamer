@@ -18,3 +18,4 @@ bin/**
 .cache
 /bin
 *.tmp
+/.target
