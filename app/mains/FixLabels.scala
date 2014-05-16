@@ -1,17 +1,16 @@
 package mains
 
 import java.io.File
-
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
-
 import common.Debug
 import common.path.Directory
 import common.path.Path.poorPath
 import common.path.RichFile.richFile
 import models.Song
+import org.jaudiotagger.tag.KeyNotFoundException
 
 object FixLabels extends App with Debug {
 	private lazy val lowerCaseWordsList = List("a", "am", "an", "and", "are", "as", "at", "be", "but", "by", "can", "can't", "cannot",
@@ -69,6 +68,13 @@ object FixLabels extends App with Debug {
 		f renameTo new File(f.parent, "%s - %s.%s".format(properTrackString(song.track), song.title, f.extension))
 	}
 
+	private def retrieveYear(firstSong: Song): Int = {
+		try firstSong.year
+		catch {
+			case _: Exception => firstSong.file.parent.name.split("[-\\s]+")(0).toInt
+		}
+	}
+
 	def fix(folder: String): String = {
 		val dir = Directory(folder).cloneDir
 		dir
@@ -87,12 +93,13 @@ object FixLabels extends App with Debug {
 			.toSet
 			.size > 1
 		val firstSong = Song(files(0))
-		files foreach(fixFile(_, hasRealDiscNumber))
+		files foreach (fixFile(_, hasRealDiscNumber))
 		files foreach rename
-		val renamedFolder = new File(dir.parent, "%s %s".format(firstSong.year, firstSong.album))
+		val year = retrieveYear(firstSong)
+		val renamedFolder = new File(dir.parent, "%s %s".format(year, fixString(firstSong.album)))
 		dir.dir renameTo renamedFolder
 		renamedFolder getAbsolutePath
 	}
-	
+
 	println(fixString("Living on A Nightmare"))
 }
