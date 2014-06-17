@@ -40,29 +40,32 @@ object RandomFolderCreator extends App {
 	val n = 100
 	(1 to n)
 		.map(index => (index, songs(random nextInt (songs length))))
-		.foreach { case (index, file) =>
-			try {
-				val newFile = new File(outputDir.dir, file.name)
-				FileUtils.copyFile(file, newFile)
-				val x = (AudioFileIO.read(newFile))
-				x.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(Song(file))))
-				breakable { while (true) {
-					try {
-						x.commit
-						break
-					} catch {
-						case _: CannotWriteException => ()
-						case _: UnableToRenameFileException => ()
+		.foreach {
+			case (index, file) =>
+				try {
+					val newFile = new File(outputDir.dir, file.name)
+					FileUtils.copyFile(file, newFile)
+					val x = (AudioFileIO.read(newFile))
+					x.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(Song(file))))
+					breakable {
+						while (true) {
+							try {
+								x.commit
+								break
+							} catch {
+								case _: CannotWriteException => ()
+								case _: UnableToRenameFileException => ()
+							}
+						}
 					}
-				} }
 
-				Thread.sleep(100) // why is this here?
-				newFile.renameTo(new File(outputDir.dir, "%02d.%s".format(index, file.extension)))
-				println(s"${100 * index / n}%% done".format())
-			} catch {
-				case e: Exception => println("Failed @ " + file); e.printStackTrace; throw e
-			}
+					Thread.sleep(100) // why is this here?
+					newFile.renameTo(new File(outputDir.dir, "%02d.%s".format(index, file.extension)))
+					println(s"${100 * index / n}%% done".format())
+				} catch {
+					case e: Exception => println("Failed @ " + file); e.printStackTrace; throw e
+				}
 		}
-//	createPlaylistFile
+	createPlaylistFile
 	println("Done!")
 }
