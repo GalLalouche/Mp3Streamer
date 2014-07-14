@@ -28,7 +28,6 @@ object DownloadCover extends App with Debug {
 
 	println("Searching for a cover picture for album " + album)
 	val url = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=%s&rsz=8&imgsz=large".format(s"lastfm $album").replaceAll(" ", "%20")
-	println(url)
 	val jsonLine = new URL(url)
 		.openConnection
 		.getInputStream

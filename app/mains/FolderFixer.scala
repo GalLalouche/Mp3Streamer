@@ -5,7 +5,7 @@ object FolderFixer extends App {
 	try {
 		val folder: String = args(0)
 		val newFolder = FixLabels.fix(folder)
-		DownloadCover.main(List(newFolder).toArray)
+		try { DownloadCover.main(List(newFolder).toArray) } catch { case e: Exception => throw new Exception("Could not download a cover picture", e) }
 		println("Done!")
 		readLine
 	} catch {

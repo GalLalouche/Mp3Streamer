@@ -95,10 +95,12 @@ object FixLabels extends App with Debug {
 		val firstSong = Song(files(0))
 		files foreach (fixFile(_, hasRealDiscNumber))
 		files foreach rename
-		val year = retrieveYear(firstSong)
-		val renamedFolder = new File(dir.parent, "%s %s".format(year, fixString(firstSong.album)))
-		dir.dir renameTo renamedFolder
-		renamedFolder getAbsolutePath
+		val year = try { retrieveYear(firstSong) } catch { case e: Exception => throw new Exception("Could not retrieve the year", e) }
+		try {
+			val renamedFolder = new File(dir.parent, "%s %s".format(year, fixString(firstSong.album)))
+			dir.dir renameTo renamedFolder
+			renamedFolder getAbsolutePath
+		} catch { case e: Exception => throw new Exception("could not rename the folder", e) }
 	}
 
 	println(fixString("Living on A Nightmare"))
