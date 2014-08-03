@@ -13,7 +13,7 @@ import models.Song
 import org.jaudiotagger.tag.KeyNotFoundException
 
 object FixLabels extends App with Debug {
-	private lazy val lowerCaseWordsList = List("a", "am", "an", "and", "are", "as", "at", "be", "but", "by", "can", "can't", "cannot",
+	private lazy val lowerCaseWordsList = List("a", "ain't", "am", "an", "and", "are", "as", "at", "be", "but", "by", "can", "can't", "cannot",
 		"do", "don't", "for", "from", "had", "has", "have", "her", "his", "in", "into", "is", "it", "it's", "its",
 		"me", "mine", "my", "not", "of", "on", "or", "our", "so", "should", "that", "the", "their", "them", "these",
 		"this", "those", "did", "to", "too", "up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't",

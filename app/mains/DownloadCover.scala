@@ -12,8 +12,8 @@ import play.api.libs.json.JsObject
 
 // downloads from zi internet!
 object DownloadCover extends App with Debug {
+	
 	val folder = args(0)//"""D:\Incoming\Bittorrent\Completed\Music\Dissection - Discography [1990-2006]\2006 - Reinkaos 320kbps"""
-
 	def getRandomIp(): String = {
 		val r = new Random
 		"%s.%s.%s.%s".format(r.nextInt(256), r.nextInt(256), r.nextInt(256), r.nextInt(256))
