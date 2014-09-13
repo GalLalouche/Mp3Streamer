@@ -14,7 +14,8 @@ trait MetadataRetriever {
 		def asJsArray: JsArray = js.asInstanceOf[JsArray]
 		def has(str: String) = {
 			val $ = js \ str
-			false == ($ == JsNull || $.isInstanceOf[JsUndefined])
+			false == ($ == JsNull || $.isInstanceOf[JsUndefined]) && 
+			($.isInstanceOf[JsString] == false || $.asInstanceOf[JsString].value != "")
 		}
 	}
 	def getAlbums(artist: String): Iterator[Album] =

@@ -11,22 +11,35 @@ import play.api.libs.ws.WS
 import java.text.SimpleDateFormat
 import common.RichString._
 import common.Jsoner._
-class MusicBrainzRetriever extends MetadataRetriever {
-	val sf = new SimpleDateFormat("yyyy-MM-dd")
+object MusicBrainzRetriever extends MetadataRetriever {
+	private val sf = new SimpleDateFormat("yyyy-MM-dd")
 	override protected def jsonToAlbum(artist: String, js: JsValue): Option[Album] = {
-		val albumName = js \ "title" asString;
-		val year = (js \ "first-release-date" asString).captureWith(".*(\\d{4}).*".r).toInt
-		Some(Album(artist, year, albumName))
+		try {
+			val albumName = js \ "title" asString;
+			val year = (js \ "first-release-date" asString).captureWith(".*(\\d{4}).*".r).toInt
+			Some(Album(artist, year, albumName))
+		} catch {
+			case e: Exception => println("Failed to parse js " + js); throw e
+		}
 	}
+	private val primaryTypes = Set("Album", "EP", "Live")
 	override protected def getAlbumsJson(artistName: String) = {
 		val artist = (getJson("artist/", "query" -> artistName) \ "artist").asInstanceOf[JsArray].value
 			.filter(_ has "type")
 			.head
 		assert("100" == (artist \ "score").asString, "could not find a certain match for " + artistName)
-		val $ = getJson("release-group",
-			"artist" -> (artist \ "id" asString),
-			"limit" -> "100") \ "release-groups" asJsArray;
+		val $ = try {
+			getJson("release-group",
+				"artist" -> (artist \ "id" asString),
+				"limit" -> "100") \ "release-groups" asJsArray;
+		} catch {
+			case e: Exception => println("Failed to get artist with id = " + artist \ "id"); throw e
+		}
+
 		new JsArray($.value
+			.filter(_ has "first-release-date")
+			.filter(_ has "primary-type")
+			.filter(e => primaryTypes.contains(e \ "primary-type" asString))
 			.filter(e => (e \ "secondary-types").asJsArray.value.isEmpty)
 			.toList
 			.sortBy(_ \ "first-release-date" asString))
@@ -45,12 +58,7 @@ class MusicBrainzRetriever extends MetadataRetriever {
 		}
 	}
 
-}
-
-// simple test, can't unit test because it wraps a third party API
-object MusicBrainzRetriever {
 	def main(args: Array[String]) {
-		val $ = new MusicBrainzRetriever
-		println($.getAlbums("finntroll").toList mkString "\n")
+		println(getAlbums("finntroll").toList mkString "\n")
 	}
 }
