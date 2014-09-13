@@ -8,6 +8,8 @@ import common.path.RichFile
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import scala.MatchError
+import java.util.logging.Logger
+import java.util.logging.Level
 /**
   * Handles parsing mp3 data
   */
@@ -15,7 +17,6 @@ class Song(val file: File) {
 	require(file != null)
 	require(file exists)
 	require(file.isDirectory == false)
-
 	private val (tag, header) = {
 		val x = (AudioFileIO.read(file))
 		(x.getTag, x.getAudioHeader)

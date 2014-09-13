@@ -39,9 +39,9 @@ class NewAlbumsRetrieverTest extends FreeSpec with MockitoSugar with ShouldMatch
 			when(song2.artist).thenReturn("blur") // teehee
 			when(mf.getSongs).thenReturn(Seq(song1, song2))
 			val albums = Set(Album("foo", 2002, "bar"), Album("Blur", 1997, "Blur"), Album("Blur", 1999, "13"))
-			when(md.getAlbums("foo")).thenReturn(albums.filter(_.artist == "foo").toSeq)
-			when(md.getAlbums("blur")).thenReturn(albums.filter(_.artist == "Blur").toSeq)
-			when(md.getAlbums("blur")).thenReturn(Seq(Album("Blur", 1997, "Blur"), Album("Blur", 1999, "13")))
+			when(md.getAlbums("foo")).thenReturn(albums.filter(_.artist == "foo").toIterator)
+			when(md.getAlbums("blur")).thenReturn(albums.filter(_.artist == "Blur").toIterator)
+			when(md.getAlbums("blur")).thenReturn(Seq(Album("Blur", 1997, "Blur"), Album("Blur", 1999, "13")).toIterator)
 			"return all albums for the artists" in {
 				$.findNewAlbums.toSet should be === albums
 			}

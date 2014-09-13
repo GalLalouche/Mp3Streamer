@@ -8,15 +8,12 @@ abstract class NewAlbumsRetriever {
 	val music: MusicFinder
 
 	def findNewAlbums: Iterator[Album] = {
-		val songs = music.getSongs
-		val lastAlbums = songs
+		val lastAlbums = music.getAlbums
+			.toSeq
 			.groupBy(_.artist)
 			.map(e => e._1.toLowerCase -> e._2.map(_.year).last)
 			.toMap
-		songs
-			.map(_.artist)
-			.toSet
-			.toIterator
+		lastAlbums.keys.iterator
 			.flatMap(meta.getAlbums)
 			.filter(e => lastAlbums(e.artist.toLowerCase) < e.year)
 	}

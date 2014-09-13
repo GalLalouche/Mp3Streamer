@@ -21,10 +21,13 @@ class RichString($: String) {
 	}
 	// splits last item too
 	def smartSplit(c: Char): Seq[String] = smartSplit(c.toString)
-	def captureWith(regex: Regex) = $ match {
-		case regex(result) => result
+	def captureWith(regex: Regex) = try {
+		$ match {
+			case regex(result) => result
+		}
+	} catch {
+		case e: MatchError => println(s"Could not capture $regex on string ${$}"); throw e
 	}
-
 	def dropLast(c: Char) = $.substring($.lastIndexOf(c) + 1)
 
 	def dropAfter(str: String) = $.replaceFirst(s"($str).*", "$1")
