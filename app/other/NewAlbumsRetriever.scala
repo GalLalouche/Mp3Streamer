@@ -11,8 +11,9 @@ abstract class NewAlbumsRetriever {
 		val lastAlbums = music.getAlbums
 			.toSeq
 			.groupBy(_.artist)
-			.map(e => e._1.toLowerCase -> e._2.map(_.year).last)
+			.map(e => e._1.toLowerCase -> e._2.map(_.year).last) // take last album
 			.toMap
+		println(lastAlbums)
 		lastAlbums.keys.iterator
 			.flatMap(meta.getAlbums)
 			.filter(e => lastAlbums(e.artist.toLowerCase) < e.year)

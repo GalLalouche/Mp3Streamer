@@ -18,15 +18,6 @@ trait MusicFinder {
 				case d => d.files.filter(f => extensions.contains(f.extension))
 			}.filter(_.nonEmpty)
 			.map(files => Album(new Song(files.head)))
-	def getSongs: Seq[Song] = try {
-		for (e <- getSongFilePaths) yield {
-			try {
-				new Song(new File(e))
-			} catch {
-				case ex: Exception => println("Failed on song " + e); throw ex;
-			}
-		}
-	}
 	def getSongFilePaths: IndexedSeq[String] = {
 		(genreDirs.flatMap(_.files) ++ (genreDirs.flatMap(_.dirs).par.flatMap(_.deepFiles)))
 			.filter(x => extensions.contains(x.extension))
