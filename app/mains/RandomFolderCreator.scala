@@ -25,7 +25,7 @@ object RandomFolderCreator extends App {
 		d.clear
 		d
 	}
-	val songs = (new MusicFinder with MusicLocations).getSongs.map(new File(_))
+	val songs = (new MusicFinder with MusicLocations).getSongFilePaths.map(new File(_))
 
 	def createPlaylistFile(): File = {
 		val files = outputDir.files

@@ -25,12 +25,16 @@ object FindSongsNotInPlaylist extends App with Debug {
 			.map(_.toLowerCase.replaceAll("\\\\", "/"))
 			.toSet
 		println(s"playlist songs |${playlistSongs.size}|")
-		val realSongs = real.getSongs
+		val realSongs = real.getSongFilePaths
 			.map(_.toLowerCase.replaceAll("\\\\", "/"))
 			.toSet
 		println(s"actual songs |${realSongs.size}|")
 
 		val playlistMissing = realSongs.diff(playlistSongs).toList.sorted
+		playlistMissing // opens the windows with the files :D
+			.map(new File(_).parent.getAbsolutePath)
+			.toSet[String]
+			.foreach(e => new ProcessBuilder("explorer.exe", e).start)
 		val serverMissing = playlistSongs.diff(realSongs).toList.sorted
 		println(s"Server is missing ${serverMissing.size} songs")
 		println(serverMissing.mkString("\n"))

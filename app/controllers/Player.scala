@@ -14,7 +14,7 @@ import common.ValueTree
 import common.path.Directory
 import common.path.Path.richPath
 import dirwatch.DirectoryWatcher
-import models.Album
+import models.AlbumDirectory
 import models.MusicFinder
 import models.MusicTree
 import models.Poster
@@ -46,7 +46,7 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
 
 	private val updatingMusic = () => timed("Updating music") {
 		// this cannot be inlined, as it has to be the same function for LazyActor
-		songs = getSongs.map(new File(_))
+		songs = getSongFilePaths.map(new File(_))
 		TreeSocket.actor ! TreeSocket.Update
 	}
 
@@ -73,6 +73,6 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
 	}
 
 	def album(path: String) = Action {
-		Ok(JsArray(Album(new File(URLDecoder.decode(path, "UTF-8"))).songs.map(songJsonInformation)))
+		Ok(JsArray(AlbumDirectory(new File(URLDecoder.decode(path, "UTF-8"))).songs.map(songJsonInformation)))
 	}
 }

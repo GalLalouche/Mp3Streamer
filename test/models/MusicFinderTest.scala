@@ -35,27 +35,27 @@ class MusicFinderTest extends TempDirTest {
 				tempDir.addSubDir("a").addSubDir("b").addSubDir("c")
 				tempDir.addSubDir("b").addSubDir("b").addSubDir("c")
 				tempDir.addSubDir("c").addSubDir("b").addSubDir("c")
-				$.getSongs should be empty
+				$.getSongFilePaths should be empty
 			}
 			"when file is in root" >> new MusicDir {
 				tempDir.addFile("foo.mp3")
-				$.getSongs should be empty
+				$.getSongFilePaths should be empty
 
 			}
 			"when file is in unlisted dir" >> new MusicDir {
 				tempDir.addSubDir("d").addFile("foo.mp3")
-				$.getSongs should be empty
+				$.getSongFilePaths should be empty
 			}
 			"when file has wrong extension" >> new MusicDir {
 				tempDir.addSubDir("b").addFile("foo.mp2")
-				$.getSongs should be empty
+				$.getSongFilePaths should be empty
 			}
 		}
 		"Find song in" >> new MusicDir {
 			withDirs("a")
 			tempDir.addSubDir("a").addSubDir("b").addFile("foo.mp3")
 			val x =
-				$.getSongs should contain((tempDir / """a/b/foo.mp3""").path)
+				$.getSongFilePaths should contain((tempDir / """a/b/foo.mp3""").path)
 		}
 	}
 //	"real test" >> {

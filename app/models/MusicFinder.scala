@@ -10,7 +10,8 @@ trait MusicFinder {
 	val extensions: List[String]
 	
 	lazy val genreDirs = subDirs.sorted.map(x => Directory(dir / x))
-	def getSongs: IndexedSeq[String] = {
+	def getSongs: Seq[Song] = ???
+	def getSongFilePaths: IndexedSeq[String] = {
 		(genreDirs.flatMap(_.files) ++ (genreDirs.flatMap(_.dirs).par.flatMap(_.deepFiles)))
 				.filter(x => extensions.contains(x.extension))
 				.map(_.path)
