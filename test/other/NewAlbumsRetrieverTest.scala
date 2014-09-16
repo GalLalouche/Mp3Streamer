@@ -11,15 +11,14 @@ import org.mockito.Mockito._
 import models.Song
 import models.Album
 import org.mockito.Matchers._
+import scala.collection.mutable.MutableList
 
 @RunWith(classOf[JUnitRunner])
 class NewAlbumsRetrieverTest extends FreeSpec with MockitoSugar with ShouldMatchers with OneInstancePerTest {
 	val metadata = mock[MetadataRetriever]
 	val finder = mock[MusicFinder]
-	val $ = new NewAlbumsRetriever {
-		val meta = metadata
-		val music = finder
-	}
+	val ignoredArtists = new MutableList[String]()
+	val $ = new NewAlbumsRetriever(metadata, finder, ignoredArtists)
 
 	"Find new albums by artist should" - {
 		"throw an exception if artist isn't found" in {
@@ -39,12 +38,12 @@ class NewAlbumsRetrieverTest extends FreeSpec with MockitoSugar with ShouldMatch
 			val albums = Set(Album("foo", 2000, "bar"), Album("Blur", 1997, "Blur"), Album("Blur", 1999, "13"))
 			when(metadata.getAlbums("foo")).thenReturn(albums.filter(_.artist == "foo").toIterator)
 			when(metadata.getAlbums("blur")).thenReturn(Seq(Album("Blur", 1997, "Blur"), Album("Blur", 1999, "13")).toIterator)
+			when(finder.getAlbums).thenReturn(albums
+					.groupBy(_.artist)
+					.map(_._2.head)
+					.map(e => Album(e.artist, 0, e.albumName))
+					.iterator)
 			"return all albums for the artists" in {
-				when(finder.getAlbums).thenReturn(albums
-						.groupBy(_.artist)
-						.map(_._2.head)
-						.map(e => Album(e.artist, 0, e.albumName))
-						.iterator)
 				$.findNewAlbums.toSet should be === albums
 			}
 			"filter albums that are older than the latest album" in {
@@ -54,7 +53,10 @@ class NewAlbumsRetrieverTest extends FreeSpec with MockitoSugar with ShouldMatch
 						.map(e => Album(e.artist, 1997, e.albumName))
 						.iterator)
 				$.findNewAlbums.toSet should be === albums.filterNot(_.albumName == "Blur")
-
+			}
+			"not return albums for ignored artists" in {
+				ignoredArtists += "blur"
+				$.findNewAlbums.toSet should be === albums.filter(_.artist == "foo")	
 			}
 		}
 	}

@@ -27,7 +27,8 @@ object MusicBrainzRetriever extends MetadataRetriever {
 		val artist = (getJson("artist/", "query" -> artistName) \ "artist").asInstanceOf[JsArray].value
 			.filter(_ has "type")
 			.head
-		assert("100" == (artist \ "score").asString, "could not find a certain match for " + artistName)
+		if("100" != (artist \ "score").asString)
+			throw new Exception("failed to get 100 match for artist " + artistName)
 		val $ = try {
 			getJson("release-group",
 				"artist" -> (artist \ "id" asString),
@@ -51,7 +52,7 @@ object MusicBrainzRetriever extends MetadataRetriever {
 			.withHeaders("User-Agent" -> "Metadata Retriever")
 		val f = ws.get()
 		try {
-			val result = Await.result(f, 10 seconds).json
+			val result = Await.result(f, 30 seconds).json
 			result
 		} catch {
 			case e: TimeoutException => println("Failed to retrieve data for " + other.toSeq); throw e

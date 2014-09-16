@@ -13,7 +13,7 @@ import java.util.logging.Level
 /**
   * Handles parsing mp3 data
   */
-class Song(val file: File) {
+class Song private(val file: File) {
 	require(file != null)
 	require(file exists)
 	require(file.isDirectory == false)
@@ -54,5 +54,6 @@ class Song(val file: File) {
 }
 
 object Song {
+	Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF) // STFU already!
 	def apply(f: File) = new Song(new RichFile(f))
 }

@@ -14,8 +14,8 @@ trait MetadataRetriever {
 		def asJsArray: JsArray = js.asInstanceOf[JsArray]
 		def has(str: String) = {
 			val $ = js \ str
-			false == ($ == JsNull || $.isInstanceOf[JsUndefined]) && 
-			($.isInstanceOf[JsString] == false || $.asInstanceOf[JsString].value != "")
+			false == ($ == JsNull || $.isInstanceOf[JsUndefined]) &&
+				($.isInstanceOf[JsString] == false || $.asInstanceOf[JsString].value != "")
 		}
 	}
 	def getAlbums(artist: String): Iterator[Album] =
@@ -25,6 +25,8 @@ trait MetadataRetriever {
 				.iterator
 				.map(jsonToAlbum(artist, _))
 				.collect { case Some(a) => a }
+		} catch {
+			case e: Exception => println("Could not get data for artist: " + artist); Thread sleep 10000; Iterator.empty
 		} finally {
 			WS.resetClient // this is needed for the application to die
 		}
