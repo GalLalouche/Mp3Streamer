@@ -36,6 +36,7 @@ object MusicBrainzRetriever extends MetadataRetriever {
 		} catch {
 			case e: Exception => println("Failed to get artist with id = " + artist \ "id"); throw e
 		}
+		new JsArray($.value.take(1))
 
 		new JsArray($.value
 			.filter(_ has "first-release-date")
