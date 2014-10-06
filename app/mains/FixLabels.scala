@@ -84,7 +84,7 @@ object FixLabels extends App with Debug {
 		val files = dir
 			.files
 			.filter(f => Set("mp3", "flac").contains(f.extension))
-
+		require(files.nonEmpty, "Could not find any songs - could it be hidden in a subfolder?")
 		val hasRealDiscNumber = files
 			.map(AudioFileIO
 				.read(_)

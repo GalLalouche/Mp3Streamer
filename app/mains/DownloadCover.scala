@@ -12,7 +12,7 @@ import play.api.libs.json.JsObject
 
 // downloads from zi internet!
 object DownloadCover extends App with Debug {
-	
+	case class CoverException(str: String) extends Exception
 	val folder = args(0)//"""D:\Incoming\Bittorrent\Completed\Music\Dissection - Discography [1990-2006]\2006 - Reinkaos 320kbps"""
 	def getRandomIp(): String = {
 		val r = new Random
@@ -23,7 +23,8 @@ object DownloadCover extends App with Debug {
 		val song = Song(Directory(folder).files(0))
 		s"${song.artist} ${song.album}"
 	}
-
+	try {
+		
 	//	val externalIp: String = new URL("http://api.externalip.net/ip").openStream.readAll
 
 	println("Searching for a cover picture for album " + album)
@@ -40,5 +41,7 @@ object DownloadCover extends App with Debug {
 	val imageUrl = (firstResult \ "url").as[String];
 	println("Downloading from url " + imageUrl)
 	val f = Image(imageUrl).saveAsJpeg(Directory(folder) \ "folder.jpg")
-	Thread.sleep(100)
+	} catch {
+		case e: Exception => throw CoverException(album)
+	} 
 }
