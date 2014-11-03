@@ -14,7 +14,7 @@ import models.MusicFinder
 object FindSongsNotInPlaylist extends App with Debug {
 	val real = new MusicFinder {
 		val dir = Directory("D:/Media/Music")
-		val subDirs = List("Metal", "Rock", "Classical", "New Age")
+		val subDirs = List("Metal", "Rock", "Classical", "New Age", "Jazz")
 		val extensions = List("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
 	}
 	timed(logger = ConsoleLogger) {
@@ -36,7 +36,7 @@ object FindSongsNotInPlaylist extends App with Debug {
 			.toSet[String]
 			.foreach(e => new ProcessBuilder("explorer.exe", e).start)
 		val serverMissing = playlistSongs.diff(realSongs).toList.sorted
-		println(s"Server is missing ${serverMissing.size} songs")
+		println(s"Server is missing ${serverMissing.size} songs ${if (serverMissing.nonEmpty) "(it's possible that these songs are in the playlist but the files themselves have been deleted)"}")
 		println(serverMissing.mkString("\n"))
 		println(s"Playlist is missing ${playlistMissing.size} songs")
 		println(playlistMissing.mkString("\n"))
