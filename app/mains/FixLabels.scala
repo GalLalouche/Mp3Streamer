@@ -75,8 +75,11 @@ object FixLabels extends App with Debug {
 		}
 	}
 
+	// returns the path of the output folder
 	def fix(folder: String): String = {
 		val dir = Directory(folder).cloneDir
+		if (dir.files.filter(_.extension == "flac").size == 1 && dir.files.filter(_.extension == "cue").size == 1)
+			throw new IllegalArgumentException("Folder contains an unsplit flac file; please split the file and try again.")
 		dir
 			.files
 			.filter(_.extension == "m3u")
