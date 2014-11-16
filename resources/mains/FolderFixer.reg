@@ -1,0 +1,9 @@
+Windows Registry Editor Version 5.00
+
+[-HKEY_CLASSES_ROOT\Directory\shell\FixMp3]
+
+[HKEY_CLASSES_ROOT\Directory\shell\FixMp3]
+@="Fix Mp3"
+
+[HKEY_CLASSES_ROOT\Directory\shell\FixMp3\command]
+@="cmd.exe /d /c java.exe -cp D:/FolderFixer.jar;C:/dev/lang/scala/lib/scala-library.jar;C:/dev/web/play-2.1.2/repository/local/play/play_2.10/2.1.2/jars/play_2.10.jar;C:/dev/web/play-2.1.2/Mp3Streamer/lib/jaudiotagger-2.0.4-20130131.171158-16.jar;C:/dev/web/play-2.1.2/repository/local/joda-time/joda-time/2.1/jars/joda-time.jar;C:/dev/web/play-2.1.2/repository/local/org.codehaus.jackson/jackson-core-asl/1.9.10/jars/jackson-core-asl.jar;C:/dev/web/play-2.1.2/repository/local/org.codehaus.jackson/jackson-mapper-asl/1.9.10/jars/jackson-mapper-asl.jar;C:/dev/web/play-2.1.2/repository/local/commons-io/commons-io/2.0.1/jars/commons-io.jar;C:/dev/git/scala-common/ScalaCommon/ScalaCommon.jar mains.FolderFixerJava \"%1\""
