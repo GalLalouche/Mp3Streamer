@@ -13,36 +13,18 @@ import models.Song
 import org.jaudiotagger.tag.KeyNotFoundException
 
 object FixLabels extends App with Debug {
-	private lazy val lowerCaseWordsList = List("a", "ain't", "am", "an", "and", "are", "as", "at", "be", "but", "by", "can", "can't", "cannot",
-		"do", "don't", "for", "from", "had", "has", "have", "her", "his", "in", "into", "is", "it", "it's", "its",
-		"me", "mine", "my", "not", "of", "on", "or", "our", "so", "should", "that", "the", "their", "them", "these",
-		"this", "those", "did", "to", "too", "up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't",
-		"your", "upon", "shall", "may", "there", "ov")
-	private lazy val lowerCaseWords = lowerCaseWordsList.toSet
-	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
-		println(lowerCaseWords.toList.sorted.map(""""%s"""".format(_)))
 
 	private def properTrackString(track: Int): String = if (track < 10) "0" + track else track toString
-
-	private def fixString(s: String): String = {
-		def upperCaseWord(w: String): String = w(0).toUpper + w.drop(1)
-		def fixWord(w: String): String = w match {
-			case "a" => "a" // don't know why this needs to be handled explicitly
-			case s if (s matches "[IVXivx]+") => s toUpperCase // roman numbers
-			case _ if (w matches """^[(\[].+""") => w(0) + fixWord(w drop 1) // words starting with (
-			case _ => if (lowerCaseWords(w.toLowerCase)) w.toLowerCase else upperCaseWord(w) // everything else
-		}
-		val split = s split "\\s+" map (_.toLowerCase)
-		(upperCaseWord(split(0)) :: (split drop 1 map fixWord toList)) mkString " "
-	}
-
+	private def fixString(str: String) = StringFixer(str)
 	private def fixFile(f: File, fixDiscNumber: Boolean) {
 		val audioFile = AudioFileIO.read(f)
 		val originalTag = audioFile.getTag
 		originalTag.deleteArtworkField
 		val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
 		List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR)
-			.foreach(f => newTag.setField(f, fixString(originalTag.getFirst(f))))
+			.foreach { f =>
+				newTag.setField(f, fixString(originalTag.getFirst(f)))
+			}
 		newTag.setField(FieldKey.TRACK, properTrackString(newTag.getFirst(FieldKey.TRACK).toInt))
 		if (fixDiscNumber)
 			try {
