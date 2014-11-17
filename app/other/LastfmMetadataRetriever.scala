@@ -6,7 +6,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 import scala.util.Try
 
-import common.RichString.richString
+import common.rich.primitives.RichString._
 import models.Album
 import play.api.libs.json.{ JsArray, JsValue }
 import play.api.libs.ws.WS

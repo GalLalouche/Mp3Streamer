@@ -4,13 +4,13 @@ import java.util.concurrent.TimeoutException
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 import scala.util.Try
-import common.RichString.richString
+import common.rich.primitives.RichString._
 import models.Album
 import play.api.libs.json._
 import play.api.libs.ws.WS
 import java.text.SimpleDateFormat
-import common.RichString._
 import common.Jsoner._
+
 object MusicBrainzRetriever extends MetadataRetriever {
 	private val sf = new SimpleDateFormat("yyyy-MM-dd")
 	override protected def jsonToAlbum(artist: String, js: JsValue): Option[Album] = {
