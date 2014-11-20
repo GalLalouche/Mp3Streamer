@@ -9,6 +9,7 @@ import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
 import loggers.ConsoleLogger
 import models.MusicFinder
+import common.rich.RichT.richT
 
 // finds songs that are in the music directory but are not saved in the playlist file
 object FindSongsNotInPlaylist extends App with Debug {
@@ -36,7 +37,7 @@ object FindSongsNotInPlaylist extends App with Debug {
 			.toSet[String]
 			.foreach(e => new ProcessBuilder("explorer.exe", e).start)
 		val serverMissing = playlistSongs.diff(realSongs).toList.sorted
-		println(s"Server is missing ${serverMissing.size} songs ${if (serverMissing.nonEmpty) "(it's possible that these songs are in the playlist but the files themselves have been deleted)"}")
+		println(s"Server is missing ${serverMissing.size} songs ${"(it's possible that these songs are in the playlist but the files themselves have been deleted)".onlyIf(serverMissing.nonEmpty)}")
 		println(serverMissing.mkString("\n"))
 		println(s"Playlist is missing ${playlistMissing.size} songs")
 		println(playlistMissing.mkString("\n"))
