@@ -5,8 +5,8 @@ import org.joda.time.format.DateTimeFormat
 import akka.actor.{ActorRef, Props}
 import akka.actor.Actor
 import common.LazyActor
-import common.path.Directory
-import common.path.RichFile._
+import common.rich.path.Directory
+import common.rich.path.RichFile._
 import loggers.Logger
 
 class LogFileManager(val dir: Directory) extends Actor {

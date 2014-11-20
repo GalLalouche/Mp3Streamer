@@ -1,7 +1,7 @@
 package models
 
-import common.path.Directory
-import common.path.RichFile._
+import common.rich.path.Directory
+import common.rich.path.RichFile._
 import java.io.File
 
 trait MusicFinder {

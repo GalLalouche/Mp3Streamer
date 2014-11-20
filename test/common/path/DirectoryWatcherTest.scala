@@ -1,4 +1,4 @@
-package common.path
+package common.rich.path
 
 import java.io.File
 import org.junit.runner.RunWith
@@ -6,9 +6,11 @@ import org.specs2.matcher.Expectable
 import org.specs2.matcher.Matcher
 import models.TempDirTest
 import org.specs2.runner.JUnitRunner
-import Path.richPath
-import Path.poorPath
-import common.path.RichFile._
+import RichPath.richPath
+import RichPath.poorPath
+import common.rich.path.RichFile._
+import common.rich.path.RichPath._
+
 import org.specs2.mutable.After
 /**
   * Add your spec here.

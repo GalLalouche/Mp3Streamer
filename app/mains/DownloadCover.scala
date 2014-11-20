@@ -4,8 +4,8 @@ import java.net.URL
 import java.util.Random
 import common.Debug
 import common.io.RichStream.richStream
-import common.path.Directory
-import common.path.RichFile.richFile
+import common.rich.path.Directory
+import common.rich.path.RichFile.richFile
 import models.{ Image, Song }
 import play.api.libs.json.{ Json, JsArray }
 import play.api.libs.json.JsObject

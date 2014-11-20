@@ -2,12 +2,12 @@ package models
 
 import java.io.File
 import common.ValueTree
-import common.path.Directory
-import common.path.Path.richPath
+import common.rich.path.Directory
+import common.rich.path.RichPath._
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import common.path.RichFile
+import common.rich.path.RichFile
 
 trait MusicTree extends MusicFinder {
 	collection.parallel.ForkJoinTasks
@@ -32,8 +32,7 @@ object MusicTree {
 	}
 
 	def jsonify(tree: ValueTree[File]): JsObject = {
-		import common.path.Path._
-		//		import common.Jsoner._ 
+		import common.rich.path.RichPath._
 		tree match {
 			case _ if (tree.isLeaf) =>
 				Json obj (

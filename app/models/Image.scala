@@ -2,7 +2,7 @@ package models
 
 import java.io.{ ByteArrayOutputStream, File, FileInputStream, InputStream }
 import java.net.URL
-import common.path.RichFile._
+import common.rich.path.RichFile._
 import javax.imageio.{ IIOImage, ImageIO, ImageWriteParam }
 import javax.imageio.stream.FileImageOutputStream
 import java.io.BufferedInputStream

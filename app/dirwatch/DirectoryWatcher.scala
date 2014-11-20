@@ -21,8 +21,8 @@ import scala.util.control.Breaks.break
 
 import akka.actor._
 import common.Debug
-import common.path.Directory
-import common.path.Path.poorPath
+import common.rich.path.Directory
+import common.rich.path.RichPath._
 import DirectoryWatcher._
 
 class DirectoryWatcher(listener: ActorRef, val dirs: Traversable[Directory]) extends Actor with Debug {

@@ -3,8 +3,8 @@ package models
 import java.io.File
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
-import common.path.Path.poorPath
-import common.path.RichFile
+import common.rich.path.RichPath._
+import common.rich.path.RichFile
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import scala.MatchError

@@ -2,7 +2,7 @@ package mains
 
 import java.io.File
 
-import common.path.RichFile.richFile
+import common.rich.path.RichFile.richFile
 import controllers.MusicLocations
 import models.MusicFinder
 import other.{ MusicBrainzRetriever, NewAlbumsRetriever }

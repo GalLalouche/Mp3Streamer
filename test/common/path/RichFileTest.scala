@@ -1,4 +1,4 @@
-package common.path
+package common.rich.path
 
 import java.io.File
 import org.junit.runner.RunWith
@@ -6,10 +6,12 @@ import org.specs2.matcher.Expectable
 import org.specs2.matcher.Matcher
 import models.TempDirTest
 import org.specs2.runner.JUnitRunner
-import Path.richPath
-import Path.poorPath
+import RichPath.richPath
+import RichPath.poorPath
 import org.specs2.mutable.After
-import common.path.RichFile._
+import common.rich.path.RichFile._
+import common.rich.path.RichPath._
+
 import java.util.Scanner
 import java.io.PrintStream
 import java.util.Random
@@ -36,7 +38,7 @@ class RichFileTest extends TempDirTest { // yeah yeah, it uses TempDirTest which
 		val r = new Random
 		val $ = RichFile(tempDir.addFile("f" + r.nextInt))
 	}
-	import resource._
+import resource._
 	private def checkClosed(f: File) {
 		managed(new PrintStream(f)).acquireAndGet { _.print("foobar2"); }
 	}

@@ -11,8 +11,8 @@ import akka.actor.actorRef2Scala
 import common.Debug
 import common.LazyActor
 import common.ValueTree
-import common.path.Directory
-import common.path.Path.richPath
+import common.rich.path.Directory
+import common.rich.path.RichPath._
 import dirwatch.DirectoryWatcher
 import models.AlbumDirectory
 import models.MusicFinder

@@ -7,8 +7,8 @@ import org.apache.commons.io.FileUtils
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.audio.exceptions.{ CannotWriteException, UnableToRenameFileException }
 import org.jaudiotagger.tag.images.StandardArtwork
-import common.path.Directory
-import common.path.RichFile.richFile
+import common.rich.path.Directory
+import common.rich.path.RichFile.richFile
 import controllers.MusicLocations
 import models.{ MusicFinder, Poster, Song }
 import scala.collection.mutable.HashSet
@@ -35,7 +35,7 @@ object RandomFolderCreator extends App {
 	}
 
 	val random = new Random
-	val n = 300
+	val n = 200
 	val selectedSongs = HashSet[File]()
 	def addSong {
 		val index = selectedSongs.size

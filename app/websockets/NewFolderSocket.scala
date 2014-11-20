@@ -1,7 +1,7 @@
 package websockets
 
 import common.Debug
-import common.path.Directory
+import common.rich.path.Directory
 
 /**
   * Sends console information to the listeners

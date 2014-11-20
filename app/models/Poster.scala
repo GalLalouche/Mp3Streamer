@@ -1,9 +1,9 @@
 package models
 
-import common.path.Path._
-import common.path.Directory
+import common.rich.path.RichPath._
+import common.rich.path.Directory
 import java.io.File
-import common.path.RichFile
+import common.rich.path.RichFile
 /**
  * Handles cover art
  */

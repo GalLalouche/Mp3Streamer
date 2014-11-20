@@ -1,7 +1,7 @@
 package models
 
 import java.io.File
-import common.path.Directory
+import common.rich.path.Directory
 
 case class Album(artist: String, year: Int, albumName: String)
 

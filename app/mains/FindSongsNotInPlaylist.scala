@@ -5,8 +5,8 @@ import java.io.File
 import scala.collection.TraversableOnce.MonadOps
 
 import common.Debug
-import common.path.Directory
-import common.path.RichFile.richFile
+import common.rich.path.Directory
+import common.rich.path.RichFile.richFile
 import loggers.ConsoleLogger
 import models.MusicFinder
 

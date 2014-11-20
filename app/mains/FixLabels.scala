@@ -6,9 +6,8 @@ import org.jaudiotagger.tag.FieldKey
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
 import common.Debug
-import common.path.Directory
-import common.path.Path.poorPath
-import common.path.RichFile.richFile
+import common.rich.path.Directory
+import common.rich.path.RichFile.richFile
 import models.Song
 import org.jaudiotagger.tag.KeyNotFoundException
 
@@ -59,7 +58,7 @@ object FixLabels extends App with Debug {
 
 	// returns the path of the output folder
 	def fix(folder: String): String = {
-		val dir = Directory(folder).cloneDir
+		val dir = Directory(folder).cloneDir()
 		if (dir.files.filter(_.extension == "flac").size == 1 && dir.files.filter(_.extension == "cue").size == 1)
 			throw new IllegalArgumentException("Folder contains an unsplit flac file; please split the file and try again.")
 		dir

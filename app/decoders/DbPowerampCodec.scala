@@ -6,7 +6,7 @@ import scala.sys.process.Process
 import scala.sys.process.ProcessLogger
 
 import common.Debug
-import common.path.Path.richPath
+import common.rich.path.RichPath._
 import decoders.CodecType.CodecType
 /**
   * An implementation of a codec using dBpoweramp appliocation

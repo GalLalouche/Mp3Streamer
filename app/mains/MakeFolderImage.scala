@@ -1,7 +1,7 @@
 package mains
 
-import common.path.RichFile
-import common.path.Path
+import common.rich.path.RichFile
+import common.rich.path.RichPath
 import models.Image
 import java.io.File
 

@@ -2,8 +2,8 @@ package models
 
 import java.io.File
 
-import common.path.Directory
-import common.path.RichFile._
+import common.rich.path.Directory
+import common.rich.path.RichFile._
 import play.api.libs.json.JsArray
 /**
   * Handles parsing mp3 data

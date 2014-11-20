@@ -2,14 +2,14 @@ package controllers
 
 import java.io.File
 import org.joda.time.DateTime
-import common.path.{ Directory, Path }
-import common.path.RichFile._
+import common.rich.path.{ Directory, RichPath }
+import common.rich.path.RichFile._
 import play.api.mvc.{ Action, Controller }
 import org.joda.time.format.DateTimeFormat
 import akka.actor.ActorDSL
 import models.KillableActors
 import common.LazyActor
-import common.path.RichFile
+import common.rich.path.RichFile
 import play.api.libs.json.Json
 import play.api.libs.json.JsValue
 import common.Jsoner._

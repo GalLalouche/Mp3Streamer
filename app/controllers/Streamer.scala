@@ -6,7 +6,7 @@ import java.net.URLDecoder
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import common.path.Directory
+import common.rich.path.Directory
 import decoders.DbPowerampCodec
 import decoders.Mp3Decoder
 import models.Decoder

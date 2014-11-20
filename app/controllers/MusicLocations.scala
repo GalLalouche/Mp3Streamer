@@ -1,6 +1,6 @@
 package controllers
 
-import common.path.Directory
+import common.rich.path.Directory
 
 trait MusicLocations {
 	val dir = Directory("d:/media/music")
