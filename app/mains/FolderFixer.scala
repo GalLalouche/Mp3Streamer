@@ -2,12 +2,30 @@ package mains
 
 import scala.sys.process.Process
 import DownloadCover.CoverException
+import common.rich.path.Directory
+import common.rich.path.RichFile._
+import common.rich.RichT._
+import models.Song
+import controllers.MusicLocations
 
 // downloads from zi internet!
 object FolderFixer extends App {
+	def findArtistFolder(folder: Directory): Option[Directory] = {
+		val artist = folder
+			.files
+			.filter(f => Set("mp3", "flac").contains(f.extension))
+			.head
+			.mapTo(Song.apply)
+			.artist
+		Directory("d:/media/music")
+			.deepDirs
+			.find(_.name == artist)
+	}
 	try {
 		val folder: String = args(0)
 		val newFolder = FixLabels.fix(folder)
+		for (dir <- findArtistFolder(Directory(newFolder)))
+			new ProcessBuilder("explorer.exe", dir.getAbsolutePath()).start
 		try
 			DownloadCover.main(List(newFolder).toArray)
 		catch {
