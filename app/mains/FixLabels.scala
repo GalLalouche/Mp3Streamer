@@ -57,10 +57,12 @@ object FixLabels extends App with Debug {
 	}
 
 	// returns the path of the output folder
-	def fix(folder: String): String = {
-		val dir = Directory(folder).cloneDir()
+	def fix(dir: Directory) = {
 		if (dir.files.filter(_.extension == "flac").size == 1 && dir.files.filter(_.extension == "cue").size == 1)
 			throw new IllegalArgumentException("Folder contains an unsplit flac file; please split the file and try again.")
+		dir
+			.files
+			.foreach(_.setWritable(true))
 		dir
 			.files
 			.filter(_.extension == "m3u")
@@ -68,7 +70,13 @@ object FixLabels extends App with Debug {
 		val files = dir
 			.files
 			.filter(f => Set("mp3", "flac").contains(f.extension))
-		require(files.nonEmpty, "Could not find any songs - could it be hidden in a subfolder?")
+		require(files.nonEmpty, s"Could not find any songs in $dir - could it be hidden in a subfolder?")
+		val firstSong = Song(files(0))
+		val year = try
+			retrieveYear(firstSong)
+		catch {
+			case e: Exception => throw new Exception("Could not retrieve the year", e)
+		}
 		val hasRealDiscNumber = files
 			.map(AudioFileIO
 				.read(_)
@@ -76,16 +84,12 @@ object FixLabels extends App with Debug {
 				.getFirst(FieldKey.DISC_NO))
 			.toSet
 			.size > 1
-		val firstSong = Song(files(0))
 		files foreach (fixFile(_, hasRealDiscNumber))
 		files foreach rename
-		val year = try { retrieveYear(firstSong) } catch { case e: Exception => throw new Exception("Could not retrieve the year", e) }
 		try {
-			val renamedFolder = new File(dir.parent, "%s %s".format(year, fixString(firstSong.album)))
+			val renamedFolder = new File(dir.parent, s"$year ${firstSong.album}")
 			dir.dir renameTo renamedFolder
 			renamedFolder getAbsolutePath
 		} catch { case e: Exception => throw new Exception("could not rename the folder", e) }
 	}
-
-	println(fixString("Living on A Nightmare"))
 }

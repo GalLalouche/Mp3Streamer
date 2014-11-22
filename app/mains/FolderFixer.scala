@@ -7,6 +7,7 @@ import common.rich.path.RichFile._
 import common.rich.RichT._
 import models.Song
 import controllers.MusicLocations
+import java.io.File
 
 // downloads from zi internet!
 object FolderFixer extends App {
@@ -22,12 +23,21 @@ object FolderFixer extends App {
 			.find(_.name == artist)
 	}
 	try {
-		val folder: String = args(0)
-		val newFolder = FixLabels.fix(folder)
-		for (dir <- findArtistFolder(Directory(newFolder)))
+		val folder = Directory(args(0))
+		val location = findArtistFolder(folder)
+		println("copying directory")
+		val clone = folder.cloneDir()
+		val outputDir: Directory = location
+			.map(new File(_, clone.name))
+			.map { e => clone.dir.renameTo(e); e }
+			.map(Directory.apply)
+			.getOrElse(clone)
+		println("fixing labels")
+		val newPath = FixLabels fix outputDir
+		for (dir <- location)
 			new ProcessBuilder("explorer.exe", dir.getAbsolutePath()).start
 		try
-			DownloadCover.main(List(newFolder).toArray)
+			DownloadCover.main(List(newPath).toArray)
 		catch {
 			case CoverException(text) =>
 				println("Could not auto-download picture :( press any key to open browser")
