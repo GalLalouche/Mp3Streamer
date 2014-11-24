@@ -6,26 +6,25 @@ private[mains] object StringFixer {
 	private val lowerCaseWordsList = List("a", "ain't", "am", "an", "and", "are", "as", "at", "be", "but", "by", "can", "can't", "cannot",
 		"do", "don't", "for", "from", "had", "has", "have", "her", "his", "in", "into", "is", "it", "it's", "its",
 		"me", "mine", "my", "not", "of", "on", "or", "our", "so", "should", "that", "the", "their", "them", "these",
-		"this", "those", "did", "to", "too", "up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't",
+		"this", "through", "those", "did", "to", "too", "up", "was", "were", "will", "with", "without", "won't", "would", "wouldn't",
 		"your", "upon", "shall", "may", "there", "ov")
 	private val lowerCaseWords = lowerCaseWordsList.toSet
 	private val delimiters = """[ ()-:/\\]"""
-	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted)
+	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted) // finds repeats
 		println(lowerCaseWords.toList.sorted.map(""""%s"""".format(_)))
 
-	private def pascalCaseWord(w: String): String = w(0).toUpper + w.drop(1)
-	
+	private def pascalCaseWord(w: String): String = w.head.toUpper + w.tail.toLowerCase
+
 	private def fixWord(w: String): String = w match {
 		case e if e matches delimiters => e
 		case "a" => "a"
 		case "i" | "I" => "I"
-		case s if s matches "[IVXivx]+" => s toUpperCase // roman numbers
+		case s if s matches "[IVXMLivxml]+" => s toUpperCase // roman numbers
 		case _ => if (lowerCaseWords(w.toLowerCase)) w.toLowerCase else pascalCaseWord(w) // everything else
 	}
-	
+
 	def apply(str: String): String = {
-		val split = str
-			.splitWithDelimiters(delimiters)
-		(pascalCaseWord(split.head) :: (split drop 1 map fixWord toList)) mkString ""
+		val split = str.splitWithDelimiters(delimiters).toList
+		(pascalCaseWord(split.head) :: (split.tail map fixWord)) mkString ""
 	}
 }
