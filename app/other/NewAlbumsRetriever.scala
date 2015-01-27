@@ -9,7 +9,7 @@ class NewAlbumsRetriever(meta: MetadataRetriever, music: MusicFinder, ignoredArt
 	def findNewAlbums: Iterator[Album] = {
 		val lastAlbums = music.getAlbums
 			.toSeq
-			.groupBy(_.artist)
+			.groupBy(_.artist.toLowerCase)
 			.map(e => e._1.toLowerCase -> e._2.toVector
 				.sortBy(_.year)
 				.map(_.year)
