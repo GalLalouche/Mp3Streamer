@@ -11,7 +11,11 @@ trait MetadataRetriever {
 
 	protected implicit def richJson(js: JsValue) = new {
 		def asString: String = js.asInstanceOf[JsString].value
-		def asJsArray: JsArray = js.asInstanceOf[JsArray]
+		def asJsArray: JsArray = try
+			js.asInstanceOf[JsArray]
+		catch {
+			case e: ClassCastException => println("js: " + js + " is not an JsonArray"); throw e
+		}
 		def has(str: String) = {
 			val $ = js \ str
 			false == ($ == JsNull || $.isInstanceOf[JsUndefined]) &&
@@ -25,7 +29,12 @@ trait MetadataRetriever {
 			.map(jsonToAlbum(artist, _))
 			.collect { case Some(a) => a }
 		catch {
-		case e: Exception => println("Could not get data for artist: " + artist); Thread sleep 10000; Iterator.empty }
+			case e: NoSuchElementException => println(e.getMessage()); Iterator.empty
+			case e: Exception =>
+				println("Could not get data for artist: " + artist + ". trying again in 10 seconds");
+				Thread sleep 10000
+				println("Retrying artist: " + artist)
+				getAlbums(artist)
 		} finally {
 			WS.resetClient // this is needed for the application to die
 			Thread sleep 1000 // doesn't overload the server

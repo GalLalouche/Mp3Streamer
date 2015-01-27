@@ -23,21 +23,25 @@ object MusicBrainzRetriever extends MetadataRetriever {
 		}
 	}
 	private val primaryTypes = Set("Album", "EP", "Live")
-	override protected def getAlbumsJson(artistName: String) = {
-		val artist = (getJson("artist/", "query" -> artistName) \ "artist").asInstanceOf[JsArray].value
+	override protected def getAlbumsJson(artistName: String): JsArray = {
+		val artists = (getJson("artist/", "query" -> artistName) \ "artists")
+		if (artists.isInstanceOf[JsUndefined]) {
+			println(s"Result was JSUndefined $artistName... sleeping for 5 seconds and trying again")
+			Thread sleep 5000
+			return getAlbumsJson(artistName)
+		}
+		val artist = (getJson("artist/", "query" -> artistName) \ "artists").asJsArray.value
 			.filter(_ has "type")
 			.head
-		if("100" != (artist \ "score").asString)
-			throw new Exception("failed to get 100 match for artist " + artistName)
+		if ("100" != (artist \ "score").asString)
+			throw new NoSuchElementException("failed to get 100 match for artist " + artistName)
 		val $ = try {
 			getJson("release-group",
 				"artist" -> (artist \ "id" asString),
-				"limit" -> "100") \ "release-groups" asJsArray;
+				"limit" -> "100") \ "release-groups" asJsArray
 		} catch {
 			case e: Exception => println("Failed to get artist with id = " + artist \ "id"); throw e
 		}
-		new JsArray($.value.take(1))
-
 		new JsArray($.value
 			.filter(_ has "first-release-date")
 			.filter(_ has "primary-type")
@@ -56,7 +60,7 @@ object MusicBrainzRetriever extends MetadataRetriever {
 			val result = Await.result(f, 30 seconds).json
 			result
 		} catch {
-			case e: TimeoutException => println("Failed to retrieve data for " + other.toSeq); throw e
+			case e: TimeoutException => println("Timed out in retrieving data for " + other.toSeq); throw e
 		}
 	}
 
