@@ -6,16 +6,19 @@ import java.util.concurrent.TimeoutException
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
+import common.CompositeDateFormat
 import models.Album
-import play.api.libs.json.{ JsArray, JsUndefined, JsValue }
+import play.api.libs.json._
 import play.api.libs.ws.WS
 
 object MusicBrainzRetriever extends MetadataRetriever {
-	private val sf = new SimpleDateFormat("yyyy-MM-dd")
+	private val sf = CompositeDateFormat("yyyy-MM-dd", "yyyy-MM", "yyyy")
+	private val simplerSf = new SimpleDateFormat("yyyy-MM")
 	override protected def jsonToAlbum(artist: String, js: JsValue): Option[Album] = {
+		val dateString = js \ "first-release-date" asString;
 		try {
-			val date = sf.parse(js \ "first-release-date" asString)
-			if (date.getTime > System.currentTimeMillis)
+			val date = sf.parse(dateString)
+			if (date.getMillis > System.currentTimeMillis)
 				None // album isn't out yet, trolls :\
 			else
 				Some(Album(artist, date.getYear, js \ "title" asString))
