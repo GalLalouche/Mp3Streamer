@@ -1,11 +1,11 @@
 package mains
 
 import java.io.File
-
 import common.rich.path.RichFile.richFile
 import controllers.MusicLocations
 import models.MusicFinder
 import other.{ MusicBrainzRetriever, NewAlbumsRetriever }
+import common.rich.path.Directory
 
 object FindNewAlbums {
 	def main(args: Array[String]) = {
@@ -18,7 +18,7 @@ object FindNewAlbums {
 			new MusicFinder with MusicLocations {
 				override val subDirs = List("Rock", "Metal")
 			}, ignoredBands)
-		val f = new File("C:/ProcessList.txt")
+		val f = Directory("C:/").addFile("albums.txt")
 		println($.findNewAlbums.foreach(a => {
 			println(a)
 			f appendLine a.toString
