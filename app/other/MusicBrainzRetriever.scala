@@ -1,23 +1,24 @@
 package other
 
+import java.text.SimpleDateFormat
 import java.util.concurrent.TimeoutException
+
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
-import scala.util.Try
-import common.rich.primitives.RichString._
+
 import models.Album
-import play.api.libs.json._
+import play.api.libs.json.{ JsArray, JsUndefined, JsValue }
 import play.api.libs.ws.WS
-import java.text.SimpleDateFormat
-import common.Jsoner._
 
 object MusicBrainzRetriever extends MetadataRetriever {
 	private val sf = new SimpleDateFormat("yyyy-MM-dd")
 	override protected def jsonToAlbum(artist: String, js: JsValue): Option[Album] = {
 		try {
-			val albumName = js \ "title" asString;
-			val year = (js \ "first-release-date" asString).captureWith(".*(\\d{4}).*".r).toInt
-			Some(Album(artist, year, albumName))
+			val date = sf.parse(js \ "first-release-date" asString)
+			if (date.getTime > System.currentTimeMillis)
+				None // album isn't out yet, trolls :\
+			else
+				Some(Album(artist, date.getYear, js \ "title" asString))
 		} catch {
 			case e: Exception => println("Failed to parse js " + js); throw e
 		}
@@ -65,6 +66,6 @@ object MusicBrainzRetriever extends MetadataRetriever {
 	}
 
 	def main(args: Array[String]) {
-		println(getAlbums("finntroll").toList mkString "\n")
+		println(getAlbums("amaranthe").toList mkString "\n")
 	}
 }
