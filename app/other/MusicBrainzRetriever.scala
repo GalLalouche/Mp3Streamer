@@ -1,5 +1,6 @@
 package other
 
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeoutException
 
@@ -7,11 +8,20 @@ import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 import common.CompositeDateFormat
+import common.rich.RichT.richT
+import common.rich.path.RichFile.richFile
 import models.Album
-import play.api.libs.json._
+import play.api.libs.json.{JsArray, JsValue}
 import play.api.libs.ws.WS
 
 object MusicBrainzRetriever extends MetadataRetriever {
+	private val artists = this.getClass.getResource("artists")
+		.getFile
+		.mapTo(new File(_))
+		.lines
+		.map(_.split("=").mapTo(e => e(0) -> e(1)))
+		.toMap
+
 	private val sf = CompositeDateFormat("yyyy-MM-dd", "yyyy-MM", "yyyy")
 	private val simplerSf = new SimpleDateFormat("yyyy-MM")
 	override protected def jsonToAlbum(artist: String, js: JsValue): Option[Album] = {
@@ -28,23 +38,20 @@ object MusicBrainzRetriever extends MetadataRetriever {
 	}
 	private val primaryTypes = Set("Album", "EP", "Live")
 	override protected def getAlbumsJson(artistName: String): JsArray = {
-		val artists = (getJson("artist/", "query" -> artistName) \ "artists")
-		if (artists.isInstanceOf[JsUndefined]) {
-			println(s"Result was JSUndefined $artistName... sleeping for 5 seconds and trying again")
-			Thread sleep 5000
-			return getAlbumsJson(artistName)
+		val artistId = artists.get(artistName.toLowerCase).getOrElse {
+			val $ = (getJson("artist/", "query" -> artistName) \ "artists").asJsArray.value
+				.filter(_ has "type")
+				.head
+			if ("100" != ($ \ "score").asString)
+				throw new NoSuchElementException("failed to get 100 match for artist " + artistName)
+			$ \ "id" asString
 		}
-		val artist = (getJson("artist/", "query" -> artistName) \ "artists").asJsArray.value
-			.filter(_ has "type")
-			.head
-		if ("100" != (artist \ "score").asString)
-			throw new NoSuchElementException("failed to get 100 match for artist " + artistName)
 		val $ = try {
 			getJson("release-group",
-				"artist" -> (artist \ "id" asString),
+				"artist" -> (artistId),
 				"limit" -> "100") \ "release-groups" asJsArray
 		} catch {
-			case e: Exception => println("Failed to get artist with id = " + artist \ "id"); throw e
+			case e: Exception => println("Failed to get artist with id = " + artistId); throw e
 		}
 		new JsArray($.value
 			.filter(_ has "first-release-date")
