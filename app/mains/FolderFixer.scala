@@ -1,17 +1,22 @@
 package mains
 
-import scala.sys.process.Process
-import DownloadCover.CoverException
-import common.rich.path.Directory
-import common.rich.path.RichFile._
-import common.rich.RichT._
-import models.Song
-import controllers.MusicLocations
 import java.io.File
+import java.nio.file.Files
+import java.util.concurrent.{ Callable, Executors }
+
+import scala.sys.process.Process
+
+import DownloadCover.CoverException
+import common.rich.RichT.richT
+import common.rich.path.Directory
+import common.rich.path.RichFile.richFile
+import common.rich.path.RichPath.poorPath
+import models.Song
 
 // downloads from zi internet!
 object FolderFixer extends App {
-	def findArtistFolder(folder: Directory): Option[Directory] = {
+	private def findArtistFolder(folder: Directory): Option[Directory] = {
+		println("Searching for artist folder")
 		val artist = folder
 			.files
 			.filter(f => Set("mp3", "flac").contains(f.extension))
@@ -20,33 +25,42 @@ object FolderFixer extends App {
 			.artist
 		Directory("d:/media/music")
 			.deepDirs
-			.find(_.name == artist)
+			.find(_.name.toLowerCase == artist.toLowerCase)
 	}
-	try {
-		val folder = Directory(args(0))
-		val location = findArtistFolder(folder)
-		println("copying directory")
-		val clone = folder.cloneDir()
-		val outputDir: Directory = location
-			.map(new File(_, clone.name))
-			.map { e => clone.dir.renameTo(e); e }
-			.map(Directory.apply)
-			.getOrElse(clone)
-		println("fixing labels")
-		val newPath = FixLabels fix outputDir
-		for (dir <- location)
-			new ProcessBuilder("explorer.exe", dir.getAbsolutePath()).start
+	private def moveDirectory(location: java.util.concurrent.Future[Option[common.rich.path.Directory]], newPath: String) {
+		if (location.isDone() == false)
+			println("Waiting on artist find...")
+		for (d <- location.get()) {
+			val newFile = new File(newPath)
+			val moved = Files.move(newFile.toPath, new File(d, newFile.name).toPath)
+			new ProcessBuilder("explorer.exe", d.getAbsolutePath).start
+		}
+	}
+
+	private def downloadCover(newPath: String) {
 		try
 			DownloadCover.main(List(newPath).toArray)
 		catch {
 			case CoverException(text) =>
-				println("Could not auto-download picture :( press any key to open browser")
-				readLine
+				println("Could not auto-download picture :( opening browser")
 				Process("""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe "https://www.google.com/search?espv=2&biw=1920&bih=955&tbs=isz%3Aex%2Ciszw%3A500%2Ciszh%3A500&tbm=isch&sa=1&q=lastfm """ + text).!!
 		}
+	}
+	private implicit def richCall[T](f: () => T): Callable[T] = new Callable[T] { override def call: T = f() }
+	private val executors = Executors newFixedThreadPool 1
+	try {
+		val folder = Directory(args(0))
+		val location = executors.submit(() => findArtistFolder(folder))
+		println("fixing directory")
+		val newPath = FixLabels fix folder.cloneDir()
+		downloadCover(newPath)
+		moveDirectory(location, newPath)
+		println("--Done!--")
 	} catch {
 		case e: Throwable =>
 			e.printStackTrace()
 			readLine
-	}
+	} finally
+		executors.shutdownNow
+
 }
