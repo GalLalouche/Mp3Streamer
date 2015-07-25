@@ -18,7 +18,7 @@ object FindNewAlbums {
 			new MusicFinder with MusicLocations {
 				override val subDirs = List("Rock", "Metal")
 			}, ignoredBands)
-		val f = Directory("C:/").addFile("albums.txt")
+		val f = Directory("C:/").addFile("albums.txt").clear()
 		println($.findNewAlbums.foreach(a => {
 			println(a)
 			f appendLine a.toString
