@@ -11,6 +11,7 @@
             <fileset dir="C:/dev/web/play-2.1.2/Mp3Streamer/.target">
 				<include name="common/"/>
 				<include name="models/"/>
+				<include name="decoders/"/>
 				<exclude name="models/MusicFinderTest.class"/>
 				<include name="mains/"/>
 				<include name="loggers/"/>
