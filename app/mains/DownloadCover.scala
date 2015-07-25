@@ -12,7 +12,7 @@ import play.api.libs.json.JsObject
 
 // downloads from zi internet!
 object DownloadCover extends App with Debug {
-	case class CoverException(str: String) extends Exception
+	case class CoverException(str: String, e: Exception) extends Exception(e)
 	val folder = args(0)//"""D:\Incoming\Bittorrent\Completed\Music\Dissection - Discography [1990-2006]\2006 - Reinkaos 320kbps"""
 	def getRandomIp(): String = {
 		val r = new Random
@@ -42,6 +42,6 @@ object DownloadCover extends App with Debug {
 	println("Downloading from url " + imageUrl)
 	val f = Image(imageUrl).saveAsJpeg(Directory(folder) \ "folder.jpg")
 	} catch {
-		case e: Exception => throw CoverException(album)
+		case e: Exception => throw CoverException(album, e)
 	} 
 }

@@ -87,7 +87,7 @@ object FixLabels extends App with Debug {
 		files foreach (fixFile(_, hasRealDiscNumber))
 		files foreach rename
 		try {
-			val renamedFolder = new File(dir.parent, s"$year ${firstSong.album}")
+			val renamedFolder = new File(dir.parent, StringFixer apply s"$year ${firstSong.album}")
 			dir.dir renameTo renamedFolder
 			renamedFolder getAbsolutePath
 		} catch { case e: Exception => throw new Exception("could not rename the folder", e) }
