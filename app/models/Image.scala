@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage
 import javax.imageio.stream.MemoryCacheImageOutputStream
 import java.io.FileOutputStream
 import java.awt.Color
+import java.nio.file.Files
 
 class Image(imageFile: File) {
 	def saveAsJpeg(outFile: File): File = {
@@ -26,7 +27,7 @@ object Image {
 	def apply(url: String): Image = {
 		val f = File.createTempFile("image", "tempfile")
 		f.deleteOnExit
-		org.apache.commons.io.IOUtils.copy(new URL(url).openConnection.getInputStream, new FileOutputStream(f))
+		Files.copy(new URL(url).openConnection.getInputStream, f.toPath)
 		new Image(f)
 	}
 	def apply(f: File): Image = new Image(f)
