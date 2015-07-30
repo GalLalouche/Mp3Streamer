@@ -26,7 +26,8 @@ object ApplicationBuild extends Build {
 		EclipseKeys.withSource := true,
 		resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
 		resolvers += "Maven Repository" at "http://repo1.maven.org/maven2/",
-		resolvers += "Apache Snapshot Repository" at "http://repository.apache.org/snapshots/"
+		resolvers += "Apache Snapshot Repository" at "http://repository.apache.org/snapshots/",
+		javaOptions ++= Seq("-Xmx2048M", "-Xms1024", "-XX:MaxPermSize=1024M")
 	)
 
 }
