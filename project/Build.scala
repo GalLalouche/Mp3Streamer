@@ -7,6 +7,8 @@ object ApplicationBuild extends Build {
 	val appName = "Mp3Streamer"
 	val appVersion = "1.0-SNAPSHOT"
 
+	
+	
 	val appDependencies = Seq(
 		// Add your project dependencies here,
 		jdbc,
@@ -17,7 +19,8 @@ object ApplicationBuild extends Build {
 		"org.mockito" % "mockito-all" % "1.9.5" % "test",
 		"com.typesafe.akka" %% "akka-actor" % "[2.0,)",
 		"com.typesafe.akka" %% "akka-testkit" % "[2.0,)" % "test",
-		"org.apache.commons" % "commons-io" % "[1.3.2, )"
+		"org.apache.commons" % "commons-io" % "[1.3.2, )",
+		"org.me" % "scalacommon_2.10" % "1.0"
 	)
 
 	val main = play.Project(appName, appVersion, appDependencies).settings(
@@ -27,6 +30,7 @@ object ApplicationBuild extends Build {
 		resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
 		resolvers += "Maven Repository" at "http://repo1.maven.org/maven2/",
 		resolvers += "Apache Snapshot Repository" at "http://repository.apache.org/snapshots/",
+		resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns),
 		javaOptions ++= Seq("-Xmx2048M", "-Xms1024", "-XX:MaxPermSize=1024M")
 	)
 
