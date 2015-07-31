@@ -31,7 +31,7 @@ object ApplicationBuild extends Build {
 		resolvers += "Maven Repository" at "http://repo1.maven.org/maven2/",
 		resolvers += "Apache Snapshot Repository" at "http://repository.apache.org/snapshots/",
 		resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns),
-		javaOptions ++= Seq("-Xmx2048M", "-Xms1024", "-XX:MaxPermSize=1024M")
+		javaOptions ++= Seq("-Xmx4G", "-Xms1024", "-XX:MaxPermSize=4G")
 	)
 
 }
