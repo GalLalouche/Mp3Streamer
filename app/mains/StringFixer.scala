@@ -8,7 +8,7 @@ private[mains] object StringFixer {
 		"has", "have", "her", "his", "in", "into", "is", "it", "it's", "its", "me", "mine", "my", "not",
 		"of", "on", "or", "our", "ours", "theirs", "so", "should", "that", "the", "their", "them", "these",
 		"this", "through", "those", "did", "to", "too", "up", "was", "were", "will", "with", "without", "won't",
-		"would", "wouldn't", "your", "upon", "shall", "may", "there", "ov")
+		"would", "wouldn't", "your", "upon", "shall", "may", "there", "ov", "than", "then")
 	private val lowerCaseWords = lowerCaseWordsList.toSet
 	private val delimiters = """[ ()-:/\\]"""
 	if (lowerCaseWords.toList.sorted != lowerCaseWordsList.sorted) // finds repeats

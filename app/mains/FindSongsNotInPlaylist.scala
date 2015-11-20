@@ -20,7 +20,7 @@ object FindSongsNotInPlaylist extends App with Debug {
 	}
 	timed(logger = ConsoleLogger) {
 
-		val playlistSongs = new File((real.dir / "Playlist.m3u").path)
+		val playlistSongs = real.dir.addFile("playlist.m3u")
 			.lines
 			.map(real.dir.path + "/" + _)
 			.map(_.toLowerCase.replaceAll("\\\\", "/"))
