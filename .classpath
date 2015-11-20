@@ -112,5 +112,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/dev/web/play-2.1.2/repository/cache/org.apache.commons/commons-imaging/jars/commons-imaging-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="C:/dev/git/scala-common/ScalaCommon/ScalaCommon.jar" sourcepath="C:/dev/git/metrics/src"/>
+	<classpathentry kind="lib" path="C:/dev/web/play-2.1.2/repository/cache/org.jsoup/jsoup/jars/jsoup-1.8.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
