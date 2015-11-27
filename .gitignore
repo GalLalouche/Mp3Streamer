@@ -20,3 +20,4 @@ bin/**
 /.target
 *QuickMain*
 jPlayer
+.cache*
