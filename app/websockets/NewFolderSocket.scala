@@ -8,6 +8,8 @@ import common.rich.path.Directory
   */
 object NewFolderSocket extends WebSocketController with Debug {
 	override def receive = {
-		case x: Directory if (x.files.isEmpty == false) => out._2.push(x.path)
+		case x: Directory if (x.files.isEmpty == false) =>
+			println("Found new folder " + x)
+			out._2.push(x.path)
 	}
 }

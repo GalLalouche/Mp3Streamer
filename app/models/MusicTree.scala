@@ -34,7 +34,7 @@ object MusicTree {
 	def jsonify(tree: ValueTree[File]): JsObject = {
 		import common.rich.path.RichPath._
 		tree match {
-			case _ if (tree.isLeaf) =>
+			case _ if (tree.isLeaf && tree.value.exists) =>
 				Json obj (
 					"data" -> Json.obj(
 						"title" -> tree.value.name,
