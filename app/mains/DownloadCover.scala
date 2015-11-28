@@ -3,18 +3,16 @@ package mains
 import java.io.File
 import java.net.URL
 import java.nio.file.{ Files, StandardCopyOption }
-
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.swing.Dialog
-
 import org.jsoup.Jsoup
-
 import common.Debug
 import common.rich.path.Directory
 import common.rich.path.RichFile.{ poorFile, richFile }
 import common.rich.primitives.RichString.richString
 import javax.swing.ImageIcon
 import models.Song
+import java.nio.charset.MalformedInputException
 
 // Uses google image search (not API, actual site) to find images
 // Then displays the images for the user to select a good picture
@@ -83,10 +81,24 @@ object DownloadCover extends Debug {
 	}
 
 	private def downloadFile(fileToDownload: String): Option[File] = {
+		/*
+		 * Tries to get the bytes with a list of encodings
+		 * @param encodings The list of encodings to attempt 
+		 */
+		def getBytes(encodings: Seq[String]): Array[Byte] = {
+			assert(encodings.nonEmpty, "Exhausted all encodings")
+			try {
+				scala.io.Source.fromInputStream(createConnection(fileToDownload).getInputStream, encodings.head)
+					.map(_.toByte)
+					.toArray;
+			} catch {
+				case e: MalformedInputException =>
+					e.printStackTrace()
+					getBytes(encodings.tail)
+			}
+		}
 		try {
-			val bytes = scala.io.Source.fromInputStream(createConnection(fileToDownload).getInputStream, "UTF-8")
-				.map(_.toByte)
-				.toArray;
+			val bytes = getBytes(List("UTF-8", "UTF-16", "ISO-8859-1", "Cp1252"))
 			val out = tempFolder
 				.addSubDir("images")
 				.addFile(System.currentTimeMillis() + "img.jpg")
@@ -96,6 +108,7 @@ object DownloadCover extends Debug {
 		} catch {
 			case e: Exception =>
 				println(s"Could not download $fileToDownload. Error: ${e.getMessage}")
+				throw e
 				None
 		}
 	}
