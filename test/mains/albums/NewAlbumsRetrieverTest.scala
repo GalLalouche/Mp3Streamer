@@ -1,4 +1,4 @@
-package other
+package mains.albums
 
 import org.junit.runner.RunWith
 import org.scalatest.FreeSpec
@@ -12,13 +12,14 @@ import models.Song
 import models.Album
 import org.mockito.Matchers._
 import scala.collection.mutable.MutableList
+import scala.Iterator
 
 @RunWith(classOf[JUnitRunner])
-class NewAlbumsRetrieverTest extends FreeSpec with MockitoSugar with ShouldMatchers with OneInstancePerTest {
+private class NewAlbumsRetrieverTest extends FreeSpec with MockitoSugar with ShouldMatchers with OneInstancePerTest {
 	val metadata = mock[MetadataRetriever]
 	val finder = mock[MusicFinder]
 	val ignoredArtists = new MutableList[String]()
-	val $ = new NewAlbumsRetriever(metadata, finder, ignoredArtists)
+	private val $ = new NewAlbumsRetriever(metadata, finder, ignoredArtists)
 
 	"Find new albums by artist should" - {
 		"throw an exception if artist isn't found" in {
