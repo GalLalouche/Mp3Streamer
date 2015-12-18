@@ -1,16 +1,17 @@
 package mains.albums
 
 import java.io.File
+
+import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
 import controllers.MusicLocations
 import models.MusicFinder
-import common.rich.path.Directory
 
 object FindNewAlbums {
-	def main(args: Array[String]) = {
-		val ignoredBands = new File(getClass()
+	def main(args: Array[String]) {
+		val ignoredBands = new File(getClass
 			.getResource("ignoredBands")
-			.getFile())
+			.getFile)
 			.lines
 			.toSeq
 		val $ = new NewAlbumsRetriever(MusicBrainzRetriever,

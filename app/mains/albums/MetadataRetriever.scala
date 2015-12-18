@@ -1,12 +1,13 @@
 package mains.albums
 
+import common.rich.collections.RichIterator._
 import models.Album
 import play.api.libs.json._
 import play.api.libs.ws.WS
 
 /**
- * Retrieves metadata about a band from some API 
- */
+  * Retrieves metadata about a band from some API
+  */
 trait MetadataRetriever {
 	protected def getAlbumsJson(artist: String): JsArray
 
@@ -25,21 +26,28 @@ trait MetadataRetriever {
 				($.isInstanceOf[JsString] == false || $.asInstanceOf[JsString].value != "")
 		}
 	}
-	
+
 	/** Gets all albums for a given artist */
-	def getAlbums(artist: String): Iterator[Album] =
+	def getAlbums(artist: String, tryNumber: Int = 0): Iterator[Album] =
 		try getAlbumsJson(artist)
 			.value
 			.iterator
-			.map(jsonToAlbum(artist, _))
-			.collect { case Some(a) => a }
+			.mapDefined(jsonToAlbum(artist, _))
 		catch {
-			case e: NoSuchElementException => println(e.getMessage()); Iterator.empty
+			case e: NoSuchElementException =>
+				println(e.getMessage)
+				Iterator.empty
 			case e: Exception =>
-				println("Could not get data for artist: " + artist + ". trying again in 10 seconds");
-				Thread sleep 10000
-				println("Retrying artist: " + artist)
-				getAlbums(artist)
+				if (tryNumber < 5) {
+					println("Could not get data for artist: " + artist + ". trying again in 10 seconds");
+					Thread sleep 10000
+					println("Retrying artist: " + artist)
+					getAlbums(artist, tryNumber + 1)
+				} else {
+					println("Could not get data for artist: " + artist + ". giving up :(");
+					Iterator.empty
+				}
+
 		} finally {
 			WS.resetClient // this is needed for the application to die
 			Thread sleep 1000 // doesn't overload the server

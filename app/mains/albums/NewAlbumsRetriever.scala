@@ -1,8 +1,6 @@
 package mains.albums
 
-import models.MusicFinder
-import models.Album
-import common.rich.RichAll._
+import models.{ Album, MusicFinder }
 
 private class NewAlbumsRetriever(meta: MetadataRetriever, music: MusicFinder, ignoredArtists: Seq[String]) {
 	var lastArtist: Option[String] = None
@@ -17,7 +15,7 @@ private class NewAlbumsRetriever(meta: MetadataRetriever, music: MusicFinder, ig
 			).toMap
 		lastAlbums.keys.iterator
 			.filterNot(ignoredArtists.contains)
-			.flatMap(meta.getAlbums)
+			.flatMap(meta.getAlbums(_)) // has default argument, can't bind by name
 			.filter(e =>
 				if (lastAlbums(e.artist.toLowerCase) < e.year)
 					true

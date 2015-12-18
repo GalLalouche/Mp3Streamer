@@ -3,8 +3,10 @@ package mains.albums
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeoutException
+
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
+
 import common.CompositeDateFormat
 import common.rich.RichT.richT
 import common.rich.path.RichFile.richFile
@@ -14,7 +16,7 @@ import play.api.libs.ws.WS
 
 private object MusicBrainzRetriever extends MetadataRetriever {
 	private val reconRepository: Map[String, String] =
-		new File(getClass().getResource("musicbrainz-recons").getFile())
+		new File(getClass.getResource("musicbrainz-recons").getFile)
 			.lines
 			.map(_.split('=').mapTo(e => e(0) -> e(1)))
 			.toMap
@@ -63,7 +65,7 @@ private object MusicBrainzRetriever extends MetadataRetriever {
 		val ws = WS.url("http://musicbrainz.org/ws/2/" + method)
 			.withQueryString("fmt" -> "json").withQueryString(other: _*)
 			.withHeaders("User-Agent" -> "Metadata Retriever")
-		val f = ws.get()
+		val f = ws.get
 		try {
 			val result = Await.result(f, 30 seconds).json
 			result
