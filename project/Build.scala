@@ -22,7 +22,9 @@ object ApplicationBuild extends Build {
 		"org.apache.commons" % "commons-io" % "[1.3.2, )",
 		"org.me" % "scalacommon_2.10" % "1.0",
 		"org.jsoup" % "jsoup" % "[1.7.2,)",
-		"org.scala-lang" % "scala-swing" % "[2.10, )"
+		"org.scala-lang" % "scala-swing" % "[2.10, )",
+		"org.scala-lang" % "scala-swing" % "[2.10, )",
+		"io.reactivex" %% "rxscala" % "[0.25, )"
 	)
 
 	val main = play.Project(appName, appVersion, appDependencies).settings(

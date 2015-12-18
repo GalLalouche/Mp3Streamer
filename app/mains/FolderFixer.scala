@@ -6,10 +6,11 @@ import java.util.concurrent.{ Callable, Executors, Future }
 import scala.sys.process.Process
 import common.rich.RichT.richT
 import common.rich.path.Directory
-import common.rich.path.RichFile.richFile
 import common.rich.path.RichPath.poorPath
+import common.rich.path.RichFile.richFile
 import models.Song
-import mains.DownloadCover.CoverException
+import mains.cover.DownloadCover
+import mains.cover.DownloadCover.CoverException
 
 object FolderFixer {
 	private def findArtistFolder(artist: String): Option[Directory] = {
