@@ -1,10 +1,9 @@
-package mains
+package mains.albums
 
 import java.io.File
 import common.rich.path.RichFile.richFile
 import controllers.MusicLocations
 import models.MusicFinder
-import other.{ MusicBrainzRetriever, NewAlbumsRetriever }
 import common.rich.path.Directory
 
 object FindNewAlbums {

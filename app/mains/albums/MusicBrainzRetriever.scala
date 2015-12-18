@@ -1,26 +1,23 @@
-package other
+package mains.albums
 
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeoutException
-
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
-
 import common.CompositeDateFormat
 import common.rich.RichT.richT
 import common.rich.path.RichFile.richFile
 import models.Album
-import play.api.libs.json.{JsArray, JsValue}
+import play.api.libs.json.{ JsArray, JsValue }
 import play.api.libs.ws.WS
 
-object MusicBrainzRetriever extends MetadataRetriever {
-	private val artists = this.getClass.getResource("artists")
-		.getFile
-		.mapTo(new File(_))
-		.lines
-		.map(_.split("=").mapTo(e => e(0) -> e(1)))
-		.toMap
+private object MusicBrainzRetriever extends MetadataRetriever {
+	private val reconRepository: Map[String, String] =
+		new File(getClass().getResource("musicbrainz-recons").getFile())
+			.lines
+			.map(_.split('=').mapTo(e => e(0) -> e(1)))
+			.toMap
 
 	private val sf = CompositeDateFormat("yyyy-MM-dd", "yyyy-MM", "yyyy")
 	private val simplerSf = new SimpleDateFormat("yyyy-MM")
@@ -38,7 +35,7 @@ object MusicBrainzRetriever extends MetadataRetriever {
 	}
 	private val primaryTypes = Set("Album", "EP", "Live")
 	override protected def getAlbumsJson(artistName: String): JsArray = {
-		val artistId = artists.get(artistName.toLowerCase).getOrElse {
+		val artistId = reconRepository.get(artistName.toLowerCase).getOrElse {
 			val $ = (getJson("artist/", "query" -> artistName) \ "artists").asJsArray.value
 				.filter(_ has "type")
 				.head

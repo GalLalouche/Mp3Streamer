@@ -1,17 +1,15 @@
-package other
+package mains.albums
 
 import java.util.concurrent.TimeoutException
-
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 import scala.util.Try
-
 import common.rich.primitives.RichString._
 import models.Album
 import play.api.libs.json.{ JsArray, JsValue }
 import play.api.libs.ws.WS
 
-class LastfmMetadataRetriever(apiKey: String = "d74d6d3b7e8fbfa6b733d376c4d41e73") extends MetadataRetriever {
+private class LastfmMetadataRetriever(apiKey: String = "d74d6d3b7e8fbfa6b733d376c4d41e73") extends MetadataRetriever {
 	override protected def jsonToAlbum(_artist: String, js: JsValue): Option[Album] = {
 		def getAlbumJson(artist: String, album: String) = getJson("album.getinfo", "artist" -> artist, "album" -> album)
 		val artist = js \ "artist" \ "name" asString
@@ -39,16 +37,10 @@ class LastfmMetadataRetriever(apiKey: String = "d74d6d3b7e8fbfa6b733d376c4d41e73
 			val result = Await.result(f, 30 seconds).json
 			result
 		} catch {
-			case e: TimeoutException => println("Failed to retrieve data for " + other.toSeq); throw e
+			case e: TimeoutException =>
+				println("Failed to retrieve data for " + other.toSeq)
+				throw e
 		}
 	}
 
-}
-
-// simple test, can't unit test because it wraps a third party API
-object LastfmMetadataRetriever {
-	def main(args: Array[String]) {
-		val $ = new LastfmMetadataRetriever
-		println($.getAlbums("in vain"))
-	}
 }

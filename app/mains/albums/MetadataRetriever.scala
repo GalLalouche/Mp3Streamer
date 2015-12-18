@@ -1,9 +1,12 @@
-package other
+package mains.albums
 
 import models.Album
 import play.api.libs.json._
 import play.api.libs.ws.WS
 
+/**
+ * Retrieves metadata about a band from some API 
+ */
 trait MetadataRetriever {
 	protected def getAlbumsJson(artist: String): JsArray
 
@@ -22,6 +25,8 @@ trait MetadataRetriever {
 				($.isInstanceOf[JsString] == false || $.asInstanceOf[JsString].value != "")
 		}
 	}
+	
+	/** Gets all albums for a given artist */
 	def getAlbums(artist: String): Iterator[Album] =
 		try getAlbumsJson(artist)
 			.value

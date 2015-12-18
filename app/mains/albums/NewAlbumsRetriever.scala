@@ -1,10 +1,10 @@
-package other
+package mains.albums
 
 import models.MusicFinder
 import models.Album
 import common.rich.RichAll._
 
-class NewAlbumsRetriever(meta: MetadataRetriever, music: MusicFinder, ignoredArtists: Seq[String]) {
+private class NewAlbumsRetriever(meta: MetadataRetriever, music: MusicFinder, ignoredArtists: Seq[String]) {
 	var lastArtist: Option[String] = None
 	def findNewAlbums: Iterator[Album] = {
 		val lastAlbums = music.getAlbums
