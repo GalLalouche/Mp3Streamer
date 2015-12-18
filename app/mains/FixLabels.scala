@@ -12,9 +12,7 @@ import models.Song
 import org.jaudiotagger.tag.KeyNotFoundException
 
 object FixLabels extends App with Debug {
-
 	private def properTrackString(track: Int): String = if (track < 10) "0" + track else track toString
-	private def fixString(str: String) = StringFixer(str)
 	private def fixFile(f: File, fixDiscNumber: Boolean) {
 		val audioFile = AudioFileIO.read(f)
 		val originalTag = audioFile.getTag
@@ -22,10 +20,10 @@ object FixLabels extends App with Debug {
 		val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
 		List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR)
 			.foreach { f =>
-				newTag.setField(f, fixString(originalTag.getFirst(f)))
+				newTag.setField(f, StringFixer(originalTag.getFirst(f)))
 			}
 		newTag.setField(FieldKey.TRACK, properTrackString(newTag.getFirst(FieldKey.TRACK).toInt))
-		if (fixDiscNumber)
+		if (fixDiscNumber) // change 1/2, 2/2, etc. to 1, 2, etc.
 			try {
 				newTag.setField(FieldKey.DISC_NO, """(\d+).*"""
 					.r
@@ -49,45 +47,38 @@ object FixLabels extends App with Debug {
 		f renameTo new File(f.parent, "%s - %s.%s".format(properTrackString(song.track), song.title, f.extension))
 	}
 
-	private def retrieveYear(firstSong: Song): Int = {
-		try firstSong.year
+	private def retrieveYear(song: Song): Int = {
+		try song.year
 		catch {
-			case _: Exception => firstSong.file.parent.name.split("[-\\s]+")(0).toInt
+			case _: Exception => song.file.parent.name.split("[-\\s]+")(0).toInt
 		}
 	}
 
 	// returns the path of the output folder
 	def fix(dir: Directory) = {
-		if (dir.files.filter(_.extension == "flac").size == 1 && dir.files.filter(_.extension == "cue").size == 1)
+		if (dir.files.count(_.extension == "flac") == 1 && dir.files.count(_.extension == "cue") == 1)
 			throw new IllegalArgumentException("Folder contains an unsplit flac file; please split the file and try again.")
-		dir
-			.files
-			.foreach(_.setWritable(true))
-		dir
-			.files
-			.filter(_.extension == "m3u")
-			.foreach(_.delete)
-		val files = dir
-			.files
-			.filter(f => Set("mp3", "flac").contains(f.extension))
-		require(files.nonEmpty, s"Could not find any songs in $dir - could it be hidden in a subfolder?")
-		val firstSong = Song(files(0))
+		dir.files.foreach(_.setWritable(true))
+		dir.files.filter(_.extension == "m3u").foreach(_.delete)
+		val musicFiles = dir.files.filter(f => Set("mp3", "flac") contains f.extension)
+		require(musicFiles.nonEmpty, s"Could not find any songs in $dir - maybe they're in subfolders...")
+		val firstSong = Song(musicFiles(0))
 		val year = try
 			retrieveYear(firstSong)
 		catch {
-			case e: Exception => throw new Exception("Could not retrieve the year", e)
+			case e: Exception => throw new Exception("Could not retrieve the year from the songs", e)
 		}
-		val hasRealDiscNumber = files
+		val hasNonTrivialDiscNumber = musicFiles // as opposed to 1/1 - Fuck those guys.
 			.map(AudioFileIO
 				.read(_)
 				.getTag
 				.getFirst(FieldKey.DISC_NO))
 			.toSet
 			.size > 1
-		files foreach (fixFile(_, hasRealDiscNumber))
-		files foreach rename
+		musicFiles foreach (fixFile(_, hasNonTrivialDiscNumber))
+		musicFiles foreach rename
 		try {
-			val renamedFolder = new File(dir.parent, StringFixer apply s"$year ${firstSong.album}")
+			val renamedFolder = new File(dir.parent, s"$year ${StringFixer apply firstSong.album}")
 			dir.dir renameTo renamedFolder
 			renamedFolder getAbsolutePath
 		} catch { case e: Exception => throw new Exception("could not rename the folder", e) }
