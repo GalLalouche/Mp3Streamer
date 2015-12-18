@@ -13,9 +13,7 @@ import controllers.MusicLocations
 import models.{ MusicFinder, Poster, Song }
 import scala.collection.mutable.HashSet
 
-/**
-  * Selects n random songs and puts them in a folder on D
-  */
+/** Selects n random songs and puts them in a folder on D:\ */
 object RandomFolderCreator extends App {
 	val outputDir = {
 		val outputFolder = new File("D:/RandomSongsOutput")

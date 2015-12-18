@@ -6,7 +6,7 @@
 //import org.specs2.mutable.Specification
 //import akka.actor.{Actor, ActorSystem}
 //import akka.testkit.TestActorRef
-//import common.rich.path.RichFile.richFile
+//import common.rich.path.mine.RichFile.richFile
 //import org.specs2.runner.JUnitRunner
 //import loggers.Logger
 //

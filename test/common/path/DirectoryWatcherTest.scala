@@ -1,4 +1,4 @@
-//package common.rich.path
+//package common.rich.path.mine
 //
 //import java.io.File
 //import org.junit.runner.RunWith
@@ -8,8 +8,8 @@
 //import org.specs2.runner.JUnitRunner
 //import RichPath.richPath
 //import RichPath.poorPath
-//import common.rich.path.RichFile._
-//import common.rich.path.RichPath._
+//import common.rich.path.mine.RichFile._
+//import common.rich.path.mine.RichPath._
 //
 //import org.specs2.mutable.After
 ///**

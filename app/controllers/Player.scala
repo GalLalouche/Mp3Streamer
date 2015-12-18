@@ -1,32 +1,20 @@
 package controllers
 
 import java.io.File
-import java.net.URLDecoder
-import scala.collection.GenSeq
+import java.net.{ URLDecoder, URLEncoder }
+
 import scala.util.Random
-import org.joda.time.format.DateTimeFormat
+
 import akka.actor.ActorDSL
 import akka.actor.ActorDSL.Act
 import akka.actor.actorRef2Scala
-import common.Debug
-import common.LazyActor
-import common.ValueTree
-import common.rich.path.Directory
-import common.rich.path.RichPath._
+import common.{ Debug, LazyActor }
+import common.rich.path.RichPath.richPath
 import dirwatch.DirectoryWatcher
-import models.AlbumDirectory
-import models.MusicFinder
-import models.MusicTree
-import models.Poster
-import models.Song
-import play.api.http.HeaderNames
-import play.api.libs.json.JsArray
-import play.api.libs.json.JsString
-import play.api.mvc.Action
-import play.api.mvc.Controller
-import websockets.NewFolderSocket
-import websockets.TreeSocket
-import java.net.URLEncoder
+import models.{ AlbumDirectory, MusicFinder, Poster, Song }
+import play.api.libs.json.{ JsArray, JsString }
+import play.api.mvc.{ Action, Controller }
+import websockets.{ NewFolderSocket, TreeSocket }
 
 /**
   * Handles fetch requests of JSON information
@@ -53,8 +41,8 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
 	private val watcher = ActorDSL.actor(new DirectoryWatcher(ActorDSL.actor(new Act {
 		become {
 			case DirectoryWatcher.DirectoryCreated(d) =>
-				NewFolderSocket.actor ! d
 				lazyActor ! updatingMusic
+				NewFolderSocket.actor ! d
 			case DirectoryWatcher.DirectoryDeleted(_) => lazyActor ! updatingMusic
 		}
 	}), genreDirs))

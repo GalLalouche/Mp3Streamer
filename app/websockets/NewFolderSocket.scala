@@ -3,9 +3,7 @@ package websockets
 import common.Debug
 import common.rich.path.Directory
 
-/**
-  * Sends console information to the listeners
-  */
+/** Notifies the client when a new folder has been added */
 object NewFolderSocket extends WebSocketController with Debug {
 	override def receive = {
 		case x: Directory if (x.files.isEmpty == false) =>

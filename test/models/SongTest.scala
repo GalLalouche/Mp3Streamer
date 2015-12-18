@@ -3,19 +3,17 @@
 package models
 
 import java.io.File
+
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
-import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
+import org.specs2.runner.JUnitRunner
+
+import javax.servlet.http.{ HttpServlet, HttpServletRequest, HttpServletResponse }
 import play.api.Play
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.test.FakeApplication
-import org.specs2.runner.JUnitRunner
-/**
-  * Add your spec here.
-  * You can mock out a whole application including requests, plugins etc.
-  * For more information, consult the wiki.
-  */
+
 @RunWith(classOf[JUnitRunner])
 class SongTest extends Specification {
 	private def getSong(location: String) = {

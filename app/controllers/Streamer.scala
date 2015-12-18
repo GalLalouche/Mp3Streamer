@@ -8,17 +8,15 @@ import scala.concurrent.Future
 
 import common.rich.path.Directory
 import decoders.DbPowerampCodec
-import decoders.Mp3Decoder
 import models.Decoder
-import play.api.mvc.Action
-import play.api.mvc.Controller
+import play.api.mvc.{ Action, Controller }
 
 object Streamer extends Controller with Decoder with DbPowerampCodec {
 	val codecPath = "D:/Media/Tools/dBpoweramp/CoreConverter.exe"
 	val outputDir = Directory("D:/media/streamer/musicOutput")
 
 	def download(s: String) = Action {
-		val futureFile = Future { decodeFileIfNeeded(new File(URLDecoder.decode(s, "UTF-8"))) } // this ensures this call isn't blocking
+		val futureFile = Future { decodeFileIfNeeded(new File(URLDecoder.decode(s, "UTF-8"))) }
 		Async {
 			futureFile.map { file =>
 				loggers.CompositeLogger.trace("Sending file " + file.getAbsolutePath)

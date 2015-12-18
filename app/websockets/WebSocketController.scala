@@ -2,12 +2,9 @@ package websockets
 
 import scala.concurrent.Future
 
-import akka.actor.Actor
-import akka.actor.ActorDSL
-import play.api.libs.iteratee.Concurrent
-import play.api.libs.iteratee.Iteratee
-import play.api.mvc.Controller
-import play.api.mvc.WebSocket
+import akka.actor.{ Actor, ActorDSL }
+import play.api.libs.iteratee.{ Concurrent, Iteratee }
+import play.api.mvc.{ Controller, WebSocket }
 
 private[websockets] trait WebSocketController extends Controller {
 	val out = Concurrent.broadcast[String];

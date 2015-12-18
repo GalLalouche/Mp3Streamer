@@ -1,7 +1,7 @@
 //package models
 //
 //import org.junit.runner.RunWith
-//import common.rich.path.Directory
+//import common.rich.path.mine.Directory
 //import org.specs2.runner.JUnitRunner
 //
 ///**

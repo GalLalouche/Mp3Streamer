@@ -2,25 +2,20 @@ package decoders;
 
 import java.io.File
 
-import scala.sys.process.Process
-import scala.sys.process.ProcessLogger
+import scala.sys.process.{ Process, ProcessLogger }
 
+import DbPowerampCodec.devNull
 import common.Debug
-import common.rich.path.RichPath._
+import common.rich.path.RichPath.richPath
 import decoders.CodecType.CodecType
-/**
-  * An implementation of a codec using dBpoweramp appliocation
-  *
-  * @author Gal Lalouche
-  */
-import DbPowerampCodec._
+
 trait DbPowerampCodec extends Codec with Debug {
 	val codecPath: String;
 
 	private implicit def richString(o: Any) = new {
 		def wrapInQuotes(): String = "\"%s\"".format(o)
 	}
-	
+
 	override def decode(srcFile: File, dstFile: File, dstType: CodecType, otherCommands: List[String]) {
 		// create the arguments for the application invocation
 		val args = List(codecPath.wrapInQuotes,

@@ -2,6 +2,7 @@ package mains
 
 import java.util.Scanner
 import common.rich.primitives.RichString._
+
 private[mains] object StringFixer {
 	private val lowerCaseWordsList = List("a", "ain't", "all", "am", "an", "and", "are", "as", "at", "be",
 		"but", "by", "can", "can't", "cannot", "do", "don't", "for", "from", "get", "got", "gotten", "had",

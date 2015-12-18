@@ -8,9 +8,7 @@ import common.ValueTree
 import java.io.File
 import org.joda.time.format.DateTimeFormat
 
-/**
-  * updates changs about the music tree
-  */
+/** updates changes about the music tree */
 object TreeSocket extends WebSocketController with MusicLocations with MusicTree {
 	case object Update
 	private val format = DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyy")
@@ -29,14 +27,12 @@ object TreeSocket extends WebSocketController with MusicLocations with MusicTree
 	}
 
 	def tree = Action { request =>
-		{
-			val dateString = request.headers.get(HeaderNames.IF_MODIFIED_SINCE).getOrElse(format.print(0).toString)
-			val lastModified = format.parseDateTime(dateString).getMillis
-			if (lastUpdated - 1000 < lastModified) // -1000 for one second margin of error
-				NotModified
-			else
-				Ok(MusicTree.jsonify(musicTree)).withHeaders(
-					HeaderNames.LAST_MODIFIED -> format.print(lastUpdated + 1000))
-		}
+		val dateString = request.headers.get(HeaderNames.IF_MODIFIED_SINCE).getOrElse(format.print(0).toString)
+		val lastModified = format.parseDateTime(dateString).getMillis
+		if (lastUpdated - 1000 < lastModified) // -1000 for one second margin of error
+			NotModified
+		else
+			Ok(MusicTree.jsonify(musicTree)).withHeaders(
+				HeaderNames.LAST_MODIFIED -> format.print(lastUpdated + 1000))
 	}
 }
