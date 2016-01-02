@@ -1,9 +1,9 @@
 $(function() {
 	jPlayer.togglePlay = function() {
 		var jPlayer = $('#jquery_jplayer_1').data().jPlayer;
-		if (jPlayer.status.paused) 
+		if (jPlayer.status.paused)
 			click("play");
-		else 
+		else
 			click("pause");
 	}
 	$(document).keyup(function(e) {
@@ -13,7 +13,7 @@ $(function() {
 		switch (letter) {
 		case 'Z':
 			if (playlist.current) {
-				click("previous");				
+				click("previous");
 			} else {
 				click("stop");
 				click("play");
@@ -27,6 +27,7 @@ $(function() {
 				click("play");
 			}
 			break;
+		case 32: // Space key
 		case 'K': // fucking youtube :\
 		case 'C':
 			if (jPlayer.status.paused) {
@@ -43,7 +44,7 @@ $(function() {
 			break;
 		}
 	});
-	
+
 	function click(what) {
 		$(".jp-" + what).click();
 	}
