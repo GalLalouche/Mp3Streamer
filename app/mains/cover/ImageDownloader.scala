@@ -10,6 +10,11 @@ import scala.io.Source
 import java.io.File
 import scala.util.Try
 
+/** 
+ *  Downloads images and saves them to a directory. Tries several different unicode encodings.
+ *  @param outputDirectory The directory to save images to
+ *  @param downloader Used to download the images
+ */
 private class ImageDownloader(outputDirectory: Directory, downloader: Downloader) {
 	def this(outputDirectory: Directory) = this(outputDirectory, new Downloader)
 	/**

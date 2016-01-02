@@ -1,10 +1,14 @@
 package mains.cover
 
-import java.net.URL
 import java.nio.file.Files
 import java.util.concurrent.LinkedBlockingQueue
+
 import scala.collection.JavaConversions.asScalaBuffer
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 import org.jsoup.Jsoup
+
 import common.Debug
 import common.rich.RichT.richT
 import common.rich.path.Directory
@@ -12,7 +16,6 @@ import common.rich.path.RichFile.richFile
 import common.rich.primitives.RichString.richString
 import models.Song
 import resource.managed
-import scala.io.Source
 
 // Uses google image search (not API, actual site) to find images
 // Then displays the images for the user to select a good picture
@@ -20,20 +23,26 @@ object DownloadCover extends Debug {
 	case class CoverException(str: String, e: Exception) extends Exception(e)
 	lazy val tempFolder: Directory = Directory.apply(Files.createTempDirectory("images").toFile)
 
-	def apply(folderPath: String) {
-		try {
-			val dir = setupDirectory(folderPath)
-			getHtml(Song(dir.files.head).mapTo(song => s"${song.artist} ${song.album}"))
-				.mapTo(extractImageURLs)
-				.mapTo(selectImage)
-				.move(dir)
-		} finally {
-			tempFolder.deleteAll()
-		}
+	/**
+	  *  Downloads a new image for the album
+	  *  @param albumFolder Should contain the songs. The metadata will be used to search for the correct picture.
+	  *  @return A future command to move the downloaded file to the directory, and delete all temporary files
+	  */
+	def apply(dir: Directory): Future[Directory => Unit] = {
+		setupDirectory(dir)
+		Future.apply(getHtml(Song(dir.files.head).mapTo(song => s"${song.artist} ${song.album}")))
+			.map(extractImageURLs)
+			.map(selectImage)
+			.map(fileMover)
 	}
 
-	private def setupDirectory(folderPath: String): Directory = {
-		val $ = Directory(folderPath);
+	private def fileMover(f: FolderImage): Directory => Unit = dir => {
+		f.move(dir)
+		tempFolder.deleteAll()
+		assert(tempFolder.exists == false)
+	}
+
+	private def setupDirectory($: Directory): Directory = {
 		val oldFile = $ \ "folder.jpg"
 		if (oldFile.exists)
 			oldFile.renameTo("folder.bak.jpg")
@@ -67,6 +76,6 @@ object DownloadCover extends Debug {
 	}
 
 	def main(args: Array[String]) {
-		apply("""D:\Incoming\Bittorrent\Completed\Music\Scale the Summit - V (2015)[Mp3@320][Instrumental Prog Metal, Post Metal]""")
+		apply(Directory("""D:\Incoming\Bittorrent\Completed\Music\Scale the Summit - V (2015)[Mp3@320][Instrumental Prog Metal, Post Metal]"""))
 	}
 }
