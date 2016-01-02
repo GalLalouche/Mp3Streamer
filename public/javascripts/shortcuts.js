@@ -27,6 +27,7 @@ $(function() {
 				click("play");
 			}
 			break;
+		case 'K': // fucking youtube :\
 		case 'C':
 			if (jPlayer.status.paused) {
 				click("play");
