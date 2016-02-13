@@ -55,16 +55,14 @@ object RandomFolderCreator extends App {
 				}
 			}
 
-			Thread.sleep(1000) // why is this here?
 			newFile.renameTo(new File(outputDir.dir, "%02d.%s".format(index, file.extension)))
 			println(s"${100 * index / n}%% done".format())
 		} catch {
 			case e: Exception => println("Failed @ " + file); e.printStackTrace; throw e
 		}
 	}
-	while (selectedSongs.size < n) {
+	while (selectedSongs.size < n)
 		addSong
-	}
 	createPlaylistFile
 	println("Done!")
 }
