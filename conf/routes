@@ -23,6 +23,8 @@ GET    /assets/*file            controllers.Assets.at(path="/public", file)
 
 #tree
 GET    /music/tree              websockets.TreeSocket.tree
+# Searcher
+GET    /music/search/*path		controllers.Searcher.search(path)
 
 # Web sockets
 GET    /ws/tree                 websockets.TreeSocket.accept
