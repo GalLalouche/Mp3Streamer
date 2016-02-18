@@ -27,6 +27,7 @@ object FolderFixer {
 
 	private def moveDirectory(artist: String, destination: Future[Option[Directory]],
 		folderImage: Future[Directory => Unit], sourcePath: String) {
+		Await.result(folderImage, 1 minute).apply(Directory(sourcePath))
 		if (destination.isCompleted == false)
 			println("Waiting on artist find...")
 		val destinationParent: Directory = Await.result(destination, 1 minute).getOrElse {
@@ -42,7 +43,6 @@ object FolderFixer {
 		val source = Directory(sourcePath)
 		val dest = new File(destinationParent, source.name).toPath
 		Files.move(source.toPath, dest)
-		Await.result(folderImage, 1 minute).apply(Directory(dest.toFile))
 		new ProcessBuilder("explorer.exe", dest.toFile.getAbsolutePath).start
 	}
 
