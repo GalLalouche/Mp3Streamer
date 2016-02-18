@@ -21,60 +21,53 @@ private object MusicBrainzRetriever extends MetadataRetriever {
 			.map(_.split('=').mapTo(e => e(0) -> e(1)))
 			.toMap
 
-	private val sf = CompositeDateFormat("yyyy-MM-dd", "yyyy-MM", "yyyy")
-	private val simplerSf = new SimpleDateFormat("yyyy-MM")
 	override protected def jsonToAlbum(artist: String, js: JsValue): Option[Album] = {
-		val dateString = js \ "first-release-date" asString;
-		try {
-			val date = sf.parse(dateString)
-			if (date.getMillis > System.currentTimeMillis)
-				None // album isn't out yet, trolls :\
-			else
-				Some(Album(artist, date.getYear, js \ "title" asString))
-		} catch {
-			case e: Exception => println("Failed to parse js " + js); throw e
-		}
+		val date = CompositeDateFormat("yyyy-MM-dd", "yyyy-MM", "yyyy")
+			.parse(js \ "first-release-date" asString)
+		if (date.getMillis > System.currentTimeMillis)
+			None // album isn't out yet, trolls :\
+		else
+			Some(Album(artist, date.getYear, js \ "title" asString))
 	}
-	private val primaryTypes = Set("Album", "EP", "Live")
+	
 	override protected def getAlbumsJson(artistName: String): JsArray = {
 		val artistId = reconRepository.get(artistName.toLowerCase).getOrElse {
-			val $ = (getJson("artist/", "query" -> artistName) \ "artists").asJsArray.value
+			val webSearchResult = (getJson("artist/", "query" -> artistName) \ "artists").asJsArray.value
 				.filter(_ has "type")
 				.head
-			if ("100" != ($ \ "score").asString)
+			if ("100" != (webSearchResult \ "score").asString)
 				throw new NoSuchElementException("failed to get 100 match for artist " + artistName)
-			$ \ "id" asString
+			webSearchResult \ "id" asString
 		}
 		val $ = try {
 			getJson("release-group",
 				"artist" -> (artistId),
 				"limit" -> "100") \ "release-groups" asJsArray
 		} catch {
-			case e: Exception => println("Failed to get artist with id = " + artistId); throw e
-		}
+			case e: Exception => System.err.println("Failed to get artist with id = " + artistId); throw e
+		} 
 		new JsArray($.value
 			.filter(_ has "first-release-date")
 			.filter(_ has "primary-type")
-			.filter(e => primaryTypes.contains(e \ "primary-type" asString))
+			.filter(e => Set("Album", "EP", "Live").contains(e \ "primary-type" asString))
 			.filter(e => (e \ "secondary-types").asJsArray.value.isEmpty)
 			.toList
 			.sortBy(_ \ "first-release-date" asString))
 	}
 
 	private def getJson(method: String, other: (String, String)*): JsValue = {
-		val ws = WS.url("http://musicbrainz.org/ws/2/" + method)
+		val webServiceRequest = WS.url("http://musicbrainz.org/ws/2/" + method)
 			.withQueryString("fmt" -> "json").withQueryString(other: _*)
 			.withHeaders("User-Agent" -> "Metadata Retriever")
-		val f = ws.get
+		val response = webServiceRequest.get
 		try {
-			val result = Await.result(f, 30 seconds).json
-			result
+			Await.result(response, 30 seconds).json
 		} catch {
-			case e: TimeoutException => println("Timed out in retrieving data for " + other.toSeq); throw e
+			case e: TimeoutException => System.err.println("Timed out in retrieving data for " + other.toSeq); throw e
 		}
 	}
 
 	def main(args: Array[String]) {
-		println(getAlbums("amaranthe").toList mkString "\n")
+		System.out.println(getAlbums("sun o)))").toList mkString "\n")
 	}
 }

@@ -40,7 +40,7 @@ private class LastfmMetadataRetriever(apiKey: String = "d74d6d3b7e8fbfa6b733d376
 			result
 		} catch {
 			case e: TimeoutException =>
-				println("Failed to retrieve data for " + other.toSeq)
+				System.err.println("Failed to retrieve data for " + other.toSeq)
 				throw e
 		}
 	}
