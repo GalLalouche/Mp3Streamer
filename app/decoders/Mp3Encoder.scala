@@ -19,7 +19,7 @@ abstract class Mp3Encoder(outputDir: Directory) extends Encoder {
 	def encodeFileIfNeeded(f: File) = if (f.extension.toLowerCase != "mp3") encode(f) else f
 	
 	/**
-	  * Encode the file to an mp3 format
+	  * Encode the file to an mp3 format. The file will only be created if its matching doesn't already exist.
 	  *
 	  * @param originalFile The file to decode
 	  * @return The (possibly new) mp3 file created; The file will be created in the {@code outputDir}, and will 
@@ -34,7 +34,7 @@ abstract class Mp3Encoder(outputDir: Directory) extends Encoder {
 		val outputFileName = file.path.replaceAll("[\\s\\/\\\\\\-\\:]", "").toLowerCase + ".mp3";
 		outputDir.files.find(_.name == outputFileName).getOrElse({
 			val outputFile = outputDir.addFile(outputFileName)
-			encode(file, outputFile, CodecType.Mp3, List("-V 2", "-b 320"));
+			encode(file, outputFile, CodecType.Mp3);
 			outputFile;
 		})
 	}

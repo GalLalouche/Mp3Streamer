@@ -13,5 +13,5 @@ trait Encoder {
 	  * @param otherCommands Any other commands sent to the codec
 	  * @throws IOException
 	  */
-	protected def encode(srcFile: File, dstFile: File, dstType: CodecType, otherCommands: List[String])
+	protected def encode(srcFile: File, dstFile: File, dstType: CodecType)
 }
