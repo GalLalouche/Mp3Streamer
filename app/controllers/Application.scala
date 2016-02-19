@@ -5,8 +5,8 @@ import java.io.File
 import loggers.Logger
 
 object Application extends Controller {
-	def index(anna: Boolean) = Action {
-		Ok(views.html.main(anna))
+	def index(mute: Boolean) = Action {
+		Ok(views.html.main(mute))
 	}
 	def song = Action {
 		val file = new File("C:/dev/web/play-2.1.2/Mp3Streamer/public/resources/songs/13 Wonderwall.mp3")
