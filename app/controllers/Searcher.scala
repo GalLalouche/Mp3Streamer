@@ -18,16 +18,17 @@ import search.SimpleIndexBuilder
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import common.rich.path.RichFile._
+import search.TermIndexBuilder
 
 object Searcher extends Controller {
-  lazy val searcher = SimpleIndexBuilder.buildIndexFor(
-    new File("D:/Media/Music/songs.json")
+  lazy val songs = new File("D:/Media/Music/songs.json")
       .lines
       .map(Json.parse)
       .map(_.as[JsObject])
-      .map(Song.apply))
+      .map(Song.apply)
+  lazy val indexBuilder = TermIndexBuilder 
+  lazy val index = TermIndexBuilder.buildIndexFor(songs)
   def search(path: String) = Action {
-    val findSongs: Seq[Song] = searcher.find(URLDecoder.decode(path, "UTF-8"))
-    Ok(JsArray(findSongs.map(_.jsonify)))
+    Ok(JsArray(index.find(URLDecoder.decode(path, "UTF-8")).map(_.jsonify)))
   }
 }
