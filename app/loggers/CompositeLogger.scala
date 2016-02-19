@@ -13,6 +13,7 @@ object CompositeLogger extends Logger {
 		}
 	}
 	private val loggers: Seq[Logger] = List(
+		ConsoleLogger,
 		aLoggerAdapter(new play.Logger.ALogger(play.api.Logger("Mp3Streamer"))),
 		ConsoleSocket
 	)

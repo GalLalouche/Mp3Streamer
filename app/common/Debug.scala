@@ -13,6 +13,7 @@ trait Debug {
 	
 	def timed[T](task: String = "Task", logger: Logger = loggers.CompositeLogger)(f: => T): T = {
 		val start = System.currentTimeMillis
+		logger.trace(s"starts $task")
 		val $ = f
 		logger.trace("%s took %d ms".format(task, System.currentTimeMillis - start))
 		$

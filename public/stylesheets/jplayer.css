@@ -21,9 +21,14 @@ body {
 
 .jstree {
 	position: absolute;
-	left: 720px;
+	left: 1320px;
 	float: left;
 }
+
+#search {
+  position: absolute;
+  left: 800px;
+  float: right;
 
 .jp-currently-playing {
 	font-size: 0.8em !important;

@@ -3,8 +3,9 @@ package models
 import common.rich.path.Directory
 import common.rich.path.RichFile._
 import java.io.File
+import common.Debug
 
-trait MusicFinder {
+trait MusicFinder extends Debug {
 	val dir: Directory
 	val subDirs: List[String]
 	val extensions: List[String]
@@ -22,5 +23,12 @@ trait MusicFinder {
 			.filter(x => extensions.contains(x.extension))
 			.map(_.path)
 			.toVector
+	}
+	def getSongIterator: Iterator[Song] = {
+		timed("finding files") { (genreDirs.flatMap(_.files) ++ (genreDirs.flatMap(_.dirs).par.flatMap(_.deepFiles))) }
+			.iterator
+			.filter(x => extensions.contains(x.extension))
+			.map(_.f)
+			.map(Song.apply)
 	}
 }
