@@ -35,7 +35,8 @@ object Streamer extends Controller {
     }
   }
 
+  // for debugging, plays the song in the browser instead of downloading it
   def playSong(s: String) = Action {
-    Ok(views.html.playSong("/music/songs/" + s))
+    Ok(views.html.playSong("/data/songs/" + s))
   }
 }

@@ -9,11 +9,11 @@ GET    /test                    controllers.Application.test
 
 
 #Player!     
-GET    /music/randomSong        controllers.Player.randomSong
-GET    /music/albums/*path      controllers.Player.album(path)
+GET    /data/randomSong        controllers.Player.randomSong
+GET    /data/albums/*path      controllers.Player.album(path)
 #Streamer
-GET    /music/songs/*path       controllers.Streamer.download(path)
-GET    /play/*path              controllers.Streamer.playSong(path)
+GET    /stream/download/*path    controllers.Streamer.download(path)
+GET    /stream/play/*path        controllers.Streamer.playSong(path)
 # Posters
 GET    /posters/display/*path   controllers.Posters.displayImage(path)
 GET    /posters/*path           controllers.Posters.image(path)
@@ -22,9 +22,9 @@ GET    /posters/*path           controllers.Posters.image(path)
 GET    /assets/*file            controllers.Assets.at(path="/public", file)
 
 #tree
-GET    /music/tree              websockets.TreeSocket.tree
+GET    /data/tree              websockets.TreeSocket.tree
 # Searcher
-GET    /music/search/*path		controllers.Searcher.search(path)
+GET    /search/*path		controllers.Searcher.search(path)
 
 # Web sockets
 GET    /ws/tree                 websockets.TreeSocket.accept

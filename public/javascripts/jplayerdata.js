@@ -1,5 +1,5 @@
 $(function() {
-  var randomSongUrl = "/music/randomSong";
+  var randomSongUrl = "data/randomSong";
   // get a random start to start off with
   $.get(randomSongUrl, function(data) {
     // setup playlist type

@@ -22,7 +22,7 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
   private var songs: Seq[File] = null
 
   private def songJsonInformation(song: models.Song): play.api.libs.json.JsObject = {
-    song.jsonify + (("mp3", JsString("/music/songs/" + URLEncoder.encode(song.file.path, "UTF-8")))) +
+    song.jsonify + (("mp3", JsString("/stream/download/" + URLEncoder.encode(song.file.path, "UTF-8")))) +
       (("poster", JsString("/posters/" + Poster.getCoverArt(song).path)))
   }
 

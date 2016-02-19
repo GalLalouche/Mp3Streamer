@@ -1,5 +1,5 @@
 $(function() {
-	var TREE_RES = "music/tree";
+	var TREE_RES = "data/tree";
 	var TREE_ID = "#tree"; 
 	function getTree() {
 		$.ajax({
@@ -20,7 +20,7 @@ $(function() {
 				}).bind("select_node.jstree", function (e, data) {
 					var path = $(data.rslt.obj[0].children[1]).attr('path');
 					if (path) {
-						$.get("/music/albums/" + path, function(data) {
+						$.get("data/albums/" + path, function(data) {
 							playlist.add(data, false);
 						});
 					}		
