@@ -65,4 +65,8 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
     songs.map(_.file).map(e => () => decode(e)).foreach(DaemonRunner.run)
     Ok(JsArray(songs.map(songJsonInformation)))
   }
+  
+  def song(path: String) = Action {
+    Ok(songJsonInformation(Song(new File(URLDecoder.decode(path, "UTF-8")))))
+  }
 }

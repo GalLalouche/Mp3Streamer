@@ -13,16 +13,16 @@ import models.{ AlbumDirectory, MusicFinder, Poster, Song }
 import play.api.libs.json.{ JsArray, JsString }
 import play.api.mvc.{ Action, Controller }
 import websockets.{ NewFolderSocket, TreeSocket }
-import models.MusicSearcher
-import models.SimpleMusicSearcher
+import search.Index
+import search.SimpleIndex
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import common.rich.path.RichFile._
 
 object Searcher extends Controller {
-	lazy val searcher = new SimpleMusicSearcher(new File("D:/Media/Music/songs.json").lines.map(Json.parse).map(_.as[JsObject]).map(Song.apply))
+	lazy val searcher = new SimpleIndex(new File("D:/Media/Music/songs.json").lines.map(Json.parse).map(_.as[JsObject]).map(Song.apply))
 	def search(path: String) = Action {
-		val findSongs: Seq[Song] = searcher(path)
+		val findSongs: Seq[Song] = searcher.find(URLDecoder.decode(path, "UTF-8"))
 		Ok(JsArray(findSongs.map(_.jsonify)))
 	}
 }

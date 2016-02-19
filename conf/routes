@@ -11,6 +11,7 @@ GET    /test                    controllers.Application.test
 #Player!     
 GET    /data/randomSong        controllers.Player.randomSong
 GET    /data/albums/*path      controllers.Player.album(path)
+GET	   /data/songs/*path		controllers.Player.song(path)
 #Streamer
 GET    /stream/download/*path    controllers.Streamer.download(path)
 GET    /stream/play/*path        controllers.Streamer.playSong(path)
