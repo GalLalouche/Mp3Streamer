@@ -69,18 +69,6 @@ $(function() {
     'float' : 'left'
   });
 
-  $("#loadRandomAlbum").click(function() {
-    $.get("resources/mp3s/randomAlbum", function(data) {
-      playlist.setPlaylist(data);
-    });
-  });
-
-  $("#addNextAlbum").click(function() {
-    $.get("resources/mp3s/nextAlbum", function(data) {
-      playlist.add(data, false);
-    });
-  });
-
   var loadNextRandom = function(playNow) {
     $.get(randomSongUrl, function(data) {
       playlist.add(data, playNow);
