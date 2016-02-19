@@ -12,8 +12,7 @@ import decoders.FlacDecoder
 import play.api.mvc.{ Action, Controller }
 
 object Streamer extends Controller {
-  val decoder = new FlacDecoder with DbPowerampCodec {
-    val codecPath = "D:/Media/Tools/dBpoweramp/CoreConverter.exe"
+  val decoder = new DbPowerampCodec(new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe")) with FlacDecoder  {
     val outputDir = Directory("D:/media/streamer/musicOutput")
   }
 

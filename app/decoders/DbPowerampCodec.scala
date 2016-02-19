@@ -9,19 +9,17 @@ import common.Debug
 import common.rich.path.RichPath.richPath
 import decoders.CodecType.CodecType
 
-trait DbPowerampCodec extends Encoder with Debug {
-	val codecPath: String;
-
-	private implicit def richString(o: Any) = new {
-		def wrapInQuotes(): String = "\"%s\"".format(o)
+class DbPowerampCodec(codecFile: File) extends Encoder with Debug {
+	private implicit class richString(o: Any) {
+		def quote: String = s""""$o""""";
 	}
 
 	override def encode(srcFile: File, dstFile: File, dstType: CodecType, otherCommands: List[String]) {
 		// create the arguments for the application invocation
-		val args = List(codecPath.wrapInQuotes,
-			"-infile=" + srcFile.path.wrapInQuotes,
-			"-outfile=" + dstFile.path.wrapInQuotes,
-			"-convert_to=" + dstType.wrapInQuotes) ++
+		val args = List(codecFile.path.quote,
+			"-infile=" + srcFile.path.quote,
+			"-outfile=" + dstFile.path.quote,
+			"-convert_to=" + dstType.quote) ++
 			otherCommands
 		timed("Decoding %s to %s".format(srcFile, dstType)) {
 			val p = Process(args) !< (devNull)
