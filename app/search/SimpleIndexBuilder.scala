@@ -5,12 +5,11 @@ import models.Song
 /** builds the index for exact matches */
 object SimpleIndexBuilder extends IndexBuilder {
   private def groupBy[T, S](ts: TraversableOnce[T], f: T => S): Map[S, Seq[T]] = {
-    var map = Map[S, List[T]]()
-    for (t <- ts) {
-      val key = f(t)
-      map += ((key, t :: map.get(key).getOrElse(Nil)))
+    ts.foldLeft(Map[S, List[T]]().withDefault(e => Nil)) {
+      case (map, t) =>
+        val key = f(t)
+        map.updated(key, t :: map(key))
     }
-    map
   }
   override def buildIndexFor(songs: TraversableOnce[Song]) = new Index(
     groupBy[Song, String](songs, _.title.toLowerCase)
