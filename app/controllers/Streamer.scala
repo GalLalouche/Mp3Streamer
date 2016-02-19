@@ -8,7 +8,7 @@ import scala.concurrent.Future
 
 import common.rich.path.Directory
 import decoders.DbPowerampCodec
-import models.Decoder
+import decoders.Decoder
 import play.api.mvc.{ Action, Controller }
 
 object Streamer extends Controller {

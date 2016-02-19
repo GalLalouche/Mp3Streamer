@@ -2,9 +2,7 @@ package controllers
 
 import java.io.File
 import java.net.{ URLDecoder, URLEncoder }
-
 import scala.util.Random
-
 import akka.actor.{ ActorDSL, actorRef2Scala }
 import common.{ DaemonRunner, Debug, LazyActor }
 import common.rich.path.Directory
@@ -15,6 +13,7 @@ import models._
 import play.api.libs.json.{ JsArray, JsString }
 import play.api.mvc.{ Action, Controller }
 import websockets.{ NewFolderSocket, TreeSocket }
+import decoders.Decoder
 
 /**
   * Handles fetch requests of JSON information
