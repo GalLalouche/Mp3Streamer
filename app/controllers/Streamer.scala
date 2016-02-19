@@ -18,7 +18,7 @@ object Streamer extends Controller {
   }
 
   def download(s: String) = Action {
-    val futureFile = Future { decoder.decodeFileIfNeeded(new File(URLDecoder.decode(s, "UTF-8"))) }
+    val futureFile = Future { decoder.encodeFileIfNeeded(new File(URLDecoder.decode(s, "UTF-8"))) }
     Async {
       futureFile.map { file =>
         loggers.CompositeLogger.trace("Sending file " + file.getAbsolutePath)

@@ -9,14 +9,14 @@ import common.Debug
 import common.rich.path.RichPath.richPath
 import decoders.CodecType.CodecType
 
-trait DbPowerampCodec extends Codec with Debug {
+trait DbPowerampCodec extends Encoder with Debug {
 	val codecPath: String;
 
 	private implicit def richString(o: Any) = new {
 		def wrapInQuotes(): String = "\"%s\"".format(o)
 	}
 
-	override def decode(srcFile: File, dstFile: File, dstType: CodecType, otherCommands: List[String]) {
+	override def encode(srcFile: File, dstFile: File, dstType: CodecType, otherCommands: List[String]) {
 		// create the arguments for the application invocation
 		val args = List(codecPath.wrapInQuotes,
 			"-infile=" + srcFile.path.wrapInQuotes,

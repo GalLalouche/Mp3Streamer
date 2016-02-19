@@ -9,7 +9,7 @@ import org.joda.time.DateTime
 import common.DaemonRunner
 
 /** Encodes audio files files to mp3. Also handles caching */
-trait Mp3Encoder extends Codec {
+trait Mp3Encoder extends Encoder {
 	val outputDir: Directory
 	
 	private def cleanOldFiles() {
@@ -25,7 +25,7 @@ trait Mp3Encoder extends Codec {
 	  * 				be the absolute path of the file (with no space) with .mp3
 	  * @throws IOException
 	  */
-	def decode(file: File): File = {
+	def encode(file: File): File = {
 		require(file != null)
 		require(file exists)
 		require(file.isDirectory == false)
@@ -33,7 +33,7 @@ trait Mp3Encoder extends Codec {
 		val outputFileName = file.path.replaceAll("[\\s\\/\\\\\\-\\:]", "").toLowerCase + ".mp3";
 		outputDir.files.find(_.name == outputFileName).getOrElse({
 			val outputFile = outputDir.addFile(outputFileName)
-			decode(file, outputFile, CodecType.Mp3, List("-V 2", "-b 320"));
+			encode(file, outputFile, CodecType.Mp3, List("-V 2", "-b 320"));
 			outputFile;
 		})
 	}

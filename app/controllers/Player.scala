@@ -62,7 +62,7 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
 
   def album(path: String) = Action {
     val songs = AlbumDirectory(new File(URLDecoder.decode(path, "UTF-8"))).songs
-    def decode(f: File) { Streamer.decoder.decodeFileIfNeeded(f) } // returns a unit as required by DaemonRunner
+    def decode(f: File) { Streamer.decoder.encodeFileIfNeeded(f) } // returns a unit as required by DaemonRunner
     songs.map(_.file).map(e => () => decode(e)).foreach(DaemonRunner.run)
     Ok(JsArray(songs.map(songJsonInformation)))
   }
