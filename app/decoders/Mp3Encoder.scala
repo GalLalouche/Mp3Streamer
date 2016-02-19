@@ -6,16 +6,16 @@ import common.rich.path.Directory
 import common.rich.path.RichFile._
 
 /**
-  * Decodes audio files files to mp3.
+  * Encodes audio files files to mp3.
   * Also handles caching
   *
   * @author Gal Lalouche
   */
-trait Mp3Decoder extends Codec {
+trait Mp3Encoder extends Codec {
 	val outputDir: Directory
 
 	/**
-	  * Decodes the file to an mp3 format
+	  * Encode the file to an mp3 format
 	  *
 	  * @param originalFile The file to decode
 	  * @return The new mp3 file created; The file will be created in the {@code outputDir}, and will be the absolute
