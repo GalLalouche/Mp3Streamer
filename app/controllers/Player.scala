@@ -13,7 +13,6 @@ import models._
 import play.api.libs.json.{ JsArray, JsString }
 import play.api.mvc.{ Action, Controller }
 import websockets.{ NewFolderSocket, TreeSocket }
-import decoders.FlacDecoder
 
 /**
   * Handles fetch requests of JSON information

@@ -1,15 +1,14 @@
 package decoders;
 
 import java.io.File
-
 import scala.sys.process.{ Process, ProcessLogger }
-
 import DbPowerampCodec.devNull
 import common.Debug
 import common.rich.path.RichPath.richPath
 import decoders.CodecType.CodecType
+import common.rich.path.Directory
 
-class DbPowerampCodec(codecFile: File) extends Encoder with Debug {
+class DbPowerampCodec(codecFile: File, outputDir: Directory) extends Mp3Encoder(outputDir) with Debug {
 	private implicit class richString(o: Any) {
 		def quote: String = s""""$o""""";
 	}

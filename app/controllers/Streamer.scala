@@ -8,13 +8,12 @@ import scala.concurrent.Future
 
 import common.rich.path.Directory
 import decoders.DbPowerampCodec
-import decoders.FlacDecoder
 import play.api.mvc.{ Action, Controller }
 
 object Streamer extends Controller {
-  val decoder = new DbPowerampCodec(new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe")) with FlacDecoder  {
-    val outputDir = Directory("D:/media/streamer/musicOutput")
-  }
+  val decoder = new DbPowerampCodec(
+      new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe"),
+      Directory("D:/media/streamer/musicOutput"))
 
   def download(s: String) = Action {
     val futureFile = Future { decoder.encodeFileIfNeeded(new File(URLDecoder.decode(s, "UTF-8"))) }

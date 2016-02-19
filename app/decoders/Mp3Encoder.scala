@@ -9,14 +9,15 @@ import org.joda.time.DateTime
 import common.DaemonRunner
 
 /** Encodes audio files files to mp3. Also handles caching */
-trait Mp3Encoder extends Encoder {
-	val outputDir: Directory
-	
+abstract class Mp3Encoder(outputDir: Directory) extends Encoder {
 	private def cleanOldFiles() {
 	  def getCreationTime(f: File) = Files.readAttributes(f.toPath, classOf[BasicFileAttributes]).creationTime().toMillis()
 	  val minimumCreationTime = DateTime.now.minusWeeks(1).getMillis
 	  outputDir.files.filter(getCreationTime(_) < minimumCreationTime).foreach(_.delete)
 	}
+	
+	def encodeFileIfNeeded(f: File) = if (f.extension.toLowerCase != "mp3") encode(f) else f
+	
 	/**
 	  * Encode the file to an mp3 format
 	  *
