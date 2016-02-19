@@ -8,11 +8,11 @@ import scala.concurrent.Future
 
 import common.rich.path.Directory
 import decoders.DbPowerampCodec
-import decoders.Decoder
+import decoders.FlacDecoder
 import play.api.mvc.{ Action, Controller }
 
 object Streamer extends Controller {
-  val decoder = new Decoder with DbPowerampCodec {
+  val decoder = new FlacDecoder with DbPowerampCodec {
     val codecPath = "D:/Media/Tools/dBpoweramp/CoreConverter.exe"
     val outputDir = Directory("D:/media/streamer/musicOutput")
   }
