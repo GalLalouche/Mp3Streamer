@@ -38,7 +38,7 @@ $(function() {
       $(".jp-currently-playing").html(songInfo);
       document.title = songInfo;
       $('#favicon').remove();
-      $('head').append('<link href="' + $("img")[0].src+ '" id="favicon" rel="shortcut icon">');
+      $('head').append('<link href="' + $("img.poster")[0].src+ '" id="favicon" rel="shortcut icon">');
     };
   });
 
