@@ -10,5 +10,5 @@ object TermIndexBuilder extends IndexBuilder {
       (map, song) => song.title.toLowerCase.split(" ").foldLeft(map)(
         (map, word) => map.updated(word, map(word) + song)))
     .map(e => e._1 -> e._2.toVector)
-    .mapTo(new Index(_))
+    .mapTo(Index.apply)
 }

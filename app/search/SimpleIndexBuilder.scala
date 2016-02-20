@@ -11,7 +11,7 @@ object SimpleIndexBuilder extends IndexBuilder {
         map.updated(key, t :: map(key))
     }
   }
-  override def buildIndexFor(songs: TraversableOnce[Song]) = new Index(
+  override def buildIndexFor(songs: TraversableOnce[Song]) = Index(
     groupBy[Song, String](songs, _.title.toLowerCase)
       .map(e => e._1 -> e._2.toVector)
       .toMap)
