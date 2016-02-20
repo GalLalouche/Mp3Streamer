@@ -8,12 +8,16 @@ import play.api.libs.json.{ JsArray, JsObject, Json }
 import play.api.mvc.{ Action, Controller }
 import search.TermIndexBuilder
 import search.MetadataCacher
+import common.SimpleActor
+import search.Index
 
 object Searcher extends Controller {
-  lazy val songs = MetadataCacher.load
-  lazy val indexBuilder = TermIndexBuilder 
-  lazy val index = TermIndexBuilder.buildIndexFor(songs)
-  
+  private val indexBuilder = TermIndexBuilder
+  var index = indexBuilder.buildIndexFor(MetadataCacher.load)
+  def update(songs: TraversableOnce[Song]) {
+    index = indexBuilder.buildIndexFor(songs)
+  }
+
   def search(path: String) = Action {
     val query = URLDecoder.decode(path, "UTF-8")
     val terms = query split " "
