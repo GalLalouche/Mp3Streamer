@@ -13,7 +13,7 @@ import controllers.Searcher
 
 object MetadataCacher extends SimpleActor[MusicFinder] {
   private val jsonFile = new File("D:/Media/Music/songs.json")
-  override protected def receive(mf: MusicFinder) {
+  override protected def act(mf: MusicFinder) {
     save(mf.getSongIterator.toList)
   }
   def save(songs: Seq[Song]) {

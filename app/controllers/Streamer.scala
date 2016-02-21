@@ -11,9 +11,7 @@ import decoders.DbPowerampCodec
 import play.api.mvc.{ Action, Controller }
 
 object Streamer extends Controller {
-  val decoder = new DbPowerampCodec(
-      new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe"),
-      Directory("D:/media/streamer/musicOutput"))
+  val decoder = DbPowerampCodec
 
   def download(s: String) = Action {
     val futureFile = Future { decoder.encodeFileIfNeeded(new File(URLDecoder.decode(s, "UTF-8"))) }

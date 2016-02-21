@@ -13,15 +13,15 @@ import common.rich.RichT._
  * whatever computation as part of its context.
  */
 trait SimpleActor[Msg] {
-  private val queue = Executors.newFixedThreadPool(1, new ThreadFactory() {
+  protected val queue = Executors.newFixedThreadPool(1, new ThreadFactory() {
     override def newThread(r: Runnable) = {
       val $ = new Thread(r, s"${this.simpleName}'s actor thread")
       $.setDaemon(true)
       $
     }
   })
-  protected def receive(m: Msg)
+  protected def act(m: Msg)
   def !(m: Msg) = queue.submit(new Runnable() {
-    override def run() { receive(m) } 
+    override def run() { act(m) } 
   })
 }

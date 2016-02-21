@@ -4,7 +4,7 @@ import java.io.File
 import java.net.{ URLDecoder, URLEncoder }
 import scala.util.Random
 import akka.actor.{ ActorDSL, actorRef2Scala }
-import common.{ DaemonRunner, Debug, LazyActor }
+import common.{ Debug, LazyActor }
 import common.rich.path.Directory
 import common.rich.path.RichPath.richPath
 import decoders.DbPowerampCodec
@@ -14,6 +14,7 @@ import play.api.libs.json.{ JsArray, JsString }
 import play.api.mvc.{ Action, Controller }
 import websockets.{ NewFolderSocket, TreeSocket }
 import search.MetadataCacher
+import common.SimpleActor
 
 /**
   * Handles fetch requests of JSON information
@@ -62,9 +63,8 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
   }
 
   def album(path: String) = Action {
-    def decode(f: File) { Streamer.decoder.encodeFileIfNeeded(f) } // returns a unit as required by DaemonRunner
     val songs = AlbumDirectory(new File(URLDecoder.decode(path, "UTF-8"))).songs
-    songs.map(_.file).map(e => () => decode(e)).foreach(DaemonRunner.run)
+    songs.map(_.file).foreach(DbPowerampCodec !)
     Ok(JsArray(songs.map(songJsonInformation)))
   }
   
