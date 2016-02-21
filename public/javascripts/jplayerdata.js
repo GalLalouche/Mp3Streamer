@@ -50,17 +50,6 @@ $(function() {
     return s;
   };
   var lastClick = 0;
-  $(document).on("click", ".poster", function(e) {
-    var diff = Date.now() - lastClick; 
-    if (diff < 50)
-      return
-    if (isMobile) {
-      if (diff > 50 && diff < 2000)
-        $(".jp-next").click();
-    } else 
-      jPlayer.togglePlay();
-    lastClick = Date.now();
-  });
 
   $(".jp-currently-playing").css({
     width : '300px',
