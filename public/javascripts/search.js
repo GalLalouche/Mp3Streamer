@@ -26,8 +26,11 @@ $(function() {
   });
 
   $("#searchbox").bind('input change', function(e) {
-    const now = Date.now()
-    var text = $(this).val()
-    $.get("search/" + text, e => setResults(now, e))
+    const text = $(this).val()
+    if (text === "") {
+      $("#clear-results").click()
+      return
+    }
+    $.get("search/" + text, e => setResults(Date.now(), e))
   });
 });
