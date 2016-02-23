@@ -1,11 +1,11 @@
-package models
+package mains.albums
 
-import java.io.File
 import common.rich.path.Directory
+import models.Song
 
-case class Album(artist: String, year: Int, albumName: String)
+private case class Album(artist: String, year: Int, albumName: String)
 
-object Album {
+private object Album {
 	def apply(s: Song) = new Album(s.artist, s.year, s.album)
 	def apply(d: Directory) = {
 		val split = d.name.split("\\s+")

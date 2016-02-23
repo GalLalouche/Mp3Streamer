@@ -1,14 +1,13 @@
 package mains.albums
 
 import common.rich.collections.RichIterator._
-import models.Album
 import play.api.libs.json._
 import play.api.libs.ws.WS
 
 /**
   * Retrieves metadata about a band from some API
   */
-trait MetadataRetriever {
+private trait MetadataRetriever {
 	/** @throws NoSuchElementException if information about the artist couldn't be retrieved */
 	protected def getAlbumsJson(artist: String): JsArray
 

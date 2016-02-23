@@ -10,7 +10,6 @@ import scala.concurrent.duration.DurationInt
 import common.CompositeDateFormat
 import common.rich.RichT.richT
 import common.rich.path.RichFile.richFile
-import models.Album
 import play.api.libs.json.{ JsArray, JsValue }
 import play.api.libs.ws.WS
 
