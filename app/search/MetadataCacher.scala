@@ -1,7 +1,7 @@
 package search
 
 import models.MusicFinder
-import common.SimpleActor
+import common.concurrency.SimpleActor
 import models.Song
 import java.io.File
 import common.rich.path.RichFile._
@@ -13,7 +13,7 @@ import controllers.Searcher
 
 object MetadataCacher extends SimpleActor[MusicFinder] {
   private val jsonFile = new File("D:/Media/Music/songs.json")
-  override protected def act(mf: MusicFinder) {
+  override def apply(mf: MusicFinder) {
     save(mf.getSongIterator.toList)
   }
   def save(songs: Seq[Song]) {

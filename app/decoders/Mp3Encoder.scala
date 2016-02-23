@@ -6,14 +6,14 @@ import java.nio.file.attribute.BasicFileAttributes
 
 import org.joda.time.DateTime
 
-import common.Extra
+import common.concurrency.Extra
 import common.rich.path.Directory
 import common.rich.path.RichFile.{ poorFile, richFile }
 
 /** Encodes audio files files to mp3. Also handles caching */
 abstract class Mp3Encoder(outputDir: Directory) extends Encoder {
   val cleanOldFiles = new Extra {
-    override protected def act() {
+    override def apply() {
       def getCreationTime(f: File) = Files.readAttributes(f.toPath, classOf[BasicFileAttributes]).creationTime().toMillis()
       val minimumCreationTime = DateTime.now.minusWeeks(1).getMillis
       outputDir.files.filter(getCreationTime(_) < minimumCreationTime).foreach(_.delete)

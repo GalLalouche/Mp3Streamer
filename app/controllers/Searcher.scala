@@ -8,7 +8,7 @@ import play.api.libs.json.{ JsArray, JsObject, Json }
 import play.api.mvc.{ Action, Controller }
 import search.TermIndexBuilder
 import search.MetadataCacher
-import common.SimpleActor
+import common.concurrency.SimpleActor
 import search.Index
 
 object Searcher extends Controller {

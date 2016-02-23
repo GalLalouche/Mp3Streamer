@@ -14,7 +14,7 @@ import play.api.libs.json.{ JsArray, JsString }
 import play.api.mvc.{ Action, Controller }
 import websockets.{ NewFolderSocket, TreeSocket }
 import search.MetadataCacher
-import common.SimpleActor
+import common.concurrency.SimpleActor
 
 /**
   * Handles fetch requests of JSON information

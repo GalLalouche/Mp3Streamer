@@ -7,9 +7,9 @@ import common.Debug
 import common.rich.path.RichPath.richPath
 import decoders.CodecType.CodecType
 import common.rich.path.Directory
-import common.WorkerActor
+import common.concurrency.FutureFactory
 
-object DbPowerampCodec extends Mp3Encoder(Directory("D:/media/streamer/musicOutput")) with Debug with WorkerActor[File, File] {
+object DbPowerampCodec extends Mp3Encoder(Directory("D:/media/streamer/musicOutput")) with Debug with FutureFactory[File, File] {
   val codecFile = new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe")
   private implicit class richString(o: Any) {
     def quote: String = s""""$o""""";
@@ -27,7 +27,7 @@ object DbPowerampCodec extends Mp3Encoder(Directory("D:/media/streamer/musicOutp
       val p = Process(args) !< (devNull)
     }
   }
-  override protected def work(m: File): File = encodeFileIfNeeded(m)
+  override def apply(m: File): File = encodeFileIfNeeded(m)
   private val devNull = new ProcessLogger { // sends all output to FREAKING NOWHERE
     // cann't use !! because it throws an exception from the decoder for some reason
     override def out(s: => String): Unit = {}
