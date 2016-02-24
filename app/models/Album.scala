@@ -8,7 +8,7 @@ import play.api.libs.json.JsArray
 /**
   * Handles parsing mp3 data
   */
-class AlbumDirectory(val dir: Directory) {
+class Album(val dir: Directory) {
 	require(dir != null)
 	
 	val songs = dir.files.filter(x => List("mp3", "flac").contains(x.extension)).map(Song(_)).sortBy(_.track)
@@ -18,6 +18,6 @@ class AlbumDirectory(val dir: Directory) {
 	}
 }
 
-object AlbumDirectory {
-	def apply(f: File) = new AlbumDirectory(Directory(f))
+object Album {
+	def apply(f: File) = new Album(Directory(f))
 }
