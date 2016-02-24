@@ -18,15 +18,16 @@ import play.api.libs.json.JsValue
 /**
   * Handles parsing mp3 data
   */
-class Song private(val file: File, val title: String, val artist: String, val album: String, 
+class Song private(val file: File, val title: String, val artist: String, val albumName: String, 
     val track: Int, val year: Int, val bitrate: String, val duration: Int, val size: Long) {
-	override def toString = "%s - %s [%s #%d] (%s)".format(artist, title, album, track, year)
-
+	override def toString = "%s - %s [%s #%d] (%s)".format(artist, title, albumName, track, year)
+	
+	lazy val album = Album(file.parent)
 	def jsonify = Json obj (
 		"file" -> file.path,
 		"title" -> title,
 		"artist" -> artist,
-		"album" -> album,
+		"album" -> albumName,
 		"track" -> track,
 		"year" -> year,
 		"bitrate" -> bitrate,
@@ -71,7 +72,7 @@ object Song {
 		def asLong(s: String): Long = json.\(s).as[Long]
 
 		val file = new File(asString("file"))
-		new Song(file=file, asString("title"), artist=asString("artist"), album=asString("album"),
+		new Song(file=file, asString("title"), artist=asString("artist"), albumName=asString("albumName"),
       track=asInt("track"), year=asInt("year"), bitrate=asString("bitrate"), 
       duration=asInt("duration"), size=asInt("size"))
 	}

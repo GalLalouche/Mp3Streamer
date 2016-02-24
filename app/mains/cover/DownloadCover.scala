@@ -30,7 +30,7 @@ object DownloadCover extends Debug {
 	  */
 	def apply(dir: Directory): Future[Directory => Unit] = {
 		setupDirectory(dir)
-		Future.apply(getHtml(Song(dir.files.head).mapTo(song => s"${song.artist} ${song.album}")))
+		Future.apply(getHtml(Song(dir.files.head).mapTo(song => s"${song.artist} ${song.albumName}")))
 			.map(extractImageURLs)
 			.map(selectImage)
 			.map(fileMover)

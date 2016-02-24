@@ -77,7 +77,7 @@ object FixLabels extends App with Debug {
 			.size > 1
 
 		val (year, album) = musicFiles.head.mapTo(Song.apply)
-			.mapTo(firstSong => retrieveYear(firstSong) -> StringFixer(firstSong.album))
+			.mapTo(firstSong => retrieveYear(firstSong) -> StringFixer(firstSong.albumName))
 
 		musicFiles foreach (fixFile(_, hasNonTrivialDiscNumber))
 		musicFiles foreach rename

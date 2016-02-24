@@ -63,7 +63,7 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
   }
 
   def album(path: String) = Action {
-    val songs = Album(new File(URLDecoder.decode(path, "UTF-8"))).songs
+    val songs = Album(Directory(URLDecoder.decode(path, "UTF-8"))).songs
     songs.map(_.file).foreach(DbPowerampCodec !)
     Ok(JsArray(songs.map(songJsonInformation)))
   }
