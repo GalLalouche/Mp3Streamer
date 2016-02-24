@@ -15,11 +15,6 @@ import search.Jsonable._
 
 object Searcher extends Controller {
   private val indexBuilder = TermIndexBuilder
-  implicit object SongIdex extends Indexable[Song] {
-    override def terms(s: Song) = s.title split " "
-    def compare(s1: Song, s2: Song) = ???
-    def extractFromSong(s: Song) = s
-  }
   var index = indexBuilder.buildIndexFor(MetadataCacher.load[Song])
   def update(songs: TraversableOnce[Song]) {
     index = indexBuilder.buildIndexFor(songs)
