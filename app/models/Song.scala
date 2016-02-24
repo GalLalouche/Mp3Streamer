@@ -14,30 +14,18 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsValue
 
-
 /**
   * Handles parsing mp3 data
   */
-class Song private(val file: File, val title: String, val artist: String, val albumName: String, 
+class Song(val file: File, val title: String, val artist: String, val albumName: String,
     val track: Int, val year: Int, val bitrate: String, val duration: Int, val size: Long) {
-	override def toString = "%s - %s [%s #%d] (%s)".format(artist, title, albumName, track, year)
-	
-	lazy val album = Album(file.parent)
-	def jsonify = Json obj (
-		"file" -> file.path,
-		"title" -> title,
-		"artist" -> artist,
-		"album" -> albumName,
-		"track" -> track,
-		"year" -> year,
-		"bitrate" -> bitrate,
-		"duration" -> duration,
-		"size" -> size)
+  override def toString = "%s - %s [%s #%d] (%s)".format(artist, title, albumName, track, year)
+  lazy val album = Album(file.parent)
 }
 
 object Song {
-	Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF) // STFU already!
-	def apply(file: File): Song = {
+  Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF) // STFU already!
+  def apply(file: File): Song = {
     require(file != null)
     require(file exists)
     require(file.isDirectory == false)
@@ -65,15 +53,5 @@ object Song {
     val size = file.length
 
     new Song(file, title, artist, album, track, year, bitrate, duration, size)
-	}
-	def apply(json: JsObject): Song = {
-		def asString(s: String): String = json.\(s).as[String]
-		def asInt(s: String): Int = json.\(s).as[Int]
-		def asLong(s: String): Long = json.\(s).as[Long]
-
-		val file = new File(asString("file"))
-		new Song(file=file, asString("title"), artist=asString("artist"), albumName=asString("albumName"),
-      track=asInt("track"), year=asInt("year"), bitrate=asString("bitrate"), 
-      duration=asInt("duration"), size=asInt("size"))
-	}
+  }
 }

@@ -15,6 +15,7 @@ import play.api.mvc.{ Action, Controller }
 import websockets.{ NewFolderSocket, TreeSocket }
 import search.MetadataCacher
 import common.concurrency.SimpleActor
+import search.Jsonable._
 
 /**
   * Handles fetch requests of JSON information
@@ -24,7 +25,7 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
   private var songPaths: Seq[File] = null
 
   private def songJsonInformation(song: models.Song): play.api.libs.json.JsObject = {
-    song.jsonify + (("mp3", JsString("/stream/download/" + URLEncoder.encode(song.file.path, "UTF-8")))) +
+    SongJsonifier.jsonify(song) + (("mp3", JsString("/stream/download/" + URLEncoder.encode(song.file.path, "UTF-8")))) +
       (("poster", JsString("/posters/" + Poster.getCoverArt(song).path)))
   }
 
@@ -67,7 +68,7 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
     songs.map(_.file).foreach(DbPowerampCodec !)
     Ok(JsArray(songs.map(songJsonInformation)))
   }
-  
+
   def song(path: String) = Action {
     Ok(songJsonInformation(Song(new File(URLDecoder.decode(path, "UTF-8")))))
   }

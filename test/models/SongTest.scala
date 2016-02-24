@@ -3,16 +3,15 @@
 package models
 
 import java.io.File
-
 import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
-
 import javax.servlet.http.{ HttpServlet, HttpServletRequest, HttpServletResponse }
 import play.api.Play
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.test.FakeApplication
+import search.Jsonable
 
 @RunWith(classOf[JUnitRunner])
 class SongTest extends Specification {
@@ -45,7 +44,7 @@ class SongTest extends Specification {
 				"artist" -> "Sentenced",
 				"title" -> "Hidden Track"
 			)
-			$.jsonify === expected
+			Jsonable.SongJsonifier.jsonify($) === expected
 		}
 
 		"parse year correctly" >> {

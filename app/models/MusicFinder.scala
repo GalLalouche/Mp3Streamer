@@ -18,11 +18,4 @@ trait MusicFinder extends Debug {
       .map(_.path)
       .toVector
   }
-  def getSongIterator: Iterator[Song] = {
-    timed("finding files") { (genreDirs.flatMap(_.files) ++ (genreDirs.flatMap(_.dirs).par.flatMap(_.deepFiles))) }
-      .iterator
-      .filter(x => extensions.contains(x.extension))
-      .map(_.f)
-      .map(Song.apply)
-  }
 }

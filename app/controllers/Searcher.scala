@@ -11,6 +11,7 @@ import search.MetadataCacher
 import common.concurrency.SimpleActor
 import search.Index
 import search.Indexable
+import search.Jsonable._
 
 object Searcher extends Controller {
   private val indexBuilder = TermIndexBuilder
@@ -19,7 +20,7 @@ object Searcher extends Controller {
     def compare(s1: Song, s2: Song) = ???
     def extractFromSong(s: Song) = s
   }
-  var index = indexBuilder.buildIndexFor(MetadataCacher.load)
+  var index = indexBuilder.buildIndexFor(MetadataCacher.load[Song])
   def update(songs: TraversableOnce[Song]) {
     index = indexBuilder.buildIndexFor(songs)
   }
@@ -27,6 +28,6 @@ object Searcher extends Controller {
   def search(path: String) = Action {
     val query = URLDecoder.decode(path, "UTF-8")
     val terms = query split " "
-    Ok(JsArray(index.findIntersection(terms).map(_.jsonify)))
+    Ok(JsArray(index.findIntersection(terms).map(SongJsonifier.jsonify)))
   }
 }
