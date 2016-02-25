@@ -17,13 +17,14 @@ object Searcher extends Controller {
   private val indexBuilder = TermIndexBuilder
   private def buildIndexFromCache[T: Jsonable: Indexable](implicit m: Manifest[T]) =
     indexBuilder.buildIndexFor(MetadataCacher.load[T])
-  var songIndex = buildIndexFromCache[Song]
-  var albumIndex = buildIndexFromCache[Album]
-  var artistIndex = buildIndexFromCache[Artist]
-  def update(songs: TraversableOnce[Song]) {
-    songIndex = buildIndexFromCache[Song]
-    albumIndex = buildIndexFromCache[Album]
-    artistIndex = buildIndexFromCache[Artist]
+  var songIndex: Index[Song] = null
+  var albumIndex: Index[Album] = null
+  var artistIndex: Index[Artist] = null
+  update
+  def update() {
+    songIndex = buildIndexFromCache
+    albumIndex = buildIndexFromCache
+    artistIndex = buildIndexFromCache
   }
 
   def search(path: String) = Action {
