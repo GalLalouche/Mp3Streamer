@@ -1,28 +1,39 @@
 package controllers
 
-import java.io.File
 import java.net.URLDecoder
-import common.rich.path.RichFile.richFile
-import models.Song
-import play.api.libs.json.{ JsArray, JsObject, Json }
+
+import common.rich.RichT.richT
+import models.{ Album, Artist, Song }
+import play.api.libs.json.{ JsArray, Json }
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.mvc.{ Action, Controller }
-import search.TermIndexBuilder
-import search.MetadataCacher
-import common.concurrency.SimpleActor
-import search.Index
-import search.Indexable
+import search.{ Index, Indexable }
+import search.{ MetadataCacher, TermIndexBuilder }
+import search.Indexable._
+import search.Jsonable
 import search.Jsonable._
 
 object Searcher extends Controller {
   private val indexBuilder = TermIndexBuilder
-  var index = indexBuilder.buildIndexFor(MetadataCacher.load[Song])
+  private def buildIndexFromCache[T: Jsonable: Indexable](implicit m: Manifest[T]) =
+    indexBuilder.buildIndexFor(MetadataCacher.load[T])
+  var songIndex = buildIndexFromCache[Song]
+  var albumIndex = buildIndexFromCache[Album]
+  var artistIndex = buildIndexFromCache[Artist]
   def update(songs: TraversableOnce[Song]) {
-    index = indexBuilder.buildIndexFor(songs)
+    songIndex = buildIndexFromCache[Song]
+    albumIndex = buildIndexFromCache[Album]
+    artistIndex = buildIndexFromCache[Artist]
   }
 
   def search(path: String) = Action {
     val query = URLDecoder.decode(path, "UTF-8")
     val terms = query split " "
-    Ok(JsArray(index.findIntersection(terms).map(SongJsonifier.jsonify)))
+    def toArray[T: Jsonable](index: Index[T]): JsArray =
+      index.findIntersection(terms).map(implicitly[Jsonable[T]].jsonify).mapTo(JsArray)
+    val songs = toArray(songIndex)
+    val albums = toArray(albumIndex)
+    val artists = toArray(artistIndex)
+    Ok(Json obj ("songs" -> songs, "albums" -> albums, "artists" -> artists))
   }
 }

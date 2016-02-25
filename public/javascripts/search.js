@@ -13,7 +13,7 @@ $(function() {
     results.empty()
     results.append('<ul style="list-style-type:none" />')
     const ul = results.find('ul')
-    $.each(jsArray, function(_, s) {
+    $.each(jsArray.songs, function(_, s) {
       const item = `${img("play")} ${img("add")} ${s.artist}: ${s.title}`
       ul.append(`<li data-song='${JSON.stringify(s)}'>${item}</li>`)
     })

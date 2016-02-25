@@ -18,7 +18,7 @@ object Jsonable {
       "file" -> s.file.path,
       "title" -> s.title,
       "artist" -> s.artist,
-      "album" -> s.albumName,
+      "albumName" -> s.albumName,
       "track" -> s.track,
       "year" -> s.year,
       "bitrate" -> s.bitrate,
@@ -38,7 +38,7 @@ object Jsonable {
   implicit object AlbumJsonifier extends Jsonable[Album] {
     def jsonify(a: Album) = Json obj (
       "dir" -> a.dir.path,
-      "name" -> a.name,
+      "name" -> a.title,
       "artistName" -> a.artistName)
     def parse(json: JsObject): Album = {
       def asString(s: String): String = json.\(s).as[String]
