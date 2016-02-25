@@ -2,7 +2,7 @@ package models
 
 import common.rich.path.Directory
 
-class Artist(val dir: Directory, val name: String) {
+case class Artist(val dir: Directory, val name: String) {
   lazy val albums = dir.dirs.map(Album.apply)
 }
 
