@@ -10,7 +10,7 @@ $(function() {
     function specificResults(name, itemProducer) {
       const tab = $(`#${name}-results`)
       tab.empty()
-      tab.append('<ul style="list-style-type:none" />')
+      tab.append('<ul/>')
       const ul = tab.find('ul')
       $.each(jsArray[`${name}s`], function(_, s) {
         const item = itemProducer(s)

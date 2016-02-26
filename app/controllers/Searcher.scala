@@ -14,7 +14,7 @@ import search.Jsonable._
 import search.CompositeIndex
 
 object Searcher extends Controller {
-  private val index = new CompositeIndex(TermIndexBuilder)
+  private val index = CompositeIndex.buildWith(TermIndexBuilder)
   private def toArray[T: Jsonable](results: Seq[T]): JsArray =
     results.map(implicitly[Jsonable[T]].jsonify).mapTo(JsArray)
   def search(path: String) = Action {

@@ -1,0 +1,11 @@
+#search *{
+  font-size:15px !important;
+} 
+#search li {
+  font-size:12px !important;
+}
+
+#search-results ul {
+  list-style-type:none;
+  padding-left:0;
+}
