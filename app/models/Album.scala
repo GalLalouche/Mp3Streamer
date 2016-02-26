@@ -11,7 +11,6 @@ import common.rich.RichT._
   * Handles parsing mp3 data
   */
 case class Album(val dir: Directory, val title: String, val artistName: String) {
-  lazy val artist: Artist = Artist(dir.parent)
   lazy val songs = dir.files.filter(x => List("mp3", "flac").contains(x.extension)).map(Song(_)).sortBy(_.track)
   lazy val year = songs.head.year
 }

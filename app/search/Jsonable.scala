@@ -5,7 +5,7 @@ import java.io.File
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
 import models.{ Album, Artist, Song }
-import play.api.libs.json.{ JsObject, Json }
+import play.api.libs.json.{ JsArray, JsObject, Json }
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 
 trait Jsonable[T] {
@@ -14,6 +14,12 @@ trait Jsonable[T] {
 }
 
 object Jsonable {
+  private implicit class smartJson(json: JsObject) {
+    def string(s: String): String = json.\(s).as[String]
+    def int(s: String) = json.\(s).as[Int]
+    def long(s: String) = json.\(s).as[Long]
+    def array(s: String) = json.\(s).as[JsArray].value
+  }
   implicit object SongJsonifier extends Jsonable[Song] {
     def jsonify(s: Song) = Json obj (
       "file" -> s.file.path,
@@ -26,14 +32,10 @@ object Jsonable {
       "duration" -> s.duration,
       "size" -> s.size)
     def parse(json: JsObject): Song = {
-      def asString(s: String): String = json.\(s).as[String]
-      def asInt(s: String): Int = json.\(s).as[Int]
-      def asLong(s: String): Long = json.\(s).as[Long]
-
-      val file = new File(asString("file"))
-      new Song(file = file, title = asString("title"), artistName = asString("artistName"), albumName = asString("albumName"),
-        track = asInt("track"), year = asInt("year"), bitrate = asString("bitrate"),
-        duration = asInt("duration"), size = asInt("size"))
+      val file = new File(json.string("file"))
+      new Song(file = file, title = json.string("title"), artistName = json.string("artistName"), albumName = json.string("albumName"),
+        track = json.int("track"), year = json.int("year"), bitrate = json.string("bitrate"),
+        duration = json.int("duration"), size = json.long("size"))
     }
   }
   implicit object AlbumJsonifier extends Jsonable[Album] {
@@ -43,23 +45,17 @@ object Jsonable {
       "artistName" -> a.artistName,
       "year" -> a.year)
     def parse(json: JsObject): Album = {
-      def asString(s: String): String = json.\(s).as[String]
-      def asInt(s: String): Int = json.\(s).as[Int]
-      def asLong(s: String): Long = json.\(s).as[Long]
-
-      new Album(Directory(asString("dir")), title = asString("title"), artistName = asString("artistName"))
+      new Album(Directory(json.string("dir")), title = json.string("title"), artistName = json.string("artistName"))
     }
   }
   implicit object ArtistJsonifier extends Jsonable[Artist] {
     def jsonify(a: Artist) = Json obj (
-      "dir" -> a.dir.path,
-      "name" -> a.name)
+      "name" -> a.name,
+      "albums" -> JsArray(a.albums.toSeq.map(AlbumJsonifier.jsonify))
+    )
     def parse(json: JsObject): Artist = {
-      def asString(s: String): String = json.\(s).as[String]
-      def asInt(s: String): Int = json.\(s).as[Int]
-      def asLong(s: String): Long = json.\(s).as[Long]
-
-      new Artist(Directory(asString("dir")), asString("name"))
+      val albums = json.array("albums").map(_.as[JsObject]).map(AlbumJsonifier.parse)
+      new Artist(json.string("name"), albums.toSet)
     }
   }
 }

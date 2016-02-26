@@ -2,10 +2,11 @@ package models
 
 import common.rich.path.Directory
 
-case class Artist(val dir: Directory, val name: String) {
-  lazy val albums = dir.dirs.map(Album.apply)
-}
+final class Artist(val name: String, val albums: Set[Album]) {
+  override def equals(other: Any) = other match {
+    case that: Artist => name == that.name
+    case _            => false
+  }
 
-object Artist {
-  def apply(dir: Directory): Artist = new Artist(dir, dir.name)
+  override def hashCode() = 41 + name.hashCode
 }
