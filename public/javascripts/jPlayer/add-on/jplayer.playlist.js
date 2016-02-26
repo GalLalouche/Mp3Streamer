@@ -297,13 +297,12 @@
 		    
 		    // The title is given next in the HTML otherwise the float:right on
 		    // the free media corrupts in IE6/7
-		    duration = ("0" + parseInt(media.duration / 60, 10)).slice(-2) + ":" + ("0" + (media.duration % 60)).slice(-2);
 		    listItem += "<a href='javascript:;' class='"
 		            + this.options.playlistOptions.itemClass
 		            + "' tabindex='1'>"
 		            + media.title
 		            + " <span class='jp-artist'>by {0} ({1}, {2}, {3}, {4}kbps, {5}) </span>".f(media.artistName, media.albumName,
-		                    media.track, media.year, media.bitrate, duration);
+		                    media.track, media.year, media.bitrate, media.duration.timeFormat());
 		    listItem += "</div></li>";
 		    
 		    return listItem;
