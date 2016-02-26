@@ -36,7 +36,7 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
   private val updatingMusic = () => timed("Updating music") {
     // this cannot be inlined, as it has to be the same function for LazyActor
     songPaths = getSongFilePaths.map(new File(_))
-    MetadataCacher ! this
+//    MetadataCacher ! this
     TreeSocket.actor ! TreeSocket.Update
   }
 
