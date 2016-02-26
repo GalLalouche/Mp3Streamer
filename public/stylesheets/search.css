@@ -4,8 +4,13 @@
 #search li {
   font-size:12px !important;
 }
+#search-results .fa {
+  zoom: 1.2;
+  cursor: pointer;
+}
 
 #search-results ul {
   list-style-type:none;
   padding-left:0;
 }
+

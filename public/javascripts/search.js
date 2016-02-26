@@ -1,12 +1,7 @@
 $(function() {
   function setResults(requestTime, jsArray) {
     $("#search-results").show()
-    function img(name) {
-      const size = 24
-      return `<img src="assets/images/${name}_icon.png"
-          height="${size}" width="${size}"
-          class="result-list-button ${name}" />`
-    }
+    const icon = name => `<i class="fa fa-${name}"/>`
     function specificResults(name, itemProducer) {
       const tab = $(`#${name}-results`)
       tab.empty()
@@ -21,16 +16,22 @@ $(function() {
     if (results.attr("time") > requestTime)
       return // a later request has already set the result
     results.attr("time", requestTime)
-    specificResults("song",  s => `${img("play")} ${img("add")} ${s.artistName}: ${s.title}`)
-    specificResults("album", a => `${img("play")} ${img("add")} ${a.artistName}: ${a.title}`)
+    specificResults("song",  s => `${icon("play")} ${icon("plus")} ${s.artistName}: ${s.title}`)
+    specificResults("album", a => `${icon("plus")} ${a.artistName}: ${a.title} (${a.year | "N/A"})`)
     specificResults("artist", a => a.name)
   }
 
-  $("#search-results").on("click", ".result-list-button", function(e) {
-    const song = JSON.parse(e.target.parentElement.attributes["data-song"].value)
-    const isPlay = e.target.classList.contains("play")
+  const getValue = (e, name) => JSON.parse(e.target.parentElement.attributes[`data-${name}`].value)
+  const results = $("#search-results")
+  results.on("click", "#song-results .fa", function(e) {
+    const song = getValue(e, "song")
+    const isPlay = e.target.classList.contains("fa-play")
     $.get("data/songs/" + song.file, e => playlist.add(e, isPlay))
   });
+  results.on("click", "#album-results .fa", function(e) {
+    const album = getValue(e, "album")
+    $.get("data/albums/" + album.dir, e => playlist.add(e, false))
+  })
 
   $("#searchbox").bind('input change', function(e) {
     const text = $(this).val()

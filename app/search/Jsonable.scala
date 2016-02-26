@@ -40,7 +40,8 @@ object Jsonable {
     def jsonify(a: Album) = Json obj (
       "dir" -> a.dir.path,
       "title" -> a.title,
-      "artistName" -> a.artistName)
+      "artistName" -> a.artistName,
+      "year" -> a.year)
     def parse(json: JsObject): Album = {
       def asString(s: String): String = json.\(s).as[String]
       def asInt(s: String): Int = json.\(s).as[Int]
