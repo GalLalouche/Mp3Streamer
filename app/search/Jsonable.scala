@@ -1,11 +1,12 @@
 package search
 
-import play.api.libs.json.JsObject
-import models._
-import common.rich.path.RichFile._
 import java.io.File
-import play.api.libs.json.Json
+
 import common.rich.path.Directory
+import common.rich.path.RichFile.richFile
+import models.{ Album, Artist, Song }
+import play.api.libs.json.{ JsObject, Json }
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
 
 trait Jsonable[T] {
   def jsonify(t: T): JsObject
@@ -17,7 +18,7 @@ object Jsonable {
     def jsonify(s: Song) = Json obj (
       "file" -> s.file.path,
       "title" -> s.title,
-      "artist" -> s.artist,
+      "artistName" -> s.artistName,
       "albumName" -> s.albumName,
       "track" -> s.track,
       "year" -> s.year,
@@ -30,7 +31,7 @@ object Jsonable {
       def asLong(s: String): Long = json.\(s).as[Long]
 
       val file = new File(asString("file"))
-      new Song(file = file, title = asString("title"), artist = asString("artist"), albumName = asString("albumName"),
+      new Song(file = file, title = asString("title"), artistName = asString("artistName"), albumName = asString("albumName"),
         track = asInt("track"), year = asInt("year"), bitrate = asString("bitrate"),
         duration = asInt("duration"), size = asInt("size"))
     }
@@ -38,14 +39,14 @@ object Jsonable {
   implicit object AlbumJsonifier extends Jsonable[Album] {
     def jsonify(a: Album) = Json obj (
       "dir" -> a.dir.path,
-      "name" -> a.title,
+      "title" -> a.title,
       "artistName" -> a.artistName)
     def parse(json: JsObject): Album = {
       def asString(s: String): String = json.\(s).as[String]
       def asInt(s: String): Int = json.\(s).as[Int]
       def asLong(s: String): Long = json.\(s).as[Long]
 
-      new Album(Directory(asString("dir")), asString("name"), asString("artistName"))
+      new Album(Directory(asString("dir")), title = asString("title"), artistName = asString("artistName"))
     }
   }
   implicit object ArtistJsonifier extends Jsonable[Artist] {

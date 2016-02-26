@@ -24,7 +24,7 @@ class SongTest extends Specification {
 	"Song" >> {
 		"parse id3tag" >> {
 			$.title === "Hidden Track"
-			$.artist === "Sentenced"
+			$.artistName === "Sentenced"
 			$.albumName === "Crimson"
 			$.track === 12
 			$.year === 2000

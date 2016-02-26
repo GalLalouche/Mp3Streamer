@@ -24,7 +24,7 @@ object Indexable {
   implicit object SongIndexer extends Indexable[Song] {
     override protected def name(s: Song) = s.title
     override protected val compareByList = 
-      List[Song => String](_.artist, _.year.toString, _.albumName, _.title.toString)
+      List[Song => String](_.artistName, _.year.toString, _.albumName, _.title.toString)
   }
   implicit object AlbumIndex extends Indexable[Album] {
     override protected def name(a: Album) = a.title

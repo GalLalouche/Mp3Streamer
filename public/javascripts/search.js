@@ -1,22 +1,29 @@
 $(function() {
   function setResults(requestTime, jsArray) {
+    $("#search-results").show()
     function img(name) {
       const size = 24
       return `<img src="assets/images/${name}_icon.png"
           height="${size}" width="${size}"
           class="result-list-button ${name}" />`
     }
+    function specificResults(name, itemProducer) {
+      const tab = $(`#${name}-results`)
+      tab.empty()
+      tab.append('<ul style="list-style-type:none" />')
+      const ul = tab.find('ul')
+      $.each(jsArray[`${name}s`], function(_, s) {
+        const item = itemProducer(s)
+        ul.append(`<li data-${name}='${JSON.stringify(s)}'>${item}</li>`)
+      })
+    }
     const results = $("#search-results")
     if (results.attr("time") > requestTime)
       return // a later request has already set the result
     results.attr("time", requestTime)
-    results.empty()
-    results.append('<ul style="list-style-type:none" />')
-    const ul = results.find('ul')
-    $.each(jsArray.songs, function(_, s) {
-      const item = `${img("play")} ${img("add")} ${s.artist}: ${s.title}`
-      ul.append(`<li data-song='${JSON.stringify(s)}'>${item}</li>`)
-    })
+    specificResults("song",  s => `${img("play")} ${img("add")} ${s.artistName}: ${s.title}`)
+    specificResults("album", a => `${img("play")} ${img("add")} ${a.artistName}: ${a.title}`)
+    specificResults("artist", a => a.name)
   }
 
   $("#search-results").on("click", ".result-list-button", function(e) {
@@ -33,4 +40,6 @@ $(function() {
     }
     $.get("search/" + text, e => setResults(Date.now(), e))
   });
+  $("#search-results").tabs()
+  $("#clear-results").click()
 });

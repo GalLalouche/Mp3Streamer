@@ -17,9 +17,9 @@ import play.api.libs.json.JsValue
 /**
   * Handles parsing mp3 data
   */
-class Song(val file: File, val title: String, val artist: String, val albumName: String,
+class Song(val file: File, val title: String, val artistName: String, val albumName: String,
     val track: Int, val year: Int, val bitrate: String, val duration: Int, val size: Long) {
-  override def toString = "%s - %s [%s #%d] (%s)".format(artist, title, albumName, track, year)
+  override def toString = "%s - %s [%s #%d] (%s)".format(artistName, title, albumName, track, year)
   lazy val album = Album(file.parent)
 }
 
@@ -52,6 +52,7 @@ object Song {
     val duration = header.getTrackLength()
     val size = file.length
 
-    new Song(file, title, artist, album, track, year, bitrate, duration, size)
+    new Song(file = file, title = title, artistName = artist, albumName = album, track = track,
+      year = year, bitrate = bitrate, duration = duration, size = size)
   }
 }

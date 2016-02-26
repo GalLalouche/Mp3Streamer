@@ -302,7 +302,7 @@
 		            + this.options.playlistOptions.itemClass
 		            + "' tabindex='1'>"
 		            + media.title
-		            + " <span class='jp-artist'>by {0} ({1}, {2}, {3}, {4}kbps, {5}) </span>".f(media.artist, media.album,
+		            + " <span class='jp-artist'>by {0} ({1}, {2}, {3}, {4}kbps, {5}) </span>".f(media.artistName, media.albumName,
 		                    media.track, media.year, media.bitrate, duration);
 		    listItem += "</div></li>";
 		    
@@ -363,8 +363,8 @@
 			            .find(".jp-playlist-item").addClass("jp-playlist-current");
 			    $(this.cssSelector.title + " li").html(
 			            this.playlist[index].title
-			                    + (this.playlist[index].artist ? " <span class='jp-artist'>by "
-			                            + this.playlist[index].artist + "</span>" : ""));
+			                    + (this.playlist[index].artistName ? " <span class='jp-artist'>by "
+			                            + this.playlist[index].artistName + "</span>" : ""));
 		    }
 	    },
 	    setPlaylist: function(playlist, instant) {

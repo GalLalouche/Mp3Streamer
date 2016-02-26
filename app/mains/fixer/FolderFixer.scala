@@ -64,7 +64,7 @@ object FolderFixer {
 			.filter(Set("mp3", "flac") contains _.extension)
 			.head
 			.mapTo(Song.apply)
-			.artist
+			.artistName
 		val folder = Directory(args(0))
 		val artist = extractArtistFromFile(folder)
 		val location = Future(findArtistFolder(artist))

@@ -6,7 +6,7 @@ import models.Song
 private case class Album(artist: String, year: Int, albumName: String)
 
 private object Album {
-	def apply(s: Song) = new Album(s.artist, s.year, s.albumName)
+	def apply(s: Song) = new Album(s.artistName, s.year, s.albumName)
 	def apply(d: Directory) = {
 		val split = d.name.split("\\s+")
 		val year = split(0).toInt

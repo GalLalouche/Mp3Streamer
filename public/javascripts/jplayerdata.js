@@ -34,7 +34,7 @@ $(function() {
     var jPlayer = $(playlist.cssSelector.jPlayer).data("jPlayer");
     jPlayer.onPlay = function() {
       var currentlyPlayingSong = playlist.currentPlayingSong();
-      var songInfo = currentlyPlayingSong.artist + " - " + currentlyPlayingSong.title;
+      var songInfo = currentlyPlayingSong.artistName + " - " + currentlyPlayingSong.title;
       $(".jp-currently-playing").html(songInfo);
       document.title = songInfo;
       $('#favicon').remove();
