@@ -1,39 +1,50 @@
 $(function() {
+  const results = $("#search-results")
   function setResults(requestTime, jsArray) {
-    $("#search-results").show()
-    const icon = name => `<i class="fa fa-${name}"/>`
-    function specificResults(name, itemProducer) {
-      const tab = $(`#${name}-results`)
-      tab.empty()
-      tab.append('<ul/>')
-      const ul = tab.find('ul')
-      $.each(jsArray[`${name}s`], function(_, s) {
-        const item = itemProducer(s)
-        const li = $(`<li class="${name}-result">${item}</li>`)
-        li.appendTo(ul)
-        li.data(s)
+    results.show()
+    function icon(name) { return `<i class="fa fa-${name}"/>` }
+    const playIcon = icon("play")
+    const addIcon = icon("plus")
+    function specificResults(name, itemProducer, appendTo, array) {
+      const ul = elem("ul").appendTo(appendTo || $(`#${name}-results`).empty())
+      $.each(array || jsArray[`${name}s`], function(_, e) {
+        $(`<li class="${name}-result">${itemProducer(e)}</li>`)
+            .appendTo(ul)
+            .data(e)
       })
     }
-    const results = $("#search-results")
     if (results.attr("time") > requestTime)
       return // a later request has already set the result
     results.attr("time", requestTime)
-    specificResults("song",  s => `${icon("play")} ${icon("plus")} ${s.artistName}: ${s.title} (${s.duration.timeFormat()})`)
+    specificResults("song",  s => 
+        `${addIcon} ${playIcon} ${s.artistName}: ${s.title} (${s.duration.timeFormat()})`)
     $.each($(".song-result"), function(_, e) {
       const song = $(this).data()
       $(this).attr("title", `${song.year}, ${song.albumName}, ${song.track}`)
     })
-    specificResults("album", a => `${icon("plus")} ${a.artistName}: ${a.title} (${a.year | "N/A"})`)
-    specificResults("artist", a => a.name)
+    const albumItem = a => `${playIcon} ${a.artistName}: ${a.title} (${a.year || "N/A"})`
+    specificResults("album", albumItem)
+    specificResults("artist", _ => "")
+    $.each($(".artist-result"), function(_, e) {
+      const li = $(this)
+      const artist = li.data()
+      const header = li.append(`<h2>${artist.name}</h2>`)
+      const albums = elem("div").appendTo(li)
+      specificResults("album", a => `${addIcon} ${a.year} ${a.title}`, albums, artist.albums)
+      li.accordion({
+        collapsible: true,
+        active: false,
+        heightStyle: "content",
+      })
+    })
   }
 
-  const results = $("#search-results")
   results.on("click", "#song-results .fa", function(e) {
     const song = $(this).parent().data()
     const isPlay = e.target.classList.contains("fa-play")
     $.get("data/songs/" + song.file, e => playlist.add(e, isPlay))
-  });
-  results.on("click", "#album-results .fa", function(e) {
+  })
+  results.on("click", ".album-result .fa", function(e) {
     const album = $(this).parent().data()
     $.get("data/albums/" + album.dir, e => playlist.add(e, false))
   })
@@ -41,11 +52,12 @@ $(function() {
   $("#searchbox").bind('input change', function(e) {
     const text = $(this).val()
     if (text === "") {
-      $("#clear-results").click()
-      return
+      return $("#clear-results").click()
     }
+    if (text.length < 3)
+      return
     $.get("search/" + text, e => setResults(Date.now(), e))
-  });
+  })
   $("#search-results").tabs()
   $("#clear-results").click()
-});
+})
