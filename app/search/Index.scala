@@ -14,6 +14,6 @@ class Index[T: Indexable](map: Map[String, Seq[T]]) {
     def findAsSet(s: String) = find(s).toSet
     val list = ss.toList
     val intersection = list.tail.foldLeft(findAsSet(list.head))((agg, term) => agg.intersect(findAsSet(term)))
-    intersection.toSeq.sortWith(implicitly[Indexable[T]].compare)
+    implicitly[Indexable[T]].sort(intersection.toVector)
   }
 }
