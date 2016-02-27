@@ -16,11 +16,11 @@ object MetadataCacher extends SimpleActor[MusicFinder] {
   private case class Cacheables private (songs: List[Song], albums: Set[Album], artists: Map[String, Artist]) {
     def this() = this(Nil, Set(), Map().withDefault(a => new Artist(a, Set())))
     def +(fm: FileMetadata) = {
-      val updateArtists = {
+      val updatedArtists = {
         val a = artists(fm.artist)
-        artists + (a.name -> new Artist(a.name, a.albums + fm.album))
+        artists + (a.name -> a.addAlbum(fm.album))
       }
-      Cacheables(fm.song :: songs, albums + fm.album, updateArtists)
+      Cacheables(fm.song :: songs, albums + fm.album, updatedArtists)
     }
   }
   private def jsonFileName[T](m: Manifest[T]) =
