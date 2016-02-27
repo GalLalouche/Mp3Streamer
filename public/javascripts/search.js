@@ -54,8 +54,6 @@ $(function() {
     if (text === "") {
       return $("#clear-results").click()
     }
-    if (text.length < 3)
-      return
     $.get("search/" + text, e => setResults(Date.now(), e))
   })
   $("#search-results").tabs()
