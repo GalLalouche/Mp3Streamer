@@ -20,7 +20,7 @@ import play.api.libs.json.JsValue
 class Song(val file: File, val title: String, val artistName: String, val albumName: String,
     val track: Int, val year: Int, val bitrate: String, val duration: Int, val size: Long) {
   override def toString = "%s - %s [%s #%d] (%s)".format(artistName, title, albumName, track, year)
-  lazy val album = Album(file.parent)
+  lazy val album = Album(dir = file.parent, title = albumName, artistName = artistName, year = year)
 }
 
 object Song {

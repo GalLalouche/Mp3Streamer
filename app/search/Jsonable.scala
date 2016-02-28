@@ -22,7 +22,7 @@ object Jsonable {
   }
   implicit object SongJsonifier extends Jsonable[Song] {
     def jsonify(s: Song) = Json obj (
-      "file" -> s.file.path,
+      "file" -> s.file.getAbsolutePath,
       "title" -> s.title,
       "artistName" -> s.artistName,
       "albumName" -> s.albumName,
@@ -40,12 +40,15 @@ object Jsonable {
   }
   implicit object AlbumJsonifier extends Jsonable[Album] {
     def jsonify(a: Album) = Json obj (
-      "dir" -> a.dir.path,
+      "dir" -> a.dir.getAbsolutePath,
       "title" -> a.title,
       "artistName" -> a.artistName,
       "year" -> a.year)
     def parse(json: JsObject): Album = {
-      new Album(Directory(json.string("dir")), title = json.string("title"), artistName = json.string("artistName"))
+      new Album(new File(json.string("dir")),
+          title = json.string("title"),
+          artistName = json.string("artistName"),
+          year = json.int("year"))
     }
   }
   implicit object ArtistJsonifier extends Jsonable[Artist] {
