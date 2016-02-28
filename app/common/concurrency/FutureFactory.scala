@@ -10,7 +10,7 @@ trait FutureFactory[Msg, Result] {
   def apply(m: Msg): Result
   private val queue = Executors.newFixedThreadPool(1, new ThreadFactory() {
     override def newThread(r: Runnable) = {
-      val $ = new Thread(r, s"${this.simpleName}'s actor thread")
+      val $ = new Thread(r, s"${FutureFactory.this.simpleName}'s actor thread")
       $.setDaemon(true)
       $
     }
