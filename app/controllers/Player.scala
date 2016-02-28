@@ -36,16 +36,18 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
   private val updatingMusic = () => timed("Updating music") {
     // this cannot be inlined, as it has to be the same function for LazyActor
     songPaths = getSongFilePaths.map(new File(_))
-//    MetadataCacher ! this
     TreeSocket.actor ! TreeSocket.Update
   }
 
   private val watcher = ActorDSL.actor(new DirectoryWatcher(ActorDSL.actor(new Act {
     become {
       case DirectoryWatcher.DirectoryCreated(d) =>
+        MetadataCacher ! d
         lazyActor ! updatingMusic
         NewFolderSocket.actor ! d
-      case DirectoryWatcher.DirectoryDeleted(_) => lazyActor ! updatingMusic
+      case DirectoryWatcher.DirectoryDeleted(d) => 
+        MetadataCacher ! d
+        lazyActor ! updatingMusic
     }
   }), genreDirs))
   updatingMusic()
