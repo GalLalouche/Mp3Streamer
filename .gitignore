@@ -1,4 +1,5 @@
 logs
+projectFilesBackup*/*
 project/project
 project/target
 target
