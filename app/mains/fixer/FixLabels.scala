@@ -2,13 +2,6 @@ package mains.fixer
 
 import java.io.File
 
-import scala.util.Try
-
-import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.tag.FieldKey
-import org.jaudiotagger.tag.flac.FlacTag
-import org.jaudiotagger.tag.id3.ID3v24Tag
-
 import common.Debug
 import common.rich.RichT.richT
 import common.rich.path.Directory
@@ -16,6 +9,12 @@ import common.rich.path.RichFile.richFile
 import common.rich.path.RichPath.poorPath
 import common.rich.primitives.RichString.richString
 import models.Song
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.FieldKey
+import org.jaudiotagger.tag.flac.FlacTag
+import org.jaudiotagger.tag.id3.ID3v24Tag
+
+import scala.util.Try
 
 /** Fixes ID3 tags on mp3 (and flac) files to proper casing, etc. */
 object FixLabels extends App with Debug {

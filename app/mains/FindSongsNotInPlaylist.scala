@@ -1,14 +1,14 @@
 package mains
 
 import java.io.File
-import scala.collection.TraversableOnce.MonadOps
 import java.nio.charset.StandardCharsets
+
 import common.Debug
+import common.rich.RichT.richT
 import common.rich.path.Directory
 import common.rich.path.RichFile._
 import loggers.ConsoleLogger
 import models.MusicFinder
-import common.rich.RichT.richT
 import org.apache.commons.codec.binary.Base64
 
 // finds songs that are in the music directory but are not saved in the playlist file

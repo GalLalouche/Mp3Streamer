@@ -1,17 +1,16 @@
 package mains.albums
 
 import java.io.File
-import java.text.SimpleDateFormat
 import java.util.concurrent.TimeoutException
-
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
 
 import common.CompositeDateFormat
 import common.rich.RichT.richT
 import common.rich.path.RichFile.richFile
-import play.api.libs.json.{ JsArray, JsValue }
+import play.api.libs.json.{JsArray, JsValue}
 import play.api.libs.ws.WS
+
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
 
 private object MusicBrainzRetriever extends MetadataRetriever {
 	private val reconRepository: Map[String, String] =

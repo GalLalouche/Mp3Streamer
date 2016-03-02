@@ -1,12 +1,13 @@
 package websockets
 
-import models.MusicTree
-import controllers.MusicLocations
-import play.api.mvc.Action
-import play.api.http.HeaderNames
-import common.ValueTree
 import java.io.File
+
+import common.ValueTree
+import controllers.MusicLocations
+import models.MusicTree
 import org.joda.time.format.DateTimeFormat
+import play.api.http.HeaderNames
+import play.api.mvc.Action
 
 /** updates changes about the music tree */
 object TreeSocket extends WebSocketController with MusicLocations with MusicTree {

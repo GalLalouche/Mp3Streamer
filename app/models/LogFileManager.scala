@@ -1,10 +1,11 @@
 package models
 
+import common.concurrency.LazyActor
+
 import scala.util.Random
 import org.joda.time.format.DateTimeFormat
 import akka.actor.{ActorRef, Props}
 import akka.actor.Actor
-import common.LazyActor
 import common.rich.path.Directory
 import common.rich.path.RichFile._
 import loggers.Logger

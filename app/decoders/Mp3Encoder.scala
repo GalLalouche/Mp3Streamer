@@ -1,20 +1,20 @@
 package decoders;
 
-import java.io.File
+import java.io.{File, IOException}
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
 
-import org.joda.time.DateTime
-
 import common.concurrency.Extra
 import common.rich.path.Directory
-import common.rich.path.RichFile.{ poorFile, richFile }
+import common.rich.path.RichFile.{poorFile, richFile}
+import org.joda.time.DateTime
 
 /** Encodes audio files files to mp3. Also handles caching */
 abstract class Mp3Encoder(outputDir: Directory) extends Encoder {
   val cleanOldFiles = new Extra {
     override def apply() {
-      def getCreationTime(f: File) = Files.readAttributes(f.toPath, classOf[BasicFileAttributes]).creationTime().toMillis()
+      def getCreationTime(f: File) =
+        Files.readAttributes(f.toPath, classOf[BasicFileAttributes]).creationTime().toMillis()
       val minimumCreationTime = DateTime.now.minusWeeks(1).getMillis
       outputDir.files.filter(getCreationTime(_) < minimumCreationTime).foreach(_.delete)
     }
@@ -25,8 +25,8 @@ abstract class Mp3Encoder(outputDir: Directory) extends Encoder {
   /**
     * Encode the file to an mp3 format. The file will only be created if its matching doesn't already exist.
     *
-    * @param originalFile The file to decode
-    * @return The (possibly new) mp3 file created; The file will be created in the {@code outputDir}, and will
+    * @param file The file to decode
+    * @return The (possibly new) mp3 file created; The file will be created in the outputDir, and will
     * 				be the absolute path of the file (with no space) with .mp3
     * @throws IOException
     */

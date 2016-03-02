@@ -1,12 +1,10 @@
 package models
 
-import common.rich.path.RichPath._
-import common.rich.path.Directory
 import java.io.File
-import common.rich.path.RichFile
-/**
- * Handles cover art
- */
+
+import common.rich.path.Directory
+import common.rich.path.RichPath._
+
 object Poster {
 	private def getCoverArt(dir: Directory): File = {
 		val f = dir.files.find(_.name.toLowerCase.matches("folder.(jpg)|(png)"))

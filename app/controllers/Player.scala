@@ -1,21 +1,23 @@
 package controllers
 
 import java.io.File
-import java.net.{ URLDecoder, URLEncoder }
-import scala.util.Random
-import akka.actor.{ ActorDSL, actorRef2Scala }
-import common.{ Debug, LazyActor }
+import java.net.{URLDecoder, URLEncoder}
+
+import akka.actor.{ActorDSL, actorRef2Scala}
+import common.Debug
+import common.concurrency.LazyActor
 import common.rich.path.Directory
 import common.rich.path.RichPath.richPath
 import decoders.DbPowerampCodec
 import dirwatch.DirectoryWatcher
 import models._
-import play.api.libs.json.{ JsArray, JsString }
-import play.api.mvc.{ Action, Controller }
-import websockets.{ NewFolderSocket, TreeSocket }
-import search.MetadataCacher
-import common.concurrency.SimpleActor
+import play.api.libs.json.{JsArray, JsString}
+import play.api.mvc.{Action, Controller}
 import search.Jsonable._
+import search.MetadataCacher
+import websockets.{NewFolderSocket, TreeSocket}
+
+import scala.util.Random
 
 /**
   * Handles fetch requests of JSON information

@@ -13,18 +13,16 @@ package dirwatch
 import java.io.File
 import java.nio.file._
 
-import scala.collection.JavaConverters.asScalaBufferConverter
-import scala.collection.mutable.HashMap
-import scala.collection.mutable.HashSet
-import scala.concurrent.duration.DurationInt
-import scala.util.control.Breaks.break
-
 import akka.actor._
 import common.Debug
 import common.rich.path.Directory
-import common.rich.path.RichPath._
-import DirectoryWatcher._
+import dirwatch.DirectoryWatcher._
 
+import scala.collection.JavaConverters.asScalaBufferConverter
+import scala.collection.mutable.{HashMap, HashSet}
+import scala.concurrent.duration.DurationInt
+
+//TODO this shit doesn't justify its own package
 class DirectoryWatcher(listener: ActorRef, val dirs: Traversable[Directory]) extends Actor with Debug {
 	def this(listener: ActorRef, dir: Directory, dirs: Directory*) = this(listener, dir :: (dirs.toList))
 	require(listener != null)

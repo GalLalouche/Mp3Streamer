@@ -1,8 +1,7 @@
 package mains.cover
 
-import java.io.InputStream
 import java.net.URL
-import scala.io.BufferedSource
+
 import scala.io.Source
 
 private class Downloader {

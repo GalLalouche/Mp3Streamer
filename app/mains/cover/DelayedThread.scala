@@ -1,5 +1,6 @@
 package mains.cover
 
+//TODO move this to the concurrency package or use one of the actors
 /**
  * Hide the mutability as much as possible.
  * HIDE THE SHAME!

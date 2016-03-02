@@ -1,9 +1,6 @@
 package search
 
-import models.Song
-import scala.annotation.tailrec
-import models.Album
-import models.Artist
+import models._
 
 trait Indexable[T] {
   protected def name(t: T): String

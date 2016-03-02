@@ -1,30 +1,21 @@
 package models
 
 import java.io.File
+import java.util.logging.{Level, Logger}
+
+import common.rich.path.RichPath._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
-import common.rich.path.RichPath._
-import common.rich.path.RichFile
-import play.api.libs.json.Json
-import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import scala.MatchError
-import java.util.logging.Logger
-import java.util.logging.Level
-import play.api.libs.json.JsObject
-import play.api.libs.json.JsObject
-import play.api.libs.json.JsValue
 
-/**
-  * Handles parsing mp3 data
-  */
 class Song(val file: File, val title: String, val artistName: String, val albumName: String,
-    val track: Int, val year: Int, val bitrate: String, val duration: Int, val size: Long) {
-  override def toString = "%s - %s [%s #%d] (%s)".format(artistName, title, albumName, track, year)
-  lazy val album = Album(dir = file.parent, title = albumName, artistName = artistName, year = year)
+           val track: Int, val year: Int, val bitrate: String, val duration: Int, val size: Long) {
+  override def toString = s"$artistName - $title [$albumName #$track] ($year)"
+  lazy val album = Album(dir = file.getParentFile, title = albumName, artistName = artistName, year = year)
 }
 
 object Song {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF) // STFU already!
+  /** Parses ID3 data */
   def apply(file: File): Song = {
     require(file != null)
     require(file exists)
@@ -40,12 +31,13 @@ object Song {
     val track = tag.getFirst(FieldKey.TRACK).toInt
     val year = {
       try {
-
         val regexp = ".*(\\d{4}).*".r
         val regexp(result) = tag.getFirst(FieldKey.YEAR)
         result.toInt
       } catch {
-        case _: MatchError => println(s"No year in $file"); 0
+        case _: MatchError =>
+          println(s"No year in $file")
+          0
       }
     }
     val bitrate = header.getBitRate()

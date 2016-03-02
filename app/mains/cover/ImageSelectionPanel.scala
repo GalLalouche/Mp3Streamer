@@ -1,15 +1,9 @@
 package mains.cover
 
-import java.io.File
-import scala.swing.event.WindowClosing
-import scala.swing.event.MouseClicked
-import scala.swing.GridPanel
+import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
+
 import scala.swing.Frame
-import java.util.concurrent.LinkedBlockingQueue
-import scala.swing.Label
-import java.util.concurrent.BlockingQueue
-import scala.swing.event.ComponentAdded
-import scala.swing.Dialog
+import scala.swing.event.{ComponentAdded, WindowClosing}
 
 /**
   * Displays several images to the user, and returns the selected image

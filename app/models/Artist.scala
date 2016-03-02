@@ -1,7 +1,5 @@
 package models
 
-import common.rich.path.Directory
-
 final class Artist(val name: String, _albums: Set[Album]) {
   override def equals(other: Any) = other match {
     case that: Artist => name == that.name

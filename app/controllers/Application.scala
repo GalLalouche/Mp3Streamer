@@ -1,8 +1,8 @@
 package controllers
 
-import play.api.mvc._
 import java.io.File
-import loggers.Logger
+
+import play.api.mvc._
 
 object Application extends Controller {
 	def index(mute: Boolean) = Action {

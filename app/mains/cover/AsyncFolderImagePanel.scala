@@ -1,14 +1,10 @@
 package mains.cover
 
 import java.util.concurrent.BlockingQueue
-import scala.swing.GridPanel
-import scala.swing.Frame
-import scala.swing.event.WindowClosing
-import scala.swing.Label
-import scala.swing.event.Event
-import scala.swing.event.MouseClicked
-import scala.swing.Button
+
 import scala.concurrent.Lock
+import scala.swing.{Button, GridPanel, Label}
+import scala.swing.event.{Event, MouseClicked}
 
 /**
   * MUTANT TEENAGE NINJA TURTLES :D

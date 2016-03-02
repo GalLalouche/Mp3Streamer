@@ -4,12 +4,11 @@ import java.net.URLDecoder
 
 import common.concurrency.Extra
 import common.rich.RichT.richT
-import play.api.libs.json.{ JsArray, Json }
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.mvc.{ Action, Controller }
-import search.{ CompositeIndex, Jsonable }
+import play.api.libs.json.{JsArray, Json}
+import play.api.mvc.{Action, Controller}
 import search.Jsonable._
-import search.TermIndexBuilder
+import search.{CompositeIndex, Jsonable, TermIndexBuilder}
 
 object Searcher extends Controller with Extra {
   private var index: CompositeIndex = CompositeIndex.buildWith(TermIndexBuilder)

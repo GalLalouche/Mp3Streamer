@@ -10,13 +10,10 @@ import controllers.Searcher
 import search.TermIndexBuilder
 
 object SongParser extends Debug {
-	def main(args: Array[String]) {
-		timed("parsing all files") {
-//		  val index = TermIndexBuilder.buildIndexFor(MetadataCacher.load[Song])
-//		  println(index.find("death"))
-			MetadataCacher.apply(new MusicFinder with MusicLocations)
-//		  Searcher.aux("black")
-		}
-		exit()
-	}
+  def main(args: Array[String]) {
+    timed("parsing all files") {
+      MetadataCacher.indexAll(new MusicFinder with MusicLocations)
+    }
+    sys.exit()
+  }
 }

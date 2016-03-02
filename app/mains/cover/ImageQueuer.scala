@@ -1,11 +1,8 @@
 package mains.cover
 
 import java.util.concurrent.BlockingQueue
-import scala.collection.LinearSeq
-import java.nio.charset.MalformedInputException
-import common.rich.path.Directory
+
 import common.rich.collections.RichIterator._
-import java.nio.file.Files
 
 /** saves urls of images to a blocking queue */
 private class ImageQueuer(

@@ -19,7 +19,7 @@ object CueTools extends CueSplitter {
 		dir.deleteAll
 	}
 	def split(cueFile: File) {
-		val response = Process(exe, Seq("/convert", s""""${cueFile.getAbsolutePath}"""")).!!
+		Process(exe, Seq("/convert", s""""${cueFile.getAbsolutePath}"""")).!!
 		clean(Directory(cueFile.getParent) / "convert" /)
 	}
 }

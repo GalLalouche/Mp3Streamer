@@ -1,7 +1,10 @@
 package websockets
 
+import loggers.Logger
+
+
 /** Sends console messages to the listeners */
-object ConsoleSocket extends WebSocketController with loggers.Logger {
+object ConsoleSocket extends WebSocketController with Logger {
 	override def trace(s: String) = out._2.push("[Trace] " + s)
 	override def debug(s: String) = out._2.push("[Debug] " + s)
 	override def info(s: String) = out._2.push("[Info] " + s)

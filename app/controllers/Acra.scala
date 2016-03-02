@@ -1,10 +1,10 @@
 package controllers
 
-import akka.actor.{ ActorDSL, actorRef2Scala }
+import akka.actor.{ActorDSL, actorRef2Scala}
 import common.rich.path.Directory
-import models.{ KillableActors, LogFileManager }
-import play.api.libs.json.{ JsObject, Json }
-import play.api.mvc.{ Action, Controller }
+import models.{KillableActors, LogFileManager}
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.{Action, Controller}
 
 object Acra extends Controller {
 	private val logManager = ActorDSL.actor(KillableActors.system)(new LogFileManager(Directory(".") / "logs" / "android" /))

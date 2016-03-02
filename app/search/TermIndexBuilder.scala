@@ -1,6 +1,5 @@
 package search
 
-import models.Song
 import common.rich.RichT._
 
 /** extracts several terms from each song to match against */

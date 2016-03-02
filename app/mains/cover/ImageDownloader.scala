@@ -1,13 +1,11 @@
 package mains.cover
 
-import java.nio.charset.MalformedInputException
-import scala.collection.LinearSeq
+import java.io.File
+
+import common.rich.collections.RichTraversable._
 import common.rich.path.Directory
 import common.rich.path.RichFile.poorFile
-import common.rich.collections.RichTraversable._
-import common.rich.path.RichFile.poorFile
-import scala.io.Source
-import java.io.File
+
 import scala.util.Try
 
 /** 
@@ -17,10 +15,7 @@ import scala.util.Try
  */
 private class ImageDownloader(outputDirectory: Directory, downloader: Downloader) {
 	def this(outputDirectory: Directory) = this(outputDirectory, new Downloader)
-	/**
-	  * Tries to get the bytes with a list of encodings
-	  * @param encodings The list of encodings to use, one after the other
-	  */
+
 	private def getBytes(url: String, encoding: String): Option[Array[Byte]] = {
 		Try(downloader.download(url, encoding)).toOption
 	}

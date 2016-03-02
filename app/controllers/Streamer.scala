@@ -3,12 +3,11 @@ package controllers
 import java.io.File
 import java.net.URLDecoder
 
+import decoders.DbPowerampCodec
+import play.api.mvc.{Action, Controller}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
-import common.rich.path.Directory
-import decoders.DbPowerampCodec
-import play.api.mvc.{ Action, Controller }
 
 object Streamer extends Controller {
   val decoder = DbPowerampCodec
@@ -33,7 +32,7 @@ object Streamer extends Controller {
     }
   }
 
-  // for debugging, plays the song in the browser instead of downloading it
+  // for debugging; plays the song in the browser instead of downloading it
   def playSong(s: String) = Action {
     Ok(views.html.playSong("/data/songs/" + s))
   }

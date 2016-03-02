@@ -1,6 +1,7 @@
 package common
 
 import loggers.Logger
+import loggers.CompositeLogger
 
 trait Debug {
 	protected def timed[T](f: => T): T = timed("Task", loggers.CompositeLogger) {
@@ -38,6 +39,6 @@ trait Debug {
 	
 	protected def echoLocation = {
 		val trace = Thread.currentThread.getStackTrace()(3);
-		println(trace.getClassName() + "@" + trace.getLineNumber())
+		CompositeLogger.trace(s"${Thread.currentThread.getName}: ${trace.getClassName}@${trace.getLineNumber}")
 	}
 }

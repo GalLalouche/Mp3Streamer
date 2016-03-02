@@ -1,17 +1,11 @@
 package models
 
-import java.io.{ ByteArrayOutputStream, File, FileInputStream, InputStream }
-import java.net.URL
-import common.rich.path.RichFile._
-import javax.imageio.{ IIOImage, ImageIO, ImageWriteParam }
-import javax.imageio.stream.FileImageOutputStream
-import java.io.BufferedInputStream
-import java.io.ByteArrayInputStream
-import java.awt.image.BufferedImage
-import javax.imageio.stream.MemoryCacheImageOutputStream
-import java.io.FileOutputStream
 import java.awt.Color
+import java.awt.image.BufferedImage
+import java.io.File
+import java.net.URL
 import java.nio.file.Files
+import javax.imageio.ImageIO
 
 class Image(imageFile: File) {
 	def saveAsJpeg(outFile: File): File = {

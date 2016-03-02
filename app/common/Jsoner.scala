@@ -13,9 +13,7 @@ import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.Writes
 
-/**
- * Because play's default json library is stupid and doesn't handle type Any
- */
+/** Because play's default json library is stupid and doesn't handle type Any */
 object Jsoner {
 	implicit def jsValue(x: Any): JsValue = x match {
 		case o: String => JsString(o)
