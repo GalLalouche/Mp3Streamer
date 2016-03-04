@@ -1,12 +1,11 @@
-package common
+package common.concurrency
 
-import common.concurrency.LazyActor
-import org.junit.runner.RunWith
-import org.specs2.mutable.Specification
-import org.specs2.specification.Scope
 import akka.actor.{ActorSystem, actorRef2Scala}
 import akka.testkit.{TestActorRef, TestProbe}
+import org.junit.runner.RunWith
+import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
+import org.specs2.specification.Scope
 
 /**
   * Add your spec here.
@@ -25,7 +24,6 @@ class LazyActorTest extends Specification {
 	}
 
 	"Lazy actor" >> {
-
 		"call f at least once" >> new Context {
 			$ ! f
 			probe expectMsg ("Hi")
