@@ -4,6 +4,6 @@ package common.concurrency
 trait Extra extends SimpleActor[Unit] {
   // overloads to avoid passing in an explicit unit
   def apply(): Unit
-  final def apply(u: Unit) { this.apply() } 
+  final override protected def apply(u: Unit) { this.apply() }
   final def !() { this.!(()) }
 }
