@@ -6,7 +6,7 @@ import java.nio.file.Files
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration.DurationInt
+import scala.concurrent.duration.{Duration, DurationInt}
 import scala.sys.process.Process
 
 import common.rich.RichT.richT
@@ -27,7 +27,7 @@ object FolderFixer {
 
 	private def moveDirectory(artist: String, destination: Future[Option[Directory]],
 		folderImage: Future[Directory => Unit], sourcePath: String) {
-		Await.result(folderImage, 1 minute).apply(Directory(sourcePath))
+		Await.result(folderImage, Duration.Inf).apply(Directory(sourcePath))
 		if (destination.isCompleted == false)
 			println("Waiting on artist find...")
 		val destinationParent: Directory = Await.result(destination, 1 minute).getOrElse {

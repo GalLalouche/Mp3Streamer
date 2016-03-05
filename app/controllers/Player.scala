@@ -10,6 +10,7 @@ import common.rich.path.Directory
 import common.rich.path.RichPath.richPath
 import decoders.DbPowerampCodec
 import dirwatch.DirectoryWatcher
+import loggers.CompositeLogger
 import models._
 import play.api.libs.json.{JsArray, JsString}
 import play.api.mvc.{Action, Controller}
@@ -44,11 +45,11 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
   private val watcher = ActorDSL.actor(new DirectoryWatcher(ActorDSL.actor(new Act {
     become {
       case DirectoryWatcher.DirectoryCreated(d) =>
-        MetadataCacher ! d
+        MetadataCacher ! getSongFilePaths(d)
         lazyActor ! updatingMusic
         NewFolderSocket.actor ! d
-      case DirectoryWatcher.DirectoryDeleted(d) => 
-        MetadataCacher ! d
+      case DirectoryWatcher.DirectoryDeleted(d) =>
+        CompositeLogger.warn(s"Directory $d has been deleted and the index is no longer consistent; please update!")
         lazyActor ! updatingMusic
     }
   }), genreDirs))

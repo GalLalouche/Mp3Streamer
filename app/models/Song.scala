@@ -7,19 +7,10 @@ import common.rich.path.RichPath._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
-class Song(val file: File, val title: String, val artistName: String, val albumName: String,
+case class Song(val file: File, val title: String, val artistName: String, val albumName: String,
            val track: Int, val year: Int, val bitrate: String, val duration: Int, val size: Long) {
   override def toString = s"$artistName - $title [$albumName #$track] ($year)"
   lazy val album = Album(dir = file.getParentFile, title = albumName, artistName = artistName, year = year)
-
-  override def equals(other: Any): Boolean = other match {
-    case that: Song => file.getAbsoluteFile == that.file.getAbsoluteFile
-    case _ => false
-  }
-  override def hashCode(): Int = {
-    val state = Seq(file)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
-  }
 }
 
 object Song {

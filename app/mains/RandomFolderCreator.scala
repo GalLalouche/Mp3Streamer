@@ -33,7 +33,7 @@ object RandomFolderCreator extends App {
 	}
 
 	val random = new Random
-	val n = 300
+	val n = 220
 	val selectedSongs = HashSet[File]()
 	def addSong {
 		val index = selectedSongs.size

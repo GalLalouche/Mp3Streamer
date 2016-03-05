@@ -12,10 +12,7 @@ trait MusicFinder extends Debug {
 
   lazy val genreDirs = subDirs.sorted.map(x => Directory(dir / x))
 
-  def getSongFilePaths: IndexedSeq[String] = {
-    (genreDirs.flatMap(_.files) ++ (genreDirs.flatMap(_.dirs).par.flatMap(_.deepFiles)))
-      .filter(x => extensions.contains(x.extension))
-      .map(_.path)
-      .toVector
-  }
+
+  def getSongFilePaths: Seq[String] = genreDirs.par.flatMap(_.deepDirs).flatMap(getSongFilePaths(_)).toVector
+  def getSongFilePaths(d: Directory): Seq[String] = d.files.filter(f => extensions.contains(f.extension)).map(_.path)
 }
