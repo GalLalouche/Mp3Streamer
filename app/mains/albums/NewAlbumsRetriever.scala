@@ -1,17 +1,20 @@
 package mains.albums
 
-import common.io.IOFileRef
-import models.{MusicFinder, Song}
+import controllers.RealLocations
+import models.Song
 
-private class NewAlbumsRetriever(meta: MetadataRetriever, music: MusicFinder, ignoredArtists: Seq[String]) {
-  var lastArtist: Option[String] = None
+private class NewAlbumsRetriever(meta: MetadataRetriever, ignoredArtists: Seq[String]) {
+  val music = new RealLocations {
+    override val subDirs = List("Rock", "Metal")
+  }
+  private var lastArtist: Option[String] = None
   def getAlbums: Iterator[Album] = music.genreDirs
     .iterator
     .flatMap(_.deepDirs)
     .collect {
       case d => d.files.filter(f => music.extensions.contains(f.extension))
     }.filter(_.nonEmpty)
-    .map(files => Album(Song(files.head.asInstanceOf[IOFileRef].file)))
+    .map(files => Album(Song(files.head.file)))
   def getLastAlbum(e: (String, Seq[Album])) = e._1.toLowerCase -> e._2.toVector
     .sortBy(_.year)
     .map(_.year)

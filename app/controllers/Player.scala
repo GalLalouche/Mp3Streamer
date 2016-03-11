@@ -6,7 +6,6 @@ import java.net.{URLDecoder, URLEncoder}
 import akka.actor.{ActorDSL, actorRef2Scala}
 import common.Debug
 import common.concurrency.LazyActor
-import common.io.IODirectory
 import common.rich.path.Directory
 import common.rich.path.RichPath.richPath
 import decoders.DbPowerampCodec
@@ -24,7 +23,8 @@ import scala.util.Random
 /**
   * Handles fetch requests of JSON information
   */
-object Player extends Controller with MusicFinder with MusicLocations with Debug {
+object Player extends Controller with Debug {
+  val musicFinder = RealLocations
   private val random = new Random
   private var songPaths: Seq[File] = null
 
@@ -39,21 +39,21 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
 
   private val updatingMusic = () => timed("Updating music") {
     // this cannot be inlined, as it has to be the same function for LazyActor
-    songPaths = getSongFilePaths.map(new File(_))
+    songPaths = musicFinder.getSongFilePaths.map(new File(_))
     TreeSocket.actor ! TreeSocket.Update
   }
 
   private val watcher = ActorDSL.actor(new DirectoryWatcher(ActorDSL.actor(new Act {
     become {
       case DirectoryWatcher.DirectoryCreated(d) =>
-        MetadataCacher ! getSongFilePaths(d)
+        MetadataCacher ! musicFinder.getSongFilePaths(d)
         lazyActor ! updatingMusic
         NewFolderSocket.actor ! d
       case DirectoryWatcher.DirectoryDeleted(d) =>
         CompositeLogger.warn(s"Directory $d has been deleted and the index is no longer consistent; please update!")
         lazyActor ! updatingMusic
     }
-  }), genreDirs.map(_.asInstanceOf[IODirectory].dir)))
+  }), musicFinder.genreDirs.map(_.dir)))
   updatingMusic()
 
   def randomSong = {

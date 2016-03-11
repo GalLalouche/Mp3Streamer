@@ -10,9 +10,7 @@ trait MusicFinder extends Debug {
   val subDirs: List[String]
   val extensions: List[String]
 
-  // this has to be lazy since this class is sometimes mixed with another class
-  lazy val genreDirs: Seq[DirectoryRef] = subDirs.sorted.map(dir.getDir(_).get)
-
+  def genreDirs: Seq[DirectoryRef] = subDirs.sorted.map(dir.getDir(_).get)
 
   def getSongFilePaths: Seq[String] = genreDirs.par
     .flatMap(_.deepFiles)

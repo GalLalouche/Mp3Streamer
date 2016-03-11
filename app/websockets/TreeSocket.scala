@@ -3,14 +3,14 @@ package websockets
 import java.io.File
 
 import common.ValueTree
-import controllers.MusicLocations
 import models.MusicTree
 import org.joda.time.format.DateTimeFormat
 import play.api.http.HeaderNames
 import play.api.mvc.Action
 
 /** updates changes about the music tree */
-object TreeSocket extends WebSocketController with MusicLocations with MusicTree {
+object TreeSocket extends WebSocketController {
+	val getTree = MusicTree.getTree
 	case object Update
 	private val format = DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyy")
 

@@ -1,17 +1,19 @@
 package mains
 
 import java.io.File
-import scala.util.Random
-import scala.util.control.Breaks.{ break, breakable }
-import org.apache.commons.io.FileUtils
-import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.audio.exceptions.{ CannotWriteException, UnableToRenameFileException }
-import org.jaudiotagger.tag.images.StandardArtwork
+
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
-import controllers.MusicLocations
-import models.{ MusicFinder, Poster, Song }
+import controllers.RealLocations
+import models.{Poster, Song}
+import org.apache.commons.io.FileUtils
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.audio.exceptions.{CannotWriteException, UnableToRenameFileException}
+import org.jaudiotagger.tag.images.StandardArtwork
+
 import scala.collection.mutable.HashSet
+import scala.util.Random
+import scala.util.control.Breaks.breakable
 
 /** Selects n random songs and puts them in a folder on D:\ */
 object RandomFolderCreator extends App {
@@ -23,7 +25,7 @@ object RandomFolderCreator extends App {
 		d.clear
 		d
 	}
-	val songs = (new MusicFinder with MusicLocations).getSongFilePaths.map(new File(_))
+	val songs = RealLocations.getSongFilePaths.map(new File(_))
 
 	def createPlaylistFile(): File = {
 		val files = outputDir.files

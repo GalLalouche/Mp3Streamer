@@ -4,7 +4,7 @@ import java.io.File
 import common.rich.path.{Directory, RichFile}
 
 /** For production; actual files on the disk */
-class IOFileRef(val file: File) extends FileRef {
+class IOFile(val file: File) extends FileRef {
   private lazy val rich = RichFile(file)
   override def write(s: String) { rich.write(s) }
   override def path: String = rich.path
@@ -14,7 +14,7 @@ class IOFileRef(val file: File) extends FileRef {
 
 class IODirectory(val dir: Directory) extends DirectoryRef {
   def this(path: String) = this(Directory(path))
-  override def addFile(name: String): FileRef = new IOFileRef(dir addFile name)
+  override def addFile(name: String): FileRef = new IOFile(dir addFile name)
   private def optionalFile(name: String) = {
     val f = new File(dir.dir, name)
     if (f.exists)
@@ -22,13 +22,18 @@ class IODirectory(val dir: Directory) extends DirectoryRef {
     else
       None
   }
-  override def getDir(name: String): Option[DirectoryRef] =
+  override def getDir(name: String): Option[IODirectory] =
     optionalFile(name).filter(_.isDirectory).map(e => new IODirectory(new Directory(e)))
-  override def addSubDir(name: String): DirectoryRef = new IODirectory(dir addSubDir name)
-  override def getFile(name: String): Option[FileRef] = optionalFile(name).map(new IOFileRef(_))
+  override def addSubDir(name: String): IODirectory = new IODirectory(dir addSubDir name)
+  override def getFile(name: String): Option[IOFile] = optionalFile(name).map(new IOFile(_))
   override def path: String = dir.path
-  override def paths = dir.files.map(new IOFileRef(_)) ++ dir.dirs.map(new IODirectory(_))
+  override def paths = dir.files.map(new IOFile(_)) ++ dir.dirs.map(new IODirectory(_))
   override def name: String = dir.name
+  override def dirs: Seq[IODirectory] = dir.dirs.map(new IODirectory(_))
+  override def files: Seq[IOFile] = dir.files.map(new IOFile(_))
+  // casting is stupid :|
+  override def deepDirs: Seq[IODirectory] = super.deepDirs.asInstanceOf[Seq[IODirectory]]
+  override def deepFiles: Seq[IOFile] = super.deepFiles.asInstanceOf[Seq[IOFile]]
 }
 object IODirectory {
   def apply(str: String) = new IODirectory(Directory(str))
