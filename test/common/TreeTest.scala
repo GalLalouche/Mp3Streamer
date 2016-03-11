@@ -4,8 +4,8 @@ import org.junit.runner.RunWith
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
-class TreeTest extends Specification {
+//@RunWith(classOf[JUnitRunner])
+//class TreeTest extends Specification {
 //
 //	"Empty Tree" should {
 //		val $ = Tree()
@@ -49,4 +49,4 @@ class TreeTest extends Specification {
 //			Tree[Int](List(), List(Tree[Int](List(), Tree(1,2)))).toString === "[]\n\t[]\n\t\t[1,2]"
 //		}
 //	}
-}
+//}
