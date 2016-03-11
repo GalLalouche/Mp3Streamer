@@ -4,7 +4,7 @@ import java.io.File
 
 import common.concurrency.SimpleActor
 import common.io.{DirectoryRef, FileRef}
-import common.{Debug, IndexedSet}
+import common.{Collectable, Debug, IndexedSet}
 import controllers.RealLocations
 import models._
 import play.api.libs.json.{JsObject, Json}
@@ -12,7 +12,9 @@ import search.Jsonable._
 
 
 class MetadataCacher(mf: MusicFinder, songParser: String => Song) extends SimpleActor[DirectoryRef] with Debug {
+
   private case class DirectoryInfo private(songs: Seq[Song], album: Album, artist: Artist)
+
   private object DirectoryInfo {
     def apply(d: DirectoryRef) = {
       val songs = mf.getSongFilePathsInDir(d).map(songParser)
@@ -21,12 +23,19 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song) extends Simple
       new DirectoryInfo(songs, album, artist)
     }
   }
+
   private case class AllInfo private(songs: Seq[Song], albums: List[Album], artists: IndexedSet[Artist]) {
     def this() = this(List(), List(), MetadataCacher.artistsSet)
     def +(other: DirectoryInfo) = new AllInfo(other.songs ++ songs, other.album :: albums, artists + other.artist)
   }
+
+  private implicit object AllInfoCollectable extends Collectable[DirectoryInfo, AllInfo] {
+    override def empty: AllInfo = new AllInfo
+    override def +(s: AllInfo, t: DirectoryInfo): AllInfo = s + t
+  }
+
   def indexAll() {
-    val $ = mf.albumDirs.map(DirectoryInfo(_))./:(new AllInfo)(_ + _)
+    val $ = Collectable.fromList(mf.albumDirs.map(DirectoryInfo(_)))
     save($.songs)
     save($.albums)
     save($.artists)
