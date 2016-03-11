@@ -6,6 +6,7 @@ import java.net.{URLDecoder, URLEncoder}
 import akka.actor.{ActorDSL, actorRef2Scala}
 import common.Debug
 import common.concurrency.LazyActor
+import common.io.IODirectory
 import common.rich.path.Directory
 import common.rich.path.RichPath.richPath
 import decoders.DbPowerampCodec
@@ -46,7 +47,7 @@ object Player extends Controller with Debug {
   private val watcher = ActorDSL.actor(new DirectoryWatcher(ActorDSL.actor(new Act {
     become {
       case DirectoryWatcher.DirectoryCreated(d) =>
-        MetadataCacher ! musicFinder.getSongFilePathsInDir(d)
+        MetadataCacher ! new IODirectory(d)
         lazyActor ! updatingMusic
         NewFolderSocket.actor ! d
       case DirectoryWatcher.DirectoryDeleted(d) =>

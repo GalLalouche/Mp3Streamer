@@ -4,16 +4,19 @@ package common.io
 abstract class PathRef {
   def path: String
   def /(name: String): PathRef
+  def /(): DirectoryRef
   def name: String
 }
 
 /** a place holder for a directory */
 private final class TempRef(dir: DirectoryRef) extends PathRef {
-  override def /(name: String): DirectoryRef = dir
+  override def /(name: String): DirectoryRef =
+  throw new UnsupportedOperationException(s"This instance is only a placeholder for dir <$dir>")
   override def path: String =
     throw new UnsupportedOperationException(s"This instance is only a placeholder for dir <$dir>")
   override def name: String =
     throw new UnsupportedOperationException(s"This instance is only a placeholder for dir <$dir>")
+  override def /(): DirectoryRef = dir
 }
 
 /** must exist */
@@ -30,6 +33,7 @@ trait FileRef extends PathRef {
     if (i == -1) "" else name.substring(i + 1).toLowerCase
   }
   def /(name: String) = throw new UnsupportedOperationException(s"file <$path> is not a directory")
+  def /() = throw new UnsupportedOperationException(s"file <$path> is not a directory")
 }
 
 trait DirectoryRef extends PathRef {
@@ -44,4 +48,5 @@ trait DirectoryRef extends PathRef {
   def files: Seq[FileRef] = paths collect { case e: FileRef => e }
   def deepDirs: Seq[DirectoryRef] = dirs ++ (dirs flatMap (_.deepDirs))
   def deepFiles: Seq[FileRef] = files ++ (dirs flatMap (_.deepFiles))
+  override def /(): DirectoryRef = this
 }

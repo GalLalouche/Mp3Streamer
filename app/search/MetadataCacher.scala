@@ -3,48 +3,43 @@ package search
 import java.io.File
 
 import common.concurrency.SimpleActor
-import common.io.{IODirectory, FileRef, DirectoryRef}
-import common.rich.RichT._
+import common.io.{DirectoryRef, FileRef}
 import common.{Debug, IndexedSet}
+import controllers.RealLocations
 import models._
 import play.api.libs.json.{JsObject, Json}
 import search.Jsonable._
 
 
-class MetadataCacher(workingDir: DirectoryRef) extends SimpleActor[Seq[String]] with Debug {
-
-  private case class FileMetadata(song: Song, album: Album, artist: Artist)
-
-  private class Cacheables private(val songs: List[Song], val albums: Set[Album], val artists: IndexedSet[Artist]) {
-    def this() = this(Nil, Set(), MetadataCacher.artistsSet)
-    def +(fm: FileMetadata) = new Cacheables(fm.song :: songs, albums + fm.album, artists + fm.artist)
+class MetadataCacher(mf: MusicFinder, songParser: String => Song) extends SimpleActor[DirectoryRef] with Debug {
+  private case class DirectoryInfo private(songs: Seq[Song], album: Album, artist: Artist)
+  private object DirectoryInfo {
+    def apply(d: DirectoryRef) = {
+      val songs = mf.getSongFilePathsInDir(d).map(songParser)
+      val album = songs.head.album
+      val artist = new Artist(songs.head.artistName, Set(album))
+      new DirectoryInfo(songs, album, artist)
+    }
   }
-
-  private def jsonFileName[T](m: Manifest[T]): FileRef =
-    workingDir addFile s"${m.runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
-  // override in test
-  protected def getSong(path: String): Song = Song(new File(path))
-  private def extractMetadata(i: Seq[String]): Cacheables = {
-    def extractMetadataFromFile(path: String): FileMetadata =
-      getSong(path).mapTo(song => FileMetadata(song, song.album, new Artist(song.artistName, Set(song.album))))
-    i.foldLeft(new Cacheables)(_ + extractMetadataFromFile(_))
+  private case class AllInfo private(songs: Seq[Song], albums: List[Album], artists: IndexedSet[Artist]) {
+    def this() = this(List(), List(), MetadataCacher.artistsSet)
+    def +(other: DirectoryInfo) = new AllInfo(other.songs ++ songs, other.album :: albums, artists + other.artist)
   }
-  def indexAll(mf: MusicFinder) {
-    val $ = extractMetadata(mf.getSongFilePaths)
+  def indexAll() {
+    val $ = mf.albumDirs.map(DirectoryInfo(_))./:(new AllInfo)(_ + _)
     save($.songs)
     save($.albums)
     save($.artists)
   }
-  override def apply(newFiles: Seq[String]) {
-    def update(c: Cacheables) {
-      save(load[Song] ++ c.songs)
-      save(load[Album].toSet ++ c.albums)
-      // Gonna curse myself in a few months, but totally worth it
-      save[Artist](c.artists./:(load[Artist]./:(MetadataCacher.artistsSet)(_ + _))(_ + _))
-    }
-    update(extractMetadata(newFiles))
+  override def apply(dir: DirectoryRef) {
+    val info = DirectoryInfo(dir)
+    save(load[Song] ++ info.songs)
+    save(load[Album].toSet + info.album)
+    save(load[Artist]./:(MetadataCacher.artistsSet)(_ + _) + info.artist)
   }
 
+  private def jsonFileName[T](m: Manifest[T]): FileRef =
+    mf.dir addFile s"${m.runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
   def save[T: Jsonable](data: Traversable[T])(implicit m: Manifest[T]) {
     require(data.nonEmpty, s"Can't save empty data of type <$m>")
     jsonFileName(m).write(data.map(implicitly[Jsonable[T]].jsonify).mkString("\n"))
@@ -62,6 +57,6 @@ class MetadataCacher(workingDir: DirectoryRef) extends SimpleActor[Seq[String]] 
   * the actual metadata is only in megabytes. Also allows for incremental updates, in the case of new data added during
   * production.
   */
-object MetadataCacher extends MetadataCacher(new IODirectory("d:/media/music")) {
+object MetadataCacher extends MetadataCacher(RealLocations, f => Song(new File(f))) {
   val artistsSet: IndexedSet[Artist] = IndexedSet[String, Artist](_.name, _ merge _)
 }
