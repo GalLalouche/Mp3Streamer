@@ -12,6 +12,7 @@ object Jsoner {
     case o: Boolean => JsBoolean(o)
     case o: Seq[_] => JsArray(o.map(jsValue))
     case o: JsValue => o
+    case o: AnyRef => jsValue(o.toString)
   }
 
 //  implicit def jsValue(x: (String, _ <: Any)): (String, JsValueWrapper) = ((x._1, jsValue(x._2)))

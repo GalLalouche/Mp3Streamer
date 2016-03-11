@@ -32,30 +32,8 @@ class SongTest extends Specification {
 			$.duration === 3
 			$.size === 75522L
 		}
-
-		"jsonify properly" >> {
-			val expected = Json obj (
-				"size" -> 75522,
-				"duration" -> 3,
-				"bitrate" -> "192",
-				"year" -> 2000,
-				"track" -> 12,
-				"album" -> "Crimson",
-				"artist" -> "Sentenced",
-				"title" -> "Hidden Track"
-			)
-			Jsonable.SongJsonifier.jsonify($) === expected
-		}
-
 		"parse year correctly" >> {
 			Song(getSong("./resources/songs/songWithYear.mp3")).year  === 1999
 		}
-	}
-
-}
-
-class x extends HttpServlet {
-	override def doPost(req: HttpServletRequest, resp: HttpServletResponse) {
-		req.getParameter("content")
 	}
 }
