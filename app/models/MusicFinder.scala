@@ -2,8 +2,6 @@ package models
 
 import common.Debug
 import common.io.DirectoryRef
-import common.rich.path.Directory
-import common.rich.path.RichFile._
 
 trait MusicFinder extends Debug {
   val dir: DirectoryRef
@@ -12,10 +10,11 @@ trait MusicFinder extends Debug {
 
   def genreDirs: Seq[DirectoryRef] = subDirs.sorted.map(dir.getDir(_).get)
 
-  def getSongFilePaths: Seq[String] = genreDirs.par
-    .flatMap(_.deepFiles)
-    .filter(f => f.extension == "flac" || f.extension == "mp3")
-    .map(_.path)
+  def getSongFilePaths: Seq[String] = genreDirs.toStream.par
+    .flatMap(_.deepDirs)
+    .map(getSongFilePathsInDir(_))
+    .filter(_.nonEmpty)
+    .flatten
     .seq
-  def getSongFilePaths(d: Directory): Seq[String] = d.files.filter(f => extensions.contains(f.extension)).map(_.path)
+  def getSongFilePathsInDir(d: DirectoryRef): Seq[String] = d.files.filter(f => extensions.contains(f.extension)).map(_.path)
 }

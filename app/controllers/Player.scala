@@ -46,7 +46,7 @@ object Player extends Controller with Debug {
   private val watcher = ActorDSL.actor(new DirectoryWatcher(ActorDSL.actor(new Act {
     become {
       case DirectoryWatcher.DirectoryCreated(d) =>
-        MetadataCacher ! musicFinder.getSongFilePaths(d)
+        MetadataCacher ! musicFinder.getSongFilePathsInDir(d)
         lazyActor ! updatingMusic
         NewFolderSocket.actor ! d
       case DirectoryWatcher.DirectoryDeleted(d) =>
