@@ -1,8 +1,7 @@
 package mains.albums
 
-import models.{ MusicFinder }
-import common.rich.path.RichFile._
-import models.Song
+import common.io.IOFileRef
+import models.{MusicFinder, Song}
 
 private class NewAlbumsRetriever(meta: MetadataRetriever, music: MusicFinder, ignoredArtists: Seq[String]) {
   var lastArtist: Option[String] = None
@@ -12,7 +11,7 @@ private class NewAlbumsRetriever(meta: MetadataRetriever, music: MusicFinder, ig
     .collect {
       case d => d.files.filter(f => music.extensions.contains(f.extension))
     }.filter(_.nonEmpty)
-    .map(files => Album(Song(files.head)))
+    .map(files => Album(Song(files.head.asInstanceOf[IOFileRef].file)))
   def getLastAlbum(e: (String, Seq[Album])) = e._1.toLowerCase -> e._2.toVector
     .sortBy(_.year)
     .map(_.year)
@@ -22,7 +21,6 @@ private class NewAlbumsRetriever(meta: MetadataRetriever, music: MusicFinder, ig
       .toSeq
       .groupBy(_.artist.toLowerCase)
       .map(getLastAlbum)
-      .toMap
     def isNewAlbum(e: Album): Boolean = // assumes they are sorted by year... perhaps it shouldn't :|
       if (lastAlbumsByArtist(e.artist.toLowerCase) < e.year)
         true

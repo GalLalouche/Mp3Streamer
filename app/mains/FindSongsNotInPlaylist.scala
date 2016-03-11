@@ -4,6 +4,7 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 
 import common.Debug
+import common.io.IODirectory
 import common.rich.RichT.richT
 import common.rich.path.Directory
 import common.rich.path.RichFile._
@@ -16,7 +17,7 @@ object FindSongsNotInPlaylist extends App with Debug {
 	private def base64(s: String) =
 		Base64.encodeBase64(s.getBytes(StandardCharsets.UTF_8)).map(_.toChar).mkString
 	val musicFiles = new MusicFinder {
-		val dir = Directory("D:/Media/Music")
+		val dir = IODirectory("D:/Media/Music")
 		val subDirs = List("Metal", "Rock", "Classical", "New Age", "Jazz")
 		val extensions = List("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
 	}

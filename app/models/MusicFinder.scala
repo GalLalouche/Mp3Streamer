@@ -1,18 +1,23 @@
 package models
 
+import common.Debug
+import common.io.DirectoryRef
 import common.rich.path.Directory
 import common.rich.path.RichFile._
-import java.io.File
-import common.Debug
 
 trait MusicFinder extends Debug {
-  val dir: Directory
+  val dir: DirectoryRef
   val subDirs: List[String]
   val extensions: List[String]
 
-  lazy val genreDirs = subDirs.sorted.map(x => Directory(dir / x))
+  // this has to be lazy since this class is sometimes mixed with another class
+  lazy val genreDirs: Seq[DirectoryRef] = subDirs.sorted.map(dir.getDir(_).get)
 
 
-  def getSongFilePaths: Seq[String] = genreDirs.par.flatMap(_.deepDirs).flatMap(getSongFilePaths(_)).toVector
+  def getSongFilePaths: Seq[String] = genreDirs.par
+    .flatMap(_.deepFiles)
+    .filter(f => f.extension == "flac" || f.extension == "mp3")
+    .map(_.path)
+    .seq
   def getSongFilePaths(d: Directory): Seq[String] = d.files.filter(f => extensions.contains(f.extension)).map(_.path)
 }

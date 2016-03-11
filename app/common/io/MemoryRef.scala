@@ -24,6 +24,7 @@ abstract sealed class MemoryDir(val path: String) extends DirectoryRef {
     dirsByName += name -> $
     $
   }
+  override def paths = (filesByName.values ++ dirsByName.values).toStream
 }
 private class ConsDir(parent: MemoryDir, val name: String) extends MemoryDir(parent + "/" + name)
 class Root extends MemoryDir("/") {

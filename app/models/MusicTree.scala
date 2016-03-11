@@ -2,6 +2,7 @@ package models
 
 import java.io.File
 import common.ValueTree
+import common.io.IODirectory
 import common.rich.path.Directory
 import common.rich.path.RichPath._
 import play.api.libs.json.JsObject
@@ -18,8 +19,9 @@ trait MusicTree extends MusicFinder {
 		ValueTree(d.dir, leaves, sons.toList)
 	}
 
-	def getTree = {
-		ValueTree(dir.dir, List(), genreDirs.par.map(buildNode(_)).toList)
+	def getTree: ValueTree[File] = {
+		ValueTree(dir.asInstanceOf[IODirectory].dir, List(),
+				genreDirs.map(_.asInstanceOf[IODirectory].dir).par.map(buildNode(_)).toList)
 	}
 
 	override def toString = getTree.toString
@@ -34,7 +36,7 @@ object MusicTree {
 	def jsonify(tree: ValueTree[File]): JsObject = {
 		import common.rich.path.RichPath._
 		tree match {
-			case _ if (tree.isLeaf && tree.value.exists) =>
+			case _ if tree.isLeaf && tree.value.exists =>
 				Json obj (
 					"data" -> Json.obj(
 						"title" -> tree.value.name,

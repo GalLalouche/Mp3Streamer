@@ -4,15 +4,15 @@ import java.io.File
 import common.rich.path.{Directory, RichFile}
 
 /** For production; actual files on the disk */
-private class IOFileRef(file: File) extends FileRef {
-  private val rich = RichFile(file)
+class IOFileRef(val file: File) extends FileRef {
+  private lazy val rich = RichFile(file)
   override def write(s: String) { rich.write(s) }
   override def path: String = rich.path
   override def readAll: String = rich.readAll
   override def name: String = rich.name
 }
 
-class IODirectory(dir: Directory) extends DirectoryRef {
+class IODirectory(val dir: Directory) extends DirectoryRef {
   def this(path: String) = this(Directory(path))
   override def addFile(name: String): FileRef = new IOFileRef(dir addFile name)
   private def optionalFile(name: String) = {
@@ -27,5 +27,9 @@ class IODirectory(dir: Directory) extends DirectoryRef {
   override def addSubDir(name: String): DirectoryRef = new IODirectory(dir addSubDir name)
   override def getFile(name: String): Option[FileRef] = optionalFile(name).map(new IOFileRef(_))
   override def path: String = dir.path
+  override def paths = dir.files.map(new IOFileRef(_)) ++ dir.dirs.map(new IODirectory(_))
   override def name: String = dir.name
+}
+object IODirectory {
+  def apply(str: String) = new IODirectory(Directory(str))
 }

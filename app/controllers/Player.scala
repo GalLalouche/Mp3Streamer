@@ -6,6 +6,7 @@ import java.net.{URLDecoder, URLEncoder}
 import akka.actor.{ActorDSL, actorRef2Scala}
 import common.Debug
 import common.concurrency.LazyActor
+import common.io.IODirectory
 import common.rich.path.Directory
 import common.rich.path.RichPath.richPath
 import decoders.DbPowerampCodec
@@ -52,7 +53,7 @@ object Player extends Controller with MusicFinder with MusicLocations with Debug
         CompositeLogger.warn(s"Directory $d has been deleted and the index is no longer consistent; please update!")
         lazyActor ! updatingMusic
     }
-  }), genreDirs))
+  }), genreDirs.map(_.asInstanceOf[IODirectory].dir)))
   updatingMusic()
 
   def randomSong = {

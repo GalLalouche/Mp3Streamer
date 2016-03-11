@@ -17,7 +17,7 @@ class MetadataCacherTest extends FreeSpec with ShouldMatchers with OneInstancePe
   val pathToSongs = mutable.HashMap[String, Song]()
   val fakeMf = new MusicFinder {
     override val extensions: List[String] = null
-    override val dir: Directory = null
+    override val dir = null
     override val subDirs: List[String] = null
     override def getSongFilePaths: IndexedSeq[String] = pathToSongs.keys.toVector
   }

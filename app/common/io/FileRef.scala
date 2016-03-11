@@ -38,4 +38,10 @@ trait DirectoryRef extends PathRef {
   def addSubDir(name: String): DirectoryRef
   def getDir(name: String): Option[DirectoryRef]
   def /(name: String): PathRef = getFile(name).orElse(getDir(name).map(new TempRef(_))).get
+  /** Files and dirs */
+  def paths: Seq[PathRef]
+  def dirs: Seq[DirectoryRef] = paths collect { case e: DirectoryRef => e }
+  def files: Seq[FileRef] = paths collect { case e: FileRef => e }
+  def deepDirs: Seq[DirectoryRef] = dirs ++ (dirs flatMap (_.deepDirs))
+  def deepFiles: Seq[FileRef] = files ++ (dirs flatMap (_.deepFiles))
 }
