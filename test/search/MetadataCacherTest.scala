@@ -1,6 +1,6 @@
 package search
 
-import common.io.MemoryFileSystem
+import common.io.Root
 import common.rich.path.Directory
 import models.{Album, Artist, MusicFinder, Song}
 import org.scalatest.matchers.ShouldMatchers
@@ -10,8 +10,8 @@ import search.Jsonable._
 
 import scala.collection.mutable
 
-  val $ = new MetadataCacher with MemoryFileSystem {
 class MetadataCacherTest extends FreeSpec with ShouldMatchers with OneInstancePerTest with MockitoSugar {
+  val $ = new MetadataCacher(new Root) {
     override protected def getSong(path: String): Song = pathToSongs(path)
   }
   val pathToSongs = mutable.HashMap[String, Song]()
@@ -27,9 +27,15 @@ class MetadataCacherTest extends FreeSpec with ShouldMatchers with OneInstancePe
       $.save(seq)
       $.load[T] should be === seq
     }
-    "songs" in { test(Models.mockSong()) }
-    "albums" in { test(Models.mockAlbum()) }
-    "artists" in { test(Models.mockArtist()) }
+    "songs" in {
+      test(Models.mockSong())
+    }
+    "albums" in {
+      test(Models.mockAlbum())
+    }
+    "artists" in {
+      test(Models.mockArtist())
+    }
   }
   "index" - {
     "all" in {

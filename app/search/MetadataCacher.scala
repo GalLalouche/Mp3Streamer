@@ -3,17 +3,16 @@ package search
 import java.io.File
 
 import common.concurrency.SimpleActor
-import common.io.{FileSystem, IOFileSystem}
+import common.io.{IODirectory, FileRef, DirectoryRef}
 import common.rich.RichT._
 import common.{Debug, IndexedSet}
-import controllers.Searcher
 import models._
 import play.api.libs.json.{JsObject, Json}
 import search.Jsonable._
 
 
-class MetadataCacher extends SimpleActor[Seq[String]] with Debug {
-  self: FileSystem =>
+class MetadataCacher(workingDir: DirectoryRef) extends SimpleActor[Seq[String]] with Debug {
+
   private case class FileMetadata(song: Song, album: Album, artist: Artist)
 
   private class Cacheables private(val songs: List[Song], val albums: Set[Album], val artists: IndexedSet[Artist]) {
@@ -21,8 +20,8 @@ class MetadataCacher extends SimpleActor[Seq[String]] with Debug {
     def +(fm: FileMetadata) = new Cacheables(fm.song :: songs, albums + fm.album, artists + fm.artist)
   }
 
-  private def jsonFileName[T](m: Manifest[T]) =
-    getFile(s"D:/Media/Music/${m.runtimeClass.getSimpleName.replaceAll("\\$", "") }s.json")
+  private def jsonFileName[T](m: Manifest[T]): FileRef =
+    workingDir addFile s"${m.runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
   // override in test
   protected def getSong(path: String): Song = Song(new File(path))
   private def extractMetadata(i: Seq[String]): Cacheables = {
@@ -44,26 +43,18 @@ class MetadataCacher extends SimpleActor[Seq[String]] with Debug {
       save[Artist](c.artists./:(load[Artist]./:(MetadataCacher.artistsSet)(_ + _))(_ + _))
     }
     update(extractMetadata(newFiles))
-    Searcher !
   }
 
   def save[T: Jsonable](data: Traversable[T])(implicit m: Manifest[T]) {
     require(data.nonEmpty, s"Can't save empty data of type <$m>")
-    val f = jsonFileName(m)
-    f.create()
-    f.write(data.map(implicitly[Jsonable[T]].jsonify).mkString("\n"))
+    jsonFileName(m).write(data.map(implicitly[Jsonable[T]].jsonify).mkString("\n"))
   }
-  def load[T: Jsonable](implicit m: Manifest[T]): Seq[T] = {
-    val file = jsonFileName(m)
-    if (file.exists == false)
-      return Nil // for testing, if there is nothing to load; shouldn't happen in production
-    val lines = file.lines
-    assert(file.lines.nonEmpty && lines.head != "", s"Json file <$file> exists but is empty")
-    lines
+  def load[T: Jsonable](implicit m: Manifest[T]): Seq[T] =
+    jsonFileName(m)
+      .lines
       .map(Json.parse)
       .map(_.as[JsObject])
       .map(implicitly[Jsonable[T]].parse)
-  }
 }
 
 /**
@@ -71,6 +62,6 @@ class MetadataCacher extends SimpleActor[Seq[String]] with Debug {
   * the actual metadata is only in megabytes. Also allows for incremental updates, in the case of new data added during
   * production.
   */
-object MetadataCacher extends MetadataCacher with IOFileSystem {
+object MetadataCacher extends MetadataCacher(new IODirectory("d:/media/music")) {
   val artistsSet: IndexedSet[Artist] = IndexedSet[String, Artist](_.name, _ merge _)
 }
