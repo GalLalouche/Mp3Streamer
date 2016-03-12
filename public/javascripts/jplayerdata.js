@@ -61,15 +61,6 @@ $(function() {
     return hourPrefix + minutes + ':' + seconds;
   };
 
-  var lastClick = 0;
-
-  $(".jp-currently-playing").css({
-    width : '300px',
-    'font-size' : '0.65em',
-    color : $('.jp-duration').css('color'),
-    'float' : 'left'
-  });
-
   var loadNextRandom = function(playNow) {
     $.get(randomSongUrl, function(data) {
       playlist.add(data, playNow);
