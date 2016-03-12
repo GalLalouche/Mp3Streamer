@@ -11,8 +11,8 @@ import search.Jsonable._
 import search.{CompositeIndex, Jsonable, TermIndexBuilder}
 
 object Searcher extends Controller with Extra {
-  private var index: CompositeIndex = CompositeIndex.buildWith(TermIndexBuilder)
-  override def apply() { index = CompositeIndex.buildWith(TermIndexBuilder) }
+  private var index: CompositeIndex = new CompositeIndex(RealLocations, TermIndexBuilder)
+  override def apply() { index = new CompositeIndex(RealLocations, TermIndexBuilder) }
 
   def search(path: String) = Action {
     def toArray[T: Jsonable](results: Seq[T]): JsArray = results.map(implicitly[Jsonable[T]].jsonify).mapTo(JsArray)
