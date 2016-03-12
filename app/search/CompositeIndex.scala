@@ -3,9 +3,10 @@ package search
 import models.{Album, Artist, MusicFinder, Song}
 
 /** Index for songs, albums and artists */
-class CompositeIndex(mf: MusicFinder, indexBuilder: IndexBuilder) {
+class CompositeIndex(mf: MusicFinder) {
+  val indexBuilder = WeightedTermIndexBuilder
   private val saver = new JsonableSaver(mf.dir)
-  private def buildIndexFromCache[T: Jsonable : Indexable](implicit m: Manifest[T]) =
+  private def buildIndexFromCache[T: Jsonable : Indexable : WeightedIndexable](implicit m: Manifest[T]) =
     indexBuilder.buildIndexFor(saver.load)
   private def find(terms: Seq[String]) = new {
     // currying because Scala isn't functional enough :(

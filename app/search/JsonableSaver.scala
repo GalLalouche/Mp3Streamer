@@ -6,7 +6,7 @@ import play.api.libs.json.{JsObject, Json}
  * Saves in json format to a file.
  * @param workingDir The dir to save and load files from
  */
-private class JsonableSaver(workingDir: DirectoryRef) {
+class JsonableSaver(workingDir: DirectoryRef) {
   private def jsonFileName[T](m: Manifest[T]): String = s"${m.runtimeClass.getSimpleName.replaceAll("\\$", "") }s.json"
   /**
    * All files of the same type will be saved in the same file. Last save overwrites

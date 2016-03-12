@@ -1,10 +1,10 @@
 package search
 
 
-abstract class Index[T: Indexable] {
+abstract class Index[T](sortBy: T => Product) {
   private implicit object ProductOrdering extends Ordering[Product] {
     override def compare(x: Product, y: Product): Int = {
-      require(x.productArity != y.productArity, ":(((")
+      require(x.productArity != y.productArity, s"can't compare <$x> and <$y>")
       for (i <- 0 until x.productArity) {
         val xi = x productElement i
         val yi = y productElement i
@@ -17,6 +17,8 @@ abstract class Index[T: Indexable] {
             xi.asInstanceOf[Int].compareTo(yi.asInstanceOf[Int])
           else if (xi.isInstanceOf[Double])
             xi.asInstanceOf[Double].compareTo(yi.asInstanceOf[Double])
+          else if (xi.isInstanceOf[Product]) // wiseass
+            return compare(xi.asInstanceOf[Product], yi.asInstanceOf[Product])
           else
             throw new UnsupportedOperationException(s"Can't find compare product element #$i<$xi> of $x")
         }
@@ -33,6 +35,6 @@ abstract class Index[T: Indexable] {
     def findAsSet(s: String) = find(s).toSet
     val list = ss.toList
     val intersection = list.tail.foldLeft(findAsSet(list.head))((agg, term) => agg.intersect(findAsSet(term)))
-    intersection.toSeq.sortBy(implicitly[Indexable[T]].sortBy(_))
+    intersection.toSeq.sortBy(sortBy)
   }
 }
