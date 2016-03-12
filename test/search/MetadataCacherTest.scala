@@ -72,24 +72,28 @@ class MetadataCacherTest extends FreeSpec with ShouldMatchers with OneInstancePe
       verifyData(new Artist(song1.artistName, Set(album1, album2)))
     }
   }
-  "incremental" in {
+  "incremental (integration)" in {
+    // it's a pain in the ass to test for updates using mocks
+    val saver = new JsonableSaver(root)
+    val $ = new MetadataCacher(fakeMf, pathToSongs, saver)
     val album1 = Models.mockAlbum(title = "album1")
     val song1 = Models.mockSong(title = "song1", album = album1, artistName = "artist1")
     $(addSong(song1))
-    verifyData(song1)
-    verifyData(album1)
-    verifyData(artistFromAlbum(album1))
+    saver.load[Song] should be === Seq(song1)
+    saver.load[Album] should be === Seq(album1)
+    saver.load[Artist] should be === Seq(new Artist("artist1", Set(album1)))
     val album2 = Models.mockAlbum(title = "album2")
     val song2 = Models.mockSong(title = "song2", album = album2, artistName = "artist1")
+    addSong(song2)
     $(addSong(song2))
-    verifyData(song1)
-    verifyData(album1)
-    verifyData(artistFromAlbum(album1).copy(_albums = Set(album1, album2)))
+    saver.load[Song].toSet should be === Set(song1, song2)
+    saver.load[Album].toSet should be === Set(album1, album2)
+    saver.load[Artist].toSet should be === Set(new Artist("artist1", Set(album1, album2)))
     val album3 = Models.mockAlbum(title = "album3")
     val song3 = Models.mockSong(title = "song3", album = album3, artistName = "artist2")
     $(addSong(song3))
-    verifyData(song1)
-    verifyData(album1)
-    verifyData(artistFromAlbum(album1).copy(_albums = Set(album1, album2)), artistFromAlbum(album3))
+    saver.load[Song].toSet should be === Set(song1, song2, song3)
+    saver.load[Album].toSet should be === Set(album1, album2, album3)
+    saver.load[Artist].toSet should be === Set(new Artist("artist1", Set(album1, album2)), new Artist("artist2", Set(album3)))
   }
 }

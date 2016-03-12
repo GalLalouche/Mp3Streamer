@@ -2,6 +2,7 @@ package search
 
 import models.{Album, Artist, MusicFinder, Song}
 
+/** Index for songs, albums and artists */
 class CompositeIndex(mf: MusicFinder, indexBuilder: IndexBuilder) {
   private val saver = new JsonableSaver(mf.dir)
   private def buildIndexFromCache[T: Jsonable : Indexable](implicit m: Manifest[T]) =
