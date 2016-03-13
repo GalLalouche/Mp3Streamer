@@ -3,54 +3,47 @@ package mains.cover
 import java.nio.file.Files
 import java.util.concurrent.LinkedBlockingQueue
 
-import scala.collection.JavaConversions.asScalaBuffer
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
-
-import org.jsoup.Jsoup
-
 import common.Debug
 import common.rich.RichT.richT
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
 import common.rich.primitives.RichString.richString
 import models.Song
+import org.jsoup.Jsoup
 import resource.managed
+
+import scala.collection.JavaConversions.asScalaBuffer
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
 // Uses google image search (not API, actual site) to find images
 // Then displays the images for the user to select a good picture
 // The site is used since the API doesn't allow for a size filter
 object DownloadCover extends Debug {
-
   case class CoverException(str: String, e: Exception) extends Exception(e)
-
   lazy val tempFolder: Directory = Directory.apply(Files.createTempDirectory("images").toFile)
+  tempFolder.dir.deleteOnExit()
 
   /**
-    * Downloads a new image for the album
+   * Downloads a new image for the album
    * @param albumDir Should contain the songs. The metadata will be used to search for the correct picture.
-    * @return A future command to move the downloaded file to the directory, and delete all temporary files
-    */
+   * @return A future command to move the downloaded file to the directory, and delete all temporary files
+   */
   def apply(albumDir: Directory): Future[Directory => Unit] = {
-    setupDirectory(albumDir)
-    Future.apply(getHtml(Song(albumDir.files.head).mapTo(song => s"${song.artistName} ${song.albumName}")))
+    Future.apply(getHtml(Song(albumDir.files.head).mapTo(song => s"${song.artistName } ${song.albumName }")))
       .map(extractImageURLs)
       .map(selectImage)
       .map(fileMover)
   }
 
-  private def fileMover(f: FolderImage): Directory => Unit = dir => {
+  private def fileMover(f: FolderImage)(dir: Directory) {
+    val oldFile = dir \ "folder.jpg"
+    if (oldFile.exists)
+      oldFile.renameTo("folder.bak.jpg")
     f.move(dir)
     tempFolder.deleteAll()
     assert(tempFolder.exists == false)
-  }
-
-  private def setupDirectory($: Directory): Directory = {
-    val oldFile = $ \ "folder.jpg"
-    if (oldFile.exists)
-      oldFile.renameTo("folder.bak.jpg")
-    $
   }
 
   private def getHtml(query: String): String = {
