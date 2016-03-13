@@ -5,7 +5,8 @@ import java.util.concurrent.LinkedBlockingQueue
 
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
 import org.jsoup.Jsoup
 
@@ -28,8 +29,7 @@ object DownloadCover extends Debug {
 
   /**
     * Downloads a new image for the album
-    *
-    * @param albumDir Should contain the songs. The metadata will be used to search for the correct picture.
+   * @param albumDir Should contain the songs. The metadata will be used to search for the correct picture.
     * @return A future command to move the downloaded file to the directory, and delete all temporary files
     */
   def apply(albumDir: Directory): Future[Directory => Unit] = {
@@ -77,6 +77,7 @@ object DownloadCover extends Debug {
     }
 
   def main(args: Array[String]) {
-    apply(Directory("""D:\Incoming\Bittorrent\Completed\Music\Scale the Summit - V (2015)[Mp3@320][Instrumental Prog Metal, Post Metal]"""))
+    val folder = Directory(args(0))
+    Await.result(apply(folder), Duration.Inf)(folder)
   }
 }

@@ -3,9 +3,9 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="d:/FolderFixer.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="d:/DownloadCover.jar" filesetmanifest="mergewithoutmain">
             <manifest>
-                <attribute name="Main-Class" value="mains.fixer.FolderFixerJava"/>
+                <attribute name="Main-Class" value="mains.cover.DownloadCoverJava"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="C:/dev/web/play-2.1.2/Mp3Streamer/target/scala-2.10/classes">
