@@ -2,8 +2,10 @@ package search
 
 import common.rich.RichT._
 
+import scala.annotation.tailrec
+
 /** to allow artist's name to be factored in the song search */
-object WeightedTermIndexBuilder {
+object WeightedIndexBuilder {
   private implicit class RichMap[T, S](map: Map[T, Set[S]]) {
     def append(t: T, s: S) = map.updated(t, map(t) + s)
   }
@@ -18,7 +20,7 @@ object WeightedTermIndexBuilder {
 
   private class WeightedIndex[T: WeightedIndexable : Indexable](weightedTerms: Map[String, Vector[(T, Double)]])
     extends Index[T](implicitly[Indexable[T]].sortBy) {
-    implicit object Foobar extends Indexable[(T, Double)] {
+    implicit object TupleIndexable extends Indexable[(T, Double)] {
       override def sortBy(t: (T, Double)): Product = t._2 -> implicitly[Indexable[T]].sortBy(t._1)
       override def name(t: (T, Double)): String = implicitly[Indexable[T]].name(t._1)
     }
@@ -26,6 +28,7 @@ object WeightedTermIndexBuilder {
     // assume they are already sorted
     override def find(s: String): Seq[T] = orNil(s).map(_._1)
     override def findIntersection(ss: Traversable[String]): Seq[T] = {
+      @tailrec
       def aux(queries: List[String], result: Map[T, Double]): Seq[T] = queries match {
         case Nil => result.toVector.sortBy(-_._2).map(_._1)
         case (q :: qs) =>

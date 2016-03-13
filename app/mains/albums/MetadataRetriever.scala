@@ -13,7 +13,7 @@ private trait MetadataRetriever {
 
 	protected def jsonToAlbum(artist: String, js: JsValue): Option[Album]
 
-	protected implicit def richJson(js: JsValue) = new {
+	protected implicit class RichJson(js: JsValue) {
 		def asString: String = js.asInstanceOf[JsString].value
 		def asJsArray: JsArray = try
 			js.asInstanceOf[JsArray]
@@ -40,12 +40,12 @@ private trait MetadataRetriever {
 				Iterator.empty
 			case e: Exception =>
 				if (tryNumber < 5) {
-					System.err.println("Could not get data for artist: " + artist + ". trying again in 10 seconds");
+					System.err.println("Could not get data for artist: " + artist + ". trying again in 10 seconds")
 					Thread sleep 10000
 					System.err.println("Retrying artist: " + artist)
 					getAlbums(artist, tryNumber + 1)
 				} else {
-					System.err.println("Could not get data for artist: " + artist + ". giving up :(");
+					System.err.println("Could not get data for artist: " + artist + ". giving up :(")
 					Iterator.empty
 				}
 		} finally {

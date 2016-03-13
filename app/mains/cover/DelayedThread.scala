@@ -16,7 +16,7 @@ private class DelayedThread(name: String) extends AutoCloseable {
 		thread = new Thread("Worker: " + name) {
 			override def run() {
 				try {
-					while (!isInterrupted())
+					while (!isInterrupted)
 						action()
 				} catch {
 					case e: InterruptedException => ()

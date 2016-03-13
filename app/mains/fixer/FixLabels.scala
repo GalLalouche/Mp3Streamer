@@ -44,7 +44,7 @@ object FixLabels extends App with Debug {
 
 		AudioFileIO delete audioFile
 		audioFile setTag newTag
-		audioFile commit
+		audioFile.commit()
 	}
 
 	private def rename(f: File) {

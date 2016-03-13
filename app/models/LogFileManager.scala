@@ -19,7 +19,7 @@ class LogFileManager(val dir: Directory) extends Actor {
 	protected def buildLogger: Logger = loggers.CompositeLogger
 	private lazy val logger = buildLogger
 
-	private def getWritingFunction(s: String) = new Function0[Unit] {
+	private def getWritingFunction(s: String) = new (() => Unit) {
 		override def equals(o: Any) = s == o
 		override def hashCode = s.hashCode
 		override def apply = {

@@ -10,7 +10,7 @@ import common.rich.path.RichFile.richFile
 import common.rich.path.RichPath.poorPath
 
 object CueTools extends CueSplitter {
-	private val exe = """C:\Program Files (x86)\CUETools_2.1.5\CUETools.exe""";
+	private val exe = """C:\Program Files (x86)\CUETools_2.1.5\CUETools.exe"""
 	private def clean(dir: Directory) {
 		dir
 			.files

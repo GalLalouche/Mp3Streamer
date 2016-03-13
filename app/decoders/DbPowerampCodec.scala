@@ -1,4 +1,4 @@
-package decoders;
+package decoders
 
 import java.io.File
 
@@ -13,7 +13,7 @@ import scala.sys.process.{Process, ProcessLogger}
 object DbPowerampCodec extends Mp3Encoder(Directory("D:/media/streamer/musicOutput")) with Debug with SimpleTypedActor[File, File] {
   val codecFile = new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe")
   private implicit class richString(o: Any) {
-    def quote: String = s""""$o""""";
+    def quote: String = s""""$o"""""
   }
 
   override def encode(srcFile: File, dstFile: File, dstType: CodecType) {
@@ -25,7 +25,7 @@ object DbPowerampCodec extends Mp3Encoder(Directory("D:/media/streamer/musicOutp
       "-V 2",
       "-b 320")
     timed(s"Decoding $srcFile $dstType") {
-      val p = Process(args) !< (devNull)
+      val p = Process(args) !< devNull
     }
   }
   override def apply(m: File): File = encodeFileIfNeeded(m)

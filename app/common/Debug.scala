@@ -27,18 +27,17 @@ trait Debug {
 			try {
 				return f
 			} catch {
-				case _: Exception if (numTries < maxTries) => {
+				case _: Exception if numTries < maxTries =>
 					numTries += 1
 					Thread.sleep(100)
-				}
 			}
 		}
 		throw new AssertionError
 	}
 	
 	
-	protected def echoLocation = {
-		val trace = Thread.currentThread.getStackTrace()(3);
+	protected def echoLocation() = {
+		val trace = Thread.currentThread.getStackTrace()(3)
 		CompositeLogger.trace(s"${Thread.currentThread.getName}: ${trace.getClassName}@${trace.getLineNumber}")
 	}
 }

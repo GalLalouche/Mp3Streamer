@@ -20,7 +20,7 @@ class Image(imageFile: File) {
 object Image {
 	def apply(url: String): Image = {
 		val f = File.createTempFile("image", "tempfile")
-		f.deleteOnExit
+		f.deleteOnExit()
 		Files.copy(new URL(url).openConnection.getInputStream, f.toPath)
 		new Image(f)
 	}

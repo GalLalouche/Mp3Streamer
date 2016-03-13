@@ -58,7 +58,7 @@ object Player extends Controller with Debug {
   updatingMusic()
 
   def randomSong = {
-    val song = songPaths(random nextInt (songPaths length))
+    val song = songPaths(random nextInt songPaths.length)
     Action {
       try {
         Ok(songJsonInformation(Song(song)))
@@ -72,7 +72,7 @@ object Player extends Controller with Debug {
 
   def album(path: String) = Action {
     val songs = Album(Directory(URLDecoder.decode(path, "UTF-8"))).songs
-    songs.map(_.file).foreach(DbPowerampCodec !)
+    songs.map(_.file).foreach(DbPowerampCodec.!)
     Ok(JsArray(songs.map(songJsonInformation)))
   }
 

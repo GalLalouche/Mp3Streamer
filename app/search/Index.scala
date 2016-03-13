@@ -1,4 +1,5 @@
 package search
+import scala.UnsupportedOperationException
 
 
 abstract class Index[T](sortBy: T => Product) {
@@ -9,23 +10,19 @@ abstract class Index[T](sortBy: T => Product) {
         val xi = x productElement i
         val yi = y productElement i
         val $ = {
-          if (xi.isInstanceOf[String])
-            xi.asInstanceOf[String].compareTo(yi.asInstanceOf[String])
-          else if (xi.isInstanceOf[Long])
-            xi.asInstanceOf[Long].compareTo(yi.asInstanceOf[Long])
-          else if (xi.isInstanceOf[Int])
-            xi.asInstanceOf[Int].compareTo(yi.asInstanceOf[Int])
-          else if (xi.isInstanceOf[Double])
-            xi.asInstanceOf[Double].compareTo(yi.asInstanceOf[Double])
-          else if (xi.isInstanceOf[Product]) // wiseass
-            return compare(xi.asInstanceOf[Product], yi.asInstanceOf[Product])
-          else
-            throw new UnsupportedOperationException(s"Can't find compare product element #$i<$xi> of $x")
+          xi match {
+            case s: String => s.compareTo(yi.asInstanceOf[String])
+            case l: Long => l.compareTo(yi.asInstanceOf[Long])
+            case i1: Int => i1.compareTo(yi.asInstanceOf[Int])
+            case d: Double => d.compareTo(yi.asInstanceOf[Double])
+            case p: Product => return compare(p, yi.asInstanceOf[Product])
+            case _ => throw new UnsupportedOperationException(s"Can't find compare product element #$i<$xi> of $x")
+          }
         }
         if ($ < 0 || $ > 0)
           return $
       }
-      return 0
+      0
     }
   }
   def find(s: String): Seq[T]

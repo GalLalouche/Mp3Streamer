@@ -1,4 +1,4 @@
-package decoders;
+package decoders
 
 import java.io.{File, IOException}
 import java.nio.file.Files
@@ -14,7 +14,7 @@ abstract class Mp3Encoder(outputDir: Directory) extends Encoder {
   val cleanOldFiles = new Extra {
     override def apply() {
       def getCreationTime(f: File) =
-        Files.readAttributes(f.toPath, classOf[BasicFileAttributes]).creationTime().toMillis()
+        Files.readAttributes(f.toPath, classOf[BasicFileAttributes]).creationTime().toMillis
       val minimumCreationTime = DateTime.now.minusWeeks(1).getMillis
       outputDir.files.filter(getCreationTime(_) < minimumCreationTime).foreach(_.delete)
     }
@@ -32,14 +32,14 @@ abstract class Mp3Encoder(outputDir: Directory) extends Encoder {
     */
   def encode(file: File): File = {
     require(file != null)
-    require(file exists)
+    require(file.exists)
     require(file.isDirectory == false)
     cleanOldFiles !
-    val outputFileName = file.path.replaceAll("[\\s\\/\\\\\\-\\:]", "").toLowerCase + ".mp3";
+    val outputFileName = file.path.replaceAll("[\\s\\/\\\\\\-\\:]", "").toLowerCase + ".mp3"
     outputDir.files.find(_.name == outputFileName).getOrElse({
       val outputFile = outputDir.addFile(outputFileName)
-      encode(file, outputFile, CodecType.Mp3);
-      outputFile;
+      encode(file, outputFile, CodecType.Mp3)
+      outputFile
     })
   }
 }

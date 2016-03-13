@@ -28,7 +28,7 @@ object TreeSocket extends WebSocketController {
 	}
 
 	def tree = Action { request =>
-		val dateString = request.headers.get(HeaderNames.IF_MODIFIED_SINCE).getOrElse(format.print(0).toString)
+		val dateString = request.headers get HeaderNames.IF_MODIFIED_SINCE getOrElse format.print(0)
 		val lastModified = format.parseDateTime(dateString).getMillis
 		if (lastUpdated - 1000 < lastModified) // -1000 for one second margin of error
 			NotModified

@@ -20,14 +20,14 @@ private class ImageSelectionPanel private (f: Int => BlockingQueue[FolderImage])
 		val panel = new AsyncFolderImagePanel(cols = cols, rows = rows, imageProvider = f(rows * cols))
 		panel.reactions += {
 			case e: ComponentAdded => frame.pack()
-			case AsyncFolderImagePanel.ImageClicked(f) => waiter put Selected(f)
+			case AsyncFolderImagePanel.ImageClicked(img) => waiter put Selected(img)
 		}
 		frame.contents = panel
 		try {
 			panel.start()
 			frame.open()
 			waiter.take match {
-				case Selected(f) => return f
+				case Selected(img) => img
 				case Next => ???
 				case Closed => throw new IllegalArgumentException("User closed window, exiting...")
 			}

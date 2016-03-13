@@ -29,17 +29,17 @@ private object MusicBrainzRetriever extends MetadataRetriever {
 	}
 	
 	override protected def getAlbumsJson(artistName: String): JsArray = {
-		val artistId = reconRepository.get(artistName.toLowerCase).getOrElse {
+		val artistId = reconRepository.getOrElse(artistName.toLowerCase, {
 			val webSearchResult = (getJson("artist/", "query" -> artistName) \ "artists").asJsArray.value
-				.filter(_ has "type")
-				.head
+					.filter(_ has "type")
+					.head
 			if ("100" != (webSearchResult \ "score").asString)
 				throw new NoSuchElementException("failed to get 100 match for artist " + artistName)
 			webSearchResult \ "id" asString
-		}
+		})
 		val $ = try {
 			getJson("release-group",
-				"artist" -> (artistId),
+				"artist" -> artistId,
 				"limit" -> "100") \ "release-groups" asJsArray
 		} catch {
 			case e: Exception => System.err.println("Failed to get artist with id = " + artistId); throw e

@@ -8,7 +8,7 @@ import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, Controller}
 import search.Jsonable._
-import search.{WeightedTermIndexBuilder, CompositeIndex, Jsonable, TermIndexBuilder}
+import search.{WeightedIndexBuilder, CompositeIndex, Jsonable, TermIndexBuilder}
 
 object Searcher extends Controller with Extra {
   private var index: CompositeIndex = new CompositeIndex(RealLocations)

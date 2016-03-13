@@ -4,7 +4,7 @@ import models.{Album, Artist, MusicFinder, Song}
 
 /** Index for songs, albums and artists */
 class CompositeIndex(mf: MusicFinder) {
-  val indexBuilder = WeightedTermIndexBuilder
+  val indexBuilder = WeightedIndexBuilder
   private val saver = new JsonableSaver(mf.dir)
   private def buildIndexFromCache[T: Jsonable : Indexable : WeightedIndexable](implicit m: Manifest[T]) =
     indexBuilder.buildIndexFor(saver.load)

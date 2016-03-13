@@ -30,7 +30,7 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: Jsonabl
     saver.update[Song](_ ++ info.songs)
     saver.update[Album](_.toSet + info.album)
     saver.update[Artist](_./:(emptyArtistSet)(_ + _) + info.artist)
-    Searcher.!
+    Searcher.!()
   }
 }
 

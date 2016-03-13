@@ -14,7 +14,7 @@ trait MusicFinder extends Debug {
   def albumDirs: GenSeq[DirectoryRef] = genreDirs.par
     .flatMap(_.deepDirs)
     .filter(_.files.exists(f => extensions.contains(f.extension)))
-  def getSongFilePaths: Seq[String] = albumDirs.flatMap(getSongFilePathsInDir(_)).seq
+  def getSongFilePaths: Seq[String] = albumDirs.flatMap(getSongFilePathsInDir).seq
   def getSongFilePathsInDir(d: DirectoryRef): Seq[String] =
     d.files.filter(f => extensions.contains(f.extension)).map(_.path)
 }

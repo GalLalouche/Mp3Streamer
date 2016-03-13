@@ -9,12 +9,12 @@ class Tree[+T](val leaves: Seq[T], val sons: Seq[Tree[T]]) {
 
   private def mkStringWithPrefix(prefix: String): String = {
     prefix + printThis +
-      (if (sons isEmpty) "" else "\n" + sons.map(_.mkStringWithPrefix(prefix + "\t")).mkString("\n"))
+      (if (sons.isEmpty) "" else "\n" + sons.map(_.mkStringWithPrefix(prefix + "\t")).mkString("\n"))
   }
 
   override def toString = mkStringWithPrefix("")
 
-  val height: Int = ((if (leaves isEmpty) 0 else 1) :: sons.map(_.height + 1).toList) max
+  val height: Int = ((if (leaves.isEmpty) 0 else 1) :: sons.map(_.height + 1).toList).max
 
   protected def getSize = sons.map(_.size).sum + leaves.length
 

@@ -18,10 +18,10 @@ object Song {
   /** Parses ID3 data */
   def apply(file: File): Song = {
     require(file != null)
-    require(file exists)
+    require(file.exists)
     require(file.isDirectory == false)
     val (tag, header) = {
-      val x = (AudioFileIO.read(file))
+      val x = AudioFileIO.read(file)
       (x.getTag, x.getAudioHeader)
     }
     // get ID3 info
@@ -40,8 +40,8 @@ object Song {
           0
       }
     }
-    val bitrate = header.getBitRate()
-    val duration = header.getTrackLength()
+    val bitrate = header.getBitRate
+    val duration = header.getTrackLength
     val size = file.length
 
     new Song(file = file, title = title, artistName = artist, albumName = album, track = track,
