@@ -13,5 +13,5 @@ object TermIndexBuilder extends IndexBuilder {
       .map(_.toLowerCase)
       .foldLeft(map)((map, word) => map.append(word, indexable)))
     .map(e => e._1 -> e._2.toVector)
-    .mapTo(new SimpleMapIndex(_))
+    .mapTo(new MapIndex(_))
 }

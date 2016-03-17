@@ -8,8 +8,7 @@ class CompositeIndex(mf: MusicFinder) {
   private val saver = new JsonableSaver(mf.dir)
   private def buildIndexFromCache[T: Jsonable : Indexable : WeightedIndexable](implicit m: Manifest[T]) =
     indexBuilder.buildIndexFor(saver.load)
-  private def find(terms: Seq[String]) = new {
-    // currying because Scala isn't functional enough :(
+  private def find(terms: Seq[String]) = new { // currying because Scala isn't functional enough :(
     def apply[T](index: Index[T]): Seq[T] = index findIntersection terms take 10
   }
   private val songIndex = buildIndexFromCache[Song]
