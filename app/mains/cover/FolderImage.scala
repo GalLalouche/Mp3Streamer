@@ -1,10 +1,10 @@
 package mains.cover
 
-import javax.swing.ImageIcon
-import common.rich.path.Directory
-import java.nio.file.Files
 import java.io.File
-import java.nio.file.StandardCopyOption
+import java.nio.file.{Files, StandardCopyOption}
+import javax.swing.ImageIcon
+
+import common.rich.path.Directory
 
 private case class FolderImage(file: java.io.File) {
 	def imageIcon = new ImageIcon(file.getAbsolutePath)

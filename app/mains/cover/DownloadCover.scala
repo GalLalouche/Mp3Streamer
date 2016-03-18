@@ -16,6 +16,7 @@ import scala.collection.JavaConversions.asScalaBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
+import scala.sys.process.Process
 
 // Uses google image search (not API, actual site) to find images
 // Then displays the images for the user to select a good picture
@@ -31,10 +32,17 @@ object DownloadCover extends Debug {
    * @return A future command to move the downloaded file to the directory, and delete all temporary files
    */
   def apply(albumDir: Directory): Future[Directory => Unit] = {
-    Future.apply(getHtml(Song(albumDir.files.head).mapTo(song => s"${song.artistName } ${song.albumName }")))
+    val searchUrl = albumDir |> getSearchUrl
+    Future.apply(getHtml(searchUrl))
       .map(extractImageURLs)
       .map(selectImage)
-      .map(fileMover)
+      .map({
+        case Selected(img) => fileMover(img)
+        case OpenBrowser =>
+          openBrowser(searchUrl)
+          throw new RuntimeException("User opened browser")
+        case Cancelled => throw new RuntimeException("User opted out")
+      })
   }
 
   private def fileMover(f: FolderImage)(dir: Directory) {
@@ -46,9 +54,15 @@ object DownloadCover extends Debug {
     assert(tempFolder.exists == false)
   }
 
-  private def getHtml(query: String): String = {
-    val url = s"https://www.google.com/search?tbs=isz%3Aex%2Ciszw%3A500%2Ciszh%3A500&tbm=isch&q=$query"
-      .replaceAll(" ", "%20")
+  private def getSearchUrl(albumDir: Directory) = {
+    val query = Song(albumDir.files.head).mapTo(song => s"${song.artistName } ${song.albumName }")
+    s"https://www.google.com/search?tbs=isz%3Aex%2Ciszw%3A500%2Ciszh%3A500&tbm=isch&q=$query".replaceAll(" ", "%20")
+  }
+  def openBrowser(searchUrl: String) {
+    Process("""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe " """" + searchUrl + "\"").!!
+  }
+
+  private def getHtml(url: String): String = {
     new String(new Downloader().download(url, "UTF-8"), "UTF-8")
   }
 
@@ -59,7 +73,7 @@ object DownloadCover extends Debug {
     .filter(_.matches(".*imgurl=.*"))
     .map(_.captureWith(".*imgurl=(.*?)\\&.*".r))
 
-  private def selectImage(imageURLs: Seq[String]): FolderImage =
+  private def selectImage(imageURLs: Seq[String]): ImageChoice =
     managed(new DelayedThread("Image downloader")).acquireAndGet { worker =>
       ImageSelectionPanel.apply(n => {
         val queue = new LinkedBlockingQueue[FolderImage](n * 2)
