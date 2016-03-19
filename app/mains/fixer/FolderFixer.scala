@@ -11,8 +11,8 @@ import mains.cover.DownloadCover
 import models.Song
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.{Duration, DurationInt}
+import scala.concurrent.{Await, Future}
 
 object FolderFixer {
   private def findArtistFolder(artist: String): Option[Directory] = {

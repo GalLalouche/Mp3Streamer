@@ -16,7 +16,7 @@
 //	class MusicDirTree extends MusicDir {
 //		override val $: MusicTree = MusicTree(withDirs())
 //	}
-//	
+//
 //
 //	"Tree Jsonifyer" >> {
 //		"handle simplest cases" >> new MusicDirTree {

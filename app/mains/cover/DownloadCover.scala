@@ -14,7 +14,7 @@ import resource.managed
 
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.sys.process.Process
 
@@ -36,13 +36,15 @@ object DownloadCover extends Debug {
     Future.apply(getHtml(searchUrl))
       .map(extractImageURLs)
       .map(selectImage)
-      .map({
-        case Selected(img) => fileMover(img)
-        case OpenBrowser =>
-          openBrowser(searchUrl)
-          throw new RuntimeException("User opened browser")
-        case Cancelled => throw new RuntimeException("User opted out")
-      })
+      .map(
+        {
+          case Selected(img) => fileMover(img)
+          case OpenBrowser =>
+            openBrowser(searchUrl)
+            throw new RuntimeException("User opened browser")
+          case Cancelled => throw new RuntimeException("User opted out")
+        }
+      )
   }
 
   private def fileMover(f: FolderImage)(dir: Directory) {
@@ -75,12 +77,14 @@ object DownloadCover extends Debug {
 
   private def selectImage(imageURLs: Seq[String]): ImageChoice =
     managed(new DelayedThread("Image downloader")).acquireAndGet { worker =>
-      ImageSelectionPanel.apply(n => {
-        val queue = new LinkedBlockingQueue[FolderImage](n * 2)
-        val queuer = new ImageQueuer(imageURLs.toIterator, queue, new ImageDownloader(tempFolder))
-        worker.start(queuer.apply)
-        queue
-      })
+      ImageSelectionPanel.apply(
+        n => {
+          val queue = new LinkedBlockingQueue[FolderImage](n * 2)
+          val queuer = new ImageQueuer(imageURLs.toIterator, queue, new ImageDownloader(tempFolder))
+          worker.start(queuer.apply)
+          queue
+        }
+      )
     }
 
   def main(args: Array[String]) {

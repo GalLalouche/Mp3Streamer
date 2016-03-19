@@ -10,11 +10,10 @@ import scalaz.Semigroup
 /** to allow artist's name to be factored in the song search */
 object WeightedIndexBuilder {
   def buildIndexFor[T: WeightedIndexable : Indexable](songs: TraversableOnce[T]): Index[T] = songs
-    .foldLeft(Map[String, Set[(T, Double)]]())((map, indexable) =>
-      implicitly[WeightedIndexable[T]]
-        .terms(indexable)
-        .map(e => e._1.toLowerCase -> e._2)
-        ./:(map)((map, weightedTerm) => map.append(weightedTerm._1, indexable -> weightedTerm._2)))
+    ./:(Map[String, Set[(T, Double)]]())((map, indexable) => implicitly[WeightedIndexable[T]]
+      .terms(indexable)
+      .map(e => e._1.toLowerCase -> e._2)
+      ./:(map)((map, weightedTerm) => map.append(weightedTerm._1, indexable -> weightedTerm._2)))
     .map(e => e._1 -> e._2.toSeq.sortBy(-_._2)) |> Trie.fromSeqMap |> (new WeightedIndex(_))
 
   private case class WeightedIndex[T: WeightedIndexable : Indexable](trie: Trie[(T, Double)]) extends Index[T] {
