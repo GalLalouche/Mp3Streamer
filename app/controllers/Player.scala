@@ -38,7 +38,7 @@ object Player extends Controller with Debug {
   import akka.actor.ActorDSL._
   private val lazyActor = ActorDSL.actor(new LazyActor(1000))
 
-  private val updatingMusic = () => timed("Updating music") {
+  def updateMusic() = timed("Updating music") {
     // this cannot be inlined, as it has to be the same function for LazyActor
     songPaths = musicFinder.getSongFilePaths.map(new File(_))
     TreeSocket.actor ! TreeSocket.Update
@@ -48,14 +48,14 @@ object Player extends Controller with Debug {
     become {
       case DirectoryWatcher.DirectoryCreated(d) =>
         MetadataCacher ! new IODirectory(d)
-        lazyActor ! updatingMusic
+        lazyActor ! updateMusic
         NewFolderSocket.actor ! d
       case DirectoryWatcher.DirectoryDeleted(d) =>
         CompositeLogger.warn(s"Directory $d has been deleted and the index is no longer consistent; please update!")
-        lazyActor ! updatingMusic
+        lazyActor ! updateMusic
     }
   }), musicFinder.genreDirs.map(_.dir)))
-  updatingMusic()
+  updateMusic()
 
   def randomSong = {
     val song = songPaths(random nextInt songPaths.length)
