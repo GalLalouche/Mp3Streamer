@@ -57,7 +57,8 @@ object DownloadCover extends Debug {
   }
 
   private def getSearchUrl(albumDir: Directory) = {
-    val query = Song(albumDir.files.head).mapTo(song => s"${song.artistName } ${song.albumName }")
+    val query = Song(albumDir.files.filter(e => e.extension == "mp3" || e.extension == "flac").head)
+      .mapTo(song => s"${song.artistName } ${song.albumName }")
     s"https://www.google.com/search?tbs=isz%3Aex%2Ciszw%3A500%2Ciszh%3A500&tbm=isch&q=$query".replaceAll(" ", "%20")
   }
   def openBrowser(searchUrl: String) {
