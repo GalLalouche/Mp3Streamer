@@ -3,37 +3,38 @@
 # ~~~~
 
 # Home page
-GET    /                        controllers.Application.index(mute:Boolean = false)
-GET    /mute                    controllers.Application.index(mute:Boolean = true)
-GET    /test                    controllers.Application.test      
+GET         /                             controllers.Application.index(mute:Boolean = false)
+GET         /mute                         controllers.Application.index(mute:Boolean = true)
+GET         /test                         controllers.Application.test
 
 
 #Player!     
-GET    /data/randomSong        controllers.Player.randomSong
-GET    /data/albums/*path      controllers.Player.album(path)
-GET	   /data/songs/*path		controllers.Player.song(path)
+GET         /data/randomSong              controllers.Player.randomSong
+GET         /data/albums/*path            controllers.Player.album(path)
+GET         /data/songs/*path             controllers.Player.song(path)
 #Streamer
-GET    /stream/download/*path    controllers.Streamer.download(path)
-GET    /stream/play/*path        controllers.Streamer.playSong(path)
+GET         /stream/download/*path        controllers.Streamer.download(path)
+GET         /stream/play/*path            controllers.Streamer.playSong(path)
 # Posters
-GET    /posters/display/*path   controllers.Posters.displayImage(path)
-GET    /posters/*path           controllers.Posters.image(path)
+GET         /posters/display/*path        controllers.Posters.displayImage(path)
+GET         /posters/*path                controllers.Posters.image(path)
 
 # Map static resources from the /public folder to the /assets URL path
-GET    /assets/*file            controllers.Assets.at(path="/public", file)
+GET         /assets/*file                 controllers.Assets.at(path="/public", file)
 
 # tree
-GET    /data/tree              	websockets.TreeSocket.tree
+GET         /data/tree                    websockets.TreeSocket.tree
 # Searcher
-GET    /search/*path			controllers.Searcher.search(path)
+GET         /search/*path                 controllers.Searcher.search(path)
 
 # Web sockets
-GET    /ws/tree                 websockets.TreeSocket.accept
-GET    /ws/console              websockets.ConsoleSocket.accept
-GET    /ws/newFolder            websockets.NewFolderSocket.accept
+GET         /ws/tree                      websockets.TreeSocket.accept
+GET         /ws/console                   websockets.ConsoleSocket.accept
+GET         /ws/newFolder                 websockets.NewFolderSocket.accept
+GET         /ws/refresh                   controllers.Debugger.accept
 
 # Debug
-GET    /debug/refresh           controllers.Debugger.forceRefresh
+GET         /debug/refresh                controllers.Debugger.forceRefresh
 
 #Acra
-POST   /acra                    controllers.Acra.post
+POST        /acra                         controllers.Acra.post

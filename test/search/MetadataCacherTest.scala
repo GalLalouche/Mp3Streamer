@@ -4,6 +4,7 @@ import common.io.{DirectoryRef, Root}
 import models.{Album, Artist, MusicFinder, Song}
 import org.hamcrest.{BaseMatcher, Description}
 import org.mockito.Matchers._
+import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar

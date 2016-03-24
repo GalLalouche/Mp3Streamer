@@ -6,7 +6,7 @@ import play.api.mvc.{Controller, WebSocket}
 
 import scala.concurrent.Future
 
-private[websockets] trait WebSocketController extends Controller {
+trait WebSocketController extends Controller {
 	val out = Concurrent.broadcast[String]
 
 	implicit val system = models.KillableActors.system

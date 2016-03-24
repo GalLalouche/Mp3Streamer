@@ -51,7 +51,7 @@ object Player extends Controller with Debug {
         lazyActor ! updateMusic
         NewFolderSocket.actor ! d
       case DirectoryWatcher.DirectoryDeleted(d) =>
-        CompositeLogger.warn(s"Directory $d has been deleted and the index is no longer consistent; please update!")
+        CompositeLogger warn s"Directory $d has been deleted and the index is no longer consistent; please update!"
         lazyActor ! updateMusic
     }
   }), musicFinder.genreDirs.map(_.dir)))
