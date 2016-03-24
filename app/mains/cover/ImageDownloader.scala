@@ -7,8 +7,6 @@ import common.rich.collections.RichTraversable._
 import common.rich.path.Directory
 import common.rich.path.RichFile.poorFile
 
-import scala.actors.threadpool.Executors
-import scala.concurrent.{Future, Await}
 import scala.concurrent.duration._
 import scala.util.Try
 

@@ -44,15 +44,14 @@ class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar
       $.download("url") should be === None
     }
     "Return none after timeout" in {
-      when(downloader.download(Matchers.anyString(), Matchers.anyString()))
-        .thenAnswer(
-          new Answer[Array[Byte]] {
-            override def answer(invocation: InvocationOnMock): Array[Byte] = {
-              while (true) {}
-              throw new AssertionError("Wat")
-            }
+      when(downloader.download(Matchers.anyString(), Matchers.anyString())).thenAnswer(
+        new Answer[Array[Byte]] {
+          override def answer(invocation: InvocationOnMock): Array[Byte] = {
+            while (true) {}
+            throw new AssertionError("Wat")
           }
-        )
+        }
+      )
       new Impatient[Option[FolderImage]](15 millis).apply {
         new ImageDownloader(tempDir, downloader, 10 millis) download "url"
       }.get should be === None

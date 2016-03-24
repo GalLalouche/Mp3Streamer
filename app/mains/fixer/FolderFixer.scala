@@ -24,7 +24,6 @@ object FolderFixer {
 
   private def moveDirectory(artist: String, destination: Future[Option[Directory]],
                             folderImage: Future[Directory => Unit], sourcePath: String) {
-    Await.result(folderImage, Duration.Inf)
     if (destination.isCompleted == false)
       println("Waiting on artist find...")
     val destinationParent: Directory = Await.result(destination, 1 minute).getOrElse {
@@ -38,6 +37,7 @@ object FolderFixer {
         .addSubDir(artist)
     }
     val source = Directory(sourcePath)
+    Await.result(folderImage, Duration.Inf)(source)
     val dest = new File(destinationParent, source.name).toPath
     Files.move(source.toPath, dest)
     new ProcessBuilder("explorer.exe", dest.toFile.getAbsolutePath).start
@@ -63,7 +63,6 @@ object FolderFixer {
     val folder = Directory(args(0))
     val artist = extractArtistFromFile(folder)
     val location = Future(findArtistFolder(artist))
-
     val folderImage = downloadCover(folder)
     println("fixing directory")
     val fixedDirectory = FixLabels fix folder.cloneDir()
