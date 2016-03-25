@@ -11,6 +11,8 @@ import models._
 
 import scala.collection.GenSeq
 
+// Possible source of bugs: indexAll and apply(DirectoryRef) work on different threads. This solution is forced
+// due to type erasure.
 class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: JsonableSaver)
   extends SimpleActor[DirectoryRef] with ProgressObservable with Debug {
   import MetadataCacher._
@@ -20,18 +22,17 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: Jsonabl
     listener()
     new DirectoryInfo(songs, album, new Artist(songs.head.artistName, Set(album)))
   }
-  override protected def apply(listener: String => Unit) {
-    val sw = new Stopwatch()
-    sw.start()
-    listener("indexing")
+  override protected def apply(sink: Sink) {
+    val sw = new Stopwatch().start()
+    sink("indexing")
     val dirs: GenSeq[DirectoryRef] = mf.albumDirs
     val totalSize = dirs.length
     var i = 1
     val $ = gatherInfo(dirs.map(getDirectoryInfo(_, () => {
       i+=1
-      listener(s"Finished $i out of $totalSize directories")
+      sink(s"Finished $i out of $totalSize directories")
     })))
-    listener(s"entire task took ${sw.elapsedMillis()} ms")
+    sink(s"entire task took ${sw.elapsedMillis()} ms")
     saver.save($.songs)
     saver.save($.albums)
     saver.save($.artists)
@@ -43,7 +44,7 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: Jsonabl
     saver.update[Artist](_./:(emptyArtistSet)(_ + _) + info.artist)
     Searcher.!()
   }
-  def indexAll(listener: String => Unit = _ => ()) = apply(listener)
+  def indexAll(sink: Sink = devNull) = apply(sink)
 }
 
 /**

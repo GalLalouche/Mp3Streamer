@@ -9,7 +9,7 @@ import java.util.concurrent.Executors
 /** It's a single threaded future factory basically */
 trait SimpleTypedActor[Msg, Result] {
   protected def apply(m: Msg): Result
-  private val queue = Executors.newFixedThreadPool(1, new ThreadFactory() {
+  protected val queue = Executors.newFixedThreadPool(1, new ThreadFactory() {
     override def newThread(r: Runnable) = {
       val $ = new Thread(r, s"${SimpleTypedActor.this.simpleName}'s actor thread")
       $.setDaemon(true)

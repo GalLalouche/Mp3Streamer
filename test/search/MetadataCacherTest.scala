@@ -1,10 +1,11 @@
 package search
 
+import java.util.concurrent.{LinkedBlockingDeque, TimeUnit}
+
 import common.io.{DirectoryRef, Root}
 import models.{Album, Artist, MusicFinder, Song}
 import org.hamcrest.{BaseMatcher, Description}
 import org.mockito.Matchers._
-import org.mockito.Mockito
 import org.mockito.Mockito._
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.mock.MockitoSugar
@@ -71,6 +72,18 @@ class MetadataCacherTest extends FreeSpec with ShouldMatchers with OneInstancePe
       addSong(song2)
       $.indexAll()
       verifyData(new Artist(song1.artistName, Set(album1, album2)))
+    }
+    "with sink" in {
+      val album1 = Models.mockAlbum(title = "a1")
+      val album2 = Models.mockAlbum(title = "a2")
+      val song1 = Models.mockSong(title = "song1", album = album1)
+      val song2 = Models.mockSong(title = "song2", album = album2)
+      addSong(song1)
+      addSong(song2)
+      val q = new LinkedBlockingDeque[String]()
+      $.indexAll(q.push)
+      q.poll(1, TimeUnit.SECONDS) should not be null
+      q.poll(1, TimeUnit.SECONDS) should not be null
     }
   }
   "incremental (integration)" in {
