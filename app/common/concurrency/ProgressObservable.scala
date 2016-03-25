@@ -1,13 +1,13 @@
 package common.concurrency
 
+/** Fucking type erasure */
 trait ProgressObservable {
-  protected def apply(listener: String => Unit)
+  private type Sink = String => Unit
+  protected def apply(sink: Sink)
   private val worker = new SimpleActor[String => Unit] {
     override protected def apply(m: String => Unit): Unit = ProgressObservable.this.apply(m)
   }
-  def !(): SimpleObservable[String] = {
-    val res = new Publisher[String]()
-    worker ! (res publish _)
-    res
+  def !(sink: Sink) {
+    worker ! sink
   }
 }

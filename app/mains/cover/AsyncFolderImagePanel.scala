@@ -9,6 +9,10 @@ import scala.swing.{Button, GridPanel, Label, TextArea}
 /** MUTANT TEENAGE NINJA TURTLES :D */
 private class AsyncFolderImagePanel(rows: Int, cols: Int, imageProvider: BlockingQueue[FolderImage])
   extends GridPanel(rows0 = rows, cols0 = cols) with AutoCloseable {
+  val openBrowserButton: Button = Button.apply("Fuck it, I'll do it myself!") {
+    AsyncFolderImagePanel.this.publish(OpenBrowser)
+    thread.close()
+  }
   private val thread = new DelayedThread("Image placer")
   private val waitForNextClick = new Lock
   waitForNextClick.available = false
@@ -22,18 +26,16 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imageProvider: Blockin
           case e: MouseClicked => AsyncFolderImagePanel.this.publish(Selected(image))
         }
       }
-    thread.start(() => {
+    thread.start(
+      () => {
         if (contents.isEmpty) {
           realSize = 0
           for (i <- 0 until rows * cols)
-          contents += new TextArea("Placeholder for image #" + i)
-          contents += Button.apply("Fuck it, I'll do it myself!") {
-            AsyncFolderImagePanel.this.publish(OpenBrowser)
-            thread.close()
-          }
+            contents += new TextArea("Placeholder for image #" + i)
+          contents += openBrowserButton
           contents += Button.apply("Show me more")(waitForNextClick.release())
         }
-      else if (realSize < rows * cols) {
+        else if (realSize < rows * cols) {
           contents.update(realSize, createImagePanel(imageProvider.take()))
           realSize += 1
         }
