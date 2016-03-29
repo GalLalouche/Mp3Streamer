@@ -7,6 +7,7 @@
         <ScalaCodeStyleSettings>
           <option name="importShortestPathForAmbiguousReferences" value="false" />
           <option name="USE_ALTERNATE_CONTINUATION_INDENT_FOR_PARAMS" value="true" />
+          <option name="INDENT_BRACED_FUNCTION_ARGS" value="false" />
           <option name="KEEP_ONE_LINE_LAMBDAS_IN_ARG_LIST" value="true" />
           <option name="USE_SCALADOC2_FORMATTING" value="false" />
           <option name="SPACES_AROUND_AT_IN_PATTERNS" value="true" />
@@ -35,8 +36,9 @@
           <option name="BLANK_LINES_AROUND_CLASS" value="0" />
           <option name="BLANK_LINES_AROUND_METHOD" value="0" />
           <option name="BLANK_LINES_AROUND_METHOD_IN_INTERFACE" value="0" />
-          <option name="CALL_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
-          <option name="CALL_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
+          <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
+          <option name="ALIGN_MULTILINE_FOR" value="false" />
+          <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
           <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
         </codeStyleSettings>
       </value>

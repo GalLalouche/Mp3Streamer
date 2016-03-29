@@ -1,11 +1,13 @@
 package common.io
 
+import common.rich.RichT._
 /** Either a file or a dir */
 abstract class PathRef {
   def path: String
   def /(name: String): PathRef
   def /(): DirectoryRef
   def name: String
+  override def toString: String = s"${this.simpleName}: $name"
 }
 
 /** a place holder for a directory */

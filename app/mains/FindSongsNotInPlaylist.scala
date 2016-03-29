@@ -14,8 +14,6 @@ import org.apache.commons.codec.binary.Base64
 
 // finds songs that are in the music directory but are not saved in the playlist file
 object FindSongsNotInPlaylist extends App with Debug {
-	private def base64(s: String) =
-		Base64.encodeBase64(s.getBytes(StandardCharsets.UTF_8)).map(_.toChar).mkString
 	val musicFiles = new MusicFinder {
 		val dir = IODirectory("D:/Media/Music")
 		val subDirs = List("Metal", "Rock", "Classical", "New Age", "Jazz")

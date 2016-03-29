@@ -3,10 +3,10 @@ import java.util.concurrent.{Semaphore, LinkedBlockingDeque, TimeUnit}
 
 import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 
-class ProgressObservableTest extends FreeSpec with OneInstancePerTest with Matchers {
+class ActorObservableTest extends FreeSpec with OneInstancePerTest with Matchers {
   val q = new LinkedBlockingDeque[String]()
   "invokes sink" in {
-    val $ = new ProgressObservable {
+    val $ = new ActorObservable {
       override protected def apply(sink: String => Unit) { sink("foobar") }
     }
     $ ! q.push
@@ -15,7 +15,7 @@ class ProgressObservableTest extends FreeSpec with OneInstancePerTest with Match
   "uses a different thread for sink" in {
     val s1 = new Semaphore(0)
     val s2 = new Semaphore(0)
-    val $ = new ProgressObservable {
+    val $ = new ActorObservable {
       override protected def apply(sink: String => Unit) {
         assert(s1.tryAcquire(1000, TimeUnit.SECONDS))
         s2.release()
