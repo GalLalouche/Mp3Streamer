@@ -17,7 +17,7 @@ import play.api.libs.json.{JsArray, JsString}
 import play.api.mvc.{Action, Controller}
 import search.Jsonable._
 import search.MetadataCacher
-import websockets.{NewFolderSocket, TreeSocket}
+import websockets.NewFolderSocket
 
 import scala.util.Random
 
@@ -41,7 +41,6 @@ object Player extends Controller with Debug {
   def updateMusic() = timed("Updating music") {
     // this cannot be inlined, as it has to be the same function for LazyActor
     songPaths = musicFinder.getSongFilePaths.map(new File(_))
-    TreeSocket.actor ! TreeSocket.Update
   }
 
   private val watcher = ActorDSL.actor(new DirectoryWatcher(ActorDSL.actor(new Act {
