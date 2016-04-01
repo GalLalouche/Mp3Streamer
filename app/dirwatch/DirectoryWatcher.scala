@@ -1,116 +1,121 @@
 /**
-  * dirwatcher.scala
-  *
-  * Uses the Java 7 WatchEvent filesystem API from within Scala.
-  * Adapted from:
-  *  http://download.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java
-  *
-  * @author Chris Eberle <eberle1080@gmail.com>
-  * @version 0.1
-  */
+ * dirwatcher.scala
+ *
+ * Uses the Java 7 WatchEvent filesystem API from within Scala.
+ * Adapted from:
+ * http://download.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java
+ * @original_author Chris Eberle <eberle1080@gmail.com>
+ * @version 0.1
+ */
 package dirwatch
 
 import java.io.File
 import java.nio.file._
 
-import akka.actor._
 import common.Debug
+import common.concurrency.SingleThreadedJobQueue
 import common.rich.path.Directory
 import dirwatch.DirectoryWatcher._
+import rx.lang.scala.{Observable, Observer, Subscription}
 
+import scala.annotation.tailrec
 import scala.collection.JavaConverters.asScalaBufferConverter
-import scala.collection.mutable.{HashMap, HashSet}
-import scala.concurrent.duration.DurationInt
+import scala.collection.mutable
 
 //TODO this shit doesn't justify its own package
-class DirectoryWatcher(listener: ActorRef, val dirs: Traversable[Directory]) extends Actor with Debug {
-	def this(listener: ActorRef, dir: Directory, dirs: Directory*) = this(listener, dir :: (dirs.toList))
-	require(listener != null)
-	require(dirs != null)
+class DirectoryWatcher(listener: Observer[DirectoryEvent], val dirs: Traversable[Directory]) extends Debug {
+  require(listener != null)
+  require(dirs != null)
+  def start() {
+    dirs foreach registerAll
+    listener onNext Started
+    waitForChange
+  }
 
-	private lazy val watchService = dirs.head.getFileSystem.newWatchService
+  private lazy val watchService = dirs.head.toPath.getFileSystem.newWatchService
 
-	private val keys = HashMap[WatchKey, Path]()
-	private val folders = HashSet[Path]()
-	private val trace = false
+  private val keys = mutable.HashMap[WatchKey, Path]()
+  private val folders = mutable.HashSet[Path]()
+  private val trace = false
 
-	override def preStart {
-		dirs.foreach(registerAll)
-		listener ! Started
-	}
+  /** Recursively register directories */
+  private def registerAll(dir: Directory) {
+    register(dir.toPath)
+    dir.dirs foreach registerAll
+  }
+  /** Register a single directory */
+  private def register(dir: Path) {
+    trySleep(maxTries = 5, sleepTime = 1000) {
+      val key = dir.register(watchService,
+        StandardWatchEventKinds.ENTRY_CREATE,
+        //				StandardWatchEventKinds.ENTRY_MODIFY, // ignoring modify because it's called on deletes, and delete is called on modifies :\
+        StandardWatchEventKinds.ENTRY_DELETE)
+      if (trace) {
+        val prev = keys.getOrElse(key, null)
+        if (prev == null)
+          println("register: " + dir)
+        else if (!dir.equals(prev))
+          println("update: " + prev + " -> " + dir)
+      }
 
-	private def register(dir: Path) {
-		trySleep(maxTries = 5, sleepTime = 1000) {
-			val key = dir.register(watchService,
-				StandardWatchEventKinds.ENTRY_CREATE,
-				//				StandardWatchEventKinds.ENTRY_MODIFY, // ignoring modify because it's called on deletes, and delete is called on modifies :\
-				StandardWatchEventKinds.ENTRY_DELETE)
-			if (trace) {
-				val prev = keys.getOrElse(key, null)
-				if (prev == null)
-					println("register: " + dir)
-				else if (!dir.equals(prev))
-					println("update: " + prev + " -> " + dir)
-			}
+      folders += dir
+      keys(key) = dir
+    }
+  }
 
-			folders += dir
-			keys(key) = dir
-		}
+  private def handleEvent(p: Path, e: java.nio.file.WatchEvent[_]) = {
+    val resolvedPath = p.resolve(e.context().asInstanceOf[Path])
+    val file = resolvedPath.toFile
+    e.kind match {
+      case StandardWatchEventKinds.ENTRY_DELETE if folders(p) => folders -= p; DirectoryDeleted(file)
+      case StandardWatchEventKinds.ENTRY_CREATE if file.isDirectory => DirectoryCreated(Directory(resolvedPath.toFile))
+      case _ => OtherChange
+    }
+  }
 
-	}
+  @tailrec
+  private def waitForChange() {
+    val key = watchService.take()
+    val publishingPath = keys(key)
+    val event = key.pollEvents().asScala
+    event // register all new directories
+      .toStream
+      .filter(_.kind == StandardWatchEventKinds.ENTRY_CREATE)
+      .map(_.context.asInstanceOf[Path])
+      .map(publishingPath.resolve)
+      .filter(Files.isDirectory(_, LinkOption.NOFOLLOW_LINKS))
+      .map(_.toAbsolutePath.toFile)
+      .map(Directory.apply)
+      .foreach(registerAll)
 
-	/**
-	  *  Recursively register directories
-	  */
-	private def registerAll(dir: Directory) {
-		register(dir)
-		dir.dirs.foreach(registerAll(_))
-	}
+    event // notify all new directories
+      .map(handleEvent(publishingPath, _))
+      .foreach(listener.onNext)
 
-	context.setReceiveTimeout(0 milliseconds)
-	override def receive = {
-		case PoisonPill => context.stop(self)
-		case _ => waitForChange
-	}
-
-	private def handleEvent(p: Path, e: java.nio.file.WatchEvent[_]) = {
-		val resolvedPath = p.resolve(e.context().asInstanceOf[Path])
-		val file = resolvedPath.toFile
-		e.kind match {
-			case StandardWatchEventKinds.ENTRY_DELETE if folders(p) => { folders -= p; DirectoryDeleted(file) }
-			case StandardWatchEventKinds.ENTRY_CREATE if file.isDirectory => DirectoryCreated(Directory(resolvedPath.toFile))
-			case _ => OtherChange
-		}
-	}
-
-	private def waitForChange = {
-		val key = watchService.take()
-		val publishingPath = keys(key)
-		val event = key.pollEvents().asScala;
-		event
-			.filter(_.kind == StandardWatchEventKinds.ENTRY_CREATE)
-			.map(e => publishingPath.resolve(e.context.asInstanceOf[Path]))
-			.filter(Files.isDirectory(_, LinkOption.NOFOLLOW_LINKS))
-			.foreach(c => registerAll(Directory(c.toAbsolutePath.toFile)))
-
-		event.foreach(listener ! handleEvent(publishingPath, _))
-
-		if (key.reset() == false)
-			keys.remove(key);
-	}
-
-	override def postStop {
-		loggers.CompositeLogger.debug("DirectoryWatcher has left the building")
-	}
+    if (key.reset() == false)
+      keys remove key
+    waitForChange
+  }
 }
 
 object DirectoryWatcher {
-	implicit def dirToPath(d: Directory): Path = Paths.get(d.path)
-	
-	case class DirectoryCreated(d: Directory)
-	case class DirectoryDeleted(f: File) // can't be directory because it doesn't exist anymore, D'oh
-	case class FileDeleted(f: File)
-	case class FileCreated(f: File)
-	case object OtherChange
-	case object Started // for testing - letting the user of the actor know that the class has started
+  private implicit def dirToPath(d: Directory): Path = Paths.get(d.path)
+
+  sealed abstract class DirectoryEvent
+  case class DirectoryCreated(d: Directory) extends DirectoryEvent
+  case class DirectoryDeleted(f: File) extends DirectoryEvent
+  // can't be directory since it doesn't exist anymore, D'oh
+  case class FileDeleted(f: File) extends DirectoryEvent
+  case class FileCreated(f: File) extends DirectoryEvent
+  case object OtherChange extends DirectoryEvent
+  // for testing - letting the user of the actor know that the class has started
+  case object Started extends DirectoryEvent
+
+  def apply(dirs: Traversable[Directory]): Observable[DirectoryEvent] = Observable.create(o => {
+    new SingleThreadedJobQueue().apply {
+      val dw = new DirectoryWatcher(o, dirs)
+      dw.start()
+    }
+    Subscription.apply(???)
+  })
 }

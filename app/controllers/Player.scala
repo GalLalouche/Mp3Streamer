@@ -11,10 +11,12 @@ import common.rich.path.Directory
 import common.rich.path.RichPath.richPath
 import decoders.DbPowerampCodec
 import dirwatch.DirectoryWatcher
+import dirwatch.DirectoryWatcher.DirectoryEvent
 import loggers.CompositeLogger
 import models._
 import play.api.libs.json.{JsArray, JsString}
 import play.api.mvc.{Action, Controller}
+import rx.lang.scala.Subscriber
 import search.Jsonable._
 import search.MetadataCacher
 import websockets.NewFolderSocket
@@ -22,8 +24,8 @@ import websockets.NewFolderSocket
 import scala.util.Random
 
 /**
-  * Handles fetch requests of JSON information
-  */
+ * Handles fetch requests of JSON information
+ */
 object Player extends Controller with Debug {
   val musicFinder = RealLocations
   private val random = new Random
@@ -35,7 +37,6 @@ object Player extends Controller with Debug {
   }
 
   private implicit val system = models.KillableActors.system
-  import akka.actor.ActorDSL._
   private val lazyActor = ActorDSL.actor(new LazyActor(1000))
 
   def updateMusic() = timed("Updating music") {
@@ -43,17 +44,21 @@ object Player extends Controller with Debug {
     songPaths = musicFinder.getSongFilePaths.map(new File(_))
   }
 
-  private val watcher = ActorDSL.actor(new DirectoryWatcher(ActorDSL.actor(new Act {
-    become {
+  private def listenToDirectoryChanges(directoryEvent: DirectoryEvent) {
+    directoryEvent match {
       case DirectoryWatcher.DirectoryCreated(d) =>
         MetadataCacher ! new IODirectory(d)
         lazyActor ! updateMusic
         NewFolderSocket.actor ! d
       case DirectoryWatcher.DirectoryDeleted(d) =>
-        CompositeLogger warn s"Directory $d has been deleted and the index is no longer consistent; please update!"
+        CompositeLogger warn s"Directory $d has been deleted; the index does not support deletions yet, so please update"
         lazyActor ! updateMusic
+      case _ =>
+        CompositeLogger debug ("DirectoryEvent:" + directoryEvent.toString)
     }
-  }), musicFinder.genreDirs.map(_.dir)))
+  }
+
+  DirectoryWatcher.apply(musicFinder.genreDirs.map(_.dir)).subscribe(Subscriber(listenToDirectoryChanges))
   updateMusic()
 
   def randomSong = {
