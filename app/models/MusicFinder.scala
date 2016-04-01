@@ -7,8 +7,8 @@ import scala.collection.GenSeq
 
 trait MusicFinder extends Debug {
   def dir: DirectoryRef
-  def subDirs: List[String]
-  def extensions: List[String]
+  def subDirs: Seq[String]
+  def extensions: Seq[String]
 
   def genreDirs: Seq[DirectoryRef] = subDirs.sorted.map(dir.getDir(_).get)
   def albumDirs: GenSeq[DirectoryRef] = genreDirs

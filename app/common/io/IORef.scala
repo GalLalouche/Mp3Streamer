@@ -6,7 +6,7 @@ import common.rich.path.{Directory, RichFile}
 /** For production; actual files on the disk */
 class IOFile(val file: File) extends FileRef {
   private lazy val rich = RichFile(file)
-  override def write(s: String) { rich.write(s) }
+  override def write(s: String) {rich.write(s) }
   override def path: String = rich.path
   override def readAll: String = rich.readAll
   override def name: String = rich.name
@@ -36,5 +36,6 @@ class IODirectory(val dir: Directory) extends DirectoryRef {
   override def deepFiles: Seq[IOFile] = super.deepFiles.asInstanceOf[Seq[IOFile]]
 }
 object IODirectory {
-  def apply(str: String) = new IODirectory(Directory(str))
+  def apply(str: String): IODirectory = this (Directory(str))
+  def apply(dir: Directory): IODirectory = new IODirectory(dir)
 }
