@@ -5,13 +5,12 @@ import java.net.{URLDecoder, URLEncoder}
 
 import akka.actor.{ActorDSL, actorRef2Scala}
 import common.Debug
-import common.concurrency.LazyActor
+import common.concurrency.DirectoryWatcher.DirectoryEvent
+import common.concurrency.{DirectoryWatcher, LazyActor}
 import common.io.IODirectory
 import common.rich.path.Directory
 import common.rich.path.RichPath.richPath
 import decoders.DbPowerampCodec
-import dirwatch.DirectoryWatcher
-import dirwatch.DirectoryWatcher.DirectoryEvent
 import loggers.CompositeLogger
 import models._
 import play.api.libs.json.{JsArray, JsString}

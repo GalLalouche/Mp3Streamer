@@ -7,15 +7,14 @@
  * @original_author Chris Eberle <eberle1080@gmail.com>
  * @version 0.1
  */
-package dirwatch
+package common.concurrency
 
 import java.io.File
 import java.nio.file._
 
 import common.Debug
-import common.concurrency.SingleThreadedJobQueue
+import common.concurrency.DirectoryWatcher._
 import common.rich.path.Directory
-import dirwatch.DirectoryWatcher._
 import rx.lang.scala.{Observable, Observer, Subscription}
 
 import scala.annotation.tailrec
