@@ -8,6 +8,6 @@ gplaylist.currentIndex = function() {
   return playlist.current
 };
 gplaylist.songs =() => playlist.playlist;
-gplaylist.add = () => playlist.add();
+gplaylist.add = (song, playNow) => playlist.add(song, playNow);
 gplaylist.next = () => playlist.next();
 gplaylist.prev = () => playlist.previous();

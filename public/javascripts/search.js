@@ -42,11 +42,11 @@ $(function() {
   results.on("click", "#song-results .fa", function(e) {
     const song = $(this).parent().data()
     const isPlay = e.target.classList.contains("fa-play")
-    $.get("data/songs/" + song.file, e => playlist.add(e, isPlay))
+    $.get("data/songs/" + song.file, e => gplaylist.add(e, isPlay))
   })
   results.on("click", ".album-result .fa", function(e) {
     const album = $(this).parent().data()
-    $.get("data/albums/" + album.dir, e => playlist.add(e, false))
+    $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
   })
 
   $("#searchbox").bind('input change', function(e) {
