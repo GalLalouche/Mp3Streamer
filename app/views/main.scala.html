@@ -3,11 +3,13 @@
 <title>My MP3 Site</title>
 <head>
 
+<script type="text/javascript" src="assets/javascripts/Player/player.js")></script>
 <script type="text/javascript" src="assets/javascripts/jquery.js")></script>
 <script type="text/javascript" src="assets/javascripts/jquery-ui-1.11.4/jquery-ui.js")></script>
 <script type="text/javascript" src="assets/javascripts/common.js")></script>
 <script type="text/javascript" src="assets/javascripts/jPlayer/jquery.jplayer.js")></script>
 <script type="text/javascript" src="assets/javascripts/jPlayer/add-on/jplayer.playlist.js")></script>
+<script type="text/javascript" src="assets/javascripts/jPlayer/PlayerImpl.js")></script>
 <script type="text/javascript" src="assets/javascripts/jplayerdata.js")></script>
 <script type="text/javascript" src="assets/javascripts/ws/common.js")></script>
 <script type="text/javascript" src="assets/javascripts/ws/console.js")></script>
@@ -26,6 +28,9 @@
   var WAIT_DELAY = 25;
   var isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) != null;
   mute=@mute
+  function CLICKME() {
+    console.log(gplaylist.songs()[1])
+  }
 </script>
 
 </head>
@@ -44,6 +49,7 @@
       <div id="artist-results">Artists</div>
     </div>
   </div>
+  <button onclick="CLICKME()">CLICK ME</button>
   <div id="jquery_jplayer_1" class="jp-jplayer"></div>
   <div id="jp_container_1" class="jp-video jp-video-270p">
     <div class="jp-type-playlist">
