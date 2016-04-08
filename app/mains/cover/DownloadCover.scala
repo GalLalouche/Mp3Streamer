@@ -69,12 +69,10 @@ object DownloadCover extends Debug {
     new String(new Downloader().download(url, "UTF-8"), "UTF-8")
   }
 
-  private def extractImageURLs(html: String): Seq[String] = Jsoup.parse(html)
-    .select("a")
-    .map(_.attr("href"))
-    .filterNot(_.isEmpty)
-    .filter(_.matches(".*imgurl=.*"))
-    .map(_.captureWith(".*imgurl=(.*?)\\&.*".r))
+  private def extractImageURLs(html: String): Seq[String] =
+    """"ou":"[^"]+"""".r.findAllIn(html)
+    .map(_.dropWhile(_ != ':').drop(2).dropRight(1))
+    .toSeq
 
   private def selectImage(imageURLs: Seq[String]): ImageChoice =
     managed(new DelayedThread("Image downloader")).acquireAndGet { worker =>
@@ -89,7 +87,8 @@ object DownloadCover extends Debug {
     }
 
   def main(args: Array[String]) {
-    val folder = Directory(args(0))
+    val folder = Directory(args.zipWithIndex.map(_.swap).toMap.get(0).getOrElse("""D:\Incoming\Bittorrent\Completed\Music\2015 Fire & Ashes"""))
+
     Await.result(apply(folder), Duration.Inf)(folder)
   }
 }
