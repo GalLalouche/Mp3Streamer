@@ -28,49 +28,20 @@
 		// disabling the remove() method until complete.
 		
 		this.cssSelector = $.extend({}, this._cssSelector, cssSelector); // Object:
-		// Containing
-		// the
-		// css
-		// selectors
-		// for
-		// jPlayer
-		// and
-		// its
-		// cssSelectorAncestor
+		// Containing the css selectors for jPlayer and its cssSelectorAncestor
 		this.options = $.extend(true, {}, this._options, options); // Object:
-		// The
-		// jPlayer
-		// constructor
-		// options
-		// for this
-		// playlist
-		// and the
-		// playlist
-		// options
+		// The jPlayer constructor/ options for this playlist and the playlist options
 		
-		this.playlist = []; // Array of Objects: The current playlist displayed
-		// (Un-shuffled or Shuffled)
+		this.playlist = []; // Array of Objects: The current playlist displayed (Un-shuffled or Shuffled)
 		this.original = []; // Array of Objects: The original playlist
 		
 		this._initPlaylist(playlist); // Copies playlist to this.original.
-		// Then mirrors this.original to
-		// this.playlist. Creating two arrays,
-		// where the element pointers match.
+		// Then mirrors this.original to this.playlist. Creating two arrays, where the element pointers match.
 		// (Enables pointer comparison.)
 		
-		// Setup the css selectors for the extra interface items used by the
-		// playlist.
+		// Setup the css selectors for the extra interface items used by the playlist.
 		this.cssSelector.title = this.cssSelector.cssSelectorAncestor + " .jp-title"; // Note
-		// that
-		// the
-		// text
-		// is
-		// written
-		// to
-		// the
-		// decendant
-		// li
-		// node.
+		// that the text is written to the decendant li node.
 		this.cssSelector.playlist = this.cssSelector.cssSelectorAncestor + " .jp-playlist";
 		this.cssSelector.next = this.cssSelector.cssSelectorAncestor + " .jp-next";
 		this.cssSelector.previous = this.cssSelector.cssSelectorAncestor + " .jp-previous";
@@ -109,8 +80,7 @@
 			}
 		});
 		
-		// Create click handlers for the extra buttons that do playlist
-		// functions.
+		// Create click handlers for the extra buttons that do playlist functions.
 		$(this.cssSelector.previous).click(function() {
 			self.previous();
 			$(this).blur();
@@ -137,12 +107,10 @@
 			$(this.cssSelector.title).hide();
 		}
 		
-		// Remove the empty <li> from the page HTML. Allows page to be valid
-		// HTML, while not interfereing with display animations
+		// Remove the empty <li> from the page HTML. Allows page to be valid HTML, while not interfereing with display animations
 		$(this.cssSelector.playlist + " ul").empty();
 		
-		// Create .live() handlers for the playlist items along with the free
-		// media and remove controls.
+		// Create .live() handlers for the playlist items along with the free/ media and remove controls.
 		this._createItemHandlers();
 		
 		// Instance jPlayer
@@ -281,8 +249,7 @@
 			    listItem += "<span class='" + this.options.playlistOptions.freeGroupClass + "'>(";
 			    $.each(media, function(property, value) {
 				    if ($.jPlayer.prototype.format[property]) { // Check
-					    // property is a
-					    // media format.
+					    // property is a media format.
 					    if (first) {
 						    first = false;
 					    } else {
@@ -295,8 +262,7 @@
 			    listItem += ")</span>";
 		    }
 		    
-		    // The title is given next in the HTML otherwise the float:right on
-		    // the free media corrupts in IE6/7
+		    // The title is given next in the HTML otherwise the float:right on the free media corrupts in IE6/7
 		    listItem += "<a href='javascript:;' class='"
 		            + this.options.playlistOptions.itemClass
 		            + "' tabindex='1'>"
@@ -324,8 +290,7 @@
 			            return false;
 		            });
 		    
-		    // Create .live() handlers that disable free media links to force
-		    // access via right click
+		    // Create .live() handlers that disable free media links to force access via right click
 		    $(self.cssSelector.playlist + " a." + this.options.playlistOptions.freeItemClass).die("click").live(
 		            "click", function() {
 			            $(this).parent().parent().find("." + self.options.playlistOptions.itemClass).click();
@@ -384,9 +349,8 @@
 		            .slideDown(this.options.playlistOptions.addTime);
 		    this._updateControls();
 		    this.original.push(media);
-		    this.playlist.push(media); // Both array elements share the same
-		    // object pointer. Comforms with
-		    // _initPlaylist(p) system.
+				// Both array elements share the same object pointer. Comforms with _initPlaylist(p) system.
+		    this.playlist.push(media); 
 		    
 		    if (playNow) {
 			    this.play(this.playlist.length - 1);
@@ -411,12 +375,7 @@
 				    return false;
 			    } else {
 				    index = (index < 0) ? self.original.length + index : index; // Negative
-				    // index
-				    // relates
-				    // to
-				    // end
-				    // of
-				    // array.
+				    // index relates to end of array.
 				    if (0 <= index && index < this.playlist.length) {
 					    this.removing = true;
 					    
@@ -443,16 +402,7 @@
 							            if (index === self.current) {
 								            self.current = (index < self.original.length) ? self.current
 								                    : self.original.length - 1; // To
-								            // cope
-								            // when
-								            // last
-								            // element
-								            // being
-								            // selected
-								            // when
-								            // it
-								            // was
-								            // removed
+								            // cope when last element being selected when it was removed
 								            self.select(self.current);
 							            } else if (index < self.current) {
 								            self.current--;
@@ -473,12 +423,7 @@
 	    },
 	    select: function(index) {
 		    index = (index < 0) ? this.original.length + index : index; // Negative
-		    // index
-		    // relates
-		    // to
-		    // end
-		    // of
-		    // array.
+		    // index relates to end of array.
 		    var displayIndex = this._getDisplayedIndex(index);
 		    if (0 <= index && index < this.playlist.length) {
 			    this.current = index;
@@ -490,12 +435,7 @@
 	    },
 	    play: function(index) {
 		    index = (index < 0) ? this.original.length + index : index; // Negative
-		    // index
-		    // relates
-		    // to
-		    // end
-		    // of
-		    // array.
+		    // index relates to end of array.
 		    if (0 <= index && index < this.playlist.length) {
 			    if (this.playlist.length) {
 				    this.select(index);
@@ -511,8 +451,7 @@
 	    next: function() {
 		    var index = (this.current + 1 < this.playlist.length) ? this.current + 1 : 0;
 		    if (this.loop) {
-			    // See if we need to shuffle before looping to start, and only
-			    // shuffle if more than 1 item.
+			    // See if we need to shuffle before looping to start, and only shuffle if more than 1 item.
 			    if (index === 0 && this.shuffled && this.options.playlistOptions.shuffleOnLoop
 			            && this.playlist.length > 1) {
 				    this.shuffle(true, true); // playNow
