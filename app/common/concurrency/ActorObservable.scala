@@ -1,7 +1,8 @@
 package common.concurrency
-import rx.lang.scala.{Observable, Observer, Subscription}
 
-/** Fucking type erasure */
+import rx.lang.scala._
+
+;/** Fucking type erasure */
 trait ActorObservable[T] {
   protected def apply(): Observable[T]
   private val q = new SingleThreadedJobQueue

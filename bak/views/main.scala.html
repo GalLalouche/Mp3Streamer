@@ -1,0 +1,118 @@
+@(mute: Boolean)
+<html>
+<title>My MP3 Site</title>
+<head>
+
+<script type="text/javascript" src="assets/javascripts/Player/player.js")></script>
+<script type="text/javascript" src="assets/javascripts/jquery.js")></script>
+<script type="text/javascript" src="assets/javascripts/jquery-ui-1.11.4/jquery-ui.js")></script>
+<script type="text/javascript" src="assets/javascripts/common.js")></script>
+<script type="text/javascript" src="assets/javascripts/jPlayer/jquery.jplayer.js")></script>
+<script type="text/javascript" src="assets/javascripts/jPlayer/add-on/jplayer.playlist.js")></script>
+<script type="text/javascript" src="assets/javascripts/jPlayer/PlayerImpl.js")></script>
+<script type="text/javascript" src="assets/javascripts/jplayerdata.js")></script>
+<script type="text/javascript" src="assets/javascripts/ws/common.js")></script>
+<script type="text/javascript" src="assets/javascripts/ws/console.js")></script>
+<script type="text/javascript" src="assets/javascripts/search.js")></script>
+<script type="text/javascript" src="assets/javascripts/ws/newFolder.js")></script>
+<script type="text/javascript" src="assets/javascripts/shortcuts.js")></script>
+<link href="assets/stylesheets/jplayer.blue.monday.css" rel="stylesheet" type="text/css" />
+<link href="assets/stylesheets/jplayer.css") rel="stylesheet" type="text/css" />
+<link href="assets/stylesheets/search.css") rel="stylesheet" type="text/css" />
+<link href="assets/javascripts/jquery-ui-1.11.4/jquery-ui.css" rel="stylesheet" /> 
+<link href="assets/stylesheets/font-awesome-4.5.0/css/font-awesome.css" rel="stylesheet" /> 
+
+<script type="text/javascript">
+  var playlist = {};
+  var jPlayer = {};
+  var WAIT_DELAY = 25;
+  var isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) != null;
+  mute=@mute
+  function CLICKME() {
+    console.log(gplaylist.songs()[1])
+  }
+</script>
+
+</head>
+<body>
+  <div id="search">
+    <input id="searchbox" type="text"/>
+    <input type="button" value="clear" id="clear-results" onclick="$('#search-results').hide(); $('#searchbox').val(''); "/>
+    <div id="search-results" time="0">
+      <ol>
+        <li><a href="#song-results"><span>Songs</span></a></li>
+        <li><a href="#album-results"><span>Albums</span></a></li>
+        <li><a href="#artist-results"><span>Artists</span></a></li>
+      </ol>
+      <div id="song-results">Songs</div>
+      <div id="album-results">Albums</div>
+      <div id="artist-results">Artists</div>
+    </div>
+  </div>
+  <button onclick="CLICKME()">CLICK ME</button>
+  <div id="jquery_jplayer_1" class="jp-jplayer"></div>
+  <div id="jp_container_1" class="jp-video jp-video-270p">
+    <div class="jp-type-playlist">
+      <div id="jquery_jplayer_1" class="jp-jplayer"></div>
+      <div class="jp-gui">
+        <div class="jp-video-play">
+          <a href="javascript:;" class="jp-video-play-icon" tabindex="1">play</a>
+        </div>
+        <div class="jp-interface">
+          <div class="jp-progress">
+            <div class="jp-seek-bar">
+              <div class="jp-play-bar"></div>
+            </div>
+          </div>
+          <div class="jp-current-time"></div>
+          <div class="jp-currently-playing">...</div>
+          <div class="jp-duration"></div>
+          <br/>
+          <div class="jp-title">
+            <ul>
+              <li></li>
+            </ul>
+          </div>
+          <div class="jp-controls-holder">
+            <ul class="jp-controls">
+              <li><a href="javascript:;" class="jp-previous jp-button" tabindex="1">previous</a></li>
+              <li><a href="javascript:;" class="jp-play jp-button" tabindex="1">play</a></li>
+              <li><a href="javascript:;" class="jp-pause jp-button" tabindex="1">pause</a></li>
+              <li><a href="javascript:;" class="jp-next jp-button" tabindex="1">next</a></li>
+              <li><a href="javascript:;" class="jp-stop jp-button" tabindex="1">stop</a></li>
+              <li><a href="javascript:;" class="jp-mute" tabindex="1"
+                title="mute">mute</a></li>
+              <li><a href="javascript:;" class="jp-unmute" tabindex="1"
+                title="unmute">unmute</a></li>
+              <li><a href="javascript:;" class="jp-volume-max"
+                tabindex="1" title="max volume">max volume</a></li>
+            </ul>
+            <div class="jp-volume-bar">
+              <div class="jp-volume-bar-value"></div>
+            </div>
+            <ul class="jp-toggles">
+              <li><a href="javascript:;" class="jp-full-screen"
+                tabindex="1" title="full screen">full screen</a></li>
+              <li><a href="javascript:;" class="jp-restore-screen"
+                tabindex="1" title="restore screen">restore screen</a></li>
+              <li><a href="javascript:;" class="jp-shuffle" tabindex="1"
+                title="shuffle">shuffle</a></li>
+              <li><a href="javascript:;" class="jp-shuffle-off"
+                tabindex="1" title="shuffle off">shuffle off</a></li>
+              <li><a href="javascript:;" class="jp-repeat" tabindex="1"
+                title="repeat">repeat</a></li>
+              <li><a href="javascript:;" class="jp-repeat-off"
+                tabindex="1" title="repeat off">repeat off</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="jp-playlist">
+        <ul>
+          <li></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

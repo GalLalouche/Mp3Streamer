@@ -4,7 +4,7 @@ import java.io.File
 
 import play.api.mvc._
 
-object Application extends Controller {
+class Application extends Controller {
 	def index(mute: Boolean) = Action {
 		Ok(views.html.main(mute))
 	}
@@ -15,8 +15,10 @@ object Application extends Controller {
 			("Content-Disposition", "attachment; filename=" + file.getName().replaceAll(",", "%2c")),
 			("Content-Range", "byte %d/%d".format(file.length, file.length)), ("Content", "audio/mp3"))
 	}
-	def test = Action {
-		Ok("Hi")
+	var i = 0;
+	def test() = Action {
+		i += 1
+		Ok("Hi: " + i)
 	}
 
 }

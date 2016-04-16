@@ -12,6 +12,6 @@ object TermIndexBuilder extends IndexBuilder {
       .terms(indexable)
       .map(_.toLowerCase)
       .foldLeft(map)((map, word) => map.append(word, indexable)))
-    .map(e => e._1 -> e._2.toVector)
+    .map(e => (e._1, e._2.toVector))
     .mapTo(new MapIndex(_))
 }

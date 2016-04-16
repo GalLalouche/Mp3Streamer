@@ -14,13 +14,13 @@ class MessageInterceptor[T] {
   final def expectMessage(msg: T, timeout: Duration = Duration(100, TimeUnit.MILLISECONDS)) {
     if (q.contains(msg))
       return
-    val watch = new Stopwatch().start()
+    val watch = Stopwatch.createStarted()
     q.poll(timeout.toMillis, TimeUnit.MILLISECONDS) match {
       case null => throw new AssertionError(s"Expected message $msg but didn't get it. got $q instead")
       case t if t == msg => return
       case t =>
         q.offer(t)
-        expectMessage(msg, Duration.apply(timeout.toMillis - watch.elapsedMillis(), TimeUnit.MILLISECONDS))
+        expectMessage(msg, Duration.apply(timeout.toMillis - watch.elapsed(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS))
     }
   }
 }

@@ -6,7 +6,6 @@ import java.util.concurrent.Executors
 import common.concurrency.SimpleActor
 import common.io.DirectoryRef
 import common.{Collectable, Debug, IndexedSet}
-import controllers.{RealLocations, Searcher}
 import models._
 import rx.lang.scala.{Observable, Observer, Subscription}
 
@@ -27,7 +26,7 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: Jsonabl
     saver.update[Song](_ ++ info.songs)
     saver.update[Album](_.toSet + info.album)
     saver.update[Artist](_./:(emptyArtistSet)(_ + _) + info.artist)
-    Searcher.!()
+//    Searcher.!()
   }
   def indexAll(): Observable[IndexUpdate] = {
     import common.concurrency._

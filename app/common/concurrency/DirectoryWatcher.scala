@@ -20,6 +20,8 @@ import rx.lang.scala.{Observable, Observer, Subscription}
 import scala.annotation.tailrec
 import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection.mutable
+import common.rich.path.Directory
+import rx.lang.scala._
 
 //TODO this shit doesn't justify its own package
 class DirectoryWatcher(listener: Observer[DirectoryEvent], val dirs: Traversable[Directory]) extends Debug {

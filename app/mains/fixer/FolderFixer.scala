@@ -27,7 +27,7 @@ object FolderFixer {
     if (destination.isCompleted == false)
       println("Waiting on artist find...")
     val destinationParent: Directory = Await.result(destination, 1 minute).getOrElse {
-      val genre = readLine("Could not find artist directory... what is the artist's genre?\n").toLowerCase
+      val genre = scala.io.StdIn.readLine("Could not find artist directory... what is the artist's genre?\n").toLowerCase
       Directory("d:/media/music")
         .dirs
         .view

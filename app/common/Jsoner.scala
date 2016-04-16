@@ -10,17 +10,9 @@ object Jsoner {
     case o: Long => JsNumber(o)
     case o: Double => JsNumber(o)
     case o: Boolean => JsBoolean(o)
-    case o: Seq[_] => JsArray(o.map(jsValue))
+    case o: Seq[_] => JsArray(o.map(jsValue).toVector)
     case o: JsValue => o
     case o: AnyRef => jsValue(o.toString)
-  }
-
-//  implicit def jsValue(x: (String, _ <: Any)): (String, JsValueWrapper) = ((x._1, jsValue(x._2)))
-
-  implicit object Impliciter extends Writes[Any] {
-    def writes(x: Any) = {
-      jsValue(x)
-    }
   }
 
   // implicit casts from a JsValue to a primitive

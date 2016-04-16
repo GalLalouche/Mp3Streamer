@@ -1,16 +1,12 @@
 package mains
 
 import java.io.File
-import java.nio.charset.StandardCharsets
 
 import common.Debug
 import common.io.IODirectory
 import common.rich.RichT.richT
-import common.rich.path.Directory
 import common.rich.path.RichFile._
-import loggers.ConsoleLogger
 import models.MusicFinder
-import org.apache.commons.codec.binary.Base64
 
 // finds songs that are in the music directory but are not saved in the playlist file
 object FindSongsNotInPlaylist extends App with Debug {
@@ -19,7 +15,7 @@ object FindSongsNotInPlaylist extends App with Debug {
 		val subDirs = List("Metal", "Rock", "Classical", "New Age", "Jazz")
 		val extensions = List("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
 	}
-	timed(logger = ConsoleLogger) {
+	timed {
 		val playlistSongs = musicFiles.dir.addFile("playlist.m3u8") // UTF-8 helps deal with Hebrew songs
 			.lines
 			// removes UTF-BOM at least until I fix it in scala common

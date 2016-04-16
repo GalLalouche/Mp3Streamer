@@ -39,7 +39,7 @@ object FixLabels extends App with Debug {
 					.toInt // throws an exception if not an int string
 					.toString)
 			} catch {
-				case e: Exception => () // do nothing... why?	
+				case e: Exception => () // do nothing... why?
 			}
 
 		AudioFileIO delete audioFile

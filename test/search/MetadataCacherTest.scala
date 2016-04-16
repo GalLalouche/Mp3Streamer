@@ -97,9 +97,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
             s"$left did not have currentIndex of $current and totalNumber of $total",
             s"$left did have currentIndex of $current and totalNumber of $total")
       }
-      println(q)
       q.poll(1, TimeUnit.SECONDS) should matchWithIndices(1, 2)
-      println(q)
       q.poll(1, TimeUnit.SECONDS) should matchWithIndices(2, 2)
     }
     "with blocking sink" in {

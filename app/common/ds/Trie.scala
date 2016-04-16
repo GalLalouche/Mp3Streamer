@@ -8,7 +8,7 @@ class Trie[+T] private(map: Map[Char, Trie[T]], private val values: List[T]) {
     if (key.isEmpty)
       new Trie(map, v :: values)
     else
-      new Trie(map + (key.head -> orDefault(key.head).+[S](key.tail, v)), values)
+      new Trie(map + ((key.head ,orDefault(key.head).+[S](key.tail, v))), values)
   final def +[S >: T](e: (String, S)): Trie[S] = this.+(e._1, e._2)
   private def allValues: Seq[T] = values ++ map.values.flatMap(_.allValues)
   @tailrec

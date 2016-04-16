@@ -1,8 +1,7 @@
-package controllers
+package models
 
 import common.io.IODirectory
 import common.rich.path.Directory
-import models.MusicFinder
 
 /** Can be extended to override its values in tests */
 class RealLocations extends MusicFinder {

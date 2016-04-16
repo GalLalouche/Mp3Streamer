@@ -12,6 +12,6 @@ object RichMap {
   }
   implicit class RichMapSemi[K, V: Semigroup]($: Map[K, V]) {
     def merge(other: Map[K, V]): Map[K, V] =
-      $.filterKeys(other.contains).map(e => e._1 -> implicitly[Semigroup[V]].append(e._2, other(e._1)))
+      $.filterKeys(other.contains).map(e => (e._1, implicitly[Semigroup[V]].append(e._2, other(e._1))))
   }
 }

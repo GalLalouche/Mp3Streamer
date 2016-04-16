@@ -4,15 +4,13 @@ import java.io.File
 
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
-import controllers.RealLocations
-import models.{Poster, Song}
+import models.{Poster, RealLocations, Song}
 import org.apache.commons.io.FileUtils
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.audio.exceptions.{CannotWriteException, UnableToRenameFileException}
 import org.jaudiotagger.tag.images.StandardArtwork
 
 import scala.collection.mutable
-import scala.collection.mutable.HashSet
 import scala.util.Random
 import scala.util.control.Breaks.breakable
 
