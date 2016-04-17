@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Mp3Streamer.iml" filepath="$PROJECT_DIR$/.idea/modules/Mp3Streamer.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Mp3Streamer-build.iml" filepath="$PROJECT_DIR$/.idea/modules/Mp3Streamer-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/client/.idea/modules/client.iml" filepath="$PROJECT_DIR$/client/.idea/modules/client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/client/.idea/modules/client-build.iml" filepath="$PROJECT_DIR$/client/.idea/modules/client-build.iml" />
     </modules>
   </component>
 </project>

@@ -6,6 +6,8 @@
 GET        /                             controllers.Application.index(mute:Boolean = false)
 GET        /mute                         controllers.Application.index(mute:Boolean = true)
 GET        /test                         controllers.Application.test()
+GET        /sjs                          controllers.Application.sjs()
+GET        /client/*file                 controllers.Application.sjsClient(file)
 
 
 
@@ -23,14 +25,15 @@ GET        /posters/*path                controllers.Posters.image(path)
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file                 controllers.Assets.at(path="/public", file)
+GET        /client/*file                 controllers.Assets.at(path="/client/scala-2.11/", file)
 GET        /js/*file                     controllers.Assets.at(path="/public/javascripts", file)
 # Flac
 GET        /flac/raw                     controllers.Flac.raw
 GET        /flac/play                    controllers.Flac.foobar
 
 # Searcher
+GET        /searcher/update              controllers.Searcher.update()
 GET        /search/*path                 controllers.Searcher.search(path)
-GET        /search/update                controllers.Searcher.update()
 
 # Web sockets
 GET        /ws/console                   websockets.ConsoleSocket.accept

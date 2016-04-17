@@ -7,7 +7,8 @@
     <option name="uncheckedWarnings" value="true" />
     <option name="explainTypeErrors" value="true" />
     <option name="incrementalityType" value="SBT" />
-    <profile name="SBT 2" modules="Mp3Streamer,mp3streamer">
+    <profile name="SBT 1" modules="client" />
+    <profile name="SBT 2" modules="mp3streamer,Mp3Streamer">
       <option name="deprecationWarnings" value="true" />
       <option name="uncheckedWarnings" value="true" />
       <parameters>
