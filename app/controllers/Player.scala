@@ -23,7 +23,7 @@ import scala.util.Random
 /**
  * Handles fetch requests of JSON information
  */
-class Player extends Controller with Debug {
+object Player extends Controller with Debug {
   val musicFinder = RealLocations
   private val random = new Random
   private var songPaths: Seq[File] = null
@@ -37,8 +37,8 @@ class Player extends Controller with Debug {
 
   def update() = timed("Updating music") {
     songPaths = musicFinder.getSongFilePaths.map(new File(_))
+    Searcher.!()
     Action {
-      // this cannot be inlined, as it has to be the same function for LazyActor
       Ok("Updated")
     }
   }
@@ -47,8 +47,8 @@ class Player extends Controller with Debug {
     directoryEvent match {
       case DirectoryWatcher.DirectoryCreated(d) =>
         MetadataCacher ! new IODirectory(d)
-        update
-//        NewFolderSocket.actor ! d
+        update()
+        NewFolderSocket.actor ! d
       case DirectoryWatcher.DirectoryDeleted(d) =>
         common.CompositeLogger warn s"Directory $d has been deleted; the index does not support deletions yet, so please update"
         update

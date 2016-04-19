@@ -6,7 +6,7 @@ import java.net.URLDecoder
 import play.api.mvc.Action
 import play.api.mvc.Controller
 
-class Posters extends Controller {
+object Posters extends Controller {
 	def image(path: String) = Action {
 		Status(200).sendFile(new File(URLDecoder.decode(path, "UTF-8")))
 	}

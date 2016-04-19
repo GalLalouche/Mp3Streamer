@@ -7,6 +7,7 @@ import common.concurrency.SimpleActor
 import common.io.DirectoryRef
 import common.{Collectable, Debug, IndexedSet}
 import models._
+import play.Routes
 import rx.lang.scala.{Observable, Observer, Subscription}
 
 import scala.collection.GenSeq
@@ -26,7 +27,6 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: Jsonabl
     saver.update[Song](_ ++ info.songs)
     saver.update[Album](_.toSet + info.album)
     saver.update[Artist](_./:(emptyArtistSet)(_ + _) + info.artist)
-//    Searcher.!()
   }
   def indexAll(): Observable[IndexUpdate] = {
     import common.concurrency._

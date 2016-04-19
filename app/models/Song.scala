@@ -18,8 +18,8 @@ object Song {
   /** Parses ID3 data */
   def apply(file: File): Song = {
     require(file != null)
-    require(file.exists)
-    require(file.isDirectory == false)
+    require(file.exists, file + " doesn't exist")
+    require(file.isDirectory == false, file + " is a directory")
     val (tag, header) = {
       val x = AudioFileIO.read(file)
       (x.getTag, x.getAudioHeader)

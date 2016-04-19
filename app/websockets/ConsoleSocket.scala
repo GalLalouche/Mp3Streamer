@@ -4,7 +4,7 @@ import common.Logger
 
 
 /** Sends console messages to the listeners */
-class ConsoleSocket extends WebSocketController with Logger {
+object ConsoleSocket extends WebSocketController with Logger {
   override def trace(s: String) = safePush("[Trace] " + s)
   override def debug(s: String) = safePush("[Debug] " + s)
   override def info(s: String) = safePush("[Info] " + s)

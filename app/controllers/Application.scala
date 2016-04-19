@@ -4,7 +4,7 @@ import java.io.File
 
 import play.api.mvc._
 
-class Application extends Controller {
+object Application extends Controller {
   def index(mute: Boolean) = Action {
     Ok(views.html.main(mute))
   }

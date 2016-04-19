@@ -16,8 +16,8 @@ object AuroraPlayer extends MusicPlayer {
     def callback(x: Player, y: Any) {
       currentPlayer.play()
     }
-    currentPlayer.preload()
     currentPlayer.on("ready", callback _)
+    currentPlayer.preload()
   }
   override def play() {currentPlayer.play()}
   override def stop() {currentPlayer.stop()}

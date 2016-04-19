@@ -7,7 +7,11 @@
     <option name="uncheckedWarnings" value="true" />
     <option name="explainTypeErrors" value="true" />
     <option name="incrementalityType" value="SBT" />
-    <profile name="SBT 1" modules="client" />
+    <profile name="SBT 1" modules="client">
+      <plugins>
+        <plugin path="C:\Users\Gal\.ivy2\cache\org.scala-js\scalajs-compiler_2.11.8\jars\scalajs-compiler_2.11.8-0.6.8.jar" />
+      </plugins>
+    </profile>
     <profile name="SBT 2" modules="mp3streamer,Mp3Streamer">
       <option name="deprecationWarnings" value="true" />
       <option name="uncheckedWarnings" value="true" />

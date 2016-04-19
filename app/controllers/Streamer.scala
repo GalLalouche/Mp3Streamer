@@ -10,7 +10,7 @@ import play.api.mvc.{Action, Controller}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class Streamer extends Controller {
+object Streamer extends Controller {
   val decoder = DbPowerampCodec
 
   def download(s: String) = Action.async {

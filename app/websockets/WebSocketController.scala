@@ -7,6 +7,16 @@ import play.api.mvc.{Controller, WebSocket}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+object WebSocketController {
+  private class DisconnectingActor(_receive: PartialFunction[Any, Unit], channel: play.api.libs.iteratee.Concurrent.Channel[_], name: String) extends Actor {
+    override def receive = _receive
+    override def postStop {
+      common.CompositeLogger.trace("Ending " + name + " socket connection")
+      channel.eofAndEnd
+    }
+  }
+}
+
 trait WebSocketController extends Controller {
   private val out = Concurrent.broadcast[String]
   def safePush(msg: String) { Option(out).flatMap(e => Option(e._2)).foreach(_.push(msg)) }
@@ -23,14 +33,4 @@ trait WebSocketController extends Controller {
     }
     (i, out._1)
   }}
-}
-
-object WebSocketController {
-  private class DisconnectingActor(_receive: PartialFunction[Any, Unit], channel: play.api.libs.iteratee.Concurrent.Channel[_], name: String) extends Actor {
-    override def receive = _receive
-    override def postStop {
-      common.CompositeLogger.trace("Ending " + name + " socket connection")
-      channel.eofAndEnd
-    }
-  }
 }
