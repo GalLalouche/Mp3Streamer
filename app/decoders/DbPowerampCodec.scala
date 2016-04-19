@@ -13,12 +13,12 @@ import scala.sys.process.{Process, ProcessLogger}
 object DbPowerampCodec extends Mp3Encoder(Directory("D:/media/streamer/musicOutput")) with Debug with SimpleTypedActor[File, File] {
   val codecFile = new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe")
   private implicit class richString(o: Any) {
-    def quote: String = s""""$o"""""
+    def quote: String = '"' + o.toString + '"'
   }
 
   override def encode(srcFile: File, dstFile: File, dstType: CodecType) {
     // create the arguments for the application invocation
-    val args = List(codecFile.path.quote,
+    val args = List(codecFile.path,
       "-infile=" + srcFile.path.quote,
       "-outfile=" + dstFile.path.quote,
       "-convert_to=" + dstType.quote,
@@ -29,7 +29,8 @@ object DbPowerampCodec extends Mp3Encoder(Directory("D:/media/streamer/musicOutp
     }
   }
   override def apply(m: File): File = encodeFileIfNeeded(m)
-  private val devNull = new ProcessLogger { // sends all output to FREAKING NOWHERE
+  private val devNull = new ProcessLogger {
+    // sends all output to FREAKING NOWHERE
     // can't use !! because it throws an exception from the decoder for some reason
     override def out(s: => String): Unit = {}
     override def err(s: => String): Unit = {}

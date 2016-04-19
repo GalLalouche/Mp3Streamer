@@ -23,20 +23,20 @@ abstract class Mp3Encoder(outputDir: Directory) extends Encoder {
   def encodeFileIfNeeded(f: File) = if (f.extension.toLowerCase != "mp3") encode(f) else f
 
   /**
-    * Encode the file to an mp3 format. The file will only be created if its matching doesn't already exist.
-    *
-    * @param file The file to decode
-    * @return The (possibly new) mp3 file created; The file will be created in the outputDir, and will
-    * 				be the absolute path of the file (with no space) with .mp3
-    * @throws IOException
-    */
+   * Encode the file to an mp3 format. The file will only be created if its matching doesn't already exist.
+   *
+   * @param file The file to decode
+   * @return The (possibly new) mp3 file created; The file will be created in the outputDir, and will
+   * be the absolute path of the file (with no space) with .mp3
+   * @throws IOException
+   */
   def encode(file: File): File = {
     require(file != null)
     require(file.exists)
     require(file.isDirectory == false)
-    cleanOldFiles !
+    cleanOldFiles.!()
     val outputFileName = file.path.replaceAll("[\\s\\/\\\\\\-\\:]", "").toLowerCase + ".mp3"
-    outputDir.files.find(_.name == outputFileName).getOrElse({
+    outputDir.files.find(_.name == outputFileName).filter(_.length > 0).getOrElse({
       val outputFile = outputDir.addFile(outputFileName)
       encode(file, outputFile, CodecType.Mp3)
       outputFile
