@@ -18,7 +18,7 @@ import search.Jsonable._
 import search.MetadataCacher
 import websockets.NewFolderSocket
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
 import scala.util.Random
 

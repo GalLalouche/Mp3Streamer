@@ -7,31 +7,24 @@ import common.RichFuture._
 import common.rich.RichT._
 import models.Song
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class LyricsWikiaRetriever(implicit ec: ExecutionContext) extends (Song => Future[Lyrics]) {
-  private def parse(html: String): Lyrics =
-    Jsoup.parse(html)
-        .select(".lyricbox")
-        .html
-        .split("\n")
-        .takeWhile(_.startsWith("<!--") == false)
-        .mkString("\n")
-        .mapTo(new Lyrics(_))
+private class LyricsWikiaRetriever(implicit ec: ExecutionContext) extends HtmlRetriever {
+  override protected def fromHtml(html: Document, s: Song): String = html
+      .select(".lyricbox")
+      .html
+      .split("\n")
+      .takeWhile(_.startsWith("<!--") == false)
+      .mkString("\n")
+  override protected def getUrl(s: Song): String =
+    s"http://lyrics.wikia.com/wiki/${normalize(s.artistName)}:${normalize(s.title)}"
+  override protected val source: String = "LyricsWikia"
   private def normalize(s: String): String = s.replaceAll(" ", "_").mapTo(URLEncoder.encode(_, "UTF-8"))
-  override def apply(s: Song): Future[Lyrics] = {
-    val path = s"${normalize(s.artistName)}:${normalize(s.title)}"
-    Future.apply(scala.io.Source.fromURL("http://lyrics.wikia.com/wiki/" + path.log(), "UTF-8"))
-        .map(_.mkString)
-        .filterWithMessage(_.matches("\\s*") == false, e => "Was empty")
-        .map(parse)
-        .filterWithMessage(_.html.matches("\\s*") == false, e => "html was invalid")
-  }
 }
 
-object LyricsWikiaRetriever extends LyricsWikiaRetriever() {
+private object LyricsWikiaRetriever extends LyricsWikiaRetriever()(scala.concurrent.ExecutionContext.Implicits.global) {
   def main(args: Array[String]) {
     println(apply(Song(new File( """D:\Media\Music\Rock\Neo-Prog\The Flower Kings\1997 Stardust We are\05 - Poor Mr. Rain's Ordinary Guitar.mp3"""))).get)
     println("Done")

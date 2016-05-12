@@ -14,5 +14,6 @@ object RichFuture {
     })
     def get: T = Await.result($, Duration.Inf)
     def orElse(t: => T)(implicit ec: ExecutionContext) = $.recover{case e => t}
+    def orElseTry(t: => Future[T])(implicit ec: ExecutionContext) = $.recoverWith{case e => t}
   }
 }

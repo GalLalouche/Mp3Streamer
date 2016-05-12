@@ -10,9 +10,9 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import common.RichFuture._
 
 object Lyrics extends Controller {
-  private val lyrics = LyricsCache
+  private val lyrics = new LyricsCache
   def get(path: String) = Action.async {
     val s = Song(new File(URLDecoder.decode(path, "UTF-8")))
-    lyrics.get(s).map(_.html).orElse("Failed to get lyrics :(").map(Ok(_))
+    lyrics.get(s).map(l => l.html + "<br><br>Source: " + l.source).orElse("Failed to get lyrics :(").map(Ok(_))
   }
 }

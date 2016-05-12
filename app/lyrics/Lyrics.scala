@@ -1,5 +1,5 @@
 package lyrics
 
-class Lyrics(val html: String) {
-  override def toString: String = html
+case class Lyrics(val html: String, val source: String) {
+  override def toString: String = "(From " + source + ")\n" + html
 }
