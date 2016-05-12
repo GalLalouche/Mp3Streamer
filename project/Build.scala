@@ -13,17 +13,22 @@ object ApplicationBuild extends Build {
       "com.typesafe.akka" %% "akka-actor" % "[2.0,)",
       "com.typesafe.akka" %% "akka-testkit" % "[2.0,)" % "test",
       "com.typesafe.play" % "play_2.11" % "2.5.2",
+      "com.typesafe.play" %% "play-ws" % "2.4.3",
+      "com.typesafe.slick" %% "slick" % "3.0.0",
       "io.reactivex" %% "rxscala" % "[0.25, )",
       "org.apache.commons" % "commons-io" % "[1.3.2, )",
       "org.jsoup" % "jsoup" % "1.8.3",
       "org.me" % "scalacommon_2.10" % "1.0",
       "org.mockito" % "mockito-all" % "1.9.5" % "test",
+      "org.scala-js" % "scalajs-library_2.11" % "0.6.8",
       "org.scala-lang" % "scala-actors" % "2.11.0",
       "org.scala-lang" % "scala-swing" % "[2.11, )",
       "org.scala-lang" % "scala-swing" % "[2.11, )",
-      "org.scala-js" % "scalajs-library_2.11" % "0.6.8",
       "org.scalatest" % "scalatest_2.11" % "2.2.1",
-      "org.scalaz" % "scalaz-core_2.11" % "7.2.0"
+      "org.scalaz" % "scalaz-core_2.11" % "7.2.0",
+      "com.h2database" % "h2" % "[1.4, )",
+      "org.xerial" % "sqlite-jdbc" % "3.7.2",
+      "org.slf4j" % "slf4j-nop" % "1.6.4"
     ),
     // Add your own project settings here
     //unmanagedBase <<= baseDirectory { base => base / "test" }

@@ -19,7 +19,7 @@ object WebSocketController {
 
 trait WebSocketController extends Controller {
   private val out = Concurrent.broadcast[String]
-  def safePush(msg: String) { Option(out).flatMap(e => Option(e._2)).foreach(_.push(msg)) }
+  def safePush(msg: String) { Option(out).flatMap(e => Option(e._2)).foreach(_ push msg) }
 
   implicit val system = models.KillableActors.system
   val name = getClass.getSimpleName

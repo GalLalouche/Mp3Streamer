@@ -37,5 +37,6 @@ object FindSongsNotInPlaylist extends App with Debug {
 		println(serverMissing.mkString("\n"))
 		println(s"Playlist is missing ${playlistMissing.size} songs")
 		println(playlistMissing.mkString("\n"))
+		System exit 0
 	}
 }

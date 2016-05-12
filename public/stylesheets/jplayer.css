@@ -1,12 +1,4 @@
 @CHARSET "windows-1255";
-
-/* mine
-.poster {
-	width: 480px !important; 
-	height: 480px !important; 
-}
-
- */
 .poster {
 	margin-left: 55px;
 	background-color: transparent !important;
@@ -29,6 +21,12 @@ body {
   position: absolute;
   left: 800px;
   float: right;
+}
+#lyrics {
+	position: absolute;
+	left: 800px;
+	top: 300px;
+	float: right;
 }
 
 .jp-currently-playing {

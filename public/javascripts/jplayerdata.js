@@ -39,6 +39,7 @@ $(function() {
       document.title = songInfo;
       $('#favicon').remove();
       $('head').append('<link href="' + $("img.poster")[0].src+ '" id="favicon" rel="shortcut icon">');
+      Lyrics.show(currentlyPlayingSong)
     };
   });
 
