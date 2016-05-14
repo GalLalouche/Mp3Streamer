@@ -25,6 +25,7 @@ private class LyricsWikiaRetriever(implicit ec: ExecutionContext) extends HtmlRe
 }
 
 private object LyricsWikiaRetriever extends LyricsWikiaRetriever()(scala.concurrent.ExecutionContext.Implicits.global) {
+  import scala.concurrent.ExecutionContext.Implicits.global
   def main(args: Array[String]) {
     println(apply(Song(new File( """D:\Media\Music\Rock\Neo-Prog\The Flower Kings\1997 Stardust We are\05 - Poor Mr. Rain's Ordinary Guitar.mp3"""))).get)
     println("Done")

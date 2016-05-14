@@ -7,7 +7,6 @@ import common.concurrency.SimpleActor
 import common.io.DirectoryRef
 import common.{Collectable, Debug, IndexedSet}
 import models._
-import play.Routes
 import rx.lang.scala.{Observable, Observer, Subscription}
 
 import scala.collection.GenSeq

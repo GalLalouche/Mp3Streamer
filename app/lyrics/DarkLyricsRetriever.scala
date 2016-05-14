@@ -30,6 +30,7 @@ private class DarkLyricsRetriever(implicit ec: ExecutionContext) extends HtmlRet
 }
 
 object DarkLyricsRetriever {
+  import scala.concurrent.ExecutionContext.Implicits.global
   def main(args: Array[String]) {
     val $ = new DarkLyricsRetriever()(scala.concurrent.ExecutionContext.Implicits.global)
     println($.apply(Song(new File( """D:\Media\Music\Metal\Power Metal\Helloween\1985 Walls of Jericho\03 - Warrior.mp3"""))).get)

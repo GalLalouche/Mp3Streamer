@@ -16,5 +16,5 @@ trait SimpleTypedActor[Msg, Result] {
       $
     }
   })
-  def !(m: Msg): Future[Result] = Future.apply(this.apply(m))(ExecutionContext.fromExecutorService(queue)) 
+  def !(m: Msg): Future[Result] = Future(this.apply(m))(ExecutionContext.fromExecutorService(queue))
 }
