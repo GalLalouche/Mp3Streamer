@@ -1,82 +1,53 @@
-$(function() {
-  var randomSongUrl = "data/randomSong";
-  // get a random start to start off with
-  $.get(randomSongUrl, function(data) {
-    // setup playlist type
+$(function () {
+  const randomSongUrl = "data/randomSong";
+  // get a random song to start off with
+  $.get(randomSongUrl, function (data) {
+    // setup playlist
     playlist = new jPlayerPlaylist({
-      jPlayer : "#jquery_jplayer_1",
-      cssSelectorAncestor : "#jp_container_1"
-    }, [ data ], {
-      swfPath : "../js",
-      supplied : "webmv, ogv, m4a, oga, mp3, flac"
+      jPlayer: "#jquery_jplayer_1",
+      cssSelectorAncestor: "#jp_container_1"
+    }, [data], {
+      swfPath: "../js",
+      supplied: "webmv, ogv, m4a, oga, mp3, flac"
     });
     $("#jp_poster_0").addClass("poster");
     $("#jquery_jplayer_1").addClass("poster");
-    // $("#jp_poster_0").width("270px");
-    // $("#jp_poster_0").css("margin-left", "105px");
-    // $("body").css("background-color", "#EEEEEE");
     if (mute) // mute for debugging
       $(".jp-mute").click()
-    else
+    else // or full volume for regular
       $(".jp-volume-max").click();
-    $(".jp-shuffle").click();
+    $(".jp-shuffle").click(); // default to shuffle
     // save a reference to the old next method before changing it
     playlist.oldNext = playlist.next;
-    // same as the old, but loads a new random song if in shuffle mode and
-    // at the end
-    playlist.next = function() {
-      if (this.shuffled && this.isLastSongPlaying()) {
-        loadNextRandom(true);
-      } else {
+    // same as the old, but loads a new random song if in shuffle mode and at the end
+    playlist.next = function () {
+      if (shouldLoadNextSongFromRandom())
+        loadNextRandom(true); 
+      else 
         playlist.oldNext();
-      }
     };
-    var jPlayer = $(playlist.cssSelector.jPlayer).data("jPlayer");
-    jPlayer.onPlay = function() {
-      var currentlyPlayingSong = playlist.currentPlayingSong();
-      var songInfo = currentlyPlayingSong.artistName + " - " + currentlyPlayingSong.title;
+    $(playlist.cssSelector.jPlayer).data("jPlayer").onPlay = function () {
+      const currentlyPlayingSong = playlist.currentPlayingSong();
+      const songInfo = `${currentlyPlayingSong.artistName} - ${currentlyPlayingSong.title}`;
       $(".jp-currently-playing").html(songInfo);
       document.title = songInfo;
       $('#favicon').remove();
-      $('head').append('<link href="' + $("img.poster")[0].src+ '" id="favicon" rel="shortcut icon">');
+      $('head').append(`<link href="${$("img.poster")[0].src}" id="favicon" rel="shortcut icon">`);
       Lyrics.show(currentlyPlayingSong)
     };
   });
-
-  String.prototype.format = String.prototype.f = function() {
-    var s = this, i = arguments.length;
-
-    while (i--)
-      s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
-    return s;
-  };
-  Number.prototype.timeFormat = function() {
-    var hours   = Math.floor(this / 3600);
-    var minutes = Math.floor((this - (hours * 3600)) / 60);
-    var seconds = this - (hours * 3600) - (minutes * 60);
-
-    if (hours   < 10) {hours   = "0" + hours;}
-    if (minutes < 10) {minutes = "0" + minutes;}
-    if (seconds < 10) {seconds = "0" + seconds;}
-    hourPrefix = hours === "00" ? "" : hours + ":";
-    return hourPrefix + minutes + ':' + seconds;
-  };
-
-  var loadNextRandom = function(playNow) {
-    $.get(randomSongUrl, function(data) {
+  function loadNextRandom(playNow) {
+    $.get(randomSongUrl, function (data) {
       playlist.add(data, playNow);
     });
   };
-
-  setInterval(function() {
-    var jPlayer = $(playlist.cssSelector.jPlayer).data("jPlayer");
-    if (playlist.shuffled
-        && playlist.playlist.length - 1 == playlist.current) {
-      var duration = jPlayer.htmlElement.media.duration;
-      var currentTime = jPlayer.htmlElement.media.currentTime;
-      if (duration - currentTime < WAIT_DELAY) {
-        loadNextRandom(false);
-      }
-    }
+  function shouldLoadNextSongFromRandom() {
+    return playlist.shuffled && playlist.isLastSongPlaying()
+  }
+  setInterval(function () {
+    const jPlayer = $(playlist.cssSelector.jPlayer).data("jPlayer");
+    var isSongNearlyFinished = jPlayer.htmlElement.media.duration - jPlayer.htmlElement.media.currentTime < WAIT_DELAY;
+    if (shouldLoadNextSongFromRandom() && isSongNearlyFinished)
+      loadNextRandom(false);
   }, (WAIT_DELAY - 5) * 1000);
 });

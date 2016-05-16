@@ -1,4 +1,3 @@
-
 class Player {
   load(song) {
     throw new Error("Abstract")

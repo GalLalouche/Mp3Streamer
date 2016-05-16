@@ -62,7 +62,12 @@ object Player extends Controller with Debug {
     Ok(JsArray(songs map toJson))
   }
 
+  private def toSong(path: String): Song = Song(new File(URLDecoder.decode(path, "UTF-8")))
   def song(path: String) = Action {
-    Ok(toJson(Song(new File(URLDecoder.decode(path, "UTF-8")))))
+    Ok(path |> toSong |> toJson)
+  }
+
+  def nextSong(path: String) = Action {
+    Ok(path |> toSong |> songSelector.followingSong |> toJson)
   }
 }

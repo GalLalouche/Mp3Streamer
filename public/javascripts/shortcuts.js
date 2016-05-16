@@ -24,8 +24,16 @@ $(function () {
       case 'B':
         gplaylist.next()
         break;
+      case 'N':
+        loadNextSong()        
+        break;
     }
   });
+  function loadNextSong() {
+    $.get("data/nextSong?path=" + gplaylist.currentPlayingSong().file, function (song) {
+      gplaylist.add(song, false)
+    })
+  }
   // pauses on poster click
   $(document).on("click", ".poster", function (e) {
     gplayer.togglePause()
