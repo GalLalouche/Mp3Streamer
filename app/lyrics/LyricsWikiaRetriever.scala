@@ -12,15 +12,18 @@ import org.jsoup.nodes.Document
 import scala.concurrent.{ExecutionContext, Future}
 
 private class LyricsWikiaRetriever(implicit ec: ExecutionContext) extends HtmlRetriever {
-  override protected def fromHtml(html: Document, s: Song): String = html
+  override val source = "LyricsWikia"
+  override protected def fromHtml(html: Document, s: Song) = html
       .select(".lyricbox")
       .html
       .split("\n")
       .takeWhile(_.startsWith("<!--") == false)
       .mkString("\n")
+      .mapTo(Some.apply)
+      .filterNot(_ contains "TrebleClef")
+
   override protected def getUrl(s: Song): String =
     s"http://lyrics.wikia.com/wiki/${normalize(s.artistName)}:${normalize(s.title)}"
-  override protected val source: String = "LyricsWikia"
   private def normalize(s: String): String = s.replaceAll(" ", "_").mapTo(URLEncoder.encode(_, "UTF-8"))
 }
 

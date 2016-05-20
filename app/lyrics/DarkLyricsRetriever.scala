@@ -15,7 +15,7 @@ private class DarkLyricsRetriever(implicit ec: ExecutionContext) extends HtmlRet
   private def removeWrappingWhiteSpace(s: String) = s.replaceAll("^\\s+", "").replaceAll("\\s$", "")
   private def removeEndingBreaklines(ss: Seq[String]) = ss.reverse.dropWhile(_.matches("<br>")).reverse
   // HTML is structured for shit, so might as well parse it by hand
-  override protected def fromHtml(html: Document, s: Song): String = html.toString
+  override protected def fromHtml(html: Document, s: Song) = html.toString
       .split("\n").toList
       .dropWhile(_.matches( s""".*a name="${s.track}".*""") == false)
       .drop(1)
@@ -23,6 +23,8 @@ private class DarkLyricsRetriever(implicit ec: ExecutionContext) extends HtmlRet
       .map(removeWrappingWhiteSpace)
       .mapTo(removeEndingBreaklines)
       .mkString("\n")
+      .mapTo(Some.apply)
+      .filterNot(_ contains "[Instrumental]")
 
   private def normalize(s: String): String = s.toLowerCase.filter(_.isLetter)
   override protected def getUrl(s: Song): String =
@@ -30,9 +32,11 @@ private class DarkLyricsRetriever(implicit ec: ExecutionContext) extends HtmlRet
 }
 
 object DarkLyricsRetriever {
+
   import scala.concurrent.ExecutionContext.Implicits.global
+
   def main(args: Array[String]) {
     val $ = new DarkLyricsRetriever()(scala.concurrent.ExecutionContext.Implicits.global)
-    println($.apply(Song(new File( """D:\Media\Music\Metal\Power Metal\Helloween\1985 Walls of Jericho\03 - Warrior.mp3"""))).get)
+    println($.apply(Song(new File( """D:\Media\Music\Metal\Progressive Metal\Dream Theater\2003 Train of Thought\05 - Vacant.mp3"""))).get)
   }
 }
