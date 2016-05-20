@@ -1,13 +1,13 @@
 package controllers
 
-import lyrics.LyricsCache
-import play.api.mvc.{Action, Controller}
 import java.io.File
 import java.net.URLDecoder
 
+import common.RichFuture._
+import lyrics.LyricsCache
 import models.Song
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import common.RichFuture._
+import play.api.mvc.{Action, Controller}
 
 object Lyrics extends Controller {
   private val lyrics = new LyricsCache

@@ -23,7 +23,7 @@ private object LyricsStorage extends LocalStorage[Song, Lyrics] {
   override def load(s: Song): Future[Lyrics] =
     db.run(lyrics
         .filter(_.song === normalize(s))
-        .map(e => e.source -> e.lyrics)
+        .map(e => e.lyrics -> e.source)
         .result)
         .map(_.head)
         .map(e => new Lyrics(e._1, e._2))
