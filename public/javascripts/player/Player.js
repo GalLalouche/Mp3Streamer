@@ -25,6 +25,10 @@ class Player {
     else
       this.pause()
   }
+  currentPlayingRelative() {
+    throw new Error("Abstract")
+  }
+  
 }
 class Playlist {
   add(song, playNow) {

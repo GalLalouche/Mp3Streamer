@@ -4,6 +4,7 @@ gplayer.pause = () => click("pause");
 gplayer.stop = () => click("stop");
 gplayer.playCurrentSong = () => click("play");
 gplayer.isPaused = () => $('#jquery_jplayer_1').data().jPlayer.status.paused
+gplayer.currentPlayingRelative = () => $('#jquery_jplayer_1').data().jPlayer.status.currentPercentRelative
 gplaylist.currentIndex = function() {
   return playlist.current
 };
