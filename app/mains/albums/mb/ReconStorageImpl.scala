@@ -2,7 +2,7 @@ package mains.albums.mb
 
 import common.RichFuture._
 import mains.albums.{ID, ReconStorage}
-import slick.driver.MySQLDriver.api._
+import slick.driver.SQLiteDriver.api._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

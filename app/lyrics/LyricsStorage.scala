@@ -4,7 +4,7 @@ import common.storage.LocalStorage
 import models.Song
 
 import scala.concurrent.Future
-import slick.driver.MySQLDriver.api._
+import slick.driver.SQLiteDriver.api._
 import common.RichFuture._
 import scala.concurrent.ExecutionContext.Implicits.global
 
