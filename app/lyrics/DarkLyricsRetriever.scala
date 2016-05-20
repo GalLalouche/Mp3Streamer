@@ -19,7 +19,7 @@ private class DarkLyricsRetriever(implicit ec: ExecutionContext) extends HtmlRet
       .split("\n").toList
       .dropWhile(_.matches( s""".*a name="${s.track}".*""") == false)
       .drop(1)
-      .takeWhile(_.matches(".*<h3>.*") == false)
+      .takeWhile(e => e.matches(".*<h3>.*") == false && e.matches(".*<div.*") == false) // this fucking site...
       .map(removeWrappingWhiteSpace)
       .mapTo(removeEndingBreaklines)
       .mkString("\n")
