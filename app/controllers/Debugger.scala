@@ -17,9 +17,9 @@ object Debugger extends WebSocketController with Debug {
     "currentDir" -> u.dir.name))
   def forceRefresh() = Action {
     MetadataCacher.indexAll().map(toJson).map(_.toString).doOnCompleted {
-      safePush("Reloading searcher")
-      Player.update().onComplete {
-        e => safePush("Finished")
+      Player.update()
+      Searcher.! onComplete {e =>
+        safePush("Reloading searcher")
       }
     } subscribe (safePush(_))
     Ok(views.html.refresh())

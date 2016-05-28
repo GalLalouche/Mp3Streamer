@@ -9,7 +9,7 @@ import java.io.File
 import scala.concurrent.ExecutionContext
 
 class LyricsCache(implicit ec: ExecutionContext) extends OnlineRetrieverCacher[Song, Lyrics](
-  LyricsStorage, new CompositeLyricsRetriever(new LyricsWikiaRetriever(), new DarkLyricsRetriever())) {
+  new LyricsStorage(), new CompositeLyricsRetriever(new LyricsWikiaRetriever(), new DarkLyricsRetriever())) {
 }
 
 object LyricsCache {

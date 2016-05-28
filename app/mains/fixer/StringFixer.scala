@@ -13,13 +13,14 @@ private object StringFixer {
 
   private def pascalCaseWord(w: String): String = w.head.toUpper + w.tail.toLowerCase
 
-  private def fixWord(w: String): String = w match {
+  private def fixWord(word: String): String = word match {
     case e if e matches delimiters => e
+    case e if e.head.isDigit => e.toLowerCase // 1st, 2nd, etc.
     case "a" | "A" => "a"
-    case _ if w.matches("[A-Z]+") => w
+    case _ if word.matches("[A-Z]+") => word
     case "i" | "I" => "I"
     case s if s matches "[IVXMLivxml]+" => s toUpperCase // roman numbers
-    case _ => if (lowerCaseWords(w.toLowerCase)) w.toLowerCase else pascalCaseWord(w) // everything else
+    case _ => if (lowerCaseWords(word.toLowerCase)) word.toLowerCase else pascalCaseWord(word) // everything else
   }
 
   def apply(str: String): String = {

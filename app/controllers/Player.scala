@@ -12,6 +12,7 @@ import common.rich.path.Directory
 import common.rich.path.RichFile._
 import decoders.DbPowerampCodec
 import models._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{JsArray, JsString}
 import play.api.mvc._
 import rx.lang.scala.Subscriber
@@ -20,20 +21,19 @@ import search.MetadataCacher
 import songs.SongSelector
 import websockets.NewFolderSocket
 
-/**
- * Handles fetch requests of JSON information
- */
+/** Handles fetch requests of JSON information, and listens to directory changes. */
 object Player extends Controller with Debug {
-  val musicFinder = RealLocations
-  var songSelector: SongSelector = null
+  private val musicFinder = RealLocations
+  private var songSelector: SongSelector = null
   def update() = timed("Updating music") {
     songSelector = SongSelector from musicFinder
-    Searcher.!()
   }
-
-  private def listenToDirectoryChanges: PartialFunction[DirectoryEvent, Unit] = {
+  //TODO hide this, shouldn't be a part of the controller
+  private def directoryListener(e: DirectoryEvent) = e match {
     case DirectoryWatcher.DirectoryCreated(d) =>
-      MetadataCacher ! new IODirectory(d)
+      MetadataCacher ! new IODirectory(d) onComplete (e => {
+        Searcher.!()
+      })
       update()
       NewFolderSocket.actor ! d
     case DirectoryWatcher.DirectoryDeleted(d) =>
@@ -41,28 +41,26 @@ object Player extends Controller with Debug {
       update()
     case e => common.CompositeLogger debug ("DirectoryEvent:" + e)
   }
-
-  DirectoryWatcher.apply(musicFinder.genreDirs.map(_.dir)).subscribe(Subscriber(listenToDirectoryChanges))
+  DirectoryWatcher.apply(musicFinder.genreDirs.map(_.dir)).subscribe(Subscriber(directoryListener))
   update()
 
-  private def toJson(s: Song) =
+  private def toJson(s: Song) = {
+    DbPowerampCodec ! s.file
     SongJsonifier.jsonify(s) +
         ("poster" -> JsString("/posters/" + Poster.getCoverArt(s).path)) +
         ("mp3" -> JsString("/stream/download/" + URLEncoder.encode(s.file.path, "UTF-8")))
+  }
 
   def randomSong = Action {
-    val song: Song = songSelector.randomSong
-    DbPowerampCodec ! song.file
-    Ok(song |> toJson)
+    Ok(songSelector.randomSong |> toJson)
   }
 
   def album(path: String) = Action {
-    val songs = Album(Directory(URLDecoder.decode(path, "UTF-8"))).songs
-    songs.map(_.file).foreach(DbPowerampCodec.!)
-    Ok(JsArray(songs map toJson))
+    Ok(Directory(URLDecoder.decode(path, "UTF-8")) |> Album.apply |> (_.songs.map(toJson)) |> JsArray.apply)
   }
 
   private def toSong(path: String): Song = Song(new File(URLDecoder.decode(path, "UTF-8")))
+
   def song(path: String) = Action {
     Ok(path |> toSong |> toJson)
   }

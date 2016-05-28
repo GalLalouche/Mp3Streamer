@@ -3,12 +3,10 @@ package lyrics
 import common.storage.LocalStorage
 import models.Song
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import slick.driver.SQLiteDriver.api._
-import common.RichFuture._
-import scala.concurrent.ExecutionContext.Implicits.global
 
-private object LyricsStorage extends LocalStorage[Song, Lyrics] {
+private class LyricsStorage(implicit ec: ExecutionContext) extends LocalStorage[Song, Lyrics] {
   // instrumental songs have NULL in lyrics
   private class LyricsTable(tag: Tag) extends Table[(String, String, Option[String])](tag, "LYRICS") {
     def song = column[String]("SONG", O.PrimaryKey)
@@ -36,8 +34,4 @@ private object LyricsStorage extends LocalStorage[Song, Lyrics] {
           case None => Instrumental(e._1)
           case Some(content) => HtmlLyrics(e._1, content)
         })
-
-  def main(args: Array[String]) {
-    (db run lyrics.schema.create).get
-  }
 }
