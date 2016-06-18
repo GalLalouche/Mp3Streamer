@@ -12,16 +12,17 @@ package common.concurrency
 import java.io.File
 import java.nio.file._
 
-import common.Debug
+import common.{CompositeLogger, Debug}
 import common.concurrency.DirectoryWatcher._
+import common.io.IODirectory
+import common.rich.RichT._
 import common.rich.path.Directory
+import models.MusicFinder
 import rx.lang.scala.{Observable, Observer, Subscription}
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection.mutable
-import common.rich.path.Directory
-import rx.lang.scala._
 
 private class DirectoryWatcher(listener: Observer[DirectoryEvent], val dirs: Traversable[Directory]) extends Debug {
   require(listener != null)
@@ -48,7 +49,7 @@ private class DirectoryWatcher(listener: Observer[DirectoryEvent], val dirs: Tra
     trySleep(maxTries = 5, sleepTime = 1000) {
       val key = dir.register(watchService,
         StandardWatchEventKinds.ENTRY_CREATE,
-        //				StandardWatchEventKinds.ENTRY_MODIFY, // ignoring modify because it's called on deletes, and delete is called on modifies :\
+        // ignoring ENTRY_MODIFY because it's called on deletes, and delete is called on modifies :\
         StandardWatchEventKinds.ENTRY_DELETE)
       if (trace) {
         val prev = keys.getOrElse(key, null)
@@ -63,7 +64,7 @@ private class DirectoryWatcher(listener: Observer[DirectoryEvent], val dirs: Tra
     }
   }
 
-  private def handleEvent(p: Path, e: java.nio.file.WatchEvent[_]) = {
+  private def handleEvent(p: Path, e: java.nio.file.WatchEvent[_]): DirectoryEvent = {
     val resolvedPath = p.resolve(e.context().asInstanceOf[Path])
     val file = resolvedPath.toFile
     e.kind match {
@@ -79,18 +80,18 @@ private class DirectoryWatcher(listener: Observer[DirectoryEvent], val dirs: Tra
     val publishingPath = keys(key)
     val event = key.pollEvents().asScala
     event // register all new directories
-      .toStream
-      .filter(_.kind == StandardWatchEventKinds.ENTRY_CREATE)
-      .map(_.context.asInstanceOf[Path])
-      .map(publishingPath.resolve)
-      .filter(Files.isDirectory(_, LinkOption.NOFOLLOW_LINKS))
-      .map(_.toAbsolutePath.toFile)
-      .map(Directory.apply)
-      .foreach(registerAll)
+        .toStream
+        .filter(_.kind == StandardWatchEventKinds.ENTRY_CREATE)
+        .map(_.context.asInstanceOf[Path])
+        .map(publishingPath.resolve)
+        .filter(Files.isDirectory(_, LinkOption.NOFOLLOW_LINKS))
+        .map(_.toAbsolutePath.toFile)
+        .map(Directory.apply)
+        .foreach(registerAll)
 
     event // notify all new directories
-      .map(handleEvent(publishingPath, _))
-      .foreach(listener.onNext)
+        .map(handleEvent(publishingPath, _))
+        .foreach(listener.onNext)
 
     if (key.reset() == false)
       keys remove key
@@ -111,8 +112,11 @@ object DirectoryWatcher {
   // for testing - letting the user of the actor know that the class has started
   case object Started extends DirectoryEvent
 
+  def apply(ref: MusicFinder): Observable[DirectoryEvent] = ref.genreDirs.map(_.asInstanceOf[IODirectory].dir) |> apply
   def apply(dirs: Traversable[Directory]): Observable[DirectoryEvent] = Observable.create(o => {
-    new SingleThreadedJobQueue().apply {
+    new SingleThreadedJobQueue() {
+      override val name = "DirectoryWatcher"
+    }.apply {
       val dw = new DirectoryWatcher(o, dirs)
       dw.start()
     }

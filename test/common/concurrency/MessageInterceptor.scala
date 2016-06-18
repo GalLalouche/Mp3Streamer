@@ -23,4 +23,11 @@ class MessageInterceptor[T] {
         expectMessage(msg, Duration.apply(timeout.toMillis - watch.elapsed(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS))
     }
   }
+
+  def expectNone(timeout: Duration = Duration(100, TimeUnit.MILLISECONDS)) {
+    Thread.sleep(100)
+    val $ = q.poll(timeout.toMillis, TimeUnit.MILLISECONDS)
+    if ($ != null)
+      throw new AssertionError("Expected nothing but got: " + $)
+  }
 }

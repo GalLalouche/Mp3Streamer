@@ -3,10 +3,12 @@ import java.util.concurrent.{Executors, ThreadFactory}
 import common.rich.RichT._
 
 class SingleThreadedJobQueue {
+  self =>
+  protected val name = self.simpleName
   protected val queue = Executors.newFixedThreadPool(
     1, new ThreadFactory() {
       override def newThread(r: Runnable) = {
-        val $ = new Thread(r, s"${SingleThreadedJobQueue.this.simpleName }'s actor thread")
+        val $ = new Thread(r, s"${name}'s actor thread")
         $.setDaemon(true)
         $
       }

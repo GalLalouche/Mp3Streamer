@@ -2,14 +2,13 @@ package lyrics
 
 import java.io.File
 import java.net.URLEncoder
-
 import common.RichFuture._
+
 import common.rich.RichT._
 import models.Song
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 private class LyricsWikiaRetriever(implicit ec: ExecutionContext) extends HtmlRetriever {
   override val source = "LyricsWikia"
@@ -30,7 +29,9 @@ private class LyricsWikiaRetriever(implicit ec: ExecutionContext) extends HtmlRe
 private object LyricsWikiaRetriever extends LyricsWikiaRetriever()(scala.concurrent.ExecutionContext.Implicits.global) {
   import scala.concurrent.ExecutionContext.Implicits.global
   def main(args: Array[String]) {
-    println(apply(Song(new File( """D:\Media\Music\Rock\Neo-Prog\The Flower Kings\1997 Stardust We are\05 - Poor Mr. Rain's Ordinary Guitar.mp3"""))).get)
+    val file: File = new File( """D:\Media\Music\Metal\Black Metal\Watain\2010 Lawless Darkness\06 - Lawless Darkness.mp3""")
+    println(file.exists())
+    println(apply(Song(file)).get)
     println("Done")
   }
 }

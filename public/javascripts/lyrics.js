@@ -15,7 +15,7 @@ $(function () {
   function scrollLyrics() {
     clearInterval(interval); // just in case
     interval = setInterval(function scrollLyrics() {
-      const heightBuffer = lyrics.height() / 2.5; // don't start scrolling right at the beginning of the song
+      const heightBuffer = lyrics.height() / 2.0; // don't start scrolling right at the beginning of the song
       const timePercentage = gplayer.currentPlayingRelative() / 100;
       autoScroll = true;
       lyrics.scrollTop((lyrics.prop('scrollHeight') * timePercentage) - heightBuffer);

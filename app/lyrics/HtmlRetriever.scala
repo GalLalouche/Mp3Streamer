@@ -13,7 +13,11 @@ private abstract class HtmlRetriever(implicit ec: ExecutionContext) extends Lyri
   protected val source: String
   override def apply(s: Song): Future[Lyrics] =
     Future.apply(scala.io.Source.fromURL(getUrl(s), "UTF-8"))
-      .map(_.mkString)
-      .map(e => fromHtml(Jsoup parse e, s))
-      .map(_.map(HtmlLyrics(source, _)).getOrElse(Instrumental(source)))
+        .map(_.mkString)
+        .map(e => fromHtml(Jsoup parse e, s))
+        .map(_.map(HtmlLyrics(source, _)).getOrElse(Instrumental(source)))
+        .filter {
+          case HtmlLyrics(s, h) => false == h.matches("[\\s<br>/]*")
+          case _ => true
+        }
 }

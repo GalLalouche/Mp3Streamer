@@ -1,7 +1,5 @@
 package common
 
-import websockets.ConsoleSocket
-
 
 object CompositeLogger extends Logger {
   private def aLoggerAdapter(l: play.Logger.ALogger): Logger = {
@@ -14,8 +12,7 @@ object CompositeLogger extends Logger {
     }
   }
   private val loggers: Seq[Logger] = Seq(
-    aLoggerAdapter(new play.Logger.ALogger(play.api.Logger("Mp3Streamer"))),
-    ConsoleSocket
+    aLoggerAdapter(new play.Logger.ALogger(play.api.Logger("Mp3Streamer")))
   )
 
   override def trace(s: String) = loggers.foreach(_.trace(s))

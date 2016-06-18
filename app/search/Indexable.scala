@@ -14,7 +14,7 @@ object Indexable {
     override def name(s: Song) = s.title
   }
   implicit object AlbumIndex extends Indexable[Album] {
-    override def sortBy(a: Album): Product = (a.artistName, a.year, a.year)
+    override def sortBy(a: Album): Product = (a.artistName, a.year, a.title)
     override def name(a: Album) = a.title
   }
   implicit object ArtistIndex extends Indexable[Artist] {

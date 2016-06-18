@@ -4,12 +4,12 @@
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<!-- The logging pattern, you might want to adapt it -->
-			<pattern>%d %coloredLevel %t - %logger - %message%n%xException</pattern>
+			<pattern>%d %coloredLevel %t - %file:%line - %message%n%xException</pattern>
 		</encoder>
 	</appender>
 
 	<!-- Default logging level for every logger -->
-	<root level="error">
+	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>

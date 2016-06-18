@@ -5,7 +5,7 @@ package mains.cover
  * Hide the mutability as much as possible.
  * HIDE THE SHAME!
  */
-private class DelayedThread(name: String) extends AutoCloseable {
+class DelayedThread(name: String) extends AutoCloseable {
 	private var thread: Thread = null
 	private var started = false
 
