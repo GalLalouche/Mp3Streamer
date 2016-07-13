@@ -1,4 +1,4 @@
-package mains.albums.mb
+package backend.mb
 
 import common.Jsoner._
 import common.RichFuture._
@@ -9,7 +9,7 @@ import play.api.libs.ws.ning.{NingWSClient, NingWSClientConfig}
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-private[albums] trait JsonHelper {
+private[mb] trait JsonHelper {
   protected def retry[T](f: () => Future[T], times: Int, retryWait: Duration)(implicit ec: ExecutionContext): Future[T] = f().recoverWith {
     case e => if (times <= 1)
       Future.failed(new Exception("Failed retry; last failure was: ", e))

@@ -2,35 +2,28 @@ package mains.cover
 
 import java.io.File
 
-import common.concurrency.Impatient
-import common.rich.collections.RichTraversable._
+import common.RichFuture._
 import common.rich.path.Directory
 import common.rich.path.RichFile.poorFile
 
-import scala.concurrent.duration._
-import scala.util.Try
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * Downloads images and saves them to a directory. Tries several different unicode encodings.
  * @param outputDirectory The directory to save images to
- * @param downloader Used to download the images
+ * @param downloader      Used to download the images
  */
-private class ImageDownloader(outputDirectory: Directory, downloader: Downloader, timeout: Duration = 10 seconds) {
-  private val impatiently = new Impatient[Option[FolderImage]](timeout)
-  def this(outputDirectory: Directory) = this(outputDirectory, new Downloader)
-
-  private def getBytes(url: String, encoding: String): Option[Array[Byte]] =
-    Try(downloader.download(url, encoding)).toOption
-
+private class ImageDownloader(outputDirectory: Directory, downloader: Downloader)(implicit ec: ExecutionContext) {
   private def toFile(bytes: Array[Byte]): File =
     outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
 
-  def download(url: String): Option[FolderImage] = impatiently {
-    List("ISO-8859-1", "Cp1252", "UTF-8", "UTF-16")
-      .view
-      .mapDefined(getBytes(url, _))
-      .map(toFile)
-      .map(FolderImage)
-      .headOption
-  }.flatten
+  private def firstSucceededOf[T, S](ts: List[T], f: T => Future[S]): Future[S] = ts match {
+    case Nil => Future.failed(new Exception("Ran out of tries"))
+    case t :: tail => f(t).orElseTry(firstSucceededOf(tail, f))
+  }
+  def download(url: String): Future[FolderImage] = firstSucceededOf[String, FolderImage](
+    List("ISO-8859-1", "Cp1252", "UTF-8", "UTF-16"),
+    enc => downloader.download(url, enc)
+        .map(toFile)
+        .map(FolderImage.apply))
 }

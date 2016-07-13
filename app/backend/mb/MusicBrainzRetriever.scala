@@ -1,21 +1,18 @@
-package mains.albums.mb
+package backend.mb
 
-
+import backend.recon.OnlineReconciler
 import common.CompositeDateFormat
 import common.Jsoner._
 import common.RichFuture._
-import mains.albums.{ID, OnlineReconciler}
+import common.rich.collections.RichTraversable._
 import play.api.libs.json._
 
 import scala.concurrent.duration._
-import common.rich.collections.RichTraversable._
-import org.joda.time.LocalDate
-
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 class MusicBrainzRetriever(implicit ec: ExecutionContext) extends OnlineReconciler with JsonHelper {
-  override def recon(artistName: String): Future[ID] =
+  override def recon(artistName: String): Future[String] =
     retry(() => getJson("artist/", ("query", artistName)), 5, 2 seconds)
         .map(_ \ "artists")
         .map(_.as[JsArray].value
@@ -30,7 +27,7 @@ class MusicBrainzRetriever(implicit ec: ExecutionContext) extends OnlineReconcil
         .map(_.toLocalDate -> (js \ "title").get.as[String])
         .toOption
 
-  private def getAlbumsAsArray(artistKey: ID): Future[JsArray] =
+  private def getAlbumsAsArray(artistKey: String): Future[JsArray] =
     getJson("release-group", ("artist", artistKey), ("limit", "100"))
         .map(_ \ "release-groups" get)
         .map($ => new JsArray($
@@ -40,9 +37,14 @@ class MusicBrainzRetriever(implicit ec: ExecutionContext) extends OnlineReconcil
             .filter(e => (e \ "secondary-types").get.as[JsArray].value.isEmpty)
             .toList
             .sortBy(e => (e \ "first-release-date").get.as[String])))
-  override def getAlbumsMetadata(key: ID) =
+  override def getAlbumsMetadata(key: String) =
     getAlbumsAsArray(key)
         .map(_.value.map(_.as[JsObject])
             .mapDefined(parseAlbum).toSeq)
 }
-object MusicBrainzRetriever extends MusicBrainzRetriever()(ExecutionContext.Implicits.global)
+object MusicBrainzRetriever extends MusicBrainzRetriever()(ExecutionContext.Implicits.global) {
+  def main(args: Array[String]) {
+    import scala.concurrent.ExecutionContext.Implicits.global
+    getJson("tags", "artist" -> "70248960-cb53-4ea4-943a-edb18f7d336f").get
+  }
+}
