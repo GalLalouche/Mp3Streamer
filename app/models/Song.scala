@@ -7,6 +7,8 @@ import common.rich.path.RichPath._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
+import scala.util.matching.Regex.MatchIterator
+
 case class Song(val file: File, val title: String, val artistName: String, val albumName: String,
            val track: Int, val year: Int, val bitrate: String, val duration: Int, val size: Long) {
   override def toString = s"$artistName - $title [$albumName #$track] ($year)"
@@ -31,9 +33,7 @@ object Song {
     val track = tag.getFirst(FieldKey.TRACK).toInt
     val year = {
       try {
-        val regexp = ".*(\\d{4}).*".r
-        val regexp(result) = tag.getFirst(FieldKey.YEAR)
-        result.toInt
+        ".*(\\d{4}).*".r.findAllIn(tag.getFirst(FieldKey.YEAR)).matchData.next().group(1).toInt
       } catch {
         case _: MatchError =>
           println(s"No year in $file")

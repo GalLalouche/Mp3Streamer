@@ -1,16 +1,15 @@
 package mains.cover
 
-import java.util.concurrent.BlockingQueue
-
-import scala.concurrent.Lock
+import scala.concurrent.{ExecutionContext, Lock}
 import scala.swing.event.MouseClicked
 import scala.swing.{Button, GridPanel, Label, TextArea}
 
 /** MUTANT TEENAGE NINJA TURTLES :D */
-private class AsyncFolderImagePanel(rows: Int, cols: Int, imageProvider: BlockingQueue[FolderImage])
-  extends GridPanel(rows0 = rows, cols0 = cols) with AutoCloseable {
+private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: ImagesSupplier)(implicit ec: ExecutionContext)
+    extends GridPanel(rows0 = rows, cols0 = cols) with AutoCloseable {
   val openBrowserButton: Button = Button.apply("Fuck it, I'll do it myself!") {
     AsyncFolderImagePanel.this.publish(OpenBrowser)
+    this.close()
     thread.close()
   }
   private val thread = new DelayedThread("Image placer")
@@ -36,7 +35,8 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imageProvider: Blockin
           contents += Button.apply("Show me more")(waitForNextClick.release())
         }
         else if (realSize < rows * cols) {
-          contents.update(realSize, createImagePanel(imageProvider.take()))
+          val currentIndex = realSize
+          imagesSupplier.next().map(createImagePanel).foreach(contents.update(currentIndex, _))
           realSize += 1
         }
         else {

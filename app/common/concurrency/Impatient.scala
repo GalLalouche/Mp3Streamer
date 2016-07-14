@@ -1,4 +1,5 @@
 package common.concurrency
+
 import java.util.concurrent.{Executors, TimeoutException}
 
 import scala.concurrent.duration.Duration
@@ -10,7 +11,7 @@ class Impatient[Result](d: Duration) {
     try Some(future.get(d.length, d.unit))
     catch {
       case e: TimeoutException =>
-        future.cancel(true)
+        assert(future.cancel(true))
         None
     }
   }

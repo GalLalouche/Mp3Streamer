@@ -20,5 +20,6 @@
         <parameter value="utf8" />
       </parameters>
     </profile>
+    <profile name="SBT 3" modules="root" />
   </component>
 </project>

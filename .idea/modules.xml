@@ -6,6 +6,8 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Mp3Streamer-build.iml" filepath="$PROJECT_DIR$/.idea/modules/Mp3Streamer-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/client/.idea/modules/client.iml" filepath="$PROJECT_DIR$/client/.idea/modules/client.iml" />
       <module fileurl="file://$PROJECT_DIR$/client/.idea/modules/client-build.iml" filepath="$PROJECT_DIR$/client/.idea/modules/client-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../git/ScalaCommon/.idea/modules/root.iml" filepath="$PROJECT_DIR$/../../git/ScalaCommon/.idea/modules/root.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../git/ScalaCommon/.idea/modules/root-build.iml" filepath="$PROJECT_DIR$/../../git/ScalaCommon/.idea/modules/root-build.iml" />
     </modules>
   </component>
 </project>

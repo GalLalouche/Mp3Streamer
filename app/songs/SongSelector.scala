@@ -6,7 +6,7 @@ import common.concurrency.DirectoryWatcher
 import common.concurrency.DirectoryWatcher.DirectoryEvent
 import common.io.IODirectory
 import common.rich.RichT._
-import common.rich.collections.RichTraversable._
+import common.rich.func.MoreMonadPlus._
 import common.rich.path.RichFile._
 import controllers.Searcher
 import models.{MusicFinder, Song}
@@ -17,6 +17,7 @@ import search.MetadataCacher
 
 import scala.concurrent.Future
 import scala.util.Random
+import scalaz.Scalaz._
 
 trait SongSelector {
   def randomSong: Song
@@ -25,13 +26,13 @@ trait SongSelector {
 
 private class SongSelectorImpl(songs: IndexedSeq[File], musicFinder: MusicFinder) extends SongSelector {
   private val random = new Random()
-  def randomSong: Song = random.nextInt(songs.length) |> songs.apply |> Song.apply
+  def randomSong: Song = random.nextInt(songs.length) mapTo songs.apply mapTo Song.apply
   def followingSong(song: Song): Song =
     song.file.parent
         .mapTo(IODirectory.apply)
         .mapTo(musicFinder.getSongFilePathsInDir)
         .map(new File(_))
-        .zipMap(Song(_).track).map(_.swap).toMap
+        .fproduct(Song(_).track).map(_.swap).toMap
         .apply(song.track + 1)
         .mapTo(Song.apply)
 }

@@ -34,7 +34,7 @@ object RandomFolderCreator extends App {
 	}
 
 	val random = new Random
-	val n = 220
+	val n = 100
 	val selectedSongs = mutable.HashSet[File]()
 	def addSong() {
 		val index = selectedSongs.size
@@ -45,11 +45,11 @@ object RandomFolderCreator extends App {
 		try {
 			val newFile = new File(outputDir.dir, file.name)
 			FileUtils.copyFile(file, newFile)
-			val x = AudioFileIO.read(newFile)
-			x.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(Song(file))))
+			val audioFile = AudioFileIO.read(newFile)
+			audioFile.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(Song(file))))
 			breakable {
 				try {
-					x.commit()
+					audioFile.commit()
 				} catch {
 					case e: CannotWriteException => e.printStackTrace()
 					case e: UnableToRenameFileException => e.printStackTrace()
@@ -57,13 +57,13 @@ object RandomFolderCreator extends App {
 			}
 
 			newFile.renameTo(new File(outputDir.dir, "%02d.%s".format(index, file.extension)))
-			println(s"${100 * index / n}%% done".format())
+			print(s"\r${100 * index / n}%% done".format())
 		} catch {
-			case e: Exception => println("Failed @ " + file); e.printStackTrace(); throw e
+			case e: Exception => println("\rFailed @ " + file); e.printStackTrace(); throw e
 		}
 	}
 	while (selectedSongs.size < n)
 		addSong()
 	createPlaylistFile()
-	println("Done!")
+	println("\rDone!")
 }
