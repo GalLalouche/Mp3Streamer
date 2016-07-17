@@ -1,10 +1,7 @@
 package mains.cover
 
-import java.io.File
-
 import common.RichFuture._
-import common.rich.path.Directory
-import common.rich.path.RichFile.poorFile
+import common.io.{DirectoryRef, FileRef}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -13,8 +10,8 @@ import scala.concurrent.{ExecutionContext, Future}
  * @param outputDirectory The directory to save images to
  * @param downloader      Used to download the images
  */
-private class ImageDownloader(outputDirectory: IODirectory, downloader: Downloader)(implicit ec: ExecutionContext) {
-  private def toFile(bytes: Array[Byte]): File =
+private class ImageDownloader(outputDirectory: DirectoryRef, downloader: Downloader)(implicit ec: ExecutionContext) {
+  private def toFile(bytes: Array[Byte]): FileRef =
     outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
 
   private def firstSucceededOf[T, S](ts: List[T], f: T => Future[S]): Future[S] = ts match {

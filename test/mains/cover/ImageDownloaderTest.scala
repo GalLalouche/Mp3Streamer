@@ -2,10 +2,9 @@ package mains.cover
 
 import java.nio.charset.MalformedInputException
 
-import common.concurrency.Impatient
-import common.rich.path.RichFile._
 import common.RichFuture._
-import common.rich.path.TempDirectory
+import common.concurrency.Impatient
+import common.io.Root
 import org.mockito.Matchers
 import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
@@ -13,20 +12,23 @@ import org.mockito.stubbing.Answer
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
 
 class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar with OneInstancePerTest {
-  private val tempDir = TempDirectory()
+  private val tempDir = new Root
   private val downloader = mock[Downloader]
+  implicit val ec: ExecutionContext = new ExecutionContext {
+    override def reportFailure(cause: Throwable): Unit = ???
+    override def execute(runnable: Runnable): Unit = runnable.run()
+  }
   "ImageDownloader" - {
     def createDownloaderThatOnlyWorksFor(encoding: String) =
       new Downloader() {
         override def download(url: String, encoding: String) = {
           encoding match {
             case "UTF-8" => Future.successful("foobar".getBytes("UTF-8"))
-            case _ => throw new MalformedInputException(0)
+            case _ => Future.failed(new MalformedInputException(0))
           }
         }
       }
@@ -42,9 +44,9 @@ class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar
     }
     "Return none if it doesn't succeed" in {
       when(downloader.download(Matchers.anyString(), Matchers.anyString()))
-        .thenThrow(classOf[MalformedInputException])
+        .thenReturn(Future.failed(new MalformedInputException(0)))
       val $ = new ImageDownloader(tempDir, downloader)
-      $.download("url") should be === None
+      $.download("url").value.get.isFailure should be === true
     }
     "Return none after timeout" in {
       when(downloader.download(Matchers.anyString(), Matchers.anyString())).thenAnswer(
