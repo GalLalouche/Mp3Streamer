@@ -32,7 +32,7 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: Jsonabl
     def aux(obs: Observer[IndexUpdate]): Subscription = {
       val s = Subscription(???)
       val updateQueue = Executors.newFixedThreadPool(1)
-      MetadataCacher.queue.submit(() => {
+      MetadataCacher.this.queue.submit(() => {
           val dirs: GenSeq[DirectoryRef] = mf.albumDirs
           val totalSize = dirs.length
           var i = 0
@@ -52,12 +52,14 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: Jsonabl
   }
 }
 
+object RealMetadataCacher extends MetadataCacher(RealLocations, f => Song(new File(f)), new JsonableSaver(RealLocations.dir))
+
 /**
  * Caches all music metadata on disk. Since extracting the metadata requires processing hundreds of gigabytes, but
  * the actual metadata is only in megabytes. Also allows for incremental updates, in the case of new data added during
  * production.
  */
-object MetadataCacher extends MetadataCacher(RealLocations, f => Song(new File(f)), new JsonableSaver(RealLocations.dir)) {
+object MetadataCacher {
   private val emptyArtistSet: IndexedSet[Artist] = IndexedSet[String, Artist](_.name, _ merge _)
   private case class AllInfo(songs: Seq[Song], albums: List[Album], artists: IndexedSet[Artist])
   private case class DirectoryInfo(songs: Seq[Song], album: Album, artist: Artist)

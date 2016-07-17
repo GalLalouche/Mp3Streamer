@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
  * @param outputDirectory The directory to save images to
  * @param downloader      Used to download the images
  */
-private class ImageDownloader(outputDirectory: Directory, downloader: Downloader)(implicit ec: ExecutionContext) {
+private class ImageDownloader(outputDirectory: IODirectory, downloader: Downloader)(implicit ec: ExecutionContext) {
   private def toFile(bytes: Array[Byte]): File =
     outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
 

@@ -11,9 +11,10 @@ import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{ShouldMatchers, FreeSpec, OneInstancePerTest}
-import scala.concurrent.ExecutionContext.Implicits.global
+import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.concurrent.duration._
 
 class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar with OneInstancePerTest {
@@ -23,11 +24,10 @@ class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar
     def createDownloaderThatOnlyWorksFor(encoding: String) =
       new Downloader() {
         override def download(url: String, encoding: String) = {
-          ???
-//          encoding match {
-//            case "UTF-8" => "foobar".getBytes
-//            case _ => throw new MalformedInputException(0)
-//          }
+          encoding match {
+            case "UTF-8" => Future.successful("foobar".getBytes("UTF-8"))
+            case _ => throw new MalformedInputException(0)
+          }
         }
       }
     "try with several different encodings" - {
@@ -55,10 +55,10 @@ class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar
           }
         }
       )
-      ???
-//      new Impatient[Option[FolderImage]](15 millis).apply {
-//        new ImageDownloader(tempDir, downloader, 10 millis) download "url"
-//      }.get should be === None
+      new Impatient[Int](15 millis).apply {
+        Thread sleep 50
+        1
+      } should be === None
     }
   }
 }
