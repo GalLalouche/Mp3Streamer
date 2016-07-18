@@ -18,10 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar with OneInstancePerTest {
   private val tempDir = new Root
   private val downloader = mock[Downloader]
-  implicit val ec: ExecutionContext = new ExecutionContext {
-    override def reportFailure(cause: Throwable): Unit = ???
-    override def execute(runnable: Runnable): Unit = runnable.run()
-  }
+  import common.concurrency.SingleThreadedExecutionContext._
   "ImageDownloader" - {
     def createDownloaderThatOnlyWorksFor(encoding: String) =
       new Downloader() {
@@ -35,18 +32,18 @@ class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar
     "try with several different encodings" - {
       "like UTF-8" in {
         val $ = new ImageDownloader(tempDir, createDownloaderThatOnlyWorksFor("UTF-8"))
-        $.download("url").get.file.bytes should be === "foobar".getBytes
+        $("url").get.file.bytes should be === "foobar".getBytes
       }
       "like UTF-16" in {
         val $ = new ImageDownloader(tempDir, createDownloaderThatOnlyWorksFor("UTF-16"))
-        $.download("url").get.file.bytes should be === "foobar".getBytes
+        $("url").get.file.bytes should be === "foobar".getBytes
       }
     }
     "Return none if it doesn't succeed" in {
       when(downloader.download(Matchers.anyString(), Matchers.anyString()))
         .thenReturn(Future.failed(new MalformedInputException(0)))
       val $ = new ImageDownloader(tempDir, downloader)
-      $.download("url").value.get.isFailure should be === true
+      $("url").value.get.isFailure should be === true
     }
     "Return none after timeout" in {
       when(downloader.download(Matchers.anyString(), Matchers.anyString())).thenAnswer(
