@@ -1,9 +1,7 @@
 package controllers
 
-import java.io.File
-import java.net.URLDecoder
-
 import common.CompositeLogger
+import common.rich.RichT._
 import decoders.DbPowerampCodec
 import play.api.mvc.{Action, Controller}
 
@@ -14,7 +12,7 @@ object Streamer extends Controller {
   val decoder = DbPowerampCodec
 
   def download(s: String) = Action.async {
-    val futureFile = Future {decoder.encodeFileIfNeeded(new File(URLDecoder.decode(s, "UTF-8")))}
+    val futureFile = Future(Utils.parseSong(s).file |> decoder.encodeFileIfNeeded)
     futureFile.map {file =>
       CompositeLogger.trace("Sending file " + file.getAbsolutePath)
       Status(200).sendFile(file).withHeaders(
