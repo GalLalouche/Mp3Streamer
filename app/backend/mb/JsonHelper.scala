@@ -1,12 +1,12 @@
 package backend.mb
 
+import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import common.Jsoner._
 import common.RichFuture._
-import akka.actor.ActorSystem
 import play.api.http.Status
 import play.api.libs.json._
-import play.api.libs.ws.ahc.{AhcWSClient, AhcWSClientConfig}
+import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}

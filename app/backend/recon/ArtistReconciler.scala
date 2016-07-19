@@ -10,8 +10,8 @@ import models.{MusicFinder, Song}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ArtistReconciler(repo: ReconStorage, online: OnlineReconciler)(implicit ec: ExecutionContext)
-    extends OnlineRetrieverCacher[String, (Option[ID], Boolean)](repo, online(_).map(_ -> false)) {
+class ArtistReconciler(repo: ReconStorage[String], online: OnlineReconciler[String])(implicit ec: ExecutionContext)
+    extends OnlineRetrieverCacher[String, (Option[ReconID], Boolean)](repo, online(_).map(_ -> false)) {
 
   def fill(mf: MusicFinder) {
     val artists: Set[String] = mf.getSongFilePaths
@@ -24,8 +24,8 @@ class ArtistReconciler(repo: ReconStorage, online: OnlineReconciler)(implicit ec
         .map(_.artistName)
         .toSet
     for (artist <- artists) {
-      val recon1: Future[Option[ID]] =
-        get(artist).map(_._1).recover({case _ => Some("Failed to find an online match for " + artist)})
+      val recon1: Future[Option[ReconID]] =
+        get(artist).map(_._1).recover({case _ => Some("Failed to find an online match for " + artist).map(ReconID)})
       println(recon1.get)
     }
     System.exit(0)

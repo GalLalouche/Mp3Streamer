@@ -1,6 +1,6 @@
 package backend.mb
 
-import backend.recon.OnlineReconciler
+import backend.recon.{OnlineReconciler, ReconID}
 import common.CompositeDateFormat
 import common.Jsoner._
 import common.RichFuture._
@@ -10,8 +10,8 @@ import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-class MusicBrainzRetriever(implicit ec: ExecutionContext) extends OnlineReconciler with JsonHelper {
-  override def recon(artistName: String): Future[String] =
+class MusicBrainzRetriever(implicit ec: ExecutionContext) extends OnlineReconciler[String] with JsonHelper {
+  override def apply(artistName: String): Future[Option[ReconID]] =
     retry(() => getJson("artist/", ("query", artistName)), 5, 2 seconds)
       .map(_ \ "artists")
       .map(_.as[JsArray].value
@@ -19,6 +19,9 @@ class MusicBrainzRetriever(implicit ec: ExecutionContext) extends OnlineReconcil
         .head)
       .filterWithMessage(webSearchResult => (webSearchResult \ "score").as[String] == "100", e => "could not find a 100 match")
       .map(_ \ "id" get)
+      .map(_.as[String])
+      .map(ReconID.apply)
+      .map(Some.apply)
 
   private def parseAlbum(js: JsObject) = // some albums don't even have a date, probably because of reasons
     Try(CompositeDateFormat("yyyy-MM-dd", "yyyy-MM", "yyyy")
@@ -36,8 +39,8 @@ class MusicBrainzRetriever(implicit ec: ExecutionContext) extends OnlineReconcil
         .filter(e => (e \ "secondary-types").get.as[JsArray].value.isEmpty)
         .toList
         .sortBy(e => (e \ "first-release-date").get.as[String])))
-  override def getAlbumsMetadata(key: String) =
-    getAlbumsAsArray(key)
+  def getAlbumsMetadata(key: ReconID) =
+    getAlbumsAsArray(key.id)
       .map(_.value.map(_.as[JsObject])
         .flatMap(parseAlbum))
 }

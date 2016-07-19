@@ -1,13 +1,15 @@
 package mains.albums
 
-import backend.recon.{OnlineReconciler, ArtistReconciler}
+import backend.mb.{MbArtistReconciler, MusicBrainzRetriever}
+import backend.recon.{ArtistReconciler, OnlineReconciler}
 import common.RichFuture._
 import common.io.IOFile
 import models.{MusicFinder, Song}
 
 import scala.concurrent.ExecutionContext
 
-private class NewAlbumsRetriever(reconciler: ArtistReconciler, meta: OnlineReconciler, mf: MusicFinder)(implicit ec: ExecutionContext) {
+private class NewAlbumsRetriever(reconciler: ArtistReconciler, mf: MusicFinder)(implicit ec: ExecutionContext) {
+  val meta = MusicBrainzRetriever
   private var lastArtist: Option[String] = None
   private def getExistingAlbums: Iterator[Album] = mf.genreDirs
       .iterator

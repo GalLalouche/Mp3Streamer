@@ -2,6 +2,7 @@ package backend.mb
 
 import backend.Url
 import backend.external.{ExternalLink, ExternalLinksProvider}
+import backend.recon.ReconID
 import common.RichFuture._
 import common.io.DocumentDownloader
 import common.rich.RichT._
@@ -12,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 class MbHtmlLinkExtractor(implicit ec: ExecutionContext) extends ExternalLinksProvider {
-  private def toId(name: String): Future[Option[String]] = ReconcilerImpl.get(name).map(_._1)
+  private def toId(name: String): Future[Option[ReconID]] = ArtistReconcilerImpl.get(name).map(_._1)
   private def getHtml(artistId: String): Future[Document] =
     DocumentDownloader(Url("https://musicbrainz.org/artist/" + artistId))
 
@@ -33,6 +34,6 @@ class MbHtmlLinkExtractor(implicit ec: ExecutionContext) extends ExternalLinksPr
     toId(artistName)
         .filterWith(_.isDefined, s"Could not find an ID for artist <${artistName}>")
         .map(_.get)
-        .flatMap(getHtml)
+        .flatMap(_.id |> getHtml)
         .map(extractLinks)
 }
