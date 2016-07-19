@@ -28,6 +28,11 @@ body {
 	top: 400px;
 	float: right;
 }
+#external {
+	position: absolute;
+	left: 1200px;
+	float: right;
+}
 
 .jp-currently-playing {
 	font-size: 0.8em;

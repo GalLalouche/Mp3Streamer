@@ -33,13 +33,11 @@ private[mb] trait JsonHelper {
     }
   }
 
-  protected def getJson(method: String, other: (String, String)*)(implicit ec: ExecutionContext): Future[JsValue] = {
-    val webServiceRequest = NingWSClient(NingWSClientConfig()).url("http://musicbrainz.org/ws/2/" + method)
-        .withQueryString(("fmt", "json")).withQueryString(other: _*)
-        // see https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#How_can_I_be_a_good_citizen_and_be_smart_about_using_the_Web_Service.3FI
-        .withHeaders(("User-Agent", "Mp3Streamer (glpkmtg@gmail.com)"))
-    webServiceRequest.get
-        .filterWithMessage(_.status == Status.OK, "HTTP response wasn't 200: " + _.body)
-        .map(_.json)
-  }
+  protected def getJson(method: String, other: (String, String)*)(implicit ec: ExecutionContext): Future[JsValue] =
+    NingWSClient(NingWSClientConfig()).url("http://musicbrainz.org/ws/2/" + method)
+      .withQueryString(("fmt", "json")).withQueryString(other: _*)
+      // see https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#How_can_I_be_a_good_citizen_and_be_smart_about_using_the_Web_Service.3FI
+      .withHeaders(("User-Agent", "Mp3Streamer (glpkmtg@gmail.com)")).get
+      .filterWithMessage(_.status == Status.OK, "HTTP response wasn't 200: " + _.body)
+      .map(_.json)
 }

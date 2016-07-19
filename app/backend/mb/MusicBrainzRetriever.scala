@@ -4,7 +4,6 @@ import backend.recon.OnlineReconciler
 import common.CompositeDateFormat
 import common.Jsoner._
 import common.RichFuture._
-import common.rich.collections.RichTraversableOnce._
 import play.api.libs.json._
 
 import scala.concurrent.duration._

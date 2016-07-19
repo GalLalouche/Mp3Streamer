@@ -24,6 +24,8 @@ GET        /posters/display/*path        controllers.Posters.displayImage(path)
 GET        /posters/*path                controllers.Posters.image(path)
 # Lyrics
 GET        /lyrics/*path                controllers.Lyrics.get(path)
+# External
+GET        /external/*path               controllers.External.get(path)
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file                 controllers.Assets.at(path="/public", file)

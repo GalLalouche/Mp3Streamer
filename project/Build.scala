@@ -20,6 +20,8 @@ object ApplicationBuild extends Build {
       "org.jsoup" % "jsoup" % "1.8.3",
       "org.me" % "scalacommon_2.11" % "1.0",
       "org.mockito" % "mockito-all" % "1.9.5" % "test",
+      "org.scalatest" % "scalatest_2.11" % "2.2.6" % "test",
+      "org.scalacheck" % "scalacheck_2.11" % "1.12.1" % "test",
       "org.scala-js" % "scalajs-library_2.11" % "0.6.8",
       "org.scala-lang" % "scala-actors" % "2.11.0",
       "org.scala-lang" % "scala-swing" % "[2.11, )",
