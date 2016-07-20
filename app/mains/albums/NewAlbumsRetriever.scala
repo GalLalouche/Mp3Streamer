@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext
 import common.rich.RichT._
 
 private class NewAlbumsRetriever(reconciler: ArtistReconcilerCacher, mf: MusicFinder)(implicit ec: ExecutionContext) {
-  val meta = MbArtistReconciler
+  val meta = new MbArtistReconciler
   private var lastArtist: Option[String] = None
   private def getExistingAlbums: Iterator[Album] = mf.genreDirs
       .iterator
