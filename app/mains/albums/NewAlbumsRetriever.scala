@@ -1,14 +1,15 @@
 package mains.albums
 
-import backend.mb.{MbArtistReconciler, MusicBrainzRetriever}
-import backend.recon.{ArtistReconciler, OnlineReconciler}
+import backend.mb.{MbArtistReconcilerCacher, MusicBrainzRetriever}
+import backend.recon.{Artist, ArtistReconcilerCacher, OnlineReconciler}
 import common.RichFuture._
 import common.io.IOFile
 import models.{MusicFinder, Song}
 
 import scala.concurrent.ExecutionContext
+import common.rich.RichT._
 
-private class NewAlbumsRetriever(reconciler: ArtistReconciler, mf: MusicFinder)(implicit ec: ExecutionContext) {
+private class NewAlbumsRetriever(reconciler: ArtistReconcilerCacher, mf: MusicFinder)(implicit ec: ExecutionContext) {
   val meta = MusicBrainzRetriever
   private var lastArtist: Option[String] = None
   private def getExistingAlbums: Iterator[Album] = mf.genreDirs
@@ -36,7 +37,7 @@ private class NewAlbumsRetriever(reconciler: ArtistReconciler, mf: MusicFinder)(
       }
     val $ = for (artist <- lastAlbumsByArtist.keys.iterator) yield {
       print("Working on artist: " + artist + "... ")
-      val f = reconciler.get(artist)
+      val f = reconciler.get(artist |> Artist)
           .filter(_._2 == false)
           .map(_._1)
           .map(_.map(meta.getAlbumsMetadata)

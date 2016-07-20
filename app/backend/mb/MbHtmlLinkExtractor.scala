@@ -11,9 +11,9 @@ import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class MbHtmlLinkExtractor(implicit ec: ExecutionContext) extends ExternalLinkProvider {
+private sealed class MbHtmlLinkExtractor(metadataType: String)(implicit ec: ExecutionContext) extends ExternalLinkProvider {
   private def getHtml(artistId: String): Future[Document] =
-    DocumentDownloader(Url("https://musicbrainz.org/artist/" + artistId))
+    DocumentDownloader(Url(s"https://musicbrainz.org/$metadataType/$artistId"))
 
   private def extractLink(e: Element): ExternalLink = {
     val url: Url = Url(e.child(0).attr("href"))
@@ -31,3 +31,7 @@ class MbHtmlLinkExtractor(implicit ec: ExecutionContext) extends ExternalLinkPro
   override def apply(id: ReconID): Future[Traversable[ExternalLink]] =
     getHtml(id.id).map(extractLinks)
 }
+
+private object ArtistLinkExtractor extends MbHtmlLinkExtractor("artist")
+private object AlbumLinkExtractor extends MbHtmlLinkExtractor("release")
+

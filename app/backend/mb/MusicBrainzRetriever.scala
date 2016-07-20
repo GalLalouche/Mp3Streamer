@@ -1,6 +1,6 @@
 package backend.mb
 
-import backend.recon.{OnlineReconciler, ReconID}
+import backend.recon.{Artist, OnlineReconciler, ReconID}
 import common.CompositeDateFormat
 import common.Jsoner._
 import common.RichFuture._
@@ -10,9 +10,9 @@ import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-class MusicBrainzRetriever(implicit ec: ExecutionContext) extends OnlineReconciler[String] with JsonHelper {
-  override def apply(artistName: String): Future[Option[ReconID]] =
-    retry(() => getJson("artist/", ("query", artistName)), 5, 2 seconds)
+class MusicBrainzRetriever(implicit ec: ExecutionContext) extends OnlineReconciler[Artist] with JsonHelper {
+  override def apply(a: Artist): Future[Option[ReconID]] =
+    retry(() => getJson("artist/", ("query", a.name)), 5, 2 seconds)
       .map(_ \ "artists")
       .map(_.as[JsArray].value
         .filter(_ has "type")

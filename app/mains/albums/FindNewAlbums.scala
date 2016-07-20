@@ -1,6 +1,6 @@
 package mains.albums
 
-import backend.mb.{MusicBrainzRetriever, MbArtistReconciler}
+import backend.mb.{MusicBrainzRetriever, MbArtistReconcilerCacher}
 import common.rich.RichT._
 import common.rich.path.Directory
 import models.RealLocations
@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object FindNewAlbums {
   def main(args: Array[String]) {
-    val $ = new NewAlbumsRetriever(MbArtistReconciler, new RealLocations {
+    val $ = new NewAlbumsRetriever(MbArtistReconcilerCacher, new RealLocations {
       override val subDirs: List[String] = List("Rock", "Metal")
     })
     val file = Directory("C:/").addFile("albums.txt").clear()
