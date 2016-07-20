@@ -1,13 +1,16 @@
 $(function () {
   const external = $('#external');
 
-  function showLinks(content) {
-    console.log(content)
-    external.html("")
-    const ul = $("<ul>Links</ul>")
-    for (const e in content)
-      ul.append($(`<li style="list-style-image: url('assets/images/${e}_icon.png')"><a href=${content[e]}>${e}</a></li>`))
-    external.append(ul)
+  function showLinks(metaContent) {
+    function addLinks(name, content) {
+      const links = content[name]
+      const ul = $(`<ul>${name}</ul>`)
+      for (const e in content.artist)
+        ul.append($(`<li style="list-style-image: url('assets/images/${e}_icon.png')"><a href=${content[e]}>${e}</a></li>`))
+      external.append(ul)
+    }
+    addLinks("artist")
+    addLinks("album")
   }
 
   External.show = function (song) {

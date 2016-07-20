@@ -18,7 +18,7 @@ object External extends Controller {
     e.filter(e => set.contains(e.host.name))
       .map(toJson).toSeq |> Json.obj
   private def toJson(e: ExternalLinks): JsObject =
-    Json.obj("artists" -> toJson(e.artistLinks), "albums" -> toJson(e.albumLinks))
+    Json.obj("artist" -> toJson(e.artistLinks), "album" -> toJson(e.albumLinks))
 
   def get(path: String) = Action.async {
     external.getExternalLinks(Utils.parseSong(path))
