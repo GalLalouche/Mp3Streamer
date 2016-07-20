@@ -10,7 +10,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-class MusicBrainzRetriever(implicit ec: ExecutionContext) extends OnlineReconciler[Artist] with JsonHelper {
+class MbArtistReconciler(implicit ec: ExecutionContext) extends OnlineReconciler[Artist] with JsonHelper {
   override def apply(a: Artist): Future[Option[ReconID]] =
     retry(() => getJson("artist/", ("query", a.name)), 5, 2 seconds)
       .map(_ \ "artists")
@@ -43,10 +43,4 @@ class MusicBrainzRetriever(implicit ec: ExecutionContext) extends OnlineReconcil
     getAlbumsAsArray(key.id)
       .map(_.value.map(_.as[JsObject])
         .flatMap(parseAlbum))
-}
-object MusicBrainzRetriever extends MusicBrainzRetriever()(ExecutionContext.Implicits.global) {
-  def main(args: Array[String]) {
-    import scala.concurrent.ExecutionContext.Implicits.global
-    getJson("tags", "artist" -> "70248960-cb53-4ea4-943a-edb18f7d336f").get
-  }
 }

@@ -1,6 +1,6 @@
 package mains.albums
 
-import backend.mb.{MusicBrainzRetriever, MbArtistReconcilerCacher}
+import backend.mb.{MbArtistReconciler, MbArtistReconcilerCacher}
 import common.rich.RichT._
 import common.rich.path.Directory
 import models.RealLocations

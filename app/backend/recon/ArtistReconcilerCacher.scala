@@ -3,16 +3,16 @@ package backend.recon
 import java.io.File
 
 import common.RichFuture._
+import common.rich.RichT._
 import common.rich.path.Directory
 import common.rich.path.RichFile._
-import common.storage.OnlineRetrieverCacher
 import models.{MusicFinder, Song}
-import common.rich.RichT._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ArtistReconcilerCacher(repo: ReconStorage[Artist], online: OnlineReconciler[Artist])(implicit ec: ExecutionContext)
-    extends OnlineRetrieverCacher[Artist, (Option[ReconID], Boolean)](repo, online(_).map(_ -> false)) {
+class ArtistReconcilerCacher(repo: ReconStorage[Artist], online: OnlineReconciler[Artist])
+                            (implicit ec: ExecutionContext)
+    extends ReconcilerCacher[Artist](repo, online) {
 
   def fill(mf: MusicFinder) {
     val artists: Set[Artist] = mf.getSongFilePaths
