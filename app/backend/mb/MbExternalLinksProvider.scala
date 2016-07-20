@@ -1,5 +1,7 @@
 package backend.mb
 
+import java.io.File
+
 import backend.external.{ExternalLink, ExternalLinkProvider, ExternalLinks, ExternalLinksProvider}
 import backend.recon.Reconcilable._
 import backend.recon.{Album, Artist, ReconID, ReconcilerCacher}
@@ -29,4 +31,14 @@ class MbExternalLinksProvider(implicit ec: ExecutionContext) extends ExternalLin
     getArtist(s.artist)
       .zip(getAlbum(s.release))
       .map(e => ExternalLinks(e._1, e._2, Nil))
+}
+
+object MbExternalLinksProvider {
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  def main(args: Array[String]) {
+    val $ = new MbExternalLinksProvider()
+    val x = $.getExternalLinks(Song(new File("""D:\Media\Music\Metal\Black Metal\Rotting Christ\2007 Theogonia\01 - The Sign of Prime Creation.flac"""))).get
+    println(x)
+  }
 }
