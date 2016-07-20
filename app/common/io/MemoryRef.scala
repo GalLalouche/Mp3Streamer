@@ -5,7 +5,15 @@ import scala.collection.mutable
 /** For testing; keeps the file in memory. Faster, and no need to clean up afterwards */
 private class MemoryFile(parent: MemoryDir, val name: String) extends FileRef {
   var readAll: String = ""
-  override def write(s: String) {readAll = s}
+  override def bytes: Array[Byte] = readAll.getBytes
+  override def write(bs: Array[Byte]): FileRef = {
+    readAll = new String(bs)
+    this
+  }
+  override def write(s: String) = {
+    readAll = s
+    this
+  }
   override def path: String = parent.path + "/" + name
 }
 

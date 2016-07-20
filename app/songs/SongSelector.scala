@@ -13,7 +13,7 @@ import models.{MusicFinder, Song}
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import rx.lang.scala.Subscriber
-import search.MetadataCacher
+import search.RealMetadataCacher
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -63,7 +63,7 @@ object SongSelector {
       case DirectoryWatcher.DirectoryCreated(d) =>
         Logger info s"Directory $d has been added"
         $.update()
-            .onEnd(MetadataCacher ! new IODirectory(d))
+            .onEnd(RealMetadataCacher ! new IODirectory(d))
             .onEnd(Searcher.!())
       case DirectoryWatcher.DirectoryDeleted(d) =>
         Logger warn s"Directory has been deleted; the index does not support deletions yet, so please update."

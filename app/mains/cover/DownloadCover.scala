@@ -3,6 +3,7 @@ package mains.cover
 import java.nio.file.Files
 
 import common.Debug
+import common.io.IODirectory
 import common.rich.RichT.richT
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
@@ -22,28 +23,28 @@ object DownloadCover extends Debug {
   tempFolder.dir.deleteOnExit()
 
   /**
-   * Downloads a new image for the album
-   * @param albumDir Should contain the songs. The songs' metadata will be used to search for the correct picture.
-   * @return A future command to move the downloaded file to the directory, and delete all temporary files
-   */
+    * Downloads a new image for the album
+    * @param albumDir Should contain the songs. The songs' metadata will be used to search for the correct picture.
+    * @return A future command to move the downloaded file to the directory, and delete all temporary files
+    */
   def apply(albumDir: Directory): Future[Directory => Unit] = {
     val searchUrl = albumDir |> getSearchUrl
     getHtml(searchUrl)
-        .map(extractImageURLs)
-        .flatMap(selectImage)
-        .map {
-          case Selected(img) => fileMover(img)
-          case OpenBrowser =>
-            pointBrowserTo(searchUrl)
-            throw new RuntimeException("User opened browser")
-          case Cancelled => throw new RuntimeException("User opted out")
-        }
+      .map(extractImageURLs)
+      .flatMap(selectImage)
+      .map {
+        case Selected(img) => fileMover(img)
+        case OpenBrowser =>
+          pointBrowserTo(searchUrl)
+          throw new RuntimeException("User opened browser")
+        case Cancelled => throw new RuntimeException("User opted out")
+      }
   }
 
   /**
-   * @param f   The file to move
-   * @param dir The directory to move to
-   */
+    * @param f   The file to move
+    * @param dir The directory to move to
+    */
   private def fileMover(f: FolderImage)(dir: Directory) {
     val oldFile = dir \ "folder.jpg"
     if (oldFile.exists)
@@ -56,7 +57,7 @@ object DownloadCover extends Debug {
   // constructs the search URL using the songs' metadata
   private def getSearchUrl(albumDir: Directory) = {
     val query = Song(albumDir.files.filter(e => e.extension == "mp3" || e.extension == "flac").head)
-        .mapTo(song => s"${song.artistName} ${song.albumName}")
+      .mapTo(song => s"${song.artistName} ${song.albumName}")
     s"https://www.google.com/search?tbs=isz%3Aex%2Ciszw%3A500%2Ciszh%3A500&tbm=isch&q=$query".replaceAll(" ", "%20")
   }
   def pointBrowserTo(searchUrl: String) {
@@ -69,13 +70,15 @@ object DownloadCover extends Debug {
 
   private def extractImageURLs(html: String): Seq[String] =
     """"ou":"[^"]+"""".r
-        .findAllIn(html) // assumes format "ou":"<url>". fucking closure :\
-        .map(_.dropWhile(_ != ':').drop(2).dropRight(1))
-        .toVector
-//        .ensuring(_.nonEmpty, "Oops, something went wrong: could not extract any images from the HTML")
+      .findAllIn(html) // assumes format "ou":"<url>". fucking closure :\
+      .map(_.dropWhile(_ != ':').drop(2).dropRight(1))
+      .toVector
+  //        .ensuring(_.nonEmpty, "Oops, something went wrong: could not extract any images from the HTML")
 
   private def selectImage(imageURLs: Seq[String]): Future[ImageChoice] =
-    ImageSelectionPanel(ImagesSupplier.withCache(imageURLs.iterator, new ImageDownloader(tempFolder, downloader), 12))
+    ImageSelectionPanel(ImagesSupplier.withCache(imageURLs.iterator,
+      new ImageDownloader(IODirectory.apply(tempFolder), downloader),
+      12))
 
   def main(args: Array[String]) {
     val path = if (args.nonEmpty)

@@ -1,7 +1,9 @@
 package backend.external
 
+import models.Song
+
 import scala.concurrent.Future
 
 trait ExternalLinksProvider {
-  def getExternalLinks(artistName: String): Future[Traversable[ExternalLink]]
+  def getExternalLinks(s: Song): Future[ExternalLinks]
 }

@@ -1,4 +1,5 @@
 package common.io
+
 import java.io.File
 
 import common.rich.path.{Directory, RichFile}
@@ -6,7 +7,13 @@ import common.rich.path.{Directory, RichFile}
 /** For production; actual files on the disk */
 class IOFile(val file: File) extends FileRef {
   private lazy val rich = RichFile(file)
-  override def write(s: String) {rich.write(s) }
+  override def bytes: Array[Byte] = rich.bytes
+  override def write(bs: Array[Byte]): IOFile = {
+    rich.write(bs); this
+  }
+  override def write(s: String) = {
+    rich.write(s); this
+  }
   override def path: String = rich.path
   override def readAll: String = rich.readAll
   override def name: String = rich.name

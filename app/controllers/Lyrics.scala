@@ -8,7 +8,7 @@ import play.api.mvc.{Action, Controller}
 object Lyrics extends Controller {
   private val lyrics = new LyricsCache
   def get(path: String) = Action.async {
-    lyrics.get(Utils.parseSong(path))
+    lyrics.apply(Utils.parseSong(path))
         .map(l => l.html + "<br><br>Source: " + l.source)
         .orElse("Failed to get lyrics :(")
         .map(Ok(_))

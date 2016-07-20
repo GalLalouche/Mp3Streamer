@@ -10,23 +10,35 @@ private trait ImagesSupplier {
   def next(): Future[FolderImage]
 }
 private object ImagesSupplier {
-  private class SimpleImagesSupplier(urls: Iterator[String], imageDownloader: ImageDownloader) extends ImagesSupplier {
-    def next(): Future[FolderImage] = urls.next() |> imageDownloader.download
+  private class SimpleImagesSupplier(urls: Iterator[String], imageDownloader: String => Future[FolderImage]) extends ImagesSupplier {
+    def next(): Future[FolderImage] = urls.next() |> imageDownloader.apply
   }
-  def apply(urls: Iterator[String], imageDownloader: ImageDownloader): ImagesSupplier =
-    new SimpleImagesSupplier(urls: Iterator[String], imageDownloader: ImageDownloader)
 
-  private class ImagesSupplierWithCache(urls: Iterator[String], downloader: ImageDownloader, cacheSize: Int) extends ImagesSupplier {
+  def apply(urls: Iterator[String], imageDownloader: String => Future[FolderImage]): ImagesSupplier =
+    new SimpleImagesSupplier(urls, imageDownloader)
+  private class ImagesSupplierWithCache(urls: Iterator[String], downloader: String => Future[FolderImage],
+                                        cacheSize: Int, timeoutInMillis: Int) extends ImagesSupplier {
     private val cache = new LinkedBlockingQueue[Future[FolderImage]](cacheSize)
-    override def next(): Future[FolderImage] = cache.poll(5, TimeUnit.SECONDS)
+    override def next(): Future[FolderImage] = {
+      val $ = cache.poll(timeoutInMillis, TimeUnit.MILLISECONDS)
+      if ($ == null)
+        throw new NoSuchElementException
+      $
+    }
     def startCaching() {
-      val t = new Thread {override def run {urls.map(downloader.download).foreach(cache.put)}}
+      val t = new Thread {
+        override def run {
+          urls.map(downloader.apply).foreach(cache.put)
+        }
+      }
       t.setDaemon(true)
       t.start()
     }
   }
-  def withCache(urls: Iterator[String], imageDownloader: ImageDownloader, cacheSize: Int): ImagesSupplier = {
-    val $ = new ImagesSupplierWithCache(urls: Iterator[String], imageDownloader: ImageDownloader, cacheSize: Int)
+
+  def withCache(urls: Iterator[String], imageDownloader: String => Future[FolderImage],
+                cacheSize: Int, timeoutInMillis: Int = 5000): ImagesSupplier = {
+    val $ = new ImagesSupplierWithCache(urls, imageDownloader, cacheSize, timeoutInMillis)
     $.startCaching()
     $
   }

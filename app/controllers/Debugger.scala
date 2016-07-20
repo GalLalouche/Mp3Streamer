@@ -5,7 +5,7 @@ import common.Jsoner.jsValue
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{JsObject, JsValue}
 import play.api.mvc.Action
-import search.MetadataCacher
+import search.{MetadataCacher, RealMetadataCacher}
 import search.MetadataCacher.IndexUpdate
 import websockets.WebSocketController
 
@@ -16,7 +16,7 @@ object Debugger extends WebSocketController with Debug {
     "total" -> u.totalNumber,
     "currentDir" -> u.dir.name))
   def forceRefresh() = Action {
-    MetadataCacher.indexAll().map(toJson).map(_.toString).doOnCompleted {
+    RealMetadataCacher.indexAll().map(toJson).map(_.toString).doOnCompleted {
       Player.update()
       safePush("Reloading searcher")
       Searcher.! onComplete {e =>

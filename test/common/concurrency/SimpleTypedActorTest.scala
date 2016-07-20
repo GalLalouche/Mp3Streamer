@@ -4,6 +4,7 @@ import java.util.concurrent.Semaphore
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{FreeSpec, OneInstancePerTest}
+import common.rich.RichT._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
@@ -22,18 +23,23 @@ class SimpleTypedActorTest extends FreeSpec with ShouldMatchers with OneInstance
       val sb = new StringBuilder
       val semaphore = new Semaphore(0)
       val map = Map("1" -> new Semaphore(0), "2" -> new Semaphore(0))
+      def appendToSb(i: Int) {
+        sb append i.toString
+        semaphore.release()
+      }
       val $ = new SimpleTypedActor[String, Int] {
         override protected def apply(m: String) = {
           map(m).acquire()
-          m.toInt
+          val $ = m.toInt
+          appendToSb($)
+          $
         }
       }
-      def appendToSb(i: Int) {
-        sb.append(i.toString)
-        semaphore.release()
-      }
-      $ ! "1" foreach appendToSb
-      $ ! "2" foreach appendToSb
+
+      // 1 is requested before 2
+      $ ! "1"
+      $ ! "2"
+
       // 2 is released before 1
       map("2").release()
       map("1").release()

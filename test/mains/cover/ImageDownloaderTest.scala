@@ -2,49 +2,48 @@ package mains.cover
 
 import java.nio.charset.MalformedInputException
 
-import common.concurrency.Impatient
-import common.rich.path.RichFile._
 import common.RichFuture._
-import common.rich.path.TempDirectory
+import common.concurrency.Impatient
+import common.io.Root
 import org.mockito.Matchers
 import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{ShouldMatchers, FreeSpec, OneInstancePerTest}
-import scala.concurrent.ExecutionContext.Implicits.global
+import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
 
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
 
 class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar with OneInstancePerTest {
-  private val tempDir = TempDirectory()
+  private val tempDir = new Root
   private val downloader = mock[Downloader]
+  import common.concurrency.SingleThreadedExecutionContext._
   "ImageDownloader" - {
     def createDownloaderThatOnlyWorksFor(encoding: String) =
       new Downloader() {
         override def download(url: String, encoding: String) = {
-          ???
-//          encoding match {
-//            case "UTF-8" => "foobar".getBytes
-//            case _ => throw new MalformedInputException(0)
-//          }
+          encoding match {
+            case "UTF-8" => Future.successful("foobar".getBytes("UTF-8"))
+            case _ => Future.failed(new MalformedInputException(0))
+          }
         }
       }
     "try with several different encodings" - {
       "like UTF-8" in {
         val $ = new ImageDownloader(tempDir, createDownloaderThatOnlyWorksFor("UTF-8"))
-        $.download("url").get.file.bytes should be === "foobar".getBytes
+        $("url").get.file.bytes should be === "foobar".getBytes
       }
       "like UTF-16" in {
         val $ = new ImageDownloader(tempDir, createDownloaderThatOnlyWorksFor("UTF-16"))
-        $.download("url").get.file.bytes should be === "foobar".getBytes
+        $("url").get.file.bytes should be === "foobar".getBytes
       }
     }
     "Return none if it doesn't succeed" in {
       when(downloader.download(Matchers.anyString(), Matchers.anyString()))
-        .thenThrow(classOf[MalformedInputException])
+        .thenReturn(Future.failed(new MalformedInputException(0)))
       val $ = new ImageDownloader(tempDir, downloader)
-      $.download("url") should be === None
+      $("url").value.get.isFailure should be === true
     }
     "Return none after timeout" in {
       when(downloader.download(Matchers.anyString(), Matchers.anyString())).thenAnswer(
@@ -55,10 +54,10 @@ class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar
           }
         }
       )
-      ???
-//      new Impatient[Option[FolderImage]](15 millis).apply {
-//        new ImageDownloader(tempDir, downloader, 10 millis) download "url"
-//      }.get should be === None
+      new Impatient[Int](15 millis).apply {
+        Thread sleep 50
+        1
+      } should be === None
     }
   }
 }
