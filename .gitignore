@@ -22,3 +22,6 @@ bin/**
 *QuickMain*
 jPlayer
 .cache*
+.idea/**
+.idea/
+.idea

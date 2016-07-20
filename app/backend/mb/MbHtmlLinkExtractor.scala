@@ -1,7 +1,7 @@
 package backend.mb
 
 import backend.Url
-import backend.external.{ExternalLink, ExternalLinkProvider}
+import backend.external.{ExternalLink, ExternalLinkProvider, Host}
 import backend.recon.ReconID
 import common.io.DocumentDownloader
 import common.rich.RichT._

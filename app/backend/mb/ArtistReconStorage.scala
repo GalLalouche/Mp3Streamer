@@ -7,7 +7,7 @@ import slick.driver.SQLiteDriver.api._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-private object ArtistReconStorageImpl extends ReconStorage[Artist] {
+private object ArtistReconStorage extends ReconStorage[Artist] {
   private class Artists(tag: Tag) extends Table[(String, Option[String], Boolean)](tag, "ARTISTS") {
     def name = column[String]("NAME", O.PrimaryKey)
     def musicBrainzId = column[Option[String]]("MUSIC_BRAINZ_String")
