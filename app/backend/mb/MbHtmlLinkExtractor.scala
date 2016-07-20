@@ -8,7 +8,6 @@ import common.rich.RichT._
 import org.jsoup.nodes.{Document, Element}
 
 import scala.collection.JavaConversions._
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 private sealed class MbHtmlLinkExtractor(metadataType: String)(implicit ec: ExecutionContext) extends ExternalLinkProvider {
@@ -32,6 +31,6 @@ private sealed class MbHtmlLinkExtractor(metadataType: String)(implicit ec: Exec
     getHtml(id.id).map(extractLinks)
 }
 
-private object ArtistLinkExtractor extends MbHtmlLinkExtractor("artist")
-private object AlbumLinkExtractor extends MbHtmlLinkExtractor("release")
+private class ArtistLinkExtractor(implicit ec: ExecutionContext) extends MbHtmlLinkExtractor("artist")
+private class AlbumLinkExtractor(implicit ec: ExecutionContext) extends MbHtmlLinkExtractor("release")
 

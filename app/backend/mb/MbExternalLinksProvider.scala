@@ -1,20 +1,32 @@
 package backend.mb
 
-import backend.external.{ExternalLinks, ExternalLinksProvider, NullExtractor}
-import models.Song
+import backend.external.{ExternalLink, ExternalLinkProvider, ExternalLinks, ExternalLinksProvider}
+import backend.recon.Reconcilable._
+import backend.recon.{Album, Artist, ReconID, ReconcilerCacher}
 import common.RichFuture._
+import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
-import backend.recon.Reconcilable._
 
 class MbExternalLinksProvider(implicit ec: ExecutionContext) extends ExternalLinksProvider {
-  private val artistExtractor = ArtistLinkExtractor
-  private val artistReconciler = MbArtistReconcilerCacher
+  private val artistLinkExtractor = new ArtistLinkExtractor
+  private val artistReconciler = new MbArtistReconcilerCacher
+  private val albumLinkExtractor = new AlbumLinkExtractor
+  private val albumReconciler = new ReconcilerCacher[Album](AlbumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get)))
+
+  private def get[T](t: T,
+                     reconciler: T => Future[(Option[ReconID], Boolean)],
+                     linkExtractor: ExternalLinkProvider): Future[Traversable[ExternalLink]] =
+    reconciler(t)
+      .filterWith(_._1.isDefined, s"Couldn't reconcile <$t>")
+      .map(_._1.get)
+      .flatMap(linkExtractor.apply)
+
+  private def getArtist(a: Artist) = get(a, artistReconciler, artistLinkExtractor)
+  private def getAlbum(a: Album) = get(a, albumReconciler, albumLinkExtractor)
 
   override def getExternalLinks(s: Song): Future[ExternalLinks] =
-    artistReconciler.get(s.artist)
-      .filterWith(_._1.isDefined, s"Couldn't reconcile <${s.artist}>")
-      .map(_._1.get)
-      .flatMap(artistExtractor.apply)
-      .map(ExternalLinks(_, Nil, Nil))
+    getArtist(s.artist)
+      .zip(getAlbum(s.release))
+      .map(e => ExternalLinks(e._1, e._2, Nil))
 }

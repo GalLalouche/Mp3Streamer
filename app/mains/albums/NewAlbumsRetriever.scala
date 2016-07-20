@@ -37,7 +37,7 @@ private class NewAlbumsRetriever(reconciler: ArtistReconcilerCacher, mf: MusicFi
       }
     val $ = for (artist <- lastAlbumsByArtist.keys.iterator) yield {
       print("Working on artist: " + artist + "... ")
-      val f = reconciler.get(artist |> Artist)
+      val f = reconciler.apply(artist |> Artist)
           .filter(_._2 == false)
           .map(_._1)
           .map(_.map(meta.getAlbumsMetadata)

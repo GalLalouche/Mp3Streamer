@@ -26,7 +26,7 @@ class ArtistReconcilerCacher(repo: ReconStorage[Artist], online: OnlineReconcile
         .toSet
     for (artist <- artists) {
       val recon1: Future[Option[ReconID]] =
-        get(artist).map(_._1).recover({case _ => Some("Failed to find an online match for " + artist).map(ReconID)})
+        apply(artist).map(_._1).recover({case _ => Some("Failed to find an online match for " + artist).map(ReconID)})
       println(recon1.get)
     }
     System.exit(0)

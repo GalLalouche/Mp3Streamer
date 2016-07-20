@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object FindNewAlbums {
   def main(args: Array[String]) {
-    val $ = new NewAlbumsRetriever(MbArtistReconcilerCacher, new RealLocations {
+    val $ = new NewAlbumsRetriever(new MbArtistReconcilerCacher, new RealLocations {
       override val subDirs: List[String] = List("Rock", "Metal")
     })
     val file = Directory("C:/").addFile("albums.txt").clear()
