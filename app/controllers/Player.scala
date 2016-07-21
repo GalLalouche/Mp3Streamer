@@ -1,6 +1,5 @@
 package controllers
 
-import java.io.File
 import java.net.{URLDecoder, URLEncoder}
 
 import common.Debug
@@ -39,13 +38,11 @@ object Player extends Controller with Debug {
     Ok(Directory(URLDecoder.decode(path, "UTF-8")) |> Album.apply |> (_.songs.map(toJson)) |> JsArray.apply)
   }
 
-  private def toSong(path: String): Song = Song(new File(URLDecoder.decode(path, "UTF-8")))
-
   def song(path: String) = Action {
-    Ok(path |> toSong |> toJson)
+    Ok(path |> Utils.parseSong |> toJson)
   }
 
   def nextSong(path: String) = Action {
-    Ok(path |> toSong |> songSelector.followingSong |> toJson)
+    Ok(path |> Utils.parseSong |> songSelector.followingSong |> toJson)
   }
 }

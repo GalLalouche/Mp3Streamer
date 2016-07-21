@@ -4,13 +4,12 @@ import backend.recon.{Artist, ReconID, ReconStorage}
 import common.RichFuture._
 import slick.driver.SQLiteDriver.api._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-private object ArtistReconStorage extends ReconStorage[Artist] {
+class ArtistReconStorage(implicit ec: ExecutionContext) extends ReconStorage[Artist] {
   private class Artists(tag: Tag) extends Table[(String, Option[String], Boolean)](tag, "ARTISTS") {
     def name = column[String]("NAME", O.PrimaryKey)
-    def musicBrainzId = column[Option[String]]("MUSIC_BRAINZ_String")
+    def musicBrainzId = column[Option[String]]("MUSIC_BRAINZ_ID")
     def isIgnored = column[Boolean]("IS_IGNORED", O.Default(false))
     def * = (name, musicBrainzId, isIgnored)
   }

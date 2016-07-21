@@ -1,13 +1,13 @@
 package mains.albums
 
-import backend.mb.{MbArtistReconcilerCacher, MbArtistReconciler}
-import backend.recon.{Artist, ArtistReconcilerCacher, OnlineReconciler}
+import backend.mb.MbArtistReconciler
+import backend.recon.{Artist, ArtistReconcilerCacher}
 import common.RichFuture._
 import common.io.IOFile
+import common.rich.RichT._
 import models.{MusicFinder, Song}
 
 import scala.concurrent.ExecutionContext
-import common.rich.RichT._
 
 private class NewAlbumsRetriever(reconciler: ArtistReconcilerCacher, mf: MusicFinder)(implicit ec: ExecutionContext) {
   val meta = new MbArtistReconciler
@@ -35,23 +35,26 @@ private class NewAlbumsRetriever(reconciler: ArtistReconcilerCacher, mf: MusicFi
         lastArtist = Some(e.artist)
         false
       }
-    val $ = for (artist <- lastAlbumsByArtist.keys.iterator) yield {
+    val $: Iterator[Iterator[Album]] = for (artist <- lastAlbumsByArtist.keys.iterator) yield {
       print("Working on artist: " + artist + "... ")
       val f = reconciler.apply(artist |> Artist)
           .filter(_._2 == false)
-          .map(_._1)
-          .map(_.map(meta.getAlbumsMetadata)
-              .map(_.map(_.filter(_._1.toDateTimeAtCurrentTime.getMillis < System.currentTimeMillis()))
-                  .map(_.map(e => Album(artist, e._1.getYear, e._2)))
-                  .map(_ filter isNewAlbum)
-                  .recover {case e => Seq()}
-                  .get
-                  .iterator)
-              .getOrElse {
-                println("Ignoring... ")
-                Iterator.empty
-              })
-      f.get
+          .get
+          .log()
+      Iterator.empty
+//          .map(_._1)
+//          .map(_.map(meta.getAlbumsMetadata)
+//              .map(_.map(_.filter(_._1.toDateTimeAtCurrentTime.getMillis < System.currentTimeMillis()))
+//                  .map(_.map(e => Album(artist, e._1.getYear, e._2)))
+//                  .map(_ filter isNewAlbum)
+//                  .recover {case e => Seq()}
+//                  .get
+//                  .iterator)
+//              .getOrElse {
+//                println("Ignoring... ")
+//                Iterator.empty
+//              })
+//      Try(f.get).getOrElse(Iterator.empty)
     }
     $.flatten
   }

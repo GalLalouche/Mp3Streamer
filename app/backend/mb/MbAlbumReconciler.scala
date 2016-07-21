@@ -6,18 +6,19 @@ import play.api.libs.json._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.util.Try
 
 class MbAlbumReconciler(artistReconciler: Artist => Future[ReconID])(implicit ec: ExecutionContext) extends OnlineReconciler[Album] with JsonHelper {
   private def parse(js: JsValue, a: Album): Option[ReconID] = {
     js.\("release-groups").as[JsArray].value
-      .filter(e => (e \ "primary-type").as[String] == "Album")
+      .filter(e => Try((e \ "primary-type").as[String] == "Album").getOrElse(false))
       .filter(e => e.\("title").as[String].toLowerCase == a.title.toLowerCase)
       .headOption.map(_.\("id").get.as[String]).map(ReconID)
   }
 
   override def apply(a: Album): Future[Option[ReconID]] =
     artistReconciler(a.artist)
-      .flatMap(artistId => retry(() => getJson("release-group/", "query" -> a.title, "artist" -> artistId.id), 5, 2 seconds))
+      .flatMap(artistId => retry(() => getJson("release-group", "artist" -> artistId.id), 5, 2 seconds))
       .map(parse(_, a))
 }
 
