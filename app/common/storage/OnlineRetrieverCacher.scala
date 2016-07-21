@@ -10,6 +10,7 @@ class OnlineRetrieverCacher[Key, Value](localStorage: LocalStorage[Key, Value], 
                                        (implicit ec: ExecutionContext) extends (Key => Future[Value]) {
   override def apply(k: Key): Future[Value] = localStorage.load(k)
     .recoverWith { case e =>
+      throw new AssertionError("THIS SHOULD NEVER HAPPEN")
       val f = onlineRetriever(k)
       f.foreach(localStorage.store(k, _))
       f
