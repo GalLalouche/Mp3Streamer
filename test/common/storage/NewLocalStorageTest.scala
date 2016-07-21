@@ -18,16 +18,16 @@ class NewLocalStorageTest extends FreeSpec with MockitoSugar with OneInstancePer
       existingValues += k -> v
       Future successful Unit
     }
-    override def load(k: Int): Future[Option[Int]] = Future successful existingValues.get(k)
+    override def newLoad(k: Int): Future[Option[Int]] = Future successful existingValues.get(k)
   }
   "store" - {
     "has existing value returns false" in {
       existingValues += 1 -> 2
-      $.store(1, 4).get shouldReturn false
+      $.newStore(1, 4).get shouldReturn false
       existingValues(1) shouldReturn 2
     }
     "no existing value should insert the value and return true" in {
-      $.store(1, 4).get shouldReturn true
+      $.newStore(1, 4).get shouldReturn true
       existingValues(1) shouldReturn 4
     }
   }
