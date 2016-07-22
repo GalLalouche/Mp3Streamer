@@ -12,7 +12,6 @@ import models.{MusicFinder, RealLocations, Song}
 import scala.concurrent.{ExecutionContext, Future}
 
 object ArtistReconFiller {
-  
   import scala.concurrent.ExecutionContext.Implicits.global
   
   val reconciler = new ReconcilerCacher[Artist](new ArtistReconStorage(), new MbArtistReconciler())

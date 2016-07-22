@@ -11,8 +11,8 @@ import play.api.libs.ws.ahc.AhcWSClient
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-private[mb] trait JsonHelper {
-  protected def retry[T](f: () => Future[T], times: Int, retryWait: Duration)(implicit ec: ExecutionContext): Future[T] = f().recoverWith {
+private object JsonHelper {
+  def retry[T](f: () => Future[T], times: Int, retryWait: Duration)(implicit ec: ExecutionContext): Future[T] = f().recoverWith {
     case e => if (times <= 1)
       Future.failed(new Exception("Failed retry; last failure was: ", e))
     else {
@@ -21,7 +21,7 @@ private[mb] trait JsonHelper {
     }
   }
 
-  protected implicit class RichJson(js: JsValue) {
+  implicit class RichJson(js: JsValue) {
     def asString: String = js.asInstanceOf[JsString].value
     def asJsArray: JsArray = try
       js.asInstanceOf[JsArray]
@@ -37,7 +37,7 @@ private[mb] trait JsonHelper {
 
   private implicit val system = ActorSystem()
   private implicit val materializer = ActorMaterializer()
-  protected def getJson(method: String, other: (String, String)*)(implicit ec: ExecutionContext): Future[JsValue] = {
+  def getJson(method: String, other: (String, String)*)(implicit ec: ExecutionContext): Future[JsValue] = {
     val webServiceRequest = AhcWSClient()
       .url("http://musicbrainz.org/ws/2/" + method)
       .withQueryString(("fmt", "json")).withQueryString(other: _*)

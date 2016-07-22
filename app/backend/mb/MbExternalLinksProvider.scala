@@ -11,10 +11,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class MbExternalLinksProvider(implicit ec: ExecutionContext) extends ExternalLinksProvider {
   private val artistLinkExtractor = new ArtistLinkExtractor
   private val artistReconciler =
-    new ReconcilerCacher[Artist](new ArtistReconStorage(), new MbArtistReconciler())
+    new ReconcilerCacher[Artist](new ArtistReconStorage, new MbArtistReconciler)
   private val albumLinkExtractor = new AlbumLinkExtractor
   private val albumReconciler =
-    new ReconcilerCacher[Album](new AlbumReconStorage(), new MbAlbumReconciler(artistReconciler(_).map(_._1.get)))
+    new ReconcilerCacher[Album](new AlbumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get)))
 
   private def get[T](t: T,
                      reconciler: T => Future[(Option[ReconID], Boolean)],
