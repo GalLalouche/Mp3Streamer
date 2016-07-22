@@ -2,4 +2,6 @@ package backend.recon
 
 import backend.storage.LocalStorageTemplate
 
-trait ReconStorage[Key <: Reconcilable] extends LocalStorageTemplate[Key, (Option[ReconID], Boolean)]
+import scala.concurrent.ExecutionContext
+
+abstract class ReconStorage[Key <: Reconcilable](implicit ec: ExecutionContext) extends LocalStorageTemplate[Key, (Option[ReconID], Boolean)]

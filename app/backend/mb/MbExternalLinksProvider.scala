@@ -1,14 +1,16 @@
 package backend.mb
 
+import backend.Configuration
 import backend.external._
 import backend.recon.Reconcilable._
 import backend.recon._
 import common.RichFuture._
 import models.Song
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class MbExternalLinksProvider(implicit ec: ExecutionContext) extends ExternalLinksProvider {
+class MbExternalLinksProvider(implicit c: Configuration) extends ExternalLinksProvider {
+  import c._
   private val artistLinkExtractor = new ArtistLinkExtractor
   private val artistReconciler =
     new ReconcilerCacher[Artist](new ArtistReconStorage, new MbArtistReconciler)

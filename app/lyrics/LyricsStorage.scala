@@ -1,13 +1,16 @@
 package lyrics
 
+import backend.Configuration
 import backend.storage.LocalStorageTemplate
 import models.Song
-import slick.driver.SQLiteDriver.api._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-private class LyricsStorage(implicit ec: ExecutionContext) extends LocalStorageTemplate[Song, Lyrics] {
+private class LyricsStorage(implicit c: Configuration) extends LocalStorageTemplate[Song, Lyrics]()(c.ec) {
   // instrumental songs have NULL in lyrics
+  import c.driver.api._
+  import c._
+  private val db = c.db
   private class LyricsTable(tag: Tag) extends Table[(String, String, Option[String])](tag, "LYRICS") {
     def song = column[String]("SONG", O.PrimaryKey)
     def source = column[String]("SOURCE")
@@ -16,7 +19,6 @@ private class LyricsStorage(implicit ec: ExecutionContext) extends LocalStorageT
   }
   private def normalize(s: Song): String = s"${s.artistName} - ${s.title}"
   private val lyrics = TableQuery[LyricsTable]
-  private val db = Database.forURL("jdbc:sqlite:d:/media/music/MBRecon.sqlite", driver = "org.sqlite.JDBC")
   override protected def internalForceStore(s: Song, l: Lyrics) = {
     val (source, content) = l match {
       case Instrumental(source) => source -> None

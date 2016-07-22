@@ -3,12 +3,13 @@ package controllers
 import backend.external.{ExternalLink, ExternalLinks, ExternalLinksProvider}
 import backend.mb.MbExternalLinksProvider
 import common.rich.RichT._
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, Controller}
 
 object External extends Controller {
+  private implicit val c = PlayConfig
+  import c._
   private val external: ExternalLinksProvider = new MbExternalLinksProvider()
 
   private val set = Set("allmusic", "wikipedia", "lastfm")

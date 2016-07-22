@@ -32,5 +32,5 @@ private sealed class MbHtmlLinkExtractor(metadataType: String)(implicit ec: Exec
 }
 
 private class ArtistLinkExtractor(implicit ec: ExecutionContext) extends MbHtmlLinkExtractor("artist")
-private class AlbumLinkExtractor(implicit ec: ExecutionContext) extends MbHtmlLinkExtractor("release")
+private class AlbumLinkExtractor(implicit ec: ExecutionContext) extends MbHtmlLinkExtractor("release-group")
 
