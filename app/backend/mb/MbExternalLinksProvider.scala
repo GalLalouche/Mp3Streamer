@@ -2,7 +2,7 @@ package backend.mb
 
 import backend.external.{ExternalLink, ExternalLinkProvider, ExternalLinks, ExternalLinksProvider}
 import backend.recon.Reconcilable._
-import backend.recon.{Album, Artist, ReconID, ReconcilerCacher}
+import backend.recon._
 import common.RichFuture._
 import models.Song
 
@@ -12,7 +12,8 @@ class MbExternalLinksProvider(implicit ec: ExecutionContext) extends ExternalLin
   private val artistLinkExtractor = new ArtistLinkExtractor
   private val artistReconciler = new MbArtistReconcilerCacher
   private val albumLinkExtractor = new AlbumLinkExtractor
-  private val albumReconciler = new ReconcilerCacher[Album](AlbumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get)))
+  private val albumReconciler =
+    new ReconcilerCacher[Album](new AlbumReconStorage(), new MbAlbumReconciler(artistReconciler(_).map(_._1.get)))
 
   private def get[T](t: T,
                      reconciler: T => Future[(Option[ReconID], Boolean)],
