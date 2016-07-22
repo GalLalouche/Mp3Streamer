@@ -17,14 +17,14 @@ private object ArtistReconStorage extends ReconStorage[Artist] {
   override protected def normalize(a: Artist): String = a.name.toLowerCase
   private val artists = TableQuery[Artists]
   private val db = Database.forURL("jdbc:sqlite:d:/media/music/MBRecon.sqlite", driver = "org.sqlite.JDBC")
-  def store(a: Artist, id: Option[String]): Future[Unit] =
+  def store(a: Artist, id: Option[String]): Future[Boolean] =
     store(a, id.map(ReconID.apply) -> (false == id.isDefined))
-  override def newLoad(a: Artist): Future[Option[(Option[ReconID], Boolean)]] =
+  override def load(a: Artist): Future[Option[(Option[ReconID], Boolean)]] =
     db.run(artists
-      .filter(_.name === normalize(a))
-      .map(e => e.isIgnored -> e.musicBrainzId)
-      .result
-      .map(_.headOption.map(_.swap.mapTo(e => e._1.map(ReconID) -> e._2))))
+        .filter(_.name === normalize(a))
+        .map(e => e.isIgnored -> e.musicBrainzId)
+        .result
+        .map(_.headOption.map(_.swap.mapTo(e => e._1.map(ReconID) -> e._2))))
   override protected def internalForceStore(a: Artist, value: (Option[ReconID], Boolean)): Future[Unit] =
     db.run(artists.forceInsert(normalize(a), value._1.map(_.id), value._2)).map(e => Unit)
 }

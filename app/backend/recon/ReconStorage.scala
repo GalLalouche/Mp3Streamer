@@ -1,7 +1,7 @@
 package backend.recon
 
-import common.storage.NewLocalStorage
+import common.storage.LocalStorage
 
-trait ReconStorage[Key <: Reconcilable] extends NewLocalStorage[Key, (Option[ReconID], Boolean)] {
+trait ReconStorage[Key <: Reconcilable] extends LocalStorage[Key, (Option[ReconID], Boolean)] {
   protected def normalize(k: Key): String
 }
