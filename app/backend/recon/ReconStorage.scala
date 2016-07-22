@@ -1,5 +1,5 @@
 package backend.recon
 
-import common.storage.LocalStorage
+import common.storage.LocalStorageTemplate
 
-trait ReconStorage[Key <: Reconcilable] extends LocalStorage[Key, (Option[ReconID], Boolean)]
+trait ReconStorage[Key <: Reconcilable] extends LocalStorageTemplate[Key, (Option[ReconID], Boolean)]

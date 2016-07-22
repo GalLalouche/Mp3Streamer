@@ -1,12 +1,12 @@
 package lyrics
 
-import common.storage.LocalStorage
+import common.storage.LocalStorageTemplate
 import models.Song
 import slick.driver.SQLiteDriver.api._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private class LyricsStorage(implicit ec: ExecutionContext) extends LocalStorage[Song, Lyrics] {
+private class LyricsStorage(implicit ec: ExecutionContext) extends LocalStorageTemplate[Song, Lyrics] {
   // instrumental songs have NULL in lyrics
   private class LyricsTable(tag: Tag) extends Table[(String, String, Option[String])](tag, "LYRICS") {
     def song = column[String]("SONG", O.PrimaryKey)
