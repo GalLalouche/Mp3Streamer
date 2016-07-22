@@ -1,6 +1,6 @@
 package backend.mb
 
-import backend.external.{ExternalLink, ExternalLinkProvider, ExternalLinks, ExternalLinksProvider}
+import backend.external._
 import backend.recon.Reconcilable._
 import backend.recon._
 import common.RichFuture._
@@ -10,7 +10,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class MbExternalLinksProvider(implicit ec: ExecutionContext) extends ExternalLinksProvider {
   private val artistLinkExtractor = new ArtistLinkExtractor
-  private val artistReconciler = new MbArtistReconcilerCacher
+  private val artistReconciler =
+    new ReconcilerCacher[Artist](new ArtistReconStorage(), new MbArtistReconciler())
   private val albumLinkExtractor = new AlbumLinkExtractor
   private val albumReconciler =
     new ReconcilerCacher[Album](new AlbumReconStorage(), new MbAlbumReconciler(artistReconciler(_).map(_._1.get)))
