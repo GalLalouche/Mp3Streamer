@@ -1,16 +1,16 @@
 package mains.albums
 
 import backend.mb.MbArtistReconciler
-import backend.recon.{Artist, ArtistReconcilerCacher}
-import common.RichFuture._
+import backend.recon.{Artist, ReconcilerCacher}
 import common.io.IOFile
 import common.rich.RichT._
 import models.{MusicFinder, Song}
 import org.joda.time.LocalDate
 
 import scala.concurrent.ExecutionContext
+import common.RichFuture._
 
-private class NewAlbumsRetriever(reconciler: ArtistReconcilerCacher, mf: MusicFinder)(implicit ec: ExecutionContext) {
+private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], mf: MusicFinder)(implicit ec: ExecutionContext) {
   val meta = new MbArtistReconciler
   private var lastArtist: Option[String] = None
   private def getExistingAlbums: Iterator[Album] = mf.genreDirs
