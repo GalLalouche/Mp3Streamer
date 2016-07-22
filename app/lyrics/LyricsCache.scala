@@ -1,6 +1,6 @@
 package lyrics
 
-import common.storage.OnlineRetrieverCacher
+import backend.storage.OnlineRetrieverCacher
 import models.Song
 
 import common.RichFuture._

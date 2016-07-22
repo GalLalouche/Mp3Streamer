@@ -1,4 +1,4 @@
-package common.storage
+package backend.storage
 
 import scala.concurrent.Future
 

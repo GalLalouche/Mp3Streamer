@@ -1,4 +1,4 @@
-//package common.storage
+//package backend.storage
 //
 //import common.AuxSpecs
 //import org.scalatest.mock.MockitoSugar

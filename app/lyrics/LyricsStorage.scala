@@ -1,6 +1,6 @@
 package lyrics
 
-import common.storage.LocalStorageTemplate
+import backend.storage.LocalStorageTemplate
 import models.Song
 import slick.driver.SQLiteDriver.api._
 

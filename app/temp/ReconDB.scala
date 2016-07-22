@@ -1,6 +1,6 @@
 //package temp
 //
-//import common.storage.LocalStorage
+//import backend.storage.LocalStorage
 //import slick.driver.SQLiteDriver.api._
 //
 //import scala.concurrent.ExecutionContext.Implicits.global
