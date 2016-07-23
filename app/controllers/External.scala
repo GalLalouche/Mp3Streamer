@@ -10,11 +10,10 @@ import play.api.mvc.{Action, Controller}
 object External extends Controller {
   private implicit val c = PlayConfig
   import c._
-  private val external: ExternalLinksProvider = new MbExternalLinksProvider()
+  private val external = new MbExternalLinksProvider
 
-  private val set = Set("allmusic", "wikipedia", "lastfm")
-  private def toJson(e: ExternalLink): (String, JsValueWrapper) =
-    e.host.name -> e.link.address
+  private val set = Set("allmusic", "wikipedia", "lastfm", "metalarchives")
+  private def toJson(e: ExternalLink): (String, JsValueWrapper) = e.host.name -> e.link.address
   private def toJson(e: Traversable[ExternalLink]): JsObject =
     e.filter(e => set.contains(e.host.name))
       .map(toJson).toSeq |> Json.obj
@@ -22,7 +21,7 @@ object External extends Controller {
     Json.obj("artist" -> toJson(e.artistLinks), "album" -> toJson(e.albumLinks))
 
   def get(path: String) = Action.async {
-    external.getExternalLinks(Utils.parseSong(path))
+    external(Utils.parseSong(path))
       .map(toJson)
       .map(Ok(_))
   }

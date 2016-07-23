@@ -27,7 +27,7 @@ trait WebSocketController extends Controller {
   lazy val actor = ActorDSL.actor(new WebSocketController.DisconnectingActor(receive, out._2, name))
   def accept = WebSocket.using[String] {r => {
     val i = Iteratee.foreach[String] {
-      x => common.CompositeLogger.debug("New subscriber to " + getClass())
+      x => common.CompositeLogger.debug("New subscriber to " + getClass)
     }
     (i, out._1)
   }

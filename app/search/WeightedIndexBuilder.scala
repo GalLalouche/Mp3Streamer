@@ -14,7 +14,7 @@ object WeightedIndexBuilder {
       .terms(indexable)
       .map(e => e._1.toLowerCase -> e._2)
       ./:(map)((map, weightedTerm) => map.append(weightedTerm._1, indexable -> weightedTerm._2)))
-    .map(e => e._1 -> e._2.toSeq.sortBy(-_._2)) |> Trie.fromSeqMap |> (new WeightedIndex(_))
+    .map(e => e._1 -> e._2.toSeq.sortBy(-_._2)) |> Trie.fromSeqMap |> (WeightedIndex(_))
 
   private case class WeightedIndex[T: WeightedIndexable : Indexable](trie: Trie[(T, Double)]) extends Index[T] {
     implicit object DoubleSemi extends Semigroup[Double] { // seriously?

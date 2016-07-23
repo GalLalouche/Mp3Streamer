@@ -5,8 +5,8 @@ import common.Jsoner.jsValue
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{JsObject, JsValue}
 import play.api.mvc.Action
-import search.{MetadataCacher, RealMetadataCacher}
 import search.MetadataCacher.IndexUpdate
+import search.RealMetadataCacher
 import websockets.WebSocketController
 
 /** used for running manual commands from the client side */

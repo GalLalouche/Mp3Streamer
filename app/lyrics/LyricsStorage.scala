@@ -8,8 +8,8 @@ import scala.concurrent.Future
 
 private class LyricsStorage(implicit c: Configuration) extends LocalStorageTemplate[Song, Lyrics]()(c.ec) {
   // instrumental songs have NULL in lyrics
-  import c.driver.api._
   import c._
+  import c.driver.api._
   private val db = c.db
   private class LyricsTable(tag: Tag) extends Table[(String, String, Option[String])](tag, "LYRICS") {
     def song = column[String]("SONG", O.PrimaryKey)

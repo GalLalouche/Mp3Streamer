@@ -12,7 +12,7 @@ class RefreshableStorage[Key, Value](freshnessStorage: FreshnessStorage[Key, Val
   private def age(dt: DateTime): Duration = Duration.millis(DateTime.now().getMillis - dt.getMillis)
   private def needsRefresh(k: Key): Future[Boolean] =
     freshnessStorage.freshness(k)
-        .map(_.map(_._2.mapTo(age).isLongerThan(maxAge)).getOrElse(true))
+        .map(_.forall(_._2.mapTo(age).isLongerThan(maxAge)))
   private def refresh(k: Key): Future[Value] =
     for (v <- onlineRetriever(k);
          _ <- freshnessStorage.store(k, v))

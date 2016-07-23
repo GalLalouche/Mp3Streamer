@@ -33,7 +33,7 @@ class MbArtistReconciler(implicit ec: ExecutionContext) extends OnlineReconciler
   private def getAlbumsAsArray(artistKey: String): Future[JsArray] =
     getJson("release-group", ("artist", artistKey), ("limit", "100"))
         .map(_ \ "release-groups" get)
-        .map($ => new JsArray($
+        .map($ => JsArray($
             .filter(_ has "first-release-date")
             .filter(_ has "primary-type")
             .filter(e => Set("Album", "EP", "Live").contains(e \ "primary-type" get))

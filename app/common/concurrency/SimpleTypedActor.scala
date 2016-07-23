@@ -1,10 +1,10 @@
 package common.concurrency
 
-import scala.concurrent.Future
+import java.util.concurrent.{Executors, ThreadFactory}
+
 import common.rich.RichT._
-import scala.concurrent.ExecutionContext
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.Executors
+
+import scala.concurrent.{ExecutionContext, Future}
 
 /** It's a single threaded future factory basically */
 trait SimpleTypedActor[Msg, Result] {

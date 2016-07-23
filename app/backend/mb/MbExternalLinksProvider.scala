@@ -29,7 +29,7 @@ class MbExternalLinksProvider(implicit c: Configuration) extends ExternalLinksPr
   private def getArtist(a: Artist) = get(a, artistReconciler, artistLinkExtractor)
   private def getAlbum(a: Album) = get(a, albumReconciler, albumLinkExtractor)
 
-  override def getExternalLinks(s: Song): Future[ExternalLinks] =
+  override def apply(s: Song): Future[ExternalLinks] =
     getArtist(s.artist)
       .zip(getAlbum(s.release))
       .map(e => ExternalLinks(e._1, e._2, Nil))

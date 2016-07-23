@@ -1,9 +1,6 @@
 package backend.external
 
+import backend.storage.Retriever
 import models.Song
 
-import scala.concurrent.Future
-
-trait ExternalLinksProvider {
-  def getExternalLinks(s: Song): Future[ExternalLinks]
-}
+trait ExternalLinksProvider extends Retriever[Song, ExternalLinks]

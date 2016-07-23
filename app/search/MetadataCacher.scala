@@ -19,7 +19,7 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: Jsonabl
     val songs = mf.getSongFilePathsInDir(d).map(songParser)
     val album = songs.head.album
     listener()
-    new DirectoryInfo(songs, album, new Artist(songs.head.artistName, Set(album)))
+    DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))
   }
   override def apply(dir: DirectoryRef) {
     val info = getDirectoryInfo(dir, () => ())
@@ -64,9 +64,9 @@ object MetadataCacher {
   private case class AllInfo(songs: Seq[Song], albums: List[Album], artists: IndexedSet[Artist])
   private case class DirectoryInfo(songs: Seq[Song], album: Album, artist: Artist)
   private implicit object AllInfoCollectable extends Collectable[DirectoryInfo, AllInfo] {
-    override def empty: AllInfo = new AllInfo(List(), List(), emptyArtistSet)
+    override def empty: AllInfo = AllInfo(List(), List(), emptyArtistSet)
     override def +(agg: AllInfo, t: DirectoryInfo): AllInfo =
-      new AllInfo(t.songs ++ agg.songs, t.album :: agg.albums, agg.artists + t.artist)
+      AllInfo(t.songs ++ agg.songs, t.album :: agg.albums, agg.artists + t.artist)
   }
   private def gatherInfo($: GenSeq[DirectoryInfo]) = Collectable fromList $
   case class IndexUpdate(currentIndex: Int, totalNumber: Int, dir: DirectoryRef)

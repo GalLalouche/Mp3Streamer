@@ -1,9 +1,6 @@
 package backend.external
 
 import backend.recon.ReconID
+import backend.storage.Retriever
 
-import scala.concurrent.Future
-
-trait ExternalLinkProvider {
-  def apply(id: ReconID): Future[Traversable[ExternalLink]]
-}
+trait ExternalLinkProvider extends Retriever[ReconID, Traversable[ExternalLink]]

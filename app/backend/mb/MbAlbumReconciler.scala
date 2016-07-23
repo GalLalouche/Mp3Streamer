@@ -12,8 +12,8 @@ class MbAlbumReconciler(artistReconciler: Artist => Future[ReconID])(implicit ec
   private def parse(js: JsValue, a: Album): Option[ReconID] = {
     js.\("release-groups").as[JsArray].value
         .filter(e => (e \ "primary-type").as[String] == "Album")
-        .filter(e => e.\("title").as[String].toLowerCase == a.title.toLowerCase)
-        .headOption.map(_.\("id").get.as[String]).map(ReconID)
+        .find(e => e.\("title").as[String].toLowerCase == a.title.toLowerCase)
+        .map(_.\("id").get.as[String]).map(ReconID)
   }
   
   override def apply(a: Album): Future[Option[ReconID]] =
@@ -24,7 +24,7 @@ class MbAlbumReconciler(artistReconciler: Artist => Future[ReconID])(implicit ec
 
 object MbAlbumReconciler {
   def main(args: Array[String]) {
-    val $ = new MbAlbumReconciler(e => "6318e724-7e6b-4e41-a35b-080065077c80" |> ReconID |> Future.successful)(ExecutionContext.Implicits.global);
+    val $ = new MbAlbumReconciler(e => "6318e724-7e6b-4e41-a35b-080065077c80" |> ReconID |> Future.successful)(ExecutionContext.Implicits.global)
     val f = $(Album("Fortress", "Foobar" |> Artist))
     Await.result(f, 10 seconds).log()
   }

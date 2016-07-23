@@ -4,10 +4,10 @@ package common
 object CompositeLogger extends Logger {
   private def aLoggerAdapter(l: play.Logger.ALogger): Logger = {
     new Logger {
-      def trace(s: String) = l trace (s)
-      def debug(s: String) = l debug (s)
-      def info(s: String) = l info (s)
-      def warn(s: String, e: Exception) = if (e != null) l warn(s, e) else l warn (s)
+      def trace(s: String) = l trace s
+      def debug(s: String) = l debug s
+      def info(s: String) = l info s
+      def warn(s: String, e: Exception) = if (e != null) l warn(s, e) else l warn s
       def error(s: String, e: Exception) = l error(s, e)
     }
   }

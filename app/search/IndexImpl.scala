@@ -1,6 +1,6 @@
 package search
 
-import Index.ProductOrdering
+import search.Index.ProductOrdering
 
 trait IndexImpl[T] extends Index[T] {
   def find(s: String): Seq[T]

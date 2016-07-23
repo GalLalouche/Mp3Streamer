@@ -2,13 +2,12 @@ package lyrics
 
 import java.io.File
 
-import models.Song
+import common.RichFuture._
 import common.rich.RichT._
+import models.Song
 import org.jsoup.nodes.Document
 
 import scala.concurrent.ExecutionContext
-
-import common.RichFuture._
 
 private class DarkLyricsRetriever(implicit ec: ExecutionContext) extends HtmlRetriever {
   override protected val source: String = "DarkLyrics"

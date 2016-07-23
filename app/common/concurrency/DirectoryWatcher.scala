@@ -12,7 +12,7 @@ package common.concurrency
 import java.io.File
 import java.nio.file._
 
-import common.{CompositeLogger, Debug}
+import common.Debug
 import common.concurrency.DirectoryWatcher._
 import common.io.IODirectory
 import common.rich.RichT._
@@ -113,7 +113,7 @@ object DirectoryWatcher {
   case object Started extends DirectoryEvent
 
   def apply(ref: MusicFinder): Observable[DirectoryEvent] = ref.genreDirs.map(_.asInstanceOf[IODirectory].dir) |> apply
-  def apply(dirs: Traversable[Directory]): Observable[DirectoryEvent] = Observable.create(o => {
+  def apply(dirs: Traversable[Directory]): Observable[DirectoryEvent] = Observable(o => {
     new SingleThreadedJobQueue() {
       override val name = "DirectoryWatcher"
     }.apply {
