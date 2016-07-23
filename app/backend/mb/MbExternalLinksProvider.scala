@@ -4,6 +4,7 @@ import backend.Configuration
 import backend.external._
 import backend.recon.Reconcilable._
 import backend.recon._
+import backend.storage.Retriever
 import common.RichFuture._
 import models.Song
 
@@ -19,7 +20,7 @@ class MbExternalLinksProvider(implicit c: Configuration) extends ExternalLinksPr
     new ReconcilerCacher[Album](new AlbumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get)))
 
   private def get[T](t: T,
-                     reconciler: T => Future[(Option[ReconID], Boolean)],
+                     reconciler: Retriever[T, (Option[ReconID], Boolean)],
                      linkExtractor: ExternalLinkProvider): Future[Traversable[ExternalLink]] =
     reconciler(t)
       .filterWith(_._1.isDefined, s"Couldn't reconcile <$t>")

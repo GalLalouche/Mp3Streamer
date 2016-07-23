@@ -2,13 +2,14 @@ package backend.mb
 
 import backend.mb.JsonHelper._
 import backend.recon.{Album, Artist, OnlineReconciler, ReconID}
+import backend.storage.Retriever
 import common.rich.RichT._
 import play.api.libs.json._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-class MbAlbumReconciler(artistReconciler: Artist => Future[ReconID])(implicit ec: ExecutionContext) extends OnlineReconciler[Album] {
+class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit ec: ExecutionContext) extends OnlineReconciler[Album] {
   private def parse(js: JsValue, a: Album): Option[ReconID] = {
     js.\("release-groups").as[JsArray].value
         .filter(e => (e \ "primary-type").as[String] == "Album")
