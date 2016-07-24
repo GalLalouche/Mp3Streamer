@@ -12,7 +12,10 @@ import scala.concurrent.Future
 class RefreshableStorageTest extends FreeSpec with MockitoSugar with AuxSpecs with OneInstancePerTest {
   var i = 0
   val freshnessStorage = new FreshnessStorage[String, String](new MemoryBackedLocalStorage)
-  val $ = new RefreshableStorage[String, String](freshnessStorage, e => {  i += 1; Future successful (e.reverse + i)}, Duration.millis(50))
+  val $ =
+    new RefreshableStorage[String, String](freshnessStorage, e => {
+      i += 1; Future successful (e.reverse + i)
+    }, Duration.millis(50))
   "apply" - {
     "no previous value should insert new value in" in {
       freshnessStorage.load("foobar").get shouldReturn None
@@ -30,6 +33,12 @@ class RefreshableStorageTest extends FreeSpec with MockitoSugar with AuxSpecs wi
       $("foobar").get shouldReturn "raboof1"
       freshnessStorage.load("foobar").get.get shouldReturn "raboof1"
       $("foobar").get shouldReturn "raboof1"
+    }
+    "existing value has no datetime" in {
+      freshnessStorage.storeWithoutTimestamp("foobar", "bazqux")
+      println($.needsRefresh("foobar").get)
+      Thread sleep 100
+      $("foobar").get shouldReturn "bazqux"
     }
   }
 }

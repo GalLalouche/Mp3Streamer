@@ -6,11 +6,17 @@ import org.joda.time.DateTime
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class FreshnessStorage[Key, Value](storage: LocalStorage[Key, (Value, DateTime)])
-    (implicit ec: ExecutionContext) extends LocalStorage[Key, Value] {
-  private def now(v: Value): (Value, DateTime) = v -> DateTime.now
-  private def toValue(v: Future[Option[(Value, DateTime)]]) = v.map(_.map(_._1))
-  def freshness(k: Key): Future[Option[(Value, DateTime)]] = storage load k
+/**
+ * Keep a timestamp for every value. If the timestamp does not exist (but the value does), it means
+ * that the value does not need to be updated
+ */
+class FreshnessStorage[Key, Value](storage: LocalStorage[Key, (Value, Option[DateTime])])
+                                  (implicit ec: ExecutionContext) extends LocalStorage[Key, Value] {
+  private def now(v: Value) = v -> Some(DateTime.now)
+  private def toValue(v: Future[Option[(Value, Any)]]) = v.map(_.map(_._1))
+  // 1st option: the data may not be there; 2nd option: it might be there but null
+  def freshness(k: Key): Future[Option[Option[DateTime]]] = storage load k map (_ map (_._2))
+  def storeWithoutTimestamp(k: Key, v: Value) = storage.store(k, v -> None)
   override def store(k: Key, v: Value) =
     storage.store(k, now(v))
   override def load(k: Key): Future[Option[Value]] =
