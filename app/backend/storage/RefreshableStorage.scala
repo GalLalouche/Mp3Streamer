@@ -15,7 +15,7 @@ class RefreshableStorage[Key, Value](freshnessStorage: FreshnessStorage[Key, Val
         .map(_.forall(_._2.mapTo(age).isLongerThan(maxAge)))
   private def refresh(k: Key): Future[Value] =
     for (v <- onlineRetriever(k);
-         _ <- freshnessStorage.store(k, v))
+         _ <- freshnessStorage.forceStore(k, v))
       yield v
   
   override def apply(k: Key): Future[Value] =

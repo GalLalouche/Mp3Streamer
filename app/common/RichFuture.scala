@@ -12,7 +12,7 @@ object RichFuture {
       if (p(e))
         $
       else
-        Future.failed(new NoSuchElementException(message(e)))
+        Future failed new NoSuchElementException(message(e))
     })
     def get: T = Await.result($, Duration.Inf)
     // like recover, but doesn't care about the failure
