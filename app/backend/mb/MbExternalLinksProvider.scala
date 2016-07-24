@@ -19,9 +19,9 @@ class MbExternalLinksProvider(implicit c: Configuration) extends ExternalLinksPr
   private val albumReconciler =
     new ReconcilerCacher[Album](new AlbumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get)))
 
-  private def get[T](t: T,
+  private def get[T <: Reconcilable](t: T,
                      reconciler: Retriever[T, (Option[ReconID], Boolean)],
-                     linkExtractor: ExternalLinkProvider): Future[Traversable[ExternalLink]] =
+                     linkExtractor: ExternalLinkProvider[T]): Future[Traversable[ExternalLink[T]]] =
     reconciler(t)
       .filterWith(_._1.isDefined, s"Couldn't reconcile <$t>")
       .map(_._1.get)

@@ -9,7 +9,7 @@ abstract class SlickReconStorage[K <: Reconcilable](implicit c: Configuration,
                                                     m: Manifest[K]) extends ReconStorage[K]()(c.ec) {
   import c.driver.api._
   import c.ec
-  
+
   private class Rows(tag: Tag) extends Table[(String, Option[String], Boolean)](tag, m.runtimeClass.getSimpleName.replaceAll("\\$", "") + "S") {
     def name = column[String]("KEY", O.PrimaryKey)
     def reconId = column[Option[String]]("RECON_ID")
