@@ -14,4 +14,5 @@ class MemoryBackedLocalStorage[Key, Value] extends LocalStorage[Key, Value] {
     }
   override def load(k: Key): Future[Option[Value]] = Future successful map.get(k)
   def get(k: Key): Option[Value] = load(k).value.get.get
+  override def utils = ???
 }

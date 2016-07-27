@@ -19,6 +19,7 @@ class LocalStorageTest extends FreeSpec with MockitoSugar with OneInstancePerTes
       Future successful Unit
     }
     override def load(k: Int): Future[Option[Int]] = Future successful existingValues.get(k)
+    override def utils = ???
   }
   "store" - {
     "has existing value returns false" in {

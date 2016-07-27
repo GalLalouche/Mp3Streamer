@@ -1,4 +1,5 @@
 package backend
+
 import models.MusicFinder
 import slick.driver.{H2Driver, JdbcProfile}
 
@@ -11,6 +12,7 @@ object TestConfiguration extends Configuration {
   }
 
   override implicit val driver: JdbcProfile = H2Driver
-  override implicit val db  = ???
-  override implicit val mf: MusicFinder = ???
+  override implicit val db: driver.backend.DatabaseDef =
+    driver.api.Database.forURL("jdbc:h2:file:./data/testing", driver = "org.H2.JDBC")
+  override implicit val mf: MusicFinder = null
 }
