@@ -19,7 +19,7 @@ object ApplicationBuild extends Build {
       "io.reactivex" %% "rxscala" % "0.26.2",
       "org.apache.commons" % "commons-io" % "1.3.2",
       "org.jsoup" % "jsoup" % "1.8.3",
-      "org.me" %% "scalacommon" % "1.0",
+      "org.me" %% "scalacommon" % "1.0" changing(),
       "org.mockito" % "mockito-all" % "1.9.5" % "test",
       "org.scala-js" %% "scalajs-library" % "0.6.8",
       "org.scala-lang" % "scala-actors" % "2.11.0",
