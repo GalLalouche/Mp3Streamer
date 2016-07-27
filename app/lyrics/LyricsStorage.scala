@@ -1,7 +1,8 @@
 package lyrics
 
 import backend.Configuration
-import backend.storage.LocalStorageTemplate
+import backend.storage.{LocalStorageTemplate, LocalStorageUtils, SlickLocalStorageUtils}
+import common.RichFuture._
 import models.Song
 
 import scala.concurrent.Future
@@ -18,16 +19,16 @@ private class LyricsStorage(implicit c: Configuration) extends LocalStorageTempl
     def * = (song, source, lyrics)
   }
   private def normalize(s: Song): String = s"${s.artistName} - ${s.title}"
-  private val lyrics = TableQuery[LyricsTable]
+  private val rows = TableQuery[LyricsTable]
   override protected def internalForceStore(s: Song, l: Lyrics) = {
     val (source, content) = l match {
       case Instrumental(source) => source -> None
       case HtmlLyrics(source, html) => source -> Some(html)
     }
-    db.run(lyrics.forceInsert(normalize(s), source, content)).map(e => ())
+    db.run(rows.forceInsert(normalize(s), source, content)).map(e => ())
   }
   override def load(s: Song): Future[Option[Lyrics]] =
-    db.run(lyrics
+    db.run(rows
         .filter(_.song === normalize(s))
         .map(e => e.source -> e.lyrics)
         .result)
@@ -35,4 +36,5 @@ private class LyricsStorage(implicit c: Configuration) extends LocalStorageTempl
           case None => Instrumental(e._1)
           case Some(content) => HtmlLyrics(e._1, content)
         }))
+  override def utils: LocalStorageUtils = SlickLocalStorageUtils(c)(rows)
 }

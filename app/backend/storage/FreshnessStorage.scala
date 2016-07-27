@@ -23,4 +23,5 @@ class FreshnessStorage[Key, Value](storage: LocalStorage[Key, (Value, Option[Dat
     storage.load(k) |> toValue
   override def forceStore(k: Key, v: Value): Future[Option[Value]] =
     storage.forceStore(k, now(v)) |> toValue
+  override def utils: LocalStorageUtils = storage.utils
 }
