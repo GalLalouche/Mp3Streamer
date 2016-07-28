@@ -8,5 +8,5 @@ object StandaloneConfig extends Configuration {
   override implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   override implicit val driver: JdbcProfile = SQLiteDriver
   override implicit val db = driver.api.Database.forURL("jdbc:sqlite:d:/media/music/MBRecon.sqlite", driver = "org.sqlite.JDBC")
-  override implicit val mf: MusicFinder = RealLocations
+  override implicit lazy val mf: MusicFinder = RealLocations
 }
