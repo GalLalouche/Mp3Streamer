@@ -1,6 +1,8 @@
 package mains.cover
 
-import scala.concurrent.{ExecutionContext, Lock}
+import java.util.concurrent.Semaphore
+
+import scala.concurrent.ExecutionContext
 import scala.swing.event.MouseClicked
 import scala.swing.{Button, GridPanel, Label, TextArea}
 
@@ -13,8 +15,7 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
     thread.close()
   }
   private val thread = new DelayedThread("Image placer")
-  private val waitForNextClick = new Lock
-  waitForNextClick.available = false
+  private val waitForNextClick = new Semaphore(0)
   private var realSize = 0
   def start() {
     def createImagePanel(image: FolderImage) =

@@ -29,8 +29,7 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: Jsonabl
   }
   def indexAll(): Observable[IndexUpdate] = {
     import common.concurrency._
-    def aux(obs: Observer[IndexUpdate]): Subscription = {
-      val s = Subscription(???)
+    def aux(obs: Observer[IndexUpdate]) {
       val updateQueue = Executors.newFixedThreadPool(1)
       MetadataCacher.this.queue.submit(() => {
           val dirs: GenSeq[DirectoryRef] = mf.albumDirs
@@ -46,9 +45,8 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: Jsonabl
           saver.save($.artists)
           obs.onCompleted()
         })
-      s
     }
-    Observable create aux
+    Observable apply aux
   }
 }
 
