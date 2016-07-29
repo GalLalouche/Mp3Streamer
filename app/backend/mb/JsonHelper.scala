@@ -30,9 +30,9 @@ private object JsonHelper {
     }
   }
   
-  private implicit val system = ActorSystem()
-  private implicit val materializer = ActorMaterializer()
   def getJson(method: String, other: (String, String)*)(implicit ec: ExecutionContext): Future[JsValue] = {
+    implicit val system = ActorSystem()
+    implicit val materializer = ActorMaterializer()
     val webServiceRequest = AhcWSClient()
         .url("http://musicbrainz.org/ws/2/" + method)
         .withQueryString(("fmt", "json")).withQueryString(other: _*)

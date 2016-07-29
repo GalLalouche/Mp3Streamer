@@ -13,6 +13,6 @@ object TestConfiguration extends Configuration {
 
   override implicit val driver: JdbcProfile = H2Driver
   override implicit val db: driver.backend.DatabaseDef =
-    driver.api.Database.forURL("jdbc:h2:file:./data/testing", driver = "org.H2.JDBC")
+    driver.api.Database.forURL("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.H2.JDBC")
   override implicit val mf: MusicFinder = null
 }

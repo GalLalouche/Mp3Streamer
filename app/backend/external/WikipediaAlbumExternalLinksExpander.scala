@@ -10,7 +10,7 @@ import org.jsoup.nodes.Document
 
 import scala.collection.JavaConversions._
 
-object WikipediaAlbumExternalLinksExpender extends ExternalLinkExpender[Album](Host.Wikipedia) {
+object WikipediaAlbumExternalLinksExpander extends ExternalLinkExpander[Album](Host.Wikipedia) {
   val re = Pattern compile "http://www.allmusic.com/album/[a-zA-Z\\-0-9]+"
   private def extractAllMusicLink(d: Document): ExternalLink[Album] =
     d.select("a")
@@ -20,7 +20,7 @@ object WikipediaAlbumExternalLinksExpender extends ExternalLinkExpender[Album](H
         .mapTo(Url)
         .mapTo(url => ExternalLink(url, Host("allmusic", url.host)))
 
-  override def apply(d: Document): Traversable[ExternalLink[Album]] = {
+  override def apply(d: Document): Links[Album] = {
     List(extractAllMusicLink(d))
   }
 }

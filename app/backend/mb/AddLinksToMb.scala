@@ -1,7 +1,7 @@
 package backend.mb
 
 import backend.StandaloneConfig.ec
-import backend.external.{AlbumLinksExpender, ExternalLink}
+import backend.external.{AlbumLinksExpander, ExternalLink}
 import backend.recon.{Album, ReconID}
 import common.rich.RichT._
 import common.RichFuture._
@@ -13,7 +13,7 @@ object AddLinksToMb {
   type Links = Traversable[ExternalLink[Album]]
   type FLinks = Future[Links]
   private val externalLinkProvider = new AlbumLinkExtractor()
-  val expender = new AlbumLinksExpender()
+  val expender = new AlbumLinksExpander()
   def reconcileAlbum(a: Album) = "8a061d0e-fa0c-4571-91ff-8bc3911b6428" |> ReconID
   def getExistingLinks(a: Album): FLinks = a |> reconcileAlbum |> externalLinkProvider
   def expend(existing: Links): FLinks = expender(existing)
