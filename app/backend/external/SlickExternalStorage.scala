@@ -9,10 +9,8 @@ import org.joda.time.DateTime
 import scala.concurrent.Future
 
 class SlickExternalStorage[K <: Reconcilable](implicit c: Configuration,
-                                              m: Manifest[K]) extends ExternalStorage[K]()(c.ec) {
-  
+                                              m: Manifest[K]) extends ExternalStorage[K] {
   import c.driver.api._
-  import c.ec
   
   private object Serializable extends StringSerializable[ExternalLink[K]] {
     override def encode(e: ExternalLink[K]): String =

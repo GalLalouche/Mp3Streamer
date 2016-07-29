@@ -2,16 +2,15 @@ package lyrics
 
 import backend.Configuration
 import backend.storage.{LocalStorageTemplate, LocalStorageUtils, SlickLocalStorageUtils}
-import common.RichFuture._
 import models.Song
 
 import scala.concurrent.Future
 
-private class LyricsStorage(implicit c: Configuration) extends LocalStorageTemplate[Song, Lyrics]()(c.ec) {
-  // instrumental songs have NULL in lyrics
-  import c._
+private class LyricsStorage(implicit c: Configuration) extends LocalStorageTemplate[Song, Lyrics] {
   import c.driver.api._
   private val db = c.db
+  
+  // instrumental songs have NULL in lyrics
   private class LyricsTable(tag: Tag) extends Table[(String, String, Option[String])](tag, "LYRICS") {
     def song = column[String]("SONG", O.PrimaryKey)
     def source = column[String]("SOURCE")

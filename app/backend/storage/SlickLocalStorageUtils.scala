@@ -8,8 +8,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object SlickLocalStorageUtils {
   def toBoolean(f: Future[_])(implicit ec: ExecutionContext): Future[Boolean] = f.map(e => true) orElse false
-  def apply[T](c: Configuration) = {
-    import c._
+  def apply[T](implicit c: Configuration) = {
     import c.driver.api._
     val db = c.db
     new {

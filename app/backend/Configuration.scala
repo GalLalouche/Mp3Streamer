@@ -5,8 +5,10 @@ import slick.driver.JdbcProfile
 
 import scala.concurrent.ExecutionContext
 
-trait Configuration {
+trait Configuration extends ExecutionContext {
   implicit val ec: ExecutionContext
+  override def execute(runnable: Runnable): Unit = ec execute runnable
+  override def reportFailure(cause: Throwable): Unit = ec reportFailure cause
   implicit val driver: JdbcProfile
   implicit val db: driver.backend.DatabaseDef
   implicit val mf: MusicFinder

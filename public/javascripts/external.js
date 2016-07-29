@@ -6,7 +6,7 @@ $(function () {
       const links = metaContent[name]
       const ul = $(`<ul>${name}</ul>`)
       for (const e in links)
-        ul.append($(`<li style="list-style-image: url('assets/images/${e}_icon.png')"><a href=${links[e]}>${e}</a></li>`))
+        ul.append($(`<li style="list-style-image: url('assets/images/${e}_icon.png')"><a target=_blank href=${links[e]}>${e}</a></li>`))
       external.append(ul)
     }
     addLinks("artist")

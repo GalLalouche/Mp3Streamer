@@ -14,7 +14,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object ArtistReconFiller {
   private implicit val config = StandaloneConfig
-  import config._
   
   val reconciler = new ReconcilerCacher[Artist](new ArtistReconStorage(), new MbArtistReconciler())
   def fill(mf: MusicFinder)(implicit ec: ExecutionContext) {

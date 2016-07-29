@@ -1,4 +1,5 @@
 package backend
+
 import models.{MusicFinder, RealLocations}
 import slick.driver.{JdbcProfile, SQLiteDriver}
 

@@ -10,8 +10,6 @@ import models.Song
 import scala.concurrent.Future
 
 class LyricsCache(implicit c: Configuration) extends Retriever[Song, Lyrics] {
-  import c._
-  
   private val r = new OnlineRetrieverCacher[Song, Lyrics](
     new LyricsStorage(), new CompositeLyricsRetriever(new LyricsWikiaRetriever(), new DarkLyricsRetriever()))
   override def apply(v1: Song): Future[Lyrics] = r(v1)
@@ -19,7 +17,6 @@ class LyricsCache(implicit c: Configuration) extends Retriever[Song, Lyrics] {
 
 object LyricsCache {
   private implicit val c = StandaloneConfig
-  import c._
   
   def main(args: Array[String]) {
     println(new LyricsCache().apply(Song(new File( """D:\Media\Music\Rock\Hard-Rock\Led Zeppelin\1971 Led Zeppelin IV\02 - Rock and Roll.mp3"""))).get)

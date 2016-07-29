@@ -4,7 +4,7 @@ import backend.Configuration
 import backend.external._
 import backend.recon.Reconcilable._
 import backend.recon._
-import backend.storage.{FreshnessStorage, OnlineRetrieverCacher, RefreshableStorage, Retriever}
+import backend.storage.{FreshnessStorage, RefreshableStorage, Retriever}
 import common.RichFuture._
 import models.Song
 import org.joda.time.Duration
@@ -12,8 +12,6 @@ import org.joda.time.Duration
 import scala.concurrent.Future
 
 class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song, ExternalLinks] {
-  import c._
-  
   private def createExternalProvider[T <: Reconcilable : Manifest](reconciler: Retriever[T, (Option[ReconID], Boolean)],
                                                         provider: Retriever[ReconID, Links[T]],
                                                         expander: Retriever[Links[T], Links[T]]): Retriever[T, Links[T]] =
