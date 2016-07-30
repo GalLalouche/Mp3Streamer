@@ -6,6 +6,8 @@ import common.RichFuture._
 import common.rich.RichT._
 
 import scala.concurrent.Future
+import scalaz._
+import Scalaz._
 
 abstract class SlickReconStorage[K <: Reconcilable](implicit c: Configuration,
                                                     m: Manifest[K]) extends ReconStorage[K] {
@@ -23,7 +25,7 @@ abstract class SlickReconStorage[K <: Reconcilable](implicit c: Configuration,
     store(k, id.map(ReconID.apply) -> (false == id.isDefined))
   /** If an existing value exists, override it. */
   override protected def internalForceStore(k: K, value: (Option[ReconID], Boolean)): Future[Unit] =
-  db.run(rows.forceInsert(k.normalize, value._1.map(_.id), value._2)).map(e => Unit)
+  db.run(rows.forceInsert(k.normalize, value._1.map(_.id), value._2)).>|(true)
   /** Returns the value associated with the key, if one exists, or None. */
   override def load(k: K): Future[Option[(Option[ReconID], Boolean)]] =
   db.run(rows

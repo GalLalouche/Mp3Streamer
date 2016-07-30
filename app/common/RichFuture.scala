@@ -8,12 +8,11 @@ object RichFuture {
     // gives better error message when the filter fails
     def filterWith(p: T => Boolean, message: String): Future[T] = filterWithMessage(p, e => message)
     // implicits suck with overloads it seems
-    def filterWithMessage(p: T => Boolean, message: T => String): Future[T] = $.flatMap(e => {
+    def filterWithMessage(p: T => Boolean, message: T => String): Future[T] = $.flatMap(e =>
       if (p(e))
         $
       else
-        Future failed new NoSuchElementException(message(e))
-    })
+        Future failed new NoSuchElementException(message(e)))
     def get: T = Await.result($, Duration.Inf)
     // like recover, but doesn't care about the failure
     def orElse(t: => T): Future[T] = $.recover { case e => t }

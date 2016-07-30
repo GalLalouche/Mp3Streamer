@@ -5,9 +5,12 @@ import common.RichFuture._
 import slick.jdbc.meta.MTable
 
 import scala.concurrent.{ExecutionContext, Future}
+import scalaz.Scalaz._
+import scalaz._
 
 object SlickLocalStorageUtils {
-  def toBoolean(f: Future[_])(implicit ec: ExecutionContext): Future[Boolean] = f.map(e => true) orElse false
+  private def toBoolean(f: Future[_])(implicit ec: ExecutionContext): Future[Boolean] =
+    f.>|(true) orElse false
   def apply[T](implicit c: Configuration) = {
     import c.driver.api._
     val db = c.db

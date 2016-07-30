@@ -1,6 +1,8 @@
 package backend.storage
 
 import common.RichFuture._
+import scalaz._
+import Scalaz._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -16,6 +18,5 @@ class OnlineRetrieverCacher[Key, Value](
       .ifNoneTry(onlineRetriever(k).flatMap(v =>
         localStorage.store(k, v)
             .filter(identity)
-            .map(e => v))
-      )
+            .>|(v)))
 }
