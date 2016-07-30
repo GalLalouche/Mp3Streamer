@@ -13,7 +13,6 @@ import Scalaz._
 class SlickExternalStorage[K <: Reconcilable](implicit c: Configuration,
                                               m: Manifest[K]) extends ExternalStorage[K] {
   import c.driver.api._
-  import c.ec
   
   private object Serializable extends StringSerializable[ExternalLink[K]] {
     override def encode(e: ExternalLink[K]): String =
@@ -35,7 +34,9 @@ class SlickExternalStorage[K <: Reconcilable](implicit c: Configuration,
   private def toString(els: Links[K]): String = els map Serializable.encode mkString ";;"
   private def fromString(s: String): Links[K] = s split ";;" filterNot (_.isEmpty) map Serializable.decode
   private def store(k: K, els: Links[K], t: Option[Long]): Future[Unit] =
-    db.run(rows.forceInsert((k.normalize, toString(els), t))).>|(Unit)
+    db.run(rows
+        .forceInsert(k.normalize, toString(els), t))
+        .>|(Unit)
   override def load(k: K): Future[Option[(Links[K], Option[DateTime])]] =
     db.run(rows
                .filter(_.name === k.normalize)

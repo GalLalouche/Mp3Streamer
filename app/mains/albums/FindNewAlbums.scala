@@ -9,7 +9,6 @@ import models.RealLocations
 
 object FindNewAlbums {
   private implicit val config = StandaloneConfig
-  import config._
   def main(args: Array[String]) {
     val $ = new NewAlbumsRetriever(new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()), new RealLocations {
       override val subDirs: List[String] = List("Rock", "Metal")

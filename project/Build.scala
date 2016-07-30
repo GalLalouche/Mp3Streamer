@@ -27,7 +27,6 @@ object ApplicationBuild extends Build {
       "org.scalacheck" %% "scalacheck" % "1.12.1" % "test",
       "org.scalatest" %% "scalatest" % "2.2.6",
       "org.scalaz" %% "scalaz-core" % "7.2.0",
-      "org.slf4j" % "slf4j-nop" % "1.6.4",
       "org.xerial" % "sqlite-jdbc" % "3.7.2"
     ),
     // Add your own project settings here
