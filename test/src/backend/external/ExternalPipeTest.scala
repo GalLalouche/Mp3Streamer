@@ -15,11 +15,15 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
   val newLink: ExternalLink[Album] = ExternalLink(Url("new"), Host("newhost", Url("newhosturl")))
   val expectedNewLink: ExternalLink[Album] = ExternalLink(Url("new"), Host("newhost*", Url("newhosturl")))
   "should add * to new links" in {
-    val $ = new ExternalPipe[Album](x => Future successful ReconID("foobar"), x => Future successful List(existingLink), x => Future successful List(newLink))
+    val $ = new ExternalPipe[Album](x => Future successful ReconID("foobar"),
+      x => Future successful List(existingLink),
+      x => Future successful List(newLink))
     $(null).get shouldReturn Set(existingLink, expectedNewLink)
   }
   "should not add * to existing links" in {
-    val $ = new ExternalPipe[Album](x => Future successful ReconID("foobar"), x => Future successful List(existingLink), x => Future successful List(newLink, existingLink))
+    val $ = new ExternalPipe[Album](x => Future successful ReconID("foobar"),
+      x => Future successful List(existingLink),
+      x => Future successful List(newLink, existingLink))
     $(null).get shouldReturn Set(existingLink, expectedNewLink)
   }
 }

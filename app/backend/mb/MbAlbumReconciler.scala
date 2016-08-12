@@ -10,13 +10,12 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit ec: ExecutionContext) extends OnlineReconciler[Album] {
-  private def parse(js: JsValue, a: Album): Option[ReconID] = {
+  private def parse(js: JsValue, a: Album): Option[ReconID] =
     js.\("release-groups").as[JsArray].value
         .filter(e => e.has("primary-type"))
         .filter(e => (e \ "primary-type").as[String] == "Album")
         .find(e => e.\("title").as[String].toLowerCase == a.title.toLowerCase)
         .map(_.\("id").get.as[String]).map(ReconID)
-  }
   
   override def apply(a: Album): Future[Option[ReconID]] =
     artistReconciler(a.artist)
