@@ -12,7 +12,6 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
   val openBrowserButton: Button = Button.apply("Fuck it, I'll do it myself!") {
     AsyncFolderImagePanel.this.publish(OpenBrowser)
     this.close()
-    thread.close()
   }
   private val thread = new DelayedThread("Image placer")
   private val waitForNextClick = new Semaphore(0)
@@ -30,14 +29,18 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
       () => {
         if (contents.isEmpty) {
           realSize = 0
-          for (i <- 0 until rows * cols)
-            contents += new TextArea("Placeholder for image #" + i)
+          (0 until rows * cols).foreach(i => contents += new TextArea("Placeholder for image #" + i))
           contents += openBrowserButton
           contents += Button.apply("Show me more")(waitForNextClick.release())
+          Thread sleep 100
         }
         else if (realSize < rows * cols) {
           val currentIndex = realSize
-          imagesSupplier.next().map(createImagePanel).foreach(contents.update(currentIndex, _))
+          imagesSupplier.next().map(createImagePanel).foreach{e =>
+            contents.synchronized {
+              contents.update(currentIndex, e)
+            }
+          }
           realSize += 1
         }
         else {
@@ -52,5 +55,7 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
   override def close() = {
     thread.close()
     contents.clear()
+    super.repaint()
+    visible = false
   }
 }

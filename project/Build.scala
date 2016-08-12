@@ -23,7 +23,7 @@ object ApplicationBuild extends Build {
       "org.mockito" % "mockito-all" % "1.9.5" % "test",
       "org.scala-js" %% "scalajs-library" % "0.6.8",
       "org.scala-lang" % "scala-actors" % "2.11.0",
-      "org.scala-lang" % "scala-swing" % "2.10.6",
+      "org.scala-lang" % "scala-swing" % "2.11.0-M7",
       "org.scalacheck" %% "scalacheck" % "1.12.1" % "test",
       "org.scalatest" %% "scalatest" % "2.2.6",
       "org.scalaz" %% "scalaz-core" % "7.2.0",
