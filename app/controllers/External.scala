@@ -12,6 +12,7 @@ object External extends Controller {
   private val external = new MbExternalLinksProvider
   
   private val set = Set("allmusic", "wikipedia", "lastfm", "metalarchives", "musicbrainz", "facebook")
+    .flatMap(e => List(e, e + "*"))
   private def toJson(e: ExternalLink[_]): (String, JsValueWrapper) = e.host.name -> e.link.address
   private def toJson(e: Traversable[ExternalLink[_]]): JsObject = e
       .filter(e => set.contains(e.host.name))
