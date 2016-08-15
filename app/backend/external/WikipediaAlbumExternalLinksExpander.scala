@@ -1,7 +1,5 @@
 package backend.external
 
-import java.util.regex.Pattern
-
 import backend.Url
 import backend.recon.Album
 import common.rich.RichT._
@@ -9,15 +7,23 @@ import org.jsoup.nodes.Document
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
+import common.rich.primitives.RichBoolean._
 
 private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext) extends ExternalLinkExpander[Album](Host.Wikipedia) {
-  val re = Pattern compile "http://www.allmusic.com/album/[a-zA-Z\\-0-9]+"
+  private val re = "http://www.allmusic.com/album/([a-zA-Z\\-0-9]+)".r
 
-  override def aux(d: Document): Links[Album] =
-    d.select("a")
+  private def extractLink(s: String): Option[String] = {
+    val $ = re.findAllIn(s)
+    ($.nonEmpty && s.contains("-")).ifTrue($ group 1)
+  }
+
+  override def aux(d: Document): Links[Album] = d
+      .select("a")
       .map(_.attr("href"))
-      .find(re.matcher(_).matches)
+      .flatMap(extractLink)
+      .filter(_ contains "-")
       .map(_
-        .mapTo(Url)
-        .mapTo(url => ExternalLink[Album](url, Host("allmusic", url.host))))
+          .mapTo("http://www.allmusic.com/album/" + _)
+          .mapTo(Url(_))
+          .mapTo(url => ExternalLink[Album](url, Host("allmusic", url.host))))
 }

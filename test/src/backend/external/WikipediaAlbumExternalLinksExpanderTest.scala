@@ -10,7 +10,7 @@ import org.scalatest.FreeSpec
 class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
   private implicit val config = TestConfiguration
 
-  def getDocument(s: String) = Jsoup.parse(getResourceFile(s).readAll)
+  private def getDocument(s: String) = Jsoup.parse(getResourceFile(s).readAll)
 
   "extract allmusic link" in {
     val allMusicLink =
@@ -19,6 +19,14 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
         .map(_.link.address)
         .single
     allMusicLink shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
+  }
+  "extract allmusic2 link" in {
+    val allMusicLink =
+      new WikipediaAlbumExternalLinksExpander().aux(getDocument("allmusic_link_2.html"))
+          .filter(_.host.name == "allmusic")
+          .map(_.link.address)
+          .single
+    allMusicLink shouldReturn "http://www.allmusic.com/album/the-metal-opera-r540587"
   }
   "succeed even if there is no link" in {
     new WikipediaAlbumExternalLinksExpander().aux(getDocument("no_link.html")) shouldReturn Nil
