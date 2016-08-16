@@ -34,4 +34,10 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
       x => Future successful List(existingLink, newLinkButWithSameHost))
     $(null).get shouldReturn Set(existingLink)
   }
+  "should not fail when there are multiple entries with the same host in existing" in {
+    val $ = new ExternalPipe[Album](x => Future successful ReconID("foobar"),
+      x => Future successful List(existingLink, existingLink.copy(link = Url("existing2"))),
+      x => Future successful List(newLink, existingLink))
+    $(null).get.size shouldReturn 3
+  }
 }
