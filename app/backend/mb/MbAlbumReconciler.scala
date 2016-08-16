@@ -11,7 +11,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit ec: ExecutionContext) extends OnlineReconciler[Album] {
   private def parse(js: JsValue, a: Album): Option[ReconID] =
-    js.\("release-groups").as[JsArray].value
+    js.log(Json.prettyPrint).\("release-groups").as[JsArray].value
         .filter(e => e.has("primary-type"))
         .filter(e => (e \ "primary-type").as[String] == "Album")
         .find(e => e.\("title").as[String].toLowerCase == a.title.toLowerCase)
@@ -19,14 +19,14 @@ class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit e
   
   override def apply(a: Album): Future[Option[ReconID]] =
     artistReconciler(a.artist)
-        .flatMap(artistId => retry(() => getJson("release-group/", "query" -> a.title, "artist" -> artistId.id), 5, 2 seconds))
+        .flatMap(artistId => retry(() => getJson("release-group/", "artist" -> artistId.id), 5, 2 seconds))
         .map(parse(_, a))
 }
 
 object MbAlbumReconciler {
   def main(args: Array[String]) {
-    val $ = new MbAlbumReconciler(e => "0a389268-6fd8-4f8c-ab6e-0dba5ecec66b" |> ReconID |> Future.successful)(ExecutionContext.Implicits.global)
-    val f = $(Album("Flower Power", "Foobar" |> Artist))
+    val $ = new MbAlbumReconciler(e => "e571db0f-fcbc-4ede-b5da-57b093b263e6" |> ReconID |> Future.successful)(ExecutionContext.Implicits.global)
+    val f = $(Album("Treehouse", "Foobar" |> Artist))
     Await.result(f, 10 seconds).log()
   }
 }
