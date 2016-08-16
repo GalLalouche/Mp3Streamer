@@ -26,4 +26,12 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
       x => Future successful List(newLink, existingLink))
     $(null).get shouldReturn Set(existingLink, expectedNewLink)
   }
+  "should ignore different links from the same host" in {
+    val newLinkButWithSameHost: ExternalLink[Album] =
+      ExternalLink(Url("existing2"), Host("host", Url("hosturl")))
+    val $ = new ExternalPipe[Album](x => Future successful ReconID("foobar"),
+      x => Future successful List(existingLink),
+      x => Future successful List(existingLink, newLinkButWithSameHost))
+    $(null).get shouldReturn Set(existingLink)
+  }
 }
