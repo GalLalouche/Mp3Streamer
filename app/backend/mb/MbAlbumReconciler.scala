@@ -11,7 +11,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit ec: ExecutionContext) extends OnlineReconciler[Album] {
   private def parse(js: JsValue, a: Album): Option[ReconID] =
-    js.log(Json.prettyPrint).\("release-groups").as[JsArray].value
+    js.\("release-groups").as[JsArray].value
         .filter(e => e.has("primary-type"))
         .filter(e => (e \ "primary-type").as[String] == "Album")
         .find(e => e.\("title").as[String].toLowerCase == a.title.toLowerCase)
