@@ -13,7 +13,7 @@ class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit e
   private def parse(js: JsValue, a: Album): Option[ReconID] =
     js.\("release-groups").as[JsArray].value
         .filter(e => e.has("primary-type"))
-        .filter(e => (e \ "primary-type").as[String] == "Album")
+        .filter(e => (e \ "primary-type").as[String].mapTo(t => t == "Album" || t == "EP"))
         .find(e => e.\("title").as[String].toLowerCase == a.title.toLowerCase)
         .map(_.\("id").get.as[String]).map(ReconID)
   
@@ -25,8 +25,8 @@ class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit e
 
 object MbAlbumReconciler {
   def main(args: Array[String]) {
-    val $ = new MbAlbumReconciler(e => "e571db0f-fcbc-4ede-b5da-57b093b263e6" |> ReconID |> Future.successful)(ExecutionContext.Implicits.global)
-    val f = $(Album("Treehouse", "Foobar" |> Artist))
+    val $ = new MbAlbumReconciler(e => "5b9890b9-a2e8-4768-ad70-9f28bb81fc00" |> ReconID |> Future.successful)(ExecutionContext.Implicits.global)
+    val f = $(Album("Now That You're Leaving", "Foobar" |> Artist))
     Await.result(f, 10 seconds).log()
   }
 }
