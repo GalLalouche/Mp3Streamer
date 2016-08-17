@@ -2,13 +2,14 @@ package backend.mb
 
 import backend.Url
 import backend.external.{ExternalLink, Host}
+import backend.mb.{AlbumLinkExtractor, ArtistLinkExtractor}
 import backend.recon.{Album, Artist, ReconID}
 import common.AuxSpecs
-import org.jsoup.nodes.Document
-import org.scalatest.FreeSpec
+import common.RichFuture._
 import common.rich.path.RichFile._
 import org.jsoup.Jsoup
-import common.RichFuture._
+import org.jsoup.nodes.Document
+import org.scalatest.FreeSpec
 
 import scala.concurrent.Future
 

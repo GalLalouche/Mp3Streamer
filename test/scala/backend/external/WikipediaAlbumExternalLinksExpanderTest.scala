@@ -1,6 +1,7 @@
 package backend.external
 
 import backend.TestConfiguration
+import backend.recon.Album
 import common.AuxSpecs
 import common.rich.collections.RichTraversableOnce._
 import common.rich.path.RichFile._
@@ -12,21 +13,17 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
 
   private def getDocument(s: String) = Jsoup.parse(getResourceFile(s).readAll)
 
-  "extract allmusic link" in {
-    val allMusicLink =
-      new WikipediaAlbumExternalLinksExpander().aux(getDocument("allmusic_link.html"))
+  def get(s: String): String =
+    new WikipediaAlbumExternalLinksExpander().aux(getDocument(s))
         .filter(_.host.name == "allmusic")
         .map(_.link.address)
         .single
-    allMusicLink shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
+
+  "extract allmusic link" in {
+    get("allmusic_link.html") shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
   }
   "extract allmusic2 link" in {
-    val allMusicLink =
-      new WikipediaAlbumExternalLinksExpander().aux(getDocument("allmusic_link_2.html"))
-          .filter(_.host.name == "allmusic")
-          .map(_.link.address)
-          .single
-    allMusicLink shouldReturn "http://www.allmusic.com/album/the-metal-opera-r540587"
+    get("allmusic_link_2.html") shouldReturn "http://www.allmusic.com/album/the-metal-opera-r540587"
   }
   "succeed even if there is no link" in {
     new WikipediaAlbumExternalLinksExpander().aux(getDocument("no_link.html")) shouldReturn Nil
