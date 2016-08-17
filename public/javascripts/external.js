@@ -5,10 +5,13 @@ $(function () {
     function addLinks(name) {
       const links = metaContent[name]
       const ul = $(`<ul>${name}</ul>`)
-      for (const e in links)
-        ul.append($(`<li style="list-style-image: url('assets/images/${e}_icon.png')"><a target=_blank href=${links[e]}>${e}</a></li>`))
+      for (const e in links) {
+        const hostName = e.replace(/\*$/g, "") // remove trailing "*" in order to fetch the correct icon
+        ul.append($(`<li style="list-style-image: url('assets/images/${hostName}_icon.png')"><a target=_blank href=${links[e]}>${e}</a></li>`))
+      }
       external.append(ul)
     }
+
     addLinks("artist")
     addLinks("album")
   }
