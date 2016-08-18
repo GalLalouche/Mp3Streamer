@@ -19,14 +19,15 @@ class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit e
   
   override def apply(a: Album): Future[Option[ReconID]] =
     artistReconciler(a.artist)
-        .flatMap(artistId => retry(() => getJson("release-group/", "artist" -> artistId.id), 5, 2 seconds))
+        .flatMap(artistId => retry(() =>
+          getJson("release-group/", "limit" -> "100", "artist" -> artistId.id), 5, 2 seconds))
         .map(parse(_, a))
 }
 
 object MbAlbumReconciler {
   def main(args: Array[String]) {
-    val $ = new MbAlbumReconciler(e => "5b9890b9-a2e8-4768-ad70-9f28bb81fc00" |> ReconID |> Future.successful)(ExecutionContext.Implicits.global)
-    val f = $(Album("Now That You're Leaving", "Foobar" |> Artist))
+    val $ = new MbAlbumReconciler(e => "134c2392-a02f-4738-9e18-062265363acb" |> ReconID |> Future.successful)(ExecutionContext.Implicits.global)
+    val f = $(Album("The Singularity", "Foobar" |> Artist))
     Await.result(f, 10 seconds).log()
   }
 }
