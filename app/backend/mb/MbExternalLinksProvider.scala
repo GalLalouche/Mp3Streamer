@@ -11,6 +11,8 @@ import models.Song
 import org.joda.time.Duration
 
 import scala.concurrent.Future
+import scalaz._
+import Scalaz._
 
 class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song, ExternalLinks] {
   private def createExternalProvider[T <: Reconcilable : Manifest](
@@ -21,23 +23,33 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
       new FreshnessStorage(new SlickExternalStorage[T]),
       new ExternalPipe[T](
         a => reconciler(a)
-            .filterWith(_._1.isDefined, s"Couldn't reconcile <${a}>")
+            .filterWith(_._1.isDefined, s"Couldn't reconcile <$a>")
             .map(_._1.get),
         provider,
         expander),
       Duration.standardDays(7))
+
   private val artistReconciler =
     new ReconcilerCacher[Artist](new ArtistReconStorage, new MbArtistReconciler)
-  private val artistPipe = createExternalProvider[Artist](artistReconciler, new ArtistLinkExtractor, Future.successful(Nil).const)
   private val albumReconciler =
     new ReconcilerCacher[Album](new AlbumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get)))
-  private val albumPipe = createExternalProvider(albumReconciler, new AlbumLinkExtractor, new AlbumLinksExpander)
-  
-  private def getArtist(a: Artist) = artistPipe(a)
-  private def getAlbum(a: Album) = albumPipe(a)
-  
+
+  private val artistPipe =
+    createExternalProvider[Artist](artistReconciler, new ArtistLinkExtractor, Future.successful(Nil).const)
+
+  private val extractor = new AlbumLinkExtractor
+  private val sameHostExpander = CompositeSameHostExpander.default
+  private def superExtractor(artistLinks: Links[Artist], a: Album): Retriever[Links[Album], Links[Album]] = links => {
+    new AlbumLinksExpander().apply(links).zip(sameHostExpander.apply(artistLinks, a)).map(_.toList.flatten)
+  }
+
+  private def getArtistLinks(a: Artist) = artistPipe(a)
+  private def getAlbumLinks(artistLinks: Links[Artist], a: Album) =
+    createExternalProvider(albumReconciler,
+      extractor,
+      superExtractor(artistLinks, a)).apply(a)
+
   override def apply(s: Song): Future[ExternalLinks] =
-    getArtist(s.artist)
-        .zip(getAlbum(s.release))
-        .map(e => ExternalLinks(e._1, e._2, Nil))
+    for (artistLinks <- getArtistLinks(s.artist); albumLinks <- getAlbumLinks(artistLinks, s.release))
+      yield ExternalLinks(artistLinks, albumLinks, Nil)
 }
