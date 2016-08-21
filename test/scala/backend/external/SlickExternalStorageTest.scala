@@ -1,6 +1,5 @@
-package src.backend.external
+package backend.external
 
-import backend.external.{ExternalLink, Host, SlickExternalStorage}
 import backend.recon.Artist
 import backend.{TestConfiguration, _}
 import common.AuxSpecs

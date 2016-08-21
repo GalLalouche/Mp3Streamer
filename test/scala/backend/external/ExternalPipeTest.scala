@@ -1,14 +1,13 @@
-package src.backend.external
+package backend.external
 
 import backend.TestConfiguration._
 import backend.Url
-import backend.external.{ExternalLink, ExternalPipe, Host}
 import backend.recon.{Album, ReconID}
 import common.AuxSpecs
+import common.RichFuture._
 import org.scalatest.FreeSpec
 
 import scala.concurrent.Future
-import common.RichFuture._
 
 class ExternalPipeTest extends FreeSpec with AuxSpecs {
   val existingLink: ExternalLink[Album] = ExternalLink(Url("existing"), Host("host", Url("hosturl")))
