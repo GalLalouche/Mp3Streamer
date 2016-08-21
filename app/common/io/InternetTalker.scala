@@ -9,11 +9,10 @@ import scala.concurrent.Future
 
 /** Things that talk to the outside world */
 trait InternetTalker {
-  /** Downloads an HTML document */
   def downloadDocument(url: Url): Future[Document]
   /**
-  * Creates an HTTP connection
-  * @param modify modifies the HttpUrlConnection, e.g., to add headers
-*/
-  def httpUrlConnection(url: Url, modify: HttpURLConnection => Unit): Future[HttpURLConnection]
+   * calls HttpURLConnectio#connect(). For testing, might return a new type, e.g., for mocks,
+   * so use the returned object.
+   */
+  def connect(httpURLConnection: HttpURLConnection): Future[HttpURLConnection]
 }

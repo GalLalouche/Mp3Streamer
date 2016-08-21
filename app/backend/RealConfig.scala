@@ -1,4 +1,5 @@
 package backend
+
 import java.net.{HttpURLConnection, URL}
 
 import models.{MusicFinder, RealLocations}
@@ -17,11 +18,8 @@ trait RealConfig extends Configuration {
     Future(Source.fromURL(url.address, "UTF-8"))
         .map(_.mkString)
         .map(Jsoup parse)
-  override def httpUrlConnection(url: Url, modify: (HttpURLConnection) => Unit): Future[HttpURLConnection] =
-    Future(new URL(url.address).openConnection())
-        .map(_.asInstanceOf[HttpURLConnection])
-        .map(e => {
-          modify(e)
-          e
-        })
+  override def connect(http: HttpURLConnection): Future[HttpURLConnection] = Future {
+    http.connect()
+    http
+  }
 }
