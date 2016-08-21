@@ -11,10 +11,6 @@ class MetalArchivesAlbumsFinderTest extends FreeSpec with DocumentSpecs {
     $.aux(getDocument("metal-archives-discography.html"), a)
   }
   "aux" - {
-    "throws exception on wrong artist" in {
-      an[IllegalArgumentException] should be thrownBy $.fromUrl(
-        Url("http://www.metal-archives.com/bands/Cruachan/86"), Album("Let it Bleed", Artist("Rolling Stones")))
-    }
     "return none when there is no matching album" in {
       aux(Album("Let it Bleed", Artist("Cruachan"))) shouldBe 'empty
     }

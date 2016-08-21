@@ -20,17 +20,14 @@ private class MetalArchivesAlbumsFinder(implicit ec: ExecutionContext) extends S
     val address = u.address
     val albumArtistName = a.artist.name
     val urlArtistName = address.split('/').dropRight(1).last
-    require(urlArtistName == albumArtistName,
-      s"Wrong band name; expected $albumArtistName but was $urlArtistName")
     val artistId = address.split('/').last.toInt
     super.fromUrl(Url(s"http://www.metal-archives.com/band/discography/id/$artistId/tab/all"), a)
   }
 }
-
 object MetalArchivesAlbumsFinder {
   def main(args: Array[String]) {
     implicit val c = StandaloneConfig
-    new MetalArchivesAlbumsFinder().fromUrl(Url("http://www.metal-archives.com/bands/Cruachan/86"),
-      Album("Blood for the Blood God", Artist("Cruachan"))).get.log()
+    new MetalArchivesAlbumsFinder().fromUrl(Url("http://www.metal-archives.com/bands/Empyrium/2345"),
+      Album("The turn of the tides", Artist("Empyrium"))).get.log()
   }
 }
