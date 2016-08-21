@@ -12,6 +12,8 @@ import common.rich.primitives.RichBoolean._
 private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext) extends ExternalLinkExpander[Album](Host.Wikipedia) {
   private val re = "http://www.allmusic.com/album/([a-zA-Z\\-0-9]+)".r
 
+private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext, interneter: InternetTalker)
+    extends ExternalLinkExpander[Album](Host.Wikipedia) {
   private def extractLink(s: String): Option[String] = {
     val $ = re.findAllIn(s)
     ($.nonEmpty && s.contains("-")).ifTrue($ group 1)
