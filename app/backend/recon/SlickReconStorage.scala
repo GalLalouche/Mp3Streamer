@@ -2,12 +2,11 @@ package backend.recon
 
 import backend.Configuration
 import backend.storage.SlickLocalStorageUtils
-import common.RichFuture._
 import common.rich.RichT._
 
 import scala.concurrent.Future
+import scalaz.Scalaz._
 import scalaz._
-import Scalaz._
 
 abstract class SlickReconStorage[K <: Reconcilable](implicit c: Configuration,
                                                     m: Manifest[K]) extends ReconStorage[K] {
@@ -25,14 +24,14 @@ abstract class SlickReconStorage[K <: Reconcilable](implicit c: Configuration,
     store(k, id.map(ReconID.apply) -> (false == id.isDefined))
   /** If an existing value exists, override it. */
   override protected def internalForceStore(k: K, value: (Option[ReconID], Boolean)): Future[Unit] =
-  db.run(rows.forceInsert(k.normalize, value._1.map(_.id), value._2)) >| Unit
+    db.run(rows.insertOrUpdate(k.normalize, value._1.map(_.id), value._2)) >| Unit
   /** Returns the value associated with the key, if one exists, or None. */
   override def load(k: K): Future[Option[(Option[ReconID], Boolean)]] =
-  db.run(rows
-             .filter(_.name === k.normalize)
-             .map(e => e.isIgnored -> e.reconId)
-             .result
-             .map(_.headOption.map(_.swap.mapTo(e => e._1.map(ReconID) -> e._2))))
+    db.run(rows
+      .filter(_.name === k.normalize)
+      .map(e => e.isIgnored -> e.reconId)
+      .result
+      .map(_.headOption.map(_.swap.mapTo(e => e._1.map(ReconID) -> e._2))))
   override def utils = SlickLocalStorageUtils(c)(rows)
 }
 

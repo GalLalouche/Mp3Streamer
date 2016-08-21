@@ -29,7 +29,7 @@ class SlickExternalStorageTest extends FreeSpec with AuxSpecs with BeforeAndAfte
   "Can load what is stored" in {
     val link1 = ExternalLink[Artist](Url("www.foobar.com/foo/bar.html"), Host("foobar", Url("www.foobar.com")))
     val link2 = ExternalLink[Artist](Url("www.bazqux.com/baz/qux.html"), Host("bazqux", Url("www.bazqux.com")))
-    val value = List(link1, link2) -> Some(DateTime.now())
+    val value = List(link1, link2) -> Some(DateTime.now)
     $.store(artist, value).get shouldReturn true
     $.load(artist).get.get shouldReturn value
   }
@@ -37,5 +37,10 @@ class SlickExternalStorageTest extends FreeSpec with AuxSpecs with BeforeAndAfte
     $.store(artist, Nil -> None).get shouldReturn true
     $.load(artist).get.get._1 shouldReturn Nil
     $.load(artist).get.get._2 shouldReturn None
+  }
+  "Can force store" in {
+    $.store(artist, Nil -> None).get shouldReturn true
+    val link1 = ExternalLink[Artist](Url("www.foobar.com/foo/bar.html"), Host("foobar", Url("www.foobar.com")))
+    $.forceStore(artist, List(link1) -> Some(DateTime.now)).get.get shouldReturn (Nil -> None)
   }
 }

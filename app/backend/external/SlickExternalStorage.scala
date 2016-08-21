@@ -35,7 +35,7 @@ class SlickExternalStorage[K <: Reconcilable](implicit c: Configuration,
   private def fromString(s: String): Links[K] = s split ";;" filterNot (_.isEmpty) map Serializable.decode
   private def store(k: K, els: Links[K], t: Option[Long]): Future[Unit] =
     db.run(rows
-        .forceInsert(k.normalize, toString(els), t))
+        .insertOrUpdate(k.normalize, toString(els), t))
         .>|(Unit)
   override def load(k: K): Future[Option[(Links[K], Option[DateTime])]] =
     db.run(rows

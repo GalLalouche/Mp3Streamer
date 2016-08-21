@@ -24,7 +24,7 @@ private class LyricsStorage(implicit c: Configuration) extends LocalStorageTempl
       case Instrumental(source) => source -> None
       case HtmlLyrics(source, html) => source -> Some(html)
     }
-    db.run(rows.forceInsert(normalize(s), source, content)).map(e => ())
+    db.run(rows.insertOrUpdate(normalize(s), source, content)).map(e => ())
   }
   override def load(s: Song): Future[Option[Lyrics]] =
     db.run(rows
