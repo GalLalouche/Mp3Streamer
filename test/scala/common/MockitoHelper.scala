@@ -1,9 +1,6 @@
 package common
 
-import common.rich.CacheMap
 import org.mockito.Mockito
-import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 
 import scala.collection.mutable
 

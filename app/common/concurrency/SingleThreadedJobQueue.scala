@@ -10,7 +10,7 @@ class SingleThreadedJobQueue {
     1, new ThreadFactory() {
       override def newThread(r: Runnable) = {
         val $ = new Thread(r, s"$name's actor thread")
-        $.setDaemon(true)
+        $ setDaemon true
         $
       }
     })
