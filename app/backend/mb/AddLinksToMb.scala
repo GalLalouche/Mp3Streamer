@@ -1,6 +1,6 @@
 package backend.mb
 
-import backend.StandaloneConfig.ec
+import backend.StandaloneConfig
 import backend.external.{AlbumLinksExpander, ExternalLink}
 import backend.recon.{Album, ReconID}
 import common.rich.RichT._
@@ -10,6 +10,7 @@ import common.rich.collections.RichSet._
 import scala.concurrent.Future
 
 object AddLinksToMb {
+  private implicit val c = StandaloneConfig
   type Links = Traversable[ExternalLink[Album]]
   type FLinks = Future[Links]
   private val externalLinkProvider = new AlbumLinkExtractor()

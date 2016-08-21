@@ -1,15 +1,9 @@
 package controllers
 
-import backend.Configuration
-import models.{MusicFinder, RealLocations}
-import slick.driver.{JdbcProfile, SQLiteDriver}
+import backend.RealConfig
 
 import scala.concurrent.ExecutionContext
 
-private object PlayConfig extends Configuration {
+private object PlayConfig extends RealConfig {
   override implicit val ec: ExecutionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
-  override implicit val driver: JdbcProfile = SQLiteDriver
-  override implicit val db: driver.backend.DatabaseDef =
-    driver.api.Database.forURL("jdbc:sqlite:d:/media/music/MBRecon.sqlite", driver = "org.sqlite.JDBC")
-  override implicit val mf: MusicFinder = RealLocations
 }
