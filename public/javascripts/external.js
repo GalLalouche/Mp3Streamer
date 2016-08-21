@@ -12,6 +12,7 @@ $(function () {
       external.append(ul)
     }
 
+    external.html("")
     addLinks("artist")
     addLinks("album")
   }
