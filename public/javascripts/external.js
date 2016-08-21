@@ -18,8 +18,11 @@ $(function () {
   }
 
   External.show = function (song) {
-    external.html("Fetching links");
-    $.get("external/" + song.file, l => showLinks(l));
+    external.html("Fetching links...");
+    $.get("external/" + song.file, l => showLinks(l))
+        .fail(function() {
+      external.html("Error occurred while fetching links");
+    });
   }
 });
 External = {};
