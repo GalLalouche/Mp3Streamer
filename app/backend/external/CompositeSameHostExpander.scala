@@ -21,5 +21,6 @@ private class CompositeSameHostExpander private(cb: Map[Host, SameHostExpander])
 
 object CompositeSameHostExpander {
   def default(implicit ec: ExecutionContext): ((Links[Artist], Album) => Future[Links[Album]]) =
-    new CompositeSameHostExpander(new MetalArchivesAlbumsFinder)
+    new CompositeSameHostExpander(// new MetalArchivesAlbumsFinder temporarily disabled, until I figure out WTF is going on with this site
+    )
 }
