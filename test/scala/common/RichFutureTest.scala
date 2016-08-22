@@ -8,6 +8,7 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Try
 
 class RichFutureTest extends FreeSpec with AuxSpecs {
   val success: Future[Int] = Future successful 1
@@ -45,6 +46,23 @@ class RichFutureTest extends FreeSpec with AuxSpecs {
         val f = success.filterWith(_ < 0, "Failure message")
         shouldFail(f)
         f.value.get.failed.get.getMessage shouldReturn "Failure message"
+      }
+      "stacktrace" in {
+        def foo: Future[Any] = {
+          def bar = {
+            def baz = {
+              def qux = {
+                Future.apply(false).filterWithStacktrace(identity, "Foobar")
+              }
+              qux
+            }
+            baz
+          }
+          bar
+        }
+        val f = foo
+        val stackTrace = Try(f.get).failed.get.getStackTrace
+        stackTrace zip List("qux", "baz", "bar", "foo") map (e => e._1.toString contains e._2) forall identity shouldReturn true
       }
     }
     "orElse" - {

@@ -7,6 +7,11 @@ object RichFuture {
   implicit class richFuture[T]($: Future[T])(implicit ec: ExecutionContext) {
     // gives better error message when the filter fails
     def filterWith(p: T => Boolean, message: String): Future[T] = filterWithMessage(p, e => message)
+    def filterWithStacktrace(p: T => Boolean, message: String = "Failed filter") = {
+      val ex = new NoSuchElementException(message)
+      ex.setStackTrace(ex.getStackTrace drop 1)
+      $.flatMap(e => if (p(e)) $ else Future failed ex)
+    }
     // implicits suck with overloads it seems
     def filterWithMessage(p: T => Boolean, message: T => String): Future[T] = $.flatMap(e =>
       if (p(e))
