@@ -5,7 +5,7 @@ import backend.external.{ExternalLink, Host}
 import backend.mb.{AlbumLinkExtractor, ArtistLinkExtractor}
 import backend.recon.{Album, Artist, ReconID}
 import common.AuxSpecs
-import common.RichFuture._
+import common.rich.RichFuture._
 import common.rich.path.RichFile._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

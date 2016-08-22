@@ -1,6 +1,6 @@
 package mains.cover
 
-import common.RichFuture._
+import common.rich.RichFuture._
 import common.io.{DirectoryRef, FileRef}
 
 import scala.concurrent.{ExecutionContext, Future}

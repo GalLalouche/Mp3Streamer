@@ -4,7 +4,7 @@ import java.io.File
 
 import backend.storage.{OnlineRetrieverCacher, Retriever}
 import backend.{Configuration, StandaloneConfig}
-import common.RichFuture._
+import common.rich.RichFuture._
 import models.Song
 
 import scala.concurrent.Future

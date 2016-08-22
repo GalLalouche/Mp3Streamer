@@ -1,6 +1,6 @@
 package lyrics
 
-import common.RichFuture._
+import common.rich.RichFuture._
 import models.Song
 
 import scala.collection.LinearSeq

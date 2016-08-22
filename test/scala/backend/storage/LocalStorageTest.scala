@@ -1,7 +1,7 @@
 package backend.storage
 
 import common.AuxSpecs
-import common.RichFuture._
+import common.rich.RichFuture._
 import common.concurrency.SingleThreadedExecutionContext._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest}

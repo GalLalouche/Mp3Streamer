@@ -1,7 +1,7 @@
 package backend.storage
 
 import backend.Configuration
-import common.RichFuture._
+import common.rich.RichFuture._
 import slick.jdbc.meta.MTable
 
 import scala.concurrent.{ExecutionContext, Future}

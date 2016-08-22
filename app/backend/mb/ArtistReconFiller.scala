@@ -4,7 +4,7 @@ import java.io.File
 
 import backend.StandaloneConfig
 import backend.recon.{Artist, ArtistReconStorage, ReconID, ReconcilerCacher}
-import common.RichFuture._
+import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.path.Directory
 import common.rich.path.RichFile._

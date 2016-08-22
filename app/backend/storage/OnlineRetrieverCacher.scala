@@ -1,6 +1,6 @@
 package backend.storage
 
-import common.RichFuture._
+import common.rich.RichFuture._
 import scalaz._
 import Scalaz._
 

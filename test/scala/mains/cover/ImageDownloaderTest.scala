@@ -2,7 +2,7 @@ package mains.cover
 
 import java.nio.charset.MalformedInputException
 
-import common.RichFuture._
+import common.rich.RichFuture._
 import common.concurrency.Impatient
 import common.io.Root
 import org.mockito.Matchers

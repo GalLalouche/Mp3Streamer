@@ -4,7 +4,7 @@ import backend.StandaloneConfig
 import backend.external.{AlbumLinksExpander, ExternalLink}
 import backend.recon.{Album, ReconID}
 import common.rich.RichT._
-import common.RichFuture._
+import common.rich.RichFuture._
 import common.rich.collections.RichSet._
 
 import scala.concurrent.Future

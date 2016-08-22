@@ -4,7 +4,7 @@ import backend.TestConfiguration._
 import backend.Url
 import backend.recon.{Album, ReconID}
 import common.AuxSpecs
-import common.RichFuture._
+import common.rich.RichFuture._
 import org.scalatest.FreeSpec
 
 import scala.concurrent.Future

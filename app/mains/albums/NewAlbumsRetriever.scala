@@ -8,7 +8,7 @@ import models.{MusicFinder, Song}
 import org.joda.time.LocalDate
 
 import scala.concurrent.ExecutionContext
-import common.RichFuture._
+import common.rich.RichFuture._
 
 private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], mf: MusicFinder)(implicit ec: ExecutionContext) {
   val meta = new MbArtistReconciler

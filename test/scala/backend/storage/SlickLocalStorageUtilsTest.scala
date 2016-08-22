@@ -3,7 +3,7 @@ package backend.storage
 import backend.TestConfiguration
 import backend.storage.{LocalStorageUtils, SlickLocalStorageUtils}
 import common.AuxSpecs
-import common.RichFuture._
+import common.rich.RichFuture._
 import org.scalatest.{BeforeAndAfter, FreeSpec}
 
 class SlickLocalStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAfter {

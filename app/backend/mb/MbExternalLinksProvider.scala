@@ -5,7 +5,7 @@ import backend.external._
 import backend.recon.Reconcilable._
 import backend.recon._
 import backend.storage.{FreshnessStorage, RefreshableStorage, Retriever}
-import common.RichFuture._
+import common.rich.RichFuture._
 import common.rich.RichT._
 import models.Song
 import org.joda.time.Duration

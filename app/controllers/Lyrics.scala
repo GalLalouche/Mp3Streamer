@@ -1,6 +1,6 @@
 package controllers
 
-import common.RichFuture._
+import common.rich.RichFuture._
 import lyrics.LyricsCache
 import play.api.mvc.{Action, Controller}
 

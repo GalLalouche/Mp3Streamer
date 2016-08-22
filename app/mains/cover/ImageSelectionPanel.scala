@@ -37,7 +37,7 @@ private object ImageSelectionPanel {
     new ImageSelectionPanel(imagesSupplier).choose()
 
   def main(args: Array[String]): Unit = {
-    import common.RichFuture._
+    import common.rich.RichFuture._
 
     import scala.concurrent.ExecutionContext.Implicits.global
     val x = apply(new ImagesSupplier {

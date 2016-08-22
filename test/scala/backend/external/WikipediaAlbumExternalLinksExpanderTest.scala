@@ -4,7 +4,7 @@ import java.net.HttpURLConnection
 
 import backend.{TestConfiguration, Url}
 import common.AuxSpecs
-import common.RichFuture._
+import common.rich.RichFuture._
 import common.rich.collections.RichTraversableOnce._
 import common.rich.path.RichFile._
 import org.jsoup.Jsoup

@@ -4,7 +4,7 @@ import backend.mb.JsonHelper._
 import backend.recon.{Artist, OnlineReconciler, ReconID}
 import common.CompositeDateFormat
 import common.Jsoner._
-import common.RichFuture._
+import common.rich.RichFuture._
 import play.api.libs.json._
 
 import scala.concurrent.duration._

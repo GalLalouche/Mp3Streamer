@@ -5,7 +5,7 @@ import java.util.regex.Pattern
 
 import backend.Url
 import backend.recon.Album
-import common.RichFuture._
+import common.rich.RichFuture._
 import common.io.InternetTalker
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._

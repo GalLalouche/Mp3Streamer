@@ -3,7 +3,7 @@ package backend.external
 import backend.recon.Artist
 import backend.{TestConfiguration, _}
 import common.AuxSpecs
-import common.RichFuture._
+import common.rich.RichFuture._
 import org.joda.time.DateTime
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpec}
 

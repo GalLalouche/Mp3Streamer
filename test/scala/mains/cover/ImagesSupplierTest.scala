@@ -1,7 +1,7 @@
 package mains.cover
 
 import common.MockitoHelper
-import common.RichFuture._
+import common.rich.RichFuture._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
 
