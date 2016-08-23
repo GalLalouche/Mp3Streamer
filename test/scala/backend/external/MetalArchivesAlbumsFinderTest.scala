@@ -12,10 +12,10 @@ class MetalArchivesAlbumsFinderTest extends FreeSpec with DocumentSpecs {
   }
   "aux" - {
     "return none when there is no matching album" in {
-      aux(Album("Let it Bleed", Artist("Cruachan"))) shouldBe 'empty
+      aux(Album("Let it Bleed", 1928, Artist("Cruachan"))) shouldBe 'empty
     }
     "find album" in {
-      aux(Album("Blood for the Blood God", Artist("Cruachan"))).get shouldReturn
+      aux(Album("Blood for the Blood God", 2014, Artist("Cruachan"))).get shouldReturn
           Url("http://www.metal-archives.com/albums/Cruachan/Blood_for_the_Blood_God/475926")
     }
   }

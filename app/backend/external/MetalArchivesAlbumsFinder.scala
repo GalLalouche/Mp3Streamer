@@ -28,6 +28,6 @@ object MetalArchivesAlbumsFinder {
   def main(args: Array[String]) {
     implicit val c = StandaloneConfig
     new MetalArchivesAlbumsFinder().fromUrl(Url("http://www.metal-archives.com/bands/Empyrium/2345"),
-      Album("The turn of the tides", Artist("Empyrium"))).get.log()
+      Album("The turn of the tides", 2014, Artist("Empyrium"))).get.log()
   }
 }

@@ -8,7 +8,7 @@ sealed trait Reconcilable {
 case class Artist(name: String) extends Reconcilable {
   override def normalize: String = name.toLowerCase
 }
-case class Album(title: String, artist: Artist) extends Reconcilable {
+case class Album(title: String, year: Int, artist: Artist) extends Reconcilable {
   def artistName: String = artist.name
   override def normalize: String = s"${artist.normalize} - ${title.toLowerCase}"
 }
@@ -21,7 +21,7 @@ case class Track(title: String, album: Album) extends Reconcilable {
 object Reconcilable {
   implicit class SongExtractor(s: Song) {
     lazy val artist = Artist(s.artistName)
-    lazy val release = Album(s.albumName, artist)
+    lazy val release = Album(s.albumName, s.year, artist)
     lazy val track = Track(s.title, release)
   }
 }
