@@ -3,7 +3,7 @@ package backend.mb
 import backend.mb.JsonHelper._
 import backend.recon.{Artist, OnlineReconciler, ReconID}
 import common.CompositeDateFormat
-import common.Jsoner._
+import common.RichJson._
 import common.rich.RichFuture._
 import play.api.libs.json._
 
