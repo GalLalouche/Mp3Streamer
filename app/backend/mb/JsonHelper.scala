@@ -2,6 +2,7 @@ package backend.mb
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import common.RichJson._
 import common.rich.RichFuture._
 import play.api.http.Status
 import play.api.libs.json._
@@ -9,8 +10,6 @@ import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
-import common.rich.RichT._
-import common.RichJson._
 
 private object JsonHelper {
   def retry[T](f: () => Future[T], times: Int, retryWait: Duration)(implicit ec: ExecutionContext): Future[T] =
