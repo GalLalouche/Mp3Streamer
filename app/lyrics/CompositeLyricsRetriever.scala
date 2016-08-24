@@ -1,13 +1,12 @@
 package lyrics
 
-import common.RichFuture._
+import common.rich.RichFuture._
 import models.Song
 
 import scala.collection.LinearSeq
 import scala.concurrent.{ExecutionContext, Future}
 
 private class CompositeLyricsRetriever(retrievers: LinearSeq[LyricsRetriever])(implicit ec: ExecutionContext) extends LyricsRetriever {
-  def this(retrievers: LyricsRetriever*)(implicit ec: ExecutionContext) = this(retrievers.toList)
   override def apply(s: Song): Future[Lyrics] = {
     def aux(rs: LinearSeq[LyricsRetriever]): Future[Lyrics] = rs match {
       case Nil => Future.failed(new NoSuchElementException("No retriever could find lyrics for " + s))
@@ -15,4 +14,5 @@ private class CompositeLyricsRetriever(retrievers: LinearSeq[LyricsRetriever])(i
     }
     aux(retrievers)
   }
+  def this(retrievers: LyricsRetriever*)(implicit ec: ExecutionContext) = this(retrievers.toList)
 }

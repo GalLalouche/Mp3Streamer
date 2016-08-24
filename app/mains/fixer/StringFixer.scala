@@ -1,6 +1,6 @@
 package mains.fixer
 
-import common.rich.primitives.RichString._
+import common.rich.RichT._
 
 private object StringFixer {
 
@@ -23,8 +23,16 @@ private object StringFixer {
     case _ => if (lowerCaseWords(word.toLowerCase)) word.toLowerCase else pascalCaseWord(word) // everything else
   }
 
+  private def splitWithDelimiters($: String, pattern: String): Seq[String] =
+    $.foldLeft((List[String](), new StringBuilder)) {
+      case ((agg, sb), c) =>
+        if (c.toString.matches(pattern)) (c.toString :: sb.toString :: agg, new StringBuilder) // delimiter
+        else (agg, sb append c)
+    }.mapTo(e => e._2.toString :: e._1) // append last SB to list
+      .filterNot(_.isEmpty) // remove empty ""
+      .reverse
   def apply(str: String): String = {
-    val split = str.splitWithDelimiters(delimiters).toList
+    val split = splitWithDelimiters(str, delimiters).toList
     (pascalCaseWord(split.head) :: (split.tail map fixWord)) mkString ""
   }
 

@@ -2,21 +2,24 @@ package mains
 
 import java.io.File
 
-import common.Debug
-import common.io.IODirectory
+import common.io.{IODirectory, IOFile}
 import common.rich.RichT.richT
 import common.rich.path.RichFile._
 import models.MusicFinder
+import org.joda.time.Duration
 
 // finds songs that are in the music directory but are not saved in the playlist file
-object FindSongsNotInPlaylist extends App with Debug {
+object FindSongsNotInPlaylist {
 	val musicFiles = new MusicFinder {
 		val dir = IODirectory("D:/Media/Music")
 		val subDirs = List("Metal", "Rock", "Classical", "New Age", "Jazz")
 		val extensions = List("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
 	}
-	timed {
-		val playlistSongs = musicFiles.dir.addFile("playlist.m3u8") // UTF-8 helps deal with Hebrew songs
+	def main(args: Array[String]): Unit = {
+		val file = musicFiles.dir.addFile("playlist.m3u8").asInstanceOf[IOFile].file
+    if (new Duration(System.currentTimeMillis() - file.lastModified()).getStandardHours > 1)
+	    throw new IllegalStateException("Please update the playlist file.")
+		val playlistSongs = file // UTF-8 helps deal with Hebrew songs
 			.lines
 			// removes UTF-BOM at least until I fix it in scala common
 			.mapIf(_.head.head.toInt == 65279).to(e => e.tail :+ e.head.drop(1))

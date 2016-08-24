@@ -3,14 +3,11 @@ package models
 import java.io.File
 import java.util.logging.{Level, Logger}
 
-import common.rich.path.RichPath._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
-import scala.util.matching.Regex.MatchIterator
-
-case class Song(val file: File, val title: String, val artistName: String, val albumName: String,
-           val track: Int, val year: Int, val bitrate: String, val duration: Int, val size: Long) {
+case class Song(file: File, title: String, artistName: String, albumName: String,
+                track: Int, year: Int, bitrate: String, duration: Int, size: Long) {
   override def toString = s"$artistName - $title [$albumName #$track] ($year)"
   lazy val album = Album(dir = file.getParentFile, title = albumName, artistName = artistName, year = year)
 }

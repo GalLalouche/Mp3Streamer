@@ -1,12 +1,14 @@
 package controllers
 
-import common.RichFuture._
+import common.rich.RichFuture._
 import lyrics.LyricsCache
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.{Action, Controller}
 
 object Lyrics extends Controller {
-  private val lyrics = new LyricsCache
+  private implicit val config = PlayConfig
+  import config._
+  
+  private val lyrics = new LyricsCache()
   def get(path: String) = Action.async {
     lyrics.apply(Utils.parseSong(path))
         .map(l => l.html + "<br><br>Source: " + l.source)

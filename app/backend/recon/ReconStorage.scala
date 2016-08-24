@@ -1,7 +1,7 @@
 package backend.recon
 
-import common.storage.LocalStorage
+import backend.storage.LocalStorageTemplate
 
-trait ReconStorage[Key <: Reconcilable] extends LocalStorage[Key, (Option[ReconID], Boolean)] {
-  protected def normalize(k: Key): String
-}
+import scala.concurrent.ExecutionContext
+
+abstract class ReconStorage[Key <: Reconcilable](implicit ec: ExecutionContext) extends LocalStorageTemplate[Key, (Option[ReconID], Boolean)]

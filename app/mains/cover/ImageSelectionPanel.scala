@@ -1,32 +1,33 @@
 package mains.cover
 
+import java.io.File
+
+import common.io.IOFile
+
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.swing.Frame
 import scala.swing.event.{ComponentAdded, WindowClosing}
 
 /** Displays several images to the user, and returns the selected image */
 private class ImageSelectionPanel private(imagesSupplier: ImagesSupplier)(implicit ec: ExecutionContext) {
-  private val rows = 2
-  private val cols = 3
   def choose(): Future[ImageChoice] = {
-    val p = Promise[ImageChoice]
+    val promise = Promise[ImageChoice]
     val frame = new Frame {
-      reactions += {case e: WindowClosing => p success Cancelled}
+      reactions += { case e: WindowClosing => promise success Cancelled }
     }
-    val panel = new AsyncFolderImagePanel(cols = cols, rows = rows, imagesSupplier = imagesSupplier)
-    panel.reactions += {
-      case e: ComponentAdded => frame.pack()
-      case e: ImageChoice =>
-        p success e
-        panel.close()
+    val panel = new AsyncFolderImagePanel(cols = 3, rows = 2, imagesSupplier = imagesSupplier) {
+      reactions += {
+        case e: ComponentAdded =>
+          frame.pack()
+          frame.repaint()
+        case e: ImageChoice => promise success e
+      }
     }
     frame.contents = panel
-    panel.start()
+    panel.refresh()
     frame.open()
-    val $ = p.future
-    $.onComplete { e =>
-      panel.close()
-    }
+    val $ = promise.future
+    $ onComplete { e => frame.dispose() }
     $
   }
 }
@@ -34,4 +35,20 @@ private class ImageSelectionPanel private(imagesSupplier: ImagesSupplier)(implic
 private object ImageSelectionPanel {
   def apply(imagesSupplier: ImagesSupplier)(implicit ec: ExecutionContext): Future[ImageChoice] =
     new ImageSelectionPanel(imagesSupplier).choose()
+
+  def main(args: Array[String]): Unit = {
+    import common.rich.RichFuture._
+
+    import scala.concurrent.ExecutionContext.Implicits.global
+    val x = apply(new ImagesSupplier {
+      override def next(): Future[FolderImage] = {
+        Future apply {
+          new FolderImage(
+            new IOFile(
+              new File("""D:\Incoming\Bittorrent\Completed\Music\Bob Dylan\1 - Studio Albums\1963 - The Freewheelin Bob Dylan\folder.jpg""")))
+        }
+      }
+    }).get
+    println(x)
+  }
 }

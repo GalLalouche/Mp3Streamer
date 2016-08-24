@@ -7,7 +7,7 @@ trait Logger {
   def warn(s: String, e: Exception = null)
   def error(s: String, e: Exception)
   def WTF(s: String, e: Exception) {
-    e.printStackTrace
+    e.printStackTrace()
     error("WTF?! " + s, e)
   }
 }

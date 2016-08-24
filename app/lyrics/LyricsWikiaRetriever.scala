@@ -2,8 +2,8 @@ package lyrics
 
 import java.io.File
 import java.net.URLEncoder
-import common.RichFuture._
 
+import common.rich.RichFuture._
 import common.rich.RichT._
 import models.Song
 import org.jsoup.nodes.Document

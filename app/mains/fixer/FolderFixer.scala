@@ -48,7 +48,7 @@ object FolderFixer {
       case e: RuntimeException =>
         println("Auto downloading picture aborted: " + e.getMessage)
         println("Press enter to continue with the script")
-        readLine()
+        scala.io.StdIn.readLine()
         _ => ()
     }
   }

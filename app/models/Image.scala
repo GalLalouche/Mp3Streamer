@@ -9,11 +9,11 @@ import javax.imageio.ImageIO
 
 class Image(imageFile: File) {
 	def saveAsJpeg(outFile: File): File = {
-		val bufferedImage = ImageIO read imageFile;
-		val newBufferedImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-		newBufferedImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
-		ImageIO.write(newBufferedImage, "jpg", outFile);
-		outFile
+		val bufferedImage = ImageIO read imageFile
+    val newBufferedImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB)
+    newBufferedImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null)
+    ImageIO.write(newBufferedImage, "jpg", outFile)
+    outFile
 	}
 }
 

@@ -55,7 +55,7 @@ object Jsonable {
         "albums" -> JsArray(a.albums.map(AlbumJsonifier.jsonify)))
     def parse(json: JsObject): Artist = {
       val albums = json \ "albums" map (AlbumJsonifier.parse(_))
-      new Artist(json \ "name", albums.toSet)
+      Artist(json \ "name", albums.toSet)
     }
   }
 

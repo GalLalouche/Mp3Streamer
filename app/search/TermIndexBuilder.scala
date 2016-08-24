@@ -7,9 +7,8 @@ object TermIndexBuilder extends IndexBuilder {
   implicit class RichMap[T, S](map: Map[T, Set[S]]) {
     def append(t: T, s: S) = map.updated(t, map(t) + s)
   }
-  private def const[A, B](c: B): A => B = e => c
   def buildIndexFor[T: Indexable](songs: TraversableOnce[T]): Index[T] = songs
-    .foldLeft(Map[String, Set[T]]().withDefault(const(Set[T]())))((map, indexable) => implicitly[Indexable[T]]
+    .foldLeft(Map[String, Set[T]]().withDefault(Set[T]().const))((map, indexable) => implicitly[Indexable[T]]
       .terms(indexable)
       .map(_.toLowerCase)
       .foldLeft(map)((map, word) => map.append(word, indexable)))

@@ -22,13 +22,13 @@ body {
   left: 800px;
   float: right;
 }
-#lyrics {
+#external {
 	position: absolute;
 	left: 800px;
 	top: 400px;
 	float: right;
 }
-#external {
+#lyrics {
 	position: absolute;
 	left: 1300px;
 	float: right;

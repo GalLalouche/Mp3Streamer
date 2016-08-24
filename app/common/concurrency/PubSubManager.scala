@@ -1,7 +1,5 @@
 package common.concurrency
 
-import java.lang.Object
-import java.util.Objects
 import java.util.concurrent.ConcurrentHashMap
 
 import scala.collection.JavaConversions._

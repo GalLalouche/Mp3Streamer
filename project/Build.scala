@@ -19,15 +19,14 @@ object ApplicationBuild extends Build {
       "io.reactivex" %% "rxscala" % "0.26.2",
       "org.apache.commons" % "commons-io" % "1.3.2",
       "org.jsoup" % "jsoup" % "1.8.3",
-      "org.me" %% "scalacommon" % "1.0",
+      "org.me" %% "scalacommon" % "1.0" changing(),
       "org.mockito" % "mockito-all" % "1.9.5" % "test",
       "org.scala-js" %% "scalajs-library" % "0.6.8",
       "org.scala-lang" % "scala-actors" % "2.11.0",
-      "org.scala-lang" % "scala-swing" % "2.10.6",
+      "org.scala-lang" % "scala-swing" % "2.11.0-M7",
       "org.scalacheck" %% "scalacheck" % "1.12.1" % "test",
       "org.scalatest" %% "scalatest" % "2.2.6",
       "org.scalaz" %% "scalaz-core" % "7.2.0",
-      "org.slf4j" % "slf4j-nop" % "1.6.4",
       "org.xerial" % "sqlite-jdbc" % "3.7.2"
     ),
     // Add your own project settings here

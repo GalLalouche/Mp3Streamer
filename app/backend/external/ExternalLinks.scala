@@ -1,5 +1,7 @@
 package backend.external
 
-case class ExternalLinks(artistLinks: Traversable[ExternalLink],
-                         albumLinks: Traversable[ExternalLink],
-                         trackLinks: Traversable[ExternalLink])
+import backend.recon._
+
+case class ExternalLinks(artistLinks: Links[Artist],
+                         albumLinks: Links[Album],
+                         trackLinks: Links[Track])

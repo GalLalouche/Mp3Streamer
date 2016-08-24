@@ -1,15 +1,16 @@
 package mains.cover
 
-import common.RichFuture._
+import common.rich.RichFuture._
 import common.io.{DirectoryRef, FileRef}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
-  * Downloads images and saves them to a directory. Tries several different unicode encodings.
-  * @param outputDirectory The directory to save images to
-  * @param downloader      Used to download the images
-  */
+ * Downloads images and saves them to a directory. Tries several different unicode encodings. Why an image needs
+ * unicode encoding is beyond me.
+ * @param outputDirectory The directory to save images to
+ * @param downloader Used to download the images
+ */
 private class ImageDownloader(outputDirectory: DirectoryRef, downloader: Downloader)(implicit ec: ExecutionContext)
   extends (String => Future[FolderImage]) {
   private def toFile(bytes: Array[Byte]): FileRef =

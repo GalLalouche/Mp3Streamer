@@ -39,7 +39,7 @@ private class SongSelectorImpl(songs: IndexedSeq[File], musicFinder: MusicFinder
 
 object SongSelector {
 
-  import common.RichFuture._
+  import common.rich.RichFuture._
 
   /** A mutable-updateable wrapper of SongSelector */
   private class SongSelectorProxy(musicFinder: MusicFinder) extends SongSelector {

@@ -1,15 +1,16 @@
 package mains.albums
 
 import backend.mb.MbArtistReconciler
-import backend.recon.{Artist, ArtistReconcilerCacher}
-import common.RichFuture._
+import backend.recon.{Artist, ReconcilerCacher}
 import common.io.IOFile
 import common.rich.RichT._
 import models.{MusicFinder, Song}
+import org.joda.time.LocalDate
 
 import scala.concurrent.ExecutionContext
+import common.rich.RichFuture._
 
-private class NewAlbumsRetriever(reconciler: ArtistReconcilerCacher, mf: MusicFinder)(implicit ec: ExecutionContext) {
+private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], mf: MusicFinder)(implicit ec: ExecutionContext) {
   val meta = new MbArtistReconciler
   private var lastArtist: Option[String] = None
   private def getExistingAlbums: Iterator[Album] = mf.genreDirs
@@ -22,12 +23,12 @@ private class NewAlbumsRetriever(reconciler: ArtistReconcilerCacher, mf: MusicFi
   private def getLastAlbum(e: (String, Seq[Album])) =
     (e._1.toLowerCase, e._2.toVector.map(_.year).sorted.last)
   def findNewAlbums: Iterator[Album] = {
-    val lastAlbumsByArtist = getExistingAlbums
+    val lastReleaseYear = getExistingAlbums
         .toSeq
         .groupBy(_.artist.toLowerCase)
         .map(getLastAlbum)
     def isNewAlbum(e: Album): Boolean =
-      if (lastAlbumsByArtist(e.artist.toLowerCase) < e.year)
+      if (lastReleaseYear(e.artist.toLowerCase) < e.year)
         true
       else {
         for (a <- lastArtist)
@@ -35,27 +36,25 @@ private class NewAlbumsRetriever(reconciler: ArtistReconcilerCacher, mf: MusicFi
         lastArtist = Some(e.artist)
         false
       }
-    val $: Iterator[Iterator[Album]] = for (artist <- lastAlbumsByArtist.keys.iterator) yield {
-      print("Working on artist: " + artist + "... ")
-      val f = reconciler.apply(artist |> Artist)
-          .filter(_._2 == false)
+    def extractNewAlbums(artistName: String, albums: Seq[(LocalDate, String)]): Seq[Album] =
+      albums.filter(_._1.toDateTimeAtCurrentTime.getMillis < System.currentTimeMillis())
+          .map(e => Album(artistName, e._1.getYear, e._2))
+          .filter(isNewAlbum)
+    lastReleaseYear.keys.iterator.map {artistName =>
+      print("Working on artist: " + artistName + "... ")
+      reconciler(artistName |> Artist)
+          .filter {e =>
+            if (e._2)
+              println("Ignoring " + artistName)
+            else if (e._1.isEmpty)
+              println("Could not reconcile " + artistName)
+            !e._2
+          }
+          .map(_._1.get)
+          .flatMap(meta.getAlbumsMetadata)
+          .map(extractNewAlbums(artistName, _))
+          .orElse(Nil)
           .get
-          .log()
-      Iterator.empty
-//          .map(_._1)
-//          .map(_.map(meta.getAlbumsMetadata)
-//              .map(_.map(_.filter(_._1.toDateTimeAtCurrentTime.getMillis < System.currentTimeMillis()))
-//                  .map(_.map(e => Album(artist, e._1.getYear, e._2)))
-//                  .map(_ filter isNewAlbum)
-//                  .recover {case e => Seq()}
-//                  .get
-//                  .iterator)
-//              .getOrElse {
-//                println("Ignoring... ")
-//                Iterator.empty
-//              })
-//      Try(f.get).getOrElse(Iterator.empty)
-    }
-    $.flatten
+    }.flatten
   }
 }

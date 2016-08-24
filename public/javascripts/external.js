@@ -1,22 +1,28 @@
 $(function () {
   const external = $('#external');
 
-  function showLinks(content) {
-    external.html("")
+  function showLinks(metaContent) {
     function addLinks(name) {
-      const links = content[name]
+      const links = metaContent[name]
       const ul = $(`<ul>${name}</ul>`)
-      for (const e in links)
-        ul.append($(`<li style="list-style-image: url('assets/images/${e}_icon.png')"><a href=${links[e]} target="_blank">${e}</a></li>`))
+      for (const e in links) {
+        const hostName = e.replace(/\*$/g, "") // remove trailing "*" in order to fetch the correct icon
+        ul.append($(`<li style="list-style-image: url('assets/images/${hostName}_icon.png')"><a target=_blank href=${links[e]}>${e}</a></li>`))
+      }
       external.append(ul)
     }
+
+    external.html("")
     addLinks("artist")
     addLinks("album")
   }
 
   External.show = function (song) {
-    external.html("Loading external links...");
-    $.get("external/" + song.file, l => showLinks(l));
+    external.html("Fetching links...");
+    $.get("external/" + song.file, l => showLinks(l))
+        .fail(function() {
+      external.html("Error occurred while fetching links");
+    });
   }
 });
 External = {};
