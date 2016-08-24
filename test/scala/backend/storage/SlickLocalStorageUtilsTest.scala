@@ -1,7 +1,6 @@
 package backend.storage
 
 import backend.TestConfiguration
-import backend.storage.{LocalStorageUtils, SlickLocalStorageUtils}
 import common.AuxSpecs
 import common.rich.RichFuture._
 import org.scalatest.{BeforeAndAfter, FreeSpec}

@@ -2,7 +2,6 @@ package backend.mb
 
 import backend.Url
 import backend.external.{ExternalLink, Host}
-import backend.mb.{AlbumLinkExtractor, ArtistLinkExtractor}
 import backend.recon.{Album, Artist, ReconID}
 import common.AuxSpecs
 import common.rich.RichFuture._

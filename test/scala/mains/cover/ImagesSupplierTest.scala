@@ -1,7 +1,7 @@
 package mains.cover
 
-import common.MockitoHelper
 import common.rich.RichFuture._
+import common.{AuxSpecs, MockitoHelper}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
 
@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoSugar
-  with ShouldMatchers with MockitoHelper {
+  with MockitoHelper with AuxSpecs {
   private def downloadImage(url: String): Future[FolderImage] = Future successful mockWithId(url)
   private def downloadImageWithDelay(delayInMillis: Int, url: String): Future[FolderImage] = Future {
     Thread sleep delayInMillis
@@ -30,11 +30,11 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoSu
   "Simple" - {
     val $ = ImagesSupplier(urls, downloadImage)
     "Should do nothing until next is called" in {
-      urls.remaining should be === 2
+      urls.remaining shouldReturn 2
     }
     "Should build from string" in {
-      $.next().get should be === mockWithId("foo")
-      $.next().get should be === mockWithId("bar")
+      $.next().get shouldReturn mockWithId("foo")
+      $.next().get shouldReturn mockWithId("bar")
     }
     "Should throw an exception when out of nexts" in {
       $.next()
@@ -46,12 +46,12 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoSu
     "Should prefetch" in {
       val $ = ImagesSupplier.withCache(urls, downloadImageWithDelay(10, _), 1)
       Thread sleep 200
-      $.next().value.get.get should be === mockWithId("foo")
+      $.next().value.get.get shouldReturn mockWithId("foo")
     }
     "Should not throw if tried to fetch more than available" in {
       val $ = ImagesSupplier.withCache(urls, downloadImageWithDelay(10, _), 5)
       Thread sleep 200
-      $.next().value.get.get should be === mockWithId("foo")
+      $.next().value.get.get shouldReturn mockWithId("foo")
     }
     "But should throw on enough nexts" in {
       val $ = ImagesSupplier.withCache(urls, downloadImageWithDelay(10, _), 5, 10)

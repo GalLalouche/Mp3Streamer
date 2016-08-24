@@ -1,10 +1,11 @@
 package search
+import common.AuxSpecs
 import common.io.Root
-import org.scalatest.{FreeSpec, ShouldMatchers, OneInstancePerTest}
+import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
 import org.scalatest.mock.MockitoSugar
-import play.api.libs.json.{Json, JsObject}
+import play.api.libs.json.{JsObject, Json}
 
-class JsonableSaverTest extends FreeSpec with ShouldMatchers with OneInstancePerTest with MockitoSugar {
+class JsonableSaverTest extends FreeSpec with OneInstancePerTest with MockitoSugar with AuxSpecs {
   val root = new Root
   private val $ = new JsonableSaver(root)
   case class Person(age: Int, name: String)
@@ -18,37 +19,37 @@ class JsonableSaverTest extends FreeSpec with ShouldMatchers with OneInstancePer
   "save" - {
     "can later load" in {
       $.save(Seq(p1))
-      $.load.head should be === p1
+      $.load.head shouldReturn p1
     }
     "overwrites previous save" in {
       $.save(Seq(p1))
       $.save(Seq(p2))
-      $.load.head should be === p2
+      $.load.head shouldReturn p2
     }
   }
   "load" - {
     "is empty by default" in {
-      $.load[Person].isEmpty should be === true
+      $.load[Person] shouldBe empty
     }
     "doesn't create a file if one doesn't exist" in {
       $.load[Person]
-      root.files.isEmpty should be === true
+      root.files shouldBe empty
     }
     "in order saved" in {
       val persons: Seq[Person] = Seq(p1, p2, p3)
       $.save(persons)
-      $.load should be === persons
+      $.load shouldReturn persons
     }
   }
   "update" - {
     "saves data" in {
       $.update[Person](_ ++ Seq(p1))
-      $.load.head should be === p1
+      $.load.head shouldReturn p1
     }
     "doesn't overwrite data" in {
       $.save(Seq(p1, p2))
       $.update[Person](_ ++ Seq(p3))
-      $.load should be === Seq(p1, p2, p3)
+      $.load shouldReturn Seq(p1, p2, p3)
     }
   }
 }

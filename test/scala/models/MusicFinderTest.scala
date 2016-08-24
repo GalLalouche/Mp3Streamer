@@ -19,24 +19,24 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with Matchers {
 
   "MusicFinder" - {
     "find nothing" - {
-      def isEmpty() = mf.getSongFilePaths should be === Seq()
+      def verifyIsEmpty() = mf.getSongFilePaths shouldBe 'empty
       "when subdirs are empty" in {
         tempDir.addSubDir("a").addSubDir("b").addSubDir("c")
         tempDir.addSubDir("b").addSubDir("b").addSubDir("c")
         tempDir.addSubDir("c").addSubDir("b").addSubDir("c")
-        isEmpty()
+        verifyIsEmpty()
       }
       "when file is in root" in {
         tempDir.addFile("foo.mp3")
-        isEmpty()
+        verifyIsEmpty()
       }
       "when file is in unlisted dir" in {
         tempDir.addSubDir("d").addFile("foo.mp3")
-        isEmpty()
+        verifyIsEmpty()
       }
       "when file has wrong extension" in {
         tempDir.addSubDir("b").addFile("foo.mp2")
-        isEmpty()
+        verifyIsEmpty()
       }
     }
     "Find song" in {

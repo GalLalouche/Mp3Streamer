@@ -37,6 +37,6 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     val $ = new ExternalPipe[Album](x => Future successful ReconID("foobar"),
       x => Future successful List(existingLink, existingLink.copy(link = Url("existing2"))),
       x => Future successful List(newLink, existingLink))
-    $(null).get.size shouldReturn 3
+    $(null).get should have size 3
   }
 }

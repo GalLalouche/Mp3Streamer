@@ -1,8 +1,7 @@
-package scala.common
+package common
 
-import common.AuxSpecs
-import common.RichJson._
-import common.rich.RichT._
+import RichJson._
+import rich.RichT._
 import org.scalatest.FreeSpec
 import play.api.libs.json.{JsNull, JsObject, JsValue}
 
@@ -38,22 +37,22 @@ class RichJsonTest extends FreeSpec with AuxSpecs {
     }
   }
   "has" - {
-    def has(js: JsObject) = js has "foo" shouldReturn true
-    def hasNot(js: JsObject) = js has "foo" shouldReturn false
+    def verifyHas(js: JsObject) = js has "foo" shouldReturn true
+    def verifyHasNot(js: JsObject) = js has "foo" shouldReturn false
     "valid string" in {
-      withObject("bar") |> has
+      withObject("bar") |> verifyHas
     }
     "valid int" in {
-      withObject(4) |> has
+      withObject(4) |> verifyHas
     }
     "no such key" in {
-      withObject("bar") |> has
+      withObject("bar") |> verifyHas
     }
     "null" in {
-      withObject(JsNull) |> hasNot
+      withObject(JsNull) |> verifyHasNot
     }
     "empty string" in {
-      withObject("") |> hasNot
+      withObject("") |> verifyHasNot
     }
   }
 }

@@ -2,6 +2,7 @@ package common.concurrency
 
 import java.util.concurrent.Semaphore
 
+import common.AuxSpecs
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import common.rich.RichT._
@@ -10,14 +11,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 import scala.concurrent.duration._
 
-class SimpleTypedActorTest extends FreeSpec with ShouldMatchers with OneInstancePerTest {
+class SimpleTypedActorTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   val semaphore = new Semaphore(0)
   "SimpleTypedActor" - {
     "basic test" in {
       val $ = new SimpleTypedActor[String, Int] {
         override protected def apply(m: String) = m.length
       } ! "Foobar"
-      Await.result($, Duration.Inf) should be === 6
+      Await.result($, Duration.Inf) shouldReturn 6
     }
     "process requests in FIFO" in {
       val sb = new StringBuilder
@@ -46,7 +47,7 @@ class SimpleTypedActorTest extends FreeSpec with ShouldMatchers with OneInstance
 
       semaphore acquire 2
       // but order is 1 and then 2
-      sb.toString should be === "12"
+      sb.toString shouldReturn "12"
     }
   }
 }

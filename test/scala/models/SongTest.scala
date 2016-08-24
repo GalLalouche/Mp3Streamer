@@ -2,31 +2,27 @@
 
 package models
 
-import java.io.File
-
+import common.AuxSpecs
 import org.scalatest.FreeSpec
-import play.api.Play
-import play.api.test.FakeApplication
 
-class SongTest extends FreeSpec {
-  private def getSong(location: String) =
-    new File(Play.application(FakeApplication()).resource(location).get.getFile.replaceAll("%20", " "))
-  val song = getSong("./resources/songs/song.mp3")
+class SongTest extends FreeSpec with AuxSpecs {
+  private def getSong(location: String) = getResourceFile(location)
+  val song = getSong("song.mp3")
   val $ = Song(song)
 
   "Song" - {
-    "parse id3tag" - {
-      $.title === "Hidden Track"
-      $.artistName === "Sentenced"
-      $.albumName === "Crimson"
-      $.track === 12
-      $.year === 2000
-      $.bitrate === "192"
-      $.duration === 3
-      $.size === 75522L
+    "parse id3tag" in {
+      $.title shouldReturn "Hidden Track"
+      $.artistName shouldReturn "Sentenced"
+      $.albumName shouldReturn "Crimson"
+      $.track shouldReturn 12
+      $.year shouldReturn 2000
+      $.bitrate shouldReturn "192"
+      $.duration shouldReturn 3
+      $.size shouldReturn 75522L
     }
-    "parse year correctly" - {
-      Song(getSong("./resources/songs/songWithYear.mp3")).year === 1999
+    "parse year correctly" in {
+      Song(getSong("songWithYear.mp3")).year shouldReturn 1999
     }
   }
 }
