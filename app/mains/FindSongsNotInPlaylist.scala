@@ -34,7 +34,7 @@ object FindSongsNotInPlaylist {
 		val playlistMissing = realSongs.diff(playlistSongs).toList.sorted
 		playlistMissing // opens the windows with the files
 			.map(new File(_).parent.getAbsolutePath).toSet[String]
-			.foreach(new ProcessBuilder("explorer.exe", _).start)
+			.foreach(e => Runtime.getRuntime.exec("explorer.exe /select," + e))
 		val serverMissing = playlistSongs.diff(realSongs).toList.sorted
 		println(s"Server is missing ${serverMissing.size} songs. ${"It's possible that these songs are in the playlist but the files themselves have been deleted, or were added from a different folder, e.g., bittorent.".onlyIf(serverMissing.nonEmpty)}")
 		println(serverMissing.mkString("\n"))
