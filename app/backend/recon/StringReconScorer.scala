@@ -13,7 +13,6 @@ object StringReconScorer extends ((String, String) => Double) {
   override def apply(s1: String, s2: String): Double = {
     val c1 = canonize(s1)
     val c2 = canonize(s2)
-    println(c1, c2)
     if (c1 == c2)
       1.0
     else
