@@ -6,17 +6,15 @@ import backend.external._
 import backend.recon.Reconcilable._
 import backend.recon._
 import backend.storage.{FreshnessStorage, RefreshableStorage, Retriever}
-import backend.{Configuration, StandaloneConfig}
+import backend.{CleanConfiguration, Configuration, StandaloneConfig}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import models.Song
 import org.joda.time.Duration
 
 import scala.concurrent.Future
-import scalaz.Scalaz._
-import scalaz._
 
-class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song, ExternalLinks] {
+class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song, ExtendedExternalLinks] {
   private def createExternalProvider[T <: Reconcilable : Manifest](
       reconciler: Retriever[T, (Option[ReconID], Boolean)],
       provider: Retriever[ReconID, Links[T]],
@@ -42,6 +40,7 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
   private val extractor = new AlbumLinkExtractor
   private val sameHostExpander = CompositeSameHostExpander.default
   private def superExtractor(artistLinks: Links[Artist], a: Album): Retriever[Links[Album], Links[Album]] = links => {
+    import scalaz.Scalaz._
     new AlbumLinksExpander().apply(links).zip(sameHostExpander.apply(artistLinks, a)).map(_.toList.flatten)
   }
 
@@ -51,16 +50,23 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
       extractor,
       superExtractor(artistLinks, a)).apply(a)
 
-  override def apply(s: Song): Future[ExternalLinks] =
-    for (artistLinks <- getArtistLinks(s.artist); albumLinks <- getAlbumLinks(artistLinks, s.release))
-      yield ExternalLinks(artistLinks, albumLinks, Nil)
+  private val extender = new CompositeExtender(
+    Map[Host, LinkExtender[Artist]](Host.MusicBrainz -> MusicBrainzExtender),
+    Map[Host, LinkExtender[Album]](Host.MusicBrainz -> MusicBrainzExtender))
+
+  // for testing on remote
+  private def apply(a: Album): Future[ExtendedExternalLinks] =
+    for (artistLinks <- getArtistLinks(a.artist); albumLinks <- getAlbumLinks(artistLinks, a))
+      yield ExtendedExternalLinks(artistLinks map (extender(_)), albumLinks map (extender(_)), Nil)
+  override def apply(s: Song): Future[ExtendedExternalLinks] = apply(s.release)
 }
 
 object MbExternalLinksProvider {
   def main(args: Array[String]) {
-    implicit val c = StandaloneConfig
+    implicit val c = CleanConfiguration
     val $ = new MbExternalLinksProvider()
-    val x = $(Song(new File("""D:\Media\Music\Metal\Black Metal\Rotting Christ\2007 Theogonia\01 - The Sign of Prime Creation.flac"""))).get
+    val x = $(Album("Scarsick", 2007, Artist("Pain of salvation"))).get
+//    val x = $(Song(new File("""D:\Media\Music\Metal\Black Metal\Rotting Christ\2007 Theogonia\01 - The Sign of Prime Creation.flac"""))).get
     println(x)
   }
 }

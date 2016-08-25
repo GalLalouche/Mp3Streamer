@@ -19,5 +19,6 @@ object Host {
   object Wikipedia extends Host("wikipedia", Url("en.wikipedia.org"))
   object AllMusic extends Host("allMusic", Url("www.allmusic.com"))
   object MetalArchives extends Host("metalarchives", Url("www.metal-archives.com"))
+  object MusicBrainz extends Host("musicbrainz", Url("musicbrainz.org"))
 }
 

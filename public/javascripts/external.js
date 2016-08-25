@@ -6,8 +6,10 @@ $(function () {
       const links = metaContent[name]
       const ul = $(`<ul>${name}</ul>`)
       for (const e in links) {
-        const hostName = e.replace(/\*$/g, "") // remove trailing "*" in order to fetch the correct icon
-        ul.append($(`<li style="list-style-image: url('assets/images/${hostName}_icon.png')"><a target=_blank href=${links[e]}>${e}</a></li>`))
+        const link = links[e]
+        const hostName = link.name.replace(/\*$/g, "") // remove trailing "*" in order to fetch the correct icon
+        // TODO add extensions
+        ul.append($(`<li style="list-style-image: url('assets/images/${hostName}_icon.png')"><a target=_blank href=${link.main}>${link.name}</a></li>`))
       }
       external.append(ul)
     }

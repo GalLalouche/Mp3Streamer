@@ -11,8 +11,8 @@ import scala.concurrent.Future
 import scala.io.Source
 
 trait RealConfig extends Configuration {
-  override implicit val driver: JdbcProfile = SQLiteDriver
-  override implicit val db = driver.api.Database.forURL("jdbc:sqlite:d:/media/music/MBRecon.sqlite", driver = "org.sqlite.JDBC")
+  override lazy implicit val driver: JdbcProfile = SQLiteDriver
+  override implicit val db: driver.backend.DatabaseDef = driver.api.Database.forURL("jdbc:sqlite:d:/media/music/MBRecon.sqlite", driver = "org.sqlite.JDBC")
   override implicit lazy val mf: MusicFinder = RealLocations
   override def downloadDocument(url: Url): Future[Document] =
     Future(Source.fromURL(url.address, "UTF-8"))
