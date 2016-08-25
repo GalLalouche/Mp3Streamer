@@ -1,12 +1,10 @@
 package backend.mb
 
-import java.io.File
-
 import backend.external._
 import backend.recon.Reconcilable._
 import backend.recon._
 import backend.storage.{FreshnessStorage, RefreshableStorage, Retriever}
-import backend.{CleanConfiguration, Configuration, StandaloneConfig}
+import backend.{Configuration, StandaloneConfig}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import models.Song
@@ -15,10 +13,9 @@ import org.joda.time.Duration
 import scala.concurrent.Future
 
 class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song, ExtendedExternalLinks] {
-  private def createExternalProvider[T <: Reconcilable : Manifest](
-      reconciler: Retriever[T, (Option[ReconID], Boolean)],
-      provider: Retriever[ReconID, Links[T]],
-      expander: Retriever[Links[T], Links[T]]): Retriever[T, Links[T]] =
+  private def createExternalProvider[T <: Reconcilable : Manifest](reconciler: Retriever[T, (Option[ReconID], Boolean)],
+                                                                   provider: Retriever[ReconID, Links[T]],
+                                                                   expander: Retriever[Links[T], Links[T]]): Retriever[T, Links[T]] =
     new RefreshableStorage(
       new FreshnessStorage(new SlickExternalStorage[T]),
       new ExternalPipe[T](
@@ -36,6 +33,7 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
 
   private val artistPipe =
     createExternalProvider[Artist](artistReconciler, new ArtistLinkExtractor, Future.successful(Nil).const)
+  private val albumPipe = createExternalProvider[Album](albumReconciler, new AlbumLinkExtractor, new AlbumLinksExpander())
 
   private val extractor = new AlbumLinkExtractor
   private val sameHostExpander = CompositeSameHostExpander.default
@@ -45,10 +43,7 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
   }
 
   private def getArtistLinks(a: Artist) = artistPipe(a)
-  private def getAlbumLinks(artistLinks: Links[Artist], a: Album) =
-    createExternalProvider(albumReconciler,
-      extractor,
-      superExtractor(artistLinks, a)).apply(a)
+  private def getAlbumLinks(artistLinks: Links[Artist], a: Album) = albumPipe(a)
 
   private val extender = new CompositeExtender(
     Map[Host, LinkExtender[Artist]](Host.MusicBrainz -> MusicBrainzExtender),
@@ -56,17 +51,19 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
 
   // for testing on remote
   private def apply(a: Album): Future[ExtendedExternalLinks] =
-    for (artistLinks <- getArtistLinks(a.artist); albumLinks <- getAlbumLinks(artistLinks, a))
-      yield ExtendedExternalLinks(artistLinks map (extender(_)), albumLinks map (extender(_)), Nil)
+  for (artistLinks <- getArtistLinks(a.artist); albumLinks <- getAlbumLinks(artistLinks, a))
+    yield ExtendedExternalLinks(artistLinks map (extender(_)), albumLinks map (extender(_)), Nil)
   override def apply(s: Song): Future[ExtendedExternalLinks] = apply(s.release)
 }
 
 object MbExternalLinksProvider {
-  def main(args: Array[String]) {
-    implicit val c = CleanConfiguration
+  import common.rich.path.Directory
+  import common.rich.path.RichFile._
+
+  def fromDir(path: String): Song = Directory(path).files.filter(f => Set("mp3", "flac").contains(f.extension)).head |> Song.apply
+  def main(args: Array[String]): Unit = {
+    implicit val c = StandaloneConfig
     val $ = new MbExternalLinksProvider()
-    val x = $(Album("Scarsick", 2007, Artist("Pain of salvation"))).get
-//    val x = $(Song(new File("""D:\Media\Music\Metal\Black Metal\Rotting Christ\2007 Theogonia\01 - The Sign of Prime Creation.flac"""))).get
-    println(x)
+    $.apply(fromDir("""D:\Media\Music\Metal\Folk Metal\Moonsorrow\2005 Verisakeet""").log()).get.log()
   }
 }

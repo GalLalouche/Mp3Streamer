@@ -4,7 +4,7 @@ import backend.external.{ExtendedExternalLinks, ExtendedLink, LinkExtensions}
 import backend.mb.MbExternalLinksProvider
 import common.rich.RichT._
 import play.api.libs.json.Json.JsValueWrapper
-import play.api.libs.json.{JsArray, JsObject, Json}
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, Controller}
 
 object External extends Controller {
@@ -13,11 +13,11 @@ object External extends Controller {
 
   private val set = Set("allmusic", "wikipedia", "lastfm", "metalarchives", "musicbrainz", "facebook")
       .flatMap(e => List(e, e + "*"))
-  private def toJson(e: LinkExtensions[_]): JsObject = Json obj (e.name -> e.link.address)
+  private def toJson(e: LinkExtensions[_]): (String, JsValueWrapper) = e.name -> e.link.address
   private def toJson(e: ExtendedLink[_]): (String, JsValueWrapper) = e.host.name -> Json.obj(
     "host" -> e.host.name,
     "main" -> e.link.address,
-    "extensions" -> JsArray(e.extensions.toSeq map toJson))
+    "extensions" -> Json.obj(e.extensions.toSeq.map(toJson): _*))
   private def toJson(e: Traversable[ExtendedLink[_]]): JsObject = e
       .filter(e => set.contains(e.host.name))
       .map(toJson).toSeq |> Json.obj

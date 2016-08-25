@@ -3,7 +3,7 @@ package backend.external
 import java.net.{HttpURLConnection, URL}
 import java.util.regex.Pattern
 
-import backend.Url
+import backend.{StandaloneConfig, Url}
 import backend.recon.Album
 import common.rich.RichFuture._
 import common.io.InternetTalker
@@ -61,4 +61,13 @@ private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext,
   // explicitly changing Links to Traversable[ExternalLink[Album]] is needed for some reason
   override def apply(e: ExternalLink[Album]): Future[Traversable[ExternalLink[Album]]] =
     super.apply(e).flatMap(Future sequence _.map(canonize)).orElse(Nil)
+}
+
+object WikipediaAlbumExternalLinksExpander {
+  def forUrl(path: String): ExternalLink[Album] = new ExternalLink[Album](Url(path), Host.Wikipedia)
+  def main(args: Array[String]): Unit = {
+    implicit val c = StandaloneConfig
+    val $ = new WikipediaAlbumExternalLinksExpander()
+    $.apply(forUrl("""https://en.wikipedia.org/wiki/Feel_Euphoria""")).get.log()
+  }
 }
