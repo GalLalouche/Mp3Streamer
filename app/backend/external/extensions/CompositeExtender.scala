@@ -21,6 +21,8 @@ class CompositeExtender(artistExtensions: Map[Host, LinkExtender[Artist]], album
 object CompositeExtender {
   lazy val default =
     new CompositeExtender(
-      Map[Host, LinkExtender[Artist]](Host.MusicBrainz -> MusicBrainzExtender, Host.AllMusic -> AllMusicArtistExtender),
+      Map[Host, LinkExtender[Artist]](Host.MusicBrainz -> MusicBrainzExtender,
+        Host.AllMusic -> AllMusicArtistExtender,
+        Host.LastFm -> LastFmArtistExtender),
       Map[Host, LinkExtender[Album]](Host.MusicBrainz -> MusicBrainzExtender))
 }
