@@ -39,14 +39,12 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
   private def getArtistLinks(a: Artist) = artistPipe(a)
   private def getAlbumLinks(artistLinks: Links[Artist], a: Album) = albumPipe(a)
 
-  private val extender = new CompositeExtender(
-    Map[Host, LinkExtender[Artist]](Host.MusicBrainz -> MusicBrainzExtender),
-    Map[Host, LinkExtender[Album]](Host.MusicBrainz -> MusicBrainzExtender))
+  private val extender = CompositeExtender.default
 
   // for testing on remote
   private def apply(a: Album): Future[ExtendedExternalLinks] =
-    for (artistLinks <- getArtistLinks(a.artist); albumLinks <- getAlbumLinks(artistLinks, a))
-      yield ExtendedExternalLinks(artistLinks map (extender(_)), albumLinks map (extender(_)), Nil)
+  for (artistLinks <- getArtistLinks(a.artist); albumLinks <- getAlbumLinks(artistLinks, a))
+    yield ExtendedExternalLinks(artistLinks map extender[Artist], albumLinks map extender[Album], Nil)
   override def apply(s: Song): Future[ExtendedExternalLinks] = apply(s.release)
 }
 
