@@ -1,7 +1,7 @@
 package controllers
 
 import backend.external.extensions.ExtendedExternalLinks
-import backend.external.{ExtendedLink, LinkExtensions}
+import backend.external.{ExtendedLink, LinkExtension}
 import backend.mb.MbExternalLinksProvider
 import common.rich.RichT._
 import play.api.libs.json.Json.JsValueWrapper
@@ -14,7 +14,7 @@ object External extends Controller {
 
   private val set = Set("allmusic", "wikipedia", "lastfm", "metalarchives", "musicbrainz", "facebook")
       .flatMap(e => List(e, e + "*"))
-  private def toJson(e: LinkExtensions[_]): (String, JsValueWrapper) = e.name -> e.link.address
+  private def toJson(e: LinkExtension[_]): (String, JsValueWrapper) = e.name -> e.link.address
   private def toJson(e: ExtendedLink[_]): (String, JsValueWrapper) = e.host.name -> Json.obj(
     "host" -> e.host.name,
     "main" -> e.link.address,
