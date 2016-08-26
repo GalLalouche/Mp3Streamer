@@ -1,9 +1,9 @@
-package backend.external
+package backend.external.extensions
 
+import backend.external.{ExternalLink, _}
 import backend.recon.{Album, Reconcilable}
 import backend.storage.Retriever
-import common.io.{DocumentDownloader, InternetTalker}
-import common.rich.RichT._
+import common.io.InternetTalker
 
 import scala.concurrent.{ExecutionContext, Future}
 

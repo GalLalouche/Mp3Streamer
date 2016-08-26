@@ -1,6 +1,7 @@
 package backend.mb
 
 import backend.external._
+import backend.external.extensions._
 import backend.recon.Reconcilable._
 import backend.recon._
 import backend.storage.{FreshnessStorage, RefreshableStorage, Retriever}
@@ -35,13 +36,6 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
     createExternalProvider[Artist](artistReconciler, new ArtistLinkExtractor, Future.successful(Nil).const)
   private val albumPipe = createExternalProvider[Album](albumReconciler, new AlbumLinkExtractor, new AlbumLinksExpander())
 
-  private val extractor = new AlbumLinkExtractor
-  private val sameHostExpander = CompositeSameHostExpander.default
-  private def superExtractor(artistLinks: Links[Artist], a: Album): Retriever[Links[Album], Links[Album]] = links => {
-    import scalaz.Scalaz._
-    new AlbumLinksExpander().apply(links).zip(sameHostExpander.apply(artistLinks, a)).map(_.toList.flatten)
-  }
-
   private def getArtistLinks(a: Artist) = artistPipe(a)
   private def getAlbumLinks(artistLinks: Links[Artist], a: Album) = albumPipe(a)
 
@@ -51,8 +45,8 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
 
   // for testing on remote
   private def apply(a: Album): Future[ExtendedExternalLinks] =
-  for (artistLinks <- getArtistLinks(a.artist); albumLinks <- getAlbumLinks(artistLinks, a))
-    yield ExtendedExternalLinks(artistLinks map (extender(_)), albumLinks map (extender(_)), Nil)
+    for (artistLinks <- getArtistLinks(a.artist); albumLinks <- getAlbumLinks(artistLinks, a))
+      yield ExtendedExternalLinks(artistLinks map (extender(_)), albumLinks map (extender(_)), Nil)
   override def apply(s: Song): Future[ExtendedExternalLinks] = apply(s.release)
 }
 

@@ -1,5 +1,6 @@
-package backend.external
+package backend.external.extensions
 
+import backend.external.{ExtendedLink, ExternalLink, Host}
 import backend.recon.{Album, Artist, Reconcilable}
 
 class CompositeExtender(artistExtensions: Map[Host, LinkExtender[Artist]], albumExtensions: Map[Host, LinkExtender[Album]]) {

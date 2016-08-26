@@ -1,6 +1,7 @@
 package controllers
 
-import backend.external.{ExtendedExternalLinks, ExtendedLink, LinkExtensions}
+import backend.external.extensions.ExtendedExternalLinks
+import backend.external.{ExtendedLink, LinkExtensions}
 import backend.mb.MbExternalLinksProvider
 import common.rich.RichT._
 import play.api.libs.json.Json.JsValueWrapper

@@ -3,10 +3,11 @@ package backend.external
 import java.net.{HttpURLConnection, URL}
 import java.util.regex.Pattern
 
-import backend.{StandaloneConfig, Url}
+import backend.external.extensions.ExternalLinkExpander
 import backend.recon.Album
-import common.rich.RichFuture._
+import backend.{StandaloneConfig, Url}
 import common.io.InternetTalker
+import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import org.jsoup.nodes.Document
@@ -60,7 +61,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext,
 
   // explicitly changing Links to Traversable[ExternalLink[Album]] is needed for some reason
   override def apply(e: ExternalLink[Album]): Future[Traversable[ExternalLink[Album]]] =
-    super.apply(e).flatMap(Future sequence _.map(canonize)).orElse(Nil)
+  super.apply(e).flatMap(Future sequence _.map(canonize)).orElse(Nil)
 }
 
 object WikipediaAlbumExternalLinksExpander {
