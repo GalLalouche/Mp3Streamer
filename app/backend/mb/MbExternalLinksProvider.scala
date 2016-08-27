@@ -51,11 +51,22 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
 object MbExternalLinksProvider {
   import common.rich.path.Directory
   import common.rich.path.RichFile._
+  import backend.Url
 
   def fromDir(path: String): Song = Directory(path).files.filter(f => Set("mp3", "flac").contains(f.extension)).head |> Song.apply
   def main(args: Array[String]): Unit = {
     implicit val c = StandaloneConfig
     val $ = new MbExternalLinksProvider()
-    $.apply(fromDir("""D:\Media\Music\Metal\Folk Metal\Moonsorrow\2005 Verisakeet""").log()).get.log()
+//    val x: ExternalLink[Artist] = $.apply(fromDir("""D:\Media\Music\Metal\Gothic Metal\Lacuna Coil\2006 Karmacode""")).get
+//        .artistLinks
+//        .find(_.host.canonize == Host.LastFm)
+//        .get
+//        .log()
+//        .toLink
+    val y = ExternalLink[Artist](Url("http://www.last.fm/music/Lacuna+Coil"), Host("lastfm", Url("www.last.fm")))
+    println(y.host.canonize)
+//    $.extender.apply(x).log()
+//    $.extender.apply(y).log()
   }
+
 }
