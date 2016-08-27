@@ -2,7 +2,7 @@ package search
 
 import java.io.File
 
-import common.Jsoner._
+import common.RichJson._
 import models.{Album, Artist, Song}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
@@ -27,11 +27,12 @@ object Jsonable {
         "year" -> s.year,
         "bitrate" -> s.bitrate,
         "duration" -> s.duration,
-        "size" -> s.size)
+        "size" -> s.size,
+        "discNumber" -> s.discNumber)
     def parse(json: JsObject): Song = {
       new Song(file = new File(json \ "file"), title = json \ "title", artistName = json \ "artistName", albumName = json \ "albumName",
         track = json \ "track", year = json \ "year", bitrate = json \ "bitrate",
-        duration = json \ "duration", size = json \ "size")
+        duration = json \ "duration", size = json \ "size", discNumber = json ostr "discNumber")
     }
   }
 
@@ -58,5 +59,4 @@ object Jsonable {
       Artist(json \ "name", albums.toSet)
     }
   }
-
 }
