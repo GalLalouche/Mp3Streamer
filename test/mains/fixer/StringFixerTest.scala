@@ -21,6 +21,6 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
     verifyFix("I Am A Rock", "I am a Rock")
   }
   "ordered" in {
-    $.lowerCaseWords.toList.sorted shouldReturn $.lowerCaseWords.toList
+    $.lowerCaseWords.sorted shouldReturn $.lowerCaseWords
   }
 }
