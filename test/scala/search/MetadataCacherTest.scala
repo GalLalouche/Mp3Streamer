@@ -18,14 +18,14 @@ import scala.collection.mutable
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSugar with Matchers with AuxSpecs {
   val root = new MemoryRoot
   val pathToSongs = mutable.HashMap[String, Song]()
-  val fakeMf = new MusicFinder {
+  private implicit val fakeMf = new MusicFinder {
     override val extensions: List[String] = List("mp3")
     override val dir = root
     override val subDirs: List[String] = null
     override def albumDirs: Seq[DirectoryRef] = dir.dirs
   }
   private val saver = mock[JsonableSaver]
-  val $ = new MetadataCacher(fakeMf, pathToSongs, saver)
+  val $ = new MetadataCacher(pathToSongs, saver)
   def addSong(s: Song) = {
     val dir = root addSubDir s.album.title
     val file = dir addFile s.file.getName
@@ -113,26 +113,26 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
 
   "incremental (integration)" in {
     // it's a pain in the ass to test for updates using mocks
-    val saver = new JsonableSaver(root)
-    val $ = new MetadataCacher(fakeMf, pathToSongs, saver)
+    val saver = new JsonableSaver()(root)
+    val $ = new MetadataCacher(pathToSongs, saver)
     val album1 = Models.mockAlbum(title = "album1")
     val song1 = Models.mockSong(title = "song1", album = album1, artistName = "artist1")
     $(addSong(song1))
     saver.load[Song] shouldReturn Seq(song1)
     saver.load[Album] shouldReturn Seq(album1)
-    saver.load[Artist] shouldReturn Seq(new Artist("artist1", Set(album1)))
+    saver.load[Artist] shouldReturn Seq(Artist("artist1", Set(album1)))
     val album2 = Models.mockAlbum(title = "album2")
     val song2 = Models.mockSong(title = "song2", album = album2, artistName = "artist1")
     $(addSong(song2))
 
     saver.load[Song].toSet shouldReturn Set(song1, song2)
     saver.load[Album].toSet shouldReturn Set(album1, album2)
-    saver.load[Artist].toSet shouldReturn Set(new Artist("artist1", Set(album1, album2)))
+    saver.load[Artist].toSet shouldReturn Set(Artist("artist1", Set(album1, album2)))
     val album3 = Models.mockAlbum(title = "album3")
     val song3 = Models.mockSong(title = "song3", album = album3, artistName = "artist2")
     $(addSong(song3))
     saver.load[Song].toSet shouldReturn Set(song1, song2, song3)
     saver.load[Album].toSet shouldReturn Set(album1, album2, album3)
-    saver.load[Artist].toSet shouldReturn Set(new Artist("artist1", Set(album1, album2)), new Artist("artist2", Set(album3)))
+    saver.load[Artist].toSet shouldReturn Set(Artist("artist1", Set(album1, album2)), Artist("artist2", Set(album3)))
   }
 }
