@@ -8,7 +8,7 @@ import org.jsoup.nodes.Document
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/** No IO */
+// TODO turn it into a case class so copying is easier and it could be fully configurable
 class TestConfigurationInstance extends NonPersistentConfig {
   override implicit val ec: ExecutionContext = new ExecutionContext {
     override def reportFailure(cause: Throwable): Unit = ???
@@ -22,10 +22,12 @@ class TestConfigurationInstance extends NonPersistentConfig {
     throw new NotImplementedError("No default implementation for httpUrlConnection")
 
   def withDocumentDownloader(dd: Url => Document): TestConfigurationInstance = new TestConfigurationInstance {
+    override val ec = TestConfigurationInstance.this.ec
     override def downloadDocument(u: Url) = Future successful dd(u)
     override def connect(http: HttpURLConnection) = TestConfigurationInstance.this.connect(http)
   }
   def withHttpConnector(httpConnector: HttpURLConnection => HttpURLConnection) = new TestConfigurationInstance {
+    override val ec = TestConfigurationInstance.this.ec
     override def downloadDocument(u: Url) = TestConfigurationInstance.this.downloadDocument(u)
     override def connect(http: HttpURLConnection) = Future successful httpConnector(http)
   }
