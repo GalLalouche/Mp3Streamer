@@ -16,7 +16,7 @@ import search.MetadataCacher.IndexUpdate
 import scala.collection.mutable
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSugar with Matchers with AuxSpecs {
-  val root = new MemoryRoot
+  private implicit val root = new MemoryRoot
   val pathToSongs = mutable.HashMap[String, Song]()
   private implicit val fakeMf = new MusicFinder {
     override val extensions: List[String] = List("mp3")
@@ -24,8 +24,11 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
     override val subDirs: List[String] = null
     override def albumDirs: Seq[DirectoryRef] = dir.dirs
   }
-  private val saver = mock[JsonableSaver]
-  val $ = new MetadataCacher(pathToSongs, saver)
+  private val mockSaver = mock[JsonableSaver]
+  def fromSaver(saver: JsonableSaver) = new MetadataCacher(saver) {
+    override protected def parseSong(filePath: String): Song = pathToSongs(filePath)
+  }
+  val $ = fromSaver(mockSaver)
   def addSong(s: Song) = {
     val dir = root addSubDir s.album.title
     val file = dir addFile s.file.getName
@@ -46,7 +49,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
     }
   )
   def verifyData[T: Jsonable](xs: T*) {
-    verify(saver).save(matches(xs))(any(), any())
+    verify(mockSaver).save(matches(xs))(any(), any())
   }
   "index" - {
     def indexAll() = {
@@ -113,8 +116,8 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
 
   "incremental (integration)" in {
     // it's a pain in the ass to test for updates using mocks
-    val saver = new JsonableSaver()(root)
-    val $ = new MetadataCacher(pathToSongs, saver)
+    val saver = new JsonableSaver
+    val $ = fromSaver(saver)
     val album1 = Models.mockAlbum(title = "album1")
     val song1 = Models.mockSong(title = "song1", album = album1, artistName = "artist1")
     $(addSong(song1))

@@ -14,16 +14,17 @@ import scala.collection.GenSeq
 
 // Possible source of bugs: indexAll and apply(DirectoryRef) work on different threads. This solution is forced
 // due to type erasure.
-class MetadataCacher(songParser: String => Song, saver: JsonableSaver)(implicit mf: MusicFinder) extends SimpleActor[DirectoryRef] {
+class MetadataCacher(saver: JsonableSaver)(implicit mf: MusicFinder) extends SimpleActor[DirectoryRef] {
 
   import MetadataCacher._
 
   private def getDirectoryInfo(d: DirectoryRef, onParsingCompleted: () => Unit): DirectoryInfo = {
-    val songs = mf.getSongFilePathsInDir(d).map(songParser)
+    val songs = mf.getSongFilePathsInDir(d).map(parseSong)
     val album = songs.head.album
     onParsingCompleted()
     DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))
   }
+  protected def parseSong(filePath: String): Song = Song(new File(filePath))
   override def apply(dir: DirectoryRef) {
     val info = getDirectoryInfo(dir, () => ())
     saver.update[Song](_ ++ info.songs)
@@ -72,6 +73,6 @@ object MetadataCacher {
 
   def create(implicit c: Configuration): MetadataCacher = {
     import c._
-    new MetadataCacher(f => Song(new File(f)), new JsonableSaver)
+    new MetadataCacher(new JsonableSaver)
   }
 }
