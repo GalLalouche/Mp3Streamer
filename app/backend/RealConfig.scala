@@ -1,7 +1,8 @@
 package backend
 
-import java.net.{HttpURLConnection, URL}
+import java.net.HttpURLConnection
 
+import common.io.{DirectoryRef, IODirectory}
 import models.{MusicFinder, RealLocations}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -22,4 +23,5 @@ trait RealConfig extends Configuration {
     http.connect()
     http
   }
+  override implicit lazy val rootDirectory: DirectoryRef = IODirectory.apply("D:/media/streamer/")
 }

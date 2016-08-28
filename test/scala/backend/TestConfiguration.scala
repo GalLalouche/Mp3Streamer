@@ -2,13 +2,12 @@ package backend
 
 import java.net.HttpURLConnection
 
+import common.io.{DirectoryRef, MemoryRoot}
 import models.MusicFinder
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import slick.driver.{H2Driver, JdbcProfile}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.io.Source
 
 class TestConfigurationInstance extends Configuration {
   override implicit val ec: ExecutionContext = new ExecutionContext {
@@ -33,6 +32,7 @@ class TestConfigurationInstance extends Configuration {
     override def downloadDocument(u: Url) = TestConfigurationInstance.this.downloadDocument(u)
     override def connect(http: HttpURLConnection) = Future successful httpConnector(http)
   }
+  override implicit val rootDirectory: DirectoryRef = new MemoryRoot
 }
 
 object TestConfiguration extends TestConfigurationInstance

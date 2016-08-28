@@ -3,7 +3,7 @@ package search
 import java.util.concurrent.{LinkedBlockingQueue, Semaphore, TimeUnit}
 
 import common.AuxSpecs
-import common.io.{DirectoryRef, Root}
+import common.io.{DirectoryRef, MemoryRoot}
 import models.{Album, Artist, MusicFinder, Song}
 import org.hamcrest.{BaseMatcher, Description}
 import org.mockito.Matchers._
@@ -16,7 +16,7 @@ import search.MetadataCacher.IndexUpdate
 import scala.collection.mutable
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSugar with Matchers with AuxSpecs {
-  val root = new Root
+  val root = new MemoryRoot
   val pathToSongs = mutable.HashMap[String, Song]()
   val fakeMf = new MusicFinder {
     override val extensions: List[String] = List("mp3")

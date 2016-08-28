@@ -1,12 +1,12 @@
 package search
 import common.AuxSpecs
-import common.io.Root
+import common.io.MemoryRoot
 import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.{JsObject, Json}
 
 class JsonableSaverTest extends FreeSpec with OneInstancePerTest with MockitoSugar with AuxSpecs {
-  val root = new Root
+  val root = new MemoryRoot
   private val $ = new JsonableSaver(root)
   case class Person(age: Int, name: String)
   implicit object PersonJsonable extends Jsonable[Person] {

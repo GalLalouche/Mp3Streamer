@@ -49,9 +49,9 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
 }
 
 object MbExternalLinksProvider {
+  import backend.Url
   import common.rich.path.Directory
   import common.rich.path.RichFile._
-  import backend.Url
 
   def fromDir(path: String): Song = Directory(path).files.filter(f => Set("mp3", "flac").contains(f.extension)).head |> Song.apply
   def main(args: Array[String]): Unit = {
