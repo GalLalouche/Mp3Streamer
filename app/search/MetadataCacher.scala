@@ -50,7 +50,7 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: Jsonabl
   }
 }
 
-object RealMetadataCacher extends MetadataCacher(RealLocations, f => Song(new File(f)), new JsonableSaver(RealLocations.dir))
+class RealMetadataCacher extends MetadataCacher(RealLocations, f => Song(new File(f)), new JsonableSaver(RealLocations.dir))
 
 /**
  * Caches all music metadata on disk. Since extracting the metadata requires processing hundreds of gigabytes, but
