@@ -32,14 +32,12 @@ object Song {
     val artist = tag.getFirst(FieldKey.ARTIST)
     val album = tag.getFirst(FieldKey.ALBUM)
     val track = tag.getFirst(FieldKey.TRACK).toInt
-    val year = {
-      try {
-        ".*(\\d{4}).*".r.findAllIn(tag.getFirst(FieldKey.YEAR)).matchData.next().group(1).toInt
-      } catch {
-        case _: MatchError =>
-          println(s"No year in $file")
-          0
-      }
+    val year = try {
+      ".*(\\d{4}).*".r.findAllIn(tag.getFirst(FieldKey.YEAR)).matchData.next().group(1).toInt
+    } catch {
+      case _: MatchError =>
+        println(s"No year in $file")
+        0
     }
     val bitrate = header.getBitRate
     val duration = header.getTrackLength
