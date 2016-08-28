@@ -14,7 +14,7 @@ import scala.concurrent.Future
 
 class MbHtmlLinkExtractorTest extends FreeSpec with AuxSpecs {
 
-  import backend.TestConfiguration._
+  import backend.configs.TestConfiguration._
   private def getDocument(name: String) = Future successful Jsoup.parse(getResourceFile(name + ".html").readAll)
 
   "parse artist links" in {

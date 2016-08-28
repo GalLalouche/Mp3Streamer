@@ -2,7 +2,7 @@ package backend.mb
 
 import java.io.File
 
-import backend.StandaloneConfig
+import backend.configs.StandaloneConfig
 import backend.recon.{Artist, ArtistReconStorage, ReconID, ReconcilerCacher}
 import common.rich.RichFuture._
 import common.rich.RichT._

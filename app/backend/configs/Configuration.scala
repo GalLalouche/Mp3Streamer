@@ -1,4 +1,4 @@
-package backend
+package backend.configs
 
 import common.io.{DirectoryRef, InternetTalker}
 import models.MusicFinder

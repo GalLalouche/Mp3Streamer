@@ -1,6 +1,6 @@
 package backend.mb
 
-import backend.StandaloneConfig
+import backend.configs.StandaloneConfig
 import backend.mb.JsonHelper._
 import backend.recon.{Artist, OnlineReconciler, ReconID}
 import common.CompositeDateFormat

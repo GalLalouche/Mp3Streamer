@@ -1,7 +1,8 @@
 package backend.external
 
 import backend.recon.{Album, Artist}
-import backend.{TestConfiguration, Url}
+import backend.Url
+import backend.configs.TestConfiguration
 import org.scalatest.FreeSpec
 
 class MetalArchivesAlbumsFinderTest extends FreeSpec with DocumentSpecs {

@@ -1,7 +1,8 @@
 package backend.external
 
 import backend.recon.{Album, Artist}
-import backend.{StandaloneConfig, Url}
+import backend.Url
+import backend.configs.StandaloneConfig
 import common.rich.RichFuture._
 import common.rich.RichT._
 import org.jsoup.nodes.Document

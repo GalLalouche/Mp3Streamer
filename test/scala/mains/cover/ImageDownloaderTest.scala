@@ -2,7 +2,7 @@ package mains.cover
 
 import java.nio.charset.MalformedInputException
 
-import backend.TestConfiguration
+import backend.configs.TestConfiguration
 import common.AuxSpecs
 import common.concurrency.Impatient
 import common.io.MemoryRoot

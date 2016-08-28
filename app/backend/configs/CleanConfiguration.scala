@@ -1,4 +1,4 @@
-package backend
+package backend.configs
 
 import backend.external.SlickExternalStorage
 import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage}

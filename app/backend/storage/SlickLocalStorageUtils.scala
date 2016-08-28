@@ -1,6 +1,6 @@
 package backend.storage
 
-import backend.Configuration
+import backend.configs.Configuration
 import common.rich.RichFuture._
 import slick.jdbc.meta.MTable
 

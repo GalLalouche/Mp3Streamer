@@ -5,7 +5,8 @@ import java.util.regex.Pattern
 
 import backend.external.extensions.ExternalLinkExpander
 import backend.recon.Album
-import backend.{StandaloneConfig, Url}
+import backend.Url
+import backend.configs.StandaloneConfig
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._

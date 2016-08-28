@@ -1,7 +1,8 @@
 package backend.external
 
 import backend.recon.Artist
-import backend.{TestConfiguration, _}
+import backend._
+import backend.configs.TestConfiguration
 import common.AuxSpecs
 import common.rich.RichFuture._
 import org.joda.time.DateTime

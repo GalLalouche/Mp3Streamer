@@ -5,7 +5,8 @@ import backend.external.extensions._
 import backend.recon.Reconcilable._
 import backend.recon._
 import backend.storage.{FreshnessStorage, RefreshableStorage, Retriever}
-import backend.{Configuration, StandaloneConfig}
+import backend.configs.StandaloneConfig
+import backend.configs.{Configuration, StandaloneConfig}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import models.Song

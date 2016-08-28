@@ -1,6 +1,6 @@
 package lyrics
 
-import backend.Configuration
+import backend.configs.Configuration
 import backend.storage.{LocalStorageTemplate, LocalStorageUtils, SlickLocalStorageUtils}
 import models.Song
 

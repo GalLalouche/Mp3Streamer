@@ -1,6 +1,6 @@
 package backend.mb
 
-import backend.StandaloneConfig
+import backend.configs.StandaloneConfig
 import backend.external.ExternalLink
 import backend.external.extensions.AlbumLinksExpander
 import backend.recon.{Album, ReconID}

@@ -1,6 +1,6 @@
 package mains.albums
 
-import backend.StandaloneConfig
+import backend.configs.StandaloneConfig
 import backend.mb.MbArtistReconciler
 import backend.recon.{ArtistReconStorage, ReconcilerCacher}
 import common.rich.RichT._

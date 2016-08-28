@@ -1,6 +1,6 @@
 package backend.external
 
-import backend.TestConfiguration._
+import backend.configs.TestConfiguration._
 import backend.Url
 import backend.recon.{Album, ReconID}
 import common.AuxSpecs

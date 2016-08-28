@@ -1,7 +1,8 @@
-package backend
+package backend.configs
 
 import java.net.HttpURLConnection
 
+import backend.Url
 import common.io.{DirectoryRef, MemoryRoot}
 import models.MusicFinder
 import org.jsoup.nodes.Document

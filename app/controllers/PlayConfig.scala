@@ -1,6 +1,6 @@
 package controllers
 
-import backend.RealConfig
+import backend.configs.RealConfig
 
 import scala.concurrent.ExecutionContext
 
