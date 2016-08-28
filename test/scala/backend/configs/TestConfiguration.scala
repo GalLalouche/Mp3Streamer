@@ -3,22 +3,18 @@ package backend.configs
 import java.net.HttpURLConnection
 
 import backend.Url
-import common.io.{DirectoryRef, MemoryRoot}
 import models.MusicFinder
 import org.jsoup.nodes.Document
-import slick.driver.{H2Driver, JdbcProfile}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class TestConfigurationInstance extends Configuration {
+/** No IO */
+class TestConfigurationInstance extends NonPersistentConfig {
   override implicit val ec: ExecutionContext = new ExecutionContext {
     override def reportFailure(cause: Throwable): Unit = ???
     override def execute(runnable: Runnable): Unit = runnable.run()
   }
 
-  override implicit val driver: JdbcProfile = H2Driver
-  override implicit val db: driver.backend.DatabaseDef =
-    driver.api.Database.forURL("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.H2.JDBC")
   override implicit val mf: MusicFinder = null
   override def downloadDocument(url: Url): Future[Document] =
     throw new NotImplementedError("No default implementation for downloadDocument")
@@ -33,7 +29,6 @@ class TestConfigurationInstance extends Configuration {
     override def downloadDocument(u: Url) = TestConfigurationInstance.this.downloadDocument(u)
     override def connect(http: HttpURLConnection) = Future successful httpConnector(http)
   }
-  override implicit val rootDirectory: DirectoryRef = new MemoryRoot
 }
 
 object TestConfiguration extends TestConfigurationInstance
