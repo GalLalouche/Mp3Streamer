@@ -1,6 +1,6 @@
 package backend.external.extensions
 
-import backend.external.{ExternalLink, LinkExtension}
+import backend.external.ExternalLink
 import backend.recon.Reconcilable
 
 private object MusicBrainzExtender extends LinkExtender[Reconcilable] {

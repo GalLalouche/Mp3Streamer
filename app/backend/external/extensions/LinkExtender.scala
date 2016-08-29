@@ -1,6 +1,6 @@
 package backend.external.extensions
 
-import backend.external.{ExternalLink, LinkExtension}
+import backend.external.ExternalLink
 import backend.recon.Reconcilable
 
 private trait LinkExtender[-R <: Reconcilable] {

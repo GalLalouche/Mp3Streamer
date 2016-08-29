@@ -1,6 +1,6 @@
 package backend.external.extensions
 
-import backend.external.{ExternalLink, LinkExtension}
+import backend.external.ExternalLink
 import backend.recon.Album
 
 private object AllMusicAlbumExtender extends LinkExtender[Album] {

@@ -1,7 +1,8 @@
-package backend.external
+package backend.external.extensions
 
 import backend.Url
-import backend.recon.{Album, Reconcilable}
+import backend.external.{ExternalLink, Host}
+import backend.recon.Reconcilable
 
 case class LinkExtension[R <: Reconcilable](name: String, link: Url)
 case class ExtendedLink[R <: Reconcilable](link: Url, host: Host, extensions: Traversable[LinkExtension[R]]) {

@@ -1,6 +1,6 @@
 package backend.external.extensions
 
-import backend.external.{ExternalLink, LinkExtension}
+import backend.external.ExternalLink
 import backend.recon.Artist
 
 private object LastFmArtistExtender extends LinkExtender[Artist] {
