@@ -24,5 +24,6 @@ object CompositeExtender {
       Map[Host, LinkExtender[Artist]](Host.MusicBrainz -> MusicBrainzExtender,
         Host.AllMusic -> AllMusicArtistExtender,
         Host.LastFm -> LastFmArtistExtender),
-      Map[Host, LinkExtender[Album]](Host.MusicBrainz -> MusicBrainzExtender))
+      Map[Host, LinkExtender[Album]](Host.MusicBrainz -> MusicBrainzExtender,
+        Host.AllMusic -> AllMusicAlbumExtender))
 }
