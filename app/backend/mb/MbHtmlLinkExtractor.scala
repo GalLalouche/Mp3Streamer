@@ -16,7 +16,7 @@ private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String
   private[mb] def getHtml(reconId: ReconID): Future[Document] =
     DocumentDownloader(getMbUrl(reconId))
   private def extractLink(e: Element): ExternalLink[T] = {
-    val url: Url = Url(e.child(0).attr("href").mapIf(_.startsWith("//")).to("https:" + _))
+    val url: Url = Url(e.select("a").attr("href").mapIf(_.startsWith("//")).to("https:" + _))
     val sourceName = e.className
         .takeWhile(_ != '-')
         .mapIf(_ == "no").to(x => e.child(0).text())
