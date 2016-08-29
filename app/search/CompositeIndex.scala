@@ -1,12 +1,13 @@
 package search
 
-import models.{Album, Artist, MusicFinder, Song}
+import common.io.DirectoryRef
+import models.{Album, Artist, Song}
 
 /** Index for songs, albums and artists */
-class CompositeIndex(mf: MusicFinder) {
+class CompositeIndex(implicit r: DirectoryRef) {
   import Index.ProductOrdering
   val indexBuilder = WeightedIndexBuilder
-  private val saver = new JsonableSaver(mf.dir)
+  private val saver = new JsonableSaver()
   private def buildIndexFromCache[T: Jsonable : Indexable : WeightedIndexable : Manifest] =
     indexBuilder.buildIndexFor(saver.load)
   private def find(terms: Seq[String]) = new { // currying because Scala isn't functional enough :(

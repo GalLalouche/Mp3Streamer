@@ -12,9 +12,11 @@ import play.api.mvc.{Action, Controller}
 import search.{CompositeIndex, Jsonable}
 
 object Searcher extends Controller with Extra {
-  private var index: CompositeIndex = new CompositeIndex(RealLocations)
+  private implicit val c = PlayConfig
+  import c._
+  private var index: CompositeIndex = new CompositeIndex
   override def apply() {
-    index = new CompositeIndex(RealLocations)
+    index = new CompositeIndex
     Logger info "Search engine has been updated"
   }
   def search(path: String) = Action {
