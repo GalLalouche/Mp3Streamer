@@ -1,12 +1,11 @@
 package backend.mb
 
+import backend.configs.{CleanConfiguration, Configuration}
 import backend.external._
 import backend.external.extensions._
 import backend.recon.Reconcilable._
 import backend.recon._
 import backend.storage.{FreshnessStorage, RefreshableStorage, Retriever}
-import backend.configs.StandaloneConfig
-import backend.configs.{Configuration, StandaloneConfig}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import models.Song
@@ -50,13 +49,13 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
 }
 
 object MbExternalLinksProvider {
-  import backend.Url
+
   import common.rich.path.Directory
   import common.rich.path.RichFile._
 
   def fromDir(path: String): Song = Directory(path).files.filter(f => Set("mp3", "flac").contains(f.extension)).head |> Song.apply
   def main(args: Array[String]): Unit = {
-    implicit val c = StandaloneConfig
+    implicit val c = CleanConfiguration
     val $ = new MbExternalLinksProvider()
 //    val x: ExternalLink[Artist] = $.apply(fromDir("""D:\Media\Music\Metal\Gothic Metal\Lacuna Coil\2006 Karmacode""")).get
 //        .artistLinks

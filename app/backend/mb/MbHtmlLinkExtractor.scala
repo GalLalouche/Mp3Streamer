@@ -20,7 +20,7 @@ private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String
     val sourceName = e.className
         .takeWhile(_ != '-')
         .mapIf(_ == "no").to(x => e.child(0).text())
-    ExternalLink(url, Host(sourceName, url.host))
+    ExternalLink(url, Host fromUrl url getOrElse Host(sourceName, url.host))
   }
   def extractLinks(d: Document): List[ExternalLink[T]] =
     d.select(".external_links")
@@ -30,9 +30,8 @@ private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String
         .toList
 
   override def apply(id: ReconID): Future[Traversable[ExternalLink[T]]] = {
-    val mbUrl = getMbUrl(id)
-    val link = ExternalLink[T](mbUrl, Host("musicbrainz", mbUrl.host))
-    getHtml(id).map(extractLinks).map(link :: _)
+    val mbLink = ExternalLink[T](getMbUrl(id), Host.MusicBrainz)
+    getHtml(id).map(extractLinks).map(mbLink :: _)
   }
 }
 
