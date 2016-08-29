@@ -1,26 +1,32 @@
 package search
 
 import java.io.File
-import java.util.concurrent.Executors
 
+import backend.configs.Configuration
 import common.concurrency.SimpleActor
 import common.io.DirectoryRef
-import common.{Collectable, Debug, IndexedSet}
+import common.{Collectable, IndexedSet}
 import models._
-import rx.lang.scala.{Observable, Observer, Subscription}
+import rx.lang.scala.subjects.ReplaySubject
+import rx.lang.scala.{Observable, Observer}
 
 import scala.collection.GenSeq
 
 // Possible source of bugs: indexAll and apply(DirectoryRef) work on different threads. This solution is forced
 // due to type erasure.
-class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: JsonableSaver) extends SimpleActor[DirectoryRef] with Debug {
+class MetadataCacher(saver: JsonableSaver)(implicit c: Configuration) extends SimpleActor[DirectoryRef] {
+
   import MetadataCacher._
-  private def getDirectoryInfo(d: DirectoryRef, listener: () => Unit): DirectoryInfo = {
-    val songs = mf.getSongFilePathsInDir(d).map(songParser)
+
+  private val mf = c.mf
+
+  private def getDirectoryInfo(d: DirectoryRef, onParsingCompleted: () => Unit): DirectoryInfo = {
+    val songs = mf.getSongFilePathsInDir(d).map(parseSong)
     val album = songs.head.album
-    listener()
+    onParsingCompleted()
     DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))
   }
+  protected def parseSong(filePath: String): Song = Song(new File(filePath))
   override def apply(dir: DirectoryRef) {
     val info = getDirectoryInfo(dir, () => ())
     saver.update[Song](_ ++ info.songs)
@@ -28,29 +34,26 @@ class MetadataCacher(mf: MusicFinder, songParser: String => Song, saver: Jsonabl
     saver.update[Artist](_./:(emptyArtistSet)(_ + _) + info.artist)
   }
   def indexAll(): Observable[IndexUpdate] = {
-    import common.concurrency._
+    import common.concurrency.toRunnable
     def aux(obs: Observer[IndexUpdate]) {
-      val updateQueue = Executors.newFixedThreadPool(1)
-      MetadataCacher.this.queue.submit(() => {
-          val dirs: GenSeq[DirectoryRef] = mf.albumDirs
-          val totalSize = dirs.length
-          var i = 0
-          val $ = gatherInfo(dirs.map(d => getDirectoryInfo(d, () => {
-            val j = i + 1
-            updateQueue submit (() => obs onNext IndexUpdate(j, totalSize, d))
-            i = j
-          })))
-          saver.save($.songs)
-          saver.save($.albums)
-          saver.save($.artists)
-          obs.onCompleted()
+      c execute (() => {
+        val dirs: GenSeq[DirectoryRef] = mf.albumDirs
+        val totalSize = dirs.length
+        val $ = gatherInfo(dirs.zipWithIndex.map { case (d, j) => getDirectoryInfo(d, onParsingCompleted = () => {
+           c execute (() => obs onNext IndexUpdate(j + 1, totalSize, d))
         })
+        })
+        saver.save($.songs)
+        saver.save($.albums)
+        saver.save($.artists)
+        obs.onCompleted()
+      })
     }
-    Observable apply aux
+    val $ = ReplaySubject[IndexUpdate]
+    Observable(aux) subscribe $
+    $
   }
 }
-
-object RealMetadataCacher extends MetadataCacher(RealLocations, f => Song(new File(f)), new JsonableSaver(RealLocations.dir))
 
 /**
  * Caches all music metadata on disk. Since extracting the metadata requires processing hundreds of gigabytes, but
@@ -68,4 +71,9 @@ object MetadataCacher {
   }
   private def gatherInfo($: GenSeq[DirectoryInfo]) = Collectable fromList $
   case class IndexUpdate(currentIndex: Int, totalNumber: Int, dir: DirectoryRef)
+
+  def create(implicit c: Configuration): MetadataCacher = {
+    import c._
+    new MetadataCacher(new JsonableSaver)
+  }
 }

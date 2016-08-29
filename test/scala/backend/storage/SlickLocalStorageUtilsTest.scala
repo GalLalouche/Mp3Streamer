@@ -1,12 +1,12 @@
 package backend.storage
 
-import backend.TestConfiguration
+import backend.configs.TestConfiguration
 import common.AuxSpecs
 import common.rich.RichFuture._
 import org.scalatest.{BeforeAndAfter, FreeSpec}
 
 class SlickLocalStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAfter {
-  val c = TestConfiguration
+  val c = new TestConfiguration
   import c._
   import c.driver.api._
 

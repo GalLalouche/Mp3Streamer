@@ -1,5 +1,5 @@
-function elem(name) {
-  return $(`<${name}></${name}>`)
+function elem(name, content) {
+  return $(`<${name}>${content}</${name}>`)
 }
 String.prototype.format = String.prototype.f = function () {
   var s = this, i = arguments.length;

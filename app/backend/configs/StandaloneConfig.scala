@@ -1,4 +1,4 @@
-package backend
+package backend.configs
 
 import scala.concurrent.ExecutionContext
 

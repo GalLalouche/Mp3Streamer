@@ -1,7 +1,7 @@
 package backend.external
 
-import backend.TestConfiguration._
 import backend.Url
+import backend.configs.TestConfiguration
 import backend.recon.{Album, ReconID}
 import common.AuxSpecs
 import common.rich.RichFuture._
@@ -10,9 +10,10 @@ import org.scalatest.FreeSpec
 import scala.concurrent.Future
 
 class ExternalPipeTest extends FreeSpec with AuxSpecs {
-  val existingLink: ExternalLink[Album] = ExternalLink(Url("existing"), Host("host", Url("hosturl")))
-  val newLink: ExternalLink[Album] = ExternalLink(Url("new"), Host("newhost", Url("newhosturl")))
-  val expectedNewLink: ExternalLink[Album] = ExternalLink(Url("new"), Host("newhost*", Url("newhosturl")))
+  private implicit val c = new TestConfiguration
+  private val existingLink: ExternalLink[Album] = ExternalLink(Url("existing"), Host("host", Url("hosturl")))
+  private val newLink: ExternalLink[Album] = ExternalLink(Url("new"), Host("newhost", Url("newhosturl")))
+  private val expectedNewLink: ExternalLink[Album] = ExternalLink(Url("new"), Host("newhost*", Url("newhosturl")))
   "should add * to new links" in {
     val $ = new ExternalPipe[Album](x => Future successful ReconID("foobar"),
       x => Future successful List(existingLink),

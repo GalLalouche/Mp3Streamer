@@ -6,7 +6,8 @@ import play.api.libs.json.{JsObject, Json}
  * Saves in json format to a file.
  * @param workingDir The dir to save and load files from
  */
-private class JsonableSaver(workingDir: DirectoryRef) {
+private class JsonableSaver(implicit rootDir: DirectoryRef) {
+  private val workingDir = rootDir addSubDir "data" addSubDir "json"
   private def jsonFileName[T : Manifest]: String =
     s"${implicitly[Manifest[T]].runtimeClass.getSimpleName.replaceAll("\\$", "") }s.json"
   /**

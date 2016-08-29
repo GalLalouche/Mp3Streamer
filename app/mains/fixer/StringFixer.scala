@@ -3,13 +3,13 @@ package mains.fixer
 import common.rich.RichT._
 
 private object StringFixer {
-
-  private val lowerCaseWords = Set("a", "ain't", "all", "am", "an", "and", "are", "aren't", "as", "at", "be", "but", "by", "can", "can't",
-    "cannot", "did", "didn't", "do", "don't", "for", "from", "get", "got", "gotten", "had", "has", "have", "her", "his", "in", "into", "is",
+  private[fixer] val lowerCaseWords = List("a", "ain't", "all", "am", "an", "and", "are", "aren't", "as", "at", "be", "but", "by", "can", "can't",
+    "cannot", "did", "didn't", "do", "doesn't", "don't", "for", "from", "get", "got", "gotten", "had", "has", "have", "her", "his", "in", "into", "is",
     "isn't", "it", "it's", "its", "may", "me", "mine", "my", "not", "of", "on", "or", "our", "ours", "ov", "shall", "should", "so", "than",
     "that", "the", "their", "theirs", "them", "then", "there", "these", "this", "those", "through", "to", "too", "up", "upon", "was", "wasn't",
     "were", "weren't", "will", "with", "without", "won't", "would", "wouldn't", "your")
-  private val delimiters = """[ ()-:/\\]"""
+  private val lowerCaseSet = lowerCaseWords.toSet
+  private val delimiters = """[ ()\-:/\\]"""
 
   private def pascalCaseWord(w: String): String = w.head.toUpper + w.tail.toLowerCase
 
@@ -20,23 +20,26 @@ private object StringFixer {
     case _ if word.matches("[A-Z]+") => word
     case "i" | "I" => "I"
     case s if s matches "[IVXMLivxml]+" => s toUpperCase // roman numbers
-    case _ => if (lowerCaseWords(word.toLowerCase)) word.toLowerCase else pascalCaseWord(word) // everything else
+    case s if s matches "\\d\\w{2}" => s.toLowerCase
+    case _ => if (lowerCaseSet(word.toLowerCase)) word.toLowerCase else pascalCaseWord(word) // everything else
   }
 
-  private def splitWithDelimiters($: String, pattern: String): Seq[String] =
+  private def splitWithDelimiters($: String): List[String] =
     $.foldLeft((List[String](), new StringBuilder)) {
       case ((agg, sb), c) =>
-        if (c.toString.matches(pattern)) (c.toString :: sb.toString :: agg, new StringBuilder) // delimiter
+        if (c.toString matches delimiters) (c.toString :: sb.toString :: agg, new StringBuilder) // delimiter
         else (agg, sb append c)
     }.mapTo(e => e._2.toString :: e._1) // append last SB to list
       .filterNot(_.isEmpty) // remove empty ""
       .reverse
   def apply(str: String): String = {
-    val split = splitWithDelimiters(str, delimiters).toList
+    val split = splitWithDelimiters(str)
     (pascalCaseWord(split.head) :: (split.tail map fixWord)) mkString ""
   }
 
   def main(args: Array[String]) {
-    println("List(" + lowerCaseWords.toList.sorted.map(e => "\"" + e + "\"").mkString(", ") + ")")
+//    println("List(" + lowerCaseWords.toList.sorted.map(e => "\"" + e + "\"").mkString(", ") + ")")
+    println("1" matches delimiters)
+    splitWithDelimiters("1St").log()
   }
 }

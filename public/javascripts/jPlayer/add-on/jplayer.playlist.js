@@ -268,8 +268,8 @@
 		            + "' tabindex='1'>"
 		            + media.title
 		            + " <span class='jp-artist'>by {0} ({1}, {2}, {3}, {4}kbps, {5}) </span>"
-                    .f(media.artistName, media.albumName, media.track, media.year, media.bitrate, 
-                        media.duration.timeFormat());
+                    .f(media.artistName, media.albumName + (media.discNumber? `[${media.discNumber}]`: ""),
+												media.track, media.year, media.bitrate, media.duration.timeFormat());
 		    listItem += "</div></li>";
 		    
 		    return listItem;

@@ -1,11 +1,12 @@
 package backend.external
 
+import backend.Url
+import backend.configs.TestConfiguration
 import backend.recon.{Album, Artist}
-import backend.{TestConfiguration, Url}
 import org.scalatest.FreeSpec
 
 class MetalArchivesAlbumsFinderTest extends FreeSpec with DocumentSpecs {
-  private implicit val c = TestConfiguration
+  private implicit val c = new TestConfiguration
   private val $ = new MetalArchivesAlbumsFinder()
   private def aux(a: Album) = {
     $.aux(getDocument("metal-archives-discography.html"), a)

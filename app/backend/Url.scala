@@ -7,5 +7,5 @@ case class Url(address: String) {
       address split '/' apply 2
     else
       address takeWhile (_ != '/'))
-
+  def +(s: String): Url = Url(address + s)
 }

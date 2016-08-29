@@ -1,6 +1,6 @@
 package backend.recon
 
-import backend.Configuration
+import backend.configs.Configuration
 import backend.storage.SlickLocalStorageUtils
 import common.rich.RichT._
 

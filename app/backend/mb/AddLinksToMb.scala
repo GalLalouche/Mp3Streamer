@@ -1,7 +1,8 @@
 package backend.mb
 
-import backend.StandaloneConfig
-import backend.external.{AlbumLinksExpander, ExternalLink}
+import backend.configs.StandaloneConfig
+import backend.external.ExternalLink
+import backend.external.extensions.AlbumLinksExpander
 import backend.recon.{Album, ReconID}
 import common.rich.RichT._
 import common.rich.RichFuture._

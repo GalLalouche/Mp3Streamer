@@ -8,12 +8,11 @@ import common.io.IODirectory
 import common.rich.RichT._
 import common.rich.func.MoreMonadPlus._
 import common.rich.path.RichFile._
-import controllers.Searcher
+import controllers.{Cacher, Searcher}
 import models.{MusicFinder, Song}
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import rx.lang.scala.Subscriber
-import search.RealMetadataCacher
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -48,7 +47,7 @@ object SongSelector {
       if (songSelector == null)
         songSelector = $
       else // don't override
-        $.onSuccess {case e => songSelector = $}
+        $.onSuccess { case e => songSelector = $ }
       $.map(e => ())
     }
     private var songSelector: Future[SongSelector] = null
@@ -56,14 +55,14 @@ object SongSelector {
     override def randomSong: Song = ss.randomSong
     override def followingSong(song: Song): Song = ss followingSong song
   }
-  
+
   def listen(musicFinder: MusicFinder): SongSelector = {
     val $ = new SongSelectorProxy(musicFinder)
     def directoryListener(e: DirectoryEvent): Unit = e match {
       case DirectoryWatcher.DirectoryCreated(d) =>
         Logger info s"Directory $d has been added"
         $.update()
-            .onEnd(RealMetadataCacher ! new IODirectory(d))
+            .onEnd(Cacher newDir new IODirectory(d))
             .onEnd(Searcher.!())
       case DirectoryWatcher.DirectoryDeleted(d) =>
         Logger warn s"Directory has been deleted; the index does not support deletions yet, so please update."

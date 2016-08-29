@@ -3,7 +3,8 @@ package lyrics
 import java.io.File
 
 import backend.storage.{OnlineRetrieverCacher, Retriever}
-import backend.{Configuration, StandaloneConfig}
+import backend.configs.StandaloneConfig
+import backend.configs.{Configuration, StandaloneConfig}
 import common.rich.RichFuture._
 import models.Song
 

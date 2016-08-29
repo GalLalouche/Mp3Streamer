@@ -2,10 +2,10 @@ package mains.cover
 
 import java.nio.charset.MalformedInputException
 
-import backend.TestConfiguration
+import backend.configs.TestConfiguration
 import common.AuxSpecs
 import common.concurrency.Impatient
-import common.io.Root
+import common.io.MemoryRoot
 import common.rich.RichFuture._
 import org.mockito.Matchers
 import org.mockito.Mockito.when
@@ -18,9 +18,9 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 
 class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar with OneInstancePerTest with AuxSpecs {
-  private val tempDir = new Root
+  private val tempDir = new MemoryRoot
   private val downloader = mock[Downloader]
-  private implicit val c = TestConfiguration
+  private implicit val c = new TestConfiguration
   "ImageDownloader" - {
     def createDownloaderThatOnlyWorksFor(encoding: String) =
       new Downloader() {

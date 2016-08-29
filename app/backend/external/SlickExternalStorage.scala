@@ -1,8 +1,9 @@
 package backend.external
 
+import backend.configs.Configuration
 import backend.recon.Reconcilable
 import backend.storage.SlickLocalStorageUtils
-import backend.{Configuration, StringSerializable, Url}
+import backend.{StringSerializable, Url}
 import common.rich.RichT._
 import org.joda.time.DateTime
 

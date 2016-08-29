@@ -7,6 +7,7 @@ import common.rich.RichT.richT
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
 import common.rich.path.RichPath.poorPath
+import mains.IOUtils
 import mains.cover.DownloadCover
 import models.Song
 
@@ -40,7 +41,7 @@ object FolderFixer {
     Await.result(folderImage, Duration.Inf)(source)
     val dest = new File(destinationParent, source.name).toPath
     Files.move(source.toPath, dest)
-    new ProcessBuilder("explorer.exe", dest.toFile.getAbsolutePath).start
+    IOUtils.focus(dest.toFile)
   }
 
   private def downloadCover(newPath: Directory): Future[Directory => Unit] = {
