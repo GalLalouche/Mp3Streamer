@@ -2,7 +2,7 @@ package search
 
 import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
-import backend.configs.{CleanConfiguration, TestConfigurationInstance}
+import backend.configs.{Configuration, TestConfiguration}
 import common.AuxSpecs
 import common.io.{DirectoryRef, MemoryRoot}
 import models.{Album, Artist, MusicFinder, Song}
@@ -19,17 +19,14 @@ import scala.concurrent.{Await, ExecutionContext, Promise}
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSugar with Matchers with AuxSpecs {
   private implicit val root = new MemoryRoot
-  implicit val c = new TestConfigurationInstance {
-    override implicit val mf: MusicFinder = new MusicFinder {
-      override val extensions: List[String] = List("mp3")
-      override val dir = root
-      override val subDirs: List[String] = null
-      override def albumDirs: Seq[DirectoryRef] = dir.dirs
-    }
-    override implicit lazy val rootDirectory: DirectoryRef = root
-  }
+  implicit val c = TestConfiguration().copy(_root = root, _mf = new MusicFinder {
+    override val extensions: List[String] = List("mp3")
+    override val dir = root
+    override val subDirs: List[String] = null
+    override def albumDirs: Seq[DirectoryRef] = dir.dirs
+  })
   private val pathToSongs = mutable.HashMap[String, Song]()
-  private def fromSaver(saver: JsonableSaver) = new MetadataCacher(saver) {
+  private def fromSaver(saver: JsonableSaver)(implicit c: Configuration) = new MetadataCacher(saver) {
     override protected def parseSong(filePath: String): Song = pathToSongs(filePath)
   }
   private def addSong(s: Song) = {
@@ -113,12 +110,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
       q.poll(5, TimeUnit.SECONDS).ensuring(_ != null, "Did not receive a metadata update") should matchWithIndices(2, 2)
     }
     "with blocking sink" in {
-      val $ = new MetadataCacher(mockSaver)(new TestConfigurationInstance() {
-        override implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
-        override implicit val mf: MusicFinder = c.mf
-      }) {
-        override protected def parseSong(filePath: String): Song = pathToSongs(filePath)
-      }
+      val $ = fromSaver(mockSaver)(c.copy(_ec = ExecutionContext.Implicits.global))
       val album1 = Models.mockAlbum(title = "a1")
       val song1 = Models.mockSong(title = "song1", album = album1)
       addSong(song1)

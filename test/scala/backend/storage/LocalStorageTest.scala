@@ -12,7 +12,7 @@ import scala.concurrent.Future
 
 
 class LocalStorageTest extends FreeSpec with MockitoSugar with OneInstancePerTest with AuxSpecs {
-  private implicit val c = TestConfiguration
+  private implicit val c = new TestConfiguration
   private val existingValues = mutable.HashMap[Int, Int]()
   private val $ = new LocalStorageTemplate[Int, Int]() {
     override protected def internalForceStore(k: Int, v: Int): Future[Unit] = {

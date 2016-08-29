@@ -20,7 +20,7 @@ import scala.concurrent.duration._
 class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar with OneInstancePerTest with AuxSpecs {
   private val tempDir = new MemoryRoot
   private val downloader = mock[Downloader]
-  private implicit val c = TestConfiguration
+  private implicit val c = new TestConfiguration
   "ImageDownloader" - {
     def createDownloaderThatOnlyWorksFor(encoding: String) =
       new Downloader() {

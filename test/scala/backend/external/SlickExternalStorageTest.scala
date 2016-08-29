@@ -9,7 +9,7 @@ import org.joda.time.DateTime
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpec}
 
 class SlickExternalStorageTest extends FreeSpec with AuxSpecs with BeforeAndAfter with BeforeAndAfterAll {
-  implicit val c = TestConfiguration
+  implicit val c = new TestConfiguration
   val $ = new SlickExternalStorage[Artist]
   val utils = $.utils
   override def beforeAll: Unit = {

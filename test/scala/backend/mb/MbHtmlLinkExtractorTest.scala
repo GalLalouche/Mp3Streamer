@@ -1,6 +1,7 @@
 package backend.mb
 
 import backend.Url
+import backend.configs.TestConfiguration
 import backend.external.{ExternalLink, Host}
 import backend.recon.{Album, Artist, ReconID}
 import common.AuxSpecs
@@ -13,7 +14,7 @@ import org.scalatest.FreeSpec
 import scala.concurrent.Future
 
 class MbHtmlLinkExtractorTest extends FreeSpec with AuxSpecs {
-  import backend.configs.TestConfiguration._
+  private implicit val c = new TestConfiguration
 
   private def getDocument(name: String) = Future successful Jsoup.parse(getResourceFile(name + ".html").readAll)
 
