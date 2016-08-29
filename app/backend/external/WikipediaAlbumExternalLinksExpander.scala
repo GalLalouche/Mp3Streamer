@@ -3,10 +3,10 @@ package backend.external
 import java.net.{HttpURLConnection, URL}
 import java.util.regex.Pattern
 
+import backend.Url
+import backend.configs.CleanConfiguration
 import backend.external.extensions.ExternalLinkExpander
 import backend.recon.Album
-import backend.Url
-import backend.configs.StandaloneConfig
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -68,8 +68,8 @@ private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext,
 object WikipediaAlbumExternalLinksExpander {
   def forUrl(path: String): ExternalLink[Album] = new ExternalLink[Album](Url(path), Host.Wikipedia)
   def main(args: Array[String]): Unit = {
-    implicit val c = StandaloneConfig
+    implicit val c = CleanConfiguration
     val $ = new WikipediaAlbumExternalLinksExpander()
-    $.apply(forUrl("""https://en.wikipedia.org/wiki/Feel_Euphoria""")).get.log()
+    $.apply(forUrl("""https://en.wikipedia.org/wiki/Re-Arrange_Us""")).get.log()
   }
 }
