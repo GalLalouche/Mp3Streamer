@@ -1,21 +1,21 @@
 package search
 import common.AuxSpecs
 import common.io.MemoryRoot
-import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
 import org.scalatest.mock.MockitoSugar
+import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, Json}
 
 class JsonableSaverTest extends FreeSpec with OneInstancePerTest with MockitoSugar with AuxSpecs {
-  val root = new MemoryRoot
-  private val $ = new JsonableSaver(root)
+  private implicit val root = new MemoryRoot
+  private val $ = new JsonableSaver
   case class Person(age: Int, name: String)
   implicit object PersonJsonable extends Jsonable[Person] {
     override def jsonify(p: Person): JsObject = Json obj("age" -> p.age, "name" -> p.name)
     override def parse(json: JsObject): Person = Person(json.\("age").as[Int], json.\("name").as[String])
   }
-  val p1 = new Person(1, "name1")
-  val p2 = new Person(2, "name2")
-  val p3 = new Person(3, "name3")
+  val p1 = Person(1, "name1")
+  val p2 = Person(2, "name2")
+  val p3 = Person(3, "name3")
   "save" - {
     "can later load" in {
       $.save(Seq(p1))

@@ -4,7 +4,7 @@ import java.net.{HttpURLConnection, URL}
 import java.util.regex.Pattern
 
 import backend.Url
-import backend.configs.CleanConfiguration
+import backend.configs.{CleanConfiguration, StandaloneConfig}
 import backend.external.extensions.ExternalLinkExpander
 import backend.recon.Album
 import common.io.InternetTalker
@@ -71,14 +71,5 @@ object WikipediaAlbumExternalLinksExpander {
     implicit val c = CleanConfiguration
     val $ = new WikipediaAlbumExternalLinksExpander()
     $.apply(forUrl("""https://en.wikipedia.org/wiki/Re-Arrange_Us""")).get.log()
-  }
-}
-
-object WikipediaAlbumExternalLinksExpander {
-  def forUrl(path: String): ExternalLink[Album] = new ExternalLink[Album](Url(path), Host.Wikipedia)
-  def main(args: Array[String]): Unit = {
-    implicit val c = StandaloneConfig
-    val $ = new WikipediaAlbumExternalLinksExpander()
-    $.apply(forUrl("""https://en.wikipedia.org/wiki/Feel_Euphoria""")).get.log()
   }
 }

@@ -54,8 +54,7 @@ object MbExternalLinksProvider {
 
   def fromDir(path: String): Song = Directory(path).files.filter(f => Set("mp3", "flac").contains(f.extension)).head |> Song.apply
   def main(args: Array[String]): Unit = {
-    implicit val c = StandaloneConfig
+    implicit val c = CleanConfiguration
     val $ = new MbExternalLinksProvider()
   }
-
 }
