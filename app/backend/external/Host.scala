@@ -6,7 +6,7 @@ import common.rich.primitives.RichBoolean._
 
 case class Host(name: String, url: Url) {
   import Host._
-  def canonize: Host = hostsByName.getOrElse(name.toLowerCase, defaultFor(url))
+  def canonize: Host = hostsByName.getOrElse(name.toLowerCase.replaceAll("\\*$", ""), defaultFor(url))
 }
 object Host {
   private lazy val hosts: Traversable[Host] = { // extract all hosts by reflection

@@ -29,4 +29,9 @@ class HostTest extends FreeSpec with AuxSpecs {
       }
     }
   }
+  "canonize" - {
+    "ending with *" in {
+      Host("LastFm*", Url("www.last.fm")).canonize shouldReturn Host.LastFm
+    }
+  }
 }
