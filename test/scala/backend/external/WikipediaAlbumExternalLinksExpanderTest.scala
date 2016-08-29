@@ -14,11 +14,6 @@ import org.scalatest.FreeSpec
 
 class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
   private implicit val config = TestConfiguration().copy(_documentDownloader = u => getDocument(u.address))
-  private class FakeHttpURLConnection(httpURLConnection: HttpURLConnection) extends HttpURLConnection(httpURLConnection.getURL) {
-    override def disconnect(): Unit = throw new AssertionError()
-    override def usingProxy(): Boolean = throw new AssertionError()
-    override def connect(): Unit = throw new AssertionError()
-  }
 
   private def getDocument(s: String): Document = Jsoup.parse(getResourceFile(s).readAll)
 
