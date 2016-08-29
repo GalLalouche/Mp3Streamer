@@ -10,21 +10,24 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 import models.Song
 import org.joda.time.Duration
+import backend.external.Reconciler
 
 import scala.concurrent.Future
 
 class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song, ExtendedExternalLinks] {
-  private def createExternalProvider[T <: Reconcilable : Manifest](reconciler: Retriever[T, (Option[ReconID], Boolean)],
-                                                                   provider: Retriever[ReconID, Links[T]],
-                                                                   expander: Retriever[Links[T], Links[T]]): Retriever[T, Links[T]] =
+  private def createExternalProvider[R <: Reconcilable : Manifest](reconciler: Retriever[R, (Option[ReconID], Boolean)],
+                                                                   provider: Retriever[ReconID, Links[R]],
+                                                                   expander: Retriever[Links[R], Links[R]],
+                                                                   additionalReconciler: Retriever[R, Links[R]]): Retriever[R, Links[R]] =
     new RefreshableStorage(
-      new FreshnessStorage(new SlickExternalStorage[T]),
-      new ExternalPipe[T](
+      new FreshnessStorage(new SlickExternalStorage[R]),
+      new ExternalPipe[R](
         a => reconciler(a)
           .filterWith(_._1.isDefined, s"Couldn't reconcile <$a>")
           .map(_._1.get),
         provider,
-        expander),
+        expander,
+        additionalReconciler),
       Duration.standardDays(7))
 
   private val artistReconciler =
@@ -33,8 +36,8 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
     new ReconcilerCacher[Album](new AlbumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get)))
 
   private val artistPipe =
-    createExternalProvider[Artist](artistReconciler, new ArtistLinkExtractor, Future.successful(Nil).const)
-  private val albumPipe = createExternalProvider[Album](albumReconciler, new AlbumLinkExtractor, new AlbumLinksExpander())
+    createExternalProvider[Artist](artistReconciler, new ArtistLinkExtractor, Future.successful(Nil).const, CompositeReconciler.artist)
+  private val albumPipe = createExternalProvider[Album](albumReconciler, new AlbumLinkExtractor, new AlbumLinksExpander(), CompositeReconciler.album)
 
   private def getArtistLinks(a: Artist) = artistPipe(a)
   private def getAlbumLinks(artistLinks: Links[Artist], a: Album) = albumPipe(a)

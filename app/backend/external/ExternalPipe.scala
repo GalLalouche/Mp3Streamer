@@ -5,22 +5,25 @@ import backend.storage.Retriever
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ExternalPipe[T <: Reconcilable](reconciler: Retriever[T, ReconID],
-                                      provider: Retriever[ReconID, Links[T]],
-                                      expander: Retriever[Links[T], Links[T]])
-                                     (implicit ec: ExecutionContext) extends Retriever[T, Links[T]] {
-  private def markDiff(el: ExternalLink[T]): ExternalLink[T] =
+class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
+                                      provider: Retriever[ReconID, Links[R]],
+                                      expander: Retriever[Links[R], Links[R]],
+                                      additionalReconciler: Retriever[R, Links[R]])
+                                     (implicit ec: ExecutionContext) extends Retriever[R, Links[R]] {
+  private def markDiff(el: ExternalLink[R]): ExternalLink[R] =
     el.copy(host = el.host.copy(name = el.host.name + "*"))
-  private def getDiff(existingLinks: Links[T], newLinks: Links[T]): Links[T] = {
+  private def getDiff(existingLinks: Links[R], newLinks: Links[R]): Links[R] = {
     val map = existingLinks.map(_.host).toSet
     newLinks.filterNot(map contains _.host)
   }
-  private def expand(existing: Links[T]): Future[Links[T]] = expander(existing).map { newLinks =>
-    val existingSet: Set[ExternalLink[T]] = existing.toSet
-    existingSet ++ (getDiff(existingSet, newLinks) map markDiff)
-  }
-  override def apply(t: T): Future[Links[T]] =
-    reconciler(t)
+  private def expand(r: R, existing: Links[R]): Future[Links[R]] =
+    for (newLinks <- expander(existing); additionalLinks <- additionalReconciler(r)) yield {
+      val existingSet: Set[ExternalLink[R]] = existing.toSet
+      val newSet = newLinks.++(additionalLinks).toSet
+      existingSet ++ (getDiff(existingSet, newSet) map markDiff)
+    }
+  override def apply(r: R): Future[Links[R]] =
+    reconciler(r)
         .flatMap(provider)
-        .flatMap(expand)
+        .flatMap(expand(r, _))
 }
