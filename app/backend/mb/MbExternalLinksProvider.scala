@@ -57,16 +57,5 @@ object MbExternalLinksProvider {
   def main(args: Array[String]): Unit = {
     implicit val c = CleanConfiguration
     val $ = new MbExternalLinksProvider()
-//    val x: ExternalLink[Artist] = $.apply(fromDir("""D:\Media\Music\Metal\Gothic Metal\Lacuna Coil\2006 Karmacode""")).get
-//        .artistLinks
-//        .find(_.host.canonize == Host.LastFm)
-//        .get
-//        .log()
-//        .toLink
-    val y = ExternalLink[Artist](Url("http://www.last.fm/music/Lacuna+Coil"), Host("lastfm", Url("www.last.fm")))
-    println(y.host.canonize)
-//    $.extender.apply(x).log()
-//    $.extender.apply(y).log()
   }
-
 }
