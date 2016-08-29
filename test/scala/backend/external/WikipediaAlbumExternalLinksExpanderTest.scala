@@ -2,7 +2,8 @@ package backend.external
 
 import java.net.HttpURLConnection
 
-import backend.{TestConfiguration, Url}
+import backend.Url
+import backend.configs.TestConfiguration
 import common.AuxSpecs
 import common.rich.RichFuture._
 import common.rich.collections.RichTraversableOnce._
@@ -12,7 +13,7 @@ import org.jsoup.nodes.Document
 import org.scalatest.FreeSpec
 
 class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
-  private implicit val config = TestConfiguration.withDocumentDownloader(u => getDocument(u.address))
+  private implicit val config = TestConfiguration().copy(_documentDownloader = u => getDocument(u.address))
   private class FakeHttpURLConnection(httpURLConnection: HttpURLConnection) extends HttpURLConnection(httpURLConnection.getURL) {
     override def disconnect(): Unit = throw new AssertionError()
     override def usingProxy(): Boolean = throw new AssertionError()
@@ -31,7 +32,7 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
     get("allmusic_link.html") shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
   }
   "canonize allmusic links" in {
-    implicit val config = this.config.withHttpConnector(http => new FakeHttpURLConnection(http) {
+    implicit val config = this.config.copy(_httpTransformer = http => new FakeHttpURLConnection(http) {
       assert(http.getURL.toString.equals("http://www.allmusic.com/album/r827504") && !http.getInstanceFollowRedirects)
       override def getResponseCode: Int = HttpURLConnection.HTTP_MOVED_PERM
       override def getHeaderField(s: String): String =
@@ -41,7 +42,7 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
         .get.single.link.address shouldReturn "http://www.allmusic.com/album/home-mw0000533017"
   }
   "Return nothing if response code isn't 301" in {
-    implicit val config = this.config.withHttpConnector(new FakeHttpURLConnection(_) {
+    implicit val config = this.config.copy(_httpTransformer = new FakeHttpURLConnection(_) {
       override def getResponseCode: Int = HttpURLConnection.HTTP_INTERNAL_ERROR
       override def getHeaderField(s: String): String = throw new AssertionError() // makes sure it isn't called
     })
