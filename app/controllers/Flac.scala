@@ -19,7 +19,7 @@ object Flac extends Controller with Debug {
         ("X-Pad", "avoid browser bug"),
         ("Content-Transfer-Encoding", "binary"),
         ("Cache-Control", "no-cache"),
-        ("Content-Disposition", "attachment; filename=" + file.getName().replaceAll(",", "%2c")),
+        ("Content-Disposition", "attachment; filename=" + file.getName.replaceAll(",", "%2c")),
         ("Content-Range", "byte %d/%d".format(file.length, file.length)),
         ("Content", "audio/mp3")
       )

@@ -30,7 +30,7 @@ private class DirectoryWatcher(listener: Observer[DirectoryEvent], val dirs: Tra
   def start() {
     dirs foreach registerAll
     listener onNext Started
-    waitForChange
+    waitForChange()
   }
 
   private lazy val watchService = dirs.head.toPath.getFileSystem.newWatchService
@@ -95,7 +95,7 @@ private class DirectoryWatcher(listener: Observer[DirectoryEvent], val dirs: Tra
 
     if (key.reset() == false)
       keys remove key
-    waitForChange
+    waitForChange()
   }
 }
 

@@ -41,7 +41,7 @@ object MbArtistReconciler {
   def main(args: Array[String]) {
     implicit val c = StandaloneConfig
     val $ = new MbArtistReconciler
-    $(new Artist("Moonsorrow")).map(_.get).flatMap($.getAlbumsMetadata).get.log()
+    $(Artist("Moonsorrow")).map(_.get).flatMap($.getAlbumsMetadata).get.log()
     System exit 0
   }
 }

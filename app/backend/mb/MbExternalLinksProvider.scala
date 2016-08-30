@@ -19,7 +19,7 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
                                                                    expander: Retriever[Links[R], Links[R]],
                                                                    additionalReconciler: Retriever[R, Links[R]]): Retriever[R, Links[R]] =
     new RefreshableStorage(
-      new FreshnessStorage(new SlickExternalStorage[R]),
+      new FreshnessStorage(new SlickExternalStorage),
       new ExternalPipe[R](
         a => reconciler(a)
           .filterWith(_._1.isDefined, s"Couldn't reconcile <$a>")
@@ -27,7 +27,7 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
         provider,
         expander,
         additionalReconciler),
-      Duration.standardDays(7))
+      Duration standardDays 7)
 
   private val artistReconciler =
     new ReconcilerCacher[Artist](new ArtistReconStorage, new MbArtistReconciler)

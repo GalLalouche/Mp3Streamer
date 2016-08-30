@@ -17,12 +17,12 @@ object SlickLocalStorageUtils {
     new {
       def apply(table: TableQuery[_ <: Table[_]]): LocalStorageUtils = new LocalStorageUtils {
         override def createTable(): Future[Boolean] =
-          toBoolean((db run table.schema.create))
+          toBoolean(db run table.schema.create)
         override def clearTable(): Future[Boolean] =
           toBoolean(db run table.delete)
         override def dropTable(): Future[Boolean] =
           toBoolean(db run table.schema.drop)
-        override def doesTableExist(): Future[Boolean] =
+        override def doesTableExist: Future[Boolean] =
           db run MTable.getTables map (tables => tables.exists(_.name.name == table.baseTableRow.tableName))
       }
     }

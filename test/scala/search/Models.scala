@@ -17,5 +17,5 @@ private object Models {
   def mockAlbum(dir: File = new File("./foobar"), title: String = "album", artistName: String = "artist",
                 year: Int = 2000) =
     new Album(new File("foobar").getAbsoluteFile, title = title, artistName = artistName, year = year)
-  def mockArtist(name: String = "artist", albums: Seq[Album] = Seq()): Artist = new Artist(name, albums.toSet)
+  def mockArtist(name: String = "artist", albums: Seq[Album] = Seq()): Artist = Artist(name, albums.toSet)
 }

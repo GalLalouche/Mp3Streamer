@@ -2,10 +2,7 @@ package search
 import common.io.DirectoryRef
 import play.api.libs.json.{JsObject, Json}
 
-/**
- * Saves in json format to a file.
- * @param workingDir The dir to save and load files from
- */
+/** Saves in json format to a file. */
 private class JsonableSaver(implicit rootDir: DirectoryRef) {
   private val workingDir = rootDir addSubDir "data" addSubDir "json"
   private def jsonFileName[T : Manifest]: String =
