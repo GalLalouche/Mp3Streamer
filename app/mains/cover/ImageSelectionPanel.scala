@@ -42,8 +42,8 @@ private object ImageSelectionPanel {
     import scala.concurrent.ExecutionContext.Implicits.global
     val x = apply(new ImagesSupplier {
       override def next(): Future[FolderImage] = {
-        Future apply {
-          new FolderImage(
+        Future {
+          FolderImage(
             new IOFile(
               new File("""D:\Incoming\Bittorrent\Completed\Music\Bob Dylan\1 - Studio Albums\1963 - The Freewheelin Bob Dylan\folder.jpg""")))
         }

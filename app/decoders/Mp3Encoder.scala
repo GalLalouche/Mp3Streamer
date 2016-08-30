@@ -24,10 +24,9 @@ abstract class Mp3Encoder(outputDir: Directory) extends Encoder {
 
   /**
    * Encode the file to an mp3 format. The file will only be created if its matching doesn't already exist.
-   *
    * @param file The file to decode
    * @return The (possibly new) mp3 file created; The file will be created in the outputDir, and will
-   * be the absolute path of the file (with no space) with .mp3
+   *         be the absolute path of the file (with no space) with .mp3
    * @throws IOException
    */
   def encode(file: File): File = {

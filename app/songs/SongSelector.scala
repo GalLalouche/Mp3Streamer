@@ -50,7 +50,7 @@ object SongSelector {
         $.onSuccess { case e => songSelector = $ }
       $.map(e => ())
     }
-    private var songSelector: Future[SongSelector] = null
+    private var songSelector: Future[SongSelector] = _
     private lazy val ss = songSelector.get
     override def randomSong: Song = ss.randomSong
     override def followingSong(song: Song): Song = ss followingSong song

@@ -26,7 +26,7 @@ object RichStream {
       
       buffer.flush()
       
-      buffer.toByteArray()
+      buffer.toByteArray
     }
   }
 }

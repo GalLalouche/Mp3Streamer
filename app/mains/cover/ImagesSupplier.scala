@@ -27,7 +27,7 @@ private object ImagesSupplier {
     }
     def startCaching() {
       val t = new Thread {
-        override def run {
+        override def run() {
           urls.map(downloader.apply).foreach(cache.put)
         }
       }

@@ -17,7 +17,7 @@ private abstract class HtmlRetriever(implicit ec: ExecutionContext) extends Lyri
         .map(e => fromHtml(Jsoup parse e, s))
         .map(_.map(HtmlLyrics(source, _)).getOrElse(Instrumental(source)))
         .filter {
-          case HtmlLyrics(s, h) => false == h.matches("[\\s<br>/]*")
+          case HtmlLyrics(_, h) => false == h.matches("[\\s<br>/]*")
           case _ => true
         }
 }
