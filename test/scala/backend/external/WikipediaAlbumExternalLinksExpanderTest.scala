@@ -17,8 +17,9 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
 
   private def getDocument(s: String): Document = Jsoup.parse(getResourceFile(s).readAll)
 
+  private val $: WikipediaAlbumExternalLinksExpander = new WikipediaAlbumExternalLinksExpander()
   private def get(s: String): String =
-    new WikipediaAlbumExternalLinksExpander().aux(getDocument(s))
+    $.aux(getDocument(s))
         .filter(_.host.name == "allmusic")
         .map(_.link.address)
         .single
@@ -26,15 +27,21 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
   "extract allmusic link" in {
     get("allmusic_link.html") shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
   }
-  "canonize allmusic links" in {
-    implicit val config = this.config.copy(_httpTransformer = http => new FakeHttpURLConnection(http) {
-      assert(http.getURL.toString.equals("http://www.allmusic.com/album/r827504") && !http.getInstanceFollowRedirects)
-      override def getResponseCode: Int = HttpURLConnection.HTTP_MOVED_PERM
-      override def getHeaderField(s: String): String =
-        if (s == "location") "http://www.allmusic.com/album/home-mw0000533017" else throw new AssertionError()
-    })
-    new WikipediaAlbumExternalLinksExpander().apply(ExternalLink(Url("allmusic_rlink.html"), Host.Wikipedia))
-        .get.single.link.address shouldReturn "http://www.allmusic.com/album/home-mw0000533017"
+  "canonize allmusic links" - {
+    "mw link" in {
+      $(ExternalLink(Url("allmusic_link.html"), Host.Wikipedia))
+          .get.single.link.address shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
+    }
+    "rlink" in {
+      implicit val config = this.config.copy(_httpTransformer = http => new FakeHttpURLConnection(http) {
+        assert(http.getURL.toString.equals("http://www.allmusic.com/album/r827504") && !http.getInstanceFollowRedirects)
+        override def getResponseCode: Int = HttpURLConnection.HTTP_MOVED_PERM
+        override def getHeaderField(s: String): String =
+          if (s == "location") "http://www.allmusic.com/album/home-mw0000533017" else throw new AssertionError()
+      })
+      new WikipediaAlbumExternalLinksExpander().apply(ExternalLink(Url("allmusic_rlink.html"), Host.Wikipedia))
+          .get.single.link.address shouldReturn "http://www.allmusic.com/album/home-mw0000533017"
+    }
   }
   "Return nothing if response code isn't 301" in {
     implicit val config = this.config.copy(_httpTransformer = new FakeHttpURLConnection(_) {

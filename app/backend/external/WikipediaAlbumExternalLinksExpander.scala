@@ -4,13 +4,14 @@ import java.net.{HttpURLConnection, URL}
 import java.util.regex.Pattern
 
 import backend.Url
-import backend.configs.{CleanConfiguration, StandaloneConfig}
+import backend.configs.CleanConfiguration
 import backend.external.extensions.ExternalLinkExpander
 import backend.recon.Album
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
+import common.rich.primitives.RichString._
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConversions._
@@ -24,7 +25,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext,
   private val nonCanonicalRe = "http://www.allmusic.com/album/(.*r\\d+)".r
   def canonize(e: ExternalLink[Album]): Future[ExternalLink[Album]] = {
     def aux(url: Url): Future[Url] =
-      if (canonicalLink.matcher(url.address).matches)
+      if (canonicalLink.matcher(url.address dropAfterLast '/').matches)
         Future successful url
       else {
         val http = new URL(url.address).openConnection.asInstanceOf[HttpURLConnection]
@@ -37,7 +38,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext,
       }
     aux(e.link).map(x => ExternalLink[Album](x, e.host))
   }
-  //      } |> Url
+
   private def extractLink(s: String): Option[String] = {
     def extractUrl(r: Regex): Option[String] = {
       val $ = r.findAllIn(s)
@@ -70,6 +71,6 @@ object WikipediaAlbumExternalLinksExpander {
   def main(args: Array[String]): Unit = {
     implicit val c = CleanConfiguration
     val $ = new WikipediaAlbumExternalLinksExpander()
-    $.apply(forUrl("""https://en.wikipedia.org/wiki/Re-Arrange_Us""")).get.log()
+    $.apply(forUrl("""https://en.wikipedia.org/wiki/Killing_Machine""")).get.log()
   }
 }
