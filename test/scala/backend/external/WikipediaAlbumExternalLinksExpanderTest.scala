@@ -32,18 +32,30 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
       $(ExternalLink(Url("allmusic_link.html"), Host.Wikipedia))
           .get.single.link.address shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
     }
-    "rlink" in {
-      implicit val config = this.config.copy(_httpTransformer = http => new FakeHttpURLConnection(http) {
-        assert(http.getURL.toString.equals("http://www.allmusic.com/album/r827504") && !http.getInstanceFollowRedirects)
-        override def getResponseCode: Int = HttpURLConnection.HTTP_MOVED_PERM
-        override def getHeaderField(s: String): String =
-          if (s == "location") "http://www.allmusic.com/album/home-mw0000533017" else throw new AssertionError()
-      })
-      new WikipediaAlbumExternalLinksExpander().apply(ExternalLink(Url("allmusic_rlink.html"), Host.Wikipedia))
-          .get.single.link.address shouldReturn "http://www.allmusic.com/album/home-mw0000533017"
+    "rlink" - {
+      def withRedirection(source: String, destination: String) = {
+        def redirect(source: String, destination: String)(http: HttpURLConnection) = new FakeHttpURLConnection(http) {
+          assert(http.getURL.toString.equals(source) && !http.getInstanceFollowRedirects)
+          override def getResponseCode: Int = HttpURLConnection.HTTP_MOVED_PERM
+          override def getHeaderField(s: String): String =
+            if (s == "location") destination else throw new AssertionError()
+        }
+        implicit val config = this.config.copy(_httpTransformer = redirect(source, destination))
+        new WikipediaAlbumExternalLinksExpander()
+      }
+      "regular" in {
+        withRedirection("http://www.allmusic.com/album/r827504", "http://www.allmusic.com/album/home-mw0000533017")
+            .apply(ExternalLink(Url("allmusic_rlink.html"), Host.Wikipedia))
+            .get.single.link.address shouldReturn "http://www.allmusic.com/album/home-mw0000533017"
+      }
+      "without www" in {
+        withRedirection("http://www.allmusic.com/album/ghost-r2202519", "http://www.allmusic.com/album/ghost-mw0002150605")
+            .apply(ExternalLink(Url("allmusic_rlink2.html"), Host.Wikipedia))
+            .get.single.link.address shouldReturn "http://www.allmusic.com/album/ghost-mw0002150605"
+      }
     }
   }
-  "Return nothing if response code isn't 301" in {
+  "Return nothing if response code isn't 301 or 200" in {
     implicit val config = this.config.copy(_httpTransformer = new FakeHttpURLConnection(_) {
       override def getResponseCode: Int = HttpURLConnection.HTTP_INTERNAL_ERROR
       override def getHeaderField(s: String): String = throw new AssertionError() // makes sure it isn't called

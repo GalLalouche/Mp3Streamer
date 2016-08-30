@@ -21,8 +21,9 @@ import scala.util.matching.Regex
 private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext, interneter: InternetTalker)
     extends ExternalLinkExpander[Album](Host.Wikipedia) {
   private val canonicalLink = Pattern compile "[a-zA-Z\\-0-9]+-mw\\d+"
-  private val canonicalRe = s"http://www.allmusic.com/album/($canonicalLink)".r
-  private val nonCanonicalRe = "http://www.allmusic.com/album/(.*r\\d+)".r
+  private val allmusicPrefx = "(?:http://www.)?allmusic.com/album/"
+  private val canonicalRe = s"$allmusicPrefx($canonicalLink)".r
+  private val nonCanonicalRe = s"$allmusicPrefx(.*r\\d+)".r
   def canonize(e: ExternalLink[Album]): Future[ExternalLink[Album]] = {
     def aux(url: Url): Future[Url] =
       if (canonicalLink.matcher(url.address dropAfterLast '/').matches)
