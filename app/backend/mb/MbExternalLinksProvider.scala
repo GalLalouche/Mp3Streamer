@@ -1,11 +1,12 @@
 package backend.mb
 
+import backend.Retriever
 import backend.configs.{CleanConfiguration, Configuration}
 import backend.external._
 import backend.external.extensions._
 import backend.recon.Reconcilable._
 import backend.recon._
-import backend.storage.{FreshnessStorage, RefreshableStorage, Retriever}
+import backend.storage.{FreshnessStorage, RefreshableStorage}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import models.Song
@@ -53,10 +54,14 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
 object MbExternalLinksProvider {
   import common.rich.path.Directory
   import common.rich.path.RichFile._
-
   def fromDir(path: String): Song = Directory(path).files.filter(f => Set("mp3", "flac").contains(f.extension)).head |> Song.apply
+
   def main(args: Array[String]): Unit = {
+    import common.rich.func.RichFoldable._
+
+    import scalaz.Scalaz._
     implicit val c = CleanConfiguration
     val $ = new MbExternalLinksProvider()
+    $.getArtistLinks(Artist("Soilwork")).map(_ map $.extender.apply[Artist]).get.toList.printPerLine()
   }
 }

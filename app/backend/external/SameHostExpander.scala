@@ -2,7 +2,7 @@ package backend.external
 
 import backend.Url
 import backend.recon.{Album, Artist}
-import backend.storage.Retriever
+import backend.Retriever
 import common.io.DocumentDownloader
 import org.jsoup.nodes.Document
 

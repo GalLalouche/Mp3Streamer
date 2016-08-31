@@ -72,6 +72,6 @@ object WikipediaAlbumExternalLinksExpander {
   def main(args: Array[String]): Unit = {
     implicit val c = CleanConfiguration
     val $ = new WikipediaAlbumExternalLinksExpander()
-    $.apply(forUrl("""https://en.wikipedia.org/wiki/Killing_Machine""")).get.log()
+    $.apply(forUrl("""https://en.wikipedia.org/wiki/Ghost_(Devin_Townsend_Project_album)""")).get.log()
   }
 }

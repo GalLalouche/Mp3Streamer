@@ -2,7 +2,7 @@ package backend.external.extensions
 
 import backend.external.{ExternalLink, _}
 import backend.recon.{Album, Reconcilable}
-import backend.storage.Retriever
+import backend.Retriever
 import common.io.InternetTalker
 
 import scala.concurrent.{ExecutionContext, Future}

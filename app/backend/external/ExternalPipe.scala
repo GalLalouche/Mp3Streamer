@@ -1,7 +1,7 @@
 package backend.external
 
+import backend.Retriever
 import backend.recon.{ReconID, Reconcilable}
-import backend.storage.Retriever
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -2,7 +2,7 @@ package backend.external.extensions
 
 import backend.external._
 import backend.recon.Reconcilable
-import backend.storage.Retriever
+import backend.Retriever
 import common.io.InternetTalker
 import org.jsoup.nodes.Document
 

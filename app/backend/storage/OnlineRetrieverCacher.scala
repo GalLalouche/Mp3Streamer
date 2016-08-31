@@ -1,10 +1,11 @@
 package backend.storage
 
+import backend.Retriever
 import common.rich.RichFuture._
-import scalaz._
-import Scalaz._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scalaz.Scalaz._
+import scalaz._
 
 /**
  * Tries to first retrieve information from a local repository.

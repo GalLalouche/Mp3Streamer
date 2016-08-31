@@ -1,7 +1,7 @@
 package common.io
 
 import backend.Url
-import backend.storage.Retriever
+import backend.Retriever
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 

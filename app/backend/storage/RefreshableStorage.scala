@@ -1,5 +1,6 @@
 package backend.storage
 
+import backend.Retriever
 import common.rich.RichT._
 import org.joda.time.{DateTime, Duration}
 

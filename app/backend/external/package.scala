@@ -2,7 +2,7 @@ package backend
 
 import backend.external.extensions.ExtendedLink
 import backend.recon.Reconcilable
-import backend.storage.Retriever
+import backend.Retriever
 
 package object external{
   type Reconciler[R <: Reconcilable] = Retriever[R, Option[ExternalLink[R]]]

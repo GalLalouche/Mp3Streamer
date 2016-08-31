@@ -1,6 +1,6 @@
 package backend.recon
 
-import backend.storage.Retriever
+import backend.Retriever
 
 import scala.concurrent.Future
 

@@ -1,7 +1,7 @@
 package backend.external
 
+import backend.Retriever
 import backend.recon.{Album, Artist, Reconcilable}
-import backend.storage.Retriever
 import common.io.InternetTalker
 
 import scala.concurrent.{ExecutionContext, Future}
