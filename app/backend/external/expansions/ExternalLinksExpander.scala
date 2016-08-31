@@ -1,11 +1,9 @@
-package backend.external.extensions
+package backend.external.expansions
 
-import backend.external.{ExternalLink, _}
-import backend.recon.{Album, Reconcilable}
-import backend.Retriever
+import backend.recon.Album
 import common.io.InternetTalker
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 object LinkExpanders {
   def albums(implicit ec: ExecutionContext, it: InternetTalker): Traversable[ExternalLinkExpander[Album]] = List(new WikipediaAlbumExternalLinksExpander)

@@ -1,8 +1,9 @@
-package backend.external
+package backend.external.expansions
 
-import backend.recon.{Album, Artist}
 import backend.Url
 import backend.configs.StandaloneConfig
+import backend.external.Host
+import backend.recon.{Album, Artist}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import org.jsoup.nodes.Document

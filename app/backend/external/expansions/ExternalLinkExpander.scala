@@ -1,8 +1,8 @@
-package backend.external.extensions
+package backend.external.expansions
 
+import backend.Retriever
 import backend.external._
 import backend.recon.Reconcilable
-import backend.Retriever
 import common.io.InternetTalker
 import org.jsoup.nodes.Document
 

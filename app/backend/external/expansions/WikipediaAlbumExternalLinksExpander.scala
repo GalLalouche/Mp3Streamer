@@ -1,11 +1,11 @@
-package backend.external
+package backend.external.expansions
 
 import java.net.{HttpURLConnection, URL}
 import java.util.regex.Pattern
 
 import backend.Url
 import backend.configs.CleanConfiguration
-import backend.external.extensions.ExternalLinkExpander
+import backend.external._
 import backend.recon.Album
 import common.io.InternetTalker
 import common.rich.RichFuture._

@@ -1,9 +1,10 @@
-package backend.external
+package backend.external.expansions
 
 import java.net.HttpURLConnection
 
 import backend.Url
 import backend.configs.TestConfiguration
+import backend.external.{ExternalLink, FakeHttpURLConnection, Host}
 import common.AuxSpecs
 import common.rich.RichFuture._
 import common.rich.collections.RichTraversableOnce._

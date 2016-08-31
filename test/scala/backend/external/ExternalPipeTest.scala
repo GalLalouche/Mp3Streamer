@@ -2,7 +2,7 @@ package backend.external
 
 import backend.Url
 import backend.configs.TestConfiguration
-import backend.external.extensions.ExternalLinkExpander
+import backend.external.expansions.ExternalLinkExpander
 import backend.recon.{Album, ReconID}
 import common.AuxSpecs
 import common.rich.RichFuture._

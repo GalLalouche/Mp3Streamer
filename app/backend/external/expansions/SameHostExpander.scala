@@ -1,8 +1,8 @@
-package backend.external
+package backend.external.expansions
 
 import backend.Url
+import backend.external.{ExternalLink, Host}
 import backend.recon.{Album, Artist}
-import backend.Retriever
 import common.io.DocumentDownloader
 import org.jsoup.nodes.Document
 

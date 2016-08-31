@@ -1,5 +1,6 @@
-package backend.external
+package backend.external.expansions
 
+import backend.external.{ExternalLink, _}
 import backend.recon.{Album, Artist}
 import common.rich.collections.RichTraversableOnce._
 

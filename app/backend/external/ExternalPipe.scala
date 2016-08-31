@@ -1,7 +1,7 @@
 package backend.external
 
 import backend.Retriever
-import backend.external.extensions.ExternalLinkExpander
+import backend.external.expansions.ExternalLinkExpander
 import backend.recon.{ReconID, Reconcilable}
 import common.rich.RichT._
 import common.rich.collections.RichSet._

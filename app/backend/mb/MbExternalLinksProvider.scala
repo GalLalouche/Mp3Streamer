@@ -3,6 +3,7 @@ package backend.mb
 import backend.Retriever
 import backend.configs.{CleanConfiguration, Configuration}
 import backend.external._
+import backend.external.expansions.{ExternalLinkExpander, LinkExpanders}
 import backend.external.extensions._
 import backend.recon.Reconcilable._
 import backend.recon._
