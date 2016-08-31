@@ -19,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.matching.Regex
 
 private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext, interneter: InternetTalker)
-    extends ExternalLinkExpander[Album](Host.Wikipedia) {
+    extends ExternalLinkExpander[Album](Host.Wikipedia, List(Host.AllMusic)) {
   private val canonicalLink = Pattern compile "[a-zA-Z\\-0-9]+-mw\\d+"
   private val allmusicPrefx = "(?:http://www.)?allmusic.com/album/"
   private val canonicalRe = s"$allmusicPrefx($canonicalLink)".r

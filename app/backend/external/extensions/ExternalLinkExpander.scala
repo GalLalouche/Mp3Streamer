@@ -9,7 +9,8 @@ import org.jsoup.nodes.Document
 import scala.concurrent.{ExecutionContext, Future}
 
 /** E.g., from wikipedia to allmusic */
-private[external] abstract class ExternalLinkExpander[T <: Reconcilable](val host: Host)(implicit ec: ExecutionContext, it: InternetTalker)
+abstract class ExternalLinkExpander[T <: Reconcilable](val sourceHost: Host, val potentialHostsExtracted: Traversable[Host])
+                                                      (implicit ec: ExecutionContext, it: InternetTalker)
     extends Retriever[ExternalLink[T], Links[T]] {
   protected def aux(d: Document): Links[T]
 

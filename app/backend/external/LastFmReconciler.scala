@@ -12,7 +12,7 @@ import org.jsoup.Jsoup
 import scala.collection.JavaConversions._
 import scala.concurrent.{ExecutionContext, Future}
 
-private class LastFmReconciler(implicit ec: ExecutionContext, it: InternetTalker) extends Reconciler[Artist] {
+private class LastFmReconciler(implicit ec: ExecutionContext, it: InternetTalker) extends Reconciler[Artist](Host.LastFm) {
   private def handleReply(h: HttpURLConnection): Option[ExternalLink[Artist]] = h.getResponseCode match {
     case HttpURLConnection.HTTP_NOT_FOUND => None
     case HttpURLConnection.HTTP_OK =>

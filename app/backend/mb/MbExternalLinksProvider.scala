@@ -17,8 +17,8 @@ import scala.concurrent.Future
 class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song, ExtendedExternalLinks] {
   private def createExternalProvider[R <: Reconcilable : Manifest](reconciler: Retriever[R, (Option[ReconID], Boolean)],
                                                                    provider: Retriever[ReconID, Links[R]],
-                                                                   expander: Retriever[Links[R], Links[R]],
-                                                                   additionalReconciler: Retriever[R, Links[R]]): Retriever[R, Links[R]] =
+                                                                   expander: Traversable[ExternalLinkExpander[R]],
+                                                                   additionalReconciler: Traversable[Reconciler[R]]): Retriever[R, Links[R]] =
     new RefreshableStorage(
       new FreshnessStorage(new SlickExternalStorage),
       new ExternalPipe[R](
@@ -36,8 +36,8 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
     new ReconcilerCacher[Album](new AlbumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get)))
 
   private val artistPipe =
-    createExternalProvider[Artist](artistReconciler, new ArtistLinkExtractor, Future.successful(Nil).const, CompositeReconciler.artist)
-  private val albumPipe = createExternalProvider[Album](albumReconciler, new AlbumLinkExtractor, new AlbumLinksExpander(), CompositeReconciler.album)
+    createExternalProvider[Artist](artistReconciler, new ArtistLinkExtractor, Nil, Reconcilers.artist)
+  private val albumPipe = createExternalProvider[Album](albumReconciler, new AlbumLinkExtractor, LinkExpanders.albums, Reconcilers.album)
 
   private def getArtistLinks(a: Artist) = artistPipe(a)
   private def getAlbumLinks(artistLinks: Links[Artist], a: Album) = albumPipe(a)
