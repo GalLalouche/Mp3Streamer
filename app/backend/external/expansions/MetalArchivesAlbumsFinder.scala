@@ -26,7 +26,7 @@ private class MetalArchivesAlbumsFinder(implicit ec: ExecutionContext) extends S
     super.fromUrl(Url(s"http://www.metal-archives.com/band/discography/id/$artistId/tab/all"), a)
   }
 }
-object MetalArchivesAlbumsFinder {
+private object MetalArchivesAlbumsFinder {
   def main(args: Array[String]) {
     implicit val c = StandaloneConfig
     new MetalArchivesAlbumsFinder().fromUrl(Url("http://www.metal-archives.com/bands/Empyrium/2345"),

@@ -10,7 +10,7 @@ case class ExtendedLink[R <: Reconcilable](link: Url, host: Host, extensions: Tr
 }
 
 
-object ExtendedLink {
+private object ExtendedLink {
   def extend[R <: Reconcilable](e: ExternalLink[R]) = new {
     def withLinks(links: Traversable[LinkExtension[R]]) = new ExtendedLink[R](e.link, e.host, links)
   }

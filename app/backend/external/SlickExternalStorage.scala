@@ -11,7 +11,7 @@ import scala.concurrent.Future
 import scalaz._
 import Scalaz._
 
-class SlickExternalStorage[K <: Reconcilable](implicit c: Configuration,
+private[backend] class SlickExternalStorage[K <: Reconcilable](implicit c: Configuration,
                                               m: Manifest[K]) extends ExternalStorage[K] {
   import c.driver.api._
   

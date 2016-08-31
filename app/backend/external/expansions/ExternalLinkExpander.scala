@@ -5,7 +5,7 @@ import backend.external.{Host, _}
 import backend.recon.Reconcilable
 
 /** E.g., from wikipedia to allmusic */
-trait ExternalLinkExpander[T <: Reconcilable] extends Retriever[ExternalLink[T], Links[T]] {
+private[external] trait ExternalLinkExpander[T <: Reconcilable] extends Retriever[ExternalLink[T], Links[T]] {
   /** The host links are extracted from */
   def sourceHost: Host
   /**

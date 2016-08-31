@@ -10,7 +10,7 @@ import common.rich.collections.RichTraversableOnce._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
+private[external] class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
                                       provider: Retriever[ReconID, Links[R]],
                                       expander: Traversable[ExternalLinkExpander[R]],
                                       additionalReconciler: Traversable[Reconciler[R]])

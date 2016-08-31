@@ -3,7 +3,7 @@ package backend.external.extensions
 import backend.external.{ExternalLink, Host, HostMap}
 import backend.recon.{Album, Artist, Reconcilable}
 
-class CompositeExtender(artistExtensions: HostMap[LinkExtender[Artist]], albumExtensions: HostMap[LinkExtender[Album]]) {
+private[external] class CompositeExtender private(artistExtensions: HostMap[LinkExtender[Artist]], albumExtensions: HostMap[LinkExtender[Album]]) {
   private def auxExtend[R <: Reconcilable](e: ExternalLink[R], map: HostMap[LinkExtender[R]]): ExtendedLink[R] =
     ExtendedLink.extend(e).withLinks(map.get(e.host.canonize).map(_ (e)).getOrElse(Nil))
 
@@ -18,7 +18,7 @@ class CompositeExtender(artistExtensions: HostMap[LinkExtender[Artist]], albumEx
   }
 }
 
-object CompositeExtender {
+private[external] object CompositeExtender {
   lazy val default =
     new CompositeExtender(
       Map(Host.MusicBrainz -> MusicBrainzExtender,

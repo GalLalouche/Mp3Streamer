@@ -1,8 +1,7 @@
-package backend.mb
+package backend.external
 
 import backend.Url
 import backend.configs.TestConfiguration
-import backend.external.{ExternalLink, Host}
 import backend.recon.{Album, Artist, ReconID}
 import common.AuxSpecs
 import common.rich.RichFuture._
@@ -20,7 +19,7 @@ class MbHtmlLinkExtractorTest extends FreeSpec with AuxSpecs {
 
   "parse artist links" in {
     val $ = new ArtistLinkExtractor() {
-      override private[mb] def getHtml(artistId: ReconID): Future[Document] = getDocument("artist")
+      override protected def getHtml(artistId: ReconID): Future[Document] = getDocument("artist")
     }
     val expected = Set(
       ExternalLink[Artist](Url("http://deafheaven.com/"), Host("home", Url("deafheaven.com"))),
@@ -44,7 +43,7 @@ class MbHtmlLinkExtractorTest extends FreeSpec with AuxSpecs {
 
   "parse album links" in {
     val $ = new AlbumLinkExtractor() {
-      override private[mb] def getHtml(artistId: ReconID): Future[Document] = getDocument("album")
+      override protected def getHtml(artistId: ReconID): Future[Document] = getDocument("album")
     }
     val expected = Set(
       ExternalLink[Album](Url("http://www.discogs.com/master/559132"), Host("discogs", Url("www.discogs.com"))),

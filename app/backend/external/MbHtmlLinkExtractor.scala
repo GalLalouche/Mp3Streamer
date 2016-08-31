@@ -1,7 +1,6 @@
-package backend.mb
+package backend.external
 
 import backend.Url
-import backend.external.{ExternalLink, ExternalLinkProvider, Host}
 import backend.recon.{Album, Artist, ReconID, Reconcilable}
 import common.io.DocumentDownloader
 import common.rich.RichT._
@@ -13,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String)(implicit ec: ExecutionContext)
     extends ExternalLinkProvider[T] {
   private def getMbUrl(reconId: ReconID): Url = Url(s"https://musicbrainz.org/$metadataType/${reconId.id}")
-  private[mb] def getHtml(reconId: ReconID): Future[Document] =
+  protected def getHtml(reconId: ReconID): Future[Document] =
     DocumentDownloader(getMbUrl(reconId))
   private def extractLink(e: Element): ExternalLink[T] = {
     val url: Url = Url(e.select("a").attr("href").mapIf(_.startsWith("//")).to("https:" + _))

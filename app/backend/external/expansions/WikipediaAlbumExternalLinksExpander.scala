@@ -67,7 +67,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext,
   super.apply(e).flatMap(Future sequence _.map(canonize)).orElse(Nil)
 }
 
-object WikipediaAlbumExternalLinksExpander {
+private object WikipediaAlbumExternalLinksExpander {
   def forUrl(path: String): ExternalLink[Album] = new ExternalLink[Album](Url(path), Host.Wikipedia)
   def main(args: Array[String]): Unit = {
     implicit val c = CleanConfiguration
