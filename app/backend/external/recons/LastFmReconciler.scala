@@ -25,7 +25,7 @@ private class LastFmReconciler(implicit ec: ExecutionContext, it: InternetTalker
           .map(e => ExternalLink[Artist](Url(e), Host.LastFm))
   }
   override def apply(a: Artist): Future[Option[ExternalLink[Artist]]] = {
-    val httpConnection = a.name.toLowerCase.filterNot(_ == ' ')
+    val httpConnection = a.name.toLowerCase.replaceAll(" ", "+")
         .mapTo(e => new URL(s"http://www.last.fm/music/$e").openConnection().asInstanceOf[HttpURLConnection])
     it connect httpConnection map handleReply
   }
