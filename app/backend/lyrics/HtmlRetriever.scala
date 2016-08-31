@@ -1,4 +1,4 @@
-package lyrics
+package backend.lyrics
 
 import models.Song
 import org.jsoup.Jsoup

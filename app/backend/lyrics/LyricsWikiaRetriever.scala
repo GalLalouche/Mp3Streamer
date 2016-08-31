@@ -1,4 +1,4 @@
-package lyrics
+package backend.lyrics
 
 import java.io.File
 import java.net.URLEncoder

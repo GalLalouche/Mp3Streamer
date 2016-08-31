@@ -1,4 +1,4 @@
-package lyrics
+package backend.lyrics
 
 import common.rich.RichFuture._
 import models.Song

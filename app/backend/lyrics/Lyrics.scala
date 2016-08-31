@@ -1,4 +1,4 @@
-package lyrics
+package backend.lyrics
 
 sealed abstract class Lyrics {
   val html: String
