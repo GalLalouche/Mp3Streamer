@@ -1,10 +1,10 @@
 package backend.external.extensions
 
-import backend.external.{ExternalLink, Host}
+import backend.external.{ExternalLink, Host, HostMap}
 import backend.recon.{Album, Artist, Reconcilable}
 
-class CompositeExtender(artistExtensions: Map[Host, LinkExtender[Artist]], albumExtensions: Map[Host, LinkExtender[Album]]) {
-  private def auxExtend[R <: Reconcilable](e: ExternalLink[R], map: Map[Host, LinkExtender[R]]): ExtendedLink[R] =
+class CompositeExtender(artistExtensions: HostMap[LinkExtender[Artist]], albumExtensions: HostMap[LinkExtender[Album]]) {
+  private def auxExtend[R <: Reconcilable](e: ExternalLink[R], map: HostMap[LinkExtender[R]]): ExtendedLink[R] =
     ExtendedLink.extend(e).withLinks(map.get(e.host.canonize).map(_ (e)).getOrElse(Nil))
 
   private val artistClass = classOf[Artist]
@@ -14,16 +14,16 @@ class CompositeExtender(artistExtensions: Map[Host, LinkExtender[Artist]], album
       case `artistClass` => artistExtensions
       case `albumClass` => albumExtensions
     }
-    auxExtend(e, map.asInstanceOf[Map[Host, LinkExtender[R]]])
+    auxExtend(e, map.asInstanceOf[HostMap[LinkExtender[R]]])
   }
 }
 
 object CompositeExtender {
   lazy val default =
     new CompositeExtender(
-      Map[Host, LinkExtender[Artist]](Host.MusicBrainz -> MusicBrainzExtender,
+      Map(Host.MusicBrainz -> MusicBrainzExtender,
         Host.AllMusic -> AllMusicArtistExtender,
         Host.LastFm -> LastFmArtistExtender),
-      Map[Host, LinkExtender[Album]](Host.MusicBrainz -> MusicBrainzExtender,
+      Map(Host.MusicBrainz -> MusicBrainzExtender,
         Host.AllMusic -> AllMusicAlbumExtender))
 }

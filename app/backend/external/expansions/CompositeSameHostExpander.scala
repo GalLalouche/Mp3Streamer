@@ -7,7 +7,7 @@ import common.rich.collections.RichTraversableOnce._
 import scala.concurrent.{ExecutionContext, Future}
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums */
-private class CompositeSameHostExpander private(cb: Map[Host, SameHostExpander])(implicit ec: ExecutionContext)
+private class CompositeSameHostExpander private(cb: HostMap[SameHostExpander])(implicit ec: ExecutionContext)
     extends ((Links[Artist], Album) => Future[Links[Album]]) {
   def this(expanders: SameHostExpander*)(implicit ec: ExecutionContext) = this(expanders.mapBy(_.host))
 
