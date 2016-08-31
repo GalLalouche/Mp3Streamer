@@ -19,7 +19,7 @@ object External extends Controller {
     "main" -> e.link.address,
     "extensions" -> Json.obj(e.extensions.toSeq.map(toJson): _*))
   private def toJson(e: Traversable[ExtendedLink[_]]): JsObject = e
-      .filter(e => e.host.name.toLowerCase |> set)
+      .filter(e => e.host.canonize.name.toLowerCase |> set)
       .map(toJson).toSeq |> Json.obj
   private def toJson(e: ExtendedExternalLinks): JsObject =
     Json.obj("artist" -> toJson(e.artistLinks), "album" -> toJson(e.albumLinks))
