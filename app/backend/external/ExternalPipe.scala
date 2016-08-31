@@ -22,18 +22,18 @@ class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
     newLinks.filterNot(map contains _.host)
   }
 
-  private def filterExpanders(existingHosts: Set[Host]) = {
-    def compose(es: Traversable[ExternalLinkExpander[R]]): Retriever[Links[R], Links[R]] = links => {
+  private def filterExpanders(existingHosts: Set[Host]) = { // remove expanders that can only returns existing hosts
+    def compose(es: Traversable[ExternalLinkExpander[R]])(links: Links[R]): Future[Links[R]] = {
       val map = es.mapBy(_.sourceHost)
       Future sequence links.flatMap(e => map.get(e.host).map(_ (e))) map (_.flatten)
     }
     expander.filterNot(e => existingHosts >= e.potentialHostsExtracted.toSet) |> compose
   }
-  private def filterReconcilers(existingHosts: Set[Host]) =
+  private def filterReconcilers(existingHosts: Set[Host]) = // removes reconcilers for existing hosts
     additionalReconciler.filterNot(_.host |> existingHosts)
   private def expand(r: R, existing: Links[R]): Future[Links[R]] = {
     val existingHosts = existing.map(_.host).toSet
-    for (newLinks <- filterExpanders(existingHosts).apply(existing);
+    for (newLinks <- filterExpanders(existingHosts)(existing);
          additionalLinks <- Future sequence filterReconcilers(existingHosts).map(_ (r)) map (_.flatten)) yield {
       val existingSet = existing.toSet
       val newSet = newLinks.++(additionalLinks).toSet
@@ -44,6 +44,4 @@ class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
     reconciler(r)
         .flatMap(provider)
         .flatMap(expand(r, _))
-}
-object ExternalPipe {
 }
