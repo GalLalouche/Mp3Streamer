@@ -35,7 +35,7 @@ class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
     val existingHosts = existing.map(_.host).toSet
     for (newLinks <- filterExpanders(existingHosts).apply(existing);
          additionalLinks <- Future sequence filterReconcilers(existingHosts).map(_ (r)) map (_.flatten)) yield {
-      val existingSet: Set[ExternalLink[R]] = existing.toSet
+      val existingSet = existing.toSet
       val newSet = newLinks.++(additionalLinks).toSet
       existingSet ++ (getDiff(existingSet, newSet) map markDiff)
     }

@@ -7,7 +7,6 @@ import backend.external.recons.Reconciler
 import backend.recon.{Album, ReconID}
 import common.AuxSpecs
 import common.rich.RichFuture._
-import org.jsoup.nodes.Document
 import org.scalatest.FreeSpec
 
 import scala.concurrent.Future
@@ -23,12 +22,13 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
   val constReconciler = new Reconciler[Album](reconciledLink.host) {
     override def apply(a: Album) = Future successful Some(reconciledLink)
   }
-  //TODO extract a trait
-  val constExpander = new ExternalLinkExpander[Album](existingHost, List(expandedLink.host)) {
-    override protected def aux(d: Document): Links[Album] = ???
+  val constExpander = new ExternalLinkExpander[Album] {
+    override val sourceHost: Host = existingHost
+    override val potentialHostsExtracted: Traversable[Host] = List(expandedLink.host)
     override def apply(v1: ExternalLink[Album]): Future[Links[Album]] = Future successful List(expandedLink)
 
   }
+  //TODO handle cases where expanders give the same link
   "should add * to new links" in {
     val $ = new ExternalPipe[Album](x => Future successful ReconID("foobar"),
       x => Future successful List(existingLink),
@@ -41,8 +41,9 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     val failedReconciler = new Reconciler[Album](existingHost) {
       override def apply(a: Album) = failed
     }
-    val failedExpander = new ExternalLinkExpander[Album](existingHost, List(existingHost)) {
-      override protected def aux(d: Document): Links[Album] = ???
+    val failedExpander = new ExternalLinkExpander[Album] {
+      override val sourceHost: Host = existingHost
+      override val potentialHostsExtracted: Traversable[Host] = List(existingHost)
       override def apply(v1: ExternalLink[Album]): Future[Links[Album]] = failed
     }
     val $ = new ExternalPipe[Album](x => Future successful ReconID("foobar"),

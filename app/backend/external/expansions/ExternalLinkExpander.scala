@@ -1,18 +1,16 @@
 package backend.external.expansions
 
 import backend.Retriever
-import backend.external._
+import backend.external.{Host, _}
 import backend.recon.Reconcilable
-import common.io.InternetTalker
-import org.jsoup.nodes.Document
-
-import scala.concurrent.{ExecutionContext, Future}
 
 /** E.g., from wikipedia to allmusic */
-abstract class ExternalLinkExpander[T <: Reconcilable](val sourceHost: Host, val potentialHostsExtracted: Traversable[Host])
-                                                      (implicit ec: ExecutionContext, it: InternetTalker)
-    extends Retriever[ExternalLink[T], Links[T]] {
-  protected def aux(d: Document): Links[T]
-
-  override def apply(v1: ExternalLink[T]): Future[Links[T]] = it.downloadDocument(v1.link).map(aux)
+trait ExternalLinkExpander[T <: Reconcilable] extends Retriever[ExternalLink[T], Links[T]] {
+  /** The host links are extracted from */
+  def sourceHost: Host
+  /**
+   * Possible links that can be extracted. Note that not all links listed will be extracted, since they
+   * might not exist in the source's document. Therefore, this only lists hosts that *can* be extracted.
+   */
+  def potentialHostsExtracted: Traversable[Host]
 }
