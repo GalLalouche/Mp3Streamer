@@ -3,6 +3,7 @@ package backend.external
 import backend.Url
 import backend.configs.TestConfiguration
 import backend.external.expansions.ExternalLinkExpander
+import backend.external.recons.Reconciler
 import backend.recon.{Album, ReconID}
 import common.AuxSpecs
 import common.rich.RichFuture._

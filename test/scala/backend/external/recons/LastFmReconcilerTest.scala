@@ -1,10 +1,11 @@
-package backend.external
+package backend.external.recons
 
 import java.io.FileInputStream
 import java.net.HttpURLConnection
 
 import backend.Url
 import backend.configs.TestConfiguration
+import backend.external.{ExternalLink, FakeHttpURLConnection, Host}
 import backend.recon.Artist
 import common.AuxSpecs
 import common.rich.RichFuture._

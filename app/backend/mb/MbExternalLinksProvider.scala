@@ -5,6 +5,7 @@ import backend.configs.{CleanConfiguration, Configuration}
 import backend.external._
 import backend.external.expansions.{ExternalLinkExpander, LinkExpanders}
 import backend.external.extensions._
+import backend.external.recons.{Reconciler, Reconcilers}
 import backend.recon.Reconcilable._
 import backend.recon._
 import backend.storage.{FreshnessStorage, RefreshableStorage}
