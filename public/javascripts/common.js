@@ -1,6 +1,4 @@
-function elem(name, content) {
-  return $(`<${name}>${content}</${name}>`)
-}
+const elem = (name, content) => $(`<${name}>${content || ""}</${name}>`)
 String.prototype.format = String.prototype.f = function () {
   var s = this, i = arguments.length;
 
