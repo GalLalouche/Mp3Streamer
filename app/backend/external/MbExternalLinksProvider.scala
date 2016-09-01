@@ -2,7 +2,7 @@ package backend.external
 
 import backend.Retriever
 import backend.configs.{CleanConfiguration, Configuration}
-import backend.external.expansions.{ExternalLinkExpander, LinkExpanders}
+import backend.external.expansions.{CompositeSameHostExpander, ExternalLinkExpander, LinkExpanders, SameHostExpander}
 import backend.external.extensions._
 import backend.external.recons.{Reconciler, Reconcilers}
 import backend.mb.{MbAlbumReconciler, MbArtistReconciler}
@@ -25,8 +25,8 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
       new FreshnessStorage(new SlickExternalStorage),
       new ExternalPipe[R](
         a => reconciler(a)
-          .filterWith(_._1.isDefined, s"Couldn't reconcile <$a>")
-          .map(_._1.get),
+            .filterWith(_._1.isDefined, s"Couldn't reconcile <$a>")
+            .map(_._1.get),
         provider,
         expander,
         additionalReconciler),
@@ -42,7 +42,14 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
   private val albumPipe = createExternalProvider[Album](albumReconciler, new AlbumLinkExtractor, LinkExpanders.albums, Reconcilers.album)
 
   private def getArtistLinks(a: Artist) = artistPipe(a)
-  private def getAlbumLinks(artistLinks: Links[Artist], a: Album) = albumPipe(a)
+  private val extractor = new AlbumLinkExtractor
+  private val sameHostExpander = CompositeSameHostExpander.default
+
+  private def getAlbumLinks(artistLinks: Links[Artist], a: Album) =
+    createExternalProvider(albumReconciler,
+      extractor,
+      LinkExpanders.albums,
+      CompositeSameHostExpander.default(c).toReconcilers(artistLinks) ++ Reconcilers.album).apply(a)
 
   private val extender = CompositeExtender.default
 
@@ -54,8 +61,10 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
 }
 
 object MbExternalLinksProvider {
+
   import common.rich.path.Directory
   import common.rich.path.RichFile._
+
   def fromDir(path: String): Song = Directory(path).files.filter(f => Set("mp3", "flac").contains(f.extension)).head |> Song.apply
 
   def main(args: Array[String]): Unit = {
@@ -64,6 +73,8 @@ object MbExternalLinksProvider {
     import scalaz.Scalaz._
     implicit val c = CleanConfiguration
     val $ = new MbExternalLinksProvider()
-    $.getArtistLinks(Artist("Soilwork")).map(_ map $.extender.apply[Artist]).get.toList.printPerLine()
+    val f = for (ls <- $.getArtistLinks(Artist("Blues Pills"))) yield
+      $.getAlbumLinks(ls, Album("Blues Pills", 2014, Artist("Blues Pills")))
+    f.get.get.toList.printPerLine()
   }
 }
