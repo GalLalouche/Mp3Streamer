@@ -2,7 +2,7 @@ package backend.external
 
 import backend.Retriever
 import backend.configs.{CleanConfiguration, Configuration}
-import backend.external.expansions.{CompositeSameHostExpander, ExternalLinkExpander, LinkExpanders, SameHostExpander}
+import backend.external.expansions.{CompositeSameHostExpander, ExternalLinkExpander, LinkExpanders}
 import backend.external.extensions._
 import backend.external.recons.{Reconciler, Reconcilers}
 import backend.mb.{MbAlbumReconciler, MbArtistReconciler}
@@ -17,7 +17,7 @@ import org.joda.time.Duration
 import scala.concurrent.Future
 
 class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song, ExtendedExternalLinks] {
-  private def createExternalProvider[R <: Reconcilable : Manifest](reconciler: Retriever[R, (Option[ReconID], Boolean)],
+  private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](reconciler: Retriever[R, (Option[ReconID], Boolean)],
                                                                    provider: Retriever[ReconID, Links[R]],
                                                                    expander: Traversable[ExternalLinkExpander[R]],
                                                                    additionalReconciler: Traversable[Reconciler[R]]): Retriever[R, Links[R]] =
@@ -34,29 +34,23 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
 
   private val artistReconciler =
     new ReconcilerCacher[Artist](new ArtistReconStorage, new MbArtistReconciler)
-  private val albumReconciler =
-    new ReconcilerCacher[Album](new AlbumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get)))
-
   private val artistPipe =
-    createExternalProvider[Artist](artistReconciler, new ArtistLinkExtractor, Nil, Reconcilers.artist)
-  private val albumPipe = createExternalProvider[Album](albumReconciler, new AlbumLinkExtractor, LinkExpanders.albums, Reconcilers.album)
-
+    wrapExternalPipeWithStorage[Artist](artistReconciler, new ArtistLinkExtractor, Nil, Reconcilers.artist)
   private def getArtistLinks(a: Artist) = artistPipe(a)
-  private val extractor = new AlbumLinkExtractor
-  private val sameHostExpander = CompositeSameHostExpander.default
 
-  private def getAlbumLinks(artistLinks: Links[Artist], a: Album) =
-    createExternalProvider(albumReconciler,
-      extractor,
+  private def getAlbumLinks(artistLinks: Links[Artist], album: Album) =
+    wrapExternalPipeWithStorage(
+      new ReconcilerCacher[Album](new AlbumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get))),
+      new AlbumLinkExtractor,
       LinkExpanders.albums,
-      CompositeSameHostExpander.default(c).toReconcilers(artistLinks) ++ Reconcilers.album).apply(a)
+      CompositeSameHostExpander.default(c).toReconcilers(artistLinks) ++ Reconcilers.album) apply album
 
   private val extender = CompositeExtender.default
 
   // for testing on remote
   private def apply(a: Album): Future[ExtendedExternalLinks] =
-  for (artistLinks <- getArtistLinks(a.artist); albumLinks <- getAlbumLinks(artistLinks, a))
-    yield ExtendedExternalLinks(artistLinks map extender[Artist], albumLinks map extender[Album], Nil)
+    for (artistLinks <- getArtistLinks(a.artist); albumLinks <- getAlbumLinks(artistLinks, a))
+      yield ExtendedExternalLinks(artistLinks map extender[Artist], albumLinks map extender[Album], Nil)
   override def apply(s: Song): Future[ExtendedExternalLinks] = apply(s.release)
 }
 
@@ -73,8 +67,8 @@ object MbExternalLinksProvider {
     import scalaz.Scalaz._
     implicit val c = CleanConfiguration
     val $ = new MbExternalLinksProvider()
-    val f = for (ls <- $.getArtistLinks(Artist("Blues Pills"))) yield
-      $.getAlbumLinks(ls, Album("Blues Pills", 2014, Artist("Blues Pills")))
+    val f = for (ls <- $.getArtistLinks(Artist("Tori Amos"))) yield
+      $.getAlbumLinks(ls, Album("Little Earthquakes", 1993, Artist("Tori Amos")))
     f.get.get.toList.printPerLine()
   }
 }

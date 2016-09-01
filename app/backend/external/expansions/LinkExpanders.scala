@@ -6,5 +6,6 @@ import common.io.InternetTalker
 import scala.concurrent.ExecutionContext
 
 private[external] object LinkExpanders {
-  def albums(implicit ec: ExecutionContext, it: InternetTalker): Traversable[ExternalLinkExpander[Album]] = List(new WikipediaAlbumExternalLinksExpander)
+  def albums(implicit ec: ExecutionContext, it: InternetTalker): Traversable[ExternalLinkExpander[Album]] =
+    List(new WikipediaAlbumExternalLinksExpander)
 }
