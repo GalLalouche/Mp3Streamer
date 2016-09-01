@@ -18,7 +18,7 @@ class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit e
     js.array("release-groups")
         .filter(_ has "first-release-date")
         .filter(_ ostr "primary-type" exists Set("Album", "EP"))
-        .find(0.95 < _.mapTo(toAlbum(_, a.artist)).mapTo(scorer(_, a)))
+        .find(0.9 <= _.mapTo(toAlbum(_, a.artist)).mapTo(scorer(_, a)))
         .map(_ str "id" mapTo ReconID)
 
   override def apply(a: Album): Future[Option[ReconID]] =
