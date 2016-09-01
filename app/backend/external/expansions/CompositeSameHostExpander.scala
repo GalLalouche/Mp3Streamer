@@ -22,6 +22,5 @@ private class CompositeSameHostExpander private(cb: HostMap[SameHostExpander])(i
 
 private[external] object CompositeSameHostExpander {
   def default(implicit ec: ExecutionContext): ((Links[Artist], Album) => Future[Links[Album]]) =
-    new CompositeSameHostExpander(// new MetalArchivesAlbumsFinder temporarily disabled, until I figure out WTF is going on with this site
-    )
+    new CompositeSameHostExpander(new WikipediaAlbumFinder()) // MetalArchives is commented until I get unbanned :|
 }
