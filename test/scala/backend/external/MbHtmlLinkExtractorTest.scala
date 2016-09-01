@@ -31,7 +31,7 @@ class MbHtmlLinkExtractorTest extends FreeSpec with AuxSpecs {
       ExternalLink[Artist](Url("https://rateyourmusic.com/artist/deafheaven"), Host("rateyourmusic", Url("rateyourmusic.com"))),
       ExternalLink[Artist](Url("http://www.metal-archives.com/bands/Deafheaven/3540315870"), Host("MetalArchives", Url("www.metal-archives.com"))),
       ExternalLink[Artist](Url("https://twitter.com/deafheavenband"), Host("twitter", Url("twitter.com"))),
-      ExternalLink[Artist](Url("https://www.facebook.com/deafheaven"), Host("facebook", Url("www.facebook.com"))),
+      ExternalLink[Artist](Url("https://www.facebook.com/deafheaven"), Host("Facebook", Url("www.facebook.com"))),
       ExternalLink[Artist](Url("https://www.wikidata.org/wiki/Q5245804"), Host("wikidata", Url("www.wikidata.org"))),
       ExternalLink[Artist](Url("https://en.wikipedia.org/wiki/Deafheaven"), Host.Wikipedia),
       ExternalLink[Artist](Url("https://itunes.apple.com/es/album/id1123970968"), Host("itunes", Url("itunes.apple.com"))),
