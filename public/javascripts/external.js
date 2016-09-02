@@ -1,5 +1,5 @@
 $(function () {
-  const href = (target, name) => `<a target=_blank href=${target}>${name}</a>`
+  const href = (target, name) => `<a target=_blank href="${target}">${name}</a>`
 
   const externalDiv = $("#external");
 
@@ -11,25 +11,32 @@ $(function () {
   }
 
   const formatTimestamp = s => `${s.slice(6)}/${s.slice(4, 6)}/${s.slice(0, 4)}`
-  function showLinks(externalLinks) {
+
+  function showLinks(externalLinks, debugLink) {
     externalDiv.html("")
     $.each(externalLinks, (entityName, externalLinksForEntity) => {
-      const ul = elem("ul", `${entityName} (${formatTimestamp(externalLinksForEntity.timestamp)})`)
-      $.each(externalLinksForEntity, (linkName, link) => {
-        if (linkName == "timestamp")
-          return
-        const extensions = getExtensions(link)
-        const links = href(link.main, link.host) + (extensions ? ` (${extensions})` : "")
-        const imageIcon = `"list-style-image: url('assets/images/${link.host.replace(/\*$/g, "")}_icon.png')"`
-        ul.append($(`<li style=${imageIcon}>${links}</li>`))
-      })
+      const isValid = externalLinksForEntity.timestamp
+      const timestampOrError = `${entityName} (${isValid ?
+          formatTimestamp(externalLinksForEntity.timestamp) : href(debugLink, externalLinksForEntity.error)})`
+      const ul = elem("ul", timestampOrError)
+      if (isValid) {
+        $.each(externalLinksForEntity, (linkName, link) => {
+          if (linkName == "timestamp")
+            return
+          const extensions = getExtensions(link)
+          const links = href(link.main, link.host) + (extensions ? ` (${extensions})` : "")
+          const imageIcon = `"list-style-image: url('assets/images/${link.host.replace(/\*$/g, "")}_icon.png')"`
+          ul.append($(`<li style=${imageIcon}>${links}</li>`))
+        })
+      }
       externalDiv.append(ul)
     })
   }
 
   External.show = function (song) {
+    const externalUrl = "external/" + song.file
     externalDiv.html("Fetching links...");
-    $.get("external/" + song.file, l => showLinks(l))
+    $.get(externalUrl, l => showLinks(l, externalUrl))
         .fail(function () {
           externalDiv.html("Error occurred while fetching links");
         });

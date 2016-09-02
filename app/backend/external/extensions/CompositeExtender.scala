@@ -1,6 +1,6 @@
 package backend.external.extensions
 
-import backend.external.{ExternalLink, Host, HostMap}
+import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
 
 private[external] class CompositeExtender private(artistExtensions: HostMap[LinkExtender[Artist]], albumExtensions: HostMap[LinkExtender[Album]]) {
@@ -16,6 +16,8 @@ private[external] class CompositeExtender private(artistExtensions: HostMap[Link
     }
     auxExtend(e, map.asInstanceOf[HostMap[LinkExtender[R]]])
   }
+  def apply[R <: Reconcilable : Manifest](e: TimestampedLinks[R]): TimestampedExtendedLinks[R] =
+    TimestampedExtendedLinks(e.links.map(apply[R]), e.timestamp)
 }
 
 private[external] object CompositeExtender {

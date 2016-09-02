@@ -3,4 +3,6 @@ package backend.external.extensions
 import backend.external._
 import backend.recon._
 
-case class ExtendedExternalLinks(artistLinks: TimestampedExtendedLinks[Artist], albumLinks: TimestampedExtendedLinks[Album])
+import scala.concurrent.Future
+
+case class ExtendedExternalLinks(artistLinks: Future[TimestampedExtendedLinks[Artist]], albumLinks: Future[TimestampedExtendedLinks[Album]])

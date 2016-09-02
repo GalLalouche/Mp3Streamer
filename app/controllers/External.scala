@@ -1,7 +1,8 @@
 package controllers
 
-import backend.external.MbExternalLinksProvider
+import backend.external.{MbExternalLinksProvider, TimestampedExtendedLinks}
 import backend.external.extensions.{ExtendedExternalLinks, ExtendedLink, LinkExtension}
+import common.rich.RichFuture._
 import common.RichJson._
 import common.rich.RichT._
 import org.joda.time.DateTime
@@ -9,6 +10,8 @@ import org.joda.time.format.ISODateTimeFormat
 import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, Controller}
+
+import scala.concurrent.Future
 
 object External extends Controller {
   private implicit val c = PlayConfig
@@ -25,13 +28,16 @@ object External extends Controller {
   private def toJson(e: Traversable[ExtendedLink[_]]): JsObject = e
       .filter(e => e.host.canonize.name.toLowerCase |> set)
       .map(toJson).toSeq |> Json.obj
-  private def toJson(e: ExtendedExternalLinks): JsObject = Json.obj(
-    "artist" -> toJson(e.artistLinks.links).mapTo(withDate(_, e.artistLinks.timestamp)),
-    "album" -> toJson(e.albumLinks.links).mapTo(withDate(_, e.albumLinks.timestamp)))
+  private def toJson(e: TimestampedExtendedLinks[_]): JsObject = toJson(e.links).mapTo(withDate(_, e.timestamp))
 
   def get(path: String) = Action.async {
-    external(Utils.parseSong(path))
-        .map(toJson)
-        .map(Ok(_))
+    def toJsonOrElse(f: Future[TimestampedExtendedLinks[_]]): Future[JsObject] =
+      f.map(toJson).recover {
+        case e => Json.obj("error" -> e.getMessage)
+      }
+    val links = external(Utils.parseSong(path))
+    val f = for (artistJson <- links.artistLinks |> toJsonOrElse; albumJson <- links.albumLinks |> toJsonOrElse) yield
+      Json.obj("Artist" -> artistJson, "Album" -> albumJson)
+    f.map(Ok(_))
   }
 }

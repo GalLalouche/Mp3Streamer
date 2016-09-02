@@ -16,7 +16,7 @@ import org.joda.time.Duration
 
 import scala.concurrent.Future
 
-class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song, ExtendedExternalLinks] {
+class MbExternalLinksProvider(implicit c: Configuration) extends Function[Song, ExtendedExternalLinks] {
   private class Timestamper[R <: Reconcilable](foo: RefreshableStorage[R, Links[R]]) extends Retriever[R, TimestampedLinks[R]] {
     override def apply(r: R): Future[TimestampedLinks[R]] = foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
@@ -25,7 +25,7 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
                                                                         expander: Traversable[ExternalLinkExpander[R]],
                                                                         additionalReconciler: Traversable[Reconciler[R]]
                                                                        ): Retriever[R, TimestampedLinks[R]] =
-    new RefreshableStorage[R, Links[R]](
+    new RefreshableStorage(
       new FreshnessStorage(new SlickExternalStorage),
       new ExternalPipe[R](
         a => reconciler(a)
@@ -53,12 +53,12 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
   private val extender = CompositeExtender.default
 
   // for testing on remote
-  private def apply(a: Album): Future[ExtendedExternalLinks] =
-  for (artistLinks <- getArtistLinks(a.artist);
-       albumLinks <- getAlbumLinks(artistLinks.links, a)) yield
-    ExtendedExternalLinks(TimestampedExtendedLinks(artistLinks.links map extender[Artist], artistLinks.timestamp),
-      TimestampedExtendedLinks(albumLinks.links map extender[Album], albumLinks.timestamp))
-  override def apply(s: Song): Future[ExtendedExternalLinks] = apply(s.release)
+  private def apply(a: Album): ExtendedExternalLinks = {
+    val artistLinks = getArtistLinks(a.artist)
+    val albumLinks = artistLinks.flatMap(l => getAlbumLinks(l.links, a))
+    ExtendedExternalLinks(artistLinks.map(extender.apply[Artist]), albumLinks.map(extender.apply[Album]))
+  }
+  override def apply(s: Song): ExtendedExternalLinks = apply(s.release)
 }
 
 object MbExternalLinksProvider {
