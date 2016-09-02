@@ -5,9 +5,9 @@ $(function () {
 
   function getExtensions(link) {
     const $ = Object.keys(link.extensions).map(k => href(link.extensions[k], k)).join(", ")
-    return $ + link.host.endsWith("*") ?
+    return $ + (link.host.endsWith("*") ?
         `${$ === '' ? '' : ', '}<a class='copy-to-clipboard' href='javascript:void(0)' url='${link.main}'>copy</a>` :
-        ""
+        "")
   }
 
   function showLinks(externalLinks) {
