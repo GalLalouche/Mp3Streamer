@@ -2264,14 +2264,20 @@
 		},
 		_error: function(error) {
 			this._trigger($.jPlayer.event.error, error);
+      const errorMsg = "Error!" + (error.message ? "\n\n" + error.message : "") + (error.hint ? "\n\n" + error.hint : "") + "\n\nContext: " + error.context
 			if(this.options.errorAlerts) {
-				this._alert("Error!" + (error.message ? "\n\n" + error.message : "") + (error.hint ? "\n\n" + error.hint : "") + "\n\nContext: " + error.context);
+				this._alert(errorMsg);
+			} else {
+				console.log(errorMsg)
 			}
 		},
 		_warning: function(warning) {
 			this._trigger($.jPlayer.event.warning, undefined, warning);
+			const errorMsg = "Warning!" + (warning.message ? "\n\n" + warning.message : "") + (warning.hint ? "\n\n" + warning.hint : "") + "\n\nContext: " + warning.context
 			if(this.options.warningAlerts) {
-				this._alert("Warning!" + (warning.message ? "\n\n" + warning.message : "") + (warning.hint ? "\n\n" + warning.hint : "") + "\n\nContext: " + warning.context);
+				this._alert(errorMsg);
+			} else {
+				console.log(errorMsg)
 			}
 		},
 		_alert: function(message) {
