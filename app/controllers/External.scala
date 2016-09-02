@@ -2,7 +2,10 @@ package controllers
 
 import backend.external.MbExternalLinksProvider
 import backend.external.extensions.{ExtendedExternalLinks, ExtendedLink, LinkExtension}
+import common.RichJson._
 import common.rich.RichT._
+import org.joda.time.DateTime
+import org.joda.time.format.ISODateTimeFormat
 import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, Controller}
@@ -13,6 +16,7 @@ object External extends Controller {
 
   private val set = Set("allmusic", "wikipedia", "lastfm", "metalarchives", "musicbrainz", "facebook")
       .flatMap(e => List(e, e + "*"))
+  private def withDate(js: JsObject, d: DateTime): JsObject = js + ("timestamp" -> d.toString(ISODateTimeFormat.basicDate))
   private def toJson(e: LinkExtension[_]): (String, JsValueWrapper) = e.name -> e.link.address
   private def toJson(e: ExtendedLink[_]): (String, JsValueWrapper) = e.host.name -> Json.obj(
     "host" -> e.host.name,
@@ -21,8 +25,9 @@ object External extends Controller {
   private def toJson(e: Traversable[ExtendedLink[_]]): JsObject = e
       .filter(e => e.host.canonize.name.toLowerCase |> set)
       .map(toJson).toSeq |> Json.obj
-  private def toJson(e: ExtendedExternalLinks): JsObject =
-    Json.obj("artist" -> toJson(e.artistLinks), "album" -> toJson(e.albumLinks))
+  private def toJson(e: ExtendedExternalLinks): JsObject = Json.obj(
+    "artist" -> toJson(e.artistLinks).mapTo(withDate(_, e.artistTimeStamp)),
+    "album" -> toJson(e.albumLinks).mapTo(withDate(_, e.albumTimestamp)))
 
   def get(path: String) = Action.async {
     external(Utils.parseSong(path))

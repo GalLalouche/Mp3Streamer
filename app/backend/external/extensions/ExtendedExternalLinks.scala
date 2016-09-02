@@ -2,7 +2,11 @@ package backend.external.extensions
 
 import backend.external._
 import backend.recon._
+import org.joda.time.DateTime
 
 case class ExtendedExternalLinks(artistLinks: ExtendedLinks[Artist],
+                                 artistTimeStamp: DateTime,
                                  albumLinks: ExtendedLinks[Album],
-                                 trackLinks: ExtendedLinks[Track])
+                                 albumTimestamp: DateTime,
+                                 trackLinks: ExtendedLinks[Track],
+                                 trackTimestamp: DateTime)

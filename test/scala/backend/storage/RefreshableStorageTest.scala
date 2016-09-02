@@ -42,4 +42,9 @@ class RefreshableStorageTest extends FreeSpec with MockitoSugar with AuxSpecs wi
       $("foobar").get shouldReturn "bazqux"
     }
   }
+  "withAge" in {
+    freshnessStorage.store("foobar", "bazqux")
+    val timestamp = freshnessStorage.freshness("foobar").get.get.get // Yeah :|
+    $.withAge("foobar").get shouldReturn ("bazqux" -> Some(timestamp))
+  }
 }

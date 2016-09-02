@@ -10,11 +10,14 @@ $(function () {
         "")
   }
 
+  const formatTimestamp = s => `${s.slice(6)}/${s.slice(4, 6)}/${s.slice(0, 4)}`
   function showLinks(externalLinks) {
     externalDiv.html("")
     $.each(externalLinks, (entityName, externalLinksForEntity) => {
-      const ul = elem("ul", entityName)
-      $.each(externalLinksForEntity, (_, link) => {
+      const ul = elem("ul", `${entityName} (${formatTimestamp(externalLinksForEntity.timestamp)})`)
+      $.each(externalLinksForEntity, (linkName, link) => {
+        if (linkName == "timestamp")
+          return
         const extensions = getExtensions(link)
         const links = href(link.main, link.host) + (extensions ? ` (${extensions})` : "")
         const imageIcon = `"list-style-image: url('assets/images/${link.host.replace(/\*$/g, "")}_icon.png')"`

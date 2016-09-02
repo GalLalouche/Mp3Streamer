@@ -23,4 +23,7 @@ class RefreshableStorage[Key, Value](freshnessStorage: FreshnessStorage[Key, Val
     for (b <- needsRefresh(k);
          $ <- if (b) refresh(k) else freshnessStorage.load(k).map(_.get))
       yield $
+
+  def withAge(k: Key): Future[(Value, Option[DateTime])] =
+    for (v <- apply(k); age <- freshnessStorage.freshness(k)) yield v -> age.get
 }
