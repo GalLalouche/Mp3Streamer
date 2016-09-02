@@ -56,9 +56,8 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Retriever[Song,
   private def apply(a: Album): Future[ExtendedExternalLinks] =
   for (artistLinks <- getArtistLinks(a.artist);
        albumLinks <- getAlbumLinks(artistLinks.links, a)) yield
-    ExtendedExternalLinks(artistLinks.links map extender[Artist], artistLinks.timestamp,
-      albumLinks.links map extender[Album], albumLinks.timestamp,
-      Nil, null)
+    ExtendedExternalLinks(TimestampedExtendedLinks(artistLinks.links map extender[Artist], artistLinks.timestamp),
+      TimestampedExtendedLinks(albumLinks.links map extender[Album], albumLinks.timestamp))
   override def apply(s: Song): Future[ExtendedExternalLinks] = apply(s.release)
 }
 

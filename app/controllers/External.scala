@@ -26,8 +26,8 @@ object External extends Controller {
       .filter(e => e.host.canonize.name.toLowerCase |> set)
       .map(toJson).toSeq |> Json.obj
   private def toJson(e: ExtendedExternalLinks): JsObject = Json.obj(
-    "artist" -> toJson(e.artistLinks).mapTo(withDate(_, e.artistTimeStamp)),
-    "album" -> toJson(e.albumLinks).mapTo(withDate(_, e.albumTimestamp)))
+    "artist" -> toJson(e.artistLinks.links).mapTo(withDate(_, e.artistLinks.timestamp)),
+    "album" -> toJson(e.albumLinks.links).mapTo(withDate(_, e.albumLinks.timestamp)))
 
   def get(path: String) = Action.async {
     external(Utils.parseSong(path))

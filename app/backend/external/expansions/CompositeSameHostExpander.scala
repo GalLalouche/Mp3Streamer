@@ -20,7 +20,7 @@ private[external] class CompositeSameHostExpander private(cb: HostMap[SameHostEx
   override def apply(v1: Links[Artist], a: Album): Future[Links[Album]] =
     Future sequence v1.map(apply(_, a)) map (_.flatten)
   def toReconcilers(ls: Links[Artist]): Traversable[Reconciler[Album]] = {
-    val availableHosts = ls.mapBy(_.host)
+    val availableHosts = ls.toMultiMap(_.host).mapValues(_.head)
     cb.flatMap(e => availableHosts.get(e._1).map(e._2.toReconciler))
   }
 }
