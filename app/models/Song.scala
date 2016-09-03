@@ -14,10 +14,8 @@ case class Song(file: File, title: String, artistName: String, albumName: String
 }
 
 object Song {
-  private def parseDiscNumber(s: String): String =
-    s.dropWhile(_ != '=').drop(2).reverse.dropWhile(_ != ';').drop(2).reverse
-
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
+
   /** Parses ID3 data */
   def apply(file: File): Song = {
     require(file != null)
@@ -25,7 +23,7 @@ object Song {
     require(file.isDirectory == false, file + " is a directory")
     val (tag, header) = {
       val x = AudioFileIO.read(file)
-      x.getTag -> x.getAudioHeader
+      (x.getTag, x.getAudioHeader) // issues with running this using java if it uses ->
     }
     // get ID3 info
     val title = tag.getFirst(FieldKey.TITLE)
@@ -42,7 +40,9 @@ object Song {
     val bitrate = header.getBitRate
     val duration = header.getTrackLength
     val size = file.length
-    // in flac files, DISC_NO works. In regular files, it doesn't it needs to be parsed manually :\
+    // in flac files, DISC_NO works. In regular files, it doesn't so it needs to be parsed manually :\
+    def parseDiscNumber(s: String): String =
+      s.dropWhile(_ != '=').drop(2).reverse.dropWhile(_ != ';').drop(2).reverse
     val discNumber = tag.getFields("TPOS").toString.opt.filter(_.length >= 3).map(parseDiscNumber)
         .orElse(tag.getFirst(FieldKey.DISC_NO).opt.filter(_.nonEmpty))
 
