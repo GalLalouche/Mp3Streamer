@@ -15,7 +15,7 @@ import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 import search.MetadataCacher.IndexUpdate
 
 import scala.collection.mutable
-import scala.concurrent.{Await, ExecutionContext, Promise}
+import scala.concurrent.{Await, Promise}
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSugar with Matchers with AuxSpecs {
   private implicit val root = new MemoryRoot
@@ -108,15 +108,6 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
       }
       q.poll(5, TimeUnit.SECONDS).ensuring(_ != null, "Did not receive a metadata update") should matchWithIndices(1, 2)
       q.poll(5, TimeUnit.SECONDS).ensuring(_ != null, "Did not receive a metadata update") should matchWithIndices(2, 2)
-    }
-    "with blocking sink" in {
-      val $ = fromSaver(mockSaver)(c.copy(_ec = ExecutionContext.Implicits.global))
-      val album1 = Models.mockAlbum(title = "a1")
-      val song1 = Models.mockSong(title = "song1", album = album1)
-      addSong(song1)
-      $.indexAll().subscribe { _ => while (true) {} }
-      Thread.sleep(100)
-      verifyData(song1)
     }
   }
 
