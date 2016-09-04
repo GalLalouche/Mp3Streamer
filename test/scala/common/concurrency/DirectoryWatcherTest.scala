@@ -4,18 +4,14 @@ import java.io.File
 
 import common.concurrency.DirectoryWatcher._
 import common.rich.path.TempDirectory
-import org.scalatest.concurrent.TimeLimitedTests
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
-import rx.lang.scala.Subscriber
-import org.scalatest.time.SpanSugar._
 
-class DirectoryWatcherTest extends FreeSpec with MockitoSugar with OneInstancePerTest with Matchers
-  with TimeLimitedTests{
-  val timeLimit = 1 second
-  val tempDir = TempDirectory()
-  val probe = new MessageInterceptor[DirectoryEvent]
-  DirectoryWatcher(Seq(tempDir)).apply(Subscriber(probe.intercept))
+class DirectoryWatcherTest extends FreeSpec with MockitoSugar with OneInstancePerTest with Matchers {
+  private val tempDir = TempDirectory()
+  private val probe = new MessageInterceptor[DirectoryEvent]
+  DirectoryWatcher(Seq(tempDir))(probe)
+  probe expectMessage DirectoryWatcher.Started // ensures watcher is up and running
   "DirectoryWatcher" - {
     "handle new creations" - {
       "new file created" in {
@@ -41,7 +37,7 @@ class DirectoryWatcherTest extends FreeSpec with MockitoSugar with OneInstancePe
       }
       "directory deleted" in {
         val d = tempDir.addSubDir("foo")
-        probe expectMessage DirectoryCreated(tempDir / "foo" /) // waits for change
+        probe expectMessage DirectoryCreated(tempDir / "foo" /)
         d.deleteAll
         probe expectMessage DirectoryDeleted(tempDir \ "foo")
       }
@@ -49,7 +45,7 @@ class DirectoryWatcherTest extends FreeSpec with MockitoSugar with OneInstancePe
     "handle renames" - {
       "directory renamed" in {
         val d = tempDir.addSubDir("foo")
-        probe expectMessage DirectoryCreated(tempDir / "foo" /) // waits for change
+        probe expectMessage DirectoryCreated(tempDir / "foo" /)
         d.dir.renameTo(new File(d.parent, "bar"))
         probe expectMessage DirectoryDeleted(tempDir \ "foo")
         probe expectMessage DirectoryCreated(tempDir / "bar" /)
