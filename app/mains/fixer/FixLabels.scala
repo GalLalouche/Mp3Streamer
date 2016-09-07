@@ -17,7 +17,7 @@ import org.jaudiotagger.tag.id3.ID3v24Tag
 import scala.util.Try
 
 /** Fixes ID3 tags on mp3 (and flac) files to proper casing, etc. */
-object FixLabels extends App with Debug {
+object FixLabels extends Debug {
 	private def properTrackString(track: Int): String = if (track < 10) "0" + track else track toString
 	private def fixFile(f: File, fixDiscNumber: Boolean) {
 		val audioFile = AudioFileIO.read(f)
@@ -88,7 +88,7 @@ object FixLabels extends App with Debug {
 		try {
 			val renamedFolder = new File(dir.parent, s"$year ${album |> toLegalDirName}")
 			val result = dir.dir renameTo renamedFolder
-      assert(result, s"Failed to rename directory to $renamedFolder")
+      assert(result, s"Failed to rename directory to <$renamedFolder>")
       Directory(renamedFolder)
 		} catch {
 			case e: Exception => throw new Exception("could not rename the folder", e)
