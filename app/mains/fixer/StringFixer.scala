@@ -1,5 +1,7 @@
 package mains.fixer
 
+import java.text.Normalizer
+
 import common.rich.RichT._
 
 private object StringFixer {
@@ -32,9 +34,11 @@ private object StringFixer {
     }.mapTo(e => e._2.toString :: e._1) // append last SB to list
       .filterNot(_.isEmpty) // remove empty ""
       .reverse
+  def asciiNormalize(s: String): String =
+    Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
   def apply(str: String): String = {
     val split = splitWithDelimiters(str)
-    (pascalCaseWord(split.head) :: (split.tail map fixWord)) mkString ""
+    (pascalCaseWord(split.head) :: (split.tail map fixWord)) map asciiNormalize mkString ""
   }
 
   def main(args: Array[String]) {
