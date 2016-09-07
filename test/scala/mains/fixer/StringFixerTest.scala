@@ -23,4 +23,7 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   "ordered" in {
     $.lowerCaseWords.sorted shouldReturn $.lowerCaseWords
   }
+  "asciify" - {
+    verifyFix("Köyliönjärven jäällä", "Koylionjarven Jaalla")
+  }
 }
