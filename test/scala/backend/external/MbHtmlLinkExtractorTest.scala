@@ -13,7 +13,7 @@ import org.scalatest.FreeSpec
 import scala.concurrent.Future
 
 class MbHtmlLinkExtractorTest extends FreeSpec with AuxSpecs {
-  private implicit val c = new TestConfiguration
+  private implicit val c = TestConfiguration()
 
   private def getDocument(name: String) = Future successful Jsoup.parse(getResourceFile(name + ".html").readAll)
 

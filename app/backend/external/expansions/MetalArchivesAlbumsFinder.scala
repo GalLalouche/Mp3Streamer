@@ -4,6 +4,7 @@ import backend.Url
 import backend.configs.StandaloneConfig
 import backend.external.Host
 import backend.recon.{Album, Artist}
+import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import org.jsoup.nodes.Document
@@ -11,7 +12,7 @@ import org.jsoup.nodes.Document
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
 
-private class MetalArchivesAlbumsFinder(implicit ec: ExecutionContext) extends SameHostExpander(Host.MetalArchives) {
+private class MetalArchivesAlbumsFinder(implicit ec: ExecutionContext, it: InternetTalker) extends SameHostExpander(Host.MetalArchives) {
   override def aux(d: Document, a: Album): Option[Url] =
     d.select(".display.discog tr td a")
         .find(_.text.toLowerCase == a.title.toLowerCase)

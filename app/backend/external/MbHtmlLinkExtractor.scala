@@ -2,18 +2,18 @@ package backend.external
 
 import backend.Url
 import backend.recon.{Album, Artist, ReconID, Reconcilable}
-import common.io.DocumentDownloader
+import common.io.InternetTalker
 import common.rich.RichT._
 import org.jsoup.nodes.{Document, Element}
 
 import scala.collection.JavaConversions._
 import scala.concurrent.{ExecutionContext, Future}
 
-private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String)(implicit ec: ExecutionContext)
+private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String)(implicit ec: ExecutionContext, it: InternetTalker)
     extends ExternalLinkProvider[T] {
   private def getMbUrl(reconId: ReconID): Url = Url(s"https://musicbrainz.org/$metadataType/${reconId.id}")
   protected def getHtml(reconId: ReconID): Future[Document] =
-    DocumentDownloader(getMbUrl(reconId))
+    it downloadDocument getMbUrl(reconId)
   private def extractLink(e: Element): ExternalLink[T] = {
     val url: Url = Url(e.select("a").attr("href").mapIf(_.startsWith("//")).to("https:" + _))
     val sourceName = e.className
@@ -34,6 +34,6 @@ private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String
   }
 }
 
-private class ArtistLinkExtractor(implicit ec: ExecutionContext) extends MbHtmlLinkExtractor[Artist]("artist")
-private class AlbumLinkExtractor(implicit ec: ExecutionContext) extends MbHtmlLinkExtractor[Album]("release-group")
+private class ArtistLinkExtractor(implicit ec: ExecutionContext, it: InternetTalker) extends MbHtmlLinkExtractor[Artist]("artist")
+private class AlbumLinkExtractor(implicit ec: ExecutionContext, it: InternetTalker) extends MbHtmlLinkExtractor[Album]("release-group")
 

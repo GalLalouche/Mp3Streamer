@@ -3,6 +3,7 @@ package backend.external.expansions
 import backend.external.recons.Reconciler
 import backend.external.{ExternalLink, _}
 import backend.recon.{Album, Artist}
+import common.io.InternetTalker
 import common.rich.collections.RichTraversableOnce._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -26,6 +27,6 @@ private[external] class CompositeSameHostExpander private(cb: HostMap[SameHostEx
 }
 
 private[external] object CompositeSameHostExpander {
-  def default(implicit ec: ExecutionContext) = new CompositeSameHostExpander(new WikipediaAlbumFinder())
+  def default(implicit ec: ExecutionContext, it: InternetTalker) = new CompositeSameHostExpander(new WikipediaAlbumFinder())
   // MetalArchives is commented until I get unbanned :|
 }
