@@ -7,20 +7,15 @@ import common.AuxSpecs
 import common.rich.RichFuture._
 import common.rich.path.RichFile._
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.scalatest.FreeSpec
 
-import scala.concurrent.Future
-
 class MbHtmlLinkExtractorTest extends FreeSpec with AuxSpecs {
-  private implicit val c = TestConfiguration()
-
-  private def getDocument(name: String) = Future successful Jsoup.parse(getResourceFile(name + ".html").readAll)
+  private def withDocument(name: String) =
+    TestConfiguration().copy(_documentDownloader = _ => Jsoup.parse(getResourceFile(name + ".html").readAll))
 
   "parse artist links" in {
-    val $ = new ArtistLinkExtractor() {
-      override protected def getHtml(artistId: ReconID): Future[Document] = getDocument("artist")
-    }
+    implicit val c = withDocument("artist")
+    val $ = new ArtistLinkExtractor
     val expected = Set(
       ExternalLink[Artist](Url("http://deafheaven.com/"), Host("home", Url("deafheaven.com"))),
       ExternalLink[Artist](Url("http://www.allmusic.com/artist/mn0002658855"), Host.AllMusic),
@@ -42,9 +37,8 @@ class MbHtmlLinkExtractorTest extends FreeSpec with AuxSpecs {
   }
 
   "parse album links" in {
-    val $ = new AlbumLinkExtractor() {
-      override protected def getHtml(artistId: ReconID): Future[Document] = getDocument("album")
-    }
+    implicit val c = withDocument("album")
+    val $ = new AlbumLinkExtractor
     val expected = Set(
       ExternalLink[Album](Url("http://www.discogs.com/master/559132"), Host("discogs", Url("www.discogs.com"))),
       ExternalLink[Album](Url("https://rateyourmusic.com/release/album/deafheaven/sunbather/"), Host("rateyourmusic", Url("rateyourmusic.com"))),
