@@ -3,6 +3,7 @@ package mains.fixer
 import java.io.File
 import java.nio.file.Files
 
+import backend.configs.StandaloneConfig
 import common.rich.RichT.richT
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
@@ -11,11 +12,11 @@ import mains.IOUtils
 import mains.cover.DownloadCover
 import models.Song
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.{Duration, DurationInt}
 import scala.concurrent.{Await, Future}
 
 object FolderFixer {
+  private implicit val c = StandaloneConfig
   private def findArtistFolder(artist: String): Option[Directory] = {
     println("finding matching folder")
     Directory("d:/media/music")

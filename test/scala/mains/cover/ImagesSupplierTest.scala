@@ -1,15 +1,15 @@
 package mains.cover
 
+import backend.configs.TestConfiguration
 import common.rich.RichFuture._
 import common.{AuxSpecs, MockitoHelper}
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
+import org.scalatest.{FreeSpec, OneInstancePerTest}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoSugar
-  with MockitoHelper with AuxSpecs {
+class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoSugar with MockitoHelper with AuxSpecs {
+  private implicit val c = TestConfiguration()
   private def downloadImage(url: String): Future[FolderImage] = Future successful mockWithId(url)
   private def downloadImageWithDelay(delayInMillis: Int, url: String): Future[FolderImage] = Future {
     Thread sleep delayInMillis

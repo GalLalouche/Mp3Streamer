@@ -2,6 +2,7 @@ package mains.cover
 
 import java.nio.file.Files
 
+import backend.configs.StandaloneConfig
 import common.Debug
 import common.io.IODirectory
 import common.rich.RichT.richT
@@ -9,7 +10,6 @@ import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
 import models.Song
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import scala.sys.process.Process
@@ -17,7 +17,8 @@ import scala.sys.process.Process
 // Uses google image search (not API, actual site) to find images, then displays the images for the user to select a
 // good picture. The site is used since the API doesn't allow for a size filter.
 object DownloadCover extends Debug {
-  case class CoverException(str: String, e: Exception) extends Exception(e)
+  private implicit val c = StandaloneConfig
+  private case class CoverException(str: String, e: Exception) extends Exception(e)
 
   private lazy val tempFolder: Directory = Directory.apply(Files.createTempDirectory("images").toFile)
   tempFolder.dir.deleteOnExit()

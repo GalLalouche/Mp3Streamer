@@ -2,6 +2,7 @@ package mains.cover
 
 import java.io.File
 
+import backend.configs.StandaloneConfig
 import common.io.IOFile
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
@@ -38,8 +39,8 @@ private object ImageSelectionPanel {
 
   def main(args: Array[String]): Unit = {
     import common.rich.RichFuture._
+    implicit val c = StandaloneConfig
 
-    import scala.concurrent.ExecutionContext.Implicits.global
     val x = apply(new ImagesSupplier {
       override def next(): Future[FolderImage] = {
         Future {

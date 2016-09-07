@@ -2,6 +2,7 @@ package backend.lyrics
 
 import java.io.File
 
+import backend.configs.StandaloneConfig
 import common.rich.RichFuture._
 import common.rich.RichT._
 import models.Song
@@ -31,9 +32,9 @@ private class DarkLyricsRetriever(implicit ec: ExecutionContext) extends HtmlRet
 }
 
 object DarkLyricsRetriever {
-  import scala.concurrent.ExecutionContext.Implicits.global
   def main(args: Array[String]) {
-    val $ = new DarkLyricsRetriever()(scala.concurrent.ExecutionContext.Implicits.global)
+    implicit val c = StandaloneConfig
+    val $ = new DarkLyricsRetriever
     println($.apply(Song(new File( """D:\Media\Music\Metal\Progressive Metal\Dream Theater\2003 Train of Thought\05 - Vacant.mp3"""))).get)
   }
 }

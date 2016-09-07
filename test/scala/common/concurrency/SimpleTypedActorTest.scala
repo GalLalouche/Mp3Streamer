@@ -3,11 +3,8 @@ package common.concurrency
 import java.util.concurrent.Semaphore
 
 import common.AuxSpecs
-import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{FreeSpec, OneInstancePerTest}
-import common.rich.RichT._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 import scala.concurrent.duration._
 

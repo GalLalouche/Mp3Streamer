@@ -3,6 +3,7 @@ package backend.lyrics
 import java.io.File
 import java.net.URLEncoder
 
+import backend.configs.StandaloneConfig
 import common.rich.RichFuture._
 import common.rich.RichT._
 import models.Song
@@ -26,12 +27,13 @@ private class LyricsWikiaRetriever(implicit ec: ExecutionContext) extends HtmlRe
   private def normalize(s: String): String = s.replaceAll(" ", "_").mapTo(URLEncoder.encode(_, "UTF-8"))
 }
 
-private object LyricsWikiaRetriever extends LyricsWikiaRetriever()(scala.concurrent.ExecutionContext.Implicits.global) {
-  import scala.concurrent.ExecutionContext.Implicits.global
+private object LyricsWikiaRetriever {
   def main(args: Array[String]) {
+    implicit val c = StandaloneConfig
+    val $ = new LyricsWikiaRetriever()
     val file: File = new File( """D:\Media\Music\Metal\Black Metal\Watain\2010 Lawless Darkness\06 - Lawless Darkness.mp3""")
     println(file.exists())
-    println(apply(Song(file)).get)
+    println($(Song(file)).get)
     println("Done")
   }
 }
