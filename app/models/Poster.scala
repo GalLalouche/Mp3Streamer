@@ -10,7 +10,5 @@ object Poster {
 		val f = dir.files.find(_.name.toLowerCase.matches("folder.(jpg)|(png)"))
 		f.getOrElse(getCoverArt(dir.parent))
 	}
-	def getCoverArt(s: Song): File = {
-		getCoverArt(s.file.parent)
-	}
+	def getCoverArt(s: Song): File = getCoverArt(s.file.parent)
 }
