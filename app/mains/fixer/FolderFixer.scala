@@ -24,7 +24,7 @@ object FolderFixer {
   }
 
   private def moveDirectory(artist: String, destination: Future[Option[Directory]],
-                            folderImage: Future[Directory => Unit], sourcePath: String) {
+                            folderImage: Future[Directory => Unit], source: Directory) {
     if (destination.isCompleted == false)
       println("Waiting on artist find...")
     val destinationParent: Directory = Await.result(destination, 1 minute).getOrElse {
@@ -37,7 +37,6 @@ object FolderFixer {
         .get
         .addSubDir(artist)
     }
-    val source = Directory(sourcePath)
     Await.result(folderImage, Duration.Inf)(source)
     val dest = new File(destinationParent, source.name).toPath
     Files.move(source.toPath, dest)
@@ -46,11 +45,10 @@ object FolderFixer {
 
   private def downloadCover(newPath: Directory): Future[Directory => Unit] = {
     DownloadCover.apply(newPath) recover {
-      case e: RuntimeException =>
+      case e: RuntimeException => d =>
         println("Auto downloading picture aborted: " + e.getMessage)
         println("Press enter to continue with the script")
         scala.io.StdIn.readLine()
-        _ => ()
     }
   }
 

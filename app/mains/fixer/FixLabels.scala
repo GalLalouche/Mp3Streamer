@@ -58,8 +58,12 @@ object FixLabels extends App with Debug {
 			.recoverWith { case e: Exception => throw new Exception("Could not retrieve the year from the songs", e) }
 			.get
 
+	private val reservedDirCharacters = "<>:\"/\\|?*".toSet
+
+	private def toLegalDirName(s: String): String = s filterNot reservedDirCharacters
+
 	// returns the path of the output folder
-	def fix(dir: Directory) = {
+	def fix(dir: Directory): Directory = {
 		require(dir.files.count(_.extension == "flac") != 1 || dir.files.count(_.extension == "cue") != 1,
 			"Folder contains an unsplit flac file; please split the file and try again.")
 
@@ -82,9 +86,10 @@ object FixLabels extends App with Debug {
 		musicFiles foreach rename
 
 		try {
-			val renamedFolder = new File(dir.parent, s"$year $album")
-			dir.dir renameTo renamedFolder
-			renamedFolder getAbsolutePath
+			val renamedFolder = new File(dir.parent, s"$year ${album |> toLegalDirName}")
+			val result = dir.dir renameTo renamedFolder
+      assert(result, s"Failed to rename directory to $renamedFolder")
+      Directory(renamedFolder)
 		} catch {
 			case e: Exception => throw new Exception("could not rename the folder", e)
 		}
