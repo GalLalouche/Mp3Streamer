@@ -44,11 +44,8 @@ object FolderFixer {
   }
 
   private def downloadCover(newPath: Directory): Future[Directory => Unit] = {
-    DownloadCover.apply(newPath) recover {
-      case e: RuntimeException => d =>
-        println("Auto downloading picture aborted: " + e.getMessage)
-        println("Press enter to continue with the script")
-        scala.io.StdIn.readLine()
+    DownloadCover(newPath) recover {
+      case e: RuntimeException => println("Auto downloading picture aborted: " + e.getMessage).const
     }
   }
 
