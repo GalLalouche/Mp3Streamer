@@ -15,11 +15,6 @@ object Application extends Controller {
       ("Content-Disposition", "attachment; filename=" + file.getName.replaceAll(",", "%2c")),
       ("Content-Range", "byte %d/%d".format(file.length, file.length)), ("Content", "audio/mp3"))
   }
-  var i = 0
-  def test() = Action {
-    i += 1
-    Ok("Hi: " + i)
-  }
 
   def sjs() = Action {
     val f: File = new File("C:/dev/web/Mp3Streamer/client/player.html")

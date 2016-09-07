@@ -5,10 +5,10 @@ import java.io.File
 import common.Debug
 import play.api.mvc.{Action, Controller}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object Flac extends Controller with Debug {
+  private implicit val c = PlayConfig
   def raw() = Action.async {
     Future {
       //    Ok.sendFile(new File("""D:\Media\Music\Rock\Neo-Prog\Beardfish\2012 The Void\09 - Note.flac"""))

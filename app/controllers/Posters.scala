@@ -1,13 +1,10 @@
 package controllers
 
-import java.io.File
-import java.net.URLDecoder
-
 import play.api.mvc.{Action, Controller}
 
 object Posters extends Controller {
 	def image(path: String) = Action {
-		Status(200).sendFile(new File(URLDecoder.decode(path, "UTF-8")))
+		Ok sendFile Utils.parseFile(path)
 	}
 
 	def displayImage(path: String) = Action {

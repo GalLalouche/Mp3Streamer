@@ -4,7 +4,6 @@ import java.net.URLDecoder
 
 import common.concurrency.Extra
 import common.rich.RichT.richT
-import models.RealLocations
 import play.api.Logger
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsArray, Json}

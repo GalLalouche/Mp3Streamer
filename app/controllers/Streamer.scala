@@ -8,10 +8,10 @@ import decoders.DbPowerampCodec
 import play.api.libs.iteratee.Enumerator
 import play.api.mvc.{Action, Controller}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object Streamer extends Controller {
+  private implicit val c = PlayConfig
   private val decoder = DbPowerampCodec
   def download(s: String) = Action.async { request =>
     // assumed format: [bytes=<start>-]

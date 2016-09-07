@@ -5,7 +5,6 @@
 # Home page
 GET        /                             controllers.Application.index(mute:Boolean = false)
 GET        /mute                         controllers.Application.index(mute:Boolean = true)
-GET        /test                         controllers.Application.test()
 GET        /sjs                          controllers.Application.sjs()
 GET        /client/*file                 controllers.Application.sjsClient(file)
 
