@@ -28,11 +28,13 @@ object FolderFixer {
     if (destination.isCompleted == false)
       println("Waiting on artist find...")
     val destinationParent: Directory = Await.result(destination, 1 minute).getOrElse {
-      val genre = scala.io.StdIn.readLine("Could not find artist directory... what is the artist's genre?\n").toLowerCase
-      Directory("d:/media/music")
-        .dirs
-        .view
-        .flatMap(_.dirs)
+      val genreDirs = Directory("d:/media/music")
+            .dirs
+            .flatMap(_.dirs)
+      println("Could not find artist directory... what is the artist's genre?")
+      println(genreDirs.map(_.name).mkString("Genres: [", ",", "]"))
+      val genre = scala.io.StdIn.readLine().toLowerCase
+      genreDirs
         .find(_.name.toLowerCase == genre)
         .get
         .addSubDir(artist)
