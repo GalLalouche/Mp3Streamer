@@ -5,7 +5,7 @@ import java.util.UUID
 
 import models.{Album, Artist, Song}
 
-private object Models {
+object Models {
   def mockSong(file: String = s"./foobar/${UUID.randomUUID()}.mp3", title: String = "title", artistName: String = "artist",
                albumName: String = "album", track: Int = 1, year: Int = 2000, bitrate: String = "320",
                duration: Int = 3600, size: Long = 1000, album: Album = null, discNumber: Option[String] = None): Song = {
