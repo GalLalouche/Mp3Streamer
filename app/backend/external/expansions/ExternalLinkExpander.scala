@@ -1,12 +1,15 @@
 package backend.external.expansions
 
 import backend.Retriever
-import backend.external.{Host, _}
+import backend.external.{ExternalLink, Host, Links}
 import backend.recon.Reconcilable
 
-/** E.g., from wikipedia to allmusic */
+/**
+ * Expansions (not to be confused with ex<b>t</b>ansions) scrap a given link in search for more links,
+ * e.g., they might find AllMusic links in a Wikipedia link.
+ */
 private[external] trait ExternalLinkExpander[T <: Reconcilable] extends Retriever[ExternalLink[T], Links[T]] {
-  /** The host links are extracted from */
+  /** The host the links are extracted from. */
   def sourceHost: Host
   /**
    * Possible links that can be extracted. Note that not all links listed will be extracted, since they

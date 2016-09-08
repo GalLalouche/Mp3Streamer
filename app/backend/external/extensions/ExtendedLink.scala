@@ -5,9 +5,7 @@ import backend.external.{ExternalLink, Host}
 import backend.recon.Reconcilable
 
 case class LinkExtension[R <: Reconcilable](name: String, link: Url)
-case class ExtendedLink[R <: Reconcilable](link: Url, host: Host, extensions: Traversable[LinkExtension[R]]) {
-  def toLink = ExternalLink[R](link, host)
-}
+case class ExtendedLink[R <: Reconcilable](link: Url, host: Host, extensions: Traversable[LinkExtension[R]])
 
 
 private object ExtendedLink {

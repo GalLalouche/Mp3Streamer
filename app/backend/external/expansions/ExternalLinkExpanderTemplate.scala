@@ -8,9 +8,10 @@ import org.jsoup.nodes.Document
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Downloads the jsoup documents and parses it */
-private abstract class ExternalLinkExpanderTemplate[T <: Reconcilable](override val sourceHost: Host, override val potentialHostsExtracted: Traversable[Host])
-                                                              (implicit ec: ExecutionContext, it: InternetTalker)
+private abstract class ExternalLinkExpanderTemplate[T <: Reconcilable](override val sourceHost: Host,
+                                                                       override val potentialHostsExtracted: Traversable[Host])
+                                                                      (implicit ec: ExecutionContext, it: InternetTalker)
     extends ExternalLinkExpander[T] {
-  protected def aux(d: Document): Links[T]
-  override def apply(v1: ExternalLink[T]): Future[Links[T]] = it.downloadDocument(v1.link).map(aux)
+  protected def parseDocument(d: Document): Links[T]
+  override def apply(l: ExternalLink[T]): Future[Links[T]] = it downloadDocument l.link map parseDocument
 }

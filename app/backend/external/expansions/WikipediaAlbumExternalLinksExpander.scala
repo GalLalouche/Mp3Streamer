@@ -52,7 +52,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext,
         .map(List(_))
         .getOrElse(xs)
 
-  override def aux(d: Document): Links[Album] = d
+  override def parseDocument(d: Document): Links[Album] = d
       .select("a")
       .map(_.attr("href"))
       .flatMap(extractLink)

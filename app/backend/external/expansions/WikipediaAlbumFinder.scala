@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext
 import common.rich.RichT._
 
 private class WikipediaAlbumFinder(implicit ec: ExecutionContext, it: InternetTalker) extends SameHostExpander(Host.Wikipedia) {
-  override def aux(d: Document, a: Album): Option[Url] = {
+  override def findAlbum(d: Document, a: Album): Option[Url] = {
     def score(linkName: String): Double = StringReconScorer(a.title, linkName)
     d.select("a")
         .find(e => score(e.text) > 0.95)

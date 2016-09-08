@@ -13,7 +13,7 @@ import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
 
 private class MetalArchivesAlbumsFinder(implicit ec: ExecutionContext, it: InternetTalker) extends SameHostExpander(Host.MetalArchives) {
-  override def aux(d: Document, a: Album): Option[Url] =
+  override def findAlbum(d: Document, a: Album): Option[Url] =
     d.select(".display.discog tr td a")
         .find(_.text.toLowerCase == a.title.toLowerCase)
         .map(_.attr("href"))

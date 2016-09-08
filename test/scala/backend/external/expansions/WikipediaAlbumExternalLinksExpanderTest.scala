@@ -19,14 +19,14 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
   private def getDocument(s: String): Document = Jsoup.parse(getResourceFile(s).readAll)
 
   private val $: WikipediaAlbumExternalLinksExpander = new WikipediaAlbumExternalLinksExpander()
-  private def get(s: String): String =
-    $.aux(getDocument(s))
+  private def getAllMusicLinkAddress(s: String): String =
+    $.parseDocument(getDocument(s))
         .filter(_.host.name == "allmusic")
         .map(_.link.address)
         .single
 
   "extract allmusic link" in {
-    get("allmusic_link.html") shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
+    getAllMusicLinkAddress("allmusic_link.html") shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
   }
   "canonize allmusic links" - {
     "mw link" in {
@@ -65,6 +65,6 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
         .get shouldReturn Nil
   }
   "succeed even if there is no link" in {
-    new WikipediaAlbumExternalLinksExpander().aux(getDocument("no_link.html")) shouldReturn Nil
+    new WikipediaAlbumExternalLinksExpander().parseDocument(getDocument("no_link.html")) shouldReturn Nil
   }
 }
