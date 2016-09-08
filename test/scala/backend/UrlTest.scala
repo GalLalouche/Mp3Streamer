@@ -22,4 +22,20 @@ class UrlTest extends FreeSpec with AuxSpecs {
       Url("www.metal-archives.com/bands/Cruachan/86/").host shouldReturn Url("www.metal-archives.com")
     }
   }
+  "+/" - {
+    "should add / if needed" in {
+      Url("www.faceboom.com") +/ "foobar" shouldReturn Url("www.faceboom.com/foobar")
+    }
+    "should not add / when not needed" - {
+      "this ends in /" in {
+        Url("www.faceboom.com/") +/ "foobar" shouldReturn Url("www.faceboom.com/foobar")
+      }
+      "that starts with /" in {
+        Url("www.faceboom.com") +/ "/foobar" shouldReturn Url("www.faceboom.com/foobar")
+      }
+      "both" in {
+        Url("www.faceboom.com/") +/ "/foobar" shouldReturn Url("www.faceboom.com/foobar")
+      }
+    }
+  }
 }
