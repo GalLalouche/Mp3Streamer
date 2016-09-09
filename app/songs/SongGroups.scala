@@ -8,7 +8,7 @@ import search.Jsonable
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private object SongGroups {
+object SongGroups {
   def fromGroups(groups: Traversable[SongGroup]): Map[Song, SongGroup] =
     groups.foldLeft(Map[Song, SongGroup]())(_ ++ _.mapTo(e => e.songs.map(_ -> e)).toMap)
 
