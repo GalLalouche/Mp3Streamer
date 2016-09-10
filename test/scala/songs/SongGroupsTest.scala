@@ -2,7 +2,6 @@ package songs
 
 import backend.configs.TestConfiguration
 import common.AuxSpecs
-import common.rich.RichFuture._
 import org.scalatest.FreeSpec
 import search.Models
 
@@ -26,7 +25,7 @@ class SongGroupsTest extends FreeSpec with AuxSpecs {
   "save and load" in {
     implicit val c = TestConfiguration()
     import c._
-    SongGroups.save(groups).get
-    SongGroups.load.get.toSeq shouldReturn Seq(group1, group2)
+    SongGroups.save(groups)
+    SongGroups.load shouldReturn Seq(group1, group2)
   }
 }

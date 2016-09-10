@@ -20,7 +20,7 @@ import common.rich.primitives.RichEither._
 object Player extends Controller with Debug {
   private implicit val c = PlayConfig
   import c._
-  private val songGroups: Map[Song, SongGroup] = SongGroups.load map SongGroups.fromGroups get
+  private val songGroups: Map[Song, SongGroup] = SongGroups.load |> SongGroups.fromGroups
   private var songSelector: SongSelector = _
   def update() = timed("Updating music") {
     songSelector = SongSelector listen c.mf
