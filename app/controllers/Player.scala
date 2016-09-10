@@ -20,11 +20,10 @@ import common.rich.primitives.RichEither._
 object Player extends Controller with Debug {
   private implicit val c = PlayConfig
   import c._
-  private val musicFinder = RealLocations
   private val songGroups: Map[Song, SongGroup] = SongGroups.load map SongGroups.fromGroups get
-  private var songSelector: SongSelector = SongSelector.listen(musicFinder)
+  private var songSelector: SongSelector = _
   def update() = timed("Updating music") {
-    songSelector = SongSelector listen musicFinder
+    songSelector = SongSelector listen c.mf
   }
   //TODO hide this, shouldn't be a part of the controller
   update()
@@ -35,7 +34,7 @@ object Player extends Controller with Debug {
         ("poster" -> JsString("/posters/" + Poster.getCoverArt(s).path)) +
         ("mp3" -> JsString("/stream/download/" + URLEncoder.encode(s.file.path, "UTF-8")))
   }
-  private def toJson(ss: SongGroup): JsArray = ss.songs.toSeq map toJson mapTo JsArray
+  private def toJson(ss: SongGroup): JsArray = ss.songs map toJson mapTo JsArray
   private def toJson(e: Either[Song, SongGroup]): JsValue = e.resolve(toJson, toJson)
 
   private def group(s: Song): Either[Song, SongGroup] = songGroups get s mapTo (_ either s) swap

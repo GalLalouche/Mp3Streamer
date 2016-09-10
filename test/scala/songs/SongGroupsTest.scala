@@ -11,9 +11,9 @@ class SongGroupsTest extends FreeSpec with AuxSpecs {
   private val song2 = Models.mockSong()
   private val song3 = Models.mockSong()
   private val song4 = Models.mockSong()
-  private val group1 = SongGroup(Set(song1, song2))
-  private val group2 = SongGroup(Set(song3, song4))
-  private val groups = Set(group1, group2)
+  private val group1 = SongGroup(Seq(song1, song2))
+  private val group2 = SongGroup(Seq(song3, song4))
+  private val groups = Seq(group1, group2)
   "fromSongs" in {
     val song5 = Models.mockSong()
     val $ = SongGroups.fromGroups(groups)
@@ -27,6 +27,6 @@ class SongGroupsTest extends FreeSpec with AuxSpecs {
     implicit val c = TestConfiguration()
     import c._
     SongGroups.save(groups).get
-    SongGroups.load.get.toSet shouldReturn Set(group1, group2)
+    SongGroups.load.get.toSeq shouldReturn Seq(group1, group2)
   }
 }
