@@ -14,7 +14,7 @@ object FindNewAlbums {
       override val subDirs: List[String] = List("Rock", "Metal")
     })
     val file = Directory("C:/").addFile("albums.txt").clear()
-    $.findNewAlbums.map(_.toString.log()).toSeq.sorted.foreach(file appendLine)
+    $.findNewAlbums.map(_.toString.log()).toSeq.sorted.foreach(file.appendLine)
     println("Done")
     System.exit(0)
   }

@@ -30,7 +30,7 @@ private object RandomFolderCreator {
 
   @tailrec
   private def findNewSong(existing: Set[File]): File = {
-    val file = songs(random nextInt (songs length))
+    val file = songs(random nextInt songs.length)
     if (existing contains file)
       findNewSong(existing)
     else

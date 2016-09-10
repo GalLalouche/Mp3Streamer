@@ -1,5 +1,7 @@
 package mains.cover;
 
+import mains.JavaMainUtils;
+
 public class DownloadCoverJava {
     public static void main(String[] args) throws Exception {
         try {
@@ -7,7 +9,7 @@ public class DownloadCoverJava {
             System.exit(0);
         } catch (Throwable t) {
             t.printStackTrace();
-            System.in.read();
+            JavaMainUtils.waitForCarriageReturn();
             System.exit(1);
         }
     }

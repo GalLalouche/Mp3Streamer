@@ -20,7 +20,7 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
   // TODO consider creating a new panel instead
   def refresh() {
     contents.clear()
-    // Prepopulate the grid to avoid images moving around.
+    // Pre-populate the grid to avoid images moving around.
     (0 until rows * cols).foreach(i => contents += new TextArea(s"Placeholder for image #$i"))
     contents += Button.apply("Fuck it, I'll do it myself!") {
       AsyncFolderImagePanel.this.publish(OpenBrowser)

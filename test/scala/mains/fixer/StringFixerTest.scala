@@ -5,7 +5,7 @@ import org.scalatest.FreeSpec
 
 class StringFixerTest extends FreeSpec with AuxSpecs {
   private val $ = StringFixer
-  def verifyFix(original: String, fix: String) {
+  private def verifyFix(original: String, fix: String) {
     s"$original should equal $fix" in {
       $(original) shouldReturn fix
     }

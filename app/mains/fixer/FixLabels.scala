@@ -18,7 +18,7 @@ import scala.util.Try
 
 /** Fixes ID3 tags on mp3 (and flac) files to proper casing, etc. */
 object FixLabels extends Debug {
-	private def properTrackString(track: Int): String = if (track < 10) "0" + track else track toString
+	private def properTrackString(track: Int): String = if (track < 10) "0" + track else track.toString
 	private def fixFile(f: File, fixDiscNumber: Boolean) {
 		val audioFile = AudioFileIO.read(f)
 		val originalTag = audioFile.getTag

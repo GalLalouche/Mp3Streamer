@@ -19,31 +19,25 @@ private object StringFixer {
     case e if e matches delimiters => e
     case e if e.head.isDigit => e.toLowerCase // 1st, 2nd, etc.
     case "a" | "A" => "a"
-    case _ if word.matches("[A-Z]+") => word
+    case _ if word.matches("[A-Z]+") => word // all caps
     case "i" | "I" => "I"
-    case s if s matches "[IVXMLivxml]+" => s toUpperCase // roman numbers
-    case s if s matches "\\d\\w{2}" => s.toLowerCase
-    case _ => if (lowerCaseSet(word.toLowerCase)) word.toLowerCase else pascalCaseWord(word) // everything else
+    case s if s matches "[IVXMLivxml]+" => s.toUpperCase // roman numbers
+    case s if s matches "\\d\\w{2}" => s.toLowerCase // 1st, 2nd, etc.
+    case _ => if (word.toLowerCase |> lowerCaseSet) word.toLowerCase else word |> pascalCaseWord
   }
 
-  private def splitWithDelimiters($: String): List[String] =
-    $.foldLeft((List[String](), new StringBuilder)) {
+  private def splitWithDelimiters(s: String): List[String] =
+    s.foldLeft((List[String](), new StringBuilder)) {
       case ((agg, sb), c) =>
         if (c.toString matches delimiters) (c.toString :: sb.toString :: agg, new StringBuilder) // delimiter
         else (agg, sb append c)
     }.mapTo(e => e._2.toString :: e._1) // append last SB to list
-      .filterNot(_.isEmpty) // remove empty ""
+      .filterNot(_.isEmpty)
       .reverse
-  def asciiNormalize(s: String): String =
+  private def asciiNormalize(s: String): String =
     Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
   def apply(str: String): String = {
     val split = splitWithDelimiters(str)
     (pascalCaseWord(split.head) :: (split.tail map fixWord)) map asciiNormalize mkString ""
-  }
-
-  def main(args: Array[String]) {
-//    println("List(" + lowerCaseWords.toList.sorted.map(e => "\"" + e + "\"").mkString(", ") + ")")
-    println("1" matches delimiters)
-    splitWithDelimiters("1St").log()
   }
 }
