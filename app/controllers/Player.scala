@@ -1,13 +1,11 @@
 package controllers
 
-import java.net.{URLDecoder, URLEncoder}
+import java.net.URLEncoder
 
 import common.Debug
-import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.path.Directory
 import common.rich.path.RichFile._
-import decoders.DbPowerampCodec
 import common.rich.primitives.RichEither._
 import common.rich.primitives.RichOption._
 import models._
@@ -29,7 +27,6 @@ object Player extends Controller with Debug {
   update()
 
   private def toJson(s: Song): JsObject = {
-    DbPowerampCodec ! s.file
     SongJsonifier.jsonify(s) +
         ("poster" -> JsString("/posters/" + Poster.getCoverArt(s).path)) +
         ("mp3" -> JsString("/stream/download/" + URLEncoder.encode(s.file.path, "UTF-8")))
