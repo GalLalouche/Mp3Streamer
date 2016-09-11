@@ -127,7 +127,7 @@
 		        autoPlay: true,
 		        loopOnPrevious: false,
 		        shuffleOnLoop: true,
-		        enableRemoveControls: false,
+		        enableRemoveControls: true,
 		        displayTime: 'slow',
 		        addTime: 'fast',
 		        removeTime: 'fast',
