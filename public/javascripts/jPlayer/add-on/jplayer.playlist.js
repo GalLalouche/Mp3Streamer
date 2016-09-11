@@ -300,12 +300,22 @@
 		    
 		    // Create .live() handlers for the remove controls
 		    $(self.cssSelector.playlist + " a." + this.options.playlistOptions.removeItemClass).die("click").live(
-		            "click", function() {
-			            var index = $(this).parent().parent().index();
-			            self.remove(index);
-			            $(this).blur();
-			            return false;
-		            });
+		            "click", function(e) {
+                  function removeElementAux(nextFunction, who) {
+                    // Shift-click is remove down (for cleaning playlists); alt-click is remove up (accidental enqueue).
+                    // This has to be calculated before the removal, otherwise the who element is empty
+                    const next = nextFunction(who)
+                    self.remove(who.index(), function() {
+                      // if there is another next element to remove, enqueue a removal after this current element is removed
+                      if (next.length > 0)
+                        removeElementAux(nextFunction, next)
+                    });
+                  }
+                  removeElementAux(
+                      e.shiftKey ? x => x.next() : e.altKey ? x => x.prev() : _ => $(),
+                      $(this).parent().parent())
+                  return false;
+                });
 	    },
 	    _updateControls: function() {
 		    if (this.options.playlistOptions.enableRemoveControls) {
@@ -360,7 +370,7 @@
 			    }
 		    }
 	    },
-	    remove: function(index) {
+	    remove: function(index, onEnd) {
 		    var self = this;
 		    
 		    if (index === undefined) {
@@ -385,6 +395,7 @@
 						            $(this).remove();
 						            
 						            if (self.shuffled) {
+													index = self.playlist.length - index - 1
 							            var item = self.playlist[index];
 							            $.each(self.original, function(i, v) {
 								            if (self.original[i] === item) {
@@ -415,6 +426,8 @@
 						            }
 						            
 						            self.removing = false;
+                        if (onEnd)
+                          onEnd()
 					            });
 				    }
 				    return true;
