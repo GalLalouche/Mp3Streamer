@@ -301,19 +301,21 @@
       // Create .live() handlers for the remove controls
       $(self.cssSelector.playlist + " a." + this.options.playlistOptions.removeItemClass).die("click").live(
           "click", function (e) {
-            function removeElementAux(nextFunction, who) {
-              // Shift-click is remove down (for cleaning playlists); alt-click is remove up (accidental enqueue).
+            function removeItemAux(nextFunction, who) {
               // This has to be calculated before the removal, otherwise the who element is empty
               const next = nextFunction(who)
               self.remove(who.index(), function () {
                 // if there is another next element to remove, enqueue a removal after this current element is removed
                 if (next.length > 0)
-                  removeElementAux(nextFunction, next)
+                  removeItemAux(nextFunction, next)
               });
             }
 
-            removeElementAux(
-                e.shiftKey ? x => x.next() : e.altKey ? x => x.prev() : _ => $(),
+            removeItemAux(
+                // Shift-click is remove down (for cleaning playlists); alt-click is remove up (accidental enqueue).
+                e.shiftKey ? x => x.next()
+                    : e.altKey ? x => x.prev()
+                    : _ => $(),
                 $(this).parent().parent())
             return false;
           });
