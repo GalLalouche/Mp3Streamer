@@ -12,6 +12,7 @@
 				<include name="common/"/>
 				<include name="models/"/>
 				<include name="decoders/"/>
+                <include name="backend/"/>
 				<exclude name="models/MusicFinderTest.class"/>
 				<include name="mains/"/>
 				<include name="loggers/"/>
