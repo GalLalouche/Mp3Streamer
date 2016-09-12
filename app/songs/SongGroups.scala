@@ -19,12 +19,12 @@ object SongGroups {
   private def writeToJsonFile(s: String)(implicit root: DirectoryRef, ec: ExecutionContext) =
     getJsonFile write s
   def save(groups: Traversable[SongGroup])(implicit root: DirectoryRef, ec: ExecutionContext) = groups
-      .map(_.songs.map(Jsonable.SongJsonifier.jsonify) |> JsArray)
+      .map(_.songs |> Jsonable.SongJsonifier.jsonify)
       .map(_.toString)
       .mkString("\n") |> writeToJsonFile
   def load(implicit root: DirectoryRef, ec: ExecutionContext): Set[SongGroup] = getJsonFile.lines
       .map(Json.parse)
-      .map(_.as[JsArray].value.map(_.as[JsObject] |> Jsonable.SongJsonifier.parse) |> SongGroup)
+      .map(_.as[JsArray] |> Jsonable.SongJsonifier.parse |> SongGroup)
       .toSet
 
   // Appends new groups and saves them

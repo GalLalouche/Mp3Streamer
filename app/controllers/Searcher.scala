@@ -19,8 +19,7 @@ object Searcher extends Controller with Extra {
     Logger info "Search engine has been updated"
   }
   def search(path: String) = Action {
-    def toJsArray[T: Jsonable](results: Seq[T]): JsArray =
-      results.map(implicitly[Jsonable[T]].jsonify) |> JsArray
+    def toJsArray[T: Jsonable](results: Seq[T]): JsArray = results |> implicitly[Jsonable[T]].jsonify
     val terms = URLDecoder.decode(path, "UTF-8") split " "
     val (songs, albums, artists) = index search terms
 

@@ -10,7 +10,9 @@ import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 
 trait Jsonable[T] {
   def jsonify(t: T): JsObject
+  def jsonify(ts: Seq[T]): JsArray = JsArray(ts map jsonify)
   def parse(json: JsObject): T
+  def parse(json: JsArray): Seq[T] = json.value map (_.as[JsObject]) map parse
 }
 
 object Jsonable {
@@ -53,7 +55,7 @@ object Jsonable {
   implicit object ArtistJsonifier extends Jsonable[Artist] {
     def jsonify(a: Artist) = Json obj(
         "name" -> a.name,
-        "albums" -> JsArray(a.albums.map(AlbumJsonifier.jsonify)))
+        "albums" -> AlbumJsonifier.jsonify(a.albums))
     def parse(json: JsObject): Artist = {
       val albums = json \ "albums" map (AlbumJsonifier.parse(_))
       Artist(json \ "name", albums.toSet)
