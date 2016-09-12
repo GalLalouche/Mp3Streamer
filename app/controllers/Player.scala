@@ -26,7 +26,7 @@ object Player extends Controller with Debug {
   //TODO hide this, shouldn't be a part of the controller
   update()
 
-  private def toJson(s: Song): JsObject = {
+  def toJson(s: Song): JsObject = {
     SongJsonifier.jsonify(s) +
         ("poster" -> JsString("/posters/" + Poster.getCoverArt(s).path)) +
         ("mp3" -> JsString("/stream/download/" + URLEncoder.encode(s.file.path, "UTF-8")))

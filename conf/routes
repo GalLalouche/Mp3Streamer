@@ -42,5 +42,9 @@ GET        /ws/console                   websockets.ConsoleSocket.accept
 GET        /ws/refresh                   controllers.Cacher.accept
 GET        /ws/newFolder                 websockets.NewFolderSocket.accept
 
+# Playlist
+GET         /playlist                    controllers.Playlist.get
+POST        /playlist                    controllers.Playlist.set
+
 # Debug
 GET        /debug/refresh                controllers.Cacher.forceRefresh
