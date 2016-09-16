@@ -5,7 +5,7 @@ import java.io.File
 import common.RichJson._
 import models.{Album, Artist, Song}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
+import play.api.libs.json.{JsArray, JsObject, Json}
 
 
 trait Jsonable[T] {
@@ -16,9 +16,6 @@ trait Jsonable[T] {
 }
 
 object Jsonable {
-  private implicit class foobarz(js: JsObject) {
-    def \(s: String): JsValue = js value s
-  }
   implicit object SongJsonifier extends Jsonable[Song] {
     def jsonify(s: Song) = Json obj(
         "file" -> s.file.getAbsolutePath,
@@ -30,12 +27,13 @@ object Jsonable {
         "bitrate" -> s.bitrate,
         "duration" -> s.duration,
         "size" -> s.size,
-        "discNumber" -> s.discNumber)
-    def parse(json: JsObject): Song = {
-      new Song(file = new File(json \ "file"), title = json \ "title", artistName = json \ "artistName", albumName = json \ "albumName",
-        track = json \ "track", year = json \ "year", bitrate = json \ "bitrate",
-        duration = json \ "duration", size = json \ "size", discNumber = json ostr "discNumber")
-    }
+        "discNumber" -> s.discNumber,
+        "trackGain" -> s.trackGain)
+    def parse(json: JsObject): Song =
+      new Song(file = new File(json str "file"), title = json str "title", artistName = json str "artistName", albumName = json str "albumName",
+        track = json / "track", year = json / "year", bitrate = json str "bitrate",
+        duration = json / "duration", size = json / "size", discNumber = json ostr "discNumber",
+        trackGain = json.\("trackGain").asOpt[Double] map (_.as[Double]))
   }
 
   implicit object AlbumJsonifier extends Jsonable[Album] {
@@ -45,10 +43,10 @@ object Jsonable {
         "artistName" -> a.artistName,
         "year" -> a.year)
     def parse(json: JsObject): Album = {
-      new Album(new File(json \ "dir"),
-        title = json \ "title",
-        artistName = json \ "artistName",
-        year = json \ "year")
+      new Album(new File(json / "dir"),
+        title = json / "title",
+        artistName = json / "artistName",
+        year = json / "year")
     }
   }
 
@@ -57,8 +55,8 @@ object Jsonable {
         "name" -> a.name,
         "albums" -> AlbumJsonifier.jsonify(a.albums))
     def parse(json: JsObject): Artist = {
-      val albums = json \ "albums" map (AlbumJsonifier.parse(_))
-      Artist(json \ "name", albums.toSet)
+      val albums = json / "albums" map (AlbumJsonifier.parse(_))
+      Artist(json / "name", albums.toSet)
     }
   }
 }

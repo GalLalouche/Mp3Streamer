@@ -4,11 +4,15 @@ import java.io.File
 import java.util.logging.{Level, Logger}
 
 import common.rich.RichT._
+import common.rich.primitives.RichString._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
+import scala.collection.JavaConversions._
+
 case class Song(file: File, title: String, artistName: String, albumName: String,
-                track: Int, year: Int, bitrate: String, duration: Int, size: Long, discNumber: Option[String]) {
+                track: Int, year: Int, bitrate: String, duration: Int, size: Long,
+                discNumber: Option[String], trackGain: Option[Double]) {
   override def toString = s"$artistName - $title [$albumName #$track] ($year)"
   lazy val album = Album(dir = file.getParentFile, title = albumName, artistName = artistName, year = year)
 }
@@ -42,11 +46,16 @@ object Song {
     val size = file.length
     // in flac files, DISC_NO works. In regular files, it doesn't so it needs to be parsed manually :\
     def parseDiscNumber(s: String): String =
-      s.dropWhile(_ != '=').drop(2).reverse.dropWhile(_ != ';').drop(2).reverse
+    s.dropWhile(_ != '=').drop(2).reverse.dropWhile(_ != ';').drop(2).reverse
     val discNumber = tag.getFields("TPOS").toString.opt.filter(_.length >= 3).map(parseDiscNumber)
         .orElse(tag.getFirst(FieldKey.DISC_NO).opt.filter(_.nonEmpty))
+    def parseReplayGain(s: String): String = s.dropAfterLast('=').drop(1).takeWhile(_ != '"').split(' ').apply(0)
+    // in flac files, REPLAYGAIN_TRACK_GAIN works. In regular files, it doesn't so it needs to be parsed manually :\
+    val trackGain = tag.getFields("REPLAYGAIN_TRACK_GAIN").headOption.map(_.toString)
+        .orElse(tag.getFields("TXXX").map(_.toString).find(_.contains("track_gain")) map parseReplayGain)
+        .map(_.toDouble)
 
     new Song(file = file, title = title, artistName = artist, albumName = album, track = track,
-      year = year, bitrate = bitrate, duration = duration, size = size, discNumber = discNumber)
+      year = year, bitrate = bitrate, duration = duration, size = size, discNumber = discNumber, trackGain = trackGain)
   }
 }

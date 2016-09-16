@@ -20,12 +20,15 @@ class SongTest extends FreeSpec with AuxSpecs {
       $.duration shouldReturn 3
       $.size shouldReturn 75522L
       $.discNumber shouldReturn None
+      $.trackGain shouldReturn None
     }
     "parse year correctly" in {
       Song(getSong("songWithYear.mp3")).year shouldReturn 1999
     }
-    "non-empty discNumber" in {
-      Song(getSong("songWithDiscNumber.mp3")).discNumber.get shouldReturn "Foobar"
+    "non-empty optionals" in {
+      val $: Song = Song(getSong("songWithMoreInfo.mp3"))
+      $.discNumber.get shouldReturn "Foobar"
+      $.trackGain.get shouldReturn -1.25
     }
 
     "flac" - {
@@ -37,9 +40,11 @@ class SongTest extends FreeSpec with AuxSpecs {
         $.track shouldReturn 1
         $.year shouldReturn 1997
         $.discNumber shouldReturn None
+        $.trackGain shouldReturn None
       }
-      "with disc number" in {
-        Song(getSong("flacWithDiscNumber.flac")).discNumber.get shouldReturn "Foobar"
+      "with optionals" in {
+        Song(getSong("flacWithMoreInfo.flac")).discNumber.get shouldReturn "Foobar"
+        Song(getSong("flacWithMoreInfo.flac")).trackGain.get shouldReturn 1.25
       }
     }
   }
