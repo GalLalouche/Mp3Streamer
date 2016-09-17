@@ -1533,11 +1533,9 @@
 					y = this.css.jq.volumeBar.height() - e.pageY + offset.top,
 					h = this.css.jq.volumeBar.height();
 
-				if(this.options.verticalVolume) {
-					this.volume(y/h);
-				} else {
-					this.volume(x/w);
-				}
+				const v = this.options.verticalVolume ? y / h : x / w
+        this.volume(v)
+        Volume.setManualVolume(v)
 			}
 			if(this.options.muted) {
 				this._muted(false);

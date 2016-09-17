@@ -35,6 +35,7 @@ $(function () {
       $('head').append(`<link href="${$("img.poster")[0].src}" id="favicon" rel="shortcut icon">`);
       Lyrics.show(currentlyPlayingSong)
       External.show(currentlyPlayingSong)
+      Volume.setPeak(currentlyPlayingSong)
     };
   });
   function loadNextRandom(playNow) {

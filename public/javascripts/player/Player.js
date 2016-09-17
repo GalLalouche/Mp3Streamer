@@ -28,7 +28,12 @@ class Player {
   currentPlayingRelative() {
     throw new Error("Abstract")
   }
-  
+  setVolume(v) {
+    throw new Error("Abstract")
+  }
+  getVolume() {
+    throw new Error("Abstract")
+  }
 }
 class Playlist {
   add(song, playNow) {

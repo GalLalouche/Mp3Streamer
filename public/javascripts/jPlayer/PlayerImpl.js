@@ -1,20 +1,31 @@
-gplayer.load = song => $("#jquery_jplayer_1").jPlayer("setMedia", song);
+// Player
+const player = () => $("#jquery_jplayer_1")
+gplayer.load = song => player().jPlayer("setMedia", song);
 const click = what => $(".jp-" + what).click();
 gplayer.pause = () => click("pause");
 gplayer.stop = () => click("stop");
 gplayer.playCurrentSong = () => click("play");
-gplayer.isPaused = () => $('#jquery_jplayer_1').data().jPlayer.status.paused
+gplayer.isPaused = () => player().data().jPlayer.status.paused
 gplayer.currentPlayingRelative = () => {
-  const jPlayer = $('#jquery_jplayer_1').data().jPlayer;
-  if(jPlayer)
+  const jPlayer = player().data().jPlayer;
+  if (jPlayer)
     return jPlayer.status.currentPercentRelative
   else
-    undefined
+    return undefined
 }
-gplaylist.currentIndex = function() {
-  return playlist.current
+const volumeBar = () => $(".jp-volume-bar-value")
+gplayer.getVolume = () => volumeBar().width()
+gplayer.setVolume = v => {
+  volumeBar().width(`${v}%`)
+  player().jPlayer("volume", v / 100.0)
+}
+
+// Playlist
+const pl = () => playlist
+gplaylist.currentIndex = function () {
+  return pl().current
 };
-gplaylist.songs =() => playlist.playlist;
-gplaylist.add = (song, playNow) => playlist.add(song, playNow);
-gplaylist.next = () => playlist.next();
-gplaylist.prev = () => playlist.previous();
+gplaylist.songs = () => pl().playlist;
+gplaylist.add = (song, playNow) => pl().add(song, playNow);
+gplaylist.next = () => pl().next();
+gplaylist.prev = () => pl().previous();
