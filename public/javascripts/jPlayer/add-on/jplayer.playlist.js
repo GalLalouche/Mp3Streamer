@@ -357,6 +357,10 @@
         });
         return;
       }
+      if (this.playlist.some(e => e.file == media.file)) {
+        console.log(`Entry ${media.file} already exists in playlist; skipping`)
+        return
+      }
       // GAL - changed here to add to beginning of list
       $(this.cssSelector.playlist + " ul").prepend(this._createListItem(media)).find("li:first-child").hide()
           .slideDown(this.options.playlistOptions.addTime);
