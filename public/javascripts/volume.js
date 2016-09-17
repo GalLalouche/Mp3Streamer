@@ -1,5 +1,5 @@
 $(function () {
-  var volumeBaseline = 80.0 // the volume that was preset by the user
+  var volumeBaseline = 50.0 // the volume that was preset by the user
   const defaultGain = -10.0 // if there is no replay gain, this is assumed to be the gain
   var currentGain = defaultGain
   function updateVolume() {
