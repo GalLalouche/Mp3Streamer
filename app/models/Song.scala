@@ -49,11 +49,11 @@ object Song {
     s.dropWhile(_ != '=').drop(2).reverse.dropWhile(_ != ';').drop(2).reverse
     val discNumber = tag.getFields("TPOS").toString.opt.filter(_.length >= 3).map(parseDiscNumber)
         .orElse(tag.getFirst(FieldKey.DISC_NO).opt.filter(_.nonEmpty))
-    def parseReplayGain(s: String): String = s.dropAfterLast('=').drop(1).takeWhile(_ != '"').split(' ').apply(0)
+    def parseReplayGain(s: String): String = s.dropAfterLast('=').drop(1).takeWhile(_ != '"')
     // in flac files, REPLAYGAIN_TRACK_GAIN works. In regular files, it doesn't so it needs to be parsed manually :\
     val trackGain = tag.getFields("REPLAYGAIN_TRACK_GAIN").headOption.map(_.toString)
         .orElse(tag.getFields("TXXX").map(_.toString).find(_.contains("track_gain")) map parseReplayGain)
-        .map(_.toDouble)
+        .map(_.split(' ').apply(0).toDouble)
 
     new Song(file = file, title = title, artistName = artist, albumName = album, track = track,
       year = year, bitrate = bitrate, duration = duration, size = size, discNumber = discNumber, trackGain = trackGain)
