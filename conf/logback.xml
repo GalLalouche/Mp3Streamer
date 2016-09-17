@@ -1,16 +1,16 @@
-<configuration debug="false">
+<configuration scan="true">
 	<statusListener class="ch.qos.logback.core.status.NopStatusListener" />
 	<conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
 	<logger name="play.core.server.netty.NettyModelConversion" level="ERROR"/>
-	<!--<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">-->
-		<!--<encoder>-->
-			<!--&lt;!&ndash; The logging pattern, you might want to adapt it &ndash;&gt;-->
-			<!--<pattern>%d %coloredLevel %t - %file:%line - %message%n%xException</pattern>-->
-		<!--</encoder>-->
-	<!--</appender>-->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<!-- The logging pattern, you might want to adapt it -->
+			<pattern>%d %coloredLevel %t - %file:%line - %message%n%xException</pattern>
+		</encoder>
+	</appender>
 
 	<!-- Default logging level for every logger -->
-	<root level="INFO">
+	<root level="WARN">
 		<appender-ref ref="STDOUT" />
 	</root>
 	<logger name="scala.slick" level="INFO" />
