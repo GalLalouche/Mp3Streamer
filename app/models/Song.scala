@@ -25,37 +25,28 @@ object Song {
     require(file != null)
     require(file.exists, file + " doesn't exist")
     require(file.isDirectory == false, file + " is a directory")
-    val (tag, header) = {
-      val x = AudioFileIO.read(file)
-      (x.getTag, x.getAudioHeader) // issues with running this using java if it uses ->
-    }
-    // get ID3 info
-    val title = tag.getFirst(FieldKey.TITLE)
-    val artist = tag.getFirst(FieldKey.ARTIST)
-    val album = tag.getFirst(FieldKey.ALBUM)
-    val track = tag.getFirst(FieldKey.TRACK).toInt
+    val (tag, header) = AudioFileIO.read(file).mapTo(e => (e.getTag, e.getAudioHeader))
     val year = try {
       ".*(\\d{4}).*".r.findAllIn(tag.getFirst(FieldKey.YEAR)).matchData.next().group(1).toInt
     } catch {
       case _: MatchError =>
         println(s"No year in $file")
-        0
+        0 // Some songs, e.g., classical, don't have a year yet.
     }
-    val bitrate = header.getBitRate
-    val duration = header.getTrackLength
-    val size = file.length
     // in flac files, DISC_NO works. In regular files, it doesn't so it needs to be parsed manually :\
     def parseDiscNumber(s: String): String =
     s.dropWhile(_ != '=').drop(2).reverse.dropWhile(_ != ';').drop(2).reverse
     val discNumber = tag.getFields("TPOS").toString.opt.filter(_.length >= 3).map(parseDiscNumber)
-        .orElse(tag.getFirst(FieldKey.DISC_NO).opt.filter(_.nonEmpty))
+        .orElse(tag.getFirst(FieldKey.DISC_NO).opt filter (_.nonEmpty))
     def parseReplayGain(s: String): String = s.dropAfterLast('=').drop(1).takeWhile(_ != '"')
     // in flac files, REPLAYGAIN_TRACK_GAIN works. In regular files, it doesn't so it needs to be parsed manually :\
-    val trackGain = tag.getFields("REPLAYGAIN_TRACK_GAIN").headOption.map(_.toString)
-        .orElse(tag.getFields("TXXX").map(_.toString).find(_.contains("track_gain")) map parseReplayGain)
-        .map(_.split(' ').apply(0).toDouble)
+    val trackGain = (tag.getFields("REPLAYGAIN_TRACK_GAIN").headOption map (_.toString))
+        .orElse(tag getFields "TXXX" map (_.toString) find (_ contains "track_gain") map parseReplayGain)
+        .map(_.split(' ').apply(0).toDouble) // handle the case of "1.43 dB"
 
-    new Song(file = file, title = title, artistName = artist, albumName = album, track = track,
-      year = year, bitrate = bitrate, duration = duration, size = size, discNumber = discNumber, trackGain = trackGain)
+    new Song(file = file, title = tag.getFirst(FieldKey.TITLE), artistName = tag.getFirst(FieldKey.ARTIST),
+      albumName = tag.getFirst(FieldKey.ALBUM), track = tag.getFirst(FieldKey.TRACK).toInt,
+      year = year, bitrate = header.getBitRate, duration = header.getTrackLength, size = file.length,
+      discNumber = discNumber, trackGain = trackGain)
   }
 }
