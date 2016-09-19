@@ -27,6 +27,7 @@ private[external] class CompositeSameHostExpander private(cb: HostMap[SameHostEx
 }
 
 private[external] object CompositeSameHostExpander {
-  def default(implicit ec: ExecutionContext, it: InternetTalker) = new CompositeSameHostExpander(new WikipediaAlbumFinder())
-  // MetalArchives is commented until I get unbanned :|
+  def default(implicit ec: ExecutionContext, it: InternetTalker) =
+    new CompositeSameHostExpander(new WikipediaAlbumFinder(), new AllMusicAlbumFinder())
+  // MetalArchives is not-production ready until I get unbanned :|
 }
