@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"><script type="text/javascript">window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){var o=e[n]={exports:{}};t[n][0].call(o.exports,function(e){var o=t[n][1][e];return r(o||e)},o,o.exports)}return e[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({1:[function(t,e,n){function r(){}function o(t,e,n){return function(){return i(t,[(new Date).getTime()].concat(u(arguments)),e?null:this,n),e?void 0:this}}var i=t("handle"),a=t(2),u=t(3),c=t("ee").get("tracer"),f=NREUM;"undefined"==typeof window.newrelic&&(newrelic=f);var s=["setPageViewName","setCustomAttribute","setErrorHandler","finished","addToTrace","inlineHit"],p="api-",l=p+"ixn-";a(s,function(t,e){f[e]=o(p+e,!0,"api")}),f.addPageAction=o(p+"addPageAction",!0),e.exports=newrelic,f.interaction=function(){return(new r).get()};var d=r.prototype={createTracer:function(t,e){var n={},r=this,o="function"==typeof e;return i(l+"tracer",[Date.now(),t,n],r),function(){if(c.emit((o?"":"no-")+"fn-start",[Date.now(),r,o],n),o)try{return e.apply(this,arguments)}finally{c.emit("fn-end",[Date.now()],n)}}}};a("setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),function(t,e){d[e]=o(l+e)}),newrelic.noticeError=function(t){"string"==typeof t&&(t=new Error(t)),i("err",[t,(new Date).getTime()])}},{}],2:[function(t,e,n){function r(t,e){var n=[],r="",i=0;for(r in t)o.call(t,r)&&(n[i]=e(r,t[r]),i+=1);return n}var o=Object.prototype.hasOwnProperty;e.exports=r},{}],3:[function(t,e,n){function r(t,e,n){e||(e=0),"undefined"==typeof n&&(n=t?t.length:0);for(var r=-1,o=n-e||0,i=Array(o<0?0:o);++r<o;)i[r]=t[e+r];return i}e.exports=r},{}],ee:[function(t,e,n){function r(){}function o(t){function e(t){return t&&t instanceof r?t:t?u(t,a,i):i()}function n(n,r,o){t&&t(n,r,o);for(var i=e(o),a=l(n),u=a.length,c=0;c<u;c++)a[c].apply(i,r);var s=f[m[n]];return s&&s.push([w,n,r,i]),i}function p(t,e){g[t]=l(t).concat(e)}function l(t){return g[t]||[]}function d(t){return s[t]=s[t]||o(n)}function v(t,e){c(t,function(t,n){e=e||"feature",m[n]=e,e in f||(f[e]=[])})}var g={},m={},w={on:p,emit:n,get:d,listeners:l,context:e,buffer:v};return w}function i(){return new r}var a="nr@context",u=t("gos"),c=t(2),f={},s={},p=e.exports=o();p.backlog=f},{}],gos:[function(t,e,n){function r(t,e,n){if(o.call(t,e))return t[e];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(t,e,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return t[e]=r,r}var o=Object.prototype.hasOwnProperty;e.exports=r},{}],handle:[function(t,e,n){function r(t,e,n,r){o.buffer([t],r),o.emit(t,e,n)}var o=t("ee").get("handle");e.exports=r,r.ee=o},{}],id:[function(t,e,n){function r(t){var e=typeof t;return!t||"object"!==e&&"function"!==e?-1:t===window?0:a(t,i,function(){return o++})}var o=1,i="nr@id",a=t("gos");e.exports=r},{}],loader:[function(t,e,n){function r(){if(!h++){var t=y.info=NREUM.info,e=s.getElementsByTagName("script")[0];if(t&&t.licenseKey&&t.applicationID&&e){c(m,function(e,n){t[e]||(t[e]=n)});var n="https"===g.split(":")[0]||t.sslForHttp;y.proto=n?"https://":"http://",u("mark",["onload",a()],null,"api");var r=s.createElement("script");r.src=y.proto+t.agent,e.parentNode.insertBefore(r,e)}}}function o(){"complete"===s.readyState&&i()}function i(){u("mark",["domContent",a()],null,"api")}function a(){return(new Date).getTime()}var u=t("handle"),c=t(2),f=window,s=f.document,p="addEventListener",l="attachEvent",d=f.XMLHttpRequest,v=d&&d.prototype;NREUM.o={ST:setTimeout,CT:clearTimeout,XHR:d,REQ:f.Request,EV:f.Event,PR:f.Promise,MO:f.MutationObserver},t(1);var g=""+location,m={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-974.min.js"},w=d&&v&&v[p]&&!/CriOS/.test(navigator.userAgent),y=e.exports={offset:a(),origin:g,features:{},xhrWrappable:w};s[p]?(s[p]("DOMContentLoaded",i,!1),f[p]("load",r,!1)):(s[l]("onreadystatechange",o),f[l]("onload",r)),u("mark",["firstbyte",a()],null,"api");var h=0},{}]},{},["loader"]);</script>
+
+        <meta http-equiv="content-language" content="en-us">
+
+        <!-- iOS metadata -->
+        <meta name="apple-mobile-web-app-capable" content="no">
+        <meta name="viewport" content="width=device-width" >
+
+        <link rel="apple-touch-icon-precomposed" href="//cdn-prod.allmusic.com/images/ios/apple-touch-icon-57x57.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="//cdn-prod.allmusic.com/images/ios/apple-touch-icon-72x72.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="//cdn-prod.allmusic.com/images/ios/apple-touch-icon-114x114.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="//cdn-prod.allmusic.com/images/ios/apple-touch-icon-144x144.png">
+
+        <link rel="shortcut icon" href="//cdn-prod.allmusic.com/images/favicon.ico" type="image/x-icon" />
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss" />
+        <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/kffpbhfpflaacppoegnbknokchggcoao">
+
+        	<meta name="title" content="Bruce Springsteen | Album Discography | AllMusic">
+	<meta name="description" content="Find Bruce Springsteen discography, albums and singles on AllMusic">
+	<meta name="image" content="http://cps-static.rovicorp.com/3/JPG_400/MI0003/879/MI0003879160.jpg?partner=allrovi.com">
+
+        <meta property="og:site_name" content="AllMusic">
+
+	<meta property="og:title" content="Bruce Springsteen | Album Discography | AllMusic">
+	<meta itemprop="name" content="Bruce Springsteen | Album Discography | AllMusic">
+	<meta name="twitter:title" content="Bruce Springsteen | Album Discography | AllMusic">
+
+	<meta property="og:description" content="Find Bruce Springsteen discography, albums and singles on AllMusic">
+	<meta itemprop="description" content="Find Bruce Springsteen discography, albums and singles on AllMusic">
+	<meta name="twitter:description" content="Find Bruce Springsteen discography, albums and singles on AllMusic">
+
+	<meta property="og:image" content="http://cps-static.rovicorp.com/3/JPG_400/MI0003/879/MI0003879160.jpg?partner=allrovi.com">
+	<meta itemprop="image" content="http://cps-static.rovicorp.com/3/JPG_400/MI0003/879/MI0003879160.jpg?partner=allrovi.com">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:image" content="http://cps-static.rovicorp.com/3/JPG_400/MI0003/879/MI0003879160.jpg?partner=allrovi.com">
+
+        <meta property="og:image" content="//cdn-prod.allmusic.com/images/allmusic_facebook_share.png">
+        <meta property="og:url" content="http://www.allmusic.com/artist/bruce-springsteen-mn0000530745/discography">
+
+        <link rel="canonical" href="http://www.allmusic.com/artist/bruce-springsteen-mn0000530745/discography">
+
+        <title>Bruce Springsteen | Album Discography | AllMusic</title>
+
+        <link type="text/css" rel="stylesheet" href="//cdn-prod.allmusic.com/css/global/global.css">
+
+                    <link type="text/css" rel="stylesheet" href="//cdn-prod.allmusic.com/css/pages/artist/artist.css">
+        
+        <!-- Alexa tag -->
+        <meta name="alexaVerifyID" content="SfgYrX5roRNK_iy-Mr_tFkRlY7M"/>
+
+                    <script src="//supportfreecontent.com/cl/latest/cll.min.js" onerror="window.____cle = 1;"></script>
+            <script>
+                if(!window.__da){!function e(t,o,n){function i(a,l){if(!o[a]){if(!t[a]){var s="function"==typeof require&&require;if(!l&&s)return s(a,!0);if(r)return r(a,!0);var c=new Error("Cannot find module '"+a+"'");throw c.code="MODULE_NOT_FOUND",c}var d=o[a]={exports:{}};t[a][0].call(d.exports,function(e){var o=t[a][1][e];return i(o?o:e)},d,d.exports,e,t,o,n)}return o[a].exports}for(var r="function"==typeof require&&require,a=0;a<n.length;a++)i(n[a]);return i}({1:[function(e,t,o){function n(){for(var e=b.b.c.l,t=0,o=b.b.c.t,n=0;n<e.length;n++){var i=T.createElement("div"),r="#"===e[n][0]?"id":"class",a=e[n].slice(1);i.setAttribute(r,a),i.style.height="0px",h.appendChild(i);var l=B.getComputedStyle(i);"none"===l.display&&(L.push(e[n]),p("blocked","1",e[n]),t++),h.removeChild(i),i=document.querySelectorAll(e[n]);for(var c=0;c<i.length;c++){l=B.getComputedStyle(i[c]);var d=i[c].className||e[n];if("amn"!==b.p||!/(suitcase)|(saamba)|(btf)/i.test(d))if("none"===l.display)L.push(d),p("blocked","11",d),t++;else if("firefox"===_)try{if(/(abp)|(elemhide)/.test(l.MozBinding)){var u=i[c].getBoundingClientRect();u.x||u.y||u.width||u.height||(L.push(d),p("blocked","12",d),t++)}}catch(f){}}if(t>=o)return R=!0,s(1)}}function i(){if(!R)for(var e=b.b.u.l,t=0,o=b.b.u.t,n=0,i=function(i,r,a){if(h.removeChild(r),!R)if(i)t++,L.push(a.src),p("blocked","2",a.src),t===o?(R=!0,s(2)):++n===e.length&&s();else{if(R)return;++n!==e.length||R||s()}},r=0;r<e.length;r++)!function(){var t=document.createElement("iframe");t.style.display="none",document.body.appendChild(t);var o=t.contentWindow.document,n=/(\.png)|(\.gif)|(\.jpg)|(type=image)/.test(e[r])?"img":"script",a=o.createElement(n);"img"===n&&(a.style.height="0px"),a.src=e[r],a.onerror=function(){i("error",t,a)},a.onload=function(){i(null,t,a)},o.body.appendChild(a)}()}function r(){R||(document.querySelectorAll("*[abp]").length?(R=!0,s(4)):s())}function a(){healthy=!0,v||(healthy=!1);var e=B.getComputedStyle(v),t=parseInt(e.width.replace("px","")),o=parseInt(e.height.replace("px",""));(!e||"block"!==e.display||"visible"!==e.visibility||parseInt(e.opacity)<1)&&(healthy=!1),("0px"!==e.top||"0px"!==e.left||"fixed"!==e.position||Math.abs(t-B.innerWidth)>50||Math.abs(o-B.innerHeight)>50)&&(healthy=!1),healthy||(p("locker","error","10"),setTimeout(function(){B.location.reload()},50))}function l(e){p("locker","lock",e),y=!0;var t=T.createElement("style");t.setAttribute("type","text/css"),t.innerHTML='body.locked{overflow:hidden;}body.locked::after{content:"";position:fixed;top:0px;left:0px;width:100%;height:100%;opacity:0.5;z-index:99990;}',T.head.appendChild(t),setInterval(a,2500),h.className+=" locked";var o="font-size:14px;background:#4596d1;border:1px solid #333;border-radius:3px;padding:7px 10px;color:white;cursor:pointer;margin-top:15px;",n="font-size:12px;margin-top:5px;padding:0 5px;line-height:normal;",i="font-size:10px;text-decoration:underline;cursor:pointer;color:#4596d1;",r="!important",l="margin:7px 0 0 0;color:#111;",s="desktop"!==k||"opera"!==_&&"safari"!==_?"2147483647":"99999";ul="margin:0;padding:0 0 0 17px;",v=T.createElement("d"+Date.now()),v.setAttribute("style","z-index:"+s+r+";display:block"+r+";visibility:visible"+r+";position:fixed"+r+";top:0"+r+";left:0"+r+";width:100%"+r+";height:100%"+r+";color:#777;background:rgba(0,0,0,0.85)"+r+";font-family:Arial;-webkit-font-smoothing:subpixel-antialiased;line-height:normal;"),v.innerHTML='<div style="margin:50px auto;display:block'+r+';padding:30px 0;width:600px;background:white;border:1px solid #111;box-shadow:0px 0px 85px 3px #c1c1c1;text-align:center;"><div style="font:bold 26px arial;padding:10px;color:#111;">'+b.t+'</div><div style="font-size:14px;padding:10px;width:70%;margin:0 auto;">'+b.m+'</div><div id="__sh" style="display:none;width:65%;margin:0 auto;text-align:left;font-size:12px;"><div style="font-size:12px;color:#111;margin-bottom:5px;">How to disable your ad blocker for '+b.c+':</div><div style="'+l+'">AdBlock</div><ul style="'+ul+'"><li>Click the Adblock icon at the right of your address bar.</li><li>Click "Don\'t run on pages on this domain".</li></ul><div style="'+l+'">AdBlock Plus</div><ul style="'+ul+'"><li>Click the Adblock Plus icon at the right of your address bar.</li><li>Click "Enabled on this site" to disable ad blocking for the current website you are on. If you are in Firefox click "disable on '+b.c+'".</li></ul></div><div style="width:50%;margin:0 auto;">'+("firefox"===_||"chrome"===_?'<div onclick="__sa(1);" style="'+o+'">Continue With SupportFreeContent</div><div style="'+n+'">Access '+b.c+' ad-free with the SupportFreeContent extension.<br/><span onclick="__sa(11);"style="'+i+'">(More info)</span></div>':"")+'<div onclick="__sa(2);" style="'+o+'">Continue After Disabling Ad Blocker</div><div style="'+n+'">Allow ads on '+b.c+' by whitelisting this site or disabling your ad blocker.<br/><span onclick="__sa(21);" style="'+i+'">(Help)</span></div>'+(b.pu?'<div onclick="__sa(3);" style="'+o+'">Continue With A Paid Subscription</div><div style="'+n+'">Support '+b.c+' for a faster, ad-free experience with a $12 annual subscription.<br/><span onclick="__sa(31);" style="'+i+'">(Already a subscriber? Log in)</span></div>':"")+"</div></div>",T.addEventListener("contextmenu",function(e){e.preventDefault()},!1);var c=Math.floor(Math.random()*h.children.length);if(h.insertBefore(v,h.children[c]),!w){w=!0,p("locker","impression"),q.session.ibf="y";for(var d=0;d<b.ib.length;d++)(new Image).src=b.ib[d]}}function s(e){if(!y&&!S){if(R){if(p("locker","abp",e),q.local.__cts&&(p("unblock","reblock"),delete q.local.__cts),3===b.f)return;return E&&p("unblock","fail"),q.local.__lts=Date.now(),l(e)}if(q.local.__cts&&p("unblock","return"),(E||I)&&(delete q.local.__club,delete q.local.__lts,p("unblock","success",E?1:2),q.local.__cts=1,b.ub))for(var t=0;t<b.ub.length;t++)(new Image).src=b.ub[t]}}function c(){!function(e,t,o,n,i,r,a){e.GoogleAnalyticsObject=i,e[i]=e[i]||function(){(e[i].q=e[i].q||[]).push(arguments)},e[i].l=1*new Date,r=t.createElement(o),a=t.getElementsByTagName(o)[0],r.async=1,r.src=n,a.parentNode.insertBefore(r,a)}(B,T,"script","https://www.google-analytics.com/analytics.js","ga"),ga("create",b.ga||"UA-63935000-27",{name:b.p+"ga"}),ga(b.p+"ga.set","dimension1",b.p),ga(b.p+"ga.set","dimension2",D),ga(b.p+"ga.send","pageview")}function d(){M="//te.supportfreecontent.com/rhythmanalytics/img?tracking_id=sfc&hit_type=event&dimension1="+encodeURIComponent(b.p)+"&dimension2="+encodeURIComponent(D)+"&"}function p(e,t,o,n){if(n||(n=1e3),"undefined"!=typeof ga&&z<=n&&ga(b.p+"ga.send","event",e,t,o),M){var i=M+["cb="+(new Date).getTime(),"event_category="+encodeURIComponent(e),"event_action="+encodeURIComponent(t),"event_label="+encodeURIComponent(o||"")].join("&");(new Image).src=i}}function u(e){try{var t="string"==typeof e.data?JSON.parse(e.data):e.data;switch(t.command){case"unlocker_installed":case"unlocker_exists":N=!0,y&&B.location.reload()}}catch(o){}}function f(e){var t=e.target||e.srcElement,o=t.src||t.href;if(!R){var n=/(moatad)|(doubleclick)|(googlesyndication)|(adserver)|(doubleverify)|(adchoice)|(googlead)|(pubads)|(adsystem)|(safeframe)|(advert)|(media\.complex)/i;if(b.b.w.p.test(o)||n.test(o)){var i=o.indexOf("?"),r=o.slice(0,i===-1?o.length:i);L.push(r),p("blocked","3",r),O++}O===b.b.w.t&&(R=!0,A&&setTimeout(s,1e3,3),x.disconnect())}}function g(e){try{if("ie"===_)return;if(!window.MutationObserver)return void p("locker","error","22");x=new MutationObserver(function(e){for(var t=0;t<e.length;t++)for(var o=0;o<e[t].addedNodes.length;o++)if("SCRIPT"!==e[t].addedNodes[o].tagName&&"IMG"!==e[t].addedNodes[o].tagName&&"LINK"!==e[t].addedNodes[o].tagName||e[t].addedNodes[o].addEventListener("error",f),"IFRAME"===e[t].addedNodes[o].tagName)try{for(var n=e[t].addedNodes[o].contentDocument.querySelectorAll("script"),i=0;i<n.length;i++)n[i].addEventListener("error",f)}catch(r){}}),x.observe(e,{childList:!0,subtree:!0,attributes:!1,characterData:!1,characterDataOldValue:!1})}catch(t){p("locker","error","23")}}function m(){if(h=T.body,p("locker","start","inline"),N||T.getElementsByTagName("r1_unlocker_loading").length||T.getElementsByTagName("r1_unlocker_loaded").length||T.getElementsByTagName("r1_unlocker_complete").length)return p("locker","standdown","whitelisted");if("amn"===b.p)try{if(b.ib=["http://rmp.supportfreecontent.com/rmp/44046/0/vc?z=1r&dim=39836"],b.ub=["http://rmp.supportfreecontent.com/rmp/44046/0/vc?z=1r&dim=44198"],document.cookie.indexOf("user%22%3Bi%3A0%3B")===-1)return p("locker","standdown","amn-user")}catch(e){}return b.s.test(T.location.href)?p("locker","standdown","spare"):B.____cle?(R=!0,setTimeout(s,1e3,4)):R?setTimeout(s,1e3,3):(n(),i(),"ie"===_&&setTimeout(r,1e3),void(A=!0))}var h,b,y,v,k,x,_,w,C,A,E,I,N,S,M,T=document,B=window,D="0.59",L=[],O=0,z=Math.floor(1e3*Math.random()+1),q={},R=!1;B.__sa=function(e){function t(){B.location="http://supportfreecontent.com/cl/static/store"+("amn"===b.p?"-amn":"")+".html"}switch(p("locker","options",e),e){case 1:if("amn"===b.p&&"chrome"===_)try{chrome.webstore.install("https://chrome.google.com/webstore/detail/kffpbhfpflaacppoegnbknokchggcoao",function(){p("inline install","success")},function(e,o){p("inline install","fail",o),"userCancelled"!==o&&setTimeout(t,50)})}catch(o){p("inline install","error",o),setTimeout(t,50)}else setTimeout(t,50);break;case 11:B.open("http://supportfreecontent.com");break;case 2:q.local.__club=Date.now(),setTimeout(function(){B.location.reload()},50);break;case 21:T.getElementById("__sh").style.display="block";break;case 3:case 31:setTimeout(function(){B.location=b.pu},50)}},B.__da=function(e){b=e,c(),d();try{k=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)?"mobile":"desktop";var t={legacy:/(msie 8)|(msie 9)|(msie 10)/i,opera:/(opr)|(opera)|(opios)/i,edge:/edge/i,ie:/(msie)|(trident)/i,chrome:/(chrome)|(crios)/i,firefox:/(firefox)|(fxios)/i,safari:/safari/i};for(var o in t)if(t[o].test(navigator.userAgent)){_=o;break}if(!_||"legacy"===_||"mobile"===k)return p("locker","standdown","device");if(/(googlebot)|(AdsBot)|(Mediapartners-Google)|(bingbot)|(slurp)/i.test(navigator.userAgent))return p("locker","standdown","crawler");q.local="localStorage"in B&&B.localStorage&&B.localStorage.getItem?B.localStorage:{},q.session="sessionStorage"in B&&B.sessionStorage&&B.sessionStorage.getItem?B.sessionStorage:{},q.local.sg=C=q.local.sg||Math.floor(4*Math.random()+1),ga(b.p+"ga.set","dimension3",C),w="y"===q.session.ibf;var n=parseInt(q.local.__club||0);E=n>Date.now()-1e4,n=parseInt(q.local.__lts||0),I=n>Date.now()-12e4}catch(i){return p("locker","error","1")}g(T.documentElement),B.addEventListener("message",u,!1),B.addEventListener("beforeunload",function(){S=!0}),"loading"!==T.readyState?setTimeout(m,b.to):T.addEventListener("DOMContentLoaded",function(){setTimeout(m,b.to)},!1)}},{}]},{},[1]);}
+            </script>
+            <script>
+                __da({p:"amn",c:"AllMusic",to:1500,s:/(https:)/,t:"Help Support AllMusic",m:"It appears that you are using an AdBlocker or something is blocking advertisements from being displayed on our site. This impacts our ability to keep AllMusic up and running. Please help us keep our content free by selecting one of the following options:",pu:"https://www.allmusic.com/subscribe",ib:["http://rmp.supportfreecontent.com/rmp/44046/0/vc?z=1r&dim=39836"],ub:["http://rmp.supportfreecontent.com/rmp/44046/0/vc?z=1r&dim=44198"],b:{c:{t:1,l:[".advertising",".medium-rectangle",".leaderboard"]},u:{t:1,l:["http://cdn.complexmedianetwork.com/js/cmnUNT.js","http://c.amazon-adsystem.com/aax2/amzn_ads.js"]},w:{t:1,p:/(cmnunt)|(amzn_ads)|(complexmedia)/i}}});
+            </script>
+        
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-7096127-1', 'auto');
+
+                                ga('send', 'pageview', 'artist/bruce-springsteen-mn0000530745/discography');
+                        setTimeout("ga('send','event','adjusted bounce rate','page visit 15 seconds or more')",15000);
+                </script>
+
+        
+        <!-- Media query polyfill ( Always require because loading via dynamic ajax injection is too slow [the enquire.js will fire before the ajax completes] ) -->
+        <script src="//cdn-prod.allmusic.com/js/lib/media.match.min.js"></script>
+
+        <script src="//cdn-prod.allmusic.com/cache/setup.1473966917.js"></script>
+
+        <script type="text/javascript">
+var googletag = googletag || {};
+googletag.cmd = googletag.cmd || [];
+(function(){
+  var gads = document.createElement("script");
+  gads.async = true;
+  gads.type = "text/javascript";
+  var useSSL = "https:" == document.location.protocol;
+  gads.src = (useSSL ? "https:" : "http:") + "//www.googletagservices.com/tag/js/gpt.js";
+  var node = document.getElementsByTagName("script")[0];
+  node.parentNode.insertBefore(gads, node);
+})();
+googletag.cmd.push(function(){
+  googletag.defineSlot('/22732481/Allmusic_ROS_1x1_Footer', [[1, 1]], 'Allmusic_ROS_1x1_Footer').addService(googletag.pubads());
+});
+googletag.cmd.push(function(){
+  googletag.pubads().setTargeting('pagename', 'artist');
+  googletag.pubads().setTargeting('artist_id', 'MN0000530745');
+  googletag.pubads().setTargeting('genre', 'Pop/Rock,Folk');
+  googletag.pubads().setTargeting('blockadex', 'TRUE');
+  googletag.pubads().set("adsense_background_color", "F4F4F4");
+  googletag.enableServices();
+});
+</script>        <script type="text/javascript">
+   // Get Mobile User agent
+   var isMobileUa = /iPhone|iPod|BlackBerry|Opera Mini|(android|bb\d+|meego).+mobile/i.test(navigator.userAgent);
+   // Get the browser width
+   var browserwidth = window.innerWidth;
+</script>
+<script type="text/javascript">
+   if (isMobile_AllMusic ) {
+       cmnunt_site = 'allmusic_mob';
+   } else {
+       cmnunt_site = 'allmusic';
+   }
+   cmnunt_silo = 's_mus';
+   cmnunt_subsilo = '';
+   cmnunt_tier = 'to,t2,internal';
+   cmnunt_zone = 'artist';
+   cmnunt_kw = 'artist_id=MN0000530745,genre=Pop/Rock,Folk,blockadex=TRUE,pagename=artist';
+   cmnunt_exclude = '';
+if (isMobile_AllMusic) {
+document.write('<scr'+'ipt type="text/javascript" src="http://cdn.complexmedianetwork.com/js/cmnUNTmobile.js"></scr'+'ipt>')
+} else {
+document.write('<scr'+'ipt type="text/javascript" src="http://cdn.complexmedianetwork.com/js/cmnUNT.js"></scr'+'ipt>')
+}
+</script>
+    
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            function async_load(script_url){
+                var protocol = ('https:' == document.location.protocol ? 'https://' : 'http://');
+                var s = document.createElement('script'); s.src = protocol + script_url;
+                var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);
+            }
+            bm_website_code = 'C0EE67EF1B164D69';
+            jQuery(document).ready(function(){async_load('asset.pagefair.com/measure.min.js')});
+            jQuery(document).ready(function(){async_load('asset.pagefair.net/ads.min.js')});
+        })();
+    </script>
+
+    <script type="text/javascript">
+        var _qevents = _qevents || [];
+
+        (function() {
+            var elem = document.createElement('script');
+            elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";
+            elem.async = true;
+            elem.type = "text/javascript";
+            var scpt = document.getElementsByTagName('script')[0];
+            scpt.parentNode.insertBefore(elem, scpt);
+        })();
+    </script>
+
+    </head>
+    <body>
+        <noscript>
+            <div class="javascript-disabled" id="no-js">
+                AllMusic relies heavily on JavaScript.<br>
+                Please enable JavaScript in your browser to use the site fully.
+            </div>
+        </noscript>
+        <div class="stripe-container header-leaderboard">
+    <div class="advertising leaderboard">
+                    <div id="cmn_ad_tag_head" class="fw_allmusic">    <!-- 3x3 Ad Tag -->    <script type="text/javascript">        cmnUNT('3x3', tile_num++);    </script></div>            </div>
+</div>
+
+<div class="overflow-container artist">
+
+<div class="stripe-container header-main-nav clearfix">
+    <div class="max-header">
+        <div class="main-nav">
+
+    <div class="logo-container">
+        <a class="logo no-snap" href="/">
+                            <h3 class="logo-img">AllMusic</h3>
+                    </a>
+    </div>
+
+    <nav class="mobile-menu"></nav>
+
+    <div class="search-container">
+        <form class="site-search" method="post" name="site-search" action="/search">
+            <input type="submit" class="site-search-button" name="submit">
+            <input type="search" class="site-search-input" name="term" placeholder="Search" tabindex="1">
+        </form>
+    </div>
+
+    <nav class="site-nav">
+        <ul>
+            <li class="new-releases">
+                <a href="/newreleases">New Releases</a>
+                <ul class="new-releases-nav">
+    <div class="sub-nav-container">
+        <div class="sub-nav-columns">
+            <div class="new-releases-subnav left">
+                <li class="nr-featured">
+                    <a href="/newreleases">Featured New Releases</a>
+                </li>
+                <li class="nr-editorschoice">
+                    <a href="/newreleases/editorschoice">Editors' Choice</a>
+                </li>
+                <li class="nr-all">
+                    <a href="/newreleases/all">All New Releases</a>
+                </li>
+            </div>
+            <div class="new-releases-subnav right">
+                <div class="sub-nav-content">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</ul>            </li>
+            <li class="discover">
+                <a href="/discover">Discover</a>
+                <ul class="discover-nav">
+    <div class="sub-nav-container">
+        <div class="sub-nav-columns left">
+            <li class="discover-genres active">
+                <a href="/genres">Genres<span class="genres-arrow" style="display:none">&nbsp;&nbsp;&rsaquo;</span></a>
+            </li>
+            <li class="discover-moods">
+                <a href="/moods">Moods<span class="moods-arrow" style="display:none">&nbsp;&nbsp;&rsaquo;</span></a>
+            </li>
+            <li class="discover-themes">
+                <a href="/themes">Themes<span class="themes-arrow" style="display:none">&nbsp;&nbsp;&rsaquo;</span></a>
+            </li>
+        </div>
+        <div class="sub-nav-columns right">
+            <ul class="discover-genre-secondary">
+    <div class="genre-column">
+        <!-- spacer to prevent hover weirdness -->
+    </div>
+    <div class="genre-column">
+        <li class="individual">
+            <a href="/genre/blues-ma0000002467">Blues</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/classical-ma0000002521">Classical</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/country-ma0000002532">Country</a>
+        </li>
+    </div>
+    <div class="genre-column">
+        <li class="individual">
+            <a href="/genre/electronic-ma0000002572">Electronic</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/folk-ma0000002592">Folk</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/international-ma0000002660">International</a>
+        </li>
+    </div>
+    <div class="genre-column">
+        <li class="individual">
+            <a href="/genre/jazz-ma0000002674">Jazz</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/latin-ma0000002692">Latin</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/new-age-ma0000002745">New Age</a>
+        </li>
+    </div>
+    <div class="genre-column">
+        <li class="individual">
+            <a href="/genre/pop-rock-ma0000002613">Pop/Rock</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/rap-ma0000002816">Rap</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/r-b-ma0000002809">R&amp;B</a>
+        </li>
+    </div>
+    <div class="genre-column">
+        <li class="individual">
+            <a href="/genre/reggae-ma0000002820">Reggae</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/stage-screen-ma0000004432">Stage &amp; Screen</a>
+        </li>
+        <li class="last">
+            <a href="/genres">All Genres</a>
+        </li>
+    </div>
+</ul>            <ul class="discover-mood-secondary" style="display:none;">
+    <div class="mood-column">
+        <!-- spacer to prevent hover weirdness -->
+    </div>
+    <div class="mood-column">
+        <li class="individual">
+            <a href="/mood/aggressive-xa0000000694">Aggressive</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/bittersweet-xa0000000946">Bittersweet</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/druggy-xa0000000979">Druggy</a>
+        </li>
+    </div>
+    <div class="mood-column">
+        <li class="individual">
+            <a href="/mood/energetic-xa0000000990">Energetic</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/happy-xa0000001016">Happy</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/hypnotic-xa0000000719">Hypnotic</a>
+        </li>
+    </div>
+    <div class="mood-column">
+        <li class="individual">
+            <a href="/mood/laid-back-mellow-xa0000001032">Laid Back/Mellow</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/melancholy-xa0000000734">Melancholy</a>
+        </li>
+        <li>
+            <a href="/mood/passionate-xa0000001062">Passionate</a>
+        </li>
+    </div>
+    <div class="mood-column">
+        <li class="individual">
+            <a href="/mood/romantic-xa0000000758">Romantic</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/sad-xa0000000761">Sad</a>
+        </li>
+        <li>
+            <a href="/mood/sentimental-xa0000000765">Sentimental</a>
+        </li>
+    </div>
+    <div class="mood-column">
+        <li>
+            <a href="/mood/sexy-xa0000000770">Sexy</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/trippy-xa0000000749">Trippy</a>
+        </li>
+        <li class="last">
+            <a href="/moods">All Moods</a>
+        </li>
+    </div>
+</ul>            <ul class="discover-theme-secondary" style="display:none;">
+    <div class="theme-column">
+        <!-- spacer to prevent hover weirdness -->
+    </div>
+    <div class="theme-column">
+        <li class="individual">
+            <a href="/theme/background-music-ma0000006329">Background Music</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/celebration-ma0000005042">Celebration</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/cool-cocky-ma0000006328">Cool & Cocky</a>
+        </li>
+    </div>
+    <div class="theme-column">
+        <li class="individual">
+            <a href="/theme/drinking-ma0000004252">Drinking</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/hanging-out-ma0000006297">Hanging Out</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/in-love-ma0000005076">In Love</a>
+        </li>
+    </div>
+    <div class="theme-column">
+        <li class="individual">
+            <a href="/theme/introspection-ma0000006318">Introspection</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/late-night-ma0000006321">Late Night</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/partying-ma0000004272">Partying</a>
+        </li>
+    </div>
+    <div class="theme-column">
+        <li class="individual">
+            <a href="/theme/rainy-day-ma0000005096">Rainy Day</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/relaxation-ma0000006314">Relaxation</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/road-trip-ma0000006287">Road Trip</a>
+        </li>
+    </div>
+    <div class="theme-column">
+        <li class="individual">
+            <a href="/theme/romantic-evening-ma0000006312">Romantic Evening</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/sex-ma0000005107">Sex</a>
+        </li>
+        <li class="last">
+            <a href="/themes">All Themes</a>
+        </li>
+    </div>
+</ul>        </div>
+    </div>
+</ul>            </li>
+            <li class="blog">
+                <a href="/blog">Articles</a>
+                <ul>
+    <div class="sub-nav-container clearfix">
+        <div class="sub-nav-columns">
+            <div class="blog-list">
+                <li class="blog-features">
+                    <a href="/blog/features">Features</a>
+                </li>
+                <li class="blog-interviews">
+                    <a href="/blog/interviews-14">Interviews</a>
+                </li>
+                <li class="blog-lists">
+                    <a href="/blog/lists">Lists</a>
+                </li>
+            </div>
+            <div class="blog-list">
+                <li class="blog-stream">
+                    <a href="/blog/stream-and-download">Streams</a>
+                </li>
+                <li class="blog-promotions">
+                    <a href="/videos">Videos</a>
+                </li>
+                <li class="blog-all">
+                    <a href="/blog">All Posts</a>
+                </li>
+            </div>
+            <div class="blog-subnav right">
+                <div class="sub-nav-blog-content"></div>
+            </div>
+        </div>
+    </div>
+</ul>
+            </li>
+<!--            <li class="videos">-->
+<!--                <a href="/videos" class="videos-link">Video</a>-->
+<!--            </li>-->
+            <li class="recommendations">
+                <a href="/recommendations">Recommendations</a>
+            </li>
+            <li class="my-profile">
+                <a href="javascript:void(0)" class="my-profile-link">My Profile</a>
+            </li>
+            <li class="advanced-search">
+                <a href="/advanced-search" class="advanced-search-link">Advanced Search</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="user-social-nav">
+        <nav class="social-nav">
+            <ul>
+                <li class="facebook">
+                    <a href="http://www.facebook.com/AllMusicDotCom" alt="Like us on Facebook" title="Like us on Facebook">Facebook</a>
+                </li>
+                <li class="twitter">
+                    <a href="https://twitter.com/#!/Allmusic" alt="Follow us on Twitter" title="Follow us on Twitter">Twitter</a>
+                </li>
+                <li class="tumblr">
+                    <a href="http://allmusic.tumblr.com" alt="Follow us on Tumblr" title="Follow us on Tumblr">Tumblr</a>
+                </li>
+                <li class="google-plus">
+                    <a href="https://plus.google.com/101788172919569561373/posts" alt="Follow us on Google+" title="Follow us on Google+">Google</a>
+                </li>
+                <li class="rss">
+                    <a href="/rss" alt="Subscribe to our RSS feed" title="Subscribe to our RSS feed" target="_blank">RSS</a>
+                </li>
+            </ul>
+        </nav>
+
+        <nav class="user-notifications">
+            <ul>
+                <li class="user-notification-icon">
+                </li>
+            </ul>
+        </nav>
+
+        <nav class="user-nav"></nav>
+    </div>
+
+</div>    </div>
+</div>
+
+<div id="cmn_wrap">
+<div class="content-container" itemscope itemtype="http://schema.org/MusicGroup">
+
+    <div class="sidebar">
+                                <script type="text/javascript">
+                var image_gallery = [{"override":false,"musicSort":"0","height":267,"width":400,"formatid":64,"author":"","copyrightOwner":null,"imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0003\/879\/MI0003879160.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"0","height":500,"width":335,"formatid":16,"author":"","copyrightOwner":"Danny Clinch","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0003\/681\/MI0003681225.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":267,"width":400,"formatid":64,"author":"","copyrightOwner":null,"imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0003\/879\/MI0003879162.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":500,"width":334,"formatid":16,"author":"","copyrightOwner":null,"imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0003\/879\/MI0003879163.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":116,"width":400,"formatid":64,"author":"","copyrightOwner":null,"imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0003\/658\/MI0003658723.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":500,"width":333,"formatid":16,"author":"","copyrightOwner":"Danny Clinch","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0003\/456\/MI0003456575.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":267,"width":400,"formatid":64,"author":"","copyrightOwner":"Danny Clinch","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0003\/456\/MI0003456578.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":500,"width":417,"formatid":16,"author":"","copyrightOwner":"Danny Clinch","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0003\/456\/MI0003456579.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":304,"width":400,"formatid":64,"author":"","copyrightOwner":"Yann Orhan","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0003\/371\/MI0003371407.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":500,"width":390,"formatid":16,"author":"","copyrightOwner":"Todd Kaplan","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/401\/MI0001401678.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":316,"width":400,"formatid":64,"author":"","copyrightOwner":null,"imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0002\/749\/MI0002749814.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":270,"width":400,"formatid":64,"author":"","copyrightOwner":"David Gahr","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0001\/415\/MI0001415582.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":318,"width":400,"formatid":64,"author":"","copyrightOwner":"Frank Stefanko","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0001\/413\/MI0001413272.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":263,"width":400,"formatid":64,"author":"","copyrightOwner":"David Gahr","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0001\/397\/MI0001397317.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":500,"width":345,"formatid":16,"author":"","copyrightOwner":"Bernstein, Joel","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/366\/MI0001366033.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":500,"width":405,"formatid":16,"author":"","copyrightOwner":"David Rose","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0002\/749\/MI0002749241.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":500,"width":417,"formatid":16,"author":"","copyrightOwner":"Neal Preston","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0002\/749\/MI0002749946.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":500,"width":355,"formatid":16,"author":"","copyrightOwner":"Pam Springsteen","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/355\/MI0001355981.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":320,"width":400,"formatid":64,"author":"","copyrightOwner":"Annie Leibovitz","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0001\/402\/MI0001402665.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":500,"width":422,"formatid":16,"author":"","copyrightOwner":null,"imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/402\/MI0001402719.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"1","height":500,"width":335,"formatid":16,"author":"","copyrightOwner":null,"imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/389\/MI0001389279.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"2","height":500,"width":379,"formatid":16,"author":"","copyrightOwner":null,"imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/464\/MI0001464718.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"2","height":500,"width":330,"formatid":16,"author":"","copyrightOwner":"Neal Preston","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/337\/MI0001337414.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"2","height":270,"width":400,"formatid":64,"author":"","copyrightOwner":"Henry Diltz","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0001\/412\/MI0001412758.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"2","height":271,"width":400,"formatid":64,"author":"","copyrightOwner":"David Gahr","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0001\/337\/MI0001337507.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"2","height":500,"width":293,"formatid":16,"author":"","copyrightOwner":null,"imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/332\/MI0001332304.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"2","height":500,"width":296,"formatid":16,"author":"","copyrightOwner":"Frank Stefanko","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/413\/MI0001413367.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"2","height":500,"width":423,"formatid":16,"author":"","copyrightOwner":"Todd Kaplan","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/400\/MI0001400918.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"2","height":500,"width":364,"formatid":16,"author":"","copyrightOwner":null,"imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/332\/MI0001332889.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"2","height":500,"width":394,"formatid":16,"author":"","copyrightOwner":"Todd Kaplan","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/402\/MI0001402670.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"2","height":391,"width":400,"formatid":64,"author":"","copyrightOwner":"David Kennedy","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_400\/MI0001\/363\/MI0001363958.jpg?partner=allrovi.com","title":"Bruce Springsteen"},{"override":false,"musicSort":"2","height":500,"width":432,"formatid":16,"author":"","copyrightOwner":"Rainer Hosch","imageTypeId":0,"zoomLevel":null,"url":"http:\/\/cps-static.rovicorp.com\/3\/JPG_500\/MI0001\/356\/MI0001356205.jpg?partner=allrovi.com","title":"Bruce Springsteen"}];
+            </script>
+            <span class="gallery-lightbox-bind"></span>
+            <div class="artist-image">
+                <img src="http://cps-static.rovicorp.com/3/JPG_400/MI0003/879/MI0003879160.jpg?partner=allrovi.com" alt="Bruce Springsteen" itemprop="image">
+
+                
+                            </div>
+        
+                <div class="advertising medium-rectangle">
+            <!-- 300x250 Ad Tag --><script type="text/javascript">    cmnUNT('300x250,300x600', tile_num++);</script>        </div>
+        
+        <section class="basic-info">
+
+            <div class="partners num-2">
+            <h4>Stream or buy on:</h4>
+
+            <ul class="partner-buttons clearfix">
+                
+                
+                <li class="amazontooltip">
+                    <a href="http://www.amazon.com/s/?field-keywords=music: &#34;Bruce Springsteen&#34;&tag=allmusicdotcom-20" data-target="amazon" class="amazon" title="Search on Amazon"></a>
+                                                                    <span>
+                            <b></b>
+                                                            <div class="amazon-div div-0">
+                                    <a href="http://www.amazon.com/Bruce Springsteen/e/B000AQ2ZLQ/works?tag=allmusicdotcom-20" data-target="amazon" class="amazonDirect" title="Buy from Amazon Music"></a>
+                                </div>
+                                                                                                                        <div class="amazon-div div-1">
+                                    <a href="http://www.amazon.com/gp/dmusic/promotions/prime.html?upsellOriginAsin=B000QJJW2M&tag=allmusicdotcom-20" data-target="amazon" class="amazonPrime" title="Stream from Amazon Prime"></a>
+                                </div>
+                                                                                    </span>
+                                    </li>
+
+                                    <li>
+                        <a href="http://itunes.apple.com/artist/id178834?at=11l6Yq&ct=allmusic " data-target="itunes" class="itunes" title="Download from iTunes"></a>
+                    </li>
+                            </ul>
+        </div>
+    
+            <div class="active-dates">
+            <h4>Active</h4>
+            <div>1970s - 2010s</div>
+        </div>
+    
+    
+            <div class="birth">
+            <h4>
+                Born            </h4>
+            <div>
+                September 23, 1949                 in Freehold, NJ            </div>
+        </div>
+    
+    
+            <div class="genre">
+            <h4>Genre</h4>
+            <div>
+                                    <a href="http://www.allmusic.com/genre/pop-rock-ma0000002613">Pop/Rock</a>                                    <a href="http://www.allmusic.com/genre/folk-ma0000002592">Folk</a>                            </div>
+        </div>
+    
+            <div class="styles">
+            <h4>Styles</h4>
+            <div>
+                                    <a href="http://www.allmusic.com/style/album-rock-ma0000004459">Album Rock</a>                                    <a href="http://www.allmusic.com/style/contemporary-pop-rock-ma0000004443">Contemporary Pop/Rock</a>                                    <a href="http://www.allmusic.com/style/heartland-rock-ma0000012246">Heartland Rock</a>                                    <a href="http://www.allmusic.com/style/rock-roll-ma0000002829">Rock & Roll</a>                                    <a href="http://www.allmusic.com/style/alternative-folk-ma0000012099">Alternative Folk</a>                            </div>
+        </div>
+    
+            <div class="aliases">
+            <h4>Also Known As</h4>
+            <div>
+                                    <div>The Boss</div>
+                            </div>
+        </div>
+    
+            <div class="member-of">
+            <h4>Member Of</h4>
+            <div>
+                                    <a href="http://www.allmusic.com/artist/steel-mill-mn0002651709" data-tooltip="{&quot;id&quot;:&quot;MN0002651709&quot;,&quot;thumbnail&quot;:true}">Steel Mill</a>                            </div>
+        </div>
+    
+    
+    <a href="http://www.allmusic.com/artist/bruce-springsteen-mn0000530745/corrections" class="submit-corrections">Submit Corrections</a>
+</section>
+
+        
+        <div id="bandpage" style="visibility: hidden;"></div>
+                <div class="advertising medium-rectangle-btf">
+            <script type="text/javascript">    cmnUNT('300x251', tile_num++);</script>        </div>
+        
+        
+    <section class="blog-entries" >
+        <h4 class="headline">Related Blog Posts</h4>
+
+            <ul>
+                                    <li>
+                        <a href="/blog/post/michael-chiklis-interview" title="Michael Chiklis On His Lifelong Passion For Music and His Debut Album, 'Influence'">
+                            Michael Chiklis On His Lifelong Passion For Music and His Debut Album, 'Influence'                        </a>
+                    </li>
+                                    <li>
+                        <a href="/blog/post/rivers-cuomo-on-the-magic-of-debut-albums-and-his-metal-roots" title="Rivers Cuomo on His Metal Roots and the Magic of Debut Albums">
+                            Rivers Cuomo on His Metal Roots and the Magic of Debut Albums                        </a>
+                    </li>
+                                    <li>
+                        <a href="/blog/post/new-releases-roundup-august-12" title="New Releases Roundup: August 12">
+                            New Releases Roundup: August 12                        </a>
+                    </li>
+                                    <li>
+                        <a href="/blog/post/advance-album-streams-from-sinead-oconnor-gaslight-anthem-and-lucero" title="Advance Album Streams from Sinead O'Connor, the Gaslight Anthem. Lucero and Ethan Johns">
+                            Advance Album Streams from Sinead O'Connor, the Gaslight Anthem. Lucero and Ethan Johns                        </a>
+                    </li>
+                                    <li>
+                        <a href="/blog/post/playlist-songs-of-the-summer-from-the-sklar-brothers" title="Playlist: Songs of the Summer from the Sklar Brothers">
+                            Playlist: Songs of the Summer from the Sklar Brothers                        </a>
+                    </li>
+                                    <li>
+                        <a href="/blog/post/pearls-before-swine-cartoonist-stephan-pastis" title="'Pearls Before Swine' Cartoonist Stephan Pastis on His Musical Inspirations and Dylan Obsession">
+                            'Pearls Before Swine' Cartoonist Stephan Pastis on His Musical Inspirations and Dylan Obsession                        </a>
+                    </li>
+                                    <li>
+                        <a href="/blog/post/dandy-warhols-interview-and-video-premiere" title="Dandy Warhols Interview and Video Premiere">
+                            Dandy Warhols Interview and Video Premiere                        </a>
+                    </li>
+                                    <li>
+                        <a href="/blog/post/radio-on-the-tv-week-of-january-17-2014" title="Radio on the TV: Bruce Springsteen, Sharon Jones and the Dap-Kings, and Jennifer Nettles">
+                            Radio on the TV: Bruce Springsteen, Sharon Jones and the Dap-Kings, and Jennifer Nettles                        </a>
+                    </li>
+                                    <li>
+                        <a href="/blog/post/new-releases-roundup-week-of-january-14-2014" title="New Releases Roundup: Week of January 14, 2014">
+                            New Releases Roundup: Week of January 14, 2014                        </a>
+                    </li>
+                                    <li>
+                        <a href="/blog/post/stream-springsteens-new-covers-album-and-read-our-review" title="Stream Bruce Springsteen's New Album and Read Our Review">
+                            Stream Bruce Springsteen's New Album and Read Our Review                        </a>
+                    </li>
+                            </ul>
+
+    </section>
+
+
+
+    </div>
+
+    <div class="content">
+
+        <header itemprop="review" itemscope itemtype="http://schema.org/Review">
+    <div class="artist-bio-container">
+                    <div class="artist-sample-container">
+                <a href="#no-js"
+                   class="audio-player large"
+                   data-sample-url="/artist/MN0000530745/samples.json">
+                    <canvas width="55" height="55"></canvas>
+                </a>
+            </div>
+        
+        <hgroup>
+            <h1 class="artist-name" itemprop="name">
+                Bruce Springsteen            </h1>
+
+                            <h2 class="bio-author">
+                    Biography by <span itemprop="author">William Ruhlmann</span>
+                </h2>
+                        <div class="artist-follow" data-id="MN0000530745"></div>
+
+                    </hgroup>
+
+    </div>
+
+            <p class="biography">
+            <span itemprop="reviewBody">A passionate showman who gained worldwide acclaim by marrying literate songwriting with bar-band rock & roll plus a flair for the dramatic.</span>
+
+                            <br>
+                <a href="http://www.allmusic.com/artist/bruce-springsteen-mn0000530745/biography">Read Full Biography</a>                    </p>
+    </header>
+        
+        <ul class="tabs discography">
+
+        <li class="tab overview" data-sections="moods,themes">
+        <a href="/artist/bruce-springsteen-mn0000530745">
+            Overview
+            <span class="arrow">&darr;</span>
+        </a>
+    </li>
+    
+            <li class="tab biography">
+            <a href="/artist/bruce-springsteen-mn0000530745/biography">
+                Biography
+                <span class="arrow">&darr;</span>
+            </a>
+        </li>
+    
+            <li class="tab discography">
+            <a href="/artist/bruce-springsteen-mn0000530745/discography">
+                Discography
+                <span class="arrow">&darr;</span>
+            </a>
+        </li>
+    
+            <li class="tab songs">
+            <a href="/artist/bruce-springsteen-mn0000530745/songs">
+                Songs
+                <span class="arrow">&darr;</span>
+            </a>
+        </li>
+    
+    
+            <li class="tab credits">
+            <a href="/artist/bruce-springsteen-mn0000530745/credits">
+                Credits
+                <span class="arrow">&darr;</span>
+            </a>
+        </li>
+    
+            <li class="tab awards">
+            <a href="/artist/bruce-springsteen-mn0000530745/awards">
+                Awards
+                <span class="arrow">&darr;</span>
+            </a>
+        </li>
+    
+            <li class="tab related">
+            <a href="/artist/bruce-springsteen-mn0000530745/related">
+                Related
+                <span class="arrow">&darr;</span>
+            </a>
+        </li>
+    
+</ul>
+        
+<div class="allmusic-share" data-sharemessage="Check out Bruce Springsteen - Biography, Discography, Credits and Similar Artists - AllMusic - ">
+    <p>
+        Share this page
+    </p>
+    <ul class="share-menu">
+        <li>
+            <a title="Share on Facebook" class="share-button facebook" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fwww.allmusic.com%2Fartist%2Fbruce-springsteen-mn0000530745%2Fdiscography">facebook</a>
+        </li>
+        <li>
+            <a title="Share on Twitter" class="share-button twitter" href="http://twitter.com/share?url=http%3A%2F%2Fwww.allmusic.com%2Fartist%2Fbruce-springsteen-mn0000530745%2Fdiscography&text=Check+out+Bruce+Springsteen+-+Biography%2C+Discography%2C+Credits+and+Similar+Artists+-+AllMusic+-+&counturl=http%3A%2F%2Fwww.allmusic.com%2Fartist%2Fbruce-springsteen-mn0000530745%2Fdiscography">twitter</a>
+        </li>
+        <li>
+            <a title="Share on Google+" class="share-button google-plus" href="https://plus.google.com/share?url=http%3A%2F%2Fwww.allmusic.com%2Fartist%2Fbruce-springsteen-mn0000530745%2Fdiscography">google+</a>
+        </li>
+    </ul>
+    <div class="share-modal">
+        <a title="close button" class="close-button"></a>
+        <div class="share-frame"></div>
+    </div>
+</div>
+        
+    
+    <section class="discography">
+
+        <h3 class="headline">Discography</h3>
+
+        <nav class="view-type">
+            <span class="full"> full </span>
+            <span class="condensed"> condensed </span>
+            <span class="editors-pick"> blue highlight denotes album pick </span>
+        </nav>
+
+        <nav class="release-types">
+            <h3>Filter Discography By</h3>
+
+                            <input type="radio"
+                       name="release-type"
+                       id="albums"
+                       onclick="this.blur(); this.focus();"
+                       checked                       value="/artist/bruce-springsteen-mn0000530745/discography">
+
+                <label for="albums"><a href="/artist/bruce-springsteen-mn0000530745/discography" alt="Bruce Springsteen Albums" title="Bruce Springsteen Albums">Albums</a></label>
+            
+                            <input type="radio"
+                       name="release-type"
+                       id="compilations"
+                       onclick="this.blur(); this.focus();"
+                                              value="/artist/bruce-springsteen-mn0000530745/discography/compilations">
+
+                <label for="compilations"><a href="/artist/bruce-springsteen-mn0000530745/discography/compilations" alt="Bruce Springsteen Compilations" title="Bruce Springsteen Compilations">Compilations</a></label>
+            
+                            <input type="radio"
+                       name="release-type"
+                       id="singles"
+                       onclick="this.blur(); this.focus();"
+                                              value="/artist/bruce-springsteen-mn0000530745/discography/singles">
+
+                <label for="singles"><a href="/artist/bruce-springsteen-mn0000530745/discography/singles" alt="Bruce Springsteen Singles &amp; EPs" title="Bruce Springsteen Singles &amp; EPs">Singles &amp; EPs</a></label>
+            
+                            <input type="radio"
+                       name="release-type"
+                       id="videos"
+                       onclick="this.blur(); this.focus();"
+                                              value="/artist/bruce-springsteen-mn0000530745/discography/video">
+
+                <label for="videos"><a href="/artist/bruce-springsteen-mn0000530745/discography/video" alt="Bruce Springsteen DVDs &amp; Videos" title="Bruce Springsteen DVDs &amp; Videos">DVDs &amp; Videos</a></label>
+            
+                            <input type="radio"
+                       name="release-type"
+                       id="others"
+                       onclick="this.blur(); this.focus();"
+                                              value="/artist/bruce-springsteen-mn0000530745/discography/others">
+
+                <label for="others"><a href="/artist/bruce-springsteen-mn0000530745/discography/others" alt="Bruce Springsteen Others" title="Bruce Springsteen Others">Others</a></label>
+            
+            <input type="radio"
+                   name="release-type"
+                   id="all"
+                   onclick="this.blur(); this.focus();"
+                                      value="/artist/bruce-springsteen-mn0000530745/discography/all">
+
+            <label for="all" class="all"><a href="/artist/bruce-springsteen-mn0000530745/discography/all" alt="Bruce Springsteen All" title="Bruce Springsteen All">All</a></label>
+        </nav>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="pick-prefix"></th>
+                    <th class="cover"></th>
+                    <th class="year sortable asc" data-sort-default="asc">
+                        <a href="#" title="Click to sort">Year</a>
+                    </th>
+                    <th class="title sortable" data-sort-default="asc">
+                        <a href="#" title="Click to sort">Album</a>
+                    </th>
+                    <th class="label sortable" data-sort-default="asc">
+                        <a href="#" title="Click to sort">Label</a>
+                    </th>
+                    <th class="all-rating sortable" data-sort-default="desc">
+                        <a href="#" title="Click to sort">AllMusic Rating</a>
+                    </th>
+                    <th class="avg-rating sortable" data-sort-default="desc">
+                        <a href="#" title="Click to sort">User Ratings</a>
+                    </th>
+                    <th class="pick-suffix"></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/greetings-from-asbury-park-nj-mw0000195808"
+                                   title="Greetings from Asbury Park, N.J."
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000195808&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0000/284/0000284389.jpg"  width="56" height="115" alt="Greetings from Asbury Park, N.J." style=""><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0000/284/0000284389.jpg" width="56" height="115" alt="Greetings from Asbury Park, N.J." style=""></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="1973-01-05-Greetings from Asbury Park, N.J.">
+                            1973                        </td>
+
+                        <td class="title" data-sort-value="Greetings from Asbury Park, N.J.">
+                            <a href="http://www.allmusic.com/album/greetings-from-asbury-park-nj-mw0000195808" data-tooltip="{&quot;id&quot;:&quot;MW0000195808&quot;,&quot;thumbnail&quot;:true}">Greetings from Asbury Park, N.J.</a>                                                            <a href="/album/greetings-from-asbury-park-nj-mw0000195808"
+                                title="Greetings from Asbury Park, N.J.">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-1973-01-05-Greetings from Asbury Park, N.J.">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="9-Greetings from Asbury Park, N.J.">
+                            <div class="allmusic-rating rating-allmusic-9"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Greetings from Asbury Park, N.J.">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000195808" data-tooltip="{&quot;id&quot;:&quot;MW0000195808&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000195808"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/the-wild-the-innocent-the-e-street-shuffle-mw0000195809"
+                                   title="The Wild, The Innocent & the E Street Shuffle"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000195809&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0000/282/0000282912.jpg"  width="56" height="54" alt="The Wild, The Innocent & the E Street Shuffle" style=""><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0000/282/0000282912.jpg" width="56" height="54" alt="The Wild, The Innocent & the E Street Shuffle" style=""></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="1973-09-11-The Wild, The Innocent &amp; the E Street Shuffle">
+                            1973                        </td>
+
+                        <td class="title" data-sort-value="The Wild, The Innocent &amp; the E Street Shuffle">
+                            <a href="http://www.allmusic.com/album/the-wild-the-innocent-the-e-street-shuffle-mw0000195809" data-tooltip="{&quot;id&quot;:&quot;MW0000195809&quot;,&quot;thumbnail&quot;:true}">The Wild, The Innocent &amp; the E Street Shuffle</a>                                                            <a href="/album/the-wild-the-innocent-the-e-street-shuffle-mw0000195809"
+                                title="The Wild, The Innocent & the E Street Shuffle">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-1973-09-11-The Wild, The Innocent &amp; the E Street Shuffle">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="9-The Wild, The Innocent &amp; the E Street Shuffle">
+                            <div class="allmusic-rating rating-allmusic-9"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="The Wild, The Innocent &amp; the E Street Shuffle">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000195809" data-tooltip="{&quot;id&quot;:&quot;MW0000195809&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000195809"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                                <img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="//cdn-prod.allmusic.com/images/no_image/album_55x55.png"  width="55" height="55" alt="Born to Run" style=""><noscript><img src="//cdn-prod.allmusic.com/images/no_image/album_55x55.png" width="55" height="55" alt="Born to Run" style=""></noscript>                                                                                    </td>
+
+                        <td class="year" data-sort-value="1975-08-25-Born to Run">
+                            1975                        </td>
+
+                        <td class="title" data-sort-value="Born to Run">
+                            <a href="http://www.allmusic.com/album/born-to-run-mw0000650803" data-tooltip="{&quot;id&quot;:&quot;MW0000650803&quot;,&quot;thumbnail&quot;:true}">Born to Run</a>                                                            <a href="/album/born-to-run-mw0000650803"
+                                title="Born to Run">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia/SonyMusicDistribution-1975-08-25-Born to Run">
+                            Columbia / Sony Music Distribution                        </td>
+
+                        <td class="all-rating" data-sort-value="9-Born to Run">
+                            <div class="allmusic-rating rating-allmusic-9"></div>
+                        </td>
+
+                        <td class="avg-rating no-img" data-secondary-sort="Born to Run">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000650803" data-tooltip="{&quot;id&quot;:&quot;MW0000650803&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000650803"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/darkness-on-the-edge-of-town-mw0000191913"
+                                   title="Darkness on the Edge of Town"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000191913&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0004/412/0004412842.jpg"  width="54" height="54" alt="Darkness on the Edge of Town" style="left:--1px;"><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0004/412/0004412842.jpg" width="54" height="54" alt="Darkness on the Edge of Town" style="left:--1px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="1978-06-02-Darkness on the Edge of Town">
+                            1978                        </td>
+
+                        <td class="title" data-sort-value="Darkness on the Edge of Town">
+                            <a href="http://www.allmusic.com/album/darkness-on-the-edge-of-town-mw0000191913" data-tooltip="{&quot;id&quot;:&quot;MW0000191913&quot;,&quot;thumbnail&quot;:true}">Darkness on the Edge of Town</a>                                                            <a href="/album/darkness-on-the-edge-of-town-mw0000191913"
+                                title="Darkness on the Edge of Town">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia/Legacy/SonyMusic-1978-06-02-Darkness on the Edge of Town">
+                            Columbia / Legacy / Sony Music                        </td>
+
+                        <td class="all-rating" data-sort-value="8-Darkness on the Edge of Town">
+                            <div class="allmusic-rating rating-allmusic-8"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Darkness on the Edge of Town">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000191913" data-tooltip="{&quot;id&quot;:&quot;MW0000191913&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000191913"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                                <img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="//cdn-prod.allmusic.com/images/no_image/album_55x55.png"  width="55" height="55" alt="The River" style=""><noscript><img src="//cdn-prod.allmusic.com/images/no_image/album_55x55.png" width="55" height="55" alt="The River" style=""></noscript>                                                                                    </td>
+
+                        <td class="year" data-sort-value="1980-10-10-The River">
+                            1980                        </td>
+
+                        <td class="title" data-sort-value="The River">
+                            <a href="http://www.allmusic.com/album/the-river-mw0000191949" data-tooltip="{&quot;id&quot;:&quot;MW0000191949&quot;,&quot;thumbnail&quot;:true}">The River</a>                                                            <a href="/album/the-river-mw0000191949"
+                                title="The River">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia/Legacy/SonyMusic-1980-10-10-The River">
+                            Columbia / Legacy / Sony Music                        </td>
+
+                        <td class="all-rating" data-sort-value="9-The River">
+                            <div class="allmusic-rating rating-allmusic-9"></div>
+                        </td>
+
+                        <td class="avg-rating no-img" data-secondary-sort="The River">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000191949" data-tooltip="{&quot;id&quot;:&quot;MW0000191949&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000191949"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                                <img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="//cdn-prod.allmusic.com/images/no_image/album_55x55.png"  width="55" height="55" alt="Nebraska" style=""><noscript><img src="//cdn-prod.allmusic.com/images/no_image/album_55x55.png" width="55" height="55" alt="Nebraska" style=""></noscript>                                                                                    </td>
+
+                        <td class="year" data-sort-value="1982-09-20-Nebraska">
+                            1982                        </td>
+
+                        <td class="title" data-sort-value="Nebraska">
+                            <a href="http://www.allmusic.com/album/nebraska-mw0000650804" data-tooltip="{&quot;id&quot;:&quot;MW0000650804&quot;,&quot;thumbnail&quot;:true}">Nebraska</a>                                                            <a href="/album/nebraska-mw0000650804"
+                                title="Nebraska">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="SMEUSLatinLLC/SonyMusicDistribution-1982-09-20-Nebraska">
+                            SME US Latin LLC / Sony Music Distribution                        </td>
+
+                        <td class="all-rating" data-sort-value="9-Nebraska">
+                            <div class="allmusic-rating rating-allmusic-9"></div>
+                        </td>
+
+                        <td class="avg-rating no-img" data-secondary-sort="Nebraska">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000650804" data-tooltip="{&quot;id&quot;:&quot;MW0000650804&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000650804"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr class="pick">
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/born-in-the-usa-mw0000191830"
+                                   title="Born in the U.S.A."
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000191830&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0000/286/0000286689.jpg"  width="56" height="54" alt="Born in the U.S.A." style=""><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0000/286/0000286689.jpg" width="56" height="54" alt="Born in the U.S.A." style=""></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="1984-06-04-Born in the U.S.A.">
+                            1984                        </td>
+
+                        <td class="title" data-sort-value="Born in the U.S.A.">
+                            <a href="http://www.allmusic.com/album/born-in-the-usa-mw0000191830" data-tooltip="{&quot;id&quot;:&quot;MW0000191830&quot;,&quot;thumbnail&quot;:true}">Born in the U.S.A.</a>                                                            <a href="/album/born-in-the-usa-mw0000191830"
+                                title="Born in the U.S.A.">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-1984-06-04-Born in the U.S.A.">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="9-Born in the U.S.A.">
+                            <div class="allmusic-rating rating-allmusic-9"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Born in the U.S.A.">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000191830" data-tooltip="{&quot;id&quot;:&quot;MW0000191830&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000191830"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/tunnel-of-love-mw0000193300"
+                                   title="Tunnel of Love"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000193300&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0000/869/0000869537.jpg"  width="56" height="54" alt="Tunnel of Love" style=""><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0000/869/0000869537.jpg" width="56" height="54" alt="Tunnel of Love" style=""></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="1987-10-09-Tunnel of Love">
+                            1987                        </td>
+
+                        <td class="title" data-sort-value="Tunnel of Love">
+                            <a href="http://www.allmusic.com/album/tunnel-of-love-mw0000193300" data-tooltip="{&quot;id&quot;:&quot;MW0000193300&quot;,&quot;thumbnail&quot;:true}">Tunnel of Love</a>                                                            <a href="/album/tunnel-of-love-mw0000193300"
+                                title="Tunnel of Love">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-1987-10-09-Tunnel of Love">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="8-Tunnel of Love">
+                            <div class="allmusic-rating rating-allmusic-8"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Tunnel of Love">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000193300" data-tooltip="{&quot;id&quot;:&quot;MW0000193300&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000193300"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/human-touch-mw0000265071"
+                                   title="Human Touch"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000265071&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0000/115/0000115823.jpg"  width="56" height="56" alt="Human Touch" style="top:-1px;"><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0000/115/0000115823.jpg" width="56" height="56" alt="Human Touch" style="top:-1px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="1992-03-31-Human Touch">
+                            1992                        </td>
+
+                        <td class="title" data-sort-value="Human Touch">
+                            <a href="http://www.allmusic.com/album/human-touch-mw0000265071" data-tooltip="{&quot;id&quot;:&quot;MW0000265071&quot;,&quot;thumbnail&quot;:true}">Human Touch</a>                                                            <a href="/album/human-touch-mw0000265071"
+                                title="Human Touch">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-1992-03-31-Human Touch">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="3-Human Touch">
+                            <div class="allmusic-rating rating-allmusic-3"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Human Touch">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000265071" data-tooltip="{&quot;id&quot;:&quot;MW0000265071&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000265071"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/lucky-town-mw0000275900"
+                                   title="Lucky Town"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000275900&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0000/023/0000023423.jpg"  width="56" height="90" alt="Lucky Town" style=""><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0000/023/0000023423.jpg" width="56" height="90" alt="Lucky Town" style=""></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="1992-03-31-Lucky Town">
+                            1992                        </td>
+
+                        <td class="title" data-sort-value="Lucky Town">
+                            <a href="http://www.allmusic.com/album/lucky-town-mw0000275900" data-tooltip="{&quot;id&quot;:&quot;MW0000275900&quot;,&quot;thumbnail&quot;:true}">Lucky Town</a>                                                            <a href="/album/lucky-town-mw0000275900"
+                                title="Lucky Town">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-1992-03-31-Lucky Town">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="5-Lucky Town">
+                            <div class="allmusic-rating rating-allmusic-5"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Lucky Town">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000275900" data-tooltip="{&quot;id&quot;:&quot;MW0000275900&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000275900"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/in-concert-mtv-plugged-mw0000026247"
+                                   title="In Concert/MTV Plugged"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000026247&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0000/077/0000077652.jpg"  width="56" height="54" alt="In Concert/MTV Plugged" style=""><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0000/077/0000077652.jpg" width="56" height="54" alt="In Concert/MTV Plugged" style=""></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="1993-04-??-In Concert/MTV Plugged">
+                            1993                        </td>
+
+                        <td class="title" data-sort-value="In Concert/MTV Plugged">
+                            <a href="http://www.allmusic.com/album/in-concert-mtv-plugged-mw0000026247" data-tooltip="{&quot;id&quot;:&quot;MW0000026247&quot;,&quot;thumbnail&quot;:true}">In Concert/MTV Plugged</a>                                                            <a href="/album/in-concert-mtv-plugged-mw0000026247"
+                                title="In Concert/MTV Plugged">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia/SonyMusicDistribution-1993-04-??-In Concert/MTV Plugged">
+                            Columbia / Sony Music Distribution                        </td>
+
+                        <td class="all-rating" data-sort-value="5-In Concert/MTV Plugged">
+                            <div class="allmusic-rating rating-allmusic-5"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="In Concert/MTV Plugged">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000026247" data-tooltip="{&quot;id&quot;:&quot;MW0000026247&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000026247"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/the-ghost-of-tom-joad-mw0000181768"
+                                   title="The Ghost of Tom Joad"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000181768&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0000/363/0000363826.jpg"  width="95" height="54" alt="The Ghost of Tom Joad" style=""><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0000/363/0000363826.jpg" width="95" height="54" alt="The Ghost of Tom Joad" style=""></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="1995-11-21-The Ghost of Tom Joad">
+                            1995                        </td>
+
+                        <td class="title" data-sort-value="The Ghost of Tom Joad">
+                            <a href="http://www.allmusic.com/album/the-ghost-of-tom-joad-mw0000181768" data-tooltip="{&quot;id&quot;:&quot;MW0000181768&quot;,&quot;thumbnail&quot;:true}">The Ghost of Tom Joad</a>                                                            <a href="/album/the-ghost-of-tom-joad-mw0000181768"
+                                title="The Ghost of Tom Joad">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-1995-11-21-The Ghost of Tom Joad">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="5-The Ghost of Tom Joad">
+                            <div class="allmusic-rating rating-allmusic-5"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="The Ghost of Tom Joad">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000181768" data-tooltip="{&quot;id&quot;:&quot;MW0000181768&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000181768"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/live-in-nyc-mw0000586938"
+                                   title="Live in NYC"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000586938&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0001/228/0001228030.jpg"  width="56" height="54" alt="Live in NYC" style=""><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0001/228/0001228030.jpg" width="56" height="54" alt="Live in NYC" style=""></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2001-03-27-Live in NYC">
+                            2001                        </td>
+
+                        <td class="title" data-sort-value="Live in NYC">
+                            <a href="http://www.allmusic.com/album/live-in-nyc-mw0000586938" data-tooltip="{&quot;id&quot;:&quot;MW0000586938&quot;,&quot;thumbnail&quot;:true}">Live in NYC</a>                                                            <a href="/album/live-in-nyc-mw0000586938"
+                                title="Live in NYC">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-2001-03-27-Live in NYC">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="5-Live in NYC">
+                            <div class="allmusic-rating rating-allmusic-5"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Live in NYC">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000586938" data-tooltip="{&quot;id&quot;:&quot;MW0000586938&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000586938"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/the-rising-mw0000221725"
+                                   title="The Rising"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000221725&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0000/833/0000833821.jpg"  width="62" height="54" alt="The Rising" style="left:-3px;"><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0000/833/0000833821.jpg" width="62" height="54" alt="The Rising" style="left:-3px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2002-07-30-The Rising">
+                            2002                        </td>
+
+                        <td class="title" data-sort-value="The Rising">
+                            <a href="http://www.allmusic.com/album/the-rising-mw0000221725" data-tooltip="{&quot;id&quot;:&quot;MW0000221725&quot;,&quot;thumbnail&quot;:true}">The Rising</a>                                                            <a href="/album/the-rising-mw0000221725"
+                                title="The Rising">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia/SonyMusicDistribution-2002-07-30-The Rising">
+                            Columbia / Sony Music Distribution                        </td>
+
+                        <td class="all-rating" data-sort-value="7-The Rising">
+                            <div class="allmusic-rating rating-allmusic-7"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="The Rising">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000221725" data-tooltip="{&quot;id&quot;:&quot;MW0000221725&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000221725"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/devils-dust-mw0000670570"
+                                   title="Devils & Dust"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000670570&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0001/410/0001410227.jpg"  width="61" height="54" alt="Devils & Dust" style="left:-2px;"><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0001/410/0001410227.jpg" width="61" height="54" alt="Devils & Dust" style="left:-2px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2005-04-26-Devils &amp; Dust">
+                            2005                        </td>
+
+                        <td class="title" data-sort-value="Devils &amp; Dust">
+                            <a href="http://www.allmusic.com/album/devils-dust-mw0000670570" data-tooltip="{&quot;id&quot;:&quot;MW0000670570&quot;,&quot;thumbnail&quot;:true}">Devils &amp; Dust</a>                                                            <a href="/album/devils-dust-mw0000670570"
+                                title="Devils & Dust">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-2005-04-26-Devils &amp; Dust">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="7-Devils &amp; Dust">
+                            <div class="allmusic-rating rating-allmusic-7"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Devils &amp; Dust">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000670570" data-tooltip="{&quot;id&quot;:&quot;MW0000670570&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000670570"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/we-shall-overcome-the-seeger-sessions-mw0000722023"
+                                   title="We Shall Overcome: The Seeger Sessions"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000722023&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0001/096/0001096979.jpg"  width="56" height="56" alt="We Shall Overcome: The Seeger Sessions" style="top:-1px;"><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0001/096/0001096979.jpg" width="56" height="56" alt="We Shall Overcome: The Seeger Sessions" style="top:-1px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2006-04-25-We Shall Overcome: The Seeger Sessions">
+                            2006                        </td>
+
+                        <td class="title" data-sort-value="We Shall Overcome: The Seeger Sessions">
+                            <a href="http://www.allmusic.com/album/we-shall-overcome-the-seeger-sessions-mw0000722023" data-tooltip="{&quot;id&quot;:&quot;MW0000722023&quot;,&quot;thumbnail&quot;:true}">We Shall Overcome: The Seeger Sessions</a>                                                            <a href="/album/we-shall-overcome-the-seeger-sessions-mw0000722023"
+                                title="We Shall Overcome: The Seeger Sessions">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-2006-04-25-We Shall Overcome: The Seeger Sessions">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="8-We Shall Overcome: The Seeger Sessions">
+                            <div class="allmusic-rating rating-allmusic-8"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="We Shall Overcome: The Seeger Sessions">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000722023" data-tooltip="{&quot;id&quot;:&quot;MW0000722023&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000722023"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/live-in-dublin-mw0000779880"
+                                   title="Live in Dublin"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000779880&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0000/723/0000723646.jpg"  width="60" height="54" alt="Live in Dublin" style="left:-2px;"><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0000/723/0000723646.jpg" width="60" height="54" alt="Live in Dublin" style="left:-2px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2007-06-05-Live in Dublin">
+                            2007                        </td>
+
+                        <td class="title" data-sort-value="Live in Dublin">
+                            <a href="http://www.allmusic.com/album/live-in-dublin-mw0000779880" data-tooltip="{&quot;id&quot;:&quot;MW0000779880&quot;,&quot;thumbnail&quot;:true}">Live in Dublin</a>                                                            <a href="/album/live-in-dublin-mw0000779880"
+                                title="Live in Dublin">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-2007-06-05-Live in Dublin">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="6-Live in Dublin">
+                            <div class="allmusic-rating rating-allmusic-6"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Live in Dublin">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000779880" data-tooltip="{&quot;id&quot;:&quot;MW0000779880&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000779880"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/magic-mw0000488481"
+                                   title="Magic"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000488481&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0001/336/0001336269.jpg"  width="60" height="54" alt="Magic" style="left:-2px;"><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0001/336/0001336269.jpg" width="60" height="54" alt="Magic" style="left:-2px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2007-10-02-Magic">
+                            2007                        </td>
+
+                        <td class="title" data-sort-value="Magic">
+                            <a href="http://www.allmusic.com/album/magic-mw0000488481" data-tooltip="{&quot;id&quot;:&quot;MW0000488481&quot;,&quot;thumbnail&quot;:true}">Magic</a>                                                            <a href="/album/magic-mw0000488481"
+                                title="Magic">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-2007-10-02-Magic">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="6-Magic">
+                            <div class="allmusic-rating rating-allmusic-6"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Magic">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000488481" data-tooltip="{&quot;id&quot;:&quot;MW0000488481&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000488481"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/working-on-a-dream-mw0000808288"
+                                   title="Working on a Dream"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000808288&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0001/013/0001013919.jpg"  width="56" height="54" alt="Working on a Dream" style=""><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0001/013/0001013919.jpg" width="56" height="54" alt="Working on a Dream" style=""></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2009-01-27-Working on a Dream">
+                            2009                        </td>
+
+                        <td class="title" data-sort-value="Working on a Dream">
+                            <a href="http://www.allmusic.com/album/working-on-a-dream-mw0000808288" data-tooltip="{&quot;id&quot;:&quot;MW0000808288&quot;,&quot;thumbnail&quot;:true}">Working on a Dream</a>                                                            <a href="/album/working-on-a-dream-mw0000808288"
+                                title="Working on a Dream">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-2009-01-27-Working on a Dream">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="5-Working on a Dream">
+                            <div class="allmusic-rating rating-allmusic-5"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Working on a Dream">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000808288" data-tooltip="{&quot;id&quot;:&quot;MW0000808288&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000808288"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/wrecking-ball-mw0002302848"
+                                   title="Wrecking Ball"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0002302848&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0003/566/0003566480.jpg"  width="56" height="54" alt="Wrecking Ball" style=""><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0003/566/0003566480.jpg" width="56" height="54" alt="Wrecking Ball" style=""></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2012-03-06-Wrecking Ball">
+                            2012                        </td>
+
+                        <td class="title" data-sort-value="Wrecking Ball">
+                            <a href="http://www.allmusic.com/album/wrecking-ball-mw0002302848" data-tooltip="{&quot;id&quot;:&quot;MW0002302848&quot;,&quot;thumbnail&quot;:true}">Wrecking Ball</a>                                                            <a href="/album/wrecking-ball-mw0002302848"
+                                title="Wrecking Ball">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-2012-03-06-Wrecking Ball">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="5-Wrecking Ball">
+                            <div class="allmusic-rating rating-allmusic-5"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Wrecking Ball">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0002302848" data-tooltip="{&quot;id&quot;:&quot;MW0002302848&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0002302848"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/high-hopes-mw0002603277"
+                                   title="High Hopes"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0002603277&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://hwcdn.allmusic.com/release-covers/75/0004/284/0004284458.jpg"  width="59" height="54" alt="High Hopes" style="left:-1px;"><noscript><img src="http://hwcdn.allmusic.com/release-covers/75/0004/284/0004284458.jpg" width="59" height="54" alt="High Hopes" style="left:-1px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2014-01-13-High Hopes">
+                            2014                        </td>
+
+                        <td class="title" data-sort-value="High Hopes">
+                            <a href="http://www.allmusic.com/album/high-hopes-mw0002603277" data-tooltip="{&quot;id&quot;:&quot;MW0002603277&quot;,&quot;thumbnail&quot;:true}">High Hopes</a>                                                            <a href="/album/high-hopes-mw0002603277"
+                                title="High Hopes">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Columbia-2014-01-13-High Hopes">
+                            Columbia                        </td>
+
+                        <td class="all-rating" data-sort-value="6-High Hopes">
+                            <div class="allmusic-rating rating-allmusic-6"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="High Hopes">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0002603277" data-tooltip="{&quot;id&quot;:&quot;MW0002603277&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0002603277"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/the-ultimate-roots-of-bruce-springsteen-mw0002935808"
+                                   title="The Ultimate Roots of Bruce Springsteen"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0002935808&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://cps-static.rovicorp.com/3/JPG_75/MI0004/071/MI0004071371.jpg?partner=allrovi.com"  width="56" height="54" alt="The Ultimate Roots of Bruce Springsteen" style=""><noscript><img src="http://cps-static.rovicorp.com/3/JPG_75/MI0004/071/MI0004071371.jpg?partner=allrovi.com" width="56" height="54" alt="The Ultimate Roots of Bruce Springsteen" style=""></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="">
+                                                    </td>
+
+                        <td class="title" data-sort-value="The Ultimate Roots of Bruce Springsteen">
+                            <a href="http://www.allmusic.com/album/the-ultimate-roots-of-bruce-springsteen-mw0002935808" data-tooltip="{&quot;id&quot;:&quot;MW0002935808&quot;,&quot;thumbnail&quot;:true}">The Ultimate Roots of Bruce Springsteen</a>                                                    </td>
+
+                        <td class="label" data-sort-value="LaserMedia-ZZZZ-The Ultimate Roots of Bruce Springsteen">
+                            Laser Media                        </td>
+
+                        <td class="all-rating" data-sort-value="">
+                            <div class="allmusic-rating rating-unrated"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="The Ultimate Roots of Bruce Springsteen">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0002935808" data-tooltip="{&quot;id&quot;:&quot;MW0002935808&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0002935808"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                            </tbody>
+        </table>
+
+    </section>
+
+    </div>
+
+
+</div>
+
+<div class="stripe-container footer-leaderboard">
+            <div class="advertising leaderboard">
+                                <script type="text/javascript">        cmnUNT('728x91', tile_num++);    </script>                    </div>
+    </div>
+<div class="stripe-container footer-container">
+    <footer>
+        <div class="other-sites">
+                <a href="http://www.allmusic.com/" title="AllMusic - Albums and Artist Database - Music Search, Guide, Recommendations, Videos and Reviews">AllMusic</a>&nbsp;&nbsp;|&nbsp;
+                <a href="http://www.allmovie.com/" title="AllMovie - Movies and Films Database - Movie Search, Guide, Recommendations, and Reviews">AllMovie</a>&nbsp;&nbsp;|&nbsp;
+                <a href="http://www.sidereel.com/" title="SideReel - Watch TV &amp; Movies Online | Episodes, Seasons, Series | SideReel">SideReel</a>&nbsp;&nbsp;|&nbsp;
+                <a href="http://www.celebified.com/" title="Celebified - Celebrity news, watch videos, get tv info">Celebified</a>
+        </div>
+
+        <div class="corporate-links">
+                <a href="/about" title="AllMusic About">About</a>&nbsp;&nbsp;|&nbsp;
+                <a href="/faq" title="AllMusic FAQ">FAQ</a>&nbsp;&nbsp;|&nbsp;
+                <a href="https://getsatisfaction.com/allmedianetwork/categories/allmedianetwork_allmusic" title="AllMusic Customer Community" class="getSatisfactionLink">Feedback</a><span class="line-one">&nbsp;&nbsp;|&nbsp;</span>
+                <a href="/advertise" title="AllMusic Advertising Network"><br class="mobile-break">Advertise</a>&nbsp;&nbsp;|&nbsp;
+                <a href="/copyright-policy" title="AllMusic - Copyright Policy &amp; Intellectual Property Rights">Copyright Policy</a>&nbsp;&nbsp;|&nbsp;
+                <a href="/privacy-policy" title="AllMusic Privacy Policy">Privacy Policy</a>&nbsp;&nbsp;|&nbsp;
+                <a href="/terms-of-service" title="AllMusic Terms of Service">Terms of Service</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="//www.allmusic.com/subscribe" title="Subscribe">Subscribe</a>
+        </div>
+
+        <div class="copyright">
+                &copy;2016 AllMusic, member of the RhythmOne group<span class="line-two">&nbsp;&nbsp;|&nbsp;&nbsp;</span><br class="mobile-break">All Rights Reserved
+        </div>
+    </footer>
+</div>
+
+<div class="advertisement-div-footer">
+            <div id="Allmusic_ROS_1x1_Footer">    <script type="text/javascript">        googletag.cmd.push(function(){ googletag.display('Allmusic_ROS_1x1_Footer'); });    </script></div>    </div>            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+            <script>!window.jQuery && document.write(unescape('%3Cscript src="//cdn-prod.allmusic.com/js/jquery/jquery-1.9.1.min.js"%3E%3C/script%3E'))</script>
+            <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+            <script>!window.jQuery.ui && document.write(unescape('%3Cscript src="//cdn-prod.allmusic.com/js/jquery/jquery-ui.min.js"%3E%3C/script%3E'))</script>
+
+            <script src="//cdn-prod.allmusic.com/cache/global.1473966917.js"></script>
+
+            
+                                            <script src="//cdn-prod.allmusic.com/cache/artist.discography.1473966917.js"></script>
+                                            <script>
+                    if(User.loggedIn) {
+                        ga('set', 'dimension1', 'Yes');
+                    } else {
+                        ga('set', 'dimension1', 'No');
+                    }
+                </script>
+            
+            <!-- BEGIN GetSat -->
+            <script type="text/javascript" charset="utf-8">
+                var is_ssl = ("https:" == document.location.protocol);
+                var asset_host = is_ssl ? "https://d11e618678w89x.cloudfront.net/" : "http://d11e618678w89x.cloudfront.net/";
+                document.write(unescape("%3Cscript src='" + asset_host + "javascripts/feedback-v2.js' type='text/javascript'%3E%3C/script%3E"));
+            </script>
+
+            <script type="text/javascript" charset="utf-8">
+                var feedback_widget = new GSFN.feedback_widget({
+                    display: 'overlay',
+                    company: 'allmedianetwork',
+                    placement: 'hidden',
+                    custom_css: '//cdn-prod.allmusic.com/css/modules/feedback-widget.css',
+                    color: '#222',
+                    style: 'idea',
+                    limit: '3',
+                    product: 'allmedianetwork_allmusic'
+                });
+            </script>
+            <!-- END GetSat -->
+
+            <!-- Begin comScore Tag -->
+            <script>
+                var _comscore = _comscore || [];
+                _comscore.push({ c1: "2", c2: "6685975" });
+                (function() {
+                    var s = document.createElement("script"), el = document.getElementsByTagName("script")[0]; s.async = true;
+                    s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
+                    el.parentNode.insertBefore(s, el);
+                })();
+            </script>
+            <noscript>
+                <img src="//b.scorecardresearch.com/p?c1=2&c2=6685975&cv=2.0&cj=1" />
+            </noscript>
+            <!-- End comScore Tag -->
+
+                    </div>
+                                
+       </div>
+       <!-- Footer Ad Tag -->
+<script type="text/javascript">
+(function() {
+window.cToolbarInit = function() {
+cToolbar.load({
+mobileRightButton: 'email',
+facebookUsername: 'AllMusicDotCom',
+facebookName: 'AllMusic',
+twitterHandle: 'allmusic',
+twitterName: 'allmusic',
+youtubeChannel: '',
+youtubeChannelName: '',
+desktopBackground: 'solid',
+desktopSocialButtons: ["twitter","facebook"],
+channel: 'Music'
+});
+};
+var ns = document.createElement('script');
+ns.type = 'text/javascript';
+ns.async = true;
+ns.src = '//toolbar.complex.com/dist/ctoolbar.min.js';
+var s = document.getElementsByTagName('script')[0];
+s.parentNode.insertBefore(ns, s);
+})();
+if (!isMobile_AllMusic ) {cmnUNT('tover', tile_num++);}
+</script>       <script type="text/javascript">
+           _qevents.push({
+               qacct:"p-59TntzuqummDw",
+               labels:"AllMedia.AllMusic"
+           });
+       </script>
+        <noscript>
+            <div style="display:none;">
+                <img src="//pixel.quantserve.com/pixel/p-59TntzuqummDw.gif?labels=AllMedia" border="0" height="1" width="1" alt="Quantcast"/>
+            </div>
+        </noscript>
+    <script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","licenseKey":"37e6a77380","applicationID":"3096013","transactionName":"NlMEYhZXW0oEWkQNVg8ZJ1UQX1pXSnhCEFASQklSDUVWVgJLURRRGA==","queueTime":0,"applicationTime":213,"ttGuid":"","agentToken":"","userAttributes":"","errorBeacon":"bam.nr-data.net","agent":""}</script></body>
+</html>
