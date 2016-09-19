@@ -1,14 +1,17 @@
 $(function () {
-  var volumeBaseline = 50.0 // the volume that was preset by the user
-  const defaultGain = -10.0 // if there is no replay gain, this is assumed to be the gain
+  const defaultGain = -10.0
+  var volumeBaseline = 40.0 // The volume that was preset by the user. Start at 40.0, so it could increase 2.5 fold.
   var currentGain = defaultGain
+
+  const calculateVolumeCoefficientFromGain = () => Math.pow(2, currentGain / 10.0)
   function updateVolume() {
-    gplayer.setVolume(volumeBaseline + currentGain)
+    // +10 dB is twice as loud. Or something.
+    gplayer.setVolume(volumeBaseline * calculateVolumeCoefficientFromGain())
   }
 
   Volume.setManualVolume = function (v) {
     v = v < 1 && v > 0 ? v * 100 : v // if v is between 0 and 1, convert to be between 0 and 100
-    volumeBaseline = v - currentGain // Remove the currentGain from the volume, to ensure continued relative volume
+    volumeBaseline = v / calculateVolumeCoefficientFromGain()
     updateVolume()
   }
   Volume.setPeak = function (song) {
