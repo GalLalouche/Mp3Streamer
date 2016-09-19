@@ -5,7 +5,7 @@ import java.text.Normalizer
 import common.rich.RichT._
 
 object StringReconScorer extends ((String, String) => Double) {
-  private val removeChars = "`'’.:-_, ;".toSet
+  private val removeChars = "`'’.:-_, ;\"".toSet
   private def normalize(s: String): String =
     Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
   private def canonize(s: String): String =
