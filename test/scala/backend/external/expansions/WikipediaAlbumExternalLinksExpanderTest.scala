@@ -21,7 +21,7 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
   private val $: WikipediaAlbumExternalLinksExpander = new WikipediaAlbumExternalLinksExpander()
   private def getAllMusicLinkAddress(s: String): String =
     $.parseDocument(getDocument(s))
-        .filter(_.host.name == "allmusic")
+        .filter(_.host == Host.AllMusic)
         .map(_.link.address)
         .single
 

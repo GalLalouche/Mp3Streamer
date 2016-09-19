@@ -60,7 +60,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext,
       .map(_
           .mapTo("http://www.allmusic.com/album/" + _)
           .mapTo(Url)
-          .mapTo(url => ExternalLink[Album](url, Host("allmusic", url.host))))
+          .mapTo(url => ExternalLink[Album](url, Host.AllMusic)))
 
   // explicitly changing Links to Traversable[ExternalLink[Album]] is needed for some reason
   override def apply(e: ExternalLink[Album]): Future[Traversable[ExternalLink[Album]]] =
