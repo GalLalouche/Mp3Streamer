@@ -16,7 +16,8 @@ import rx.lang.scala.Subscriber
 
 import scala.concurrent.Future
 import scala.util.Random
-import scalaz.syntax.ToFunctorOps
+import scalaz.std.FutureInstances
+import scalaz.syntax.{ToBindOps, ToFunctorOps}
 
 trait SongSelector {
   def randomSong: Song
@@ -37,7 +38,8 @@ private class SongSelectorImpl(songs: IndexedSeq[File], musicFinder: MusicFinder
         .mapTo(Song.apply)
 }
 
-object SongSelector {
+object SongSelector
+    extends ToBindOps with FutureInstances {
 
   import common.rich.RichFuture._
 
@@ -62,9 +64,7 @@ object SongSelector {
     def directoryListener(e: DirectoryEvent): Unit = e match {
       case DirectoryWatcher.DirectoryCreated(d) =>
         Logger info s"Directory $d has been added"
-        $.update()
-            .onEnd(Cacher newDir new IODirectory(d))
-            .onEnd(Searcher.!())
+        $.update() >> (Cacher newDir new IODirectory(d)) >> Searcher.!()
       case DirectoryWatcher.DirectoryDeleted(d) =>
         Logger warn s"Directory has been deleted; the index does not support deletions yet, so please update."
         $.update()

@@ -15,9 +15,12 @@ import org.jaudiotagger.tag.images.StandardArtwork
 import scala.annotation.tailrec
 import scala.concurrent.Future
 import scala.util.Random
+import scalaz.std.FutureInstances
+import scalaz.syntax.ToBindOps
 
 /** Selects n random songs and puts them in a folder on D:\ */
-private object RandomFolderCreator {
+private object RandomFolderCreator extends
+    ToBindOps with FutureInstances {
   implicit val c = StandaloneConfig
   private val songs = c.mf.getSongFilePaths.map(new File(_))
 
@@ -73,7 +76,7 @@ private object RandomFolderCreator {
       d.clear()
       d
     }
-    addSongs(300, copyFileToOutputDir(outputDir)).onEnd(createPlaylistFile(outputDir)).get
+    addSongs(300, copyFileToOutputDir(outputDir)).>>(createPlaylistFile(outputDir)).get
     println("\rDone!")
   }
 }

@@ -5,7 +5,11 @@ import common.AuxSpecs
 import common.rich.RichFuture._
 import org.scalatest.{BeforeAndAfter, FreeSpec}
 
-class SlickLocalStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAfter {
+import scalaz.std.FutureInstances
+import scalaz.syntax.ToBindOps
+
+class SlickLocalStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAfter
+    with ToBindOps with FutureInstances {
   val c = new TestConfiguration
   import c._
   import c.driver.api._
@@ -28,18 +32,17 @@ class SlickLocalStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAf
       $.doesTableExist.get shouldReturn false
     }
     "yes after creation" in {
-      $.createTable()
-          .onEnd($.doesTableExist).get shouldReturn true
+      $.createTable().>>($.doesTableExist).get shouldReturn true
     }
     "no after drop" in {
       $.createTable()
-          .onEnd($.dropTable())
-          .onEnd($.doesTableExist).get shouldReturn false
+          .>>($.dropTable())
+          .>>($.doesTableExist).get shouldReturn false
     }
     "yes after clear" in {
       $.createTable()
-          .onEnd($.clearTable())
-          .onEnd($.doesTableExist).get shouldReturn true
+          .>>($.clearTable())
+          .>>($.doesTableExist).get shouldReturn true
     }
   }
   "create" - {
@@ -52,8 +55,8 @@ class SlickLocalStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAf
     }
     "succeed after drop" in {
       $.createTable()
-          .onEnd($.dropTable())
-          .onEnd($.createTable()).get shouldReturn true
+          .>>($.dropTable())
+          .>>($.createTable()).get shouldReturn true
     }
   }
   "clear" - {
@@ -73,7 +76,7 @@ class SlickLocalStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAf
       $.dropTable().get shouldReturn false
     }
     "should succeed if table exists" in {
-      $.createTable().onEnd($.dropTable()).get shouldReturn true
+      $.createTable().>>($.dropTable()).get shouldReturn true
     }
   }
 }
