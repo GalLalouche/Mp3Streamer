@@ -5,11 +5,12 @@ import backend.storage.SlickLocalStorageUtils
 import common.rich.RichT._
 
 import scala.concurrent.Future
-import scalaz.Scalaz._
-import scalaz._
+import scalaz.std.FutureInstances
+import scalaz.syntax.ToFunctorOps
 
 abstract class SlickReconStorage[K <: Reconcilable](implicit c: Configuration,
-                                                    m: Manifest[K]) extends ReconStorage[K] {
+                                                    m: Manifest[K]) extends ReconStorage[K]
+    with ToFunctorOps with FutureInstances {
   import c.driver.api._
 
   private class Rows(tag: Tag) extends Table[(String, Option[String], Boolean)](tag, m.runtimeClass.getSimpleName.replaceAll("\\$", "") + "S") {
@@ -24,10 +25,10 @@ abstract class SlickReconStorage[K <: Reconcilable](implicit c: Configuration,
     store(k, id.map(ReconID.apply) -> (false == id.isDefined))
   /** If an existing value exists, override it. */
   override protected def internalForceStore(k: K, value: (Option[ReconID], Boolean)): Future[Unit] =
-    db.run(rows.insertOrUpdate(k.normalize, value._1.map(_.id), value._2)) >| Unit
+  db.run(rows.insertOrUpdate(k.normalize, value._1.map(_.id), value._2)) >| Unit
   /** Returns the value associated with the key, if one exists, or None. */
   override def load(k: K): Future[Option[(Option[ReconID], Boolean)]] =
-    db.run(rows
+  db.run(rows
       .filter(_.name === k.normalize)
       .map(e => e.isIgnored -> e.reconId)
       .result

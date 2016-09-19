@@ -5,10 +5,11 @@ import common.rich.RichFuture._
 import slick.jdbc.meta.MTable
 
 import scala.concurrent.{ExecutionContext, Future}
-import scalaz.Scalaz._
-import scalaz._
+import scalaz.std.FutureInstances
+import scalaz.syntax.ToFunctorOps
 
-object SlickLocalStorageUtils {
+object SlickLocalStorageUtils
+    extends ToFunctorOps with FutureInstances {
   private def toBoolean(f: Future[_])(implicit ec: ExecutionContext): Future[Boolean] =
     f.>|(true) orElse false
   def apply[T](implicit c: Configuration) = {

@@ -8,11 +8,12 @@ import common.rich.RichT._
 import org.joda.time.DateTime
 
 import scala.concurrent.Future
-import scalaz._
-import Scalaz._
+import scalaz.std.FutureInstances
+import scalaz.syntax.ToFunctorOps
 
 private[backend] class SlickExternalStorage[K <: Reconcilable](implicit c: Configuration,
-                                              m: Manifest[K]) extends ExternalStorage[K] {
+                                              m: Manifest[K]) extends ExternalStorage[K]
+    with ToFunctorOps with FutureInstances {
   import c.driver.api._
   
   private object Serializable extends StringSerializable[ExternalLink[K]] {

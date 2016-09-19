@@ -16,14 +16,15 @@ import rx.lang.scala.Subscriber
 
 import scala.concurrent.Future
 import scala.util.Random
-import scalaz.Scalaz._
+import scalaz.syntax.ToFunctorOps
 
 trait SongSelector {
   def randomSong: Song
   def followingSong(song: Song): Song
 }
 
-private class SongSelectorImpl(songs: IndexedSeq[File], musicFinder: MusicFinder) extends SongSelector {
+private class SongSelectorImpl(songs: IndexedSeq[File], musicFinder: MusicFinder) extends SongSelector
+    with ToFunctorOps {
   private val random = new Random()
   def randomSong: Song = random.nextInt(songs.length) mapTo songs.apply mapTo Song.apply
   def followingSong(song: Song): Song =
