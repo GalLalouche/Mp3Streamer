@@ -28,4 +28,20 @@ class LastFmReconcilerTest extends FreeSpec with AuxSpecs {
     new LastFmReconciler().apply(Artist("dreamtheater")).get.get shouldReturn
         ExternalLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm)
   }
+  "302" in {
+    implicit val c = this.c.copy(_httpTransformer = {
+      var firstAttempt = true
+      new FakeHttpURLConnection(_) {
+        override def getResponseCode: Int = if (firstAttempt) {
+          firstAttempt = false
+          HttpURLConnection.HTTP_MOVED_TEMP
+        } else
+          HttpURLConnection.HTTP_OK
+        override def getContent: AnyRef = if (!firstAttempt) new FileInputStream(getResourceFile("last_fm.html")) else null
+      }
+    })
+    new LastFmReconciler().apply(Artist("Foobar")).get.get shouldReturn
+        ExternalLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm)
+
+  }
 }
