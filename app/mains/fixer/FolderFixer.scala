@@ -20,6 +20,7 @@ import scalaz.syntax.ToFunctorOps
 object FolderFixer
     extends ToFunctorOps with FutureInstances {
   private implicit val c = StandaloneConfig
+  import c._
   private def findArtistFolder(artist: String): Option[Directory] = {
     println("finding matching folder")
     Directory("d:/media/music")
@@ -42,11 +43,12 @@ object FolderFixer
           .addSubDir(artist)
     })
     for (d <- destinationParent; f <- folderImage) yield {
+      println("Copying folder image")
       f(source)
       val dest = new File(d, source.name).toPath
-      Files.move(source.toPath, dest)
+      val $ = Files.move(source.toPath, dest).toFile |> Directory.apply
       IOUtils.focus(dest.toFile)
-      d
+      $
     }
   }
 
@@ -69,7 +71,8 @@ object FolderFixer
     val folderImage = downloadCover(folder)
     println("fixing directory")
     val fixedDirectory = FixLabels fix folder.cloneDir()
-    moveDirectory(artist, location, folderImage, fixedDirectory).map(FoobarGain.calculateTrackGain)
+    moveDirectory(artist, location, folderImage, fixedDirectory)
+        .map(FoobarGain.calculateTrackGain)
         .>|(println("--Done!--"))
         .get
   }
