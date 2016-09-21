@@ -1,19 +1,18 @@
 package playlist
 
-import common.io.{DirectoryRef, FileRef}
-import common.rich.RichT._
 import models.Song
-import play.api.libs.json.{JsArray, Json}
-import search.ModelsJsonable.SongJsonifier
 
 case class Playlist(songs: Seq[Song])
 
 object Playlist {
-  private def jsonFile(implicit root: DirectoryRef): FileRef = root addSubDir "data" addFile "playlist.json"
-  def save(playlist: Playlist)(implicit root: DirectoryRef): Unit = {
-    playlist.songs |> SongJsonifier.jsonify |> (_.toString) |> jsonFile.write
-  }
+  import common.Jsonable
+  import common.RichJson._
+  import common.rich.RichT._
+  import play.api.libs.json.{JsArray, JsObject, Json}
+  import search.ModelsJsonable.SongJsonifier
 
-  def load(implicit root: DirectoryRef): Playlist =
-    jsonFile.readAll.ensuring(_.nonEmpty, "No playlist saved") mapTo Json.parse mapTo (_.as[JsArray] |> SongJsonifier.parse |> Playlist.apply)
+  implicit object PlaylistJsonable extends Jsonable[Playlist] {
+    override def jsonify(p: Playlist): JsObject = Json obj "songs" -> SongJsonifier.jsonify(p.songs)
+    override def parse(json: JsObject): Playlist = json / "songs" |> (_.as[JsArray]) |> SongJsonifier.parse |> Playlist.apply
+  }
 }
