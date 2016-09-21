@@ -23,7 +23,7 @@ private class AllMusicAlbumFinder(implicit ec: ExecutionContext, it: InternetTal
         .flatMap(e => Try(Album(e.select(".title").head.text, e.select(".year").head.text.toInt, a.artist)).toOption.map(e -> _))
         .find(e => score(e._2) >= 0.95)
         .map(_._1)
-        .map(_.select("td a").head.attr("href").mapTo("www.allmusic.com" + _).mapTo(Url))
+        .map(_.select("td a").head.attr("href").mapTo("http://www.allmusic.com" + _).mapTo(Url))
   }
   override def apply(e: ExternalLink[Artist], a: Album): Future[Option[ExternalLink[Album]]] =
     it.downloadDocument(e.link +/ "discography")
