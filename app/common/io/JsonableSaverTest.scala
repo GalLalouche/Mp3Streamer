@@ -1,5 +1,7 @@
-package search
-import common.io.{JsonableSaver, MemoryRoot}
+package common.io
+
+import java.io.FileNotFoundException
+
 import common.{AuxSpecs, Jsonable}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest}
@@ -19,37 +21,46 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with MockitoSug
   "save" - {
     "can later load" in {
       $.save(Seq(p1))
-      $.load.head shouldReturn p1
+      $.loadArray.head shouldReturn p1
     }
     "overwrites previous save" in {
       $.save(Seq(p1))
       $.save(Seq(p2))
-      $.load.head shouldReturn p2
+      $.loadArray.head shouldReturn p2
+    }
+    "object" - {
+      "exists" in {
+        $.save(p1)
+        $.loadObject shouldReturn p1
+      }
+      "no previous file exists" in {
+        a[FileNotFoundException] should be thrownBy $.loadObject
+      }
     }
   }
   "load" - {
     "is empty by default" in {
-      $.load[Person] shouldBe empty
+      $.loadArray[Person] shouldBe empty
     }
     "doesn't create a file if one doesn't exist" in {
-      $.load[Person]
+      $.loadArray[Person]
       root.files shouldBe empty
     }
     "in order saved" in {
       val persons: Seq[Person] = Seq(p1, p2, p3)
       $.save(persons)
-      $.load shouldReturn persons
+      $.loadArray shouldReturn persons
     }
   }
   "update" - {
     "saves data" in {
       $.update[Person](_ ++ Seq(p1))
-      $.load.head shouldReturn p1
+      $.loadArray.head shouldReturn p1
     }
     "doesn't overwrite data" in {
       $.save(Seq(p1, p2))
       $.update[Person](_ ++ Seq(p3))
-      $.load shouldReturn Seq(p1, p2, p3)
+      $.loadArray shouldReturn Seq(p1, p2, p3)
     }
   }
 }
