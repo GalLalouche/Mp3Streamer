@@ -1,10 +1,10 @@
-package search
+package common.io
+
 import common.Jsonable
-import common.io.DirectoryRef
 import play.api.libs.json.{JsObject, Json}
 
 /** Saves in json format to a file. */
-private class JsonableSaver(implicit rootDir: DirectoryRef) {
+class JsonableSaver(implicit rootDir: DirectoryRef) {
   private val workingDir = rootDir addSubDir "data" addSubDir "json"
   private def jsonFileName[T : Manifest]: String =
     s"${implicitly[Manifest[T]].runtimeClass.getSimpleName.replaceAll("\\$", "") }s.json"

@@ -1,5 +1,5 @@
 package search
-import common.io.MemoryRoot
+import common.io.{JsonableSaver, MemoryRoot}
 import common.{AuxSpecs, Jsonable}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest}

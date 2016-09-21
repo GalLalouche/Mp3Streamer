@@ -4,7 +4,7 @@ import java.io.File
 
 import backend.configs.Configuration
 import common.concurrency.SimpleActor
-import common.io.DirectoryRef
+import common.io.{DirectoryRef, JsonableSaver}
 import common.{Collectable, IndexedSet}
 import models._
 import rx.lang.scala.subjects.ReplaySubject

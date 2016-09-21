@@ -1,7 +1,7 @@
 package search
 
 import common.Jsonable
-import common.io.DirectoryRef
+import common.io.{DirectoryRef, JsonableSaver}
 import models.{Album, Artist, Song}
 import search.ModelsJsonable._
 
