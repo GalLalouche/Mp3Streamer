@@ -6,7 +6,7 @@ import common.rich.RichT._
 import common.rich.path.Directory
 import models.Song
 import play.api.libs.json.{JsArray, JsObject, Json}
-import search.Jsonable
+import search.ModelsJsonable
 
 import scala.concurrent.ExecutionContext
 
@@ -19,12 +19,12 @@ object SongGroups {
   private def writeToJsonFile(s: String)(implicit root: DirectoryRef, ec: ExecutionContext) =
     getJsonFile write s
   def save(groups: Traversable[SongGroup])(implicit root: DirectoryRef, ec: ExecutionContext) = groups
-      .map(_.songs |> Jsonable.SongJsonifier.jsonify)
+      .map(_.songs |> ModelsJsonable.SongJsonifier.jsonify)
       .map(_.toString)
       .mkString("\n") |> writeToJsonFile
   def load(implicit root: DirectoryRef, ec: ExecutionContext): Set[SongGroup] = getJsonFile.lines
       .map(Json.parse)
-      .map(_.as[JsArray] |> Jsonable.SongJsonifier.parse |> SongGroup)
+      .map(_.as[JsArray] |> ModelsJsonable.SongJsonifier.parse |> SongGroup)
       .toSet
 
   // Appends new groups and saves them

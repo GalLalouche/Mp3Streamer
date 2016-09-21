@@ -1,8 +1,8 @@
 package search
 
-import common.AuxSpecs
+import common.{AuxSpecs, Jsonable}
 import org.scalatest.FreeSpec
-import search.Jsonable._
+import search.ModelsJsonable._
 
 class JsonableTest extends FreeSpec with AuxSpecs {
   def test[T: Jsonable](t: T) {

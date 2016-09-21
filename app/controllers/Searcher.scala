@@ -2,13 +2,15 @@ package controllers
 
 import java.net.URLDecoder
 
+import common.Jsonable
 import common.concurrency.Extra
 import common.rich.RichT.richT
 import play.api.Logger
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, Controller}
-import search.{CompositeIndex, Jsonable}
+import search.CompositeIndex
+import search.ModelsJsonable._
 
 object Searcher extends Controller with Extra {
   private implicit val c = PlayConfig

@@ -4,7 +4,7 @@ import common.io.{DirectoryRef, FileRef}
 import common.rich.RichT._
 import models.Song
 import play.api.libs.json.{JsArray, Json}
-import search.Jsonable.SongJsonifier
+import search.ModelsJsonable.SongJsonifier
 
 case class Playlist(songs: Seq[Song])
 

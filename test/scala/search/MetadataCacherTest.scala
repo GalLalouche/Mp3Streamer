@@ -3,8 +3,8 @@ package search
 import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
 import backend.configs.{Configuration, TestConfiguration}
-import common.AuxSpecs
 import common.io.{DirectoryRef, MemoryRoot}
+import common.{AuxSpecs, Jsonable}
 import models.{Album, Artist, MusicFinder, Song}
 import org.hamcrest.{BaseMatcher, Description}
 import org.mockito.Matchers._
@@ -13,6 +13,7 @@ import org.scalatest.matchers.{MatchResult, Matcher}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 import search.MetadataCacher.IndexUpdate
+import search.ModelsJsonables._
 
 import scala.collection.mutable
 import scala.concurrent.{Await, Promise}

@@ -1,4 +1,5 @@
 package search
+import common.Jsonable
 import common.io.DirectoryRef
 import play.api.libs.json.{JsObject, Json}
 

@@ -9,6 +9,7 @@ import common.{Collectable, IndexedSet}
 import models._
 import rx.lang.scala.subjects.ReplaySubject
 import rx.lang.scala.{Observable, Observer}
+import search.ModelsJsonable._
 
 import scala.collection.GenSeq
 

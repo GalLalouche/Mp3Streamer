@@ -1,6 +1,6 @@
 package search
-import common.AuxSpecs
 import common.io.MemoryRoot
+import common.{AuxSpecs, Jsonable}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, Json}

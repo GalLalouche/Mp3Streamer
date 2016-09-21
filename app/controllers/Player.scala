@@ -11,7 +11,7 @@ import common.rich.primitives.RichOption._
 import models._
 import play.api.libs.json.{JsArray, JsObject, JsString, JsValue}
 import play.api.mvc._
-import search.Jsonable._
+import search.ModelsJsonable._
 import songs.{SongGroup, SongGroups, SongSelector}
 
 /** Handles fetch requests of JSON information, and listens to directory changes. */

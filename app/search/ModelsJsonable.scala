@@ -2,20 +2,13 @@ package search
 
 import java.io.File
 
+import common.Jsonable
 import common.RichJson._
 import models.{Album, Artist, Song}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.libs.json.{JsArray, JsObject, Json}
+import play.api.libs.json.{JsObject, Json}
 
-
-trait Jsonable[T] {
-  def jsonify(t: T): JsObject
-  def jsonify(ts: Seq[T]): JsArray = JsArray(ts map jsonify)
-  def parse(json: JsObject): T
-  def parse(json: JsArray): Seq[T] = json.value map (_.as[JsObject]) map parse
-}
-
-object Jsonable {
+object ModelsJsonable {
   implicit object SongJsonifier extends Jsonable[Song] {
     def jsonify(s: Song) = Json obj(
         "file" -> s.file.getAbsolutePath,
