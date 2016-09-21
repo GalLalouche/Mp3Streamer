@@ -30,7 +30,7 @@ class MbArtistReconciler(implicit ec: ExecutionContext) extends OnlineReconciler
         .map(_.array("release-groups")
             .filter(_ has "first-release-date")
             .filter(_ ostr "primary-type" exists Set("Album", "EP", "Live"))
-            .filter(_ array "secondary-types" isEmpty) // why?
+            .filter(_.array("secondary-types").value.isEmpty) // why?
             .sortBy(_ str "first-release-date")
             .mapTo(JsArray))
 

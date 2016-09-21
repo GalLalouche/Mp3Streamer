@@ -32,6 +32,6 @@ object RichJson {
     def /(s: String): JsValue = js \ s get
     def str(s: String): String = /(s)
     def ostr(s: String): Option[String] = js.\(s).asOpt[String]
-    def array(s: String): Seq[JsValue] = /(s)
+    def array(s: String): JsArray = /(s).as[JsArray]
   }
 }
