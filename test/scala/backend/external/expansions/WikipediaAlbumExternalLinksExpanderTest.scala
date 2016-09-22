@@ -12,6 +12,7 @@ import common.rich.path.RichFile._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.FreeSpec
+import common.rich.RichT._
 
 class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
   private implicit val config = TestConfiguration().copy(_documentDownloader = u => getDocument(u.address))
@@ -23,6 +24,7 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
     $.parseDocument(getDocument(s))
         .filter(_.host == Host.AllMusic)
         .map(_.link.address)
+            .log()
         .single
 
   "extract allmusic link" in {
