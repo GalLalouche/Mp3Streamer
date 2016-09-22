@@ -8,19 +8,30 @@ import backend.external.ExternalLink
 import backend.recon.Reconcilable
 import common.io.InternetTalker
 import common.rich.RichFuture._
+import common.rich.RichT._
 import common.rich.primitives.RichString._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scalaz.std.TupleInstances
+import scalaz.syntax.ToFoldableOps
+import common.rich.collections.RichTraversableOnce._
+import scala.collection.JavaConversions._
 
-private class AllMusicHelper(implicit ec: ExecutionContext, it: InternetTalker) {
+private class AllMusicHelper(implicit ec: ExecutionContext, it: InternetTalker) extends ToFoldableOps with TupleInstances {
   private val canonicalLink = Pattern compile "[a-zA-Z\\-0-9]+-mw\\d+"
   private val allmusicPrefx = "(?:http://www.)?allmusic.com/album/"
   private val canonicalRe = s"$allmusicPrefx($canonicalLink)".r
-  private val nonCanonicalRe = s"$allmusicPrefx(.*r\\d+)".r
-  //  def canonize(e: ExternalLink[Album]): Future[ExternalLink[Album]] = {
-  def hasStaffReview(albumLink: String): Future[Boolean] = ???
-  def hasRating(albumLink: String): Future[Boolean] = ???
-  def isValidLink(albumLink: String): Future[Boolean] = ???
+
+  def hasStaffReview(u: Url): Future[Boolean] = it.downloadDocument(u)
+      .map(_.select("div[itemprop=reviewBody]").toTraversable.headOption.exists(_.html.nonEmpty))
+  def hasRating(u: Url): Future[Boolean] = it.downloadDocument(u)
+      .map(_.select(".allmusic-rating").toTraversable.single)
+      .map(_.hasClass("rating-allmusic-0"))
+      .map(!_)
+  // TODO this should only be invoked once, from the external pipe
+  def isValidLink(u: Url): Future[Boolean] = u
+      .mapTo(e => hasRating(u) zip hasStaffReview(u))
+      .map(_.all(identity))
   def isCanonical(link: String): Boolean = canonicalRe.findAllMatchIn(link).hasNext
   def canonize[R <: Reconcilable](e: ExternalLink[R]): Future[ExternalLink[R]] = {
     def aux(url: Url): Future[Url] =

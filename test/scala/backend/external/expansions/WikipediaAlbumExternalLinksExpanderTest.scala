@@ -4,20 +4,14 @@ import java.net.HttpURLConnection
 
 import backend.Url
 import backend.configs.TestConfiguration
-import backend.external.{ExternalLink, FakeHttpURLConnection, Host}
-import common.AuxSpecs
+import backend.external.{DocumentSpecs, ExternalLink, FakeHttpURLConnection, Host}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
-import common.rich.path.RichFile._
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.scalatest.FreeSpec
 
-class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with AuxSpecs {
+class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpecs {
   private implicit val config = TestConfiguration().copy(_documentDownloader = u => getDocument(u.address))
-
-  private def getDocument(s: String): Document = Jsoup.parse(getResourceFile(s).readAll)
 
   private val $: WikipediaAlbumExternalLinksExpander = new WikipediaAlbumExternalLinksExpander()
   private def getAllMusicLinkAddress(s: String): String =

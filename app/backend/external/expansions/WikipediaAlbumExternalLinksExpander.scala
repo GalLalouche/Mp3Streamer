@@ -12,10 +12,13 @@ import org.jsoup.nodes.Document
 
 import scala.collection.JavaConversions._
 import scala.concurrent.{ExecutionContext, Future}
+import scalaz.std.FutureInstances
+import scalaz.syntax.ToMonadOps
 
 private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext, it: InternetTalker)
-    extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic)) {
-  private val allMusicHelper = new AllMusicHelper
+    extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic))
+        with FutureInstances with ToMonadOps {
+  protected val allMusicHelper = new AllMusicHelper
   def canonize(e: ExternalLink[Album]): Future[ExternalLink[Album]] =
     if (e.host == AllMusic)
       allMusicHelper.canonize(e)
@@ -35,16 +38,24 @@ private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext,
       .map(List(_))
       .getOrElse(xs)
 
-  override def parseDocument(d: Document): Links[Album] = d
+  private def extractAllMusicLink(d: Document): Option[Url] = d
       .select("a")
       .map(_.attr("href"))
       .flatMap(extractSemiCanonicalAllMusicLink)
       .mapTo(preferCanonical)
-      .map(_.mapTo(Url).mapTo(ExternalLink[Album](_, Host.AllMusic)))
+      .map(_.mapTo(Url))
+      .mapTo(us => if (us.size <= 1) us.headOption else throw new IllegalStateException("extracted too many AllMusic links"))
 
+  override def parseDocument(d: Document): Links[Album] =
+    extractAllMusicLink(d).map(ExternalLink[Album](_, Host.AllMusic))
+
+  // TODO move this to somewhere more common
+  private def filterFutures[T](fs: Traversable[T], p: T => Future[Boolean]): Future[Traversable[T]] =
+    Future.sequence(fs.map(e => p(e).map(e -> _))).map(_.filter(_._2).map(_._1))
   // explicitly changing Links to Traversable[ExternalLink[Album]] is needed for some reason
   override def apply(e: ExternalLink[Album]): Future[Traversable[ExternalLink[Album]]] = super.apply(e)
-      .flatMap(Future sequence _.map(canonize))
+      .flatMap(Future sequence _.map(allMusicHelper.canonize))
+      .flatMap(links => filterFutures[ExternalLink[Album]](links, link => allMusicHelper.isValidLink(link.link)))
       .orElse(Nil)
 }
 
