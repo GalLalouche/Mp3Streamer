@@ -8,16 +8,17 @@ import backend.recon.Album
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
+import common.rich.func.MoreTraverse._
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConversions._
 import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.FutureInstances
-import scalaz.syntax.ToMonadOps
+import scalaz.syntax.{ToMonadOps, ToTraverseOps}
 
 private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext, it: InternetTalker)
     extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic))
-        with FutureInstances with ToMonadOps {
+        with FutureInstances with ToMonadOps with ToTraverseOps {
   protected val allMusicHelper = new AllMusicHelper
   def canonize(e: ExternalLink[Album]): Future[ExternalLink[Album]] =
     if (e.host == AllMusic)
@@ -51,10 +52,10 @@ private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext,
 
   // TODO move this to somewhere more common
   private def filterFutures[T](fs: Traversable[T], p: T => Future[Boolean]): Future[Traversable[T]] =
-    Future.sequence(fs.map(e => p(e).map(e -> _))).map(_.filter(_._2).map(_._1))
-  // explicitly changing Links to Traversable[ExternalLink[Album]] is needed for some reason
-  override def apply(e: ExternalLink[Album]): Future[Traversable[ExternalLink[Album]]] = super.apply(e)
-      .flatMap(Future sequence _.map(allMusicHelper.canonize))
+    fs.traverse(e => p(e).map(e -> _)).map(_.filter(_._2).map(_._1))
+  override def apply(e: ExternalLink[Album]) = super.apply(e)
+      // explicitly changing Links to Traversable is needed for some reason
+      .flatMap(_.toTraversable.traverse(allMusicHelper.canonize))
       .flatMap(links => filterFutures[ExternalLink[Album]](links, link => allMusicHelper.isValidLink(link.link)))
       .orElse(Nil)
 }

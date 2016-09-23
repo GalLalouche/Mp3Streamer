@@ -15,12 +15,12 @@ import org.jaudiotagger.tag.images.StandardArtwork
 import scala.annotation.tailrec
 import scala.concurrent.Future
 import scala.util.Random
-import scalaz.std.FutureInstances
-import scalaz.syntax.ToBindOps
+import scalaz.std.{FutureInstances, ListInstances}
+import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
 /** Selects n random songs and puts them in a folder on D:\ */
 private object RandomFolderCreator extends
-    ToBindOps with FutureInstances {
+    ToBindOps with FutureInstances with ListInstances with ToTraverseOps {
   implicit val c = StandaloneConfig
   private val songs = c.mf.getSongFilePaths.map(new File(_))
 
@@ -44,7 +44,7 @@ private object RandomFolderCreator extends
   private def addSongs(maxSize: Int, forEachEntry: (File, Int) => Unit, existing: Set[File] = Set(), futures: List[Future[Unit]] = Nil): Future[Unit] = {
     val index = existing.size
     if (index == maxSize)
-      return Future sequence futures map (_.reduce((_, _) => Unit))
+      return futures.sequenceU map (_.reduce((_, _) => Unit))
     val newFile = findNewSong(existing)
     val f = Future apply forEachEntry(newFile, index)
     print(s"\r${100 * index / maxSize}% done")
