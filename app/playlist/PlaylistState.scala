@@ -1,7 +1,10 @@
 package playlist
 
 
+import java.util.concurrent.TimeUnit
+
 import models.Song
+
 import scala.concurrent.duration.Duration
 
 case class PlaylistState(songs: Seq[Song], currentIndex: Int, currentDuration: Duration) {
@@ -11,10 +14,10 @@ case class PlaylistState(songs: Seq[Song], currentIndex: Int, currentDuration: D
 object PlaylistState {
 
   import common.Jsonable
-  import play.api.libs.json.{JsObject, Json}
-  import search.ModelsJsonable.SongJsonifier
   import common.RichJson._
   import common.rich.RichT._
+  import play.api.libs.json.{JsObject, Json}
+  import search.ModelsJsonable.SongJsonifier
 
   implicit object PlaylistStateJsonable extends Jsonable[PlaylistState] {
     override def jsonify(t: PlaylistState): JsObject = Json.obj(
@@ -24,7 +27,7 @@ object PlaylistState {
     override def parse(json: JsObject): PlaylistState = PlaylistState(
       songs = json array "songs" mapTo SongJsonifier.parse,
       currentIndex = json / "currentIndex",
-      currentDuration = Duration.apply(json / "duration"))
+      currentDuration = Duration.apply(json / "duration", TimeUnit.SECONDS))
   }
 }
 
