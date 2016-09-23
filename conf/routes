@@ -45,8 +45,8 @@ GET        /ws/newFolder                 websockets.NewFolderSocket.accept
 # Playlist
 GET         /playlist/queue              controllers.Playlist.getQueue
 POST        /playlist/queue              controllers.Playlist.setQueue
-GET         /playlist/clone              controllers.Playlist.getClone
-POST        /playlist/clone              controllers.Playlist.setClone
+GET         /playlist/state              controllers.Playlist.getState
+POST        /playlist/state              controllers.Playlist.setState
 
 # Debug
 GET        /debug/refresh                controllers.Cacher.forceRefresh

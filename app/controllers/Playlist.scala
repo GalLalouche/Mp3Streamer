@@ -1,15 +1,15 @@
 package controllers
 
-import common.io.JsonableSaver
 import common.RichJson._
+import common.io.JsonableSaver
 import common.rich.RichT._
+import models.Song
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
-import playlist.PlaylistQueue
 import playlist.PlaylistQueue._
-import models.Song
-import playlist.PlaylistClone
-import playlist.PlaylistClone.PlaylistCloneJsonable
+import playlist.{PlaylistQueue, PlaylistState}
+import playlist.PlaylistState.PlaylistStateJsonable
+
 import scala.concurrent.duration.DurationInt
 
 object Playlist extends Controller {
@@ -26,17 +26,17 @@ object Playlist extends Controller {
         .mapTo(_ |> getStringFromBody |> Json.parse)
         .mapTo(_.as[JsArray] |> arrayOfPathsToSong |> PlaylistQueue.apply)
     saver save playlist
-    Created.withHeaders("Location" -> "playlist")
+    Created.withHeaders("Location" -> "playlist/queue")
   }
-  def getClone = Action {
-    Ok(saver.loadObject[PlaylistClone] |> PlaylistCloneJsonable.jsonify)
+  def getState = Action {
+    Ok(saver.loadObject[PlaylistState] |> PlaylistStateJsonable.jsonify)
   }
-  def setClone = Action { request =>
+  def setState = Action { request =>
     val json = request.body |> getStringFromBody |> Json.parse
     val songs = json array "songs" mapTo arrayOfPathsToSong
     val duration: Int = json / "duration"
     val index: Int = json / "index"
-    saver save PlaylistClone(songs, index, duration.seconds)
-    Created.withHeaders("Location" -> ???)
+    saver save PlaylistState(songs, index, duration.seconds)
+    Created.withHeaders("Location" -> "playlist/state")
   }
 }
