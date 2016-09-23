@@ -43,8 +43,10 @@ GET        /ws/refresh                   controllers.Cacher.accept
 GET        /ws/newFolder                 websockets.NewFolderSocket.accept
 
 # Playlist
-GET         /playlist                    controllers.Playlist.get
-POST        /playlist                    controllers.Playlist.set
+GET         /playlist/queue              controllers.Playlist.getQueue
+POST        /playlist/queue              controllers.Playlist.setQueue
+GET         /playlist/clone              controllers.Playlist.getClone
+POST        /playlist/clone              controllers.Playlist.setClone
 
 # Debug
 GET        /debug/refresh                controllers.Cacher.forceRefresh
