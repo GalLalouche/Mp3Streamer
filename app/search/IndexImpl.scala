@@ -2,7 +2,7 @@ package search
 
 import search.Index.ProductOrdering
 
-trait IndexImpl[T] extends Index[T] {
+private trait IndexImpl[T] extends Index[T] {
   def find(s: String): Seq[T]
   def sortBy(t: T): Product
   def findIntersection(ss: Traversable[String]): Seq[T] = {

@@ -6,7 +6,7 @@ import models.{Album, Artist, Song}
 /** Index for songs, albums and artists */
 class CompositeIndex(implicit r: DirectoryRef) {
   import Index.ProductOrdering
-  val indexBuilder = WeightedIndexBuilder
+  private val indexBuilder = WeightedIndexBuilder
   private val saver = new JsonableSaver()
   private def buildIndexFromCache[T: Jsonable : Indexable : WeightedIndexable : Manifest] =
     indexBuilder.buildIndexFor(saver.load)

@@ -2,13 +2,13 @@ package search
 
 import models._
 
-trait Indexable[T] {
+private trait Indexable[T] {
   def sortBy(t: T): Product
   def name(t: T): String
   def terms(t: T): Seq[String] = name(t) split " "
 }
 
-object Indexable {
+private object Indexable {
   implicit object SongIndexer extends Indexable[Song] {
     override def sortBy(s: Song): Product = (s.artistName, s.title, s.year, s.albumName, s.track)
     override def name(s: Song) = s.title

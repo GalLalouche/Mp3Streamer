@@ -12,11 +12,11 @@ import models.{MusicFinder, RealLocations, Song}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object ArtistReconFiller {
+private object ArtistReconFiller {
   private implicit val config = StandaloneConfig
   
-  val reconciler = new ReconcilerCacher[Artist](new ArtistReconStorage(), new MbArtistReconciler())
-  def fill(mf: MusicFinder)(implicit ec: ExecutionContext) {
+  private val reconciler = new ReconcilerCacher[Artist](new ArtistReconStorage(), new MbArtistReconciler())
+  private def fill(mf: MusicFinder)(implicit ec: ExecutionContext) {
     val artists: Set[Artist] = mf.getSongFilePaths
         .map(new File(_).getParent)
         .toSet.iterator

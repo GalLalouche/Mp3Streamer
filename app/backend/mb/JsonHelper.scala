@@ -22,8 +22,8 @@ private object JsonHelper {
     }
 
   private implicit lazy val system = ActorSystem()
-  private implicit lazy val materializer = ActorMaterializer()
   def getJson(method: String, other: (String, String)*)(implicit ec: ExecutionContext): Future[JsValue] = {
+    implicit val materializer = ActorMaterializer()
     val c = AhcWSClient()
     c.url("http://musicbrainz.org/ws/2/" + method)
         .withQueryString(("fmt", "json")).withQueryString(other: _*)
