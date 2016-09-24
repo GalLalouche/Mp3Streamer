@@ -7,7 +7,6 @@ import common.rich.RichT._
 import common.rich.path.Directory
 import common.rich.path.RichFile._
 import common.rich.primitives.RichEither._
-import common.rich.primitives.RichOption._
 import models._
 import play.api.libs.json.{JsArray, JsObject, JsString, JsValue}
 import play.api.mvc._
@@ -35,7 +34,7 @@ object Player extends Controller with Debug {
   private def toJson(ss: SongGroup): JsArray = ss.songs map toJson mapTo JsArray
   private def toJson(e: Either[Song, SongGroup]): JsValue = e.resolve(toJson, toJson)
 
-  private def group(s: Song): Either[Song, SongGroup] = songGroups get s either s
+  private def group(s: Song): Either[Song, SongGroup] = songGroups get s toRight s
 
   def randomSong = Action {
     Ok(songSelector.randomSong |> group |> toJson)
