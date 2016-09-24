@@ -4,17 +4,17 @@ import common.RichJson._
 import common.io.JsonableSaver
 import common.rich.RichT._
 import models.Song
-import play.api.libs.json.{JsArray, Json}
+import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
 import playlist.PlaylistQueue._
-import playlist.{PlaylistQueue, PlaylistState}
 import playlist.PlaylistState.PlaylistStateJsonable
+import playlist.{PlaylistQueue, PlaylistState}
 
 import scala.concurrent.duration.DurationInt
 
 object Playlist extends Controller {
   private implicit val c = PlayConfig
-  import c._ // I have no idea why it doesn't require it
+  // I have no idea why it doesn't require it
   private val saver = new JsonableSaver
   private def getStringFromBody(a: AnyContent): String = a.asFormUrlEncoded.get.keys.head
   private def arrayOfPathsToSong(a: JsArray): Seq[Song] = a.value.map(_.as[String]).map(Utils.parseSong)
@@ -28,8 +28,13 @@ object Playlist extends Controller {
     saver save playlist
     Created.withHeaders("Location" -> "playlist/queue")
   }
+  private def toJson(state: PlaylistState): JsObject = Json.obj(
+    "songs" -> JsArray(state.songs.map(Player.toJson)),
+    "index" -> state.currentIndex,
+    "duration" -> state.currentDuration.toSeconds
+  )
   def getState = Action {
-    Ok(saver.loadObject[PlaylistState] |> PlaylistStateJsonable.jsonify)
+    Ok(saver.loadObject[PlaylistState] |> toJson)
   }
   def setState = Action { request =>
     val json = request.body |> getStringFromBody |> Json.parse
