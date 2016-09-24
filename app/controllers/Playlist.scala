@@ -19,7 +19,7 @@ object Playlist extends Controller {
   def getQueue = Action {
     Ok(saver.loadObject[PlaylistQueue].songs map Player.toJson mapTo JsArray.apply)
   }
-  def setQueue = Action { request =>
+  def setQueue() = Action { request =>
     val playlist = request.body
         .mapTo(_ |> getStringFromBody |> Json.parse)
         .mapTo(_.as[JsArray] |> arrayOfPathsToSong |> PlaylistQueue.apply)
@@ -34,7 +34,7 @@ object Playlist extends Controller {
   def getState = Action {
     Ok(saver.loadObject[PlaylistState] |> toJson)
   }
-  def setState = Action { request =>
+  def setState() = Action { request =>
     val json = request.body |> getStringFromBody |> Json.parse
     val songs = json array "songs" mapTo arrayOfPathsToSong
     val duration: Double = json / "duration"

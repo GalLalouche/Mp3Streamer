@@ -44,9 +44,9 @@ GET        /ws/newFolder                 websockets.NewFolderSocket.accept
 
 # Playlist
 GET         /playlist/queue              controllers.Playlist.getQueue
-POST        /playlist/queue              controllers.Playlist.setQueue
+POST        /playlist/queue              controllers.Playlist.setQueue()
 GET         /playlist/state              controllers.Playlist.getState
-POST        /playlist/state              controllers.Playlist.setState
+POST        /playlist/state              controllers.Playlist.setState()
 
 # Debug
 GET        /debug/refresh                controllers.Cacher.forceRefresh
