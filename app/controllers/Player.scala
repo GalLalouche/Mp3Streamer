@@ -26,10 +26,11 @@ object Player extends Controller with Debug {
   //TODO hide this, shouldn't be a part of the controller
   update()
 
+  //TODO "flac" -> instead of hardcoded mp3
   def toJson(s: Song): JsObject = {
     SongJsonifier.jsonify(s) +
         ("poster" -> JsString("/posters/" + Poster.getCoverArt(s).path)) +
-        ("mp3" -> JsString("/stream/download/" + URLEncoder.encode(s.file.path, "UTF-8")))
+        (s.file.extension -> JsString("/stream/download/" + URLEncoder.encode(s.file.path, "UTF-8")))
   }
   private def toJson(ss: SongGroup): JsArray = ss.songs map toJson mapTo JsArray
   private def toJson(e: Either[Song, SongGroup]): JsValue = e.resolve(toJson, toJson)
