@@ -28,18 +28,44 @@ class Player {
   currentPlayingRelative() {
     throw new Error("Abstract")
   }
+  currentPlayingInSeconds() {
+    throw new Error("Abstract")
+  }
   setVolume(v) {
     throw new Error("Abstract")
   }
   getVolume() {
     throw new Error("Abstract")
   }
+  skip(seconds) {
+    throw new Error("Abstract")
+  }
 }
 class Playlist {
+  clear(instant) {
+    this.setPlaylist([], instant)
+  }
+  setPlaylist(playlist, instant) {
+    this.clear()
+    const self = this
+    playlist.forEach(s => console.log(s))
+    playlist.forEach(s => self.add(s, false))
+  }
   add(song, playNow) {
     throw new Error("Abstract")
   }
-  next() {
+  _next() {
+    throw new Error("Abstract")
+  }
+  next(count) {
+    count = count || 1
+    for (var i = 0; i < count; i++)
+      this._next()
+  }
+  play(index) {
+    throw new Error("Abstract")
+  }
+  select(index) {
     throw new Error("Abstract")
   }
   prev() {

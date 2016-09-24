@@ -9,8 +9,17 @@ $(function () {
     const data = {
       songs: gplaylist.songs().map(x => x.file),
       index: gplaylist.currentIndex(),
-      duration: gplayer.currentPlayingRelative()
+      duration: gplayer.currentPlayingInSeconds()
     }
     $.post("playlist/state", JSON.stringify(data))
+  })
+  $("#load_state").click(function () {
+    $.get("playlist/state", data => {
+      gplayer.stop()
+      gplaylist.setPlaylist(data.songs, false)
+      gplaylist.select(data.index)
+      gplayer.skip(data.duration)
+      // gplayer.playCurrentSong()
+    })
   })
 })

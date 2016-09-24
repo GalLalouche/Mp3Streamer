@@ -180,21 +180,19 @@
     },
     _initPlaylist: function (playlist) {
       this.current = 0;
-      this.shuffled = false;
+      this.shuffled = true;
       this.removing = false;
       this.original = $.extend(true, [], playlist); // Copy the Array of
       // Objects
       this._originalPlaylist();
     },
     _originalPlaylist: function () {
-      var self = this;
       this.playlist = [];
       // Make both arrays point to the same object elements. Gives us 2
       // different arrays, each pointing to the same actual object. ie.,
       // Not copies of the object.
-      $.each(this.original, function (i, v) {
-        self.playlist[i] = self.original[i];
-      });
+      for (var i = 0; i < this.original.length; i++)
+        this.playlist[i] = this.original[this.original.length - i - 1];
     },
     _refresh: function (instant) {
       /*
@@ -346,6 +344,7 @@
       }
     },
     setPlaylist: function (playlist, instant) {
+      playlist = playlist
       this._initPlaylist(playlist);
       this._init(instant);
     },
