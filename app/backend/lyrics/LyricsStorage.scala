@@ -9,7 +9,7 @@ import scala.concurrent.Future
 private class LyricsStorage(implicit c: Configuration) extends LocalStorageTemplate[Song, Lyrics] {
   import c.driver.api._
   private val db = c.db
-  
+
   // instrumental songs have NULL in lyrics
   private class LyricsTable(tag: Tag) extends Table[(String, String, Option[String])](tag, "LYRICS") {
     def song = column[String]("SONG", O.PrimaryKey)
@@ -30,10 +30,9 @@ private class LyricsStorage(implicit c: Configuration) extends LocalStorageTempl
     db.run(rows
         .filter(_.song === normalize(s))
         .map(e => e.source -> e.lyrics)
-        .result)
-        .map(_.headOption.map(e => e._2 match {
-          case None => Instrumental(e._1)
-          case Some(content) => HtmlLyrics(e._1, content)
-        }))
+        .result
+    ).map(_.headOption.map(e => e._2
+        .map(HtmlLyrics(e._1, _))
+        .getOrElse(Instrumental(e._1))))
   override def utils: LocalStorageUtils = SlickLocalStorageUtils(c)(rows)
 }

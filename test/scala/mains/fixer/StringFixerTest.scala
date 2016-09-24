@@ -17,6 +17,9 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
     verifyFix("3Rd", "3rd")
     verifyFix("4th", "4th")
   }
+  "capitalize" - {
+    List("foobar", "FOOBAR", "Foobar", "FoOBaR", "fOObAr").foreach(verifyFix(_, "Foobar"))
+  }
   "sentence" - {
     verifyFix("I Am A Rock", "I am a Rock")
   }

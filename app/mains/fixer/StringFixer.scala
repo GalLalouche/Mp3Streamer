@@ -13,7 +13,7 @@ private object StringFixer {
   private val lowerCaseSet = lowerCaseWords.toSet
   private val delimiters = """[ ()\-:/\\]"""
 
-  private def pascalCaseWord(w: String): String = w.head.toUpper + w.tail.toLowerCase
+  private def pascalCaseWord(w: String): String = w.toLowerCase.capitalize
 
   private def fixWord(word: String): String = word match {
     case e if e matches delimiters => e

@@ -22,13 +22,7 @@ class IOFile(val file: File) extends FileRef {
 class IODirectory(val dir: Directory) extends DirectoryRef {
   def this(path: String) = this(Directory(path))
   override def addFile(name: String): FileRef = new IOFile(dir addFile name)
-  private def optionalFile(name: String) = {
-    val f = new File(dir.dir, name)
-    if (f.exists)
-      Some(f)
-    else
-      None
-  }
+  private def optionalFile(name: String) = Some(new File(dir.dir, name)).filter(_.exists)
   override def getDir(name: String): Option[IODirectory] =
     optionalFile(name).filter(_.isDirectory).map(e => new IODirectory(new Directory(e)))
   override def addSubDir(name: String): IODirectory = new IODirectory(dir addSubDir name)

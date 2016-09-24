@@ -5,8 +5,8 @@ import backend.external.{ExternalLink, Host}
 import backend.recon.ReconScorers.AlbumReconScorer
 import backend.recon.{Album, Artist, StringReconScorer}
 import common.io.InternetTalker
-import common.rich.RichT._
 import common.rich.RichFuture._
+import common.rich.RichT._
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConversions._
