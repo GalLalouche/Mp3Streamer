@@ -3,7 +3,7 @@ package search
 import common.rich.RichT._
 
 /** extracts several terms from each song to match against */
-object TermIndexBuilder extends IndexBuilder {
+private object TermIndexBuilder extends IndexBuilder {
   implicit class RichMap[T, S](map: Map[T, Set[S]]) {
     def append(t: T, s: S) = map.updated(t, map(t) + s)
   }

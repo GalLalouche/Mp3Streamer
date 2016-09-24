@@ -20,7 +20,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../app" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../target/scala-2.10/src_managed/main" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../conf" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../test/scala" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../test/resources" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/../target/resolution-cache" />
       <excludeFolder url="file://$MODULE_DIR$/../target/scala-2.10/cache" />

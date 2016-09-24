@@ -8,7 +8,7 @@ import search.ModelsJsonable._
 /** Index for songs, albums and artists */
 class CompositeIndex(implicit r: DirectoryRef) {
   import Index.ProductOrdering
-  val indexBuilder = WeightedIndexBuilder
+  private val indexBuilder = WeightedIndexBuilder
   private val saver = new JsonableSaver()
   private def buildIndexFromCache[T: Jsonable : Indexable : WeightedIndexable : Manifest] =
     indexBuilder.buildIndexFor(saver.loadArray[T]) // don't know why [T] is needed here

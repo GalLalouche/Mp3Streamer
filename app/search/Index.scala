@@ -1,10 +1,10 @@
 package search
 
-trait Index[T] {
+private trait Index[T] {
   def find(s: String): Seq[T] = findIntersection(List(s))
   def findIntersection(ss: Traversable[String]): Seq[T]
 }
-object Index {
+private object Index {
   implicit object ProductOrdering extends Ordering[Product] {
     override def compare(x: Product, y: Product): Int = {
       require(x.productArity == y.productArity, s"can't compare <$x> and <$y>")

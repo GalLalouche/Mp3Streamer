@@ -8,7 +8,7 @@ import common.rich.RichT._
 import scalaz.Semigroup
 
 /** to allow artist's name to be factored in the song search */
-object WeightedIndexBuilder {
+private object WeightedIndexBuilder {
   def buildIndexFor[T: WeightedIndexable : Indexable](songs: TraversableOnce[T]): Index[T] = songs
     ./:(Map[String, Set[(T, Double)]]())((map, indexable) => implicitly[WeightedIndexable[T]]
       .terms(indexable)

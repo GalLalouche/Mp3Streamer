@@ -1,9 +1,9 @@
 package backend.mb
 
+import backend.Retriever
 import backend.configs.StandaloneConfig
 import backend.mb.JsonHelper._
 import backend.recon._
-import backend.Retriever
 import common.RichJson._
 import common.rich.RichT._
 import play.api.libs.json._
