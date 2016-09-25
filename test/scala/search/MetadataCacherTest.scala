@@ -20,9 +20,10 @@ import scala.concurrent.{Await, Promise}
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSugar with Matchers with AuxSpecs {
   private implicit val root = new MemoryRoot
+  val songs = root.addSubDir("songs")
   implicit val c = TestConfiguration().copy(_root = root, _mf = new MusicFinder {
     override val extensions: List[String] = List("mp3")
-    override val dir = root
+    override val dir = songs
     override val subDirs: List[String] = null
     override def albumDirs: Seq[DirectoryRef] = dir.dirs
   })
