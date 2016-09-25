@@ -1,6 +1,7 @@
 package search
 
 import java.io.File
+import java.time.{LocalDateTime, ZoneOffset}
 
 import backend.configs.Configuration
 import common.concurrency.SimpleActor
@@ -12,17 +13,20 @@ import rx.lang.scala.{Observable, Observer}
 import search.ModelsJsonable._
 
 import scala.collection.GenSeq
+import scalaz.std.{AnyValInstances, ListInstances, OptionInstances}
+import scalaz.syntax.ToTraverseOps
 
 // Possible source of bugs: indexAll and apply(DirectoryRef) work on different threads. This solution is forced
 // due to type erasure.
-class MetadataCacher(saver: JsonableSaver)(implicit c: Configuration) extends SimpleActor[DirectoryRef] {
+class MetadataCacher(saver: JsonableSaver)(implicit c: Configuration) extends SimpleActor[DirectoryRef]
+    with OptionInstances with ListInstances with AnyValInstances with ToTraverseOps {
 
   import MetadataCacher._
 
   private val mf = c.mf
 
   private def getDirectoryInfo(d: DirectoryRef, onParsingCompleted: () => Unit): DirectoryInfo = {
-    val songs = mf.getSongFilePathsInDir(d).map(parseSong)
+    val songs = mf getSongFilePathsInDir d map parseSong
     val album = songs.head.album
     onParsingCompleted()
     DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))
@@ -34,14 +38,16 @@ class MetadataCacher(saver: JsonableSaver)(implicit c: Configuration) extends Si
     saver.update[Album](_.toSet + info.album)
     saver.update[Artist](_./:(emptyArtistSet)(_ + _) + info.artist)
   }
+
+  import common.concurrency.toRunnable
+
   def indexAll(): Observable[IndexUpdate] = {
-    import common.concurrency.toRunnable
     def aux(obs: Observer[IndexUpdate]) {
       c execute (() => {
         val dirs: GenSeq[DirectoryRef] = mf.albumDirs
         val totalSize = dirs.length
         val $ = gatherInfo(dirs.zipWithIndex.map { case (d, j) => getDirectoryInfo(d, onParsingCompleted = () => {
-           c execute (() => obs onNext IndexUpdate(j + 1, totalSize, d))
+          c execute (() => obs onNext IndexUpdate(j + 1, totalSize, d))
         })
         })
         saver.save($.songs)
@@ -49,6 +55,36 @@ class MetadataCacher(saver: JsonableSaver)(implicit c: Configuration) extends Si
         saver.save($.artists)
         obs.onCompleted()
       })
+    }
+    val $ = ReplaySubject[IndexUpdate]
+    Observable(aux) subscribe $
+    $
+  }
+
+  private def lastUpdateTime: Option[LocalDateTime] = {
+    List(saver.lastUpdateTime[Song], saver.lastUpdateTime[Album], saver.lastUpdateTime[Artist])
+        .sequence[Option, LocalDateTime]
+        .flatMap(_.minimumBy(_.toEpochSecond(ZoneOffset.UTC)))
+  }
+
+  // There is a hidden assumption here, that nothing happened between the time the index finished updating,
+  // and between the time it took to save the file. PROBABLY ok :|
+  def quickRefresh(): Observable[IndexUpdate] = {
+    val lut = lastUpdateTime
+    if (lut.isEmpty)
+      return indexAll()
+
+    val newDirs = mf.albumDirs.filter(_.lastModified isAfter lut.get)
+    // TODO handle the duplication between this and indexAll
+    def aux(obs: Observer[IndexUpdate]) {
+      c execute { () =>
+        val totalSize = newDirs.length
+        newDirs.zipWithIndex.foreach { case (d, i) =>
+          this apply d
+          obs.onNext(IndexUpdate(currentIndex = i, totalNumber = totalSize, d))
+        }
+        obs.onCompleted()
+      }
     }
     val $ = ReplaySubject[IndexUpdate]
     Observable(aux) subscribe $

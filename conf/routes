@@ -49,4 +49,5 @@ GET         /playlist/state              controllers.Playlist.getState
 POST        /playlist/state              controllers.Playlist.setState()
 
 # Debug
-GET        /debug/refresh                controllers.Cacher.forceRefresh
+GET        /debug/slow_refresh           controllers.Cacher.forceRefresh()
+GET        /debug/fast_refresh           controllers.Cacher.quickRefresh()

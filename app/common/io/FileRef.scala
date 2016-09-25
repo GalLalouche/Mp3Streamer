@@ -1,5 +1,7 @@
 package common.io
 
+import java.time.LocalDateTime
+
 import common.rich.RichT._
 /** Either a file or a dir */
 abstract class PathRef {
@@ -26,6 +28,7 @@ trait FileRef extends PathRef {
   def bytes: Array[Byte]
   def write(s: String): FileRef
   def write(bs: Array[Byte]): FileRef
+  def appendLine(line: String): FileRef
   def readAll: String
   final def lines: Seq[String] = {
     val content = readAll
@@ -38,6 +41,8 @@ trait FileRef extends PathRef {
   }
   def /(name: String) = throw new UnsupportedOperationException(s"file <$path> is not a directory")
   def /() = throw new UnsupportedOperationException(s"file <$path> is not a directory")
+
+  def lastModified: LocalDateTime
 }
 
 trait DirectoryRef extends PathRef {
@@ -53,4 +58,5 @@ trait DirectoryRef extends PathRef {
   def deepDirs: Seq[DirectoryRef] = dirs ++ (dirs flatMap (_.deepDirs))
   def deepFiles: Seq[FileRef] = files ++ (dirs flatMap (_.deepFiles))
   override def /(): DirectoryRef = this
+  def lastModified: LocalDateTime
 }

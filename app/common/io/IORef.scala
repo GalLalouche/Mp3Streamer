@@ -1,22 +1,39 @@
 package common.io
 
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.attribute.BasicFileAttributes
+import java.time.{Clock, LocalDateTime}
 
+import common.rich.RichT._
 import common.rich.path.{Directory, RichFile}
 
+private[this] object FileUtils {
+  private val currentZone = Clock.systemDefaultZone().getZone
+  def lastModified(f: File): LocalDateTime = {
+    LocalDateTime.ofInstant(Files.readAttributes(f.toPath, classOf[BasicFileAttributes]).lastModifiedTime().toInstant, currentZone)
+  }
+}
 /** For production; actual files on the disk */
 class IOFile(val file: File) extends FileRef {
   private lazy val rich = RichFile(file)
   override def bytes: Array[Byte] = rich.bytes
   override def write(bs: Array[Byte]): IOFile = {
-    rich.write(bs); this
+    rich write bs
+    this
   }
   override def write(s: String) = {
-    rich.write(s); this
+    rich write s
+    this
+  }
+  override def appendLine(line: String): FileRef = {
+    rich appendLine line
+    this
   }
   override def path: String = rich.path
   override def readAll: String = rich.readAll
   override def name: String = rich.name
+  override def lastModified: LocalDateTime = file |> FileUtils.lastModified
 }
 
 class IODirectory(val dir: Directory) extends DirectoryRef {
@@ -35,6 +52,7 @@ class IODirectory(val dir: Directory) extends DirectoryRef {
   // casting is stupid :|
   override def deepDirs: Seq[IODirectory] = super.deepDirs.asInstanceOf[Seq[IODirectory]]
   override def deepFiles: Seq[IOFile] = super.deepFiles.asInstanceOf[Seq[IOFile]]
+  override def lastModified: LocalDateTime = dir.dir |> FileUtils.lastModified
 }
 object IODirectory {
   def apply(str: String): IODirectory = this (Directory(str))

@@ -1,7 +1,9 @@
 package common.io
 
 import java.io.FileNotFoundException
+import java.time.{LocalDateTime, ZoneOffset}
 
+import common.rich.RichT._
 import common.{AuxSpecs, Jsonable}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest}
@@ -20,17 +22,17 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with MockitoSug
   val p3 = Person(3, "name3")
   "save" - {
     "can later load" in {
-      $.save(Seq(p1))
+      $ save Seq(p1)
       $.loadArray.head shouldReturn p1
     }
     "overwrites previous save" in {
-      $.save(Seq(p1))
-      $.save(Seq(p2))
+      $ save Seq(p1)
+      $ save Seq(p2)
       $.loadArray.head shouldReturn p2
     }
     "object" - {
       "exists" in {
-        $.save(p1)
+        $ save p1
         $.loadObject shouldReturn p1
       }
       "no previous file exists" in {
@@ -48,7 +50,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with MockitoSug
     }
     "in order saved" in {
       val persons: Seq[Person] = Seq(p1, p2, p3)
-      $.save(persons)
+      $ save persons
       $.loadArray shouldReturn persons
     }
   }
@@ -58,9 +60,21 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with MockitoSug
       $.loadArray.head shouldReturn p1
     }
     "doesn't overwrite data" in {
-      $.save(Seq(p1, p2))
+      $ save Seq(p1, p2)
       $.update[Person](_ ++ Seq(p3))
       $.loadArray shouldReturn Seq(p1, p2, p3)
+    }
+  }
+  "lastUpdateTime" - {
+    "None before a save" in {
+      $.lastUpdateTime shouldReturn None
+    }
+    "Time after change" in {
+      def toMillis(ldt: LocalDateTime): Long = ldt.toEpochSecond(ZoneOffset.UTC)
+      val now = LocalDateTime.now |> toMillis
+      $ save p1
+      val lastUpdateTime = $.lastUpdateTime[Person].get |> toMillis
+      Math.abs(now - lastUpdateTime) < 10 shouldReturn true
     }
   }
 }

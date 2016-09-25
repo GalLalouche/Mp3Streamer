@@ -1,6 +1,7 @@
 package common.io
 
-import java.io.FileNotFoundException
+import java.io.{File, FileNotFoundException}
+import java.time.LocalDateTime
 
 import common.Jsonable
 import common.rich.RichT._
@@ -50,4 +51,7 @@ class JsonableSaver(implicit rootDir: DirectoryRef) {
     val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <${implicitly[Manifest[T]]}>")
     js.asInstanceOf[JsObject] |> implicitly[Jsonable[T]].parse
   }
+
+  // Require T: Jsonable, otherwise T will always be inferred as Nothing
+  def lastUpdateTime[T: Jsonable : Manifest]: Option[LocalDateTime] = workingDir getFile jsonFileName map (_.lastModified)
 }

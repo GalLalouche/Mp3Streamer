@@ -1,20 +1,35 @@
 package common.io
 
+import java.time.{Clock, LocalDateTime, ZoneOffset}
+
 import scala.collection.mutable
 
 /** For testing; keeps the file in memory. Faster, and no need to clean up afterwards */
 private class MemoryFile(parent: MemoryDir, val name: String) extends FileRef {
-  var readAll: String = ""
-  override def bytes: Array[Byte] = readAll.getBytes
+  private var content: String = ""
+  private var lastUpdatedTime: LocalDateTime = _
+  touch()
+  private def touch() {
+    lastUpdatedTime = LocalDateTime.now
+  }
+  override def bytes: Array[Byte] = content.getBytes
   override def write(bs: Array[Byte]): FileRef = {
-    readAll = new String(bs)
-    this
+    write(new String(bs))
   }
   override def write(s: String) = {
-    readAll = s
+    content = s
+    touch()
     this
   }
+  override def appendLine(line: String): FileRef = {
+    content += line
+    touch()
+    this
+  }
+
+  override def readAll: String = content
   override def path: String = parent.path + "/" + name
+  override def lastModified: LocalDateTime = lastUpdatedTime
 }
 
 abstract sealed class MemoryDir(val path: String) extends DirectoryRef {
@@ -33,6 +48,7 @@ abstract sealed class MemoryDir(val path: String) extends DirectoryRef {
     $
   }
   override def paths = (filesByName.values ++ dirsByName.values).toStream
+  override val lastModified = LocalDateTime.now()
 }
 private class ConsDir(parent: MemoryDir, val name: String) extends MemoryDir(parent.path + "/" + name)
 class MemoryRoot extends MemoryDir("/") {
