@@ -1,6 +1,6 @@
 package common.io
 
-import java.io.{File, FileNotFoundException}
+import java.io.FileNotFoundException
 import java.time.LocalDateTime
 
 import common.Jsonable

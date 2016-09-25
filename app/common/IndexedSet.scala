@@ -14,6 +14,7 @@ trait IndexedSet[Value] extends Traversable[Value] {
     require(key == index(newV), s"Inconsistent keys for $v ($key) and new $newV (${index(newV) })")
     withMap(map + ((key, newV)))
   }
+  def ++(vs: TraversableOnce[Value]): IndexedSet[Value] = vs.foldLeft(this)(_ + _)
   override def foreach[U](f: Value => U) { map.values foreach f }
 }
 
