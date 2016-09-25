@@ -6,7 +6,6 @@ import backend.Url
 import backend.configs.TestConfiguration
 import backend.external.{DocumentSpecs, ExternalLink, FakeHttpURLConnection, Host}
 import common.rich.RichFuture._
-import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
 import org.scalatest.FreeSpec
 
@@ -18,7 +17,6 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpec
     $.parseDocument(getDocument(s))
         .filter(_.host == Host.AllMusic)
         .map(_.link.address)
-            .log()
         .single
 
   "extract allmusic link" in {
@@ -29,7 +27,8 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpec
       override def getResponseCode: Int = HttpURLConnection.HTTP_INTERNAL_ERROR
       override def getHeaderField(s: String): String = throw new AssertionError() // makes sure it isn't called
     })
-    new WikipediaAlbumExternalLinksExpander().apply(ExternalLink(Url("allmusic_rlink.html"), Host.Wikipedia))
+    new WikipediaAlbumExternalLinksExpander()
+        .apply(ExternalLink(Url("allmusic_rlink.html"), Host.Wikipedia))
         .get shouldReturn Nil
   }
   "succeed even if there is no link" in {
