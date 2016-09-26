@@ -18,80 +18,73 @@ import scala.util.Try
 
 /** Fixes ID3 tags on mp3 (and flac) files to proper casing, etc. */
 object FixLabels extends Debug {
-	private def properTrackString(track: Int): String = if (track < 10) "0" + track else track.toString
-	private def fixFile(f: File, fixDiscNumber: Boolean) {
-		val audioFile = AudioFileIO.read(f)
-		val originalTag = audioFile.getTag
-		val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
+  private def properTrackString(track: Int): String = if (track < 10) "0" + track else track.toString
+  private def fixFile(f: File, fixDiscNumber: Boolean) {
+    val audioFile = AudioFileIO.read(f)
+    val originalTag = audioFile.getTag
+    val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
 
-		for (f <- List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.TRACK, FieldKey.ALBUM, FieldKey.YEAR))
-			newTag.setField(f, StringFixer(originalTag.getFirst(f)))
-		newTag.setField(FieldKey.TRACK, properTrackString(newTag.getFirst(FieldKey.TRACK).toInt))
+    for (f <- List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.ALBUM, FieldKey.YEAR))
+      newTag.setField(f, StringFixer(originalTag getFirst f))
+    newTag.setField(FieldKey.TRACK, properTrackString(originalTag.getFirst(FieldKey.TRACK).toInt))
 
-		if (fixDiscNumber) // change 1/2, 2/2, etc. to 1, 2, etc.
-			try {
-				newTag.setField(FieldKey.DISC_NO, """(\d+).*"""
-					.r
-					.findAllIn(originalTag.getFirst(FieldKey.DISC_NO))
-					.matchData
-					.next
-					.group(1)
-					.toInt // throws an exception if not an int string
-					.toString)
-			} catch {
-				case e: Exception => () // do nothing... why?
-			}
+    // Not all track need to have a disc number property, e.g., bonus track
+    if (fixDiscNumber && originalTag.hasField(FieldKey.DISC_NO)) {
+      // if it matches the pattern of 1/2, just take the number, removing the total
+      val discNumber = originalTag getFirst FieldKey.DISC_NO mapIf (_ matches "\\d+[/\\\\]") to (_ takeWhile (_.isDigit))
+      newTag.setField(FieldKey.DISC_NO, discNumber)
+    }
 
-		AudioFileIO delete audioFile
-		audioFile setTag newTag
-		audioFile.commit()
-	}
+    AudioFileIO delete audioFile
+    audioFile setTag newTag
+    audioFile.commit()
+  }
 
-	private def rename(f: File) {
-		Song(f).applyAndReturn(song =>
-			f renameTo new File(f.parent, "%s - %s.%s".format(properTrackString(song.track), song.title, f.extension)))
-	}
+  private def rename(f: File) {
+    Song(f).applyAndReturn(song =>
+      f renameTo new File(f.parent, "%s - %s.%s".format(properTrackString(song.track), song.title, f.extension)))
+  }
 
-	private def retrieveYear(song: Song): Int =
-		Try(song.year)
-			.orElse(Try(song.file.parent.name.captureWith("\\D*([12]\\d{3})\\D*".r).toInt)) // Y3/0K Bug
-			.recoverWith { case e: Exception => throw new Exception("Could not retrieve the year from the songs", e) }
-			.get
+  private def retrieveYear(song: Song): Int =
+    Try(song.year)
+        .orElse(Try(song.file.parent.name.captureWith("\\D*([12]\\d{3})\\D*".r).toInt)) // Y3/0K Bug
+        .recoverWith { case e: Exception => throw new Exception("Could not retrieve the year from the songs", e) }
+        .get
 
-	private val reservedDirCharacters = "<>:\"/\\|?*".toSet
+  private val reservedDirCharacters = "<>:\"/\\|?*".toSet
 
-	private def toLegalDirName(s: String): String = s filterNot reservedDirCharacters
+  private def toLegalDirName(s: String): String = s filterNot reservedDirCharacters
 
-	// returns the path of the output folder
-	def fix(dir: Directory): Directory = {
-		require(dir.files.count(_.extension == "flac") != 1 || dir.files.count(_.extension == "cue") != 1,
-			"Folder contains an unsplit flac file; please split the file and try again.")
+  // returns the path of the output folder
+  def fix(dir: Directory): Directory = {
+    require(dir.files.count(_.extension == "flac") != 1 || dir.files.count(_.extension == "cue") != 1,
+      "Folder contains an unsplit flac file; please split the file and try again.")
 
-		dir.files.foreach(_.setWritable(true)) // stupid bittorrent
-		dir.files.filter(_.extension == "m3u").foreach(_.delete)
+    dir.files.foreach(_.setWritable(true)) // stupid bittorrent
+    dir.files.filter(_.extension == "m3u").foreach(_.delete)
 
-		val musicFiles = dir.files.filter(f => Set("mp3", "flac") contains f.extension)
-		require(musicFiles.nonEmpty, s"Could not find any songs in $dir - maybe they're in subfolders...")
+    val musicFiles = dir.files.filter(f => Set("mp3", "flac") contains f.extension)
+    require(musicFiles.nonEmpty, s"Could not find any songs in $dir - maybe they're in subfolders...")
 
-		val hasNonTrivialDiscNumber = musicFiles // as opposed to 1/1 - Fuck those guys.
-			.map(AudioFileIO.read)
-			.map(_.getTag.getFirst(FieldKey.DISC_NO))
-			.toSet
-			.size > 1
+    val hasNonTrivialDiscNumber = musicFiles // as opposed to 1/1 - Fuck those guys.
+        .map(AudioFileIO.read)
+        .map(_.getTag.getFirst(FieldKey.DISC_NO))
+        .toSet
+        .size > 1
 
-		val (year, album) = musicFiles.head.mapTo(Song.apply)
-			.mapTo(firstSong => retrieveYear(firstSong) -> StringFixer(firstSong.albumName))
+    val (year, album) = musicFiles.head.mapTo(Song.apply)
+        .mapTo(firstSong => retrieveYear(firstSong) -> StringFixer(firstSong.albumName))
 
-		musicFiles foreach (fixFile(_, hasNonTrivialDiscNumber))
-		musicFiles foreach rename
+    musicFiles foreach (fixFile(_, hasNonTrivialDiscNumber))
+    musicFiles foreach rename
 
-		try {
-			val renamedFolder = new File(dir.parent, s"$year ${album |> toLegalDirName}")
-			val result = dir.dir renameTo renamedFolder
+    try {
+      val renamedFolder = new File(dir.parent, s"$year ${album |> toLegalDirName}")
+      val result = dir.dir renameTo renamedFolder
       assert(result, s"Failed to rename directory to <$renamedFolder>")
       Directory(renamedFolder)
-		} catch {
-			case e: Exception => throw new Exception("could not rename the folder", e)
-		}
-	}
+    } catch {
+      case e: Exception => throw new Exception("could not rename the folder", e)
+    }
+  }
 }
