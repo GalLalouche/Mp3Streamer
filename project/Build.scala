@@ -17,6 +17,7 @@ object ApplicationBuild extends Build {
       "com.typesafe.play" %% "play-ws" % "2.5.4",
       "com.typesafe.slick" %% "slick" % "3.0.0",
       "io.reactivex" %% "rxscala" % "0.26.2",
+      "my.net.jthink" % "jaudiotagger" % "2.2.6-SNAPSHOT" changing(),
       "org.apache.commons" % "commons-io" % "1.3.2",
       "org.jsoup" % "jsoup" % "1.8.3",
       "org.me" %% "scalacommon" % "1.0" changing(),
@@ -34,7 +35,8 @@ object ApplicationBuild extends Build {
     resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
     resolvers += "Maven Repository" at "http://repo1.maven.org/maven2/",
     resolvers += "Apache Snapshot Repository" at "http://repository.apache.org/snapshots/",
-    resolvers += Resolver.file("Local repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns),
+    resolvers += Resolver.file("Local ivy repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns),
+    resolvers += Resolver.mavenLocal,
     javaOptions ++= Seq("-Xmx4000M", "-Xms2024M", "-XX:MaxPermSize=2000M"),
     routesGenerator := StaticRoutesGenerator
   )
