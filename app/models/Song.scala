@@ -33,11 +33,7 @@ object Song {
         println(s"No year in $file")
         0 // Some songs, e.g., classical, don't have a year yet.
     }
-    // in flac files, DISC_NO works. In regular files, it doesn't so it needs to be parsed manually :\
-    def parseDiscNumber(s: String): String =
-    s.dropWhile(_ != '=').drop(2).reverse.dropWhile(_ != ';').drop(2).reverse
-    val discNumber = tag.getFields("TPOS").toString.opt.filter(_.length >= 3).map(parseDiscNumber)
-        .orElse(tag.getFirst(FieldKey.DISC_NO).opt filter (_.nonEmpty))
+    val discNumber = Option(tag.getFirst(FieldKey.DISC_NO)).filterNot(_.isEmpty)
     def parseReplayGain(s: String): String = s.dropAfterLast('=').drop(1).takeWhile(_ != '"')
     // in flac files, REPLAYGAIN_TRACK_GAIN works. In regular files, it doesn't so it needs to be parsed manually :\
     val trackGain = (tag.getFields("REPLAYGAIN_TRACK_GAIN").headOption map (_.toString))

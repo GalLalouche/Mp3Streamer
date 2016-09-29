@@ -1,6 +1,7 @@
 package mains.fixer
 
 import java.io.File
+import java.util.logging.{Level, Logger}
 
 import common.Debug
 import common.rich.RichT.richT
@@ -10,7 +11,7 @@ import common.rich.path.RichPath.poorPath
 import common.rich.primitives.RichString.richString
 import models.Song
 import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.tag.FieldKey
+import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
 
@@ -18,8 +19,9 @@ import scala.util.Try
 
 /** Fixes ID3 tags on mp3 (and flac) files to proper casing, etc. */
 object FixLabels extends Debug {
+  Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   private def properTrackString(track: Int): String = if (track < 10) "0" + track else track.toString
-  private def fixFile(f: File, fixDiscNumber: Boolean) {
+  private[fixer] def fixTag(f: File, fixDiscNumber: Boolean): Tag = {
     val audioFile = AudioFileIO.read(f)
     val originalTag = audioFile.getTag
     val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
@@ -34,7 +36,11 @@ object FixLabels extends Debug {
       val discNumber = originalTag getFirst FieldKey.DISC_NO mapIf (_ matches "\\d+[/\\\\]") to (_ takeWhile (_.isDigit))
       newTag.setField(FieldKey.DISC_NO, discNumber)
     }
-
+    newTag
+  }
+  private def fixFile(f: File, fixDiscNumber: Boolean) {
+    val audioFile = AudioFileIO.read(f)
+    val newTag = fixTag(f, fixDiscNumber)
     AudioFileIO delete audioFile
     audioFile setTag newTag
     audioFile.commit()
