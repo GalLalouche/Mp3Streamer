@@ -31,6 +31,10 @@ class FixLabelsTest extends FreeSpec with AuxSpecs {
           val fixedTag = FixLabels.fixTag(song, fixDiscNumber = true)
           getTagValue(fixedTag)(FieldKey.DISC_NO) shouldReturn "Foobar"
         }
+        "Partial number" in {
+          val fixedTag = FixLabels.fixTag(getSongFile("flacWithMoreInfo.flac"), fixDiscNumber = true)
+          getTagValue(fixedTag)(FieldKey.DISC_NO) shouldReturn "1"
+        }
       }
     }
   }

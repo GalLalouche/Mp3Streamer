@@ -33,7 +33,7 @@ object FixLabels extends Debug {
     // Not all track need to have a disc number property, e.g., bonus track
     if (fixDiscNumber && originalTag.hasField(FieldKey.DISC_NO)) {
       // if it matches the pattern of 1/2, just take the number, removing the total
-      val discNumber = originalTag getFirst FieldKey.DISC_NO mapIf (_ matches "\\d+[/\\\\]") to (_ takeWhile (_.isDigit))
+      val discNumber = originalTag getFirst FieldKey.DISC_NO mapIf (_ matches "\\d+[/\\\\].*") to (_ takeWhile (_.isDigit))
       newTag.setField(FieldKey.DISC_NO, discNumber)
     }
     newTag

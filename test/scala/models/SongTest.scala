@@ -43,7 +43,7 @@ class SongTest extends FreeSpec with AuxSpecs {
         $.trackGain shouldReturn None
       }
       "with optionals" in {
-        Song(getSong("flacWithMoreInfo.flac")).discNumber.get shouldReturn "Foobar"
+        Song(getSong("flacWithMoreInfo.flac")).discNumber.get shouldReturn "1/2"
         Song(getSong("flacWithMoreInfo.flac")).trackGain.get shouldReturn 1.25
       }
     }
