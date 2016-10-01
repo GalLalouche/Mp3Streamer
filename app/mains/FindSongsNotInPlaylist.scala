@@ -21,7 +21,7 @@ object FindSongsNotInPlaylist {
       throw new IllegalStateException("Please update the playlist file.")
     val playlistSongs = file // UTF-8 helps deal with Hebrew songs
         .lines
-        // removes UTF-BOM at least until I fix it in scala common
+        // removes UTF-BOM at least until I fix it in ScalaCommon
         .mapIf(_.head.head.toInt == 65279).to(e => e.tail :+ e.head.drop(1))
         .map(musicFiles.dir.path + "/" + _)
         .map(_.toLowerCase.replaceAll("\\\\", "/"))
@@ -38,9 +38,9 @@ object FindSongsNotInPlaylist {
         .foreach(IOUtils.focus)
     val serverMissing = playlistSongs.diff(realSongs).toList.sorted
     println(s"Server is missing ${serverMissing.size} songs. ${"It's possible that these songs are in the playlist but the files themselves have been deleted, or were added from a different folder, e.g., bittorent.".onlyIf(serverMissing.nonEmpty)}")
-    println(serverMissing.mkString("\n"))
+    println(serverMissing mkString "\n")
     println(s"Playlist is missing ${playlistMissing.size} songs")
-    println(playlistMissing.mkString("\n"))
+    println(playlistMissing mkString "\n")
     System exit 0
   }
 }

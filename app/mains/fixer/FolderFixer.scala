@@ -47,7 +47,7 @@ object FolderFixer
       f(source)
       val dest = new File(d, source.name).toPath
       val $ = Files.move(source.toPath, dest).toFile |> Directory.apply
-      IOUtils.focus(dest.toFile)
+      IOUtils focus dest.toFile
       $
     }
   }
