@@ -1,16 +1,12 @@
 package controllers
 
-import java.net.URLEncoder
-
 import common.Debug
 import common.rich.RichT._
 import common.rich.path.Directory
-import common.rich.path.RichFile._
 import common.rich.primitives.RichEither._
 import models._
-import play.api.libs.json.{JsArray, JsObject, JsString, JsValue}
+import play.api.libs.json.{JsArray, JsValue}
 import play.api.mvc._
-import search.ModelsJsonable._
 import songs.{SongGroup, SongGroups, SongSelector}
 
 /** Handles fetch requests of JSON information, and listens to directory changes. */
@@ -25,14 +21,8 @@ object Player extends Controller with Debug {
   //TODO hide this, shouldn't be a part of the controller
   update()
 
-  //TODO "flac" -> instead of hardcoded mp3
-  def toJson(s: Song): JsObject = {
-    SongJsonifier.jsonify(s) +
-        ("poster" -> JsString("/posters/" + Poster.getCoverArt(s).path)) +
-        (s.file.extension -> JsString("/stream/download/" + URLEncoder.encode(s.file.path, "UTF-8")))
-  }
-  private def toJson(ss: SongGroup): JsArray = ss.songs map toJson mapTo JsArray
-  private def toJson(e: Either[Song, SongGroup]): JsValue = e.resolve(toJson, toJson)
+  private def toJson(ss: SongGroup): JsArray = ss.songs map Utils.toJson mapTo JsArray
+  private def toJson(e: Either[Song, SongGroup]): JsValue = e.resolve(Utils.toJson, toJson)
 
   private def group(s: Song): Either[Song, SongGroup] = songGroups get s toRight s
 
@@ -41,7 +31,7 @@ object Player extends Controller with Debug {
   }
 
   def album(path: String) = Action {
-    Ok(Utils.parseFile(path) |> Directory.apply |> Album.apply |> (_.songs.map(toJson)) |> JsArray.apply)
+    Ok(Utils.parseFile(path) |> Directory.apply |> Album.apply |> (_.songs.map(Utils.toJson)) |> JsArray.apply)
   }
 
   def song(path: String) = Action {
@@ -49,6 +39,6 @@ object Player extends Controller with Debug {
   }
 
   def nextSong(path: String) = Action {
-    Ok(path |> Utils.parseSong |> songSelector.followingSong |> toJson)
+    Ok(path |> Utils.parseSong |> songSelector.followingSong |> Utils.toJson)
   }
 }
