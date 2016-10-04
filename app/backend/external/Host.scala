@@ -25,6 +25,7 @@ private[external] object Host {
   object LastFm extends Host("LastFm", Url("www.last.fm"))
   object MetalArchives extends Host("MetalArchives", Url("www.metal-archives.com"))
   object MusicBrainz extends Host("MusicBrainz", Url("musicbrainz.org"))
+  object RateYourMusic extends Host("RateYourMusic", Url("rateyourmusic.com"))
   object Wikipedia extends Host("Wikipedia", Url("en.wikipedia.org"))
 
   def fromUrl(url: Url): Option[Host] = hostsByUrl get url.host

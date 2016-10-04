@@ -14,7 +14,7 @@ import scala.concurrent.Future
 object External extends Controller {
   private implicit val c = PlayConfig
   private type KVPair = (String, JsValueWrapper)
-  private val allowedHosts = Set("allmusic", "wikipedia", "lastfm", "metalarchives", "musicbrainz", "facebook")
+  private val allowedHosts = Set("allmusic", "wikipedia", "lastfm", "musicbrainz", "facebook", "rateyourmusic")
       .flatMap(e => List(e, e + "*"))
   private val external = new MbExternalLinksProvider
 
