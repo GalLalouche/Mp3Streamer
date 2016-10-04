@@ -1,11 +1,9 @@
 package songs
 
-import backend.configs.StandaloneConfig
 import common.io.{DirectoryRef, FileRef}
 import common.rich.RichT._
-import common.rich.path.Directory
 import models.Song
-import play.api.libs.json.{JsArray, JsObject, Json}
+import play.api.libs.json.{JsArray, Json}
 import search.ModelsJsonable
 
 import scala.concurrent.ExecutionContext
@@ -26,21 +24,4 @@ object SongGroups {
       .map(Json.parse)
       .map(_.as[JsArray] |> ModelsJsonable.SongJsonifier.parse |> SongGroup)
       .toSet
-
-  // Appends new groups and saves them
-  def main(args: Array[String]): Unit = {
-    def trackNumbers(directory: String, trackNumbers: Int*): SongGroup = {
-      val dir = Directory(directory)
-      val prefixes: Set[String] = trackNumbers.map(_.toString.mapIf(_.length < 2).to("0".+)).toSet
-      def isPrefix(s: String) = prefixes exists s.startsWith
-      val songs = dir.files.filter(_.getName |> isPrefix)
-      SongGroup(songs.sortBy(_.getName).map(Song.apply))
-    }
-    implicit val c = StandaloneConfig
-    import c._
-    def append(g: SongGroup) = (g :: load.toList).toSet |> save
-    val group: SongGroup = trackNumbers("""D:\Media\Music\Rock\Soft Rock\Regina Spektor\2005 Soviet Kitscsh""", 7, 8)
-    append(group)
-    println("Done")
-  }
 }
