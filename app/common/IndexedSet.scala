@@ -1,16 +1,16 @@
 package common
 
+import scalaz.Semigroup
 
-trait IndexedSet[Value] extends Traversable[Value] {
-  // TODO replace with Monoid
+
+abstract class IndexedSet[Value : Semigroup] extends Traversable[Value] {
   type Key
   protected val index: Value => Key
-  protected val merge: (Value, Value) => Value
-  protected val map: Map[Key, Value]
-  private def withMap(map: Map[Key, Value]): IndexedSet[Value] = IndexedSet.withMap(index, merge, map)
+  protected val map: Map[Key, Value] // can't be a constructor object since it depends on the type
+  private def withMap(map: Map[Key, Value]): IndexedSet[Value] = IndexedSet.withMap(index, map)
   def +(v: Value): IndexedSet[Value] = {
     val key = index(v)
-    val newV = map.get(key).map(merge(_, v)).getOrElse(v)
+    val newV = map.get(key).map(implicitly[Semigroup[Value]].append(_, v)).getOrElse(v)
     require(key == index(newV), s"Inconsistent keys for $v ($key) and new $newV (${index(newV) })")
     withMap(map + ((key, newV)))
   }
@@ -19,13 +19,12 @@ trait IndexedSet[Value] extends Traversable[Value] {
 }
 
 object IndexedSet {
-  private def withMap[K, V](_index: V => K, _merge: (V, V) => V, _map: Map[K, V]): IndexedSet[V] =
+  private def withMap[K, V : Semigroup](_index: V => K, _map: Map[K, V]): IndexedSet[V] =
     new IndexedSet[V] {
       override type Key = K
       override protected val index = _index
-      override protected val merge = _merge
       override protected val map = _map
     }
-  def apply[K, V](index: V => K, merge: (V, V) => V): IndexedSet[V] = withMap(index, merge, Map())
+  def apply[K, V : Semigroup](index: V => K): IndexedSet[V] = withMap(index, Map())
 }
 
