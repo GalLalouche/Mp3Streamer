@@ -1,5 +1,5 @@
 function openConnection(path, onMessage) {
-	var connection = new WebSocket("ws://" + window.location.host + "/ws/" + path);
+	const connection = new WebSocket("ws://" + window.location.host + "/ws/" + path);
 	connection.onopen = function() {
 		console.log(path + " connection opened");
 	};

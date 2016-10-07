@@ -20,10 +20,10 @@ $(function () {
     })
   }
 
-  var previousContent = ""
-  var autoScroll = false
-  var scrollBaseline = 0
-  var timeBaseline = 0
+  let previousContent = ""
+  let autoScroll = false
+  let scrollBaseline = 0
+  let timeBaseline = 0
   function scrollLyrics() {
     // Don't start scrolling right at the beginning of the song if there is no baseline set
     const heightBaseline =  scrollBaseline || (lyrics.height() / -1.75)

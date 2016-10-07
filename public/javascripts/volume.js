@@ -1,7 +1,7 @@
 $(function () {
   const defaultGain = -10.0
-  var volumeBaseline = 40.0 // The volume that was preset by the user. Start at 40.0, so it could increase 2.5 fold.
-  var currentGain = defaultGain
+  let volumeBaseline = 40.0 // The volume that was preset by the user. Start at 40.0, so it could increase 2.5 fold.
+  let currentGain = defaultGain
 
   const calculateVolumeCoefficientFromGain = () => Math.pow(2, currentGain / 10.0)
   function updateVolume() {
