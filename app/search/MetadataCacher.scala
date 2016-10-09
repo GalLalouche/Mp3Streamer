@@ -14,6 +14,7 @@ import search.ModelsJsonable._
 
 import scala.collection.GenSeq
 import scala.concurrent.Future
+import scalaz.Semigroup
 import scalaz.std.{AnyValInstances, FutureInstances, ListInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
@@ -86,7 +87,10 @@ class MetadataCacher(saver: JsonableSaver)(implicit c: Configuration) extends Si
  * production.
  */
 object MetadataCacher {
-  private val emptyArtistSet: IndexedSet[Artist] = IndexedSet[String, Artist](_.name, _ merge _)
+  private implicit object ArtistSemigroup extends Semigroup[Artist] {
+    override def append(f1: Artist, f2: => Artist): Artist = f1 merge f2
+  }
+  private val emptyArtistSet: IndexedSet[Artist] = IndexedSet[String, Artist](_.name)
   private case class AllInfo(songs: Seq[Song], albums: List[Album], artists: IndexedSet[Artist])
   private case class DirectoryInfo(songs: Seq[Song], album: Album, artist: Artist)
   private implicit object AllInfoCollectable extends Collectable[DirectoryInfo, AllInfo] {
