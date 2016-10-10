@@ -1,7 +1,7 @@
 package backend.external.extensions
 
 import backend.Url
-import backend.external.{ExtendedLinks, Host}
+import backend.external.{ExtendedLinks, Host, TimestampedExtendedLinks}
 import backend.recon.Reconcilable
 import common.rich.RichT._
 import common.rich.collections.RichSet._
@@ -13,4 +13,8 @@ object SearchExtension {
 
   def extendMissing[R <: Reconcilable](allHosts: TraversableOnce[Host], r: R, links: ExtendedLinks[R]): ExtendedLinks[R] =
     links ++ (allHosts.toSet \ links.map(_.host.canonize).toSet map (SearchExtension(_, r)))
+  def extendMissing[R <: Reconcilable](allHosts: TraversableOnce[Host],
+                                               r: R,
+                                               e: TimestampedExtendedLinks[R]): TimestampedExtendedLinks[R] =
+    e.copy(SearchExtension.extendMissing(allHosts, r, e.links))
 }
