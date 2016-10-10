@@ -40,10 +40,8 @@ object External extends Controller
       case e => Json.obj("error" -> e.getMessage)
     }
 
-  private def extendMissing[R <: Reconcilable](r: R, links: ExtendedLinks[R]): ExtendedLinks[R] =
-    links ++ (hosts.toSet \ links.map(_.host.canonize).toSet map (SearchExtension(_, r)))
   private def extendMissing[R <: Reconcilable](r: R, e: TimestampedExtendedLinks[R]): TimestampedExtendedLinks[R] =
-    e.copy(extendMissing(r, e.links))
+    e.copy(SearchExtension.extendMissing(hosts, r, e.links))
   def get(path: String) = Action.async {
     val song: Song = Utils parseSong path
     val links = external(song)
