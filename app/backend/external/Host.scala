@@ -4,13 +4,13 @@ import backend.Url
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichBoolean._
 
-private[external] case class Host(name: String, url: Url) {
+case class Host(name: String, url: Url) {
 
   import Host._
 
-  def canonize: Host = hostsByName.getOrElse(name.toLowerCase.replaceAll("\\*$", ""), defaultFor(url))
+  def canonize: Host = hostsByName.getOrElse(name.toLowerCase.replaceAll("[*?]$", ""), defaultFor(url))
 }
-private[external] object Host {
+object Host {
   private val hosts: Traversable[Host] = { // extract all hosts by reflection
     import scala.reflect.runtime.{universe => u}
     u.typeOf[Host.type]

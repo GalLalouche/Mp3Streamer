@@ -25,7 +25,7 @@ $(function () {
             return
           const extensions = getExtensions(link)
           const links = href(link.main, link.host) + (extensions ? ` (${extensions})` : "")
-          const imageIcon = `"list-style-image: url('assets/images/${link.host.replace(/\*$/g, "")}_icon.png')"`
+          const imageIcon = `"list-style-image: url('assets/images/${link.host.replace(/[*?]$/g, "")}_icon.png')"`
           ul.append($(`<li style=${imageIcon}>${links}</li>`))
         })
       }
