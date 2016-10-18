@@ -14,4 +14,6 @@ abstract class LocalStorageTemplate[Key, Value](implicit ec: ExecutionContext) e
     load(k)
         .map(_.isDefined)
         .flatMap(if (_) Future successful false else internalForceStore(k, v).>|(true))
+  override def mapStore(k: Key, f: Value => Value, default: => Value) =
+    load(k).flatMap(v => forceStore(k, v map f getOrElse default))
 }

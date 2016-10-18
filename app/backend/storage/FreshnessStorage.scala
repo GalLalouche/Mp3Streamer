@@ -24,4 +24,7 @@ class FreshnessStorage[Key, Value](storage: LocalStorage[Key, (Value, Option[Dat
   override def forceStore(k: Key, v: Value): Future[Option[Value]] =
     storage.forceStore(k, now(v)) |> toValue
   override def utils: LocalStorageUtils = storage.utils
+  /** Also updates the timestamp */
+  override def mapStore(k: Key, f: Value => Value, default: => Value): Future[Option[Value]] =
+    storage.mapStore(k, e => now(f(e._1)), now(default)) |> toValue
 }

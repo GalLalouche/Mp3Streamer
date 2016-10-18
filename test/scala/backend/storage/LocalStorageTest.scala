@@ -44,4 +44,15 @@ class LocalStorageTest extends FreeSpec with MockitoSugar with OneInstancePerTes
       existingValues(1) shouldReturn 4
     }
   }
+  "mapStore" - {
+    "has no existing value uses default" in {
+      $.mapStore(1, e => ???, 2).get shouldReturn None
+      existingValues(1) shouldReturn 2
+    }
+    "maps existign value if present" in {
+      existingValues += 1 -> 2
+      $.mapStore(1, _ * 2, ???).get shouldReturn Option(2)
+      existingValues(1) shouldReturn 4
+    }
+  }
 }
