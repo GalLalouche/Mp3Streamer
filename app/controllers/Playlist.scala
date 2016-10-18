@@ -15,7 +15,6 @@ import scala.concurrent.duration.DurationInt
 object Playlist extends Controller {
   private val saver = new JsonableSaver()(PlayConfig.rootDirectory) // since implicit importing is auto-removed
 
-  private def getStringFromBody(a: AnyContent): String = a.asFormUrlEncoded.get.keys.head
   private def arrayOfPathsToSong(a: JsArray): Seq[Song] = a.value.map(_.as[String]).map(Utils.parseSong)
 
   def getQueue = Action {
@@ -23,7 +22,7 @@ object Playlist extends Controller {
   }
   def setQueue() = Action { request =>
     val playlist = request.body
-        .mapTo(_ |> getStringFromBody |> Json.parse)
+        .mapTo(_ |> Utils.getStringFromBody |> Json.parse)
         .mapTo(_.as[JsArray] |> arrayOfPathsToSong |> PlaylistQueue.apply)
     saver save playlist
     Created.withHeaders("Location" -> "playlist/queue")
@@ -38,7 +37,7 @@ object Playlist extends Controller {
     Ok(saver.loadObject[PlaylistState] |> toJson)
   }
   def setState() = Action { request =>
-    val json = request.body |> getStringFromBody |> Json.parse
+    val json = request.body |> Utils.getStringFromBody |> Json.parse
     val songs = json array "songs" mapTo arrayOfPathsToSong
     val duration: Double = json / "duration"
     val index: Int = json / "index"
