@@ -3,6 +3,7 @@ package controllers
 import backend.external.extensions.{ExtendedLink, LinkExtension, SearchExtension}
 import backend.external.{Host, MbExternalLinksProvider, TimestampedExtendedLinks}
 import backend.recon.Reconcilable.SongExtractor
+import backend.recon._
 import common.RichJson._
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
@@ -44,5 +45,12 @@ object External extends Controller {
       albumJson <- links.albumLinks |> toJsonOrError
     ) yield Json.obj("Artist links" -> artistJson, "Album links" -> albumJson)
     f.map(Ok(_))
+  }
+
+  def updateRecon(path: String) = Action.async { request =>
+    val json = Utils getStringFromBody request.body mapTo Json.parse
+    def getReconId(s: String) = json ostr s map ReconID
+    external.updateRecon(Utils parseSong path, artistReconId = getReconId("artist"), albumReconId = getReconId("album"))
+      .map(e => Ok("Updated"))
   }
 }
