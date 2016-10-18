@@ -3,7 +3,7 @@ package backend.storage
 import scala.concurrent.Future
 
 /** A SQL oriented store of key-value */
-trait LocalStorageUtils {
+trait StorageUtils {
   /** Returns true if a table was created, i.e., did not exist before; false otherwise. */
   def createTable(): Future[Boolean]
   /** Returns true if a table was deleted, i.e., exists; false otherwise. */

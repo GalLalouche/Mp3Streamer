@@ -8,7 +8,7 @@ import org.scalatest.{BeforeAndAfter, FreeSpec}
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
-class SlickLocalStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAfter
+class SlickStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAfter
     with ToBindOps with FutureInstances {
   val c = new TestConfiguration
   import c._
@@ -20,7 +20,7 @@ class SlickLocalStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAf
     def * = (key, value)
   }
   private val table = TableQuery[Rows]
-  val $: LocalStorageUtils = SlickLocalStorageUtils(c)(table)
+  val $: StorageUtils = SlickStorageUtils(c)(table)
   before {
     $.dropTable().get
   }

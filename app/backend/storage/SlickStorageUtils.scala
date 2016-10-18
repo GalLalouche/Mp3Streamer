@@ -8,7 +8,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
-object SlickLocalStorageUtils
+object SlickStorageUtils
     extends ToFunctorOps with FutureInstances {
   private def toBoolean(f: Future[_])(implicit ec: ExecutionContext): Future[Boolean] =
     f.>|(true) orElse false
@@ -16,7 +16,7 @@ object SlickLocalStorageUtils
     import c.driver.api._
     val db = c.db
     new {
-      def apply(table: TableQuery[_ <: Table[_]]): LocalStorageUtils = new LocalStorageUtils {
+      def apply(table: TableQuery[_ <: Table[_]]): StorageUtils = new StorageUtils {
         override def createTable(): Future[Boolean] =
           toBoolean(db run table.schema.create)
         override def clearTable(): Future[Boolean] =

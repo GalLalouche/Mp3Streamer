@@ -4,7 +4,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
-abstract class LocalStorageTemplate[Key, Value](implicit ec: ExecutionContext) extends LocalStorage[Key, Value]
+abstract class StorageTemplate[Key, Value](implicit ec: ExecutionContext) extends Storage[Key, Value]
     with ToFunctorOps with FutureInstances {
   /** If an existing value exists, override it. */
   protected def internalForceStore(k: Key, v: Value): Future[Unit]

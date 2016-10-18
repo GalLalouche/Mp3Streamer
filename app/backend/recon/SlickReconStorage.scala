@@ -1,7 +1,7 @@
 package backend.recon
 
 import backend.configs.Configuration
-import backend.storage.SlickLocalStorageUtils
+import backend.storage.SlickStorageUtils
 import common.rich.RichT._
 
 import scala.concurrent.Future
@@ -33,7 +33,7 @@ abstract class SlickReconStorage[K <: Reconcilable](implicit c: Configuration,
       .map(e => e.isIgnored -> e.reconId)
       .result
       .map(_.headOption.map(_.swap.mapTo(e => e._1.map(ReconID) -> e._2))))
-  override def utils = SlickLocalStorageUtils(c)(rows)
+  override def utils = SlickStorageUtils(c)(rows)
 }
 
 class ArtistReconStorage(implicit c: Configuration) extends SlickReconStorage[Artist]

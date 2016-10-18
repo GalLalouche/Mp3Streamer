@@ -2,7 +2,7 @@ package backend.storage
 import scala.collection.mutable
 import scala.concurrent.Future
 
-class MemoryBackedLocalStorage[Key, Value] extends LocalStorage[Key, Value] {
+class MemoryBackedStorage[Key, Value] extends Storage[Key, Value] {
   private val map = new mutable.HashMap[Key, Value]
   override def forceStore(k: Key, v: Value): Future[Option[Value]] = Future successful map.put(k, v)
   override def store(k: Key, v: Value): Future[Boolean] =

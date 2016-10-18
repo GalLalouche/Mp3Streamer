@@ -12,8 +12,8 @@ import scalaz.syntax.ToFunctorOps
  * If it fails, it will try to use an online API, and save the result persistently.
  */
 class OnlineRetrieverCacher[Key, Value](
-    localStorage: LocalStorage[Key, Value],
-    onlineRetriever: Retriever[Key, Value])
+                                         localStorage: Storage[Key, Value],
+                                         onlineRetriever: Retriever[Key, Value])
     (implicit ec: ExecutionContext) extends Retriever[Key, Value]
     with ToFunctorOps with FutureInstances {
   override def apply(k: Key): Future[Value] = localStorage.load(k)

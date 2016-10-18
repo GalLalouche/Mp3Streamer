@@ -2,7 +2,7 @@ package backend.external
 
 import backend.configs.Configuration
 import backend.recon.Reconcilable
-import backend.storage.SlickLocalStorageUtils
+import backend.storage.SlickStorageUtils
 import backend.{StringSerializable, Url}
 import common.rich.RichT._
 import org.joda.time.DateTime
@@ -47,7 +47,7 @@ private[backend] class SlickExternalStorage[K <: Reconcilable](implicit c: Confi
                .map(_.headOption.map(_.mapTo(e => e._1.mapTo(fromString) -> e._2.map(new DateTime(_))))))
   override protected def internalForceStore(k: K, v: (Links[K], Option[DateTime])): Future[Unit] =
     store(k, v._1, v._2.map(_.getMillis))
-  override def utils = SlickLocalStorageUtils(c)(rows)
+  override def utils = SlickStorageUtils(c)(rows)
 }
 
 
