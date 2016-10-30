@@ -33,6 +33,8 @@ abstract class SlickReconStorage[K <: Reconcilable](implicit c: Configuration,
       .map(e => e.isIgnored -> e.reconId)
       .result
       .map(_.headOption.map(_.swap.mapTo(e => e._1.map(ReconID) -> e._2))))
+  override def internalDelete(k: K): Future[Unit] =
+    db.run(rows.filter(_.name === k.normalize).delete).>|(Unit)
   override def utils = SlickStorageUtils(c)(rows)
 }
 

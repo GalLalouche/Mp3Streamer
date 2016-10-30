@@ -14,6 +14,7 @@ class MemoryBackedStorage[Key, Value] extends Storage[Key, Value] {
     }
   override def load(k: Key): Future[Option[Value]] = Future successful map.get(k)
   def get(k: Key): Option[Value] = load(k).value.get.get
+  override def delete(k: Key): Future[Option[Value]] = Future successful map.remove(k)
   override def utils = ???
   override def mapStore(k: Key, f: (Value) => Value, default: => Value): Future[Option[Value]] =
     forceStore(k, map get k map f getOrElse default)

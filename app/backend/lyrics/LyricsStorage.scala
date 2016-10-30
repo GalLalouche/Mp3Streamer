@@ -34,5 +34,7 @@ private class LyricsStorage(implicit c: Configuration) extends StorageTemplate[S
     ).map(_.headOption.map(e => e._2
         .map(HtmlLyrics(e._1, _))
         .getOrElse(Instrumental(e._1))))
+  override def internalDelete(s: Song): Future[Unit] =
+    db.run(rows.filter(_.song === normalize(s)).delete).>|(Unit)
   override def utils: StorageUtils = SlickStorageUtils(c)(rows)
 }

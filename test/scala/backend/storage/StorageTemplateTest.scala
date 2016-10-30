@@ -10,7 +10,6 @@ import scala.collection.mutable
 import scala.concurrent.Future
 
 
-
 class StorageTemplateTest extends FreeSpec with MockitoSugar with OneInstancePerTest with AuxSpecs {
   private implicit val c = new TestConfiguration
   private val existingValues = mutable.HashMap[Int, Int]()
@@ -20,6 +19,7 @@ class StorageTemplateTest extends FreeSpec with MockitoSugar with OneInstancePer
       Future successful Unit
     }
     override def load(k: Int): Future[Option[Int]] = Future successful existingValues.get(k)
+    override protected def internalDelete(k: Int): Future[Unit] = Future successful existingValues.remove(k)
     override def utils = ???
   }
   "store" - {
@@ -53,6 +53,17 @@ class StorageTemplateTest extends FreeSpec with MockitoSugar with OneInstancePer
       existingValues += 1 -> 2
       $.mapStore(1, _ * 2, ???).get shouldReturn Option(2)
       existingValues(1) shouldReturn 4
+    }
+  }
+  "delete" - {
+    "existing value" in {
+      existingValues += 1 -> 2
+      $.delete(1).get.get shouldReturn 2
+      $.load(1).get shouldReturn None
+    }
+    "no existing value" in {
+      $.delete(1).get shouldReturn None
+      $.load(1).get shouldReturn None
     }
   }
 }

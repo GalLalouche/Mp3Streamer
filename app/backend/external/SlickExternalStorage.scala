@@ -47,6 +47,8 @@ private[backend] class SlickExternalStorage[K <: Reconcilable](implicit c: Confi
                .map(_.headOption.map(_.mapTo(e => e._1.mapTo(fromString) -> e._2.map(new DateTime(_))))))
   override protected def internalForceStore(k: K, v: (Links[K], Option[DateTime])): Future[Unit] =
     store(k, v._1, v._2.map(_.getMillis))
+  override def internalDelete(k: K): Future[Unit] =
+    db.run(rows.filter(_.name === k.normalize).delete).>|(Unit)
   override def utils = SlickStorageUtils(c)(rows)
 }
 
