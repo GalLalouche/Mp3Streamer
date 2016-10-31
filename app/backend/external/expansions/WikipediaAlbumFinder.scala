@@ -17,6 +17,7 @@ private class WikipediaAlbumFinder(implicit ec: ExecutionContext, it: InternetTa
         .find(e => score(e.text) > 0.95)
         .map(_.attr("href"))
         .filter(_.nonEmpty)
+        .filterNot(_ contains "redlink=1")
         .map("https://en.wikipedia.org" + _ |> Url)
   }
 }
