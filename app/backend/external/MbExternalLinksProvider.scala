@@ -18,8 +18,8 @@ import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.{ToBindOps, ToFunctorOps}
 
-class MbExternalLinksProvider(implicit c: Configuration) extends Function[Song, ExtendedExternalLinks]
-    with FutureInstances with ToFunctorOps with ToBindOps {
+class MbExternalLinksProvider(implicit c: Configuration)
+    extends FutureInstances with ToFunctorOps with ToBindOps {
   private class TimeStamper[R <: Reconcilable](foo: RefreshableStorage[R, Links[R]]) extends Retriever[R, TimestampedLinks[R]] {
     override def apply(r: R): Future[TimestampedLinks[R]] = foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
@@ -65,9 +65,9 @@ class MbExternalLinksProvider(implicit c: Configuration) extends Function[Song, 
   private def apply(a: Album): ExtendedExternalLinks = {
     val artistLinks = getArtistLinks(a.artist)
     val albumLinks = artistLinks.flatMap(l => getAlbumLinks(l.links, a))
-    ExtendedExternalLinks(artistLinks.map(extender.apply[Artist]), albumLinks.map(extender.apply[Album]))
+    ExtendedExternalLinks(artistLinks.map(extender.apply(a.artist, _)), albumLinks.map(extender.apply(a, _)))
   }
-  override def apply(s: Song): ExtendedExternalLinks = apply(s.release)
+  def apply(s: Song): ExtendedExternalLinks = apply(s.release)
 
   // creates the future if true, otherwise return an empty future
   private def booleanFuture[T](b: Boolean, f: => Future[_]): Future[Unit] =

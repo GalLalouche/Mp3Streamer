@@ -1,9 +1,9 @@
 package backend.external.extensions
 
-import backend.external.ExternalLink
+import backend.external.{ExternalLink, Host}
 import backend.recon.Reconcilable
 
 private object MusicBrainzExtender extends LinkExtender[Reconcilable] {
-  override def apply[T <: Reconcilable](v: ExternalLink[T]): Seq[LinkExtension[T]] =
-    append(v, "edit")
+  override def apply[T <: Reconcilable](a: T, v: ExternalLink[T]): Seq[LinkExtension[T]] =
+    append(v, "edit") ++ SearchExtension.apply(Host.MusicBrainz, a).extensions
 }
