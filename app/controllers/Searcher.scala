@@ -13,7 +13,7 @@ import search.CompositeIndex
 import search.ModelsJsonable._
 
 object Searcher extends Controller with Extra {
-  private implicit val c = PlayConfig
+  private implicit val c = Utils.config
   import c._
   private var index: CompositeIndex = new CompositeIndex
   override def apply() {

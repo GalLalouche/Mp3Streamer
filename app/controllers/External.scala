@@ -15,7 +15,7 @@ import play.api.mvc.{Action, Controller}
 import scala.concurrent.Future
 
 object External extends Controller {
-  private implicit val c = PlayConfig
+  import Utils.config
   private type KVPair = (String, JsValueWrapper)
   private val hosts: Seq[Host] =
     Seq(Host.MusicBrainz, Host.Wikipedia, Host.AllMusic, Host.Facebook, Host.LastFm, Host.RateYourMusic)

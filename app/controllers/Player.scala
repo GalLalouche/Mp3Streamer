@@ -11,7 +11,7 @@ import songs.{SongGroup, SongGroups, SongSelector}
 
 /** Handles fetch requests of JSON information, and listens to directory changes. */
 object Player extends Controller with Debug {
-  private implicit val c = PlayConfig
+  private implicit val c = Utils.config
   import c._
   private val songGroups: Map[Song, SongGroup] = SongGroups.load |> SongGroups.fromGroups
   private var songSelector: SongSelector = _
