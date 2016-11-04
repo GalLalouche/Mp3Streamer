@@ -71,10 +71,10 @@ class MbExternalLinksProvider(implicit c: Configuration)
 
   // creates the future if true, otherwise return an empty future
   private def booleanFuture[T](b: Boolean, f: => Future[_]): Future[Unit] =
-    optionalFuture(Option(b) filter identity)(e => f)
+  optionalFuture(Option(b) filter identity)(e => f)
   // creates the future if the option exists, otherwise return an empty future
   private def optionalFuture[T](o: Option[T])(f: T => Future[_]): Future[Unit] =
-    o.map(f(_).>|(())).getOrElse(Future successful Unit)
+  o.map(f(_).>|(())).getOrElse(Future successful Unit)
   private def update[R <: Reconcilable](key: R, recon: Option[ReconID], storage: ReconStorage[R]): Future[Unit] =
     optionalFuture(recon)(reconId => storage.mapStore(key, e => Some(reconId) -> e._2, Some(reconId) -> false))
 
@@ -82,6 +82,7 @@ class MbExternalLinksProvider(implicit c: Configuration)
     require(artistReconId.isDefined || albumReconId.isDefined, "No actual recon IDs given")
     update(song.artist, artistReconId, artistReconStorage)
         .>>(update(song.release, albumReconId, albumReconStorage))
+        .>>(booleanFuture(artistReconId.isDefined && albumReconId.isEmpty, albumReconStorage delete song.release))
         .>>(booleanFuture(artistReconId.isDefined, artistExternalStorage delete song.artist))
         .>>(booleanFuture(artistReconId.isDefined || albumReconId.isDefined, albumExternalStorage delete song.release))
   }
