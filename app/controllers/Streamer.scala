@@ -7,7 +7,7 @@ import play.api.libs.iteratee.Enumerator
 import play.api.mvc.{Action, Controller}
 
 object Streamer extends Controller {
-  private implicit val c = PlayConfig
+  import Utils.config
   def download(s: String) = Action { request =>
     // assumed format: [bytes=<start>-]
     def parseRange(s: String): Long = s dropAfterLast '=' takeWhile (_ isDigit) toLong

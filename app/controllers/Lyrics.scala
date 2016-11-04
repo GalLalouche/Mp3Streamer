@@ -5,7 +5,7 @@ import common.rich.RichFuture._
 import play.api.mvc.{Action, Controller}
 
 object Lyrics extends Controller {
-  private implicit val config = PlayConfig
+  import Utils.config
 
   private val lyrics = new LyricsCache()
   def get(path: String) = Action.async {

@@ -16,7 +16,7 @@ object Cacher extends WebSocketController with Debug {
     "finished" -> u.currentIndex,
     "total" -> u.totalNumber,
     "currentDir" -> u.dir.name))
-  private implicit val c = PlayConfig
+  import Utils.config
   private val cacher = MetadataCacher.create
   private def toRefreshStatus(o: Observable[IndexUpdate]) = {
     o.map(toJson).map(_.toString).doOnCompleted {

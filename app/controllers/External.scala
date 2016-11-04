@@ -19,7 +19,7 @@ import scalaz.syntax.ToBindOps
 
 object External extends Controller
     with FutureInstances with ToBindOps {
-  private implicit val c = PlayConfig
+  import Utils.config
   private type KVPair = (String, JsValueWrapper)
   private val hosts: Seq[Host] =
     Seq(Host.MusicBrainz, Host.Wikipedia, Host.AllMusic, Host.Facebook, Host.LastFm, Host.RateYourMusic)

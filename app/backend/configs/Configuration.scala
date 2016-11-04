@@ -1,5 +1,6 @@
 package backend.configs
 
+import backend.logging.Logger
 import common.io.{DirectoryRef, InternetTalker}
 import models.MusicFinder
 import slick.driver.JdbcProfile
@@ -14,4 +15,5 @@ trait Configuration extends ExecutionContext with InternetTalker {
   implicit val db: driver.backend.DatabaseDef
   implicit val mf: MusicFinder
   implicit val rootDirectory: DirectoryRef
+  implicit val logger: Logger
 }

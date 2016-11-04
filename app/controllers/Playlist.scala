@@ -13,7 +13,7 @@ import playlist.{PlaylistQueue, PlaylistState}
 import scala.concurrent.duration.DurationInt
 
 object Playlist extends Controller {
-  private val saver = new JsonableSaver()(PlayConfig.rootDirectory) // since implicit importing is auto-removed
+  private val saver = new JsonableSaver()(Utils.config.rootDirectory) // since implicit importing is auto-removed
 
   private def arrayOfPathsToSong(a: JsArray): Seq[Song] = a.value.map(_.as[String]).map(Utils.parseSong)
 

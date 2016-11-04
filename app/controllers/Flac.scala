@@ -8,7 +8,7 @@ import play.api.mvc.{Action, Controller}
 import scala.concurrent.Future
 
 object Flac extends Controller with Debug {
-  private implicit val c = PlayConfig
+  import Utils.config
   def raw() = Action.async {
     Future {
       //    Ok.sendFile(new File("""D:\Media\Music\Rock\Neo-Prog\Beardfish\2012 The Void\09 - Note.flac"""))
