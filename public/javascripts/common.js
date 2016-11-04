@@ -46,3 +46,12 @@ function copyTextToClipboard(text) {
 
   document.body.removeChild(textArea);
 }
+
+function isEmptyObject(obj) {
+  for(var prop in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+      return false;
+    }
+  }
+  return true;
+}

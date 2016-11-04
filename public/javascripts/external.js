@@ -1,7 +1,7 @@
 $(function () {
   const href = (target, name) => `<a target=_blank href="${target}">${name}</a>`
-
   const externalDiv = $("#external");
+  const remotePath = "external/"
 
   function getExtensions(link) {
     const $ = Object.keys(link.extensions).map(k => href(link.extensions[k], k)).join(", ")
@@ -10,7 +10,27 @@ $(function () {
         "")
   }
 
+  function resetLinks() {
+    externalDiv.html("Fetching links...");
+  }
+
   const formatTimestamp = s => `${s.slice(6)}/${s.slice(4, 6)}/${s.slice(0, 4)}`
+
+  function updateRecon() {
+    function addIfNotEmpty(json, id) {
+      const text = $(`#${id}-id`).val()
+      if (text.length != 0)
+        json[id] = text
+    }
+    const json = {}
+    addIfNotEmpty(json, "artist")
+    addIfNotEmpty(json, "album")
+    if (!isEmptyObject(json)) {
+      resetLinks()
+      const songPath = gplaylist.currentPlayingSong().file
+      $.post(remotePath + "recons/" + songPath, JSON.stringify(json), l => showLinks(l, remotePath + songPath))
+    }
+  }
 
   function showLinks(externalLinks, debugLink) {
     externalDiv.html("")
@@ -31,11 +51,14 @@ $(function () {
       }
       externalDiv.append(ul)
     })
+    externalDiv.append($("<input id='artist-id' placeholder='Artist ID' type='text'/><br/>"))
+    externalDiv.append($("<input id='album-id' placeholder='Album ID' type='text'/><br/>"))
+    externalDiv.append(elem("button", "Update Recon").click(updateRecon))
   }
 
   External.show = function (song) {
-    const externalUrl = "external/" + song.file
-    externalDiv.html("Fetching links...");
+    resetLinks()
+    const externalUrl = remotePath + song.file
     $.get(externalUrl, l => showLinks(l, externalUrl))
         .fail(function () {
           externalDiv.html("Error occurred while fetching links");
