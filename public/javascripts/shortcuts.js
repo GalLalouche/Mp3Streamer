@@ -25,15 +25,26 @@ $(function () {
         gplaylist.next()
         break;
       case 'N':
-        loadNextSong()        
+        loadNextSong()
         break;
     }
   });
   function loadNextSong() {
-    $.get("data/nextSong?path=" + gplaylist.currentPlayingSong().file, function (song) {
+    const songs = gplaylist.songs()
+    // verify that the sequence of queued songs, starting from the current song, are continuous in the same album
+    // otherwise, don't queue a new song
+    for (let index = gplaylist.currentIndex(); index < gplaylist.length() - 1; index++) {
+      const currentSong = songs[index]
+      const nextSong = songs[index + 1]
+      const same = field => currentSong[field] == nextSong[field]
+      if (false == (same("artistName") && same("albumName") && currentSong.track + 1 == nextSong.track))
+        return
+    }
+    $.get("data/nextSong?path=" + gplaylist.last().file, function (song) {
       gplaylist.add(song, false)
     })
   }
+
   // pauses on poster click
   $(document).on("click", ".poster", function (e) {
     gplayer.togglePause()
