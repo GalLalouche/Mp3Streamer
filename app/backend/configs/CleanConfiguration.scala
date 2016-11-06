@@ -1,7 +1,7 @@
 package backend.configs
 
-import backend.external.SlickExternalStorage
-import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage}
+import backend.external.{AlbumExternalStorage, ArtistExternalStorage}
+import backend.recon.{AlbumReconStorage, ArtistReconStorage}
 
 import scala.concurrent.ExecutionContext
 
@@ -12,8 +12,8 @@ object CleanConfiguration extends RealConfig with NonPersistentConfig {
     implicit val c = CleanConfiguration
     new ArtistReconStorage().utils.createTable()
     new AlbumReconStorage().utils.createTable()
-    new SlickExternalStorage[Artist]().utils.createTable()
-    new SlickExternalStorage[Album]().utils.createTable()
+    new ArtistExternalStorage().utils.createTable()
+    new AlbumExternalStorage().utils.createTable()
   }
   createTables()
 }

@@ -24,7 +24,7 @@ class MbExternalLinksProvider(implicit c: Configuration)
     override def apply(r: R): Future[TimestampedLinks[R]] = foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](reconciler: Retriever[R, (Option[ReconID], Boolean)],
-                                                                        storage: SlickExternalStorage[R],
+                                                                        storage: ExternalStorage[R],
                                                                         provider: Retriever[ReconID, Links[R]],
                                                                         expander: Traversable[ExternalLinkExpander[R]],
                                                                         additionalReconciler: Traversable[Reconciler[R]]
@@ -42,7 +42,7 @@ class MbExternalLinksProvider(implicit c: Configuration)
         .mapTo(new TimeStamper(_))
 
   private val artistReconStorage: ArtistReconStorage = new ArtistReconStorage
-  private val artistExternalStorage: SlickExternalStorage[Artist] = new SlickExternalStorage
+  private val artistExternalStorage = new ArtistExternalStorage
   private val artistReconciler =
     new ReconcilerCacher[Artist](artistReconStorage, new MbArtistReconciler)
   private val artistPipe =
@@ -50,7 +50,7 @@ class MbExternalLinksProvider(implicit c: Configuration)
   private def getArtistLinks(a: Artist): Future[TimestampedLinks[Artist]] = artistPipe(a)
 
   private val albumReconStorage: AlbumReconStorage = new AlbumReconStorage
-  private val albumExternalStorage: SlickExternalStorage[Album] = new SlickExternalStorage
+  private val albumExternalStorage = new AlbumExternalStorage
   private def getAlbumLinks(artistLinks: Links[Artist], album: Album): Future[TimestampedLinks[Album]] =
     wrapExternalPipeWithStorage(
       new ReconcilerCacher[Album](albumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get))),
