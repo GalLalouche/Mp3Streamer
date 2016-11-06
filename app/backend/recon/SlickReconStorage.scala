@@ -8,12 +8,12 @@ import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
-abstract class SlickReconStorage[K <: Reconcilable](implicit c: Configuration,
-                                                    m: Manifest[K]) extends ReconStorage[K]
+//TODO so much code duplication :(
+class ArtistReconStorage(implicit c: Configuration) extends ReconStorage[Artist]
     with ToFunctorOps with FutureInstances {
   import c.driver.api._
 
-  private class Rows(tag: Tag) extends Table[(String, Option[String], Boolean)](tag, _tableName = m.runtimeClass.getSimpleName.replaceAll("\\$", "") + "S") {
+  private class Rows(tag: Tag) extends Table[(String, Option[String], Boolean)](tag, "ARTISTS") {
     def name = column[String]("KEY", O.PrimaryKey)
     def reconId = column[Option[String]]("RECON_ID")
     def isIgnored = column[Boolean]("IS_IGNORED", O.Default(false))
@@ -21,25 +21,23 @@ abstract class SlickReconStorage[K <: Reconcilable](implicit c: Configuration,
   }
   private val rows = TableQuery[Rows]
   private val db = c.db
-  def store(k: K, id: Option[String]): Future[Boolean] =
-    store(k, id.map(ReconID.apply) -> id.isEmpty)
-  /** If an existing value exists, override it. */
-  override protected def internalForceStore(k: K, value: (Option[ReconID], Boolean)): Future[Unit] =
-  db.run(rows.insertOrUpdate(k.normalize, value._1.map(_.id), value._2)) >| Unit
-  /** Returns the value associated with the key, if one exists, or None. */
-  override def load(k: K): Future[Option[(Option[ReconID], Boolean)]] =
-  db.run(rows
-      .filter(_.name === k.normalize)
-      .map(e => e.isIgnored -> e.reconId)
-      .result
-      .map(_.headOption.map(_.swap.mapTo(e => e._1.map(ReconID) -> e._2))))
-  override def internalDelete(k: K): Future[Unit] =
-    db.run(rows.filter(_.name === k.normalize).delete).>|(Unit)
+  def store(a: Artist, id: Option[String]): Future[Boolean] =
+    store(a, id.map(ReconID.apply) -> id.isEmpty)
+  override protected def internalForceStore(a: Artist, value: (Option[ReconID], Boolean)): Future[Unit] =
+    db.run(rows.insertOrUpdate(a.normalize, value._1.map(_.id), value._2)) >| Unit
+  override def load(a: Artist): Future[Option[(Option[ReconID], Boolean)]] =
+    db.run(rows
+        .filter(_.name === a.normalize)
+        .map(e => e.isIgnored -> e.reconId)
+        .result
+        .map(_.headOption.map(_.swap.mapTo(e => e._1.map(ReconID) -> e._2))))
+  override def internalDelete(a: Artist): Future[Unit] =
+    db.run(rows.filter(_.name === a.normalize).delete).>|(Unit)
   override def utils = SlickStorageUtils(c)(rows)
 }
 
-class ArtistReconStorage(implicit c: Configuration) extends SlickReconStorage[Artist]
-class AlbumReconStorage(implicit c: Configuration) extends ReconStorage[Album] {
+class AlbumReconStorage(implicit c: Configuration) extends ReconStorage[Album]
+    with ToFunctorOps with FutureInstances {
   import c.driver.api._
   private class Rows(tag: Tag) extends Table[(String, String, Option[String], Boolean)](tag, "ALBUMS") {
     def album = column[String]("ALBUM", O.PrimaryKey)
