@@ -81,6 +81,12 @@ class Playlist {
   songs() {
     throw new Error("Abstract")
   }
+  last() {
+    return this.songs()[this.length() - 1]
+  }
+  length() {
+    return this.songs().length
+  }
 }
 gplayer = new Player()
 gplaylist = new Playlist()

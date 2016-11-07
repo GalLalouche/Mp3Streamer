@@ -1,9 +1,11 @@
 $(function () {
-  const isFromInput = tag => tag == 'input' || tag == 'textarea'
-
   $(document).keyup(function (e) {
-    if (isFromInput(e.target.tagName.toLowerCase())) // ignore text input into boxes
-      return
+    {
+      const tag = e.target.tagName.toLowerCase()
+      const isFromInput = tag == 'input' || tag == 'textarea'
+      if (isFromInput) // ignore text input into boxes
+        return
+    }
     const letter = String.fromCharCode(e.which);
     switch (letter) {
       case 'Z':
@@ -40,7 +42,7 @@ $(function () {
       if (false == (same("artistName") && same("albumName") && currentSong.track + 1 == nextSong.track))
         return
     }
-    $.get("data/nextSong?path=" + gplaylist.last().file, function (song) {
+    $.get("data/nextSong?path=" + gplaylist.last().file, function(song) {
       gplaylist.add(song, false)
     })
   }
