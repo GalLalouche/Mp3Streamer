@@ -24,7 +24,7 @@ class MbExternalLinksProvider(implicit c: Configuration)
     override def apply(r: R): Future[TimestampedLinks[R]] = foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](reconciler: Retriever[R, (Option[ReconID], Boolean)],
-                                                                        storage: SlickExternalStorage[R],
+                                                                        storage: ExternalStorage[R],
                                                                         provider: Retriever[ReconID, Links[R]],
                                                                         expander: Traversable[ExternalLinkExpander[R]],
                                                                         additionalReconciler: Traversable[Reconciler[R]]
@@ -42,7 +42,7 @@ class MbExternalLinksProvider(implicit c: Configuration)
         .mapTo(new TimeStamper(_))
 
   private val artistReconStorage: ArtistReconStorage = new ArtistReconStorage
-  private val artistExternalStorage: SlickExternalStorage[Artist] = new SlickExternalStorage
+  private val artistExternalStorage = new ArtistExternalStorage
   private val artistReconciler =
     new ReconcilerCacher[Artist](artistReconStorage, new MbArtistReconciler)
   private val artistPipe =
@@ -50,7 +50,7 @@ class MbExternalLinksProvider(implicit c: Configuration)
   private def getArtistLinks(a: Artist): Future[TimestampedLinks[Artist]] = artistPipe(a)
 
   private val albumReconStorage: AlbumReconStorage = new AlbumReconStorage
-  private val albumExternalStorage: SlickExternalStorage[Album] = new SlickExternalStorage
+  private val albumExternalStorage = new AlbumExternalStorage
   private def getAlbumLinks(artistLinks: Links[Artist], album: Album): Future[TimestampedLinks[Album]] =
     wrapExternalPipeWithStorage(
       new ReconcilerCacher[Album](albumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get))),
@@ -69,27 +69,27 @@ class MbExternalLinksProvider(implicit c: Configuration)
   }
   def apply(s: Song): ExtendedExternalLinks = apply(s.release)
 
-  // creates the future if true, otherwise return an empty future
-  private def booleanFuture[T](b: Boolean, f: => Future[_]): Future[Unit] =
-  optionalFuture(Option(b) filter identity)(e => f)
-  // creates the future if the option exists, otherwise return an empty future
   private def optionalFuture[T](o: Option[T])(f: T => Future[_]): Future[Unit] =
-  o.map(f(_).>|(())).getOrElse(Future successful Unit)
+    o.map(f(_).>|(())).getOrElse(Future successful Unit)
   private def update[R <: Reconcilable](key: R, recon: Option[ReconID], storage: ReconStorage[R]): Future[Unit] =
     optionalFuture(recon)(reconId => storage.mapStore(key, e => Some(reconId) -> e._2, Some(reconId) -> false))
 
   def updateRecon(song: Song, artistReconId: Option[ReconID], albumReconId: Option[ReconID]): Future[Unit] = {
     require(artistReconId.isDefined || albumReconId.isDefined, "No actual recon IDs given")
-    update(song.artist, artistReconId, artistReconStorage)
-        .>>(update(song.release, albumReconId, albumReconStorage))
-        .>>(booleanFuture(artistReconId.isDefined && albumReconId.isEmpty, albumReconStorage delete song.release))
-        .>>(booleanFuture(artistReconId.isDefined, artistExternalStorage delete song.artist))
-        .>>(booleanFuture(artistReconId.isDefined || albumReconId.isDefined, albumExternalStorage delete song.release))
+    update(song.artist, artistReconId, artistReconStorage).>>(
+      if (artistReconId.isDefined) {
+        artistExternalStorage.delete(song.artist) >>
+            albumReconStorage.deleteAllRecons(song.artist) >>
+            albumExternalStorage.deleteAllLinks(song.artist)
+      } else {
+        assert(albumReconId.isDefined)
+        albumReconStorage.delete(song.release) >>
+            albumExternalStorage.delete(song.release)
+      }).>>(update(song.release, albumReconId, albumReconStorage))
   }
 }
 
 object MbExternalLinksProvider {
-
   import common.rich.path.Directory
   import common.rich.path.RichFile._
 
