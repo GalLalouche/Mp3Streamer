@@ -1,10 +1,13 @@
 package backend.logging
 
+import common.rich.RichT._
+
 sealed abstract class LoggingLevel(private val level: Int) extends Ordered[LoggingLevel] {
   // Has to be lazy to avoid infinite constructor recursion.
   lazy val andLower: Traversable[LoggingLevel] = LoggingLevel.values.filter(_.level <= level)
 
   override def compare(that: LoggingLevel): Int = this.level.compare(that.level)
+  override def toString: String = this.simpleName
 }
 
 object LoggingLevel {

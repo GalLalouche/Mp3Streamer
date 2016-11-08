@@ -1,5 +1,7 @@
 package backend.logging
 
+import org.joda.time.DateTime
+
 trait FilteringLogger extends Logger {
   private var currentLevel: LoggingLevel = LoggingLevel.Info
   def setCurrentLevel(l: LoggingLevel) = {
@@ -7,5 +9,6 @@ trait FilteringLogger extends Logger {
     currentLevel = l
     this
   }
-  override def log(what: String, level: LoggingLevel): Unit = if (level >= currentLevel) super.log(what, level)
+  abstract override def log(what: String, level: LoggingLevel, when: DateTime): Unit =
+    if (level >= currentLevel) super.log(what, level, when)
 }
