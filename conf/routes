@@ -31,9 +31,6 @@ POST       /external/recons/*path        controllers.External.updateRecon(path)
 GET        /assets/*file                 controllers.Assets.at(path="/public", file)
 GET        /client/*file                 controllers.Assets.at(path="/client/scala-2.11/", file)
 GET        /js/*file                     controllers.Assets.at(path="/public/javascripts", file)
-# Flac
-GET        /flac/raw                     controllers.Flac.raw
-GET        /flac/play                    controllers.Flac.foobar
 
 # Searcher
 GET        /search/*path                 controllers.Searcher.search(path)
