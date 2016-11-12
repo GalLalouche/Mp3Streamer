@@ -14,12 +14,12 @@ class StorageTemplateTest extends FreeSpec with MockitoSugar with OneInstancePer
   private implicit val c = new TestConfiguration
   private val existingValues = mutable.HashMap[Int, Int]()
   private val $ = new StorageTemplate[Int, Int]() {
-    override protected def internalForceStore(k: Int, v: Int): Future[Unit] = {
+    override protected def internalForceStore(k: Int, v: Int) = {
       existingValues += k -> v
       Future successful Unit
     }
     override def load(k: Int): Future[Option[Int]] = Future successful existingValues.get(k)
-    override protected def internalDelete(k: Int): Future[Unit] = Future successful existingValues.remove(k)
+    override protected def internalDelete(k: Int) = Future successful existingValues.remove(k)
     override def utils = ???
   }
   "store" - {

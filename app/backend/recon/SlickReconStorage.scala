@@ -23,16 +23,16 @@ class ArtistReconStorage(implicit c: Configuration) extends ReconStorage[Artist]
   private val db = c.db
   def store(a: Artist, id: Option[String]): Future[Boolean] =
     store(a, id.map(ReconID.apply) -> id.isEmpty)
-  override protected def internalForceStore(a: Artist, value: (Option[ReconID], Boolean)): Future[Unit] =
-    db.run(rows.insertOrUpdate(a.normalize, value._1.map(_.id), value._2)) >| Unit
+  override protected def internalForceStore(a: Artist, value: (Option[ReconID], Boolean)) =
+    db.run(rows.insertOrUpdate(a.normalize, value._1.map(_.id), value._2))
   override def load(a: Artist): Future[Option[(Option[ReconID], Boolean)]] =
     db.run(rows
         .filter(_.name === a.normalize)
         .map(e => e.isIgnored -> e.reconId)
         .result
         .map(_.headOption.map(_.swap.mapTo(e => e._1.map(ReconID) -> e._2))))
-  override def internalDelete(a: Artist): Future[Unit] =
-    db.run(rows.filter(_.name === a.normalize).delete).>|(Unit)
+  override def internalDelete(a: Artist) =
+    db.run(rows.filter(_.name === a.normalize).delete)
   override def utils = SlickStorageUtils(c)(rows)
 }
 
@@ -49,16 +49,16 @@ class AlbumReconStorage(implicit c: Configuration) extends ReconStorage[Album]
   }
   private val rows = TableQuery[Rows]
   private val db = c.db
-  override protected def internalForceStore(a: Album, value: (Option[ReconID], Boolean)): Future[Unit] =
-    db.run(rows.insertOrUpdate(a.normalize, a.artist.normalize, value._1.map(_.id), value._2)) >| Unit
+  override protected def internalForceStore(a: Album, value: (Option[ReconID], Boolean)) =
+    db.run(rows.insertOrUpdate(a.normalize, a.artist.normalize, value._1.map(_.id), value._2))
   override def load(a: Album): Future[Option[(Option[ReconID], Boolean)]] =
     db.run(rows
         .filter(_.album === a.normalize)
         .map(e => e.isIgnored -> e.reconId)
         .result
         .map(_.headOption.map(_.swap.mapTo(e => e._1.map(ReconID) -> e._2))))
-  override def internalDelete(a: Album): Future[Unit] =
-    db.run(rows.filter(_.album === a.normalize).delete).>|(Unit)
+  override def internalDelete(a: Album) =
+    db.run(rows.filter(_.album === a.normalize).delete)
   override def utils = SlickStorageUtils(c)(rows)
   /** Delete all recons for albums for that artist */
   def deleteAllRecons(a: Artist): Future[Traversable[(String, Option[ReconID], Boolean)]] = {

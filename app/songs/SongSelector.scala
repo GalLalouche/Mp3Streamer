@@ -45,13 +45,13 @@ object SongSelector
 
   /** A mutable-updateable wrapper of SongSelector */
   private class SongSelectorProxy(musicFinder: MusicFinder) extends SongSelector {
-    def update(): Future[Unit] = {
+    def update(): Future[_] = {
       val $ = Future(new SongSelectorImpl(musicFinder.getSongFilePaths.toVector.map(new File(_)), musicFinder))
       if (songSelector == null)
         songSelector = $
       else // don't override
         $.onSuccess { case e => songSelector = $ }
-      $.map(e => ())
+      $
     }
     private var songSelector: Future[SongSelector] = _
     private lazy val ss = songSelector.get

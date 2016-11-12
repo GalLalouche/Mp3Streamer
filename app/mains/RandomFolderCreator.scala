@@ -41,7 +41,7 @@ private object RandomFolderCreator extends
   }
 
   @tailrec
-  private def addSongs(maxSize: Int, forEachEntry: (File, Int) => Unit, existing: Set[File] = Set(), futures: List[Future[Unit]] = Nil): Future[Unit] = {
+  private def addSongs(maxSize: Int, forEachEntry: (File, Int) => Unit, existing: Set[File] = Set(), futures: List[Future[Unit]] = Nil): Future[_] = {
     val index = existing.size
     if (index == maxSize)
       return futures.sequenceU map (_.reduce((_, _) => Unit))
