@@ -2,14 +2,14 @@ package controllers
 
 import common.Debug
 import common.Jsoner.jsValue
+import common.concurrency.toRunnable
 import common.io.DirectoryRef
+import controllers.websockets.WebSocketController
 import play.api.libs.json.{JsObject, JsValue}
 import play.api.mvc.Action
 import rx.lang.scala.Observable
 import search.MetadataCacher
 import search.MetadataCacher.IndexUpdate
-import websockets.WebSocketController
-import common.concurrency.toRunnable
 
 /** used for running manual commands from the client side */
 object Cacher extends WebSocketController with Debug {

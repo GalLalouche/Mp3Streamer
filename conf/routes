@@ -36,7 +36,7 @@ GET        /js/*file                     controllers.Assets.at(path="/public/jav
 GET        /search/*path                 controllers.Searcher.search(path)
 
 # Web sockets
-GET        /ws/console                   websockets.ConsoleSocket.accept
+GET        /ws/console                   controllers.websockets.ConsoleSocket.accept
 GET        /ws/refresh                   controllers.Cacher.accept
 
 # Playlist

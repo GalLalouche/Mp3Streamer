@@ -1,7 +1,9 @@
-package websockets
+package controllers.websockets
 
 import akka.actor.{Actor, ActorDSL}
+import controllers.Utils
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import common.rich.RichT._
 import play.api.libs.iteratee.{Concurrent, Iteratee}
 import play.api.mvc.{Controller, WebSocket}
 
@@ -27,7 +29,7 @@ trait WebSocketController extends Controller {
   lazy val actor = ActorDSL.actor(new WebSocketController.DisconnectingActor(receive, out._2, name))
   def accept = WebSocket.using[String] {r => {
     val i = Iteratee.foreach[String] {
-      x => common.CompositeLogger.debug("New subscriber to " + getClass)
+      x => Utils.config.logger.verbose(s"${this.simpleName} received message <$x>")
     }
     (i, out._1)
   }
