@@ -9,6 +9,7 @@ import rx.lang.scala.Observable
 import search.MetadataCacher
 import search.MetadataCacher.IndexUpdate
 import websockets.WebSocketController
+import common.concurrency.toRunnable
 
 /** used for running manual commands from the client side */
 object Cacher extends WebSocketController with Debug {
@@ -19,13 +20,19 @@ object Cacher extends WebSocketController with Debug {
   import Utils.config
   private val cacher = MetadataCacher.create
   private def toRefreshStatus(o: Observable[IndexUpdate]) = {
-    o.map(toJson).map(_.toString).doOnCompleted {
-      Player.update()
-      safePush("Reloading searcher")
-      Searcher.! onComplete { e =>
-        safePush("Finished")
+    Utils.config.ec.execute(() => {
+      // TODO this should be fixed by having a websocket that receives ALL messages, even ones that he missed
+      Thread.sleep(1000) // Wait until client is ready to receive messages. Apparently, even using a lock isn't enough.
+      o.map(toJson).map(_.toString).doOnCompleted {
+        Player.update()
+        safePush("Reloading searcher")
+        Searcher.! onComplete { e =>
+          safePush("Finished")
+        }
+      } subscribe { e =>
+        safePush(e)
       }
-    } subscribe (safePush(_))
+    })
     Ok(views.html.refresh())
   }
 
