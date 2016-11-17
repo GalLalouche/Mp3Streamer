@@ -18,7 +18,9 @@ private[controllers] object Utils {
   implicit val config = new RealConfig {
     override implicit val ec: ExecutionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
     override implicit val logger: Logger =
-      new CompositeLogger(new ConsoleLogger with FilteringLogger, new DirectoryLogger()(this))
+      new CompositeLogger(new ConsoleLogger with FilteringLogger {
+        setCurrentLevel(LoggingLevel.Verbose)
+      }, new DirectoryLogger()(this))
   }
   def toJson(s: Song): JsObject = {
     // TODO lenses?

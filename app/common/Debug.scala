@@ -1,20 +1,15 @@
 package common
 
+import backend.logging.Logger
 
 trait Debug {
-	protected def timed[T](f: => T): T = timed("Task", CompositeLogger) {
-		f
-	}
+	protected def timed[T](f: => T)(implicit l: Logger): T = timed("Task")(f)
 
-	protected def timed[T](task: String) (f: => T): T = timed(task, CompositeLogger) {
-		f
-	}
-
-	protected def timed[T](task: String = "Task", logger: Logger = CompositeLogger)(f: => T): T = {
+	protected def timed[T](task: String)(f: => T)(implicit l: Logger): T = {
 		val start = System.currentTimeMillis
-		logger.trace(s"starts $task")
+		l.verbose(s"starts $task")
 		val $ = f
-		logger.trace("%s took %d ms".format(task, System.currentTimeMillis - start))
+		l.verbose("%s took %d ms".format(task, System.currentTimeMillis - start))
 		$
 	}
 
@@ -34,8 +29,8 @@ trait Debug {
 	}
 
 
-	protected def echoLocation() = {
+	protected def echoLocation(implicit l: Logger) = {
 		val trace = Thread.currentThread.getStackTrace()(3)
-		CompositeLogger.trace(s"${Thread.currentThread.getName}: ${trace.getClassName}@${trace.getLineNumber}")
+		l.verbose(s"${Thread.currentThread.getName}: ${trace.getClassName}@${trace.getLineNumber}")
 	}
 }

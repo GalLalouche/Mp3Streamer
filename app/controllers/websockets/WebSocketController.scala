@@ -8,10 +8,11 @@ import play.api.libs.iteratee.{Concurrent, Iteratee}
 import play.api.mvc.{Controller, WebSocket}
 
 object WebSocketController {
+  private val logger: Logger = Utils.config.logger
   private class DisconnectingActor(_receive: PartialFunction[Any, Unit], channel: play.api.libs.iteratee.Concurrent.Channel[_], name: String) extends Actor {
     override def receive = _receive
     override def postStop {
-      common.CompositeLogger.trace("Ending " + name + " socket connection")
+      logger verbose s"Ending $name socket connection"
       channel.eofAndEnd
     }
   }
@@ -19,7 +20,6 @@ object WebSocketController {
 
 trait WebSocketController extends Controller {
   import Utils.config._
-  private val logger: Logger = Utils.config.logger
   private val out = Concurrent.broadcast[String]
   def safePush(msg: String) {
     Option(out).flatMap(e => Option(e._2)).foreach(_ push msg)
