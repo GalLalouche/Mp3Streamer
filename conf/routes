@@ -38,7 +38,6 @@ GET        /search/*path                 controllers.Searcher.search(path)
 # Web sockets
 GET        /ws/console                   websockets.ConsoleSocket.accept
 GET        /ws/refresh                   controllers.Cacher.accept
-GET        /ws/newFolder                 websockets.NewFolderSocket.accept
 
 # Playlist
 GET         /playlist/queue              controllers.Playlist.getQueue
