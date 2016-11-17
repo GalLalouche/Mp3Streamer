@@ -51,8 +51,8 @@ $(function () {
       }
       externalDiv.append(ul)
     })
-    externalDiv.append($("<input id='artist-id' placeholder='Artist ID' type='text'/><br/>"))
-    externalDiv.append($("<input id='album-id' placeholder='Album ID' type='text'/><br/>"))
+    externalDiv.append($("<input class='external-recon-id' id='artist-id' placeholder='Artist ID' type='text'/><br/>"))
+    externalDiv.append($("<input class='external-recon-id' id='album-id' placeholder='Album ID' type='text'/><br/>"))
     externalDiv.append(elem("button", "Update Recon").click(updateRecon))
   }
 
@@ -65,8 +65,13 @@ $(function () {
         });
   }
   externalDiv.on("click", ".copy-to-clipboard", function () {
-    const foo = $(this)
-    copyTextToClipboard(foo.attr("url"))
+    copyTextToClipboard($(this).attr("url"))
+  })
+  // Update recon on pressing Enter
+  externalDiv.on("keypress", ".external-recon-id", function() {
+    if (event.keyCode == 13) {
+      updateRecon()
+    }
   })
 });
 External = {};
