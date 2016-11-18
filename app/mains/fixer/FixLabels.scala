@@ -3,7 +3,6 @@ package mains.fixer
 import java.io.File
 import java.util.logging.{Level, Logger}
 
-import common.Debug
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce._
 import common.rich.path.Directory
@@ -20,7 +19,7 @@ import org.jaudiotagger.tag.{FieldKey, Tag}
 import scala.util.Try
 
 /** Fixes ID3 tags on mp3 (and flac) files to proper casing, etc. */
-object FixLabels extends Debug {
+object FixLabels {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   private def properTrackString(track: Int): String = if (track < 10) "0" + track else track.toString
   private[fixer] def fixTag(f: File, fixDiscNumber: Boolean): Tag = {

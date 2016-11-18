@@ -1,6 +1,5 @@
 package controllers
 
-import common.Debug
 import common.Jsoner.jsValue
 import common.io.DirectoryRef
 import controllers.websockets.WebSocketController
@@ -15,7 +14,7 @@ import scalaz.Bind
 import scalaz.syntax.ToBindOps
 
 /** used for running manual commands from the client side */
-object Cacher extends WebSocketController with Debug
+object Cacher extends WebSocketController
     with ToBindOps {
   //TODO this should probably be moved to common.concurrency or something
   private implicit object ObservableFunctor extends Bind[Observable] {
