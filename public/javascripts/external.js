@@ -17,6 +17,8 @@ $(function () {
   const formatTimestamp = s => `${s.slice(6)}/${s.slice(4, 6)}/${s.slice(0, 4)}`
 
   function updateRecon() {
+    if ($("#update-recon").prop("disabled"))
+      return
     function addIfNotEmpty(json, id) {
       const text = $(`#${id}-id`).val()
       if (text.length != 0)
@@ -53,7 +55,7 @@ $(function () {
     })
     externalDiv.append($("<input class='external-recon-id' id='artist-id' placeholder='Artist ID' type='text'/><br/>"))
     externalDiv.append($("<input class='external-recon-id' id='album-id' placeholder='Album ID' type='text'/><br/>"))
-    externalDiv.append(elem("button", "Update Recon").click(updateRecon))
+    externalDiv.append(elem("button", "Update Recon").click(updateRecon).attr("id", "update-recon").prop("disabled", true))
   }
 
   External.show = function (song) {
@@ -64,13 +66,23 @@ $(function () {
           externalDiv.html("Error occurred while fetching links");
         });
   }
+
+  const hexa = "[a-f0-9]"
+  // d8f63b51-73e0-4f65-8bd3-bcfe6892fb0e
+  const reconRegex = `${hexa}{8}-(?:${hexa}{4}-){3}${hexa}{12}`
+  function verify(element) {
+    const text = element.val();
+    $("#update-recon").prop('disabled', !text.match(reconRegex))
+  }
   externalDiv.on("click", ".copy-to-clipboard", function () {
     copyTextToClipboard($(this).attr("url"))
   })
   // Update recon on pressing Enter
-  externalDiv.on("keypress", ".external-recon-id", function() {
+  externalDiv.on("keyup", ".external-recon-id", function() {
     if (event.keyCode == 13) {
       updateRecon()
+    } else {
+      verify($(this))
     }
   })
 });
