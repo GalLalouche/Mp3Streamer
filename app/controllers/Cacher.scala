@@ -1,6 +1,6 @@
 package controllers
 
-import common.Jsoner.jsValue
+import common.RichJson._
 import common.io.DirectoryRef
 import controllers.websockets.WebSocketController
 import play.api.libs.json.{JsObject, JsValue}
