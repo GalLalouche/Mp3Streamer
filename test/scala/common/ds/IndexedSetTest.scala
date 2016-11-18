@@ -1,5 +1,6 @@
-package common
+package common.ds
 
+import common.AuxSpecs
 import org.scalatest.FreeSpec
 
 import scalaz.Semigroup

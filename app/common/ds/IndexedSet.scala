@@ -1,4 +1,4 @@
-package common
+package common.ds
 
 import scalaz.Semigroup
 
