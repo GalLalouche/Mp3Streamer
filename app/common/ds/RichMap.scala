@@ -1,5 +1,4 @@
 package common.ds
-import common.SemiCollectable
 
 import scalaz.Semigroup
 

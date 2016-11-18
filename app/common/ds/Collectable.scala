@@ -1,5 +1,4 @@
-package common
-
+package common.ds
 
 import scala.collection.GenTraversable
 import scalaz.Semigroup
