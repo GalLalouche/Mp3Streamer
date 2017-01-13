@@ -38,6 +38,21 @@ $(function() {
     })
   }
 
+  function clearResults() {
+    $('#search-results').hide()
+    $('#searchbox').val('')
+  }
+  function scan() {
+    $.get("debug/fast_refresh", function() {
+      openConnection("refresh", function(msg) {
+        try {
+          $.toast("Found new directory: " + JSON.parse(msg.data).currentDir)
+        } catch (e) {
+          $.toast(msg.data)
+        }
+      })
+    })
+  }
   results.on("click", "#song-results .fa", function(e) {
     const song = $(this).parent().data()
     const isPlay = e.target.classList.contains("fa-play")
@@ -50,11 +65,15 @@ $(function() {
 
   $("#searchbox").bind('input change', function () {
     const text = $(this).val()
-    if (text === "") {
-      return $("#clear-results").click()
-    }
+    if (text === "")
+      clearResults()
     $.get("search/" + text, e => setResults(Date.now(), e))
   })
   results.tabs()
-  $("#clear-results").click()
+  clearResults()
+  const scanButton = elem("button", "Scan")
+  scanButton.click(function() {
+    scan()
+  })
+  $("#searchbox").after(scanButton)
 })

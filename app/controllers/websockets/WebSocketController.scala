@@ -1,46 +1,45 @@
 package controllers.websockets
 
-import akka.actor.{Actor, ActorDSL}
-import backend.logging.Logger
+import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
+import akka.stream.ActorMaterializer
 import common.rich.RichT._
 import controllers.Utils
-import play.api.libs.iteratee.{Concurrent, Iteratee}
+import play.api.libs.streams.ActorFlow
 import play.api.mvc.{Controller, WebSocket}
 
+import scala.collection.mutable
+
+// This has to appear before the trait, otherwise materializer won't be available as an implicit val?!
 object WebSocketController {
-  private val logger: Logger = Utils.config.logger
-  private class DisconnectingActor(_receive: PartialFunction[Any, Unit], channel: play.api.libs.iteratee.Concurrent.Channel[_], name: String) extends Actor {
-    override def receive = _receive
-    override def postStop {
-      logger verbose s"Ending $name socket connection"
-      channel.eofAndEnd
-    }
-  }
+  private case class MessageToClient(str: String) extends AnyVal
+  private implicit val system = ActorSystem("WebSockets")
+  private implicit val materializer = ActorMaterializer()(system)
 }
 
 trait WebSocketController extends Controller {
-  import Utils.config._
-  private val out = Concurrent.broadcast[String]
-  def safePush(msg: String) {
-    Option(out).flatMap(e => Option(e._2)).foreach(_ push msg)
+  import Utils.config
+  import WebSocketController._
+  private val actors = new mutable.HashSet[ActorRef]
+  protected def broadcast(msg: String): Unit = actors.foreach(_ ! MessageToClient(msg))
+  protected def closeConnections(): Unit = actors.foreach(_ ! PoisonPill)
+
+  private class SocketActor(out: ActorRef) extends Actor {
+    override def preStart() = actors += this.self
+    override def postStop() = actors -= this.self
+    def receive = {
+      case msg: String =>
+        config.logger.verbose(s"${this.simpleName} received message <$msg>")
+        onMessage(msg)
+      case MessageToClient(msg) => out ! msg
+    }
   }
 
-  implicit val system = models.KillableActors.system
-  val name = getClass.getSimpleName
-  def receive: PartialFunction[Any, Unit] = {
-    case _ => ()
-  }
-  lazy val actor = ActorDSL.actor(new WebSocketController.DisconnectingActor(receive, out._2, name))
   protected def onMessage(msg: String) {}
   protected def onConnection() {}
-  def accept = WebSocket.using[String] { r => {
-    logger.verbose(s"${this.simpleName} received a new connection")
+
+  def accept = WebSocket.accept[String, String] { _ =>
+    config.logger.verbose(s"${this.simpleName} received a new connection")
     onConnection()
-    val i = Iteratee.foreach[String] { x =>
-      logger.verbose(s"${this.simpleName} received message <$x>")
-      onMessage(x)
-    }
-    (i, out._1)
-  }
+    ActorFlow.actorRef(out => Props(new SocketActor(out)))
   }
 }

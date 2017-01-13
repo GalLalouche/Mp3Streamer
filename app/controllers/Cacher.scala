@@ -1,7 +1,9 @@
 package controllers
 
+import backend.logging.LoggingLevel
 import common.RichJson._
 import common.io.DirectoryRef
+import common.rich.func.MoreMonadPlus._
 import controllers.websockets.WebSocketController
 import play.api.libs.json.{JsObject, JsValue}
 import play.api.mvc.Action
@@ -10,17 +12,11 @@ import search.MetadataCacher
 import search.MetadataCacher.IndexUpdate
 
 import scala.concurrent.Promise
-import scalaz.Bind
 import scalaz.syntax.ToBindOps
 
 /** used for running manual commands from the client side */
 object Cacher extends WebSocketController
     with ToBindOps {
-  //TODO this should probably be moved to common.concurrency or something
-  private implicit object ObservableFunctor extends Bind[Observable] {
-    override def bind[A, B](fa: Observable[A])(f: A => Observable[B]): Observable[B] = fa flatMap f
-    override def map[A, B](fa: Observable[A])(f: A => B): Observable[B] = fa map f
-  }
   private def toJson(u: IndexUpdate): JsObject = JsObject(Map[String, JsValue](
     "finished" -> u.currentIndex,
     "total" -> u.totalNumber,
@@ -33,16 +29,20 @@ object Cacher extends WebSocketController
   private var connectionPromise: Promise[Unit] = _
   private def toRefreshStatus(o: Observable[IndexUpdate]) = {
     connectionPromise = Promise()
+    config.logger.log("Awaiting connection", LoggingLevel.Verbose)
     Observable.from(connectionPromise.future)
         .>>(o)
         .map(toJson).map(_.toString).doOnCompleted {
+      config.logger.log("Finished caching", LoggingLevel.Verbose)
       Player.update()
-      safePush("Reloading searcher")
-      Searcher.! onComplete { e =>
-        safePush("Finished")
+      broadcast("Reloading searcher")
+      Searcher.! onComplete { _ =>
+        broadcast("Finished")
+        Thread.sleep(1000)
+        closeConnections()
       }
     } subscribe { e =>
-      safePush(e)
+      broadcast(e)
     }
     Ok(views.html.refresh())
   }
@@ -55,6 +55,11 @@ object Cacher extends WebSocketController
     toRefreshStatus(cacher.quickRefresh())
   }
   override protected def onConnection(): Unit = {
-    Option(connectionPromise).foreach(_.success(()))
+    Option(connectionPromise).foreach { p =>
+      if (p.isCompleted)
+        config.logger.log("Can't complete promise again!", LoggingLevel.Warn)
+      else
+        p.success(())
+    }
   }
 }
