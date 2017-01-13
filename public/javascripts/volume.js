@@ -3,7 +3,7 @@ $(function () {
   let volumeBaseline = 40.0 // The volume that was preset by the user. Start at 40.0, so it could increase 2.5 fold.
   let currentGain = defaultGain
 
-  const calculateVolumeCoefficientFromGain = () => Math.pow(2, currentGain / 10.0)
+  const calculateVolumeCoefficientFromGain = () => Math.pow(2, currentGain / 8.0)
   function updateVolume() {
     // +10 dB is twice as loud. Or something.
     gplayer.setVolume(volumeBaseline * calculateVolumeCoefficientFromGain())

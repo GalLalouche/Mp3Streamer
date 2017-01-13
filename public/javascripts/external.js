@@ -53,6 +53,7 @@ $(function () {
       }
       externalDiv.append(ul)
     })
+    // TODO this shouldn't really be created every time
     externalDiv.append($("<input class='external-recon-id' id='artist-id' placeholder='Artist ID' type='text'/><br/>"))
     externalDiv.append($("<input class='external-recon-id' id='album-id' placeholder='Album ID' type='text'/><br/>"))
     externalDiv.append(elem("button", "Update Recon").click(updateRecon).attr("id", "update-recon").prop("disabled", true))
@@ -78,7 +79,7 @@ $(function () {
     copyTextToClipboard($(this).attr("url"))
   })
   // Update recon on pressing Enter
-  externalDiv.on("keyup", ".external-recon-id", function() {
+  externalDiv.on("keyup", ".external-recon-id", function(event) {
     if (event.keyCode == 13) {
       updateRecon()
     } else {

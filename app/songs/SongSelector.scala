@@ -7,7 +7,7 @@ import common.concurrency.DirectoryWatcher
 import common.concurrency.DirectoryWatcher.DirectoryEvent
 import common.io.IODirectory
 import common.rich.RichT._
-import common.rich.func.MoreMonadPlus._
+import common.rich.func.MoreMonadPlus.SeqMonadPlus
 import common.rich.path.RichFile._
 import controllers.{Cacher, Searcher}
 import models.{MusicFinder, Song}
