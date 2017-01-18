@@ -2,11 +2,12 @@ package backend.mb
 
 import backend.configs.StandaloneConfig
 import backend.mb.JsonHelper._
-import backend.recon.{Artist, OnlineReconciler, ReconID}
+import backend.recon._
 import common.CompositeDateFormat
 import common.RichJson._
 import common.rich.RichFuture._
 import common.rich.RichT._
+import org.joda.time.LocalDate
 import play.api.libs.json._
 
 import scala.concurrent.duration._
@@ -25,16 +26,15 @@ class MbArtistReconciler(implicit ec: ExecutionContext) extends OnlineReconciler
         .map(_.toLocalDate -> (js str "title"))
         .toOption
 
-  private def getAlbumsAsArray(artistKey: String): Future[JsArray] =
-    getJson("release-group", ("artist", artistKey), ("limit", "100"))
+  def getAlbumsMetadata(key: ReconID): Future[Seq[(LocalDate, String)]] =
+    retry(() => getJson("release-group", ("artist", key.id), ("limit", "100")), 10, 2 seconds)
         .map(_.array("release-groups")
             .filter(_ has "first-release-date")
             .filter(_ ostr "primary-type" exists Set("Album", "EP", "Live"))
             .filter(_.array("secondary-types").value.isEmpty) // why?
             .sortBy(_ str "first-release-date")
             .mapTo(JsArray))
-
-  def getAlbumsMetadata(key: ReconID) = getAlbumsAsArray(key.id).map(_ flatMap parseAlbum)
+        .map(_ flatMap parseAlbum)
 }
 
 object MbArtistReconciler {
