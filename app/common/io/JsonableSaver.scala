@@ -6,13 +6,13 @@ import java.time.LocalDateTime
 import common.Jsonable
 import common.rich.RichT._
 import common.rich.primitives.RichOption._
-import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
+import play.api.libs.json._
 
 /** Saves in json format to a file. */
 class JsonableSaver(implicit rootDir: DirectoryRef) {
   private val workingDir = rootDir addSubDir "data" addSubDir "json"
-  private def jsonFileName[T: Manifest]: String =
-    s"${implicitly[Manifest[T]].runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
+  protected def jsonFileName[T: Manifest]: String =
+    s"${implicitly[Manifest[T]].runtimeClass.getSimpleName.replaceAll("\\$", "") }s.json"
   private def save[T: Manifest](js: JsValue) {
     workingDir addFile jsonFileName write js.toString
   }
@@ -33,7 +33,7 @@ class JsonableSaver(implicit rootDir: DirectoryRef) {
   /**
    * Similar to save, but doesn't overwrite the data
    * @param dataAppender A function that takes the old data and appends the new data. Since some constraints can exist
-   * on the data save, e.g., uniqueness, a simple concatenation of old and new data isn't enough.
+   *                     on the data save, e.g., uniqueness, a simple concatenation of old and new data isn't enough.
    */
   //TODO this could perhaps be handled by a typeclass that would know its saving constraints?
   def update[T: Jsonable : Manifest](dataAppender: Seq[T] => TraversableOnce[T]) {
@@ -44,11 +44,11 @@ class JsonableSaver(implicit rootDir: DirectoryRef) {
     workingDir getFile jsonFileName map (_.readAll |> Json.parse)
   /** Loads the previously saved entries, or returns an empty list. */
   def loadArray[T: Jsonable : Manifest]: Seq[T] =
-  load.map(_.as[JsArray] |> implicitly[Jsonable[T]].parse)
-      .getOrElse(Nil)
+    load.map(_.as[JsArray] |> implicitly[Jsonable[T]].parse)
+        .getOrElse(Nil)
   /** Loads the previously saved entry, or throws an exception if no file has been found */
   def loadObject[T: Jsonable : Manifest]: T = {
-    val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <${implicitly[Manifest[T]]}>")
+    val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <${implicitly[Manifest[T]] }>")
     js.asInstanceOf[JsObject] |> implicitly[Jsonable[T]].parse
   }
 
