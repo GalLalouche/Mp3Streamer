@@ -48,3 +48,7 @@ POST        /playlist/state              controllers.Playlist.setState()
 # Debug
 GET        /debug/slow_refresh           controllers.Cacher.forceRefresh()
 GET        /debug/fast_refresh           controllers.Cacher.quickRefresh()
+
+# Albums
+GET        /albums/albums                controllers.Albums.albums
+GET        /albums/index                 controllers.Albums.index
