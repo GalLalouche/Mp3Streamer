@@ -5,16 +5,15 @@ import backend.mb.MbArtistReconciler
 import backend.recon._
 import common.Jsonable
 import common.RichJson._
+import common.ds.RichMap._
 import common.io.JsonableSaver
 import common.rich.RichFuture._
-import common.ds.RichMap._
-import common.rich.RichT._
+import common.rich.RichObservable._
 import mains.fixer.StringFixer
 import models.RealLocations
 import play.api.libs.json.{JsObject, Json}
-import rx.lang.scala.Observable
 
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
@@ -26,12 +25,6 @@ object NewAlbums {
     override def parse(json: JsObject) =
       Album(json str "title", json int "year", Artist(json str "artistName"))
   }
-  // TODO move to somewhere more general
-  private def toFuture[T](o: Observable[T]): Future[Traversable[T]] = {
-    val $ = Promise[Traversable[T]]()
-    o.toTraversable.subscribe($ success _)
-    $.future
-  }
 
   def main(args: Array[String]): Unit = {
     implicit val c = StandaloneConfig
@@ -41,8 +34,8 @@ object NewAlbums {
 }
 class NewAlbums(implicit c: Configuration)
     extends ToBindOps with FutureInstances {
-  import c._
   import NewAlbums._
+  import c._
   private val logger = c.logger
 
   private val artistReconStorage = new ArtistReconStorage()
@@ -83,14 +76,8 @@ class NewAlbums(implicit c: Configuration)
     new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()), new RealLocations {
       override val subDirs: List[String] = List("Rock", "Metal")
     })
-  def fetchAndSave: Future[Traversable[Album]] = {
-    val $ = retriever.findNewAlbums |> toFuture
-    // TODO add consume method to RichFuture
-    $.map(e => {
-      jsonableSaver save e
-      e
-    })
-  }
+  def fetchAndSave: Future[Traversable[Album]] =
+    retriever.findNewAlbums.toFuture[Traversable].consume(jsonableSaver.save(_))
   def load: Future[Map[Artist, Seq[Album]]] = Future(jsonableSaver.loadArray)
       .map(_.map(e => e.copy(artist = Artist(StringFixer(e.artist.name))))
           .groupBy(_.artist)
