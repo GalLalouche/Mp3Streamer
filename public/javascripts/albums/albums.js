@@ -12,11 +12,12 @@ $(function() {
         .append(button("Remove", "remove-artist"))
         .append(createHideButton())
         .append(albums)
+        .data("artistName", obj.artistName)
         .appendTo(artists)
-        .data(obj.artistName)
 
     function processAlbum(album) {
       elem("li", `${album.title} (${album.year})`)
+          .data({"artistName": obj.artistName, "year": album.year, "title": album.title})
           .appendTo(albums)
           .append(button("Ignore", "ignore-album"))
           .append(button("Remove", "remove-album"))
@@ -35,7 +36,24 @@ $(function() {
     $(this).parent().hide()
   })
   div.on("click", ".albums-ignore-artist", function() {
-    const artistName = $(this).data()
-    console.log("Removing " + artistName)
+    const parent = $(this).parent()
+    const artistName = parent.data("artistName")
+    $.put("artist/ignore", artistName, function() {
+      parent.hide()
+    })
+  })
+  div.on("click", ".albums-remove-artist", function() {
+    const parent = $(this).parent()
+    const artistName = parent.data("artistName")
+    $.put("artist/remove", artistName, function() {
+      parent.hide()
+    })
+  })
+  div.on("click", ".albums-remove-album", function() {
+    const parent = $(this).parent()
+    const data = parent.data()
+    $.put("album/remove", JSON.stringify(data), function() {
+      parent.hide()
+    })
   })
 })

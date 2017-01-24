@@ -1,12 +1,12 @@
 const elem = (name, content) => $(`<${name}>${content || ""}</${name}>`)
-String.prototype.format = String.prototype.f = function () {
+String.prototype.format = String.prototype.f = function() {
   let s = this, i = arguments.length;
 
   while (i--)
     s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
   return s;
 };
-Number.prototype.timeFormat = function () {
+Number.prototype.timeFormat = function() {
   let hours = Math.floor(this / 3600);
   let minutes = Math.floor((this - (hours * 3600)) / 60);
   let seconds = this - (hours * 3600) - (minutes * 60);
@@ -48,10 +48,28 @@ function copyTextToClipboard(text) {
 }
 
 function isEmptyObject(obj) {
-  for(var prop in obj) {
+  for (const prop in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, prop)) {
       return false;
     }
   }
   return true;
 }
+
+jQuery.each(["put", "delete"], function(i, method) {
+  jQuery[method] = function(url, data, callback, type) {
+    if (jQuery.isFunction(data)) {
+      type = type || callback;
+      callback = data;
+      data = undefined;
+    }
+
+    return jQuery.ajax({
+      url: url,
+      type: method,
+      dataType: type,
+      data: data,
+      success: callback
+    });
+  };
+});
