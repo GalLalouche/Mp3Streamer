@@ -70,7 +70,10 @@ class NewAlbums(implicit c: Configuration)
     logger.debug(s"Removing $a")
     load.map(_.modified(a.artist, _.filterNot(_ == a))).map(save)
   }
-  def ignoreAlbum(a: Album): Future[Unit] = ignore(a, albumReconStorage) >> removeAlbum(a)
+  def ignoreAlbum(a: Album): Future[Unit] = {
+    logger.warn(s"Deleting albums ($a) is not supported right now...")
+    Future(())
+  }
 
   private val retriever = new NewAlbumsRetriever(
     new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()), new RealLocations {
