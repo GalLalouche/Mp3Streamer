@@ -57,7 +57,7 @@ class NewAlbums(implicit c: Configuration)
       assert(existing.isDefined)
       val existingData = existing.get
       assert(existingData._1.isDefined)
-      reconStorage.store(r, existingData._1 -> true)
+      reconStorage.forceStore(r, existingData._1 -> true)
     }
   }
 
