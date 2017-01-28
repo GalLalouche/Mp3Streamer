@@ -3,6 +3,7 @@ package backend.lyrics
 import java.io.File
 
 import backend.configs.StandaloneConfig
+import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import models.Song
@@ -10,12 +11,12 @@ import org.jsoup.nodes.Document
 
 import scala.concurrent.ExecutionContext
 
-private class DarkLyricsRetriever(implicit ec: ExecutionContext) extends HtmlRetriever {
+private class DarkLyricsRetriever(implicit ec: ExecutionContext, it: InternetTalker) extends HtmlRetriever {
   override protected val source: String = "DarkLyrics"
   private def removeWrappingWhiteSpace(s: String) = s.replaceAll("^\\s+", "").replaceAll("\\s$", "")
   private def removeEndingBreaklines(ss: Seq[String]) = ss.reverse.dropWhile(_.matches("<br>")).reverse
   // HTML is structured for shit, so might as well parse it by hand
-  override protected def fromHtml(html: Document, s: Song) = html.toString
+  override def fromHtml(html: Document, s: Song) = html.toString
       .split("\n").toList
       .dropWhile(_.matches( s""".*a name="${s.track}".*""") == false)
       .drop(1)
@@ -27,7 +28,7 @@ private class DarkLyricsRetriever(implicit ec: ExecutionContext) extends HtmlRet
       .filterNot(_ contains "[Instrumental]")
 
   private def normalize(s: String): String = s.toLowerCase.filter(_.isLetter)
-  override protected def getUrl(s: Song): String =
+  override def getUrl(s: Song): String =
     s"http://www.darklyrics.com/lyrics/${normalize(s.artistName)}/${normalize(s.albumName)}.html#${s.track}"
 }
 
