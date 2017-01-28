@@ -4,8 +4,8 @@ import backend.Url
 import backend.external.Host
 import backend.recon.Artist
 import common.AuxSpecs
-import org.scalatest.FreeSpec
 import common.rich.collections.RichTraversableOnce._
+import org.scalatest.FreeSpec
 
 class SearchExtensionTest extends FreeSpec with AuxSpecs {
   "apply" in {
