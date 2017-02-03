@@ -63,7 +63,10 @@ $(function() {
     $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
   })
 
+  let timeOfLastInput = 0
+  const inputTimeout = 10000
   $("#searchbox").bind('input change', function () {
+    timeOfLastInput = Date.now()
     const text = $(this).val()
     if (text === "")
       clearResults()
@@ -76,4 +79,11 @@ $(function() {
     scan()
   })
   $("#searchbox").after(scanButton)
+
+  // Blur search box after enough time has passed and it wasn't updated. By blurring the box, keyboard shortcuts are
+  // Re-enabled. This way, after 10 minutes of playing, you can still press 'K' to pause the damn thing.
+  setInterval(function() {
+    if (Date.now() - timeOfLastInput > inputTimeout)
+      $("#searchbox").blur()
+  }, inputTimeout)
 })
