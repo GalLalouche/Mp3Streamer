@@ -3,8 +3,12 @@ $(function () {
     {
       const tag = e.target.tagName.toLowerCase()
       const isFromInput = tag == 'input' || tag == 'textarea'
+
       if (isFromInput) // ignore text input into boxes
-        return
+        if (e.keyCode == 27) // Esc key
+          e.target.blur()
+        else
+          return
     }
     const letter = String.fromCharCode(e.which);
     switch (letter) {
