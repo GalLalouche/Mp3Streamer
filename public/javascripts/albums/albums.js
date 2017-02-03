@@ -16,7 +16,7 @@ $(function() {
         .appendTo(artists)
 
     function processAlbum(album) {
-      elem("li", `${album.title} (${album.year})`)
+      elem("li", `[${album.type}] ${album.title} (${album.year})`)
           .data({"artistName": obj.artistName, "year": album.year, "title": album.title})
           .appendTo(albums)
           .append(button("Ignore", "ignore-album"))
@@ -46,6 +46,13 @@ $(function() {
     const parent = $(this).parent()
     const artistName = parent.data("artistName")
     $.put("artist/remove", artistName, function() {
+      parent.hide()
+    })
+  })
+  div.on("click", ".albums-ignore-album", function() {
+    const parent = $(this).parent()
+    const data = parent.data()
+    $.put("album/ignore", JSON.stringify(data), function() {
       parent.hide()
     })
   })

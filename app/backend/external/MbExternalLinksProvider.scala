@@ -98,8 +98,7 @@ object MbExternalLinksProvider {
   def main(args: Array[String]): Unit = {
     implicit val c = CleanConfiguration
     val $ = new MbExternalLinksProvider()
-    //    val f = for (ls <- $.getArtistLinks(Artist("Tori Amos"))) yield
-    //      $.getAlbumLinks(ls, Album("Little Earthquakes", 1993, Artist("Tori Amos")))
-    //    f.get.get.toList.printPerLine()
+    val s = fromDir("""D:\Media\Music\Metal\Blackgaze\Empyrium\2014 the turn of the tides""")
+    println($(s).albumLinks.get)
   }
 }

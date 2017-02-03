@@ -1,7 +1,10 @@
 package backend.mb
 
+import backend.albums.NewAlbum.AlbumType
+import backend.albums.NewAlbum.AlbumType.AlbumType
 import backend.configs.StandaloneConfig
 import backend.mb.JsonHelper._
+import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon._
 import common.CompositeDateFormat
 import common.RichJson._
@@ -21,27 +24,42 @@ class MbArtistReconciler(implicit ec: ExecutionContext) extends OnlineReconciler
         .filterWith(_ str "score" equals "100", "could not find a 100 match")
         .map(_ ostr "id" map ReconID)
 
-  private def parseAlbum(js: JsValue) = // some albums don't even have a date, probably because of reasons
-    Try(CompositeDateFormat("yyyy-MM-dd", "yyyy-MM", "yyyy").parse(js str "first-release-date"))
-        .map(_.toLocalDate -> (js str "title"))
-        .toOption
+  // Returns none if date couldn't be parsed
+  // TODO fix this in CompositeDateFormat
+  private def parseDate(js: JsValue): Option[LocalDate] =
+  Try(MbArtistReconciler.compositeDateFormat.parse(js.str("first-release-date")))
+      .map(_.toLocalDate)
+      .toOption
 
-  def getAlbumsMetadata(key: ReconID): Future[Seq[(LocalDate, String)]] =
-    retry(() => getJson("release-group", ("artist", key.id), ("limit", "100")), 10, 2 seconds)
+  def getAlbumsMetadata(artistKey: ReconID): Future[Seq[MbAlbumMetadata]] =
+    retry(() => getJson("release-group", ("artist", artistKey.id), ("limit", "100")), 10, 2 seconds)
         .map(_.array("release-groups")
             .filter(_ has "first-release-date")
             .filter(_ ostr "primary-type" exists Set("Album", "EP", "Live"))
             .filter(_.array("secondary-types").value.isEmpty) // why?
             .sortBy(_ str "first-release-date")
             .mapTo(JsArray))
-        .map(_ flatMap parseAlbum)
+        .map(_.flatMap {json =>
+          for (date <- parseDate(json)) yield {
+            MbAlbumMetadata(title = json str "title",
+              releaseDate = date,
+              albumType = AlbumType.withName(json str "primary-type"),
+              reconId = ReconID(json str "id"))
+          }
+        })
 }
 
 object MbArtistReconciler {
+  private val compositeDateFormat = CompositeDateFormat("yyyy-MM-dd", "yyyy-MM", "yyyy")
+
   def main(args: Array[String]) {
     implicit val c = StandaloneConfig
     val $ = new MbArtistReconciler
     $(Artist("Moonsorrow")).map(_.get).flatMap($.getAlbumsMetadata).get.log()
     System exit 0
+  }
+
+  case class MbAlbumMetadata(title: String, releaseDate: LocalDate, albumType: AlbumType, reconId: ReconID) {
+    def isOut = releaseDate.toDateTimeAtCurrentTime isBefore System.currentTimeMillis
   }
 }
