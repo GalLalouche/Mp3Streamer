@@ -1,11 +1,11 @@
 package backend.albums
 
-import backend.configs.Configuration
+import backend.configs.{Configuration, StandaloneConfig}
 import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon._
-import common.io.IOFile
+import common.io.{DirectoryRef, IOFile}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.MoreMonadPlus._
@@ -24,10 +24,7 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
   private val meta = new MbArtistReconciler
   private def getExistingAlbums: Seq[Album] = mf.genreDirs
       .flatMap(_.deepDirs)
-      .flatMap(_.files
-          .find(f => f.extension |> mf.extensions)
-          .map(_.asInstanceOf[IOFile].file)
-          .map(Song(_).release))
+      .flatMap(NewAlbumsRetriever.dirToAlbum(_))
   private def removeIgnored(artist: Artist, as: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
     def isIgnored($: Option[(_, Boolean)]) = $.exists(_._2)
     def toAlbum(album: MbAlbumMetadata): Album =
@@ -41,28 +38,58 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
   def findNewAlbums: Observable[(NewAlbum, ReconID)] = {
     val cache = ArtistLastYearCache.from(getExistingAlbums)
     Observable.from(cache.artists)
-        .flatMap {artist =>
-          val start = System.currentTimeMillis()
-          log(s"Working on $artist...")
-          Observable.from(reconciler(artist)
-              .filterWith(!_._2, "Ignored")
-              .filterWith(_._1.isDefined, s"Unreconcilable")
-              .map(_._1.get)
-              .flatMap(meta.getAlbumsMetadata)
-              .flatMap(removeIgnored(artist, _))
-              .map(cache.filterNewAlbums(artist, _))
-              .consume(e => {
-                val totalTime = Duration.millis(System.currentTimeMillis - start)
-                log(s"Finished working on $artist; Found ${e.size} new albums; Took $totalTime.")
-              })
-              .recover {
-                case e: NoSuchElementException =>
-                  log(s"$artist was filtered, reason: ${e.getMessage}")
-                  Nil
-                case e: Throwable =>
-                  e.printStackTrace()
-                  Nil
-              })
-        }.flatMap(Observable.from(_))
+        .flatMap(artist => Observable.from(findNewAlbums(cache, artist))).flatMap(Observable.from(_))
+  }
+
+  private def findNewAlbums(cache: ArtistLastYearCache, artist: Artist): Future[Seq[(NewAlbum, ReconID)]] = {
+    log(s"Working on $artist...")
+    val start = System.currentTimeMillis()
+    reconciler(artist)
+        .filterWith(!_._2, "Ignored")
+        .filterWith(_._1.isDefined, s"Unreconcilable")
+        .map(_._1.get)
+        .flatMap(meta.getAlbumsMetadata)
+        .flatMap(removeIgnored(artist, _))
+        .map(cache.filterNewAlbums(artist, _))
+        .consume(e => {
+          val totalTime = Duration.millis(System.currentTimeMillis - start)
+          log(s"Finished working on $artist; Found ${e.size} new albums; Took $totalTime.")
+        })
+        .recover {
+          case e: NoSuchElementException =>
+            log(s"$artist was filtered, reason: ${e.getMessage}")
+            Nil
+          case e: Throwable =>
+            e.printStackTrace()
+            Nil
+        }
+  }
+}
+
+object NewAlbumsRetriever {
+  private def dirToAlbum(dir: DirectoryRef)(implicit mf: MusicFinder): Option[Album] = dir.files
+      .find(f => f.extension |> mf.extensions)
+      .map(_.asInstanceOf[IOFile].file)
+      .map(Song(_).release)
+
+  def main(args: Array[String]): Unit = {
+    implicit val c = StandaloneConfig
+    import c._
+    val artist: Artist = Artist("At the Gates")
+    def cacheForArtist(a: Artist)(implicit mf: MusicFinder): ArtistLastYearCache =
+      mf.genreDirs
+          .flatMap(_.deepDirs)
+          .find(_.name.toLowerCase == a.name.toLowerCase)
+          .get
+          .mapTo(dirToAlbum)
+          .get
+          .mapTo(Seq.apply(_) |> ArtistLastYearCache.from)
+    def findNewAlbums(a: Artist): Future[Seq[NewAlbum]] = {
+      val artistReconciler: ReconcilerCacher[Artist] =
+        new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler())
+      val $ = new NewAlbumsRetriever(artistReconciler, new AlbumReconStorage())(c, c.mf)
+      $.findNewAlbums(cacheForArtist(a), artist).map(_.map(_._1))
+    }
+    findNewAlbums(artist).get.log()
   }
 }
