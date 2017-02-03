@@ -1,15 +1,14 @@
 package controllers
 
 import backend.albums.{NewAlbum, NewAlbums}
-import backend.recon.{Album, Artist}
+import backend.recon._
 import common.Debug
+import common.RichJson._
 import common.rich.RichT._
 import play.api.libs.json._
 import play.api.mvc._
 
 import scala.concurrent.Future
-import common.RichJson._
-
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
@@ -30,16 +29,16 @@ object Albums extends Controller with Debug
     newAlbums.load.map(toJson).map(Ok(_))
   }
 
-  private def updateNewAlbums[A](extractor: Request[AnyContent] => A,
-                                 action: A => Future[Unit]) = Action.async { request =>
-    action(extractor(request)).>|(NoContent)
-  }
+  private def updateNewAlbums[A <: Reconcilable](extractor: Request[AnyContent] => A, action: A => Future[Unit]) =
+    Action.async {request =>
+      action(extractor(request)).>|(NoContent)
+    }
 
   private def extractArtist(request: Request[AnyContent]): Artist =
     request.body |> Utils.getStringFromBody |> Artist
-
   def removeArtist = updateNewAlbums(extractArtist, newAlbums.removeArtist)
   def ignoreArtist = updateNewAlbums(extractArtist, newAlbums.ignoreArtist)
+
   private def extractAlbum(request: Request[AnyContent]): Album = {
     val json = request.body |> Utils.getStringFromBody |> Json.parse
     Album(json str "title", json int "year", Artist(json str "artistName"))

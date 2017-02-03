@@ -3,16 +3,12 @@ package backend.albums
 import backend.configs.{Configuration, StandaloneConfig}
 import backend.mb.MbArtistReconciler
 import backend.recon._
-import common.Jsonable
-import common.RichJson._
 import common.ds.RichMap._
 import common.io.JsonableSaver
 import common.rich.RichFuture._
 import common.rich.RichObservable._
-import common.rich.RichT._
 import mains.fixer.StringFixer
 import models.RealLocations
-import play.api.libs.json.{JsObject, Json}
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future
@@ -33,7 +29,6 @@ object NewAlbums {
 class NewAlbums(implicit c: Configuration)
     extends ToBindOps with FutureInstances {
   import NewAlbum.NewAlbumJsonable
-  import NewAlbums._
   private val logger = c.logger
   import c._
 

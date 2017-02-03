@@ -6,7 +6,7 @@ import backend.recon._
 import common.rich.RichT._
 import org.joda.time.LocalDate
 
-private class ArtistLastYearCache(lastReleaseYear: Map[Artist, Year]) {
+private class ArtistLastYearCache private(lastReleaseYear: Map[Artist, Year]) {
   def artists: Iterable[Artist] = lastReleaseYear.keys
 
   def filterNewAlbums(artist: Artist, albums: Seq[MbAlbumMetadata]): Seq[(NewAlbum, ReconID)] = albums
@@ -23,9 +23,8 @@ private object ArtistLastYearCache {
   object Year {
     def from(ld: LocalDate) = Year(ld.getYear)
   }
-  def from(albums: Seq[Album]): ArtistLastYearCache = {
-    new ArtistLastYearCache(albums
-        .groupBy(_.artist)
-        .mapValues(_.toVector.map(_.year).sorted.last |> Year.apply))
-  }
+  def from(albums: Seq[Album]): ArtistLastYearCache = albums
+      .groupBy(_.artist)
+      .mapValues(_.toVector.map(_.year).sorted.last |> Year.apply)
+      .mapTo(new ArtistLastYearCache(_))
 }

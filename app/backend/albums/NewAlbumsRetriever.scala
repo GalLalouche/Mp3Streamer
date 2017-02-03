@@ -8,7 +8,6 @@ import backend.recon._
 import common.io.{DirectoryRef, IOFile}
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.func.MoreMonadPlus._
 import models.{MusicFinder, Song}
 import org.joda.time.Duration
 import rx.lang.scala.Observable
@@ -25,42 +24,47 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
   private def getExistingAlbums: Seq[Album] = mf.genreDirs
       .flatMap(_.deepDirs)
       .flatMap(NewAlbumsRetriever.dirToAlbum(_))
-  private def removeIgnored(artist: Artist, as: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
+  private def removeIgnoredAlbums(artist: Artist, as: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
+    // TODO add isIgnored to ReconStorage
     def isIgnored($: Option[(_, Boolean)]) = $.exists(_._2)
     def toAlbum(album: MbAlbumMetadata): Album =
       Album(title = album.title, year = album.releaseDate.getYear, artist = artist)
-    val $ = as.fproduct(toAlbum(_) |> albumReconStorage.load).map(e => e._2.fproduct(e._1.const))
-        .toList // TODO make Seq Traversable
+    // TODO make Seq Traversable
+    // TODO generalize to RichFuture: should be filterable with a Future[Boolean]
+    as.toList
+        .map(e => albumReconStorage load toAlbum(e) map isIgnored strengthL e)
         .sequenceU
-        .map(_.filterNot(e => isIgnored(e._1)).map(_._2))
-    $
+        .map(_.filterNot(_._2).map(_._1))
   }
+
   def findNewAlbums: Observable[(NewAlbum, ReconID)] = {
     val cache = ArtistLastYearCache.from(getExistingAlbums)
     Observable.from(cache.artists)
-        .flatMap(artist => Observable.from(findNewAlbums(cache, artist))).flatMap(Observable.from(_))
+        .flatMap(artist => Observable.from(findNewAlbums(cache, artist)))
+        .flatMap(Observable.from(_))
   }
 
   private def findNewAlbums(cache: ArtistLastYearCache, artist: Artist): Future[Seq[(NewAlbum, ReconID)]] = {
-    log(s"Working on $artist...")
     val start = System.currentTimeMillis()
     reconciler(artist)
         .filterWith(!_._2, "Ignored")
         .filterWith(_._1.isDefined, s"Unreconcilable")
         .map(_._1.get)
         .flatMap(meta.getAlbumsMetadata)
-        .flatMap(removeIgnored(artist, _))
+        .flatMap(removeIgnoredAlbums(artist, _))
         .map(cache.filterNewAlbums(artist, _))
         .consume(e => {
           val totalTime = Duration.millis(System.currentTimeMillis - start)
-          log(s"Finished working on $artist; Found ${e.size} new albums; Took $totalTime.")
+          val newAlbumsCount = if (e.isEmpty) "no" else e.size
+          log(s"Finished working on $artist; Found $newAlbumsCount new albums; Took $totalTime.")
         })
         .recover {
-          case e: NoSuchElementException =>
-            log(s"$artist was filtered, reason: ${e.getMessage}")
-            Nil
           case e: Throwable =>
-            e.printStackTrace()
+            e match {
+              // TODO filterWith should return a better exception
+              case e: NoSuchElementException => log(s"$artist was filtered, reason: ${e.getMessage}")
+              case e: Throwable => e.printStackTrace()
+            }
             Nil
         }
   }
