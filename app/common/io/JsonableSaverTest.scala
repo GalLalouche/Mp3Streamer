@@ -77,4 +77,13 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with MockitoSug
       Math.abs(now - lastUpdateTime) < 10 shouldReturn true
     }
   }
+  "override file name" in {
+    val $ = new JsonableSaver {
+      override protected def jsonFileName[T: Manifest] = "foobars.json"
+    }
+    $ save p1
+    val files = root.deepFiles
+    files.toList.map(_.name) shouldReturn List("foobars.json")
+    $.loadObject shouldReturn p1
+  }
 }
