@@ -26,15 +26,12 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
       .flatMap(_.deepDirs)
       .flatMap(NewAlbumsRetriever.dirToAlbum(_))
   private def removeIgnoredAlbums(artist: Artist, as: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
-    // TODO add isIgnored to ReconStorage
-    def isIgnored($: Option[(_, Boolean)]) = $.exists(_._2)
     def toAlbum(album: MbAlbumMetadata): Album =
       Album(title = album.title, year = album.releaseDate.getYear, artist = artist)
-    // TODO make Seq Traversable
     // TODO generalize to RichFuture: should be filterable with a Future[Boolean]
-    as.map(e => albumReconStorage load toAlbum(e) map isIgnored strengthL e)
+    as.map(e => albumReconStorage isIgnored toAlbum(e) strengthL e)
         .sequenceU
-        .map(_.filterNot(_._2).map(_._1))
+        .map(_.filterNot(_._2 getOrElse false).map(_._1))
   }
 
   def findNewAlbums: Observable[(NewAlbum, ReconID)] = {
