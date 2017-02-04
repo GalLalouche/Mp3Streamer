@@ -8,6 +8,7 @@ import backend.recon._
 import common.io.{DirectoryRef, IOFile}
 import common.rich.RichFuture._
 import common.rich.RichT._
+import common.rich.func.MoreTraverse._
 import models.{MusicFinder, Song}
 import org.joda.time.Duration
 import rx.lang.scala.Observable
@@ -31,17 +32,16 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
       Album(title = album.title, year = album.releaseDate.getYear, artist = artist)
     // TODO make Seq Traversable
     // TODO generalize to RichFuture: should be filterable with a Future[Boolean]
-    as.toList
-        .map(e => albumReconStorage load toAlbum(e) map isIgnored strengthL e)
+    as.map(e => albumReconStorage load toAlbum(e) map isIgnored strengthL e)
         .sequenceU
         .map(_.filterNot(_._2).map(_._1))
   }
 
   def findNewAlbums: Observable[(NewAlbum, ReconID)] = {
-    val cache = ArtistLastYearCache.from(getExistingAlbums)
+    val cache = ArtistLastYearCache from getExistingAlbums
     Observable.from(cache.artists)
-        .flatMap(artist => Observable.from(findNewAlbums(cache, artist)))
-        .flatMap(Observable.from(_))
+        .flatMap(Observable from findNewAlbums(cache, _))
+        .flatMap(Observable from _)
   }
 
   private def findNewAlbums(cache: ArtistLastYearCache, artist: Artist): Future[Seq[(NewAlbum, ReconID)]] = {
