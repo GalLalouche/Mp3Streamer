@@ -78,7 +78,7 @@ class NewAlbums(implicit c: Configuration)
   private def store(a: NewAlbum, r: ReconID): Unit = albumReconStorage.store(a.toAlbum, Some(r) -> false)
   def fetchAndSave: Future[Traversable[NewAlbum]] =
     retriever.findNewAlbums
-        .doOnEach(e => store(e._1, e._2))
+        .doOnEach((store _).tupled)
         .map(_._1)
         .toFuture[Traversable]
         .consume(jsonableSaver save _)
