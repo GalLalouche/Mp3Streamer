@@ -6,6 +6,7 @@ import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon._
 import common.io.{DirectoryRef, IOFile}
+import common.rich.RichFuture
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.MoreTraverse._
@@ -58,8 +59,7 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
         .recover {
           case e: Throwable =>
             e match {
-              // TODO filterWith should return a better exception
-              case e: NoSuchElementException => log(s"$artist was filtered, reason: ${e.getMessage}")
+              case e: RichFuture.FilteredException => log(s"$artist was filtered, reason: ${e.getMessage}")
               case e: Throwable => e.printStackTrace()
             }
             Nil

@@ -3,6 +3,7 @@ package backend.mb
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
+import common.rich.RichFuture
 import common.rich.RichFuture._
 import play.api.http.Status
 import play.api.libs.json._
@@ -17,7 +18,7 @@ private object JsonHelper {
       if (times <= 1)
         Future failed new Exception("Failed retry; last failure was: " + e.getMessage)
       else {
-        if (!e.isInstanceOf[NoSuchElementException])
+        if (!e.isInstanceOf[RichFuture.FilteredException])
           println(e.getMessage)
         Thread sleep retryWait.toMillis
         retry(f, times - 1, retryWait)
