@@ -70,7 +70,7 @@ $(function () {
 
   const hexa = "[a-f0-9]"
   // d8f63b51-73e0-4f65-8bd3-bcfe6892fb0e
-  const reconRegex = `${hexa}{8}-(?:${hexa}{4}-){3}${hexa}{12}`
+  const reconRegex = `^${hexa}{8}-(?:${hexa}{4}-){3}${hexa}{12}$`
   function verify(element) {
     const text = element.val();
     $("#update-recon").prop('disabled', !text.match(reconRegex))
