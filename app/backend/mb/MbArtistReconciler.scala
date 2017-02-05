@@ -15,7 +15,6 @@ import play.api.libs.json._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 class MbArtistReconciler(implicit ec: ExecutionContext) extends OnlineReconciler[Artist] {
   override def apply(a: Artist): Future[Option[ReconID]] =
@@ -24,12 +23,9 @@ class MbArtistReconciler(implicit ec: ExecutionContext) extends OnlineReconciler
         .filterWith(_ str "score" equals "100", "could not find a 100 match")
         .map(_ ostr "id" map ReconID)
 
-  // Returns none if date couldn't be parsed
-  // TODO fix this in CompositeDateFormat
   private def parseDate(js: JsValue): Option[LocalDate] =
-  Try(MbArtistReconciler.compositeDateFormat.parse(js.str("first-release-date")))
-      .map(_.toLocalDate)
-      .toOption
+    MbArtistReconciler.compositeDateFormat.parse(js.str("first-release-date"))
+        .map(_.toLocalDate)
 
   def getAlbumsMetadata(artistKey: ReconID): Future[Seq[MbAlbumMetadata]] =
     retry(() => getJson("release-group", ("artist", artistKey.id), ("limit", "100")), 10, 2 seconds)

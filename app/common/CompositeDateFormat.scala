@@ -13,12 +13,9 @@ import org.joda.time.{DateTime, DateTimeZone}
 class CompositeDateFormat private(formatters: Seq[DateTimeFormatter]) {
   require(formatters.nonEmpty)
 
-  def parse(source: String): DateTime = {
-    formatters
-        .tryMap(_.parseDateTime(source))
-        .headOption
-        .getOrThrow("No formatter could parse " + source)
-  }
+  def parse(source: String): Option[DateTime] = formatters
+      .tryMap(_.parseDateTime(source))
+      .headOption
 
   def print(date: Date): String = print(date.getTime)
   def print(date: DateTime): String = print(date.getMillis)
