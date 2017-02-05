@@ -21,9 +21,7 @@ object Playlist extends Controller {
     Ok(saver.loadObject[PlaylistQueue].songs map Utils.toJson mapTo JsArray.apply)
   }
   def setQueue() = Action { request =>
-    val playlist = request.body
-        .mapTo(_ |> Utils.getStringFromBody |> Json.parse)
-        .mapTo(_.as[JsArray] |> arrayOfPathsToSong |> PlaylistQueue.apply)
+    val playlist = request.body.asJson.get.as[JsArray] |> arrayOfPathsToSong |> PlaylistQueue.apply
     saver save playlist
     Created.withHeaders("Location" -> "playlist/queue")
   }
@@ -37,7 +35,7 @@ object Playlist extends Controller {
     Ok(saver.loadObject[PlaylistState] |> toJson)
   }
   def setState() = Action { request =>
-    val json = request.body |> Utils.getStringFromBody |> Json.parse
+    val json = request.body.asJson.get
     val songs = json array "songs" mapTo arrayOfPathsToSong
     val duration: Double = json / "duration"
     val index: Int = json / "index"
