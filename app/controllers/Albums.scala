@@ -34,13 +34,12 @@ object Albums extends Controller with Debug
       action(extractor(request)).>|(NoContent)
     }
 
-  private def extractArtist(request: Request[AnyContent]): Artist =
-    request.body |> Utils.getStringFromBody |> Artist
   def removeArtist = updateNewAlbums(extractArtist, newAlbums.removeArtist)
   def ignoreArtist = updateNewAlbums(extractArtist, newAlbums.ignoreArtist)
+  private def extractArtist(request: Request[AnyContent]): Artist = request.body.asText.get |> Artist
 
   private def extractAlbum(request: Request[AnyContent]): Album = {
-    val json = request.body |> Utils.getStringFromBody |> Json.parse
+    val json = request.body.asJson.get
     Album(json str "title", json int "year", Artist(json str "artistName"))
   }
   def removeAlbum = updateNewAlbums(extractAlbum, newAlbums.removeAlbum)

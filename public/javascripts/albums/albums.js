@@ -5,6 +5,16 @@ $(function() {
   const button = (text, clazz) => elem("button", text).addClass(classPrefix + clazz)
   const createHideButton = () => button("Hide", "hide")
 
+  function putText(url, text, success) {
+    $.ajax({
+      url: url,
+      data: text,
+      type: "PUT",
+      contentType: "text/plain",
+      dataType: "text",
+      success: success
+    })
+  }
   function addArtist(obj) {
     const albums = elem("ol")
     elem("li", obj.artistName)
@@ -38,28 +48,28 @@ $(function() {
   div.on("click", ".albums-ignore-artist", function() {
     const parent = $(this).parent()
     const artistName = parent.data("artistName")
-    $.put("artist/ignore", artistName, function() {
+    putText("artist/ignore", artistName, function() {
       parent.hide()
     })
   })
   div.on("click", ".albums-remove-artist", function() {
     const parent = $(this).parent()
     const artistName = parent.data("artistName")
-    $.put("artist/remove", artistName, function() {
+    putText("artist/remove", artistName, function() {
       parent.hide()
     })
   })
   div.on("click", ".albums-ignore-album", function() {
     const parent = $(this).parent()
     const data = parent.data()
-    $.put("album/ignore", JSON.stringify(data), function() {
+    putJson("album/ignore", data, function() {
       parent.hide()
     })
   })
   div.on("click", ".albums-remove-album", function() {
     const parent = $(this).parent()
     const data = parent.data()
-    $.put("album/remove", JSON.stringify(data), function() {
+    putJson("album/remove", data, function() {
       parent.hide()
     })
   })

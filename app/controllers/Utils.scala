@@ -31,6 +31,4 @@ private[controllers] object Utils {
   }
   def parseSong(path: String): Song = Song(parseFile(path))
   def parseFile(path: String): File = new File(URLDecoder.decode(path, "UTF-8"))
-
-  def getStringFromBody(a: AnyContent): String = a.asFormUrlEncoded.get.keys.head
 }

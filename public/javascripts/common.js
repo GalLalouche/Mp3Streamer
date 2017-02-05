@@ -74,13 +74,20 @@ jQuery.each(["put", "delete"], function(i, method) {
   };
 });
 
-function postJson(url, data, success) {
+function _ajaxJson(method, url, data, success) {
   data = typeof data === 'string' ? data : JSON.stringify(data)
   $.ajax({
     url: url,
     data: data,
-    type: "POST",
+    type: method,
     contentType: "application/json; charset=utf-8",
     dataType: "json",
     success: success})
+}
+function postJson(url, data, success) {
+  _ajaxJson("POST", url, data, success)
+}
+
+function putJson(url, data, success) {
+  _ajaxJson("PUT", url, data, success)
 }
