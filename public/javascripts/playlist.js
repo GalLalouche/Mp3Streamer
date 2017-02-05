@@ -1,15 +1,7 @@
 $(function () {
-  function postJson(url, data) {
-    $.ajax({
-        url: url,
-        data: data,
-        type: "POST",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json"})
-  }
   $("#update_playlist").click(function () {
     const playlist = gplaylist.songs().slice(gplaylist.currentIndex()).map(x => x.file);
-    postJson("playlist/queue", JSON.stringify(playlist))
+    postJson("playlist/queue", playlist)
   })
   $("#load_playlist").click(function () {
     $.get("playlist/queue", x => x.forEach(e => gplaylist.add(e, false)))
@@ -20,7 +12,7 @@ $(function () {
       index: gplaylist.currentIndex(),
       duration: gplayer.currentPlayingInSeconds()
     }
-    postJson("playlist/state", JSON.stringify(data))
+    postJson("playlist/state", data)
   })
   $("#load_state").click(function () {
     $.get("playlist/state", data => {

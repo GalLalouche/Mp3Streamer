@@ -30,7 +30,7 @@ $(function () {
     if (!isEmptyObject(json)) {
       resetLinks()
       const songPath = gplaylist.currentPlayingSong().file
-      $.post(remotePath + "recons/" + songPath, JSON.stringify(json), l => showLinks(l, remotePath + songPath))
+      postJson(remotePath + "recons/" + songPath, json, l => showLinks(l, remotePath + songPath))
     }
   }
 

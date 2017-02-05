@@ -54,7 +54,7 @@ object External extends Controller
     f.map(Ok(_))
   }
   def updateRecon(path: String) = Action.async { request =>
-    val json = Utils getStringFromBody request.body mapTo Json.parse
+    val json = request.body.asJson.get
     def getReconId(s: String) = json ostr s map ReconID
     val song: Song = Utils parseSong path
     external.updateRecon(song, artistReconId = getReconId("artist"), albumReconId = getReconId("album"))

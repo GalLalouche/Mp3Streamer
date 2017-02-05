@@ -73,3 +73,14 @@ jQuery.each(["put", "delete"], function(i, method) {
     });
   };
 });
+
+function postJson(url, data, success) {
+  data = typeof data === 'string' ? data : JSON.stringify(data)
+  $.ajax({
+    url: url,
+    data: data,
+    type: "POST",
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: success})
+}
