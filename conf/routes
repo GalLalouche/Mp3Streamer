@@ -22,25 +22,22 @@ GET        /stream/play/*path            controllers.Streamer.playSong(path)
 GET        /posters/display/*path        controllers.Posters.displayImage(path)
 GET        /posters/*path                controllers.Posters.image(path)
 # Lyrics
-GET        /lyrics/*path                controllers.Lyrics.get(path)
+GET        /lyrics/*path                 controllers.Lyrics.get(path)
 # External
 GET        /external/*path               controllers.External.get(path)
+POST       /external/recons/*path        controllers.External.updateRecon(path)
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file                 controllers.Assets.at(path="/public", file)
 GET        /client/*file                 controllers.Assets.at(path="/client/scala-2.11/", file)
 GET        /js/*file                     controllers.Assets.at(path="/public/javascripts", file)
-# Flac
-GET        /flac/raw                     controllers.Flac.raw
-GET        /flac/play                    controllers.Flac.foobar
 
 # Searcher
 GET        /search/*path                 controllers.Searcher.search(path)
 
 # Web sockets
-GET        /ws/console                   websockets.ConsoleSocket.accept
+GET        /ws/console                   controllers.websockets.ConsoleSocket.accept
 GET        /ws/refresh                   controllers.Cacher.accept
-GET        /ws/newFolder                 websockets.NewFolderSocket.accept
 
 # Playlist
 GET         /playlist/queue              controllers.Playlist.getQueue
@@ -51,3 +48,11 @@ POST        /playlist/state              controllers.Playlist.setState()
 # Debug
 GET        /debug/slow_refresh           controllers.Cacher.forceRefresh()
 GET        /debug/fast_refresh           controllers.Cacher.quickRefresh()
+
+# Albums
+GET        /albums/albums                controllers.Albums.albums
+GET        /albums/index                 controllers.Albums.index
+PUT        /albums/artist/remove         controllers.Albums.removeArtist
+PUT        /albums/artist/ignore         controllers.Albums.ignoreArtist
+PUT        /albums/album/remove          controllers.Albums.removeAlbum
+PUT        /albums/album/ignore          controllers.Albums.ignoreAlbum

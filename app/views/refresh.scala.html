@@ -8,7 +8,7 @@
       $(function () {
         openConnection("refresh", function (msg) {
           try {
-            var json = JSON.parse(msg.data);
+            const json = JSON.parse(msg.data);
             document.title = `${Math.floor(100 * json.finished / json.total)}%`
             $("#status").text(msg.data);
           } catch (err) {

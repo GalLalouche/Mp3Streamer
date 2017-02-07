@@ -20,12 +20,12 @@ private class AllMusicAlbumFinder(implicit ec: ExecutionContext, it: InternetTal
     require(StringReconScorer.apply(artistName, a.artist.name) >= 0.90,
       s"Bad artist name in AllMusicAlbumFinder. Was <$artistName> but was supposed to be <${a.artist.name}>.")
     def score(other: Album): Double = AlbumReconScorer.apply(a, other)
-    d.select(".discography table tbody tr")
-        .toSeq
-        .flatMap(e => Try(Album(e.select(".title").head.text, e.select(".year").head.text.toInt, a.artist)).toOption.map(e -> _))
-        .find(e => score(e._2) >= 0.95)
-        .map(_._1)
-        .map(_.select("td a").head.attr("href").mapTo("http://www.allmusic.com" + _).mapTo(Url))
+      d.select(".discography table tbody tr")
+          .toSeq
+          .flatMap(e => Try(Album(e.select(".title").head.text, e.select(".year").head.text.toInt, a.artist)).toOption.map(e -> _))
+          .find(e => score(e._2) >= 0.95)
+          .map(_._1)
+          .map(_.select("td a").head.attr("href").mapIf(!_.startsWith("http")).to("http://www.allmusic.com" + _).mapTo(Url))
   }
 
   override def apply(e: ExternalLink[Artist], a: Album): Future[Option[ExternalLink[Album]]] =

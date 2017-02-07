@@ -3,6 +3,7 @@ package backend.configs
 import java.net.HttpURLConnection
 
 import backend.Url
+import backend.logging.{Logger, StringBuilderLogger}
 import common.io.MemoryRoot
 import models.MusicFinder
 import org.jsoup.nodes.Document
@@ -23,4 +24,9 @@ case class TestConfiguration(private val _ec: ExecutionContext = new ExecutionCo
   override implicit val mf: MusicFinder = _mf
   override def downloadDocument(url: Url): Future[Document] = Future successful _documentDownloader(url)
   override def connect(http: HttpURLConnection): Future[HttpURLConnection] = Future successful _httpTransformer(http)
+  override implicit val logger: Logger = new StringBuilderLogger(TestConfiguration.loggingHistory)
+}
+
+object TestConfiguration {
+  val loggingHistory = new StringBuilder
 }

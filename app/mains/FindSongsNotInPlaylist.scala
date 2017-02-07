@@ -13,7 +13,7 @@ object FindSongsNotInPlaylist {
   val musicFiles = new MusicFinder {
     val dir = IODirectory("D:/Media/Music")
     val subDirs = List("Metal", "Rock", "Classical", "New Age", "Jazz")
-    val extensions = List("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
+    val extensions = Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
   }
   def main(args: Array[String]): Unit = {
     val file = musicFiles.dir.addFile("playlist.m3u8").asInstanceOf[IOFile].file

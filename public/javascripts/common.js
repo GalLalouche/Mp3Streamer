@@ -1,12 +1,12 @@
 const elem = (name, content) => $(`<${name}>${content || ""}</${name}>`)
-String.prototype.format = String.prototype.f = function () {
+String.prototype.format = String.prototype.f = function() {
   let s = this, i = arguments.length;
 
   while (i--)
     s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
   return s;
 };
-Number.prototype.timeFormat = function () {
+Number.prototype.timeFormat = function() {
   let hours = Math.floor(this / 3600);
   let minutes = Math.floor((this - (hours * 3600)) / 60);
   let seconds = this - (hours * 3600) - (minutes * 60);
@@ -45,4 +45,49 @@ function copyTextToClipboard(text) {
   }
 
   document.body.removeChild(textArea);
+}
+
+function isEmptyObject(obj) {
+  for (const prop in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+jQuery.each(["put", "delete"], function(i, method) {
+  jQuery[method] = function(url, data, callback, type) {
+    if (jQuery.isFunction(data)) {
+      type = type || callback;
+      callback = data;
+      data = undefined;
+    }
+
+    return jQuery.ajax({
+      url: url,
+      type: method,
+      dataType: type,
+      data: data,
+      success: callback
+    });
+  };
+});
+
+function _ajaxJson(method, url, data, success) {
+  data = typeof data === 'string' ? data : JSON.stringify(data)
+  $.ajax({
+    url: url,
+    data: data,
+    type: method,
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: success})
+}
+function postJson(url, data, success) {
+  _ajaxJson("POST", url, data, success)
+}
+
+function putJson(url, data, success) {
+  _ajaxJson("PUT", url, data, success)
 }

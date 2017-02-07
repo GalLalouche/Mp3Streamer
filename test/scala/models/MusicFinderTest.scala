@@ -12,7 +12,7 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with Matchers {
     val mf = new MusicFinder {
       override val dir = IODirectory(tempDir)
       override val subDirs = dirs
-      override val extensions = List("mp3", "flac")
+      override val extensions = Set("mp3", "flac")
     }
     tempDir -> mf
   }

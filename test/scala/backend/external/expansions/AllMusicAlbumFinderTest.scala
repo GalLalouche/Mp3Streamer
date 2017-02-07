@@ -13,8 +13,12 @@ class AllMusicAlbumFinderTest extends FreeSpec with DocumentSpecs {
     $.findAlbum(getDocument("allmusic_discography.html"), Album("A night at the opera", 1975, Artist("Queen")))
         .get shouldReturn Url("http://www.allmusic.com/album/a-night-at-the-opera-mw0000391519")
   }
-  "Handle case of missing input in discography list" in {
+  "Missing input in discography list" in {
     $.findAlbum(getDocument("allmusic_discography2.html"), Album("The Ghost of Tom Joad", 1995, Artist("Bruce Springsteen")))
         .get shouldReturn Url("http://www.allmusic.com/album/the-ghost-of-tom-joad-mw0000181768")
+  }
+  "href already has host name" in {
+    $.findAlbum(getDocument("allmusic_discography3.html"), Album("A Wintersunset", 1996, Artist("Empyrium")))
+        .get shouldReturn Url("http://www.allmusic.com/album/a-wintersunset-mw0001654263")
   }
 }

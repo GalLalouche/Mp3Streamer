@@ -1,6 +1,6 @@
 package search
 
-import common.Collectable._
+import common.ds.Collectable._
 import common.ds.RichMap._
 import common.ds.Trie
 import common.rich.RichT._

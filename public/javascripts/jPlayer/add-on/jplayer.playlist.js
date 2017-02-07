@@ -296,6 +296,9 @@
             return false;
           });
 
+      $(self.cssSelector.playlist + " a." + this.options.playlistOptions.removeItemClass).livequery(function() {
+        $(this).attr("title", "shift-click removes down, alt-click removes up")
+      })
       // Create .live() handlers for the remove controls
       $(self.cssSelector.playlist + " a." + this.options.playlistOptions.removeItemClass).die("click").live(
           "click", function (e) {

@@ -16,7 +16,7 @@ object Player extends Controller with Debug {
   private val songGroups: Map[Song, SongGroup] = SongGroups.load |> SongGroups.fromGroups
   private var songSelector: SongSelector = _
   def update() = timed("Updating music") {
-    songSelector = SongSelector listen c.mf
+    songSelector = SongSelector.listen
   }
   //TODO hide this, shouldn't be a part of the controller
   update()

@@ -3,7 +3,6 @@ package mains.cover
 import java.nio.file.Files
 
 import backend.configs.StandaloneConfig
-import common.Debug
 import common.io.IODirectory
 import common.rich.RichT.richT
 import common.rich.path.Directory
@@ -16,7 +15,7 @@ import scala.sys.process.Process
 
 // Uses google image search (not API, actual site) to find images, then displays the images for the user to select a
 // good picture. The site is used since the API doesn't allow for a size filter.
-object DownloadCover extends Debug {
+object DownloadCover {
   private implicit val c = StandaloneConfig
   private case class CoverException(str: String, e: Exception) extends Exception(e)
 

@@ -3,6 +3,7 @@ package controllers
 import backend.external.extensions.{ExtendedLink, LinkExtension, SearchExtension}
 import backend.external.{Host, MbExternalLinksProvider, TimestampedExtendedLinks}
 import backend.recon.Reconcilable.SongExtractor
+import backend.recon._
 import common.RichJson._
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
@@ -10,11 +11,14 @@ import models.Song
 import org.joda.time.format.ISODateTimeFormat
 import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{Action, Controller, Result}
 
 import scala.concurrent.Future
+import scalaz.std.FutureInstances
+import scalaz.syntax.ToBindOps
 
-object External extends Controller {
+object External extends Controller
+    with FutureInstances with ToBindOps {
   import Utils.config
   private type KVPair = (String, JsValueWrapper)
   private val hosts: Seq[Host] =
@@ -38,11 +42,22 @@ object External extends Controller {
 
   def get(path: String) = Action.async {
     val song: Song = Utils parseSong path
+    getLinks(song)
+  }
+
+  def getLinks(song: Song): Future[Result] = {
     val links = external(song)
     val f = for (
       artistJson <- links.artistLinks.map(SearchExtension.extendMissing(hosts, song.artist, _)) |> toJsonOrError;
       albumJson <- links.albumLinks |> toJsonOrError
     ) yield Json.obj("Artist links" -> artistJson, "Album links" -> albumJson)
     f.map(Ok(_))
+  }
+  def updateRecon(path: String) = Action.async { request =>
+    val json = request.body.asJson.get
+    def getReconId(s: String) = json ostr s map ReconID
+    val song: Song = Utils parseSong path
+    external.updateRecon(song, artistReconId = getReconId("artist"), albumReconId = getReconId("album"))
+        .>>(getLinks(song))
   }
 }

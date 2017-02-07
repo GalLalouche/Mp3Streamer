@@ -8,11 +8,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * Keep a timestamp for every value. If the timestamp does not exist (but the value does), it means
- * that the value does not need to be updated
+ * that the value does not need to be updated.
  */
-class FreshnessStorage[Key, Value](storage: LocalStorage[Key, (Value, Option[DateTime])])
-                                  (implicit ec: ExecutionContext) extends LocalStorage[Key, Value] {
-  private def now(v: Value) = v -> Some(DateTime.now)
+class FreshnessStorage[Key, Value](storage: Storage[Key, (Value, Option[DateTime])])
+                                  (implicit ec: ExecutionContext) extends Storage[Key, Value] {
+  protected def now: DateTime = DateTime.now
+  private def now(v: Value): (Value, Option[DateTime]) = v -> Some(now)
   private def toValue(v: Future[Option[(Value, Any)]]) = v.map(_.map(_._1))
   // 1st option: the data may not be there; 2nd option: it might be there but null
   def freshness(k: Key): Future[Option[Option[DateTime]]] = storage load k map (_ map (_._2))
@@ -23,5 +24,10 @@ class FreshnessStorage[Key, Value](storage: LocalStorage[Key, (Value, Option[Dat
     storage.load(k) |> toValue
   override def forceStore(k: Key, v: Value): Future[Option[Value]] =
     storage.forceStore(k, now(v)) |> toValue
-  override def utils: LocalStorageUtils = storage.utils
+  /** Also updates the timestamp */
+  override def mapStore(k: Key, f: Value => Value, default: => Value): Future[Option[Value]] =
+    storage.mapStore(k, e => now(f(e._1)), now(default)) |> toValue
+  override def delete(k: Key): Future[Option[Value]] =
+    storage.delete(k).map(_.map(_._1))
+  override def utils: StorageUtils = storage.utils
 }

@@ -11,9 +11,9 @@ import scala.concurrent.Future
 
 class RefreshableStorageTest extends FreeSpec with MockitoSugar with AuxSpecs with OneInstancePerTest {
   private implicit val c = new TestConfiguration
-  var i = 0
-  val freshnessStorage = new FreshnessStorage[String, String](new MemoryBackedLocalStorage)
-  val $ =
+  private var i = 0
+  private val freshnessStorage = new FreshnessStorage[String, String](new MemoryBackedStorage)
+  private val $ =
     new RefreshableStorage[String, String](freshnessStorage, e => {
       i += 1
       Future successful (e.reverse + i)

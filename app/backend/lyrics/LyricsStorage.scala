@@ -1,12 +1,12 @@
 package backend.lyrics
 
 import backend.configs.Configuration
-import backend.storage.{LocalStorageTemplate, LocalStorageUtils, SlickLocalStorageUtils}
+import backend.storage.{StorageTemplate, StorageUtils, SlickStorageUtils}
 import models.Song
 
 import scala.concurrent.Future
 
-private class LyricsStorage(implicit c: Configuration) extends LocalStorageTemplate[Song, Lyrics] {
+private class LyricsStorage(implicit c: Configuration) extends StorageTemplate[Song, Lyrics] {
   import c.driver.api._
   private val db = c.db
 
@@ -24,7 +24,7 @@ private class LyricsStorage(implicit c: Configuration) extends LocalStorageTempl
       case Instrumental(source) => source -> None
       case HtmlLyrics(source, html) => source -> Some(html)
     }
-    db.run(rows.insertOrUpdate(normalize(s), source, content)).map(e => ())
+    db.run(rows.insertOrUpdate(normalize(s), source, content))
   }
   override def load(s: Song): Future[Option[Lyrics]] =
     db.run(rows
@@ -34,5 +34,7 @@ private class LyricsStorage(implicit c: Configuration) extends LocalStorageTempl
     ).map(_.headOption.map(e => e._2
         .map(HtmlLyrics(e._1, _))
         .getOrElse(Instrumental(e._1))))
-  override def utils: LocalStorageUtils = SlickLocalStorageUtils(c)(rows)
+  override def internalDelete(s: Song) =
+    db.run(rows.filter(_.song === normalize(s)).delete)
+  override def utils: StorageUtils = SlickStorageUtils(c)(rows)
 }

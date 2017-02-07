@@ -2,16 +2,15 @@ package songs
 
 import java.io.File
 
+import backend.configs.Configuration
 import common.concurrency.DirectoryWatcher
 import common.concurrency.DirectoryWatcher.DirectoryEvent
 import common.io.IODirectory
 import common.rich.RichT._
-import common.rich.func.MoreMonadPlus._
+import common.rich.func.MoreMonadPlus.SeqMonadPlus
 import common.rich.path.RichFile._
 import controllers.{Cacher, Searcher}
 import models.{MusicFinder, Song}
-import play.api.Logger
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import rx.lang.scala.Subscriber
 
 import scala.concurrent.Future
@@ -44,14 +43,14 @@ object SongSelector
   import common.rich.RichFuture._
 
   /** A mutable-updateable wrapper of SongSelector */
-  private class SongSelectorProxy(musicFinder: MusicFinder) extends SongSelector {
-    def update(): Future[Unit] = {
-      val $ = Future(new SongSelectorImpl(musicFinder.getSongFilePaths.toVector.map(new File(_)), musicFinder))
+  private class SongSelectorProxy(implicit c: Configuration) extends SongSelector {
+    def update(): Future[_] = {
+      val $ = Future(new SongSelectorImpl(c.mf.getSongFilePaths.toVector.map(new File(_)), c.mf))
       if (songSelector == null)
         songSelector = $
       else // don't override
         $.onSuccess { case e => songSelector = $ }
-      $.map(e => ())
+      $
     }
     private var songSelector: Future[SongSelector] = _
     private lazy val ss = songSelector.get
@@ -59,19 +58,20 @@ object SongSelector
     override def followingSong(song: Song): Song = ss followingSong song
   }
 
-  def listen(musicFinder: MusicFinder): SongSelector = {
-    val $ = new SongSelectorProxy(musicFinder)
+  def listen(implicit c: Configuration): SongSelector = {
+    val logger = c.logger
+    val $ = new SongSelectorProxy
     def directoryListener(e: DirectoryEvent): Unit = e match {
       case DirectoryWatcher.DirectoryCreated(d) =>
-        Logger info s"Directory $d has been added"
+        logger info s"Directory $d has been added"
         $.update() >> (Cacher newDir new IODirectory(d)) >> Searcher.!()
       case DirectoryWatcher.DirectoryDeleted(d) =>
-        Logger warn s"Directory has been deleted; the index does not support deletions yet, so please update."
+        logger warn "Directory has been deleted; the index does not support deletions yet, so please update."
         $.update()
-      case DirectoryWatcher.Started => common.CompositeLogger info "SongSelector is listening to directory changes"
+      case DirectoryWatcher.Started => logger info "SongSelector is listening to directory changes"
       case _ => ()
     }
-    DirectoryWatcher.apply(musicFinder).subscribe(Subscriber(directoryListener))
+    DirectoryWatcher.apply(c.mf).subscribe(Subscriber(directoryListener))
     $.update()
     $
   }

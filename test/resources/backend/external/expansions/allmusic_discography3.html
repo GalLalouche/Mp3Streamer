@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"><script type="text/javascript">window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){var o=e[n]={exports:{}};t[n][0].call(o.exports,function(e){var o=t[n][1][e];return r(o||e)},o,o.exports)}return e[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({1:[function(t,e,n){function r(){}function o(t,e,n){return function(){return i(t,[(new Date).getTime()].concat(u(arguments)),e?null:this,n),e?void 0:this}}var i=t("handle"),a=t(2),u=t(3),c=t("ee").get("tracer"),f=NREUM;"undefined"==typeof window.newrelic&&(newrelic=f);var s=["setPageViewName","setCustomAttribute","setErrorHandler","finished","addToTrace","inlineHit"],p="api-",l=p+"ixn-";a(s,function(t,e){f[e]=o(p+e,!0,"api")}),f.addPageAction=o(p+"addPageAction",!0),e.exports=newrelic,f.interaction=function(){return(new r).get()};var d=r.prototype={createTracer:function(t,e){var n={},r=this,o="function"==typeof e;return i(l+"tracer",[Date.now(),t,n],r),function(){if(c.emit((o?"":"no-")+"fn-start",[Date.now(),r,o],n),o)try{return e.apply(this,arguments)}finally{c.emit("fn-end",[Date.now()],n)}}}};a("setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),function(t,e){d[e]=o(l+e)}),newrelic.noticeError=function(t){"string"==typeof t&&(t=new Error(t)),i("err",[t,(new Date).getTime()])}},{}],2:[function(t,e,n){function r(t,e){var n=[],r="",i=0;for(r in t)o.call(t,r)&&(n[i]=e(r,t[r]),i+=1);return n}var o=Object.prototype.hasOwnProperty;e.exports=r},{}],3:[function(t,e,n){function r(t,e,n){e||(e=0),"undefined"==typeof n&&(n=t?t.length:0);for(var r=-1,o=n-e||0,i=Array(o<0?0:o);++r<o;)i[r]=t[e+r];return i}e.exports=r},{}],ee:[function(t,e,n){function r(){}function o(t){function e(t){return t&&t instanceof r?t:t?u(t,a,i):i()}function n(n,r,o){t&&t(n,r,o);for(var i=e(o),a=l(n),u=a.length,c=0;c<u;c++)a[c].apply(i,r);var s=f[m[n]];return s&&s.push([w,n,r,i]),i}function p(t,e){g[t]=l(t).concat(e)}function l(t){return g[t]||[]}function d(t){return s[t]=s[t]||o(n)}function v(t,e){c(t,function(t,n){e=e||"feature",m[n]=e,e in f||(f[e]=[])})}var g={},m={},w={on:p,emit:n,get:d,listeners:l,context:e,buffer:v};return w}function i(){return new r}var a="nr@context",u=t("gos"),c=t(2),f={},s={},p=e.exports=o();p.backlog=f},{}],gos:[function(t,e,n){function r(t,e,n){if(o.call(t,e))return t[e];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(t,e,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return t[e]=r,r}var o=Object.prototype.hasOwnProperty;e.exports=r},{}],handle:[function(t,e,n){function r(t,e,n,r){o.buffer([t],r),o.emit(t,e,n)}var o=t("ee").get("handle");e.exports=r,r.ee=o},{}],id:[function(t,e,n){function r(t){var e=typeof t;return!t||"object"!==e&&"function"!==e?-1:t===window?0:a(t,i,function(){return o++})}var o=1,i="nr@id",a=t("gos");e.exports=r},{}],loader:[function(t,e,n){function r(){if(!h++){var t=y.info=NREUM.info,e=s.getElementsByTagName("script")[0];if(t&&t.licenseKey&&t.applicationID&&e){c(m,function(e,n){t[e]||(t[e]=n)});var n="https"===g.split(":")[0]||t.sslForHttp;y.proto=n?"https://":"http://",u("mark",["onload",a()],null,"api");var r=s.createElement("script");r.src=y.proto+t.agent,e.parentNode.insertBefore(r,e)}}}function o(){"complete"===s.readyState&&i()}function i(){u("mark",["domContent",a()],null,"api")}function a(){return(new Date).getTime()}var u=t("handle"),c=t(2),f=window,s=f.document,p="addEventListener",l="attachEvent",d=f.XMLHttpRequest,v=d&&d.prototype;NREUM.o={ST:setTimeout,CT:clearTimeout,XHR:d,REQ:f.Request,EV:f.Event,PR:f.Promise,MO:f.MutationObserver},t(1);var g=""+location,m={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-974.min.js"},w=d&&v&&v[p]&&!/CriOS/.test(navigator.userAgent),y=e.exports={offset:a(),origin:g,features:{},xhrWrappable:w};s[p]?(s[p]("DOMContentLoaded",i,!1),f[p]("load",r,!1)):(s[l]("onreadystatechange",o),f[l]("onload",r)),u("mark",["firstbyte",a()],null,"api");var h=0},{}]},{},["loader"]);</script>
+
+        <meta http-equiv="content-language" content="en-us">
+
+        <!-- iOS metadata -->
+        <meta name="apple-mobile-web-app-capable" content="no">
+        <meta name="viewport" content="width=device-width" >
+
+        <link rel="apple-touch-icon-precomposed" href="//cdn-prod.allmusic.com/images/ios/apple-touch-icon-57x57.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="//cdn-prod.allmusic.com/images/ios/apple-touch-icon-72x72.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="//cdn-prod.allmusic.com/images/ios/apple-touch-icon-114x114.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="//cdn-prod.allmusic.com/images/ios/apple-touch-icon-144x144.png">
+
+        <link rel="shortcut icon" href="//cdn-prod.allmusic.com/images/favicon.ico" type="image/x-icon" />
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss" />
+        <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/kffpbhfpflaacppoegnbknokchggcoao">
+
+        	<meta name="title" content="Empyrium | Album Discography | AllMusic">
+	<meta name="description" content="Find Empyrium discography, albums and singles on AllMusic">
+
+        <meta property="og:site_name" content="AllMusic">
+
+	<meta property="og:title" content="Empyrium | Album Discography | AllMusic">
+	<meta itemprop="name" content="Empyrium | Album Discography | AllMusic">
+	<meta name="twitter:title" content="Empyrium | Album Discography | AllMusic">
+
+	<meta property="og:description" content="Find Empyrium discography, albums and singles on AllMusic">
+	<meta itemprop="description" content="Find Empyrium discography, albums and singles on AllMusic">
+	<meta name="twitter:description" content="Find Empyrium discography, albums and singles on AllMusic">
+
+
+        <meta property="og:image" content="//cdn-prod.allmusic.com/images/allmusic_facebook_share.png">
+        <meta property="og:url" content="http://www.allmusic.com/artist/mn0000194124/discography">
+
+        <link rel="canonical" href="http://www.allmusic.com/artist/empyrium-mn0000194124/discography">
+
+        <title>Empyrium | Album Discography | AllMusic</title>
+
+        <link type="text/css" rel="stylesheet" href="//cdn-prod.allmusic.com/css/global/global.css">
+
+                    <link type="text/css" rel="stylesheet" href="//cdn-prod.allmusic.com/css/pages/artist/artist.css">
+        
+        <!-- Alexa tag -->
+        <meta name="alexaVerifyID" content="SfgYrX5roRNK_iy-Mr_tFkRlY7M"/>
+
+        <script type="text/javascript" src="//zt.allmusic.com/allmusic/header"></script>
+
+                    <script>!function e(t,o,i){function n(a,l){if(!o[a]){if(!t[a]){var s="function"==typeof require&&require;if(!l&&s)return s(a,!0);if(r)return r(a,!0);var c=new Error("Cannot find module '"+a+"'");throw c.code="MODULE_NOT_FOUND",c}var d=o[a]={exports:{}};t[a][0].call(d.exports,function(e){var o=t[a][1][e];return n(o?o:e)},d,d.exports,e,t,o,i)}return o[a].exports}for(var r="function"==typeof require&&require,a=0;a<i.length;a++)n(i[a]);return n}({1:[function(e,t,o){function i(){for(var e,t=A.b.o?A.b.o.l:[],o=0;o<t.length;o++){var i,n=t[o];if(n.i){if(n.i.indexOf(".")===-1)i=q[n.i];else try{var r=n.i.split(".");i=q;for(var a=0;a<r.length;a++)i=i[r[a]]}catch(e){i=null}if(n.e&&!i)e="50",K=!0;else if(i){var l=(i.toString?i.toString():"").replace(/\s+/gm," ");typeof i!==n.t?(e="51",K=!0):"noopfn"===i.name?(e="54",K=!0):n.l&&l.length<n.l?(e="52",K=!0):"function () { ; }"===l&&(e="53",K=!0)}if(K)return H.push(n.i),f("blocked",e,h(n.i)),d(e)}}}function n(){for(var e=A.b.c.l,t=0,o=A.b.c.t,i=0;i<e.length;i++){var n=e[i].indexOf("*")===-1;e[i]=e[i].replace("*","");var r=j.createElement("div"),a="#"===e[i][0]?"id":"class",l=e[i].slice(1);r.setAttribute(a,l),r.style.height="0px",_.appendChild(r);var s=q.getComputedStyle(r);if("none"===s.display&&(H.push(e[i]),f("blocked","1",h(e[i])),t++),_.removeChild(r),n){r=document.querySelectorAll(e[i]);for(var c=0;c<r.length;c++){s=q.getComputedStyle(r[c]);var p=r[c].className||e[i];if("amn"!==A.p||!/(suitcase)|(saamba)|(btf)/i.test(p))if("none"===s.display)H.push(p),f("blocked","11",h(p)),t++;else if("firefox"===I)try{if(/(abp)|(elemhide)/.test(s.MozBinding)){var u=r[c].getBoundingClientRect();u.x||u.y||u.width||u.height||(H.push(p),f("blocked","12",h(p)),t++)}}catch(e){}}}if(t>=o)return K=!0,d(1)}}function r(){if(!K){var e=A.b.u.l,t=0,o=A.b.u.t,i=0,n=function(n,r,a,l){if(!l&&(_.removeChild(r),!K))if(n)t++,H.push(a.src),f("blocked","2",h(a.src)),t===o?(K=!0,d(2)):++i===e.length&&d();else{if(K)return;++i!==e.length||K||d()}};e.length||d();for(var r=0;r<e.length;r++)!function(){var t=document.createElement("iframe");t.style.display="none",document.body.appendChild(t);var o=t.contentWindow.document,i=r,a=!1,l=/(\.png)|(\.gif)|(\.jpg)|(type=image)/.test(e[r])?"img":"script",s=o.createElement(l);"img"===l&&(s.style.height="0px"),s.src=e[r],s.onerror=function(){n("error",t,s,a),a=!0},s.onload=function(){n(null,t,s,a),a=!0},setTimeout(function(){o.body.appendChild(s)},500*(i+1))}()}}function a(){K||(document.querySelectorAll("*[abp]").length?(K=!0,d(4)):d())}function l(){healthy=!0,T||(healthy=!1);var e=q.getComputedStyle(T),t=parseInt(e.width.replace("px","")),o=parseInt(e.height.replace("px",""));(!e||"block"!==e.display||"visible"!==e.visibility||parseInt(e.opacity)<1)&&(healthy=!1),("0px"!==e.top||"0px"!==e.left||"fixed"!==e.position||Math.abs(t-q.innerWidth)>50||Math.abs(o-q.innerHeight)>50)&&(healthy=!1),healthy||(f("locker","error","10"),setTimeout(function(){q.location.reload()},50))}function s(){try{var e="color: #ffffff !important;font-size: 14px;font-family:PlutoSansCondBold;margin: 0; padding: 15px 15px;background-color: #1278bd;cursor:pointer",t="font-size:12px;margin-top:5px;padding:5px;line-height:normal;height:55px",o="display:inline-block;width:28%;height:170px;vertical-align:top;margin:10px;",i="font-size:12px;font-weight: bold;text-decoration:none;cursor:pointer;color:#1278bd;",n="!important",r="margin:7px 0 0 0;color:#111;",a="desktop"!==C||"opera"!==I&&"safari"!==I?"2147483647":"99999",l="margin:0;padding:0 0 0 17px;";T=j.createElement("d"+Date.now()),T.setAttribute("style","z-index:"+a+n+";display:block"+n+";visibility:visible"+n+";position:fixed"+n+";top:0"+n+";left:0"+n+";width:100%"+n+";height:100%"+n+";color:#555;background:rgba(0,0,0,0.85)"+n+";font-family:Helvetica;-webkit-font-smoothing:subpixel-antialiased;line-height:normal;"),T.innerHTML='<div style="margin:50px auto;display:block'+n+';padding:30px 10px;position:relative;width:650px;background:white;border:0px solid #111;box-shadow:0px 0px 0px 0px #c1c1c1;text-align:center;"><div style="font-size:36px;padding:10px;color:#000;font-family:PlutoSansCondBold, Helvetica;">'+A.t+'</div><div style="font-size:12px;padding:10px;width:87%;margin:10px auto;">'+A.m+'</div><div id="__sh" style="display:none;width:65%;margin:0 auto;text-align:left;font-size:11px;"><div style="font-size:12px;color:#000;margin-bottom:5px;">How to disable your ad blocker for '+A.c+':</div><div style="'+r+'">AdBlock</div><ul style="'+l+'"><li>Click the Adblock icon at the right of your address bar.</li><li>Click "Don\'t run on pages on this domain".</li></ul><div style="'+r+'">AdBlock Plus</div><ul style="'+l+'"><li>Click the Adblock Plus icon at the right of your address bar.</li><li>Click "Enabled on this site" to disable ad blocking for the current website you are on. If you are in Firefox click "disable on '+A.c+'".</li></ul></div><hr style="width:89%;margin:5px auto;border-top:1px solid #ccc; border-bottom:0">'+("firefox"===I||"chrome"===I?'<div style="'+o+'"><div style="'+t+'">Use '+A.c+' ad-free with the SupportFreeContent extension.</div><div ct=1 style="'+e+'">Continue With Support Free Content</div><div style="margin:15px 0 0 0"><span ct=11 style="'+i+'">More Info</span></div></div>':"")+'<div style="'+o+'"><div style="'+t+'">Allow ads on '+A.c+' by whitelisting this site or disabling your ad blocker.</div><div ct=2 style="'+e+'">Continue After Disabling Ad Blocker</div><div style="margin:15px 0 0 0"><span ct=21 style="'+i+'">Help</span></div></div>'+(A.pu?'<div style="'+o+'"><div style="'+t+'">Support '+A.c+' for a faster, ad-free experience with a $12 annual subscription.</div><div ct=3 style="'+e+'">Support AllMusic With A Paid Subscription</div><div style="margin:15px 0 0 0"><span ct=31 style="'+i+'">Already a subscriber? Log in</span></div></div>':"")+(A.su?'<div style="'+o+'"><div style="'+t+'">Track, rate and review your favorite shows by signing up for a free '+A.c+' account.</div><div ct=5 style="'+e+'">Sign Up For An AllMusic Account</div><div style="margin:15px 0 0 0"><span ct=51 style="'+i+'">Already Have an Account?</span></div></div>':"")+(0===U?'<hr style="width:89%;margin:35px auto 0 auto;border-top:1px solid #ccc; border-bottom:0"><div style="width:65%;font-size:12px;margin:0 auto;"><div ct=6 style="margin-top:20px;'+i+'">No thanks, I want to continue using AdBlock.</div></div>':"")+"</div></div>"}catch(e){}}function c(e){f("locker","lock",e),S=!0;var t=j.createElement("style");t.setAttribute("type","text/css"),t.innerHTML='body.locked{overflow:hidden;}body.locked::after{content:"";position:fixed;top:0px;left:0px;width:100%;height:100%;opacity:0.5;z-index:99990;}',j.head.appendChild(t),setInterval(l,2500),_.className+=" locked",s();var o,i=T.querySelectorAll("*[ct]");for(o=0;o<i.length;o++)i[o].addEventListener("click",w);j.addEventListener("contextmenu",function(e){e.preventDefault()},!1);var n=Math.floor(Math.random()*_.children.length);if(_.insertBefore(T,_.children[n]),!E)for(E=!0,f("locker","impression"),G.session.ibf="y",o=0;o<A.ib.length;o++)(new Image).src=A.ib[o]}function d(e){if(!S&&!z){if(setTimeout(m,K?0:7500),K)return G.local.__cts&&(f("unblock","reblock"),delete G.local.__cts),3===A.f?(S=!0,f("locker","abp",e)):(B&&f("unblock","fail"),G.local.__lts=Date.now(),c(e));setTimeout(function(){!K&&G.local.__cts&&f("unblock","return")},3e3),(B||O)&&setTimeout(function(){if(!K&&(delete G.local.__club,delete G.local.__lts,f("unblock","success",B?1:2),G.local.__cts=1,A.ub))for(var e=0;e<A.ub.length;e++)(new Image).src=A.ub[e]},3e3)}}function p(){A.ga=A.ga||"UA-63935000-27",function(e,t,o,i,n,r,a){e.GoogleAnalyticsObject=n,e[n]=e[n]||function(){(e[n].q=e[n].q||[]).push(arguments)},e[n].l=1*new Date,r=t.createElement(o),a=t.getElementsByTagName(o)[0],r.async=1,r.src=i,a.parentNode.insertBefore(r,a)}(q,j,"script","https://www.google-analytics.com/analytics.js","ga"),ga("create",A.ga,{name:A.p+"ga"}),ga(A.p+"ga.set","dimension1",A.p),ga(A.p+"ga.set","dimension2",P),ga(A.p+"ga.set","dimension3",A.pl),ga(A.p+"ga.send","pageview")}function u(){L="//te.supportfreecontent.com/supportfreecontent/img?tracking_id=sfc&hit_type=event&dimension1="+encodeURIComponent(A.p)+"&dimension2="+encodeURIComponent(P)+"&"}function f(e,t,o,i){if(i||(i=1e3),"undefined"!=typeof ga&&W<=i&&ga(A.p+"ga.send","event",e,t,o),L){var n=L+["cb="+(new Date).getTime(),"event_category="+encodeURIComponent(e),"event_action="+encodeURIComponent(t),"event_label="+encodeURIComponent(o||"")].join("&");(new Image).src=n}}function g(e){try{var t="string"==typeof e.data?JSON.parse(e.data):e.data;switch(t.command){case"unlocker_installed":case"unlocker_exists":D=!0,S&&q.location.reload()}}catch(e){}}function m(){for(var e=0;e<R.length;e++)try{R[e].disconnect()}catch(e){}}function h(e){return btoa&&(e=btoa(e)),e}function v(e){var t=e.target||e.srcElement,o=t.src||t.href;if(!K){var i=/(moatad)|(doubleclick)|(googletagservices)|(googlesyndication)|(adserver)|(1rx)|(doubleverify)|(adchoice)|(googlead)|(pubads)|(adsystem)|(safeframe)|(advert)|(virool\.com)(media\.complex)/i,n=/(doubleclick\.net\/activity)|(doubleclick\.net\/ddm)/i;if(n.test(o))return f("ignored","99");if(A.b.w.p.test(o)||i.test(o)){var r=o.indexOf("?")!==-1?o.indexOf("?"):o.indexOf("#"),a=o.slice(0,r===-1?o.length:r);H.push(a),N?f("blocked","3",h(a)):J.push(function(){f("blocked","3",h(a))}),F++}F===A.b.w.t&&(K=!0,N&&setTimeout(d,1e3,3),m())}}function b(e,t){try{if("ie"===I)return;if(!window.MutationObserver)return void f("locker","error","22");var o=new MutationObserver(function(e){for(var t=0;t<e.length;t++)for(var o=0;o<e[t].addedNodes.length;o++)if("SCRIPT"!==e[t].addedNodes[o].tagName&&"IMG"!==e[t].addedNodes[o].tagName&&"LINK"!==e[t].addedNodes[o].tagName||e[t].addedNodes[o].addEventListener("error",v),"IFRAME"===e[t].addedNodes[o].tagName)try{!function(e){function t(){try{for(var t=e.contentDocument,o=t.querySelectorAll?t.querySelectorAll("script,img"):[],i=0;i<o.length;i++)!o[i].__mo&&o[i].src&&(o[i].addEventListener("error",v),o[i].__mo=1)}catch(e){}}t();for(var o=0;o<=1500;o+=25)setTimeout(t,o)}(e[t].addedNodes[o])}catch(e){}});o.observe(e,{childList:!0,subtree:!0,attributes:!1,characterData:!1,characterDataOldValue:!1}),R.push(o)}catch(e){f("locker","error","23")}}function y(){if(_=j.body,D||j.getElementsByTagName("r1_unlocker_loading").length||j.getElementsByTagName("r1_unlocker_loaded").length||j.getElementsByTagName("r1_unlocker_complete").length)return f("locker","standdown","whitelisted");if("function"==typeof A.suv&&A.suv())return f("locker","standdown","user");if(A.s.test(j.location.href))return f("locker","standdown","spare");f("locker","start",P);for(var e=0;e<J.length;e++)"function"==typeof J[e]&&J[e]();return K?setTimeout(d,1e3,3):(i(),n(),r(),"ie"===I&&setTimeout(a,1e3),void(N=!0))}function k(e){A=e,p(),u();try{C=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)?"mobile":"desktop";var t={legacy:/(msie 8)|(msie 9)|(msie 10)/i,opera:/(opr)|(opera)|(opios)/i,edge:/edge/i,ie:/(msie)|(trident)/i,chrome:/(chrome)|(crios)/i,firefox:/(firefox)|(fxios)/i,safari:/safari/i};for(var o in t)if(t[o].test(navigator.userAgent)){I=o;break}if(!I||"legacy"===I||"mobile"===C)return f("locker","standdown","device");if(/(googlebot)|(AdsBot)|(Mediapartners-Google)|(bingbot)|(slurp)/i.test(navigator.userAgent))return f("locker","standdown","crawler");if(G.local="localStorage"in q&&q.localStorage&&q.localStorage.getItem?q.localStorage:{},A.tr&&A.tr>0&&(U=x(A.tr),1===U))return f("locker","standdown","trial");G.session="sessionStorage"in q&&q.sessionStorage&&q.sessionStorage.getItem?q.sessionStorage:{},G.local.sg=M=G.local.sg||Math.floor(4*Math.random()+1),ga(A.p+"ga.set","dimension3",M),E="y"===G.session.ibf;var i=parseInt(G.local.__club||0);B=i>Date.now()-1e4,i=parseInt(G.local.__lts||0),O=i>Date.now()-12e4}catch(e){return f("locker","error","1")}b(j.documentElement,1),q.addEventListener("message",g,!1),q.addEventListener("beforeunload",function(){z=!0}),"loading"!==j.readyState?setTimeout(y,A.to):j.addEventListener("DOMContentLoaded",function(){setTimeout(y,A.to)},!1)}function x(e){var t=0;try{if(G.local.__trex){var o=parseInt(G.local.__trex);t=o&&o>0?Date.now()>=o?2:1:2}}catch(e){t=2}return t}function w(e){function t(){q.location="http://cl.supportfreecontent.com/cl/static/store"+("amn"===A.p?"-allmusic":"")+".html"}var o=e.target||e.srcElement,i=parseInt(o.getAttribute("ct"));switch(f("locker","options",i),i){case 1:if("amn"!==A.p&&"sidereel"!==A.p||"chrome"!==I)setTimeout(t,50);else try{var n;"amn"===A.p?n="https://chrome.google.com/webstore/detail/kffpbhfpflaacppoegnbknokchggcoao":"sidereel"===A.p&&(n="https://chrome.google.com/webstore/detail/jhjoknpendpadgdjhofkappanplkaibi"),chrome.webstore.install(n,function(){f("inline install","success")},function(e,o){f("inline install","fail",o),"userCancelled"!==o&&"notPermitted"!==o&&setTimeout(t,50)})}catch(e){f("inline install","error",e),setTimeout(t,50)}break;case 11:q.open("http://supportfreecontent.com");break;case 2:G.local.__club=Date.now(),setTimeout(function(){q.location.reload()},50);break;case 21:j.getElementById("__sh").style.display="block";break;case 3:setTimeout(function(){q.location=A.pu},50);break;case 31:setTimeout(function(){q.location=A.li||A.pu},50);break;case 5:setTimeout(function(){q.location=A.su},50);break;case 51:setTimeout(function(){q.location=A.li||A.su},50);break;case 6:G.local.__trex=Date.now()+24*A.tr*3600*1e3,setTimeout(function(){q.location.reload()},50)}}var _,A,S,T,C,I,E,M,N,B,O,D,z,L,U,j=document,q=window,P="0.70",R=[],H=[],F=0,W=Math.floor(1e3*Math.random()+1),G={},J=[],K=!1;k({p:"amn",pl:"desktop",c:"AllMusic",to:1500,s:/(https:)/,t:"Support AllMusic",m:"It appears that something in this browser is blocking advertisements from being displayed properly on our site. This impacts our ability to keep AllMusic up and running. Please help us keep our content free by selecting one of the following options:",pu:"https://www.allmusic.com/subscribe",ib:["http://rmp.supportfreecontent.com/rmp/44046/0/vc?z=1r&dim=39836"],ub:["http://rmp.supportfreecontent.com/rmp/44046/0/vc?z=1r&dim=44198"],suv:function(){return document.cookie.indexOf("user%22%3Bi%3A0%3B")<0},b:{c:{t:1,l:[".advertising",".medium-rectangle",".leaderboard"]},u:{t:2,l:["http://cdn.complexmedianetwork.com/js/cmnUNT.js","http://c.amazon-adsystem.com/aax2/amzn_ads.js","http://allmedia-d.openx.net/w/1.0/jstag?nc=22732481-SideReel","http://video.unrulymedia.com/native/native-loader.js"]},w:{t:2,p:/(cmnunt)|(amzn_ads)|(complexmedia)|(unrulymedia)|(revcontent)/i},o:{l:[{i:"googletag.display",t:"function",e:0,l:54},{i:"ga.remove",t:"function",e:0,l:54},{i:"cmnUNT",t:"function",e:1,l:54},{i:"COMSCORE.beacon",t:"function",e:0,l:54}]}}})},{}]},{},[1]);
+</script>        
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-7096127-1', 'auto');
+
+                                ga('send', 'pageview', 'artist/mn0000194124/discography');
+                        setTimeout("ga('send','event','adjusted bounce rate','page visit 15 seconds or more')",15000);
+                </script>
+
+        
+        <!-- Media query polyfill ( Always require because loading via dynamic ajax injection is too slow [the enquire.js will fire before the ajax completes] ) -->
+        <script src="//cdn-prod.allmusic.com/js/lib/media.match.min.js"></script>
+
+        <script src="//cdn-prod.allmusic.com/cache/setup.1480436007.js"></script>
+
+        <script type="text/javascript">
+var googletag = googletag || {};
+googletag.cmd = googletag.cmd || [];
+(function(){
+  var gads = document.createElement("script");
+  gads.async = true;
+  gads.type = "text/javascript";
+  var useSSL = "https:" == document.location.protocol;
+  gads.src = (useSSL ? "https:" : "http:") + "//www.googletagservices.com/tag/js/gpt.js";
+  var node = document.getElementsByTagName("script")[0];
+  node.parentNode.insertBefore(gads, node);
+})();
+googletag.cmd.push(function(){
+  googletag.defineSlot('/22732481/Allmusic_ROS_1x1_Footer', [[1, 1]], 'Allmusic_ROS_1x1_Footer').addService(googletag.pubads());
+});
+googletag.cmd.push(function(){
+  googletag.pubads().setTargeting('pagename', 'artist');
+  googletag.pubads().setTargeting('artist_id', 'MN0000194124');
+  googletag.pubads().setTargeting('genre', 'Pop/Rock');
+  googletag.pubads().setTargeting('blockadex', 'FALSE');
+  googletag.pubads().set("adsense_background_color", "F4F4F4");
+  googletag.enableServices();
+});
+</script>        <script type="text/javascript">
+   // Get Mobile User agent
+   var isMobileUa = /iPhone|iPod|BlackBerry|Opera Mini|(android|bb\d+|meego).+mobile/i.test(navigator.userAgent);
+   // Get the browser width
+   var browserwidth = window.innerWidth;
+</script>
+<script type="text/javascript">
+   if (isMobile_AllMusic ) {
+       cmnunt_site = 'allmusic_mob';
+   } else {
+       cmnunt_site = 'allmusic';
+   }
+   cmnunt_silo = 's_mus';
+   cmnunt_subsilo = '';
+   cmnunt_tier = 'to,t2,internal';
+   cmnunt_zone = 'artist';
+   cmnunt_kw = 'artist_id=MN0000194124,genre=Pop/Rock,blockadex=FALSE,pagename=artist';
+   cmnunt_exclude = '';
+if (isMobile_AllMusic) {
+document.write('<scr'+'ipt type="text/javascript" src="http://cdn.complexmedianetwork.com/js/cmnUNTmobile.js"></scr'+'ipt>')
+} else {
+document.write('<scr'+'ipt type="text/javascript" src="http://cdn.complexmedianetwork.com/js/cmnUNT.js"></scr'+'ipt>')
+}
+</script>
+    
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            function async_load(script_url){
+                var protocol = ('https:' == document.location.protocol ? 'https://' : 'http://');
+                var s = document.createElement('script'); s.src = protocol + script_url;
+                var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);
+            }
+            bm_website_code = 'C0EE67EF1B164D69';
+            jQuery(document).ready(function(){async_load('asset.pagefair.com/measure.min.js')});
+            jQuery(document).ready(function(){async_load('asset.pagefair.net/ads.min.js')});
+        })();
+    </script>
+
+    <script type="text/javascript">
+        var _qevents = _qevents || [];
+
+        (function() {
+            var elem = document.createElement('script');
+            elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";
+            elem.async = true;
+            elem.type = "text/javascript";
+            var scpt = document.getElementsByTagName('script')[0];
+            scpt.parentNode.insertBefore(elem, scpt);
+        })();
+    </script>
+
+    </head>
+    <body>
+        <noscript>
+            <div class="javascript-disabled" id="no-js">
+                AllMusic relies heavily on JavaScript.<br>
+                Please enable JavaScript in your browser to use the site fully.
+            </div>
+        </noscript>
+        <div class="stripe-container header-leaderboard">
+    <div class="advertising leaderboard">
+                    <div id="cmn_ad_tag_head" class="fw_allmusic">    <!-- 3x3 Ad Tag -->    <script type="text/javascript">        cmnUNT('3x3', tile_num++);    </script></div>            </div>
+</div>
+
+<div class="overflow-container artist">
+
+<div class="stripe-container header-main-nav clearfix">
+    <div class="max-header">
+        <div class="main-nav">
+
+    <div class="logo-container">
+        <a class="logo no-snap" href="/">
+                            <h3 class="logo-img">AllMusic</h3>
+                    </a>
+    </div>
+
+    <nav class="mobile-menu"></nav>
+
+    <div class="search-container">
+        <form class="site-search" method="post" name="site-search" action="/search">
+            <input type="submit" class="site-search-button" name="submit">
+            <input type="search" class="site-search-input" name="term" placeholder="Search" tabindex="1">
+        </form>
+    </div>
+
+    <nav class="site-nav">
+        <ul>
+            <li class="new-releases">
+                <a href="/newreleases">New Releases</a>
+                <ul class="new-releases-nav">
+    <div class="sub-nav-container">
+        <div class="sub-nav-columns">
+            <div class="new-releases-subnav left">
+                <li class="nr-featured">
+                    <a href="/newreleases">Featured New Releases</a>
+                </li>
+                <li class="nr-editorschoice">
+                    <a href="/newreleases/editorschoice">Editors' Choice</a>
+                </li>
+                <li class="nr-all">
+                    <a href="/newreleases/all">All New Releases</a>
+                </li>
+            </div>
+            <div class="new-releases-subnav right">
+                <div class="sub-nav-content">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</ul>            </li>
+            <li class="discover">
+                <a href="/discover">Discover</a>
+                <ul class="discover-nav">
+    <div class="sub-nav-container">
+        <div class="sub-nav-columns left">
+            <li id="discover-genres" class="discover-drop-trigger active">
+                <a href="/genres">Genres<span class="genres-arrow" style="display:none">&nbsp;&nbsp;&rsaquo;</span></a>
+            </li>
+            <li id="discover-moods" class="discover-drop-trigger">
+                <a href="/moods">Moods<span class="moods-arrow" style="display:none">&nbsp;&nbsp;&rsaquo;</span></a>
+            </li>
+            <li id="discover-themes" class="discover-drop-trigger">
+                <a href="/themes">Themes<span class="themes-arrow" style="display:none">&nbsp;&nbsp;&rsaquo;</span></a>
+            </li>
+        </div>
+        <div class="sub-nav-columns right">
+            <ul class="discover-genre-secondary">
+    <div class="genre-column">
+        <!-- spacer to prevent hover weirdness -->
+    </div>
+    <div class="genre-column">
+        <li class="individual">
+            <a href="/genre/blues-ma0000002467">Blues</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/classical-ma0000002521">Classical</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/country-ma0000002532">Country</a>
+        </li>
+    </div>
+    <div class="genre-column">
+        <li class="individual">
+            <a href="/genre/electronic-ma0000002572">Electronic</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/folk-ma0000002592">Folk</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/international-ma0000002660">International</a>
+        </li>
+    </div>
+    <div class="genre-column">
+        <li class="individual">
+            <a href="/genre/jazz-ma0000002674">Jazz</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/latin-ma0000002692">Latin</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/new-age-ma0000002745">New Age</a>
+        </li>
+    </div>
+    <div class="genre-column">
+        <li class="individual">
+            <a href="/genre/pop-rock-ma0000002613">Pop/Rock</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/rap-ma0000002816">Rap</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/r-b-ma0000002809">R&amp;B</a>
+        </li>
+    </div>
+    <div class="genre-column">
+        <li class="individual">
+            <a href="/genre/reggae-ma0000002820">Reggae</a>
+        </li>
+        <li class="individual">
+            <a href="/genre/stage-screen-ma0000004432">Stage &amp; Screen</a>
+        </li>
+        <li class="last">
+            <a href="/genres">All Genres</a>
+        </li>
+    </div>
+</ul>            <ul class="discover-mood-secondary" style="display:none;">
+    <div class="mood-column">
+        <!-- spacer to prevent hover weirdness -->
+    </div>
+    <div class="mood-column">
+        <li class="individual">
+            <a href="/mood/aggressive-xa0000000694">Aggressive</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/bittersweet-xa0000000946">Bittersweet</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/druggy-xa0000000979">Druggy</a>
+        </li>
+    </div>
+    <div class="mood-column">
+        <li class="individual">
+            <a href="/mood/energetic-xa0000000990">Energetic</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/happy-xa0000001016">Happy</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/hypnotic-xa0000000719">Hypnotic</a>
+        </li>
+    </div>
+    <div class="mood-column">
+        <li class="individual">
+            <a href="/mood/laid-back-mellow-xa0000001032">Laid Back/Mellow</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/melancholy-xa0000000734">Melancholy</a>
+        </li>
+        <li>
+            <a href="/mood/passionate-xa0000001062">Passionate</a>
+        </li>
+    </div>
+    <div class="mood-column">
+        <li class="individual">
+            <a href="/mood/romantic-xa0000000758">Romantic</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/sad-xa0000000761">Sad</a>
+        </li>
+        <li>
+            <a href="/mood/sentimental-xa0000000765">Sentimental</a>
+        </li>
+    </div>
+    <div class="mood-column">
+        <li>
+            <a href="/mood/sexy-xa0000000770">Sexy</a>
+        </li>
+        <li class="individual">
+            <a href="/mood/trippy-xa0000000749">Trippy</a>
+        </li>
+        <li class="last">
+            <a href="/moods">All Moods</a>
+        </li>
+    </div>
+</ul>            <ul class="discover-theme-secondary" style="display:none;">
+    <div class="theme-column">
+        <!-- spacer to prevent hover weirdness -->
+    </div>
+    <div class="theme-column">
+        <li class="individual">
+            <a href="/theme/background-music-ma0000006329">Background Music</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/celebration-ma0000005042">Celebration</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/cool-cocky-ma0000006328">Cool & Cocky</a>
+        </li>
+    </div>
+    <div class="theme-column">
+        <li class="individual">
+            <a href="/theme/drinking-ma0000004252">Drinking</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/hanging-out-ma0000006297">Hanging Out</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/in-love-ma0000005076">In Love</a>
+        </li>
+    </div>
+    <div class="theme-column">
+        <li class="individual">
+            <a href="/theme/introspection-ma0000006318">Introspection</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/late-night-ma0000006321">Late Night</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/partying-ma0000004272">Partying</a>
+        </li>
+    </div>
+    <div class="theme-column">
+        <li class="individual">
+            <a href="/theme/rainy-day-ma0000005096">Rainy Day</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/relaxation-ma0000006314">Relaxation</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/road-trip-ma0000006287">Road Trip</a>
+        </li>
+    </div>
+    <div class="theme-column">
+        <li class="individual">
+            <a href="/theme/romantic-evening-ma0000006312">Romantic Evening</a>
+        </li>
+        <li class="individual">
+            <a href="/theme/sex-ma0000005107">Sex</a>
+        </li>
+        <li class="last">
+            <a href="/themes">All Themes</a>
+        </li>
+    </div>
+</ul>        </div>
+    </div>
+</ul>            </li>
+            <li class="blog">
+                <a href="/blog">Articles</a>
+                <ul>
+    <div class="sub-nav-container clearfix">
+        <div class="sub-nav-columns">
+            <div class="blog-list">
+                <li class="blog-features">
+                    <a href="/blog/features">Features</a>
+                </li>
+                <li class="blog-interviews">
+                    <a href="/blog/interviews-14">Interviews</a>
+                </li>
+                <li class="blog-lists">
+                    <a href="/blog/lists">Lists</a>
+                </li>
+            </div>
+            <div class="blog-list">
+                <li class="blog-stream">
+                    <a href="/blog/stream-and-download">Streams</a>
+                </li>
+                <li class="blog-promotions">
+                    <a href="/videos">Videos</a>
+                </li>
+                <li class="blog-all">
+                    <a href="/blog">All Posts</a>
+                </li>
+            </div>
+            <div class="blog-subnav right">
+                <div class="sub-nav-blog-content"></div>
+            </div>
+        </div>
+    </div>
+</ul>
+            </li>
+<!--            <li class="videos">-->
+<!--                <a href="/videos" class="videos-link">Video</a>-->
+<!--            </li>-->
+            <li class="recommendations">
+                <a href="/recommendations">Recommendations</a>
+            </li>
+            <li class="my-profile">
+                <a href="javascript:void(0)" class="my-profile-link">My Profile</a>
+            </li>
+            <li class="advanced-search">
+                <a href="/advanced-search" class="advanced-search-link">Advanced Search</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="user-social-nav">
+        <nav class="social-nav">
+            <ul>
+                <li class="facebook">
+                    <a href="http://www.facebook.com/AllMusicDotCom" alt="Like us on Facebook" title="Like us on Facebook">Facebook</a>
+                </li>
+                <li class="twitter">
+                    <a href="https://twitter.com/#!/Allmusic" alt="Follow us on Twitter" title="Follow us on Twitter">Twitter</a>
+                </li>
+                <li class="tumblr">
+                    <a href="http://allmusic.tumblr.com" alt="Follow us on Tumblr" title="Follow us on Tumblr">Tumblr</a>
+                </li>
+                <li class="google-plus">
+                    <a href="https://plus.google.com/101788172919569561373/posts" alt="Follow us on Google+" title="Follow us on Google+">Google</a>
+                </li>
+                <li class="rss">
+                    <a href="/rss" alt="Subscribe to our RSS feed" title="Subscribe to our RSS feed" target="_blank">RSS</a>
+                </li>
+            </ul>
+        </nav>
+
+        <nav class="user-notifications">
+            <ul>
+                <li class="user-notification-icon">
+                </li>
+            </ul>
+        </nav>
+
+        <nav class="user-nav"></nav>
+    </div>
+
+</div>    </div>
+</div>
+
+<div id="cmn_wrap">
+<div class="content-container" itemscope itemtype="http://schema.org/MusicGroup">
+
+    <div class="sidebar">
+        
+                <div class="advertising medium-rectangle">
+            <!-- 300x250 Ad Tag --><script type="text/javascript">    cmnUNT('300x250,300x600', tile_num++);</script>        </div>
+        
+        <section class="basic-info">
+
+            <div class="partners num-2">
+            <h4>Stream or buy on:</h4>
+
+            <ul class="partner-buttons clearfix">
+                
+                
+                <li class="amazontooltip">
+                    <a href="http://www.amazon.com/s/?field-keywords=music: &#34;Empyrium&#34;&tag=allmusicdotcom-20" data-target="amazon" class="amazon" title="Search on Amazon"></a>
+                                                                    <span>
+                            <b></b>
+                                                            <div class="amazon-div div-0">
+                                    <a href="http://www.amazon.com/Empyrium/e/B001LHHOAU/works?tag=allmusicdotcom-20" data-target="amazon" class="amazonDirect" title="Buy from Amazon Music"></a>
+                                </div>
+                                                                                                                </span>
+                                    </li>
+
+                                    <li>
+                        <a href="http://itunes.apple.com/artist/id78416944?at=11l6Yq&ct=allmusic " data-target="itunes" class="itunes" title="Download from iTunes"></a>
+                    </li>
+                            </ul>
+        </div>
+    
+            <div class="active-dates">
+            <h4>Active</h4>
+            <div>1990s - 2000s</div>
+        </div>
+    
+    
+    
+    
+            <div class="genre">
+            <h4>Genre</h4>
+            <div>
+                                    <a href="http://www.allmusic.com/genre/pop-rock-ma0000002613">Pop/Rock</a>                            </div>
+        </div>
+    
+    
+    
+    
+    
+    <a href="http://www.allmusic.com/artist/empyrium-mn0000194124/corrections" class="submit-corrections">Submit Corrections</a>
+</section>
+
+        
+                    <div class="advertising saambaa">
+    <script type="text/javascript" src="//zt.allmusic.com/allmusic/sidebar-btf/"></script>
+</div>
+        
+        
+                <div class="advertising medium-rectangle-btf">
+            <script type="text/javascript">    cmnUNT('300x251', tile_num++);</script>        </div>
+        
+        
+
+
+
+    </div>
+
+    <div class="content">
+
+        <header itemprop="review" itemscope itemtype="http://schema.org/Review">
+    <div class="artist-bio-container">
+                    <div class="artist-sample-container">
+                <a href="#no-js"
+                   class="audio-player large"
+                   data-sample-url="/artist/MN0000194124/samples.json">
+                    <canvas width="55" height="55"></canvas>
+                </a>
+            </div>
+        
+        <hgroup>
+            <h1 class="artist-name" itemprop="name">
+                Empyrium            </h1>
+
+                        <div class="artist-follow" data-id="MN0000194124"></div>
+
+                    </hgroup>
+
+    </div>
+
+    </header>
+        
+        <ul class="tabs discography">
+
+        <li class="tab overview" data-sections="moods">
+        <a href="/artist/empyrium-mn0000194124">
+            Overview
+            <span class="arrow">&darr;</span>
+        </a>
+    </li>
+    
+    
+            <li class="tab discography">
+            <a href="/artist/empyrium-mn0000194124/discography">
+                Discography
+                <span class="arrow">&darr;</span>
+            </a>
+        </li>
+    
+            <li class="tab songs">
+            <a href="/artist/empyrium-mn0000194124/songs">
+                Songs
+                <span class="arrow">&darr;</span>
+            </a>
+        </li>
+    
+    
+            <li class="tab credits">
+            <a href="/artist/empyrium-mn0000194124/credits">
+                Credits
+                <span class="arrow">&darr;</span>
+            </a>
+        </li>
+    
+    
+            <li class="tab related">
+            <a href="/artist/empyrium-mn0000194124/related">
+                Related
+                <span class="arrow">&darr;</span>
+            </a>
+        </li>
+    
+</ul>
+        
+<div class="allmusic-share" data-sharemessage="Check out Empyrium - Biography, Discography, Credits and Similar Artists - AllMusic - ">
+    <p>
+        Share this page
+    </p>
+    <ul class="share-menu">
+        <li>
+            <a title="Share on Facebook" class="share-button facebook" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fwww.allmusic.com%2Fartist%2Fmn0000194124%2Fdiscography">facebook</a>
+        </li>
+        <li>
+            <a title="Share on Twitter" class="share-button twitter" href="http://twitter.com/share?url=http%3A%2F%2Fwww.allmusic.com%2Fartist%2Fmn0000194124%2Fdiscography&text=Check+out+Empyrium+-+Biography%2C+Discography%2C+Credits+and+Similar+Artists+-+AllMusic+-+&counturl=http%3A%2F%2Fwww.allmusic.com%2Fartist%2Fmn0000194124%2Fdiscography">twitter</a>
+        </li>
+        <li>
+            <a title="Share on Google+" class="share-button google-plus" href="https://plus.google.com/share?url=http%3A%2F%2Fwww.allmusic.com%2Fartist%2Fmn0000194124%2Fdiscography">google+</a>
+        </li>
+    </ul>
+    <div class="share-modal">
+        <a title="close button" class="close-button"></a>
+        <div class="share-frame"></div>
+    </div>
+</div>
+        
+    
+    <section class="discography">
+
+        <h3 class="headline">Discography</h3>
+
+        <nav class="view-type">
+            <span class="full"> full </span>
+            <span class="condensed"> condensed </span>
+            <span class="editors-pick"> blue highlight denotes album pick </span>
+        </nav>
+
+        <nav class="release-types">
+            <h3>Filter Discography By</h3>
+
+                            <input type="radio"
+                       name="release-type"
+                       id="albums"
+                       onclick="this.blur(); this.focus();"
+                       checked                       value="/artist/empyrium-mn0000194124/discography">
+
+                <label for="albums"><a href="/artist/empyrium-mn0000194124/discography" alt="Empyrium Albums" title="Empyrium Albums">Albums</a></label>
+            
+                            <input type="radio"
+                       name="release-type"
+                       id="compilations"
+                       onclick="this.blur(); this.focus();"
+                                              value="/artist/empyrium-mn0000194124/discography/compilations">
+
+                <label for="compilations"><a href="/artist/empyrium-mn0000194124/discography/compilations" alt="Empyrium Compilations" title="Empyrium Compilations">Compilations</a></label>
+            
+                            <input type="radio"
+                       name="release-type"
+                       id="singles"
+                       onclick="this.blur(); this.focus();"
+                                              value="/artist/empyrium-mn0000194124/discography/singles">
+
+                <label for="singles"><a href="/artist/empyrium-mn0000194124/discography/singles" alt="Empyrium Singles &amp; EPs" title="Empyrium Singles &amp; EPs">Singles &amp; EPs</a></label>
+            
+            
+            
+            <input type="radio"
+                   name="release-type"
+                   id="all"
+                   onclick="this.blur(); this.focus();"
+                                      value="/artist/empyrium-mn0000194124/discography/all">
+
+            <label for="all" class="all"><a href="/artist/empyrium-mn0000194124/discography/all" alt="Empyrium All" title="Empyrium All">All</a></label>
+        </nav>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="pick-prefix"></th>
+                    <th class="cover"></th>
+                    <th class="year sortable asc" data-sort-default="asc">
+                        <a href="#" title="Click to sort">Year</a>
+                    </th>
+                    <th class="title sortable" data-sort-default="asc">
+                        <a href="#" title="Click to sort">Album</a>
+                    </th>
+                    <th class="label sortable" data-sort-default="asc">
+                        <a href="#" title="Click to sort">Label</a>
+                    </th>
+                    <th class="all-rating sortable" data-sort-default="desc">
+                        <a href="#" title="Click to sort">AllMusic Rating</a>
+                    </th>
+                    <th class="avg-rating sortable" data-sort-default="desc">
+                        <a href="#" title="Click to sort">User Ratings</a>
+                    </th>
+                    <th class="pick-suffix"></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                                <img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="//cdn-prod.allmusic.com/images/no_image/album_55x55.png"  width="55" height="55" alt="A Wintersunset" style=""><noscript><img src="//cdn-prod.allmusic.com/images/no_image/album_55x55.png" width="55" height="55" alt="A Wintersunset" style=""></noscript>                                                                                    </td>
+
+                        <td class="year" data-sort-value="1996-07-15-A Wintersunset">
+                            1996                        </td>
+
+                        <td class="title" data-sort-value="A Wintersunset">
+                            <a href="http://www.allmusic.com/album/a-wintersunset-mw0001654263" data-tooltip="{&quot;id&quot;:&quot;MW0001654263&quot;,&quot;thumbnail&quot;:true}">A Wintersunset</a>                                                    </td>
+
+                        <td class="label" data-sort-value="Prophecy-1996-07-15-A Wintersunset">
+                            Prophecy                        </td>
+
+                        <td class="all-rating" data-sort-value="">
+                            <div class="allmusic-rating rating-unrated"></div>
+                        </td>
+
+                        <td class="avg-rating no-img" data-secondary-sort="A Wintersunset">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0001654263" data-tooltip="{&quot;id&quot;:&quot;MW0001654263&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0001654263"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/songs-of-moors-misty-fields-mw0000770680"
+                                   title="Songs of Moors & Misty Fields"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000770680&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://cps-static.rovicorp.com/3/JPG_75/MI0000/845/MI0000845910.jpg?partner=allrovi.com"  width="56" height="56" alt="Songs of Moors & Misty Fields" style="top:-1px;"><noscript><img src="http://cps-static.rovicorp.com/3/JPG_75/MI0000/845/MI0000845910.jpg?partner=allrovi.com" width="56" height="56" alt="Songs of Moors & Misty Fields" style="top:-1px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2002-05-28-Songs of Moors &amp; Misty Fields">
+                            2002                        </td>
+
+                        <td class="title" data-sort-value="Songs of Moors &amp; Misty Fields">
+                            <a href="http://www.allmusic.com/album/songs-of-moors-misty-fields-mw0000770680" data-tooltip="{&quot;id&quot;:&quot;MW0000770680&quot;,&quot;thumbnail&quot;:true}">Songs of Moors &amp; Misty Fields</a>                                                    </td>
+
+                        <td class="label" data-sort-value="Prophecy-2002-05-28-Songs of Moors &amp; Misty Fields">
+                            Prophecy                        </td>
+
+                        <td class="all-rating" data-sort-value="">
+                            <div class="allmusic-rating rating-unrated"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Songs of Moors &amp; Misty Fields">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000770680" data-tooltip="{&quot;id&quot;:&quot;MW0000770680&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000770680"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/where-at-night-the-wood-grouse-plays-mw0000550536"
+                                   title="Where at Night the Wood Grouse Plays"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000550536&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://cps-static.rovicorp.com/3/JPG_75/MI0000/850/MI0000850234.jpg?partner=allrovi.com"  width="58" height="54" alt="Where at Night the Wood Grouse Plays" style="left:-1px;"><noscript><img src="http://cps-static.rovicorp.com/3/JPG_75/MI0000/850/MI0000850234.jpg?partner=allrovi.com" width="58" height="54" alt="Where at Night the Wood Grouse Plays" style="left:-1px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2002-05-28-Where at Night the Wood Grouse Plays">
+                            2002                        </td>
+
+                        <td class="title" data-sort-value="Where at Night the Wood Grouse Plays">
+                            <a href="http://www.allmusic.com/album/where-at-night-the-wood-grouse-plays-mw0000550536" data-tooltip="{&quot;id&quot;:&quot;MW0000550536&quot;,&quot;thumbnail&quot;:true}">Where at Night the Wood Grouse Plays</a>                                                    </td>
+
+                        <td class="label" data-sort-value="Prophecy-2002-05-28-Where at Night the Wood Grouse Plays">
+                            Prophecy                        </td>
+
+                        <td class="all-rating" data-sort-value="">
+                            <div class="allmusic-rating rating-unrated"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Where at Night the Wood Grouse Plays">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000550536" data-tooltip="{&quot;id&quot;:&quot;MW0000550536&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000550536"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/weiland-mw0000225898"
+                                   title="Weiland"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0000225898&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://cps-static.rovicorp.com/3/JPG_75/MI0002/790/MI0002790390.jpg?partner=allrovi.com"  width="62" height="54" alt="Weiland" style="left:-3px;"><noscript><img src="http://cps-static.rovicorp.com/3/JPG_75/MI0002/790/MI0002790390.jpg?partner=allrovi.com" width="62" height="54" alt="Weiland" style="left:-3px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2002-09-24-Weiland">
+                            2002                        </td>
+
+                        <td class="title" data-sort-value="Weiland">
+                            <a href="http://www.allmusic.com/album/weiland-mw0000225898" data-tooltip="{&quot;id&quot;:&quot;MW0000225898&quot;,&quot;thumbnail&quot;:true}">Weiland</a>                                                    </td>
+
+                        <td class="label" data-sort-value="Prophecy-2002-09-24-Weiland">
+                            Prophecy                        </td>
+
+                        <td class="all-rating" data-sort-value="">
+                            <div class="allmusic-rating rating-unrated"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Weiland">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0000225898" data-tooltip="{&quot;id&quot;:&quot;MW0000225898&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0000225898"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/the-turn-of-the-tides-mw0002682416"
+                                   title="The Turn of the Tides"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0002682416&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://cps-static.rovicorp.com/3/JPG_75/MI0003/768/MI0003768346.jpg?partner=allrovi.com"  width="56" height="59" alt="The Turn of the Tides" style="top:-2px;"><noscript><img src="http://cps-static.rovicorp.com/3/JPG_75/MI0003/768/MI0003768346.jpg?partner=allrovi.com" width="56" height="59" alt="The Turn of the Tides" style="top:-2px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="2014-07-22-The Turn of the Tides">
+                            2014                        </td>
+
+                        <td class="title" data-sort-value="The Turn of the Tides">
+                            <a href="http://www.allmusic.com/album/the-turn-of-the-tides-mw0002682416" data-tooltip="{&quot;id&quot;:&quot;MW0002682416&quot;,&quot;thumbnail&quot;:true}">The Turn of the Tides</a>                                                            <a href="/album/the-turn-of-the-tides-mw0002682416"
+                                title="The Turn of the Tides">
+                                    <span class="song-review"></span>
+                                </a>
+                                                    </td>
+
+                        <td class="label" data-sort-value="Prophecy-2014-07-22-The Turn of the Tides">
+                            Prophecy                        </td>
+
+                        <td class="all-rating" data-sort-value="7-The Turn of the Tides">
+                            <div class="allmusic-rating rating-allmusic-7"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="The Turn of the Tides">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0002682416" data-tooltip="{&quot;id&quot;:&quot;MW0002682416&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0002682416"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                                    <tr >
+                        <td class="pick-prefix"></td>
+
+                        <td class="cover">
+                                                                                            <a href="/album/into-the-pantheon-mw0002565990"
+                                   title="Into the Pantheon"
+                                   data-tooltip="{&quot;id&quot;:&quot;MW0002565990&quot;,&quot;thumbnail&quot;:true}">
+                                    <div class="cropped-image crop-image-borders" style="width:55px;height:53px;" ><img class="lazy" src="//cdn-prod.allmusic.com/images/lazy.gif" data-original="http://cps-static.rovicorp.com/3/JPG_75/MI0003/642/MI0003642025.jpg?partner=allrovi.com"  width="56" height="56" alt="Into the Pantheon" style="top:-1px;"><noscript><img src="http://cps-static.rovicorp.com/3/JPG_75/MI0003/642/MI0003642025.jpg?partner=allrovi.com" width="56" height="56" alt="Into the Pantheon" style="top:-1px;"></noscript></div>                                </a>
+                                                    </td>
+
+                        <td class="year" data-sort-value="">
+                                                    </td>
+
+                        <td class="title" data-sort-value="Into the Pantheon">
+                            <a href="http://www.allmusic.com/album/into-the-pantheon-mw0002565990" data-tooltip="{&quot;id&quot;:&quot;MW0002565990&quot;,&quot;thumbnail&quot;:true}">Into the Pantheon</a>                                                    </td>
+
+                        <td class="label" data-sort-value="Prophecy-ZZZZ-Into the Pantheon">
+                            Prophecy                        </td>
+
+                        <td class="all-rating" data-sort-value="">
+                            <div class="allmusic-rating rating-unrated"></div>
+                        </td>
+
+                        <td class="avg-rating" data-secondary-sort="Into the Pantheon">
+                            <div class="user-rating-block">
+                                <span class="average-user-rating" data-id="MW0002565990" data-tooltip="{&quot;id&quot;:&quot;MW0002565990&quot;,&quot;thumbnail&quot;:true}"></span>
+                                <span class="avg-rating-count">(<span class="average-user-rating-count" data-id="MW0002565990"></span>)</span>
+                            </div>
+                        </td>
+                        <td class="pick-suffix"></td>
+                    </tr>
+
+                            </tbody>
+        </table>
+
+    </section>
+
+    </div>
+
+
+</div>
+
+<div class="stripe-container footer-leaderboard">
+            <div class="advertising leaderboard">
+                                <script type="text/javascript">        cmnUNT('728x91', tile_num++);    </script>                    </div>
+    </div>
+<div class="stripe-container footer-container">
+    <footer>
+        <div class="other-sites">
+                <a href="http://www.allmusic.com/" title="AllMusic - Albums and Artist Database - Music Search, Guide, Recommendations, Videos and Reviews">AllMusic</a>&nbsp;&nbsp;|&nbsp;
+                <a href="http://www.allmovie.com/" title="AllMovie - Movies and Films Database - Movie Search, Guide, Recommendations, and Reviews">AllMovie</a>&nbsp;&nbsp;|&nbsp;
+                <a href="http://www.sidereel.com/" title="SideReel - Watch TV &amp; Movies Online | Episodes, Seasons, Series | SideReel">SideReel</a>&nbsp;&nbsp;|&nbsp;
+                <a href="http://www.celebified.com/" title="Celebified - Celebrity news, watch videos, get tv info">Celebified</a>
+        </div>
+
+        <div class="corporate-links">
+                <a href="/about" title="AllMusic About">About</a>&nbsp;&nbsp;|&nbsp;
+                <a href="/faq" title="AllMusic FAQ">FAQ</a>&nbsp;&nbsp;|&nbsp;
+                <a href="https://getsatisfaction.com/allmedianetwork/categories/allmedianetwork_allmusic" title="AllMusic Customer Community" class="getSatisfactionLink">Feedback</a><span class="line-one">&nbsp;&nbsp;|&nbsp;</span>
+                <a href="/advertise" title="AllMusic Advertising Network"><br class="mobile-break">Advertise</a>&nbsp;&nbsp;|&nbsp;
+                <a href="/copyright-policy" title="AllMusic - Copyright Policy &amp; Intellectual Property Rights">Copyright Policy</a>&nbsp;&nbsp;|&nbsp;
+                <a href="/privacy-policy" title="AllMusic Privacy Policy">Privacy Policy</a>&nbsp;&nbsp;|&nbsp;
+                <a href="/terms-of-service" title="AllMusic Terms of Service">Terms of Service</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="//www.allmusic.com/subscribe" title="Subscribe">Subscribe</a>
+        </div>
+
+        <div class="copyright">
+                &copy;2016 AllMusic, member of the RhythmOne group<span class="line-two">&nbsp;&nbsp;|&nbsp;&nbsp;</span><br class="mobile-break">All Rights Reserved
+        </div>
+    </footer>
+</div>
+
+<div class="advertisement-div-footer">
+            <div id="Allmusic_ROS_1x1_Footer">    <script type="text/javascript">        googletag.cmd.push(function(){ googletag.display('Allmusic_ROS_1x1_Footer'); });    </script></div>    </div>            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+            <script>!window.jQuery && document.write(unescape('%3Cscript src="//cdn-prod.allmusic.com/js/jquery/jquery-1.9.1.min.js"%3E%3C/script%3E'))</script>
+            <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+            <script>!window.jQuery.ui && document.write(unescape('%3Cscript src="//cdn-prod.allmusic.com/js/jquery/jquery-ui.min.js"%3E%3C/script%3E'))</script>
+
+            <script src="//cdn-prod.allmusic.com/cache/global.1480436007.js"></script>
+
+            
+                                            <script src="//cdn-prod.allmusic.com/cache/artist.discography.1480436007.js"></script>
+                                            <script>
+                    if(User.loggedIn) {
+                        ga('set', 'dimension1', 'Yes');
+                    } else {
+                        ga('set', 'dimension1', 'No');
+                    }
+                </script>
+            
+            <!-- BEGIN GetSat -->
+            <script type="text/javascript" charset="utf-8">
+                var is_ssl = ("https:" == document.location.protocol);
+                var asset_host = is_ssl ? "https://d11e618678w89x.cloudfront.net/" : "http://d11e618678w89x.cloudfront.net/";
+                document.write(unescape("%3Cscript src='" + asset_host + "javascripts/feedback-v2.js' type='text/javascript'%3E%3C/script%3E"));
+            </script>
+
+            <script type="text/javascript" charset="utf-8">
+                var feedback_widget = new GSFN.feedback_widget({
+                    display: 'overlay',
+                    company: 'allmedianetwork',
+                    placement: 'hidden',
+                    custom_css: '//cdn-prod.allmusic.com/css/modules/feedback-widget.css',
+                    color: '#222',
+                    style: 'idea',
+                    limit: '3',
+                    product: 'allmedianetwork_allmusic'
+                });
+            </script>
+            <!-- END GetSat -->
+
+            <!-- Begin comScore Tag -->
+            <script>
+                var _comscore = _comscore || [];
+                _comscore.push({ c1: "2", c2: "6685975" });
+                (function() {
+                    var s = document.createElement("script"), el = document.getElementsByTagName("script")[0]; s.async = true;
+                    s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
+                    el.parentNode.insertBefore(s, el);
+                })();
+            </script>
+            <noscript>
+                <img src="//b.scorecardresearch.com/p?c1=2&c2=6685975&cv=2.0&cj=1" />
+            </noscript>
+            <!-- End comScore Tag -->
+
+                    </div>
+                                
+       </div>
+       <!-- Footer Ad Tag -->
+<script type="text/javascript">
+(function() {
+window.cToolbarInit = function() {
+cToolbar.load({
+mobileRightButton: 'email',
+facebookUsername: 'AllMusicDotCom',
+facebookName: 'AllMusic',
+twitterHandle: 'allmusic',
+twitterName: 'allmusic',
+youtubeChannel: '',
+youtubeChannelName: '',
+desktopBackground: 'solid',
+desktopSocialButtons: ["twitter","facebook"],
+channel: 'Music'
+});
+};
+var ns = document.createElement('script');
+ns.type = 'text/javascript';
+ns.async = true;
+ns.src = '//toolbar.complex.com/dist/ctoolbar.min.js';
+var s = document.getElementsByTagName('script')[0];
+s.parentNode.insertBefore(ns, s);
+})();
+if (!isMobile_AllMusic ) {cmnUNT('tover', tile_num++);}
+</script>       <script type="text/javascript">
+           _qevents.push({
+               qacct:"p-59TntzuqummDw",
+               labels:"AllMedia.AllMusic"
+           });
+       </script>
+        <noscript>
+            <div style="display:none;">
+                <img src="//pixel.quantserve.com/pixel/p-59TntzuqummDw.gif?labels=AllMedia" border="0" height="1" width="1" alt="Quantcast"/>
+            </div>
+        </noscript>
+    <script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","licenseKey":"37e6a77380","applicationID":"3096013","transactionName":"NlMEYhZXW0oEWkQNVg8ZJ1UQX1pXSnhCEFASQklSDUVWVgJLURRRGA==","queueTime":0,"applicationTime":212,"ttGuid":"","agentToken":"","userAttributes":"","errorBeacon":"bam.nr-data.net","agent":""}</script></body>
+</html>
