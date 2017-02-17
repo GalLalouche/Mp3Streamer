@@ -35,6 +35,7 @@ private class LastFmReconciler(implicit ec: ExecutionContext, it: InternetTalker
         .mapTo(e => new URL(s"https://www.last.fm/music/$e").openConnection().asInstanceOf[HttpURLConnection])
     it connect httpConnection map handleReply recoverWith {
       case _: TempRedirect => Future(Thread sleep 100).>>(apply(a))
+      case e: MatchError => Future.failed(new UnsupportedOperationException("last.fm returned an unsupported status code", e))
     }
   }
 }
