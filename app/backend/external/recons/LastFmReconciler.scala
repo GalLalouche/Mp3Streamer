@@ -32,9 +32,9 @@ private class LastFmReconciler(implicit ec: ExecutionContext, it: InternetTalker
 
   override def apply(a: Artist): Future[Option[ExternalLink[Artist]]] = {
     val httpConnection = a.name.toLowerCase.replaceAll(" ", "+")
-        .mapTo(e => new URL(s"http://www.last.fm/music/$e").openConnection().asInstanceOf[HttpURLConnection])
+        .mapTo(e => new URL(s"https://www.last.fm/music/$e").openConnection().asInstanceOf[HttpURLConnection])
     it connect httpConnection map handleReply recoverWith {
-      case e: TempRedirect => Future(Thread sleep 100).>>(apply(a))
+      case _: TempRedirect => Future(Thread sleep 100).>>(apply(a))
     }
   }
 }
