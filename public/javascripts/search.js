@@ -1,10 +1,13 @@
 $(function() {
+  const searchBox = $("#searchbox");
   const results = $("#search-results")
-  function setResults(requestTime, jsArray) {
+
+  function setResults(jsArray, requestTime) {
     results.show()
-    const icon = name => `<i class="fa fa-${name}"/>` 
+    const icon = name => `<i class="fa fa-${name}"/>`
     const playIcon = icon("play")
     const addIcon = icon("plus")
+
     function specificResults(name, itemProducer, appendTo, array) {
       const ul = elem("ul").appendTo(appendTo || $(`#${name}-results`).empty())
       $.each(array || jsArray[`${name}s`], function(_, e) {
@@ -13,10 +16,11 @@ $(function() {
             .data(e)
       })
     }
+
     if (parseInt(results.attr("time")) > requestTime)
       return // a later request has already set the result
     results.attr("time", requestTime)
-    specificResults("song",  s => 
+    specificResults("song", s =>
         `${addIcon} ${playIcon} ${s.artistName}: ${s.title} (${s.duration.timeFormat()})`)
     $.each($(".song-result"), function() {
       const song = $(this).data()
@@ -39,9 +43,10 @@ $(function() {
   }
 
   function clearResults() {
-    $('#search-results').hide()
-    $('#searchbox').val('')
+    searchBox.val('')
+    results.hide()
   }
+
   function scan() {
     $.get("debug/fast_refresh", function() {
       openConnection("refresh", function(msg) {
@@ -49,10 +54,14 @@ $(function() {
           $.toast("Found new directory: " + JSON.parse(msg.data).currentDir)
         } catch (e) {
           $.toast(msg.data)
+          if (msg.data.includes("Finished")) {
+            search()
+          }
         }
       })
     })
   }
+
   results.on("click", "#song-results .fa", function(e) {
     const song = $(this).parent().data()
     const isPlay = e.target.classList.contains("fa-play")
@@ -64,26 +73,26 @@ $(function() {
   })
 
   let timeOfLastInput = 0
-  const inputTimeout = 10000
-  $("#searchbox").bind('input change', function () {
-    timeOfLastInput = Date.now()
-    const text = $(this).val()
+  searchBox.bind('input change', search)
+  function search() {
+    const searchTime = timeOfLastInput = Date.now()
+    const text = searchBox.val()
     if (text === "")
       clearResults()
-    $.get("search/" + text, e => setResults(Date.now(), e))
-  })
+    $.get("search/" + text, e => setResults(e, searchTime))
+  }
+
   results.tabs()
   clearResults()
-  const scanButton = elem("button", "Scan")
-  scanButton.click(function() {
+  searchBox.after(elem("button", "Scan").click(function() {
     scan()
-  })
-  $("#searchbox").after(scanButton)
+  }))
 
   // Blur search box after enough time has passed and it wasn't updated. By blurring the box, keyboard shortcuts are
   // Re-enabled. This way, after 10 minutes of playing, you can still press 'K' to pause the damn thing.
+  const INPUT_TIMEOUT_IN_MILLIS = 10000
   setInterval(function() {
-    if (Date.now() - timeOfLastInput > inputTimeout)
-      $("#searchbox").blur()
-  }, inputTimeout)
+    if (Date.now() - timeOfLastInput > INPUT_TIMEOUT_IN_MILLIS)
+      searchBox.blur()
+  }, INPUT_TIMEOUT_IN_MILLIS)
 })
