@@ -22,7 +22,7 @@ object Searcher extends Controller with Extra {
   }
   def search(path: String) = Action {
     def toJsArray[T: Jsonable](results: Seq[T]): JsArray = results |> implicitly[Jsonable[T]].jsonify
-    val terms = URLDecoder.decode(path, "UTF-8") split " "
+    val terms = URLDecoder.decode(path, "UTF-8") split " " map (_.toLowerCase)
     val (songs, albums, artists) = index search terms
 
     Ok(Json obj(("songs", toJsArray(songs)), ("albums", toJsArray(albums)), ("artists", toJsArray(artists))))
