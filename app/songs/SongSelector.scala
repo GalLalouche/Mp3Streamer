@@ -3,15 +3,12 @@ package songs
 import java.io.File
 
 import backend.configs.Configuration
-import common.concurrency.DirectoryWatcher
-import common.concurrency.DirectoryWatcher.DirectoryEvent
 import common.io.IODirectory
 import common.rich.RichT._
 import common.rich.func.MoreMonadPlus.SeqMonadPlus
 import common.rich.path.RichFile._
 import controllers.{Cacher, Searcher}
 import models.{MusicFinder, Song}
-import rx.lang.scala.Subscriber
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -48,8 +45,8 @@ object SongSelector
       val $ = Future(new SongSelectorImpl(c.mf.getSongFilePaths.toVector.map(new File(_)), c.mf))
       if (songSelector == null)
         songSelector = $
-      else // don't override
-        $.onSuccess { case e => songSelector = $ }
+      else // don't override until complete
+        $.>|(songSelector = $)
       $
     }
     private var songSelector: Future[SongSelector] = _
@@ -58,21 +55,11 @@ object SongSelector
     override def followingSong(song: Song): Song = ss followingSong song
   }
 
-  def listen(implicit c: Configuration): SongSelector = {
-    val logger = c.logger
+  def create(implicit c: Configuration): SongSelector = {
+    // TODO TimedFuture?
+    val start = System.currentTimeMillis()
     val $ = new SongSelectorProxy
-    def directoryListener(e: DirectoryEvent): Unit = e match {
-      case DirectoryWatcher.DirectoryCreated(d) =>
-        logger info s"Directory $d has been added"
-        $.update() >> (Cacher newDir new IODirectory(d)) >> Searcher.!()
-      case DirectoryWatcher.DirectoryDeleted(d) =>
-        logger warn "Directory has been deleted; the index does not support deletions yet, so please update."
-        $.update()
-      case DirectoryWatcher.Started => logger info "SongSelector is listening to directory changes"
-      case _ => ()
-    }
-    DirectoryWatcher.apply(c.mf).subscribe(Subscriber(directoryListener))
-    $.update()
+    $.update().>|(c.logger.info(s"SongSelector has finished updating (${System.currentTimeMillis() - start} ms)"))
     $
   }
 }
