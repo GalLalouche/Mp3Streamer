@@ -17,8 +17,6 @@ private class AllMusicAlbumFinder(implicit ec: ExecutionContext, it: InternetTal
   val allMusicHelper = new AllMusicHelper
   override def findAlbum(d: Document, a: Album): Option[Url] = {
     val artistName = d.select(".artist-name").head.text
-    require(StringReconScorer.apply(artistName, a.artist.name) >= 0.90,
-      s"Bad artist name in AllMusicAlbumFinder. Was <$artistName> but was supposed to be <${a.artist.name}>.")
     def score(other: Album): Double = AlbumReconScorer.apply(a, other)
       d.select(".discography table tbody tr")
           .toSeq
