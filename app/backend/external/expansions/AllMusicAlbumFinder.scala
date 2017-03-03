@@ -16,7 +16,6 @@ import scala.util.Try
 private class AllMusicAlbumFinder(implicit ec: ExecutionContext, it: InternetTalker) extends SameHostExpander(Host.AllMusic) {
   val allMusicHelper = new AllMusicHelper
   override def findAlbum(d: Document, a: Album): Option[Url] = {
-    val artistName = d.select(".artist-name").head.text
     def score(other: Album): Double = AlbumReconScorer.apply(a, other)
       d.select(".discography table tbody tr")
           .toSeq
