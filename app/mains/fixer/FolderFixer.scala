@@ -5,7 +5,7 @@ import java.nio.file.Files
 
 import backend.configs.StandaloneConfig
 import common.rich.RichFuture._
-import common.rich.RichT.richT
+import common.rich.RichT._
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
 import common.rich.path.RichPath.poorPath

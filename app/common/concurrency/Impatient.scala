@@ -10,7 +10,7 @@ class Impatient[Result](d: Duration) {
     val future = service.submit(task)
     try Some(future.get(d.length, d.unit))
     catch {
-      case e: TimeoutException =>
+      case _: TimeoutException =>
         assert(future.cancel(true))
         None
     }
