@@ -37,7 +37,7 @@ object StringFixer {
     Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
 
   def apply(str: String): String = {
-    val split = splitWithDelimiters(str)
+    val split = splitWithDelimiters(str.trim)
     fixWord(split.head, isFirstWord = true) :: (split.tail map (fixWord(_, isFirstWord = false))) map asciiNormalize mkString ""
   }
 }

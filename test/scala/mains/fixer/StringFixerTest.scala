@@ -49,4 +49,7 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   "with delimiters" - {
     verifyFix("foo/bar", "Foo/Bar")
   }
+  "strips" in {
+    verifyFix(" Foo Bar ", "Foo Bar")
+  }
 }
