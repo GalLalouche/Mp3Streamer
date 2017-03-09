@@ -19,6 +19,6 @@ class OnlineRetrieverCacher[Key, Value](
   override def apply(k: Key): Future[Value] = localStorage.load(k)
       .ifNoneTry(onlineRetriever(k).flatMap(v =>
         localStorage.store(k, v)
-            .filter(identity)
+            .filterWith(identity, "Cacher failed to write recon. This usually indicates a race condition.")
             .>|(v)))
 }
