@@ -29,13 +29,15 @@ object FolderFixer
   }
 
   private def moveDirectory(artist: String, destination: Future[Option[Directory]],
-                            folderImage: Future[Directory => Unit], source: Directory): Future[Directory] = {
+      folderImage: Future[Directory => Unit], source: Directory,
+      expectedName: String): Future[Directory] = {
     val destinationParent: Future[Directory] = destination.map(_.getOrElse {
       val genreDirs = Directory("d:/media/music")
           .dirs
+          .filter(e => Set("Rock", "Metal").map(_.toLowerCase).contains(e.name.toLowerCase))
           .flatMap(_.dirs)
       println("Could not find artist directory... what is the artist's genre?")
-      println(genreDirs.map(_.name).mkString("Genres: [", ",", "]"))
+      println(genreDirs.map(_.name).sorted mkString "\n")
       val genre = scala.io.StdIn.readLine().toLowerCase
       genreDirs
           .find(_.name.toLowerCase == genre)
@@ -45,7 +47,7 @@ object FolderFixer
     for (d <- destinationParent; f <- folderImage) yield {
       println("Copying folder image")
       f(source)
-      val dest = new File(d, source.name).toPath
+      val dest = new File(d, expectedName).toPath
       val $ = Files.move(source.toPath, dest).toFile |> Directory.apply
       IOUtils focus dest.toFile
       $
@@ -71,7 +73,7 @@ object FolderFixer
     val folderImage = downloadCover(folder)
     println("fixing directory")
     val fixedDirectory = FixLabels fix folder.cloneDir()
-    moveDirectory(artist, location, folderImage, fixedDirectory)
+    moveDirectory(artist, location, folderImage, fixedDirectory._1, fixedDirectory._2)
         .map(FoobarGain.calculateTrackGain)
         .>|(println("--Done!--"))
         .get

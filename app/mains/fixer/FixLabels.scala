@@ -16,6 +16,7 @@ import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
 import org.jaudiotagger.tag.{FieldKey, Tag}
 
+import scala.annotation.tailrec
 import scala.util.Try
 
 /** Fixes ID3 tags on mp3 (and flac) files to proper casing, etc. */
@@ -60,8 +61,18 @@ object FixLabels {
 
   private val reservedDirCharacters = "<>:\"/\\|?*".toSet
 
-  // returns the path of the output folder
-  def fix(dir: Directory): Directory = {
+  @tailrec
+  private def renameFolder(source: Directory, initialName: String): Directory = {
+    val file = new File(source.parent, initialName)
+    if (source.dir renameTo file) Directory(file) else renameFolder(source, initialName + "_temp")
+  }
+
+  // TODO this is ugly as fuck
+  /**
+   * Returns the output folder, and its correct name. The extra name output is needed in case the expected name is
+   * already in use by the original folder.
+   */
+  def fix(dir: Directory): (Directory, String) = {
     def containsASingleFileWithExtension(extension: String) = dir.files.count(_.extension == extension) == 1
     require(!(containsASingleFileWithExtension("flac") && containsASingleFileWithExtension("cue")),
       "Folder contains an unsplit flac file; please split the file and try again.")
@@ -72,9 +83,10 @@ object FixLabels {
     val musicFiles = dir.files.filter(_.extension |> Set("mp3", "flac"))
     require(musicFiles.nonEmpty, s"Could not find any songs in $dir - maybe they're in subfolders...")
 
-    val hasNonTrivialDiscNumber = false == musicFiles // as opposed to 1/1 - Fuck those guys.
+    // as opposed to 1/1 - Fuck those guys.
+    val hasNonTrivialDiscNumber = false == (musicFiles
         .map(AudioFileIO.read)
-        .hasSameValues(_.getTag getFirst FieldKey.DISC_NO)
+        .hasSameValues(_.getTag getFirst FieldKey.DISC_NO))
 
     val (year, album) = musicFiles.head.mapTo(Song.apply)
         .mapTo(firstSong => retrieveYear(firstSong) -> StringFixer(firstSong.albumName))
@@ -82,12 +94,10 @@ object FixLabels {
     musicFiles foreach (fixFile(_, hasNonTrivialDiscNumber))
     musicFiles foreach rename
 
-    try {
-      val renamedFolder = new File(dir.parent, s"$year ${album filterNot reservedDirCharacters}")
-      val result = dir.dir renameTo renamedFolder
-      assert(result, s"Failed to rename directory to <$renamedFolder>")
-      Directory(renamedFolder)
-    } catch {
+    val expectedName = s"$year ${album filterNot reservedDirCharacters}"
+    try
+      renameFolder(dir, expectedName) -> expectedName
+    catch {
       case e: Exception => throw new Exception("could not rename the folder", e)
     }
   }
