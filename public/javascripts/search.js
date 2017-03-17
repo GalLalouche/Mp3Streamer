@@ -85,6 +85,7 @@ $(function() {
   results.tabs()
   clearResults()
   searchBox.after(elem("button", "Scan").click(function() {
+    searchBox.focus()
     scan()
   }))
 
@@ -95,4 +96,10 @@ $(function() {
     if (Date.now() - timeOfLastInput > INPUT_TIMEOUT_IN_MILLIS)
       searchBox.blur()
   }, INPUT_TIMEOUT_IN_MILLIS)
+  Search.quickSearch = function() {
+    searchBox.focus()
+    scan()
+  }
 })
+
+Search = {}

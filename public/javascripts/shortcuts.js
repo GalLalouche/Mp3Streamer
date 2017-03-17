@@ -33,6 +33,8 @@ $(function () {
       case 'N':
         loadNextSong()
         break;
+      case 'S':
+        Search.quickSearch()
     }
   });
   function loadNextSong() {
