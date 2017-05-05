@@ -1,5 +1,36 @@
 $(function () {
-  const lyrics = $('#lyrics')
+  const lyricsDiv = $('#lyrics')
+  const lyrics = elem('div').appendTo(lyricsDiv)
+  const lyricsPusher = elem('div').appendTo(lyricsDiv)
+  lyricsPusher.append($("<input id='lyrics-url' placeholder='Lyrics URL' type='text'/><br/>"))
+  lyricsPusher.append(elem("button", "Update lyrics").click(updateLyrics).attr("id", "update-lyrics").prop("disabled", true))
+  // Update recon on pressing Enter
+  lyricsPusher.on("keyup", "#lyrics-url", function(event) {
+    // TODO move to common
+    if (event.keyCode == 13) { // Enter
+      updateLyrics()
+    } else {
+      verify($(this))
+    }
+  })
+  const updateLyricsButton = $("#update-lyrics")
+  function verify(element) {
+    updateLyricsButton.prop('disabled', isValidUrl(element.val()))
+  }
+  function updateLyrics() {
+    if (updateLyricsButton.prop("disabled"))
+      return
+    const url = $("#lyrics-url").val()
+    const songPath = gplaylist.currentPlayingSong().file
+    $.ajax({
+      type: "POST",
+      url: "lyrics/push/" + songPath,
+      data: url,
+      success: c => showLyrics(c),
+      contentType: "text/plain",
+    })
+  }
+
 
   function showLyrics(content) {
     autoScroll = true

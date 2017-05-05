@@ -23,6 +23,7 @@ GET        /posters/display/*path        controllers.Posters.displayImage(path)
 GET        /posters/*path                controllers.Posters.image(path)
 # Lyrics
 GET        /lyrics/*path                 controllers.Lyrics.get(path)
+POST       /lyrics/push/*path            controllers.Lyrics.push(path)
 # External
 GET        /external/*path               controllers.External.get(path)
 POST       /external/recons/*path        controllers.External.updateRecon(path)

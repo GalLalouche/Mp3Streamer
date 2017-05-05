@@ -1,4 +1,4 @@
-package backend.lyrics
+package backend.lyrics.retrievers
 
 import java.io.File
 
@@ -11,7 +11,7 @@ import org.jsoup.nodes.Document
 
 import scala.concurrent.ExecutionContext
 
-private class DarkLyricsRetriever(implicit ec: ExecutionContext, it: InternetTalker) extends HtmlRetriever {
+private[lyrics] class DarkLyricsRetriever(implicit ec: ExecutionContext, it: InternetTalker) extends HtmlRetriever {
   override protected val source: String = "DarkLyrics"
   private def removeWrappingWhiteSpace(s: String) = s.replaceAll("^\\s+", "").replaceAll("\\s$", "")
   private def removeEndingBreaklines(ss: Seq[String]) = ss.reverse.dropWhile(_.matches("<br>")).reverse
@@ -28,14 +28,15 @@ private class DarkLyricsRetriever(implicit ec: ExecutionContext, it: InternetTal
       .filterNot(_ contains "[Instrumental]")
 
   private def normalize(s: String): String = s.toLowerCase.filter(_.isLetter)
+  override protected val hostPrefix: String = "http://www.darklyrics.com/lyrics"
   override def getUrl(s: Song): String =
-    s"http://www.darklyrics.com/lyrics/${normalize(s.artistName)}/${normalize(s.albumName)}.html#${s.track}"
+    s"$hostPrefix/${normalize(s.artistName)}/${normalize(s.albumName)}.html#${s.track}"
 }
 
-object DarkLyricsRetriever {
+private[lyrics] object DarkLyricsRetriever {
   def main(args: Array[String]) {
     implicit val c = StandaloneConfig
     val $ = new DarkLyricsRetriever
-    println($.apply(Song(new File( """D:\Media\Music\Metal\Progressive Metal\Dream Theater\2003 Train of Thought\05 - Vacant.mp3"""))).get)
+    println($.find(Song(new File( """D:\Media\Music\Metal\Progressive Metal\Dream Theater\2003 Train of Thought\05 - Vacant.mp3"""))).get)
   }
 }

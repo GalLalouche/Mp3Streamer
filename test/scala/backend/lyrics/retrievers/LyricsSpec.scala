@@ -1,4 +1,4 @@
-package backend.lyrics
+package backend.lyrics.retrievers
 
 import backend.configs.TestConfiguration
 import backend.external.DocumentSpecs

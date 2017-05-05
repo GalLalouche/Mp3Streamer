@@ -1,4 +1,4 @@
-package backend.lyrics
+package backend.lyrics.retrievers
 
 import common.io.InternetTalker
 import common.rich.collections.RichTraversableOnce._
@@ -8,7 +8,7 @@ import org.jsoup.nodes.Document
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
 
-private class AzLyricsRetriever(implicit ec: ExecutionContext, it: InternetTalker) extends HtmlRetriever {
+private[lyrics] class AzLyricsRetriever(implicit ec: ExecutionContext, it: InternetTalker) extends HtmlRetriever {
   private def normalize(s: String): String = s.filter(e => e.isDigit || e.isLetter).toLowerCase
   // AZ lyrics don't support instrumental :\
   override def fromHtml(html: Document, s: Song): Option[String] = Some(
@@ -18,7 +18,9 @@ private class AzLyricsRetriever(implicit ec: ExecutionContext, it: InternetTalke
         .single
         .html
         .replaceAll("<!--.*?-->\\s*", ""))
+  override protected val hostPrefix: String = "http://www.azlyrics.com/lyrics"
   override def getUrl(s: Song) =
-    s"http://www.azlyrics.com/lyrics/${normalize(s.artistName)}/${normalize(s.title)}.html"
+    s"$hostPrefix/${normalize(s.artistName)}/${normalize(s.title)}.html"
   override protected val source = "AZLyrics"
+
 }
