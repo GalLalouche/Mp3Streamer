@@ -3,21 +3,19 @@ $(function () {
   const lyrics = $('<div style="overflow-y: scroll; height:770px;"/>').appendTo(lyricsDiv)
   lyricsDiv.append(elem('br'))
   const lyricsPusher = elem('div').appendTo(lyricsDiv)
-  lyricsPusher.append($("<input id='lyrics-url' placeholder='Lyrics URL' type='text'/><br/>"))
-  lyricsPusher.append(elem("button", "Update lyrics").click(updateLyrics).attr("id", "update-lyrics").prop("disabled", true))
+  const lyricsUrlBox = $("<input id='lyrics-url' placeholder='Lyrics URL' type='text'/>").appendTo(lyricsPusher)
+  const updateLyricsButton =
+      elem("button", "Update lyrics").click(updateLyrics).prop("disabled", true).appendTo(lyricsPusher)
   // Update recon on pressing Enter
-  lyricsPusher.on("keyup", "#lyrics-url", function(event) {
+  lyricsUrlBox.keyup(function (event) {
     // TODO move to common
-    if (event.keyCode == 13) { // Enter
+    if (event.keyCode === 13) { // Enter
       updateLyrics()
     } else {
-      verify($(this))
+      updateLyricsButton.prop('disabled', false === isValidUrl($(this).val()))
     }
   })
-  const updateLyricsButton = $("#update-lyrics")
-  function verify(element) {
-    updateLyricsButton.prop('disabled', isValidUrl(element.val()))
-  }
+
   function updateLyrics() {
     if (updateLyricsButton.prop("disabled"))
       return
@@ -58,7 +56,7 @@ $(function () {
   let timeBaseline = 0
   function scrollLyrics() {
     // Don't start scrolling right at the beginning of the song if there is no baseline set
-    const heightBaseline =  scrollBaseline || (lyrics.height() / -1.75)
+    const heightBaseline = scrollBaseline || (lyrics.height() / -1.75)
     const timePercentage = (gplayer.currentPlayingRelative() - timeBaseline) / 100.0
     autoScroll = true
     lyrics.scrollTop(lyrics.prop('scrollHeight') * timePercentage + heightBaseline)

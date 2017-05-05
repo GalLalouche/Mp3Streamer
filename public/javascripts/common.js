@@ -98,5 +98,5 @@ function isValidUrl(urlString) {
       '(\\:\\d+)?(\\/[-a-z\\d%_.~+\\:]*)*'+ // port and path
       '(\\?[\\;&a-z\\d%_.~+=-]*)?'+ // query string
       '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-  return !pattern.test(urlString)
+  return pattern.test(urlString)
 }
