@@ -1,6 +1,7 @@
 $(function () {
   const lyricsDiv = $('#lyrics')
-  const lyrics = elem('div').appendTo(lyricsDiv)
+  const lyrics = $('<div style="overflow-y: scroll; height:770px;"/>').appendTo(lyricsDiv)
+  lyricsDiv.append(elem('br'))
   const lyricsPusher = elem('div').appendTo(lyricsDiv)
   lyricsPusher.append($("<input id='lyrics-url' placeholder='Lyrics URL' type='text'/><br/>"))
   lyricsPusher.append(elem("button", "Update lyrics").click(updateLyrics).attr("id", "update-lyrics").prop("disabled", true))
