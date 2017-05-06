@@ -6,6 +6,10 @@ String.prototype.format = String.prototype.f = function() {
     s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i]);
   return s;
 };
+const button = text => elem("button", text)
+const div = () => elem('div')
+const br = () => elem('br')
+function appendBr(elementToAppendTo) { elementToAppendTo.append(br()) }
 Number.prototype.timeFormat = function() {
   let hours = Math.floor(this / 3600);
   let minutes = Math.floor((this - (hours * 3600)) / 60);

@@ -1,13 +1,15 @@
 $(function () {
   const href = (target, name) => `<a target=_blank href="${target}">${name}</a>`
   const externalDivParent = $("#external")
-  const externalDiv = elem('div').appendTo(externalDivParent)
+  const externalDiv = div().appendTo(externalDivParent)
 
   const artistReconBox =
-      $("<input class='external-recon-id' placeholder='Artist ID' type='text'/><br/>").appendTo(externalDivParent)
+      $("<input class='external-recon-id' placeholder='Artist ID' type='text'/>").appendTo(externalDivParent)
+  appendBr(externalDivParent)
   const albumReconBox =
-      $("<input class='external-recon-id' placeholder='Album ID' type='text'/><br/>").appendTo(externalDivParent)
-  const updateReconButton = elem("button", "Update Recon").appendTo(externalDivParent)
+      $("<input class='external-recon-id' placeholder='Album ID' type='text'/>").appendTo(externalDivParent)
+  appendBr(externalDivParent)
+  const updateReconButton = button("Update Recon").appendTo(externalDivParent)
   const remotePath = "external/"
 
   function getExtensions(link) {

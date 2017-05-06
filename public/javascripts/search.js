@@ -32,7 +32,7 @@ $(function() {
     $.each($(".artist-result"), function() {
       const li = $(this)
       const artist = li.data()
-      const albums = elem("div").appendTo(li)
+      const albums = div().appendTo(li)
       specificResults("album", a => `${addIcon} ${a.year} ${a.title}`, albums, artist.albums)
       li.accordion({
         collapsible: true,
@@ -84,7 +84,7 @@ $(function() {
 
   results.tabs()
   clearResults()
-  searchBox.after(elem("button", "Scan").click(function() {
+  searchBox.after(button("Scan").click(function() {
     searchBox.focus()
     scan()
   }))
