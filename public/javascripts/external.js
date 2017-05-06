@@ -7,8 +7,7 @@ $(function () {
       $("<input class='external-recon-id' placeholder='Artist ID' type='text'/><br/>").appendTo(externalDivParent)
   const albumReconBox =
       $("<input class='external-recon-id' placeholder='Album ID' type='text'/><br/>").appendTo(externalDivParent)
-  const updateReconButton =
-      elem("button", "Update Recon").click(updateRecon).prop("disabled", true).appendTo(externalDivParent)
+  const updateReconButton = elem("button", "Update Recon").appendTo(externalDivParent)
   const remotePath = "external/"
 
   function getExtensions(link) {
@@ -25,8 +24,6 @@ $(function () {
   const formatTimestamp = s => `${s.slice(6)}/${s.slice(4, 6)}/${s.slice(0, 4)}`
 
   function updateRecon() {
-    if (updateReconButton.prop("disabled"))
-      return
     const json = {}
     function addIfNotEmpty(elem) {
       const text = elem.val()
@@ -75,16 +72,9 @@ $(function () {
 
   const hexa = "[a-f0-9]"
   // d8f63b51-73e0-4f65-8bd3-bcfe6892fb0e
-  const reconRegex = `^${hexa}{8}-(?:${hexa}{4}-){3}${hexa}{12}$`
+  const reconRegex = new RegExp(`^${hexa}{8}-(?:${hexa}{4}-){3}${hexa}{12}$`)
   // Update recon on pressing Enter
-  $(".external-recon-id").keyup(function (event) {
-    if (event.keyCode == 13) {
-      updateRecon()
-    } else {
-      const text = $(this).val()
-      $("#update-recon").prop('disabled', !text.match(reconRegex))
-    }
-  })
+  validateBoxAndButton($(".external-recon-id"), updateReconButton, s => reconRegex.test(s), updateRecon)
   externalDiv.on("click", ".copy-to-clipboard", function () {
     copyTextToClipboard($(this).attr("url"))
   })

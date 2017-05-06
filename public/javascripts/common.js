@@ -100,3 +100,30 @@ function isValidUrl(urlString) {
       '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
   return pattern.test(urlString)
 }
+
+/**
+ * Disables or enables a button if the textbox contains valid text. Also binds "ENTER" key press to clicking the button.
+ * @param textBox Jquery textbox(es) to bind a keyup event to; when modified, its text will be validated
+ * @param button Jquery button which will be disabled or enabled, if the above textbox is successfully validated;
+ *               will also be bound to the button function, and will be disabled by default
+ * @param validationFunction A function that accepts a string (the new contents of the modified text box) and returns
+ *                           true if the content is valid
+ * @param buttonFunction A function to invoke when the button is clicked (assuming is is enabled, of course), or when
+ *                       the 'Enter' (<CR>) key is pressed while modifying the textbox(es)
+ */
+function validateBoxAndButton(textBox, button, validationFunction, buttonFunction) {
+  function runIfEnabled() {
+    if (button.prop("disabled"))
+      return
+    buttonFunction()
+  }
+  const ENTER_CODE = 13
+  button.click(_ => runIfEnabled())
+  button.prop('disabled', true)
+  textBox.keyup(function(event) {
+    if (event.keyCode === ENTER_CODE)
+      runIfEnabled()
+    else
+      button.prop('disabled', false === validationFunction($(this).val()))
+  })
+}

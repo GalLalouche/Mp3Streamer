@@ -4,21 +4,10 @@ $(function () {
   lyricsDiv.append(elem('br'))
   const lyricsPusher = elem('div').appendTo(lyricsDiv)
   const lyricsUrlBox = $("<input id='lyrics-url' placeholder='Lyrics URL' type='text'/>").appendTo(lyricsPusher)
-  const updateLyricsButton =
-      elem("button", "Update lyrics").click(updateLyrics).prop("disabled", true).appendTo(lyricsPusher)
-  // Update recon on pressing Enter
-  lyricsUrlBox.keyup(function (event) {
-    // TODO move to common
-    if (event.keyCode === 13) { // Enter
-      updateLyrics()
-    } else {
-      updateLyricsButton.prop('disabled', false === isValidUrl($(this).val()))
-    }
-  })
+  const updateLyricsButton = elem("button", "Update lyrics").appendTo(lyricsPusher)
+  validateBoxAndButton(lyricsUrlBox, updateLyricsButton, isValidUrl, updateLyrics)
 
   function updateLyrics() {
-    if (updateLyricsButton.prop("disabled"))
-      return
     const url = $("#lyrics-url").val()
     const songPath = gplaylist.currentPlayingSong().file
     $.ajax({
@@ -44,7 +33,7 @@ $(function () {
   Lyrics.show = function (song) {
     autoScroll = true
     lyrics.html("Fetching lyrics...")
-    $.get("lyrics/" + song.file, function(l) {
+    $.get("lyrics/" + song.file, function (l) {
       showLyrics(l)
       scrollLyrics()
     })
@@ -54,6 +43,7 @@ $(function () {
   let autoScroll = false
   let scrollBaseline = 0
   let timeBaseline = 0
+
   function scrollLyrics() {
     // Don't start scrolling right at the beginning of the song if there is no baseline set
     const heightBaseline = scrollBaseline || (lyrics.height() / -1.75)
@@ -61,9 +51,10 @@ $(function () {
     autoScroll = true
     lyrics.scrollTop(lyrics.prop('scrollHeight') * timePercentage + heightBaseline)
   }
+
   setInterval(scrollLyrics, 100)
 
-  lyrics.scroll(function() { // When the user scrolls manually, reset the baselines
+  lyrics.scroll(function () { // When the user scrolls manually, reset the baselines
     if (!autoScroll) {
       scrollBaseline = lyrics.scrollTop()
       timeBaseline = scrollBaseline && gplayer.currentPlayingRelative()
