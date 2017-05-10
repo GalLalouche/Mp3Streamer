@@ -10,20 +10,24 @@ import common.rich.RichFuture._
 import models.Song
 
 import scala.concurrent.Future
+import scalaz.std.FutureInstances
+import scalaz.syntax.ToFunctorOps
 
-class LyricsCache(implicit c: Configuration) extends LyricsRetriever {
+class LyricsCache(implicit c: Configuration)
+    extends FutureInstances with ToFunctorOps {
   private val retriever: LyricsRetriever =
     new CompositeLyricsRetriever(new LyricsWikiaRetriever(), new DarkLyricsRetriever(), new AzLyricsRetriever())
   private val cache = new OnlineRetrieverCacher[Song, Lyrics](
     new LyricsStorage(), new Retriever[Song, Lyrics] {override def apply(v1: Song): Future[Lyrics] = retriever.find(v1)})
-  override def find(s: Song): Future[Lyrics] = cache(s)
-  override def doesUrlMatchHost(url: Url): Boolean = retriever.doesUrlMatchHost(url)
-  override def parse(url: Url, s: Song): Future[Lyrics] = {
-    for (lyrics <- retriever.parse(url, s)) yield {
+  def find(s: Song): Future[Lyrics] = cache(s)
+  def parse(url: Url, s: Song): Future[Lyrics] =
+    retriever.parse(url, s).map(lyrics => {
       cache.forceStore(s, lyrics)
       lyrics
-    }
-
+    })
+  def setInstrumental(s: Song): Future[Instrumental] = {
+    val instrumental = Instrumental("Manual override")
+    cache.forceStore(s, instrumental).>|(instrumental)
   }
 }
 
