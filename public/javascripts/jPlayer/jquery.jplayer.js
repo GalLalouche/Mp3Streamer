@@ -636,6 +636,8 @@
         self.html.canPlay[format] = self.html[self.format[format].media].available && "" !== self.htmlElement[self.format[format].media].canPlayType(self.format[format].codec);
         self.flash.canPlay[format] = self.format[format].flashCanPlay && self.flash.available;
       });
+      // TODO find a better way to do this :\
+      self.html.canPlay["flac"] = true;
       this.html.desired = false;
       this.flash.desired = false;
       $.each(this.solutions, function (solutionPriority, solution) {

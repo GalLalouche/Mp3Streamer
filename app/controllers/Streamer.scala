@@ -2,6 +2,7 @@ package controllers
 
 import java.io.FileInputStream
 
+import common.rich.path.RichFile._
 import common.rich.primitives.RichString._
 import play.api.libs.iteratee.Enumerator
 import play.api.mvc.{Action, Controller}
@@ -13,6 +14,7 @@ object Streamer extends Controller {
     def parseRange(s: String): Long = s dropAfterLast '=' takeWhile (_ isDigit) toLong
     val bytesToSkip = request.headers get "Range" map parseRange getOrElse 0L
     val file = Utils.parseSong(s).file
+    val codec = if(file.extension == "flac") "audio/x-flac" else "audio/mpeg"
     val fis = new FileInputStream(file)
     fis.skip(bytesToSkip)
     val status = if (bytesToSkip == 0) Ok else PartialContent
@@ -22,8 +24,8 @@ object Streamer extends Controller {
       "Access-Control-Allow-Origin" -> "*",
       "Accept-Ranges" -> "bytes",
       "Connection" -> "close",
-      "Codec" -> "audio/mpeg",
-      "Content-Type" -> "audio/mpeg",
+      "Codec" -> codec,
+      "Content-Type" -> codec,
       "Content-Length" -> (file.length - bytesToSkip).toString,
       "Content-Range" -> s"bytes $bytesToSkip-${file.length}/${file.length}"
     )
