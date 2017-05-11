@@ -97,6 +97,7 @@ $(function() {
       searchBox.blur()
   }, INPUT_TIMEOUT_IN_MILLIS)
   Search.quickSearch = function() {
+    searchBox.val("")
     searchBox.focus()
     scan()
   }
