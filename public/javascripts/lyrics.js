@@ -5,8 +5,16 @@ $(function () {
   const lyricsPusher = div().appendTo(lyricsDiv)
   const lyricsUrlBox = $("<input id='lyrics-url' placeholder='Lyrics URL' type='text'/>").appendTo(lyricsPusher)
   const updateLyricsButton = button("Update lyrics").appendTo(lyricsPusher)
+  const instrumentalButton = button("Instrumental").appendTo(lyricsPusher)
   validateBoxAndButton(lyricsUrlBox, updateLyricsButton, isValidUrl, updateLyrics)
 
+  lyricsUrlBox.keyup(function() {
+    instrumentalButton.prop('disabled', $(this).val() !== "")
+  })
+
+  instrumentalButton.click(function() {
+    $.post("lyrics/instrumental/" + gplaylist.currentPlayingSong().file, null, c => showLyrics(c))
+  })
   function updateLyrics() {
     const url = lyricsUrlBox.val()
     const songPath = gplaylist.currentPlayingSong().file
