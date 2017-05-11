@@ -53,7 +53,8 @@ GET        /debug/fast_refresh           controllers.Cacher.quickRefresh()
 
 # Albums
 GET        /albums/albums                controllers.Albums.albums
-GET        /albums/index                 controllers.Albums.index
+GET        /albums/new                   controllers.Albums.newAlbums
+GET        /albums/recent                controllers.Albums.recent
 PUT        /albums/artist/remove         controllers.Albums.removeArtist
 PUT        /albums/artist/ignore         controllers.Albums.ignoreArtist
 PUT        /albums/album/remove          controllers.Albums.removeAlbum

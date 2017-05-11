@@ -1,10 +1,15 @@
 package controllers
 
+import java.io.File
+import java.time.ZoneOffset
+
 import backend.albums.{NewAlbum, NewAlbums}
 import backend.recon._
 import common.Debug
 import common.RichJson._
+import common.io.DirectoryRef
 import common.rich.RichT._
+import models.Song
 import play.api.libs.json._
 import play.api.mvc._
 
@@ -12,11 +17,12 @@ import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
-/** Handles fetch requests of JSON information, and listens to directory changes. */
+/** A web interface to new albums finder. Displays new albums and can update the current file / ignoring policy. */
+//noinspection MutatorLikeMethodIsParameterless
 object Albums extends Controller with Debug
     with FutureInstances with ToFunctorOps {
   import Utils.config
-  private val newAlbums = new NewAlbums()
+  private val $ = new NewAlbums()
 
   private def toJson(a: NewAlbum): JsObject =
     Json.obj("title" -> a.title, "year" -> a.year, "type" -> a.albumType)
@@ -26,7 +32,7 @@ object Albums extends Controller with Debug
     m.map(e => toJson(e._1, e._2)).toSeq |> JsArray.apply
 
   def albums = Action.async {
-    newAlbums.load.map(toJson).map(Ok(_))
+    $.load.map(toJson).map(Ok(_))
   }
 
   private def updateNewAlbums[A <: Reconcilable](extractor: Request[AnyContent] => A, action: A => Future[Unit]) =
@@ -34,18 +40,26 @@ object Albums extends Controller with Debug
       action(extractor(request)).>|(NoContent)
     }
 
-  def removeArtist = updateNewAlbums(extractArtist, newAlbums.removeArtist)
-  def ignoreArtist = updateNewAlbums(extractArtist, newAlbums.ignoreArtist)
   private def extractArtist(request: Request[AnyContent]): Artist = request.body.asText.get |> Artist
+  def removeArtist = updateNewAlbums(extractArtist, $.removeArtist)
+  def ignoreArtist = updateNewAlbums(extractArtist, $.ignoreArtist)
 
   private def extractAlbum(request: Request[AnyContent]): Album = {
     val json = request.body.asJson.get
     Album(json str "title", json int "year", Artist(json str "artistName"))
   }
-  def removeAlbum = updateNewAlbums(extractAlbum, newAlbums.removeAlbum)
-  def ignoreAlbum = updateNewAlbums(extractAlbum, newAlbums.ignoreAlbum)
+  def removeAlbum = updateNewAlbums(extractAlbum, $.removeAlbum)
+  def ignoreAlbum = updateNewAlbums(extractAlbum, $.ignoreAlbum)
 
-  def index = Action {
+  def newAlbums = Action {
     Ok(views.html.new_albums())
+  }
+
+  def recent = Action.async {
+    $.recent
+        .map(_.take(10)
+            .map(a => s"${a.artistName} - ${a.year} ${a.title}")
+            .mkString("\n")
+        ).map(Ok(_))
   }
 }

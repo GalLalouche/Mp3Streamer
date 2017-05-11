@@ -1,30 +1,22 @@
 package backend.albums
 
+import java.io.File
+import java.time.ZoneOffset
+
 import backend.configs.{Configuration, StandaloneConfig}
 import backend.mb.MbArtistReconciler
 import backend.recon._
 import common.ds.RichMap._
-import common.io.JsonableSaver
+import common.io.{DirectoryRef, JsonableSaver}
 import common.rich.RichFuture._
 import common.rich.RichObservable._
 import mains.fixer.StringFixer
-import models.RealLocations
+import models.{RealLocations, Song}
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
-
-
-object NewAlbums {
-  def main(args: Array[String]): Unit = {
-    implicit val c = StandaloneConfig
-    val $ = new NewAlbums()
-    $.fetchAndSave.get
-    println("Done!")
-    Thread.getAllStackTraces.keySet.filterNot(_.isDaemon).foreach(println)
-  }
-}
 
 class NewAlbums(implicit c: Configuration)
     extends ToBindOps with FutureInstances {
@@ -54,8 +46,8 @@ class NewAlbums(implicit c: Configuration)
   def load: Future[Map[Artist, Seq[NewAlbum]]] = Future(jsonableSaver.loadArray)
       //TODO lenses
       .map(_.map(e => e.copy(artist = Artist(StringFixer(e.artist.name))))
-          .groupBy(_.artist)
-          .mapValues(_.sortBy(_.year)))
+      .groupBy(_.artist)
+      .mapValues(_.sortBy(_.year)))
 
   def removeArtist(a: Artist): Future[Unit] = {
     logger.debug(s"Removing $a")
@@ -82,5 +74,23 @@ class NewAlbums(implicit c: Configuration)
         .map(_._1)
         .toFuture[Traversable]
         .consume(jsonableSaver save _)
+  def recent: Future[Seq[Album]] = {
+    def toAlbum(d: DirectoryRef): Album =
+      Reconcilable.SongExtractor(Song(new File(c.mf.getSongFilePathsInDir(d).head))).release
+    Future(c.mf.genreDirs
+        .flatMap(_.deepDirs)
+        .filter(e => c.mf.getSongFilePathsInDir(e).nonEmpty)
+        .sortBy(_.lastModified)(Ordering.by(-_.toEpochSecond(ZoneOffset.UTC)))
+        .map(toAlbum))
+  }
+}
 
+object NewAlbums {
+  def main(args: Array[String]): Unit = {
+    implicit val c = StandaloneConfig
+    val $ = new NewAlbums()
+    $.fetchAndSave.get
+    println("Done!")
+    Thread.getAllStackTraces.keySet.filterNot(_.isDaemon).foreach(println)
+  }
 }
