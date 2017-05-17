@@ -28,6 +28,7 @@ $(function () {
   function updateRecon() {
     const json = {}
     function addIfNotEmpty(elem) {
+      const id = elem[0].placeholder.split(" ")[0].toLowerCase()
       const text = elem.val()
       if (text.length !== 0) // the box is either empty, or is valid TODO replace with an assert
         json[id] = text
