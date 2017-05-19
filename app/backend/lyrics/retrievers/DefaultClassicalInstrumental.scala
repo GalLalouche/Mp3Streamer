@@ -2,7 +2,7 @@ package backend.lyrics.retrievers
 
 import java.io.File
 import backend.Url
-import backend.lyrics.{Instrumental, LyricsRetriever}
+import backend.lyrics.Instrumental
 import models.Song
 import scala.annotation.tailrec
 import scala.concurrent.Future

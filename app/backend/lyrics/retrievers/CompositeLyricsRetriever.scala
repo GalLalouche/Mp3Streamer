@@ -1,7 +1,7 @@
 package backend.lyrics.retrievers
 
 import backend.Url
-import backend.lyrics.{Lyrics, LyricsRetriever}
+import backend.lyrics.Lyrics
 import models.Song
 
 import scala.collection.LinearSeq
@@ -20,7 +20,7 @@ private[lyrics] class CompositeLyricsRetriever(retrievers: LinearSeq[LyricsRetri
   }
   def this(retrievers: LyricsRetriever*)(implicit ec: ExecutionContext) = this(retrievers.toList)
   override def doesUrlMatchHost(url: Url): Boolean = {
-    retrievers.exists(_.doesUrlMatchHost(url))
+    retrievers.exists(_ doesUrlMatchHost url)
   }
   override def parse(url: Url, s: Song): Future[Lyrics] =
     retrievers.find(_ doesUrlMatchHost url)

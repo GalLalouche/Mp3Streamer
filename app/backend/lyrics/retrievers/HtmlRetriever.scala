@@ -1,7 +1,7 @@
 package backend.lyrics.retrievers
 
 import backend.Url
-import backend.lyrics.{HtmlLyrics, Instrumental, Lyrics, LyricsRetriever}
+import backend.lyrics.{HtmlLyrics, Instrumental, Lyrics}
 import common.io.InternetTalker
 import models.Song
 import org.jsoup.nodes.Document
