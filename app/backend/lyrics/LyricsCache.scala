@@ -15,10 +15,13 @@ import scalaz.syntax.ToFunctorOps
 
 class LyricsCache(implicit c: Configuration)
     extends FutureInstances with ToFunctorOps {
-  private val retriever: LyricsRetriever =
-    new CompositeLyricsRetriever(new LyricsWikiaRetriever(), new DarkLyricsRetriever(), new AzLyricsRetriever())
+  private val retriever: LyricsRetriever = new CompositeLyricsRetriever(
+    DefaultClassicalInstrumental,
+    new LyricsWikiaRetriever(),
+    new DarkLyricsRetriever(),
+    new AzLyricsRetriever())
   private val cache = new OnlineRetrieverCacher[Song, Lyrics](
-    new LyricsStorage(), new Retriever[Song, Lyrics] {override def apply(v1: Song): Future[Lyrics] = retriever.find(v1)})
+    new LyricsStorage(), new Retriever[Song, Lyrics] {override def apply(v1: Song) = retriever find v1})
   def find(s: Song): Future[Lyrics] = cache(s)
   def parse(url: Url, s: Song): Future[Lyrics] =
     retriever.parse(url, s).map(lyrics => {
