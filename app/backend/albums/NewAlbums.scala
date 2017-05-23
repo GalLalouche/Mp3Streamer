@@ -75,6 +75,7 @@ class NewAlbums(implicit c: Configuration)
         .toFuture[Traversable]
         .consume(jsonableSaver save _)
   def recent: Future[Seq[Album]] = {
+    // TODO move to Album.apply?
     def toAlbum(d: DirectoryRef): Album =
       Reconcilable.SongExtractor(Song(new File(c.mf.getSongFilePathsInDir(d).head))).release
     Future(c.mf.genreDirs

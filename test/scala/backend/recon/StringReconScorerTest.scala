@@ -20,4 +20,7 @@ class StringReconScorerTest extends FreeSpec with AuxSpecs {
   "ignores and" - {
     verifyHighReconScore("Songs of Moors & Misty fields", "Songs of moors and misty fields")
   }
+  "ignores punctuations" - {
+    verifyHighReconScore("Grand Opening and Closing!", "Grand Opening and Closing")
+  }
 }

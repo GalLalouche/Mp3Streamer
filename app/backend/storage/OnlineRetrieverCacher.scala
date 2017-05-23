@@ -21,6 +21,7 @@ class OnlineRetrieverCacher[Key, Value](
         localStorage.store(k, v)
             .filterWith(identity, "Cacher failed to write recon. This usually indicates a race condition.")
             .>|(v)))
+  // delegate all methods to localStorage
   override def forceStore(k: Key, v: Value): Future[Option[Value]] = localStorage.forceStore(k, v)
   override def store(k: Key, v: Value): Future[Boolean] = localStorage.store(k, v)
   override def mapStore(k: Key, f: (Value) => Value, default: => Value): Future[Option[Value]] = localStorage.mapStore(k ,f, default)
