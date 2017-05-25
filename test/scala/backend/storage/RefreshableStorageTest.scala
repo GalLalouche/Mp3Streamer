@@ -1,6 +1,7 @@
 package backend.storage
 
 import backend.configs.TestConfiguration
+import common.rich.RichT._
 import common.AuxSpecs
 import common.rich.RichFuture._
 import org.joda.time.Duration
@@ -40,6 +41,17 @@ class RefreshableStorageTest extends FreeSpec with MockitoSugar with AuxSpecs wi
       freshnessStorage.storeWithoutTimestamp("foobar", "bazqux")
       Thread sleep 100
       $("foobar").get shouldReturn "bazqux"
+    }
+    "reuse existing value on failure" in {
+      val $ = new RefreshableStorage[String, String](freshnessStorage,
+        Future.failed(new RuntimeException()).const,
+        Duration.millis(50))
+      freshnessStorage.store("foo", "bar")
+      val dataFreshness = freshnessStorage.freshness("foo").get
+      Thread sleep 100
+      assert($.needsRefresh("foo").get)
+      $.apply("foo").get shouldReturn "bar"
+      freshnessStorage.freshness("foo").get shouldReturn dataFreshness
     }
   }
   "withAge" in {

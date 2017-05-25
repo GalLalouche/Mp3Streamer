@@ -1,6 +1,7 @@
 package backend.storage
 
 import backend.Retriever
+import common.rich.RichFuture._
 import common.rich.RichT._
 import org.joda.time.{DateTime, Duration}
 
@@ -20,9 +21,13 @@ class RefreshableStorage[Key, Value](freshnessStorage: FreshnessStorage[Key, Val
       yield v
 
   override def apply(k: Key): Future[Value] =
-    for (b <- needsRefresh(k);
-         $ <- if (b) refresh(k) else freshnessStorage.load(k).map(_.get))
-      yield $
+    needsRefresh(k).flatMap(isOld => {
+      lazy val oldData = freshnessStorage.load(k).map(_.get)
+      if (isOld)
+        refresh(k) orElseTry oldData
+      else
+        oldData
+    })
 
   def withAge(k: Key): Future[(Value, Option[DateTime])] =
     for (v <- apply(k); age <- freshnessStorage.freshness(k)) yield v -> age.get
