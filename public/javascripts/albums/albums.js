@@ -1,8 +1,7 @@
 $(function() {
   const div = $("#albums")
   const artists = $("<ol>").appendTo(div)
-  const classPrefix = "albums-"
-  const button = (text, clazz) => elem("button", text).addClass(classPrefix + clazz)
+  const button = (text, clazz) => elem("button", text).addClass(clazz)
   const createHideButton = () => button("Hide", "hide")
 
   function putText(url, text, success) {
@@ -32,6 +31,7 @@ $(function() {
           .append(button("Ignore", "ignore-album"))
           .append(button("Remove", "remove-album"))
           .append(createHideButton())
+          .append(button("Google torrent", "google-torrent"))
     }
 
     obj.albums.forEach(processAlbum)
@@ -42,35 +42,40 @@ $(function() {
   })
 
   // buttons
-  div.on("click", ".albums-hide", function() {
+  div.on("click", ".hide", function() {
     $(this).parent().hide()
   })
-  div.on("click", ".albums-ignore-artist", function() {
+  div.on("click", ".ignore-artist", function() {
     const parent = $(this).parent()
     const artistName = parent.data("artistName")
     putText("artist/ignore", artistName, function() {
       parent.hide()
     })
   })
-  div.on("click", ".albums-remove-artist", function() {
+  div.on("click", ".remove-artist", function() {
     const parent = $(this).parent()
     const artistName = parent.data("artistName")
     putText("artist/remove", artistName, function() {
       parent.hide()
     })
   })
-  div.on("click", ".albums-ignore-album", function() {
+  div.on("click", ".ignore-album", function() {
     const parent = $(this).parent()
     const data = parent.data()
     putJson("album/ignore", data, function() {
       parent.hide()
     })
   })
-  div.on("click", ".albums-remove-album", function() {
+  div.on("click", ".remove-album", function() {
     const parent = $(this).parent()
     const data = parent.data()
     putJson("album/remove", data, function() {
       parent.hide()
     })
+  })
+  div.on("click", ".google-torrent", function() {
+    const parent = $(this).parent()
+    const data = parent.data()
+    window.open("https://www.google.com/search?q=torrent " + data.title)
   })
 })
