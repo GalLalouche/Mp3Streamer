@@ -45,6 +45,8 @@ $(function() {
   function clearResults() {
     searchBox.val('')
     results.hide()
+    // TODO can we change attr automatically? Do we want to?
+    results.attr("time", updateTimeOfLastInput()) // ensure late results will be ignored
   }
 
   function scan() {
@@ -73,12 +75,18 @@ $(function() {
   })
 
   let timeOfLastInput = 0
+  function updateTimeOfLastInput() {
+    timeOfLastInput = Date.now()
+    return timeOfLastInput
+  }
   searchBox.bind('input change', search)
   function search() {
-    const searchTime = timeOfLastInput = Date.now()
+    const searchTime = updateTimeOfLastInput()
     const text = searchBox.val()
-    if (text === "")
+    if (text === "") {
       clearResults()
+      return
+    }
     $.get("search/" + text, e => setResults(e, searchTime))
   }
 
@@ -97,7 +105,7 @@ $(function() {
       searchBox.blur()
   }, INPUT_TIMEOUT_IN_MILLIS)
   Search.quickSearch = function() {
-    searchBox.val("")
+    clearResults()
     searchBox.focus()
     scan()
   }
