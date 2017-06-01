@@ -8,7 +8,7 @@ $(function () {
   const instrumentalButton = button("Instrumental").appendTo(lyricsPusher)
   validateBoxAndButton(lyricsUrlBox, updateLyricsButton, isValidUrl, updateLyrics)
 
-  lyricsUrlBox.keyup(function() {
+  lyricsUrlBox.keyup(function() { // the validateBoxAndButton only applies to updateLyricsButton
     instrumentalButton.prop('disabled', $(this).val() !== "")
   })
 
@@ -25,10 +25,18 @@ $(function () {
       success: c => showLyrics(c),
       contentType: "text/plain",
     })
+    clearButtons()
+    lyricsContent.html("Pushing lyrics...")
+  }
+
+  function clearButtons() {
+    lyricsUrlBox.val("")
+    lyricsUrlBox.trigger("keyup")
   }
 
 
   function showLyrics(content) {
+    clearButtons()
     autoScroll = true
     lyricsContent.html(content)
     if (previousContent === lyricsContent.html()) // Ensure the same HTML formatting is used for comparison
@@ -39,6 +47,7 @@ $(function () {
   }
 
   Lyrics.show = function (song) {
+    clearButtons()
     autoScroll = true
     lyricsContent.html("Fetching lyrics...")
     $.get("lyrics/" + song.file, function (l) {
