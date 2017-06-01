@@ -13,10 +13,12 @@ private class ArtistLastYearCache private(lastReleaseYear: Map[Artist, Year]) {
       .filter(_.isOut)
       .filter(e => isLaterThanLastRelease(artist, e.releaseDate |> Year.from))
       .map(e => NewAlbum.from(artist, e) -> e.reconId)
-  private def isLaterThanLastRelease(artist: Artist, y: Year) = lastReleaseYear(artist) < y
+  private def isLaterThanLastRelease(artist: Artist, y: Year) =
+    lastReleaseYear(ArtistLastYearCache.canonize(artist)) < y
 }
 
 private object ArtistLastYearCache {
+  private def canonize(a: Artist): Artist = Artist(a.normalize)
   case class Year(y: Int) extends AnyVal with Ordered[Year] {
     override def compare(that: Year) = y compare that.y
   }
@@ -24,7 +26,7 @@ private object ArtistLastYearCache {
     def from(ld: LocalDate) = Year(ld.getYear)
   }
   def from(albums: Seq[Album]): ArtistLastYearCache = albums
-      .groupBy(_.artist)
-      .mapValues(_.toVector.map(_.year).sorted.last |> Year.apply)
+      .groupBy(a => canonize(a.artist))
+      .mapValues(_.toVector.map(_.year).max |> Year.apply)
       .mapTo(new ArtistLastYearCache(_))
 }
