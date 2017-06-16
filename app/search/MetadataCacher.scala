@@ -1,6 +1,5 @@
 package search
 
-import java.io.File
 import java.time.{LocalDateTime, ZoneOffset}
 
 import backend.configs.{Configuration, RealConfig}
@@ -26,12 +25,11 @@ class MetadataCacher[Dir <: DirectoryRef](saver: JsonableSaver)(implicit val c: 
   import MetadataCacher._
 
   private def getDirectoryInfo(d: Dir, onParsingCompleted: () => Unit): DirectoryInfo = {
-    val songs = c.mf getSongFilePathsInDir d map parseSong
+    val songs = c.mf getSongFilePathsInDir d map c.mf.parseSong
     val album = songs.head.album
     onParsingCompleted()
     DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))
   }
-  protected def parseSong(filePath: String): Song = Song(new File(filePath))
   private val updatingActor = new SimpleActor[Dir] {
     override def apply(dir: Dir) {
       val info = getDirectoryInfo(dir, () => ())

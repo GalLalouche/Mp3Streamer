@@ -19,4 +19,6 @@ trait MusicFinder { self =>
   def getSongFilePaths: Seq[String] = albumDirs.par.flatMap(getSongFilePathsInDir).seq
   def getSongFilePathsInDir(d: D): Seq[String] =
     d.files.filter(f => extensions.contains(f.extension)).map(_.path)
+
+  def parseSong(filePath: String): Song
 }

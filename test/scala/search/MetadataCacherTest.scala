@@ -3,17 +3,16 @@ package search
 import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
 import backend.configs.{FakeMusicFinder, TestConfiguration}
-import common.io.{JsonableSaver, MemoryDir, MemoryRoot}
+import common.io.{JsonableSaver, MemoryRoot}
 import common.rich.RichFuture._
 import common.{AuxSpecs, Jsonable}
-import models.{Artist, Song}
+import models.Artist
 import org.scalatest.matchers.{MatchResult, Matcher}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import rx.lang.scala.Observable
 import search.MetadataCacher.IndexUpdate
 import search.ModelsJsonable._
 
-import scala.collection.mutable
 import scala.concurrent.{Await, Promise}
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
@@ -26,9 +25,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
 
   private val mf = new FakeMusicFinder(songs)
   private implicit val c = TestConfiguration().copy(_root = root, _mf = mf)
-  private val $ = new MetadataCacher(jsonableSaver)(c) {
-    override protected def parseSong(filePath: String): Song = mf.findSong(filePath)
-  }
+  private val $ = new MetadataCacher(jsonableSaver)(c)
 
   private def awaitCompletion($: Observable[Any]) = {
     val p = Promise[Unit]

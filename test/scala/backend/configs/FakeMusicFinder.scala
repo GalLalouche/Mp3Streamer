@@ -19,5 +19,5 @@ class FakeMusicFinder(val dir: MemoryDir) extends MusicFinder {
     $
   }
 
-  def findSong(filePath: String): Song = pathToSongs(filePath)
+  override def parseSong(filePath: String): Song = pathToSongs(filePath)
 }
