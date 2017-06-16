@@ -46,7 +46,6 @@ class IODirectory(val dir: Directory) extends DirectoryRef {
   override def addSubDir(name: String): IODirectory = new IODirectory(dir addSubDir name)
   override def getFile(name: String): Option[IOFile] = optionalFile(name).map(new IOFile(_))
   override def path: String = dir.path
-  override def paths = dir.files.map(new IOFile(_)) ++ dir.dirs.map(new IODirectory(_))
   override def name: String = dir.name
   override def dirs: Seq[IODirectory] = dir.dirs.map(new IODirectory(_))
   override def files: Seq[IOFile] = dir.files.map(new IOFile(_))

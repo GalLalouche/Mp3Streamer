@@ -48,8 +48,9 @@ abstract sealed class MemoryDir(val path: String) extends DirectoryRef {
     dirsByName += ((name, $))
     $
   }
-  override def paths = (filesByName.values ++ dirsByName.values).toStream
   override val lastModified = LocalDateTime.now()
+  override def dirs: Seq[DirectoryRef] = dirsByName.values.toSeq.sortBy(_.name)
+  override def files: Seq[FileRef] = filesByName.values.toSeq.sortBy(_.name)
 }
 private class ConsDir(parent: MemoryDir, val name: String) extends MemoryDir(parent.path + "/" + name)
 class MemoryRoot extends MemoryDir("/") {

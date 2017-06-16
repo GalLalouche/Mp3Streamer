@@ -45,10 +45,8 @@ trait DirectoryRef extends PathRef {
   def getFile(name: String): Option[FileRef]
   def addSubDir(name: String): DirectoryRef
   def getDir(name: String): Option[DirectoryRef]
-  /** Files and dirs */
-  def paths: Seq[PathRef]
-  def dirs: Seq[DirectoryRef] = paths collect { case e: DirectoryRef => e }
-  def files: Seq[FileRef] = paths collect { case e: FileRef => e }
+  def dirs: Seq[DirectoryRef]
+  def files: Seq[FileRef]
   def deepDirs: Seq[DirectoryRef] = dirs ++ (dirs flatMap (_.deepDirs))
   def deepFiles: Seq[FileRef] = files ++ (dirs flatMap (_.deepFiles))
   def lastModified: LocalDateTime
