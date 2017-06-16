@@ -4,7 +4,7 @@ import java.time.{LocalDateTime, ZoneOffset}
 
 import backend.configs.{Configuration, RealConfig}
 import common.Jsonable
-import common.concurrency.SimpleActor
+import common.concurrency.SimpleTypedActor
 import common.ds.{Collectable, IndexedSet}
 import common.io.{DirectoryRef, IODirectory, JsonableSaver}
 import models._
@@ -20,26 +20,61 @@ import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
 // Possible source of bugs: indexAll and apply(DirectoryRef) work on different threads. This solution is forced
 // due to type erasure.
-class MetadataCacher[Dir <: DirectoryRef](saver: JsonableSaver)(implicit val c: Configuration { type D = Dir})
+class MetadataCacher[Dir <: DirectoryRef](saver: JsonableSaver)(implicit val c: Configuration {type D = Dir})
     extends OptionInstances with ListInstances with AnyValInstances with ToTraverseOps with FutureInstances with ToBindOps {
   import MetadataCacher._
+  private sealed trait UpdateType {
+    def apply(): Observable[IndexUpdate]
+  }
+  private object UpdateAll extends UpdateType {
+    override def apply(): Observable[IndexUpdate] =
+      updateIndex(c.mf.albumDirs, new AllInfoHandler {
+        override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver save xs
+        override def apply(artists: IndexedSet[Artist]): Unit = apply(artists.toSeq)
+      })
+  }
+  private object QuickRefresh extends UpdateType {
+    override def apply(): Observable[IndexUpdate] = {
+      val lastUpdateTime: Option[LocalDateTime] =
+        List(saver.lastUpdateTime[Song], saver.lastUpdateTime[Album], saver.lastUpdateTime[Artist])
+            .sequence[Option, LocalDateTime]
+            .flatMap(_.minimumBy(_.toEpochSecond(ZoneOffset.UTC)))
+      lastUpdateTime.fold(indexAll()) {lastUpdateTime =>
+        updateIndex(c.mf.albumDirs.filter(_.lastModified isAfter lastUpdateTime), new AllInfoHandler {
+          override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver.update[T](_ ++ xs)
+          override def apply(artists: IndexedSet[Artist]): Unit = saver.update[Artist](artists ++ _)
+        })
+      }
+    }
+  }
+  private case class UpdateDir(dir: Dir) extends UpdateType {
+    override def apply(): Observable[IndexUpdate] =
+      Observable.from(Future {
+        val info = getDirectoryInfo(dir, () => ())
+        saver.update[Song](_ ++ info.songs)
+        saver.update[Album](_.toSet + info.album)
+        saver.update[Artist](_./:(emptyArtistSet)(_ + _) + info.artist)
+        IndexUpdate(1, 1, dir)
+      })
+  }
 
+  // TODO handle empty directories
   private def getDirectoryInfo(d: Dir, onParsingCompleted: () => Unit): DirectoryInfo = {
     val songs = c.mf getSongFilePathsInDir d map c.mf.parseSong
     val album = songs.head.album
     onParsingCompleted()
     DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))
   }
-  private val updatingActor = new SimpleActor[Dir] {
-    override def apply(dir: Dir) {
-      val info = getDirectoryInfo(dir, () => ())
-      saver.update[Song](_ ++ info.songs)
-      saver.update[Album](_.toSet + info.album)
-      saver.update[Artist](_./:(emptyArtistSet)(_ + _) + info.artist)
-    }
+  private val updatingActor = new SimpleTypedActor[UpdateType, Observable[IndexUpdate]] {
+    override def apply(u: UpdateType): Observable[IndexUpdate] = u.apply()
   }
 
-  def !(dir: Dir): Future[Unit] = updatingActor ! dir
+  private def update(u: UpdateType): Observable[IndexUpdate] = Observable.from(updatingActor ! u).flatten
+
+  def processDirectory(dir: Dir): Future[Unit] = {
+    import common.rich.RichObservable._
+    update(UpdateDir(dir)).toFuture.>|(Unit)
+  }
 
   private def updateIndex(dirs: GenSeq[Dir], allInfoHandler: AllInfoHandler): Observable[IndexUpdate] = {
     val $ = ReplaySubject[IndexUpdate]
@@ -61,26 +96,11 @@ class MetadataCacher[Dir <: DirectoryRef](saver: JsonableSaver)(implicit val c: 
     $
   }
 
-  def indexAll(): Observable[IndexUpdate] = {
-    updateIndex(c.mf.albumDirs, new AllInfoHandler {
-      override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver save xs
-      override def apply(artists: IndexedSet[Artist]): Unit = apply(artists.toSeq)
-    })
-  }
+  def indexAll(): Observable[IndexUpdate] = update(UpdateAll)
 
   // There is a hidden assumption here, that nothing happened between the time the index finished updating,
   // and between the time it took to save the file. PROBABLY ok :|
-  def quickRefresh(): Observable[IndexUpdate] = {
-    val lastUpdateTime = List(saver.lastUpdateTime[Song], saver.lastUpdateTime[Album], saver.lastUpdateTime[Artist])
-        .sequence[Option, LocalDateTime]
-        .flatMap(_.minimumBy(_.toEpochSecond(ZoneOffset.UTC)))
-    lastUpdateTime.fold(indexAll()) {lastUpdateTime =>
-      updateIndex(c.mf.albumDirs.filter(_.lastModified isAfter lastUpdateTime), new AllInfoHandler {
-        override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver.update[T](_ ++ xs)
-        override def apply(artists: IndexedSet[Artist]): Unit = saver.update[Artist](artists ++ _)
-      })
-    }
-  }
+  def quickRefresh(): Observable[IndexUpdate] = update(QuickRefresh)
 }
 
 /**

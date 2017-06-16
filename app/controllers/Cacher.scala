@@ -47,7 +47,7 @@ object Cacher extends WebSocketController
     Ok(views.html.refresh())
   }
 
-  def newDir(d: IODirectory): Future[Unit] = cacher ! d
+  def newDir(d: IODirectory): Future[Unit] = cacher processDirectory d
   def forceRefresh() = Action {
     toRefreshStatus(cacher.indexAll())
   }
