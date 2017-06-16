@@ -11,7 +11,7 @@ import common.io.{DirectoryRef, JsonableSaver}
 import common.rich.RichFuture._
 import common.rich.RichObservable._
 import mains.fixer.StringFixer
-import models.{RealLocations, Song}
+import models.{IOMusicFinder, Song}
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future
@@ -59,7 +59,7 @@ class NewAlbums(implicit c: Configuration)
     load.map(_.modified(a.artist, _.filterNot(_.title == a.title))).map(save)
   }
   def ignoreAlbum(a: Album): Future[Unit] = ignore(a, albumReconStorage) >> removeAlbum(a)
-  implicit val locations = new RealLocations {
+  implicit val locations = new IOMusicFinder {
     override val subDirs: List[String] = List("Rock", "Metal")
   }
 

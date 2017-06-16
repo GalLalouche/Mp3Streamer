@@ -4,7 +4,7 @@ import common.io.IODirectory
 import common.rich.path.Directory
 
 /** Can be extended to override its values in tests */
-class RealLocations extends MusicFinder {
+class IOMusicFinder extends MusicFinder {
 	override val dir = IODirectory("d:/media/music")
 	override val subDirs = List("Rock", "New Age", "Classical", "Metal", "Jazz")
 	override val extensions = Set("mp3", "flac")
@@ -13,4 +13,4 @@ class RealLocations extends MusicFinder {
 }
 
 /** The actual locations, as opposed to mocked ones. This is used by scripts as well as the real controllers. */
-object RealLocations extends RealLocations
+object IOMusicFinder extends IOMusicFinder

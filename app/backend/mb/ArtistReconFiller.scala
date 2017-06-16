@@ -8,7 +8,7 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.path.Directory
 import common.rich.path.RichFile._
-import models.{MusicFinder, RealLocations, Song}
+import models.{MusicFinder, IOMusicFinder, Song}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,7 +33,7 @@ private object ArtistReconFiller {
     }
   }
   def main(args: Array[String]): Unit = {
-    fill(new RealLocations {override val subDirs = List("Rock", "Metal")})
+    fill(new IOMusicFinder {override val subDirs = List("Rock", "Metal")})
     System.exit(0)
   }
 }

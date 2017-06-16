@@ -4,7 +4,7 @@ import java.net.HttpURLConnection
 
 import backend.Url
 import common.io.{DirectoryRef, IODirectory}
-import models.{MusicFinder, RealLocations}
+import models.{MusicFinder, IOMusicFinder}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import slick.driver.{JdbcProfile, SQLiteDriver}
@@ -15,7 +15,7 @@ import scala.io.Source
 trait RealConfig extends Configuration {
   override lazy implicit val driver: JdbcProfile = SQLiteDriver
   override implicit lazy val db: driver.backend.DatabaseDef = driver.api.Database.forURL("jdbc:sqlite:d:/media/music/MBRecon.sqlite", driver = "org.sqlite.JDBC")
-  override implicit lazy val mf: MusicFinder = RealLocations
+  override implicit lazy val mf: MusicFinder = IOMusicFinder
   override def downloadDocument(url: Url): Future[Document] =
     Future(Source.fromURL(url.address, "UTF-8"))
         .map(_.mkString)
