@@ -6,10 +6,10 @@ import scala.collection.GenSeq
 
 trait MusicFinder {
   def dir: DirectoryRef
-  def subDirs: Seq[String]
+  protected def subDirNames: Seq[String]
   def extensions: Set[String]
 
-  def genreDirs: Seq[DirectoryRef] = subDirs.sorted.map(dir.getDir(_).get)
+  def genreDirs: Seq[DirectoryRef] = subDirNames.sorted.map(dir.getDir(_).get)
   def albumDirs: GenSeq[DirectoryRef] = genreDirs
     .flatMap(_.deepDirs)
     .toVector

@@ -25,7 +25,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
   implicit val c = TestConfiguration().copy(_root = root, _mf = new MusicFinder {
     override val extensions = Set("mp3")
     override val dir = songs
-    override val subDirs: List[String] = null
+    protected override val subDirNames: List[String] = null
     override def albumDirs = dir.dirs
   })
   private val pathToSongs = mutable.HashMap[String, Song]()

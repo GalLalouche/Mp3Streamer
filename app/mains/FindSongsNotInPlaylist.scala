@@ -12,7 +12,7 @@ import org.joda.time.Duration
 object FindSongsNotInPlaylist {
   val musicFiles = new MusicFinder {
     val dir = IODirectory("D:/Media/Music")
-    val subDirs = List("Metal", "Rock", "Classical", "New Age", "Jazz")
+    protected val subDirNames = List("Metal", "Rock", "Classical", "New Age", "Jazz")
     val extensions = Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
   }
   def main(args: Array[String]): Unit = {

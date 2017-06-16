@@ -60,7 +60,7 @@ class NewAlbums(implicit c: Configuration)
   }
   def ignoreAlbum(a: Album): Future[Unit] = ignore(a, albumReconStorage) >> removeAlbum(a)
   implicit val locations = new IOMusicFinder {
-    override val subDirs: List[String] = List("Rock", "Metal")
+    override val subDirNames: List[String] = List("Rock", "Metal")
   }
 
   private val retriever =

@@ -33,7 +33,7 @@ private object ArtistReconFiller {
     }
   }
   def main(args: Array[String]): Unit = {
-    fill(new IOMusicFinder {override val subDirs = List("Rock", "Metal")})
+    fill(new IOMusicFinder {override val subDirNames = List("Rock", "Metal")})
     System.exit(0)
   }
 }
