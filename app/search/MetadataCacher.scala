@@ -21,20 +21,19 @@ import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
 // Possible source of bugs: indexAll and apply(DirectoryRef) work on different threads. This solution is forced
 // due to type erasure.
-class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration)
+class MetadataCacher[Dir <: DirectoryRef](saver: JsonableSaver)(implicit val c: Configuration { type D = Dir})
     extends OptionInstances with ListInstances with AnyValInstances with ToTraverseOps with FutureInstances with ToBindOps {
   import MetadataCacher._
-  final type D = c.mf.D
 
-  private def getDirectoryInfo(d: D, onParsingCompleted: () => Unit): DirectoryInfo = {
+  private def getDirectoryInfo(d: Dir, onParsingCompleted: () => Unit): DirectoryInfo = {
     val songs = c.mf getSongFilePathsInDir d map parseSong
     val album = songs.head.album
     onParsingCompleted()
     DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))
   }
   protected def parseSong(filePath: String): Song = Song(new File(filePath))
-  private val updatingActor = new SimpleActor[D] {
-    override def apply(dir: D) {
+  private val updatingActor = new SimpleActor[Dir] {
+    override def apply(dir: Dir) {
       val info = getDirectoryInfo(dir, () => ())
       saver.update[Song](_ ++ info.songs)
       saver.update[Album](_.toSet + info.album)
@@ -42,9 +41,9 @@ class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration)
     }
   }
 
-  def !(dir: D): Future[Unit] = updatingActor ! dir
+  def !(dir: Dir): Future[Unit] = updatingActor ! dir
 
-  private def updateIndex(dirs: GenSeq[D], allInfoHandler: AllInfoHandler): Observable[IndexUpdate] = {
+  private def updateIndex(dirs: GenSeq[Dir], allInfoHandler: AllInfoHandler): Observable[IndexUpdate] = {
     val $ = ReplaySubject[IndexUpdate]
     Observable.apply[IndexUpdate](obs => {
       val totalSize = dirs.length
@@ -111,7 +110,7 @@ object MetadataCacher {
     def apply(artists: IndexedSet[Artist]): Unit
   }
 
-  def create(implicit c: RealConfig): MetadataCacher = {
+  def create(implicit c: RealConfig): MetadataCacher[IODirectory] = {
     import c._
     new MetadataCacher(new JsonableSaver)(c)
   }

@@ -40,10 +40,10 @@ trait FileRef extends PathRef {
   def lastModified: LocalDateTime
 }
 
-trait DirectoryRef extends PathRef { self: DirectoryRef =>
+trait DirectoryRef extends PathRef { self =>
   type F <: FileRef
   // F-bounded type parameter magic
-  type D <: (DirectoryRef { type D = self.D; type F = self.F })
+  type D <: DirectoryRef {type D = self.D; type F = self.F}
   def addFile(name: String): F
   def getFile(name: String): Option[F]
   def addSubDir(name: String): D

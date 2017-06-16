@@ -4,9 +4,9 @@ import common.io.DirectoryRef
 
 import scala.collection.GenSeq
 
-trait MusicFinder { self: MusicFinder =>
+trait MusicFinder { self =>
   // Why do we need this if D is already F-bounded :((
-  type D <: (DirectoryRef { type D = self.D })
+  type D <: DirectoryRef {type D = self.D}
   def dir: D
   protected def subDirNames: Seq[String]
   def extensions: Set[String]
