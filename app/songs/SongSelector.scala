@@ -2,13 +2,12 @@ package songs
 
 import java.io.File
 
-import backend.configs.Configuration
+import backend.configs.RealConfig
 import common.io.IODirectory
 import common.rich.RichT._
 import common.rich.func.MoreMonadPlus.SeqMonadPlus
 import common.rich.path.RichFile._
-import controllers.{Cacher, Searcher}
-import models.{MusicFinder, Song}
+import models.{IOMusicFinder, Song}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -20,7 +19,7 @@ trait SongSelector {
   def followingSong(song: Song): Song
 }
 
-private class SongSelectorImpl(songs: IndexedSeq[File], musicFinder: MusicFinder) extends SongSelector
+private class SongSelectorImpl(songs: IndexedSeq[File], musicFinder: IOMusicFinder) extends SongSelector
     with ToFunctorOps {
   private val random = new Random()
   def randomSong: Song = random.nextInt(songs.length) mapTo songs.apply mapTo Song.apply
@@ -40,7 +39,7 @@ object SongSelector
   import common.rich.RichFuture._
 
   /** A mutable-updateable wrapper of SongSelector */
-  private class SongSelectorProxy(implicit c: Configuration) extends SongSelector {
+  private class SongSelectorProxy(implicit c: RealConfig) extends SongSelector {
     def update(): Future[_] = {
       val $ = Future(new SongSelectorImpl(c.mf.getSongFilePaths.toVector.map(new File(_)), c.mf))
       if (songSelector == null)
@@ -55,7 +54,7 @@ object SongSelector
     override def followingSong(song: Song): Song = ss followingSong song
   }
 
-  def create(implicit c: Configuration): SongSelector = {
+  def create(implicit c: RealConfig): SongSelector = {
     // TODO TimedFuture?
     val start = System.currentTimeMillis()
     val $ = new SongSelectorProxy

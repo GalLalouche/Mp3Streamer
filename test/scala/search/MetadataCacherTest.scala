@@ -3,7 +3,7 @@ package search
 import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
 import backend.configs.{Configuration, TestConfiguration}
-import common.io.{DirectoryRef, JsonableSaver, MemoryRoot}
+import common.io.{JsonableSaver, MemoryDir, MemoryRoot}
 import common.{AuxSpecs, Jsonable}
 import models.{Album, Artist, MusicFinder, Song}
 import org.hamcrest.{BaseMatcher, Description}
@@ -23,6 +23,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
   private implicit val root = new MemoryRoot
   val songs = root.addSubDir("songs")
   implicit val c = TestConfiguration().copy(_root = root, _mf = new MusicFinder {
+    override type D = MemoryDir
     override val extensions = Set("mp3")
     override val dir = songs
     protected override val subDirNames: List[String] = null

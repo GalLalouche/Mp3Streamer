@@ -5,12 +5,12 @@ import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon._
-import common.io.{DirectoryRef, IOFile}
+import common.io.IODirectory
 import common.rich.RichFuture
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.MoreTraverse._
-import models.{MusicFinder, Song}
+import models.{IOMusicFinder, Song}
 import org.joda.time.Duration
 import rx.lang.scala.Observable
 
@@ -19,7 +19,7 @@ import scalaz.std.{FutureInstances, ListInstances}
 import scalaz.syntax.ToTraverseOps
 
 private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReconStorage: AlbumReconStorage)(
-    implicit c: Configuration, mf: MusicFinder)
+    implicit c: Configuration, mf: IOMusicFinder)
     extends FutureInstances with ToTraverseOps with ListInstances {
   private val log = c.logger.verbose _
   private val meta = new MbArtistReconciler
@@ -68,16 +68,16 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
 }
 
 object NewAlbumsRetriever {
-  private def dirToAlbum(dir: DirectoryRef)(implicit mf: MusicFinder): Option[Album] = dir.files
+  private def dirToAlbum(dir: IODirectory)(implicit mf: IOMusicFinder): Option[Album] = dir.files
       .find(f => f.extension |> mf.extensions)
-      .map(_.asInstanceOf[IOFile].file)
+      .map(_.file)
       .map(Song(_).release)
 
   def main(args: Array[String]): Unit = {
     implicit val c = StandaloneConfig
     import c._
     val artist: Artist = Artist("At the Gates")
-    def cacheForArtist(a: Artist)(implicit mf: MusicFinder): ArtistLastYearCache =
+    def cacheForArtist(a: Artist)(implicit mf: IOMusicFinder): ArtistLastYearCache = {
       mf.genreDirs
           .flatMap(_.deepDirs)
           .find(_.name.toLowerCase == a.name.toLowerCase)
@@ -85,6 +85,7 @@ object NewAlbumsRetriever {
           .mapTo(dirToAlbum)
           .get
           .mapTo(Seq.apply(_) |> ArtistLastYearCache.from)
+    }
     def findNewAlbums(a: Artist): Future[Seq[NewAlbum]] = {
       val artistReconciler: ReconcilerCacher[Artist] =
         new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler())

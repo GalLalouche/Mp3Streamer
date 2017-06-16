@@ -5,11 +5,10 @@ import common.rich.path.Directory
 
 /** Can be extended to override its values in tests */
 class IOMusicFinder extends MusicFinder {
+	override type D = IODirectory
 	override val dir = IODirectory("d:/media/music")
 	override protected val subDirNames = List("Rock", "New Age", "Classical", "Metal", "Jazz")
 	override val extensions = Set("mp3", "flac")
-	override def genreDirs: Seq[IODirectory] = super.genreDirs.asInstanceOf[Seq[IODirectory]]
-	def getSongFilePathsInDir(d: Directory): Seq[String] = super.getSongFilePathsInDir(new IODirectory(d))
 }
 
 /** The actual locations, as opposed to mocked ones. This is used by scripts as well as the real controllers. */

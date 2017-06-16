@@ -27,7 +27,8 @@ class MetadataCacher(saver: JsonableSaver)(implicit c: Configuration) extends Si
   private val mf = c.mf
 
   private def getDirectoryInfo(d: DirectoryRef, onParsingCompleted: () => Unit): DirectoryInfo = {
-    val songs = mf getSongFilePathsInDir d map parseSong
+    // TODO ugly casting
+    val songs = mf getSongFilePathsInDir d.asInstanceOf[mf.D] map parseSong
     val album = songs.head.album
     onParsingCompleted()
     DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))

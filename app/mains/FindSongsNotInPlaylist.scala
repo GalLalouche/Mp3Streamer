@@ -2,7 +2,6 @@ package mains
 
 import java.io.File
 
-import common.io.IOFile
 import common.rich.RichT.richT
 import common.rich.path.RichFile._
 import models.IOMusicFinder
@@ -14,7 +13,7 @@ object FindSongsNotInPlaylist {
     override val extensions = Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
   }
   def main(args: Array[String]): Unit = {
-    val file = musicFiles.dir.addFile("playlist.m3u8").asInstanceOf[IOFile].file
+    val file = musicFiles.dir.addFile("playlist.m3u8").file
     if (new Duration(System.currentTimeMillis() - file.lastModified()).getStandardHours > 1)
       throw new IllegalStateException("Please update the playlist file.")
     val playlistSongs = file // UTF-8 helps deal with Hebrew songs
