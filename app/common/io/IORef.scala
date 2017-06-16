@@ -16,9 +16,10 @@ private[this] object FileUtils {
 }
 /** For production; actual files on the disk */
 class IOFile(val file: File) extends FileRef {
+  override type F = IOFile
   private lazy val rich = RichFile(file)
   override def bytes: Array[Byte] = rich.bytes
-  override def write(bs: Array[Byte]): IOFile = {
+  override def write(bs: Array[Byte]) = {
     rich write bs
     this
   }
@@ -26,7 +27,7 @@ class IOFile(val file: File) extends FileRef {
     rich write s
     this
   }
-  override def appendLine(line: String): FileRef = {
+  override def appendLine(line: String) = {
     rich appendLine line
     this
   }

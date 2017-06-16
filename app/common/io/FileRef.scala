@@ -21,10 +21,11 @@ private final class TempRef(dir: DirectoryRef) extends PathRef {
 
 /** must exist */
 trait FileRef extends PathRef {
+  type F <: FileRef
   def bytes: Array[Byte]
-  def write(s: String): FileRef
-  def write(bs: Array[Byte]): FileRef
-  def appendLine(line: String): FileRef
+  def write(s: String): F
+  def write(bs: Array[Byte]): F
+  def appendLine(line: String): F
   def readAll: String
   final def lines: Seq[String] = {
     val content = readAll

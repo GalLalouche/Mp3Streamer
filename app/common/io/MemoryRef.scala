@@ -1,11 +1,12 @@
 package common.io
 
-import java.time.{Clock, LocalDateTime, ZoneOffset}
+import java.time.LocalDateTime
 
 import scala.collection.mutable
 
 /** For testing; keeps the file in memory. Faster, and no need to clean up afterwards */
 private class MemoryFile(parent: MemoryDir, val name: String) extends FileRef {
+  override type F = MemoryFile
   private var content: String = ""
   private var lastUpdatedTime: LocalDateTime = _
   touch()
@@ -13,7 +14,7 @@ private class MemoryFile(parent: MemoryDir, val name: String) extends FileRef {
     lastUpdatedTime = LocalDateTime.now
   }
   override def bytes: Array[Byte] = content.getBytes
-  override def write(bs: Array[Byte]): FileRef = {
+  override def write(bs: Array[Byte]) = {
     write(new String(bs))
   }
   override def write(s: String) = {
@@ -21,7 +22,7 @@ private class MemoryFile(parent: MemoryDir, val name: String) extends FileRef {
     touch()
     this
   }
-  override def appendLine(line: String): FileRef = {
+  override def appendLine(line: String) = {
     content += line
     touch()
     this
