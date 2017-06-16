@@ -40,14 +40,17 @@ trait FileRef extends PathRef {
   def lastModified: LocalDateTime
 }
 
-trait DirectoryRef extends PathRef {
-  def addFile(name: String): FileRef
-  def getFile(name: String): Option[FileRef]
-  def addSubDir(name: String): DirectoryRef
-  def getDir(name: String): Option[DirectoryRef]
-  def dirs: Seq[DirectoryRef]
-  def files: Seq[FileRef]
-  def deepDirs: Seq[DirectoryRef] = dirs ++ (dirs flatMap (_.deepDirs))
-  def deepFiles: Seq[FileRef] = files ++ (dirs flatMap (_.deepFiles))
+trait DirectoryRef extends PathRef { self: DirectoryRef =>
+  type F <: FileRef
+  // F-bounded type parameter magic
+  type D <: (DirectoryRef { type D = self.D; type F = self.F })
+  def addFile(name: String): F
+  def getFile(name: String): Option[F]
+  def addSubDir(name: String): D
+  def getDir(name: String): Option[D]
+  def dirs: Seq[D]
+  def files: Seq[F]
+  def deepDirs: Seq[D] = dirs ++ (dirs flatMap (_.deepDirs))
+  def deepFiles: Seq[F] = files ++ (dirs flatMap (_.deepFiles))
   def lastModified: LocalDateTime
 }

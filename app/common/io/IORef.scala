@@ -38,20 +38,19 @@ class IOFile(val file: File) extends FileRef {
 }
 
 class IODirectory(val dir: Directory) extends DirectoryRef {
+  override type F = IOFile
+  override type D = IODirectory
   def this(path: String) = this(Directory(path))
-  override def addFile(name: String): FileRef = new IOFile(dir addFile name)
+  override def addFile(name: String) = new IOFile(dir addFile name)
   private def optionalFile(name: String) = Some(new File(dir.dir, name)).filter(_.exists)
-  override def getDir(name: String): Option[IODirectory] =
+  override def getDir(name: String) =
     optionalFile(name).filter(_.isDirectory).map(e => new IODirectory(new Directory(e)))
-  override def addSubDir(name: String): IODirectory = new IODirectory(dir addSubDir name)
-  override def getFile(name: String): Option[IOFile] = optionalFile(name).map(new IOFile(_))
-  override def path: String = dir.path
-  override def name: String = dir.name
-  override def dirs: Seq[IODirectory] = dir.dirs.map(new IODirectory(_))
-  override def files: Seq[IOFile] = dir.files.map(new IOFile(_))
-  // casting is stupid :|
-  override def deepDirs: Seq[IODirectory] = super.deepDirs.asInstanceOf[Seq[IODirectory]]
-  override def deepFiles: Seq[IOFile] = super.deepFiles.asInstanceOf[Seq[IOFile]]
+  override def addSubDir(name: String) = new IODirectory(dir addSubDir name)
+  override def getFile(name: String) = optionalFile(name).map(new IOFile(_))
+  override def path = dir.path
+  override def name = dir.name
+  override def dirs = dir.dirs.map(new IODirectory(_))
+  override def files = dir.files.map(new IOFile(_))
   override def lastModified: LocalDateTime = dir.dir |> FileUtils.lastModified
 }
 object IODirectory {

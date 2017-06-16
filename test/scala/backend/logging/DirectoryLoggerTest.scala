@@ -9,7 +9,7 @@ import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
 class DirectoryLoggerTest extends FreeSpec with AuxSpecs with OneInstancePerTest with ShouldMatchers {
   private implicit val c = new TestConfiguration
   private val $ = new DirectoryLogger
-  val logsDir = c.rootDirectory addSubDir "logs"
+  private val logsDir = c.rootDirectory addSubDir "logs"
 
   "logging" in {
     $.info("foobar")

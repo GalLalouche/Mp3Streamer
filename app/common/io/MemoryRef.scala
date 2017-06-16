@@ -4,8 +4,7 @@ import java.time.LocalDateTime
 
 import scala.collection.mutable
 
-/** For testing; keeps the file in memory. Faster, and no need to clean up afterwards */
-private class MemoryFile(parent: MemoryDir, val name: String) extends FileRef {
+abstract sealed class MemoryFile(parent: MemoryDir, val name: String) extends FileRef {
   override type F = MemoryFile
   private var content: String = ""
   private var lastUpdatedTime: LocalDateTime = _
@@ -13,7 +12,7 @@ private class MemoryFile(parent: MemoryDir, val name: String) extends FileRef {
   private def touch() {
     lastUpdatedTime = LocalDateTime.now
   }
-  override def bytes: Array[Byte] = content.getBytes
+  override def bytes = content.getBytes
   override def write(bs: Array[Byte]) = {
     write(new String(bs))
   }
@@ -30,29 +29,33 @@ private class MemoryFile(parent: MemoryDir, val name: String) extends FileRef {
 
   override def readAll: String = content
   override def path: String = parent.path + "/" + name
-  override def lastModified: LocalDateTime = lastUpdatedTime
+  override def lastModified = lastUpdatedTime
 }
 
+private class MemoryFileImpl(parent: MemoryDir, name: String) extends MemoryFile(parent, name)
+
 abstract sealed class MemoryDir(val path: String) extends DirectoryRef {
+  override type F = MemoryFile
+  override type D = MemoryDir
   private val filesByName = mutable.Map[String, MemoryFile]()
-  private val dirsByName = mutable.Map[String, ConsDir]()
-  override def getFile(name: String): Option[FileRef] = filesByName get name
-  override def addFile(name: String): FileRef = getFile(name).getOrElse {
-    val $ = new MemoryFile(this, name)
+  private val dirsByName = mutable.Map[String, SubDir]()
+  override def getFile(name: String) = filesByName get name
+  override def addFile(name: String) = getFile(name).getOrElse {
+    val $ = new MemoryFileImpl(this, name)
     filesByName += ((name, $))
     $
   }
-  override def getDir(name: String): Option[DirectoryRef] = dirsByName get name
-  override def addSubDir(name: String): DirectoryRef = getDir(name).getOrElse {
-    val $ = new ConsDir(this, name)
+  override def getDir(name: String): Option[MemoryDir] = dirsByName get name
+  override def addSubDir(name: String) = getDir(name).getOrElse {
+    val $ = new SubDir(this, name)
     dirsByName += ((name, $))
     $
   }
   override val lastModified = LocalDateTime.now()
-  override def dirs: Seq[DirectoryRef] = dirsByName.values.toSeq.sortBy(_.name)
-  override def files: Seq[FileRef] = filesByName.values.toSeq.sortBy(_.name)
+  override def dirs: Seq[MemoryDir] = dirsByName.values.toSeq.sortBy(_.name)
+  override def files = filesByName.values.toSeq.sortBy(_.name)
 }
-private class ConsDir(parent: MemoryDir, val name: String) extends MemoryDir(parent.path + "/" + name)
+private class SubDir(parent: MemoryDir, val name: String) extends MemoryDir(parent.path + "/" + name)
 class MemoryRoot extends MemoryDir("/") {
   override def name: String = "/"
 }
