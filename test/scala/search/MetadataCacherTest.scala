@@ -2,17 +2,13 @@ package search
 
 import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
-import backend.configs.TestConfiguration
+import backend.configs.{FakeMusicFinder, TestConfiguration}
 import common.io.{JsonableSaver, MemoryDir, MemoryRoot}
 import common.rich.RichFuture._
 import common.{AuxSpecs, Jsonable}
-import models.{Album, Artist, MusicFinder, Song}
-import org.hamcrest.{BaseMatcher, Description}
-import org.mockito.Matchers._
-import org.mockito.Mockito._
+import models.{Artist, Song}
 import org.scalatest.matchers.{MatchResult, Matcher}
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FreeSpec, OneInstancePerTest}
 import rx.lang.scala.Observable
 import search.MetadataCacher.IndexUpdate
 import search.ModelsJsonable._
@@ -20,58 +16,36 @@ import search.ModelsJsonable._
 import scala.collection.mutable
 import scala.concurrent.{Await, Promise}
 
-class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSugar with Matchers with AuxSpecs {
+class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private implicit val root = new MemoryRoot
-  val songs = root.addSubDir("songs")
-  implicit val c = TestConfiguration().copy(_root = root, _mf = new MusicFinder {
-    override type D = MemoryDir
-    override val extensions = Set("mp3")
-    override val dir = songs
-    protected override val subDirNames: List[String] = null
-    override def albumDirs = dir.dirs
-  })
-  private val pathToSongs = mutable.HashMap[String, Song]()
-  private def fromSaver(saver: JsonableSaver) = new MetadataCacher(saver)(c) {
-    override protected def parseSong(filePath: String): Song = pathToSongs(filePath)
-  }
-  private def addSong(s: Song): MemoryDir = {
-    val dir = songs addSubDir s.album.title
-    val file = dir addFile s.file.getName
-    pathToSongs += file.path -> s
-    dir
+  private val songs = root.addSubDir("songs")
+  private val jsonableSaver = new JsonableSaver
+  private def verifyData[T: Jsonable : Manifest](xs: T*) {
+    jsonableSaver.loadArray[T].toSet shouldReturn xs.toSet
   }
 
-  def awaitCompletion($: Observable[Any]) = {
+  private val mf = new FakeMusicFinder(songs)
+  private implicit val c = TestConfiguration().copy(_root = root, _mf = mf)
+  private val $ = new MetadataCacher(jsonableSaver)(c) {
+    override protected def parseSong(filePath: String): Song = mf.findSong(filePath)
+  }
+
+  private def awaitCompletion($: Observable[Any]) = {
     val p = Promise[Unit]
     $.doOnCompleted(p success Unit) subscribe()
     import scala.concurrent.duration.DurationInt
     Await.ready(p.future, 1 second)
   }
+  private def indexAllAndWait() = {
+    awaitCompletion($.indexAll())
+  }
 
   "index" - {
-    val mockSaver = mock[JsonableSaver]
-    val $ = fromSaver(mockSaver)
-    // TODO replace mock with fake
-    def verifyData[T: Jsonable](xs: T*) {
-      def matches(t: TraversableOnce[T]): TraversableOnce[T] = argThat(
-        new BaseMatcher[TraversableOnce[T]] {
-          override def matches(item: scala.Any): Boolean = item match {
-            case s: TraversableOnce[_] => t.toSet == s.toSet
-            case _ => false
-          }
-          override def describeTo(description: Description) {
-            description.appendText(t.toString)
-          }
-        }
-      )
-      verify(mockSaver).save(matches(xs))(any(), any())
-    }
-
     "all" in {
       val album = Models.mockAlbum()
       val song = Models.mockSong(album = album)
-      addSong(song)
-      awaitCompletion($.indexAll())
+      mf.addSong(song)
+      indexAllAndWait()
       verifyData(song)
       verifyData(album)
       verifyData(Artist(album.artistName, Set(album)))
@@ -80,9 +54,9 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
     "no album duplicates" in {
       val song1 = Models.mockSong(title = "song1", album = album)
       val song2 = Models.mockSong(title = "song2", album = album)
-      addSong(song1)
-      addSong(song2)
-      awaitCompletion($.indexAll())
+      mf.addSong(song1)
+      mf.addSong(song2)
+      indexAllAndWait()
       verifyData(album)
     }
     "no artist duplicates" in {
@@ -90,9 +64,9 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
       val album2 = Models.mockAlbum(title = "a2")
       val song1 = Models.mockSong(title = "song1", album = album1)
       val song2 = Models.mockSong(title = "song2", album = album2)
-      addSong(song1)
-      addSong(song2)
-      awaitCompletion($.indexAll())
+      mf.addSong(song1)
+      mf.addSong(song2)
+      indexAllAndWait()
       verifyData(Artist(song1.artistName, Set(album1, album2)))
     }
     "with sink" in {
@@ -100,8 +74,8 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
       val album2 = Models.mockAlbum(title = "a2")
       val song1 = Models.mockSong(title = "song1", album = album1)
       val song2 = Models.mockSong(title = "song2", album = album2)
-      addSong(song1)
-      addSong(song2)
+      mf.addSong(song1)
+      mf.addSong(song2)
       val q = new LinkedBlockingQueue[IndexUpdate]()
       $.indexAll().subscribe(onNext = q put _)
       def matchWithIndices(current: Int, total: Int) = new Matcher[IndexUpdate] {
@@ -118,53 +92,52 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
   }
 
   "incremental (integration)" in {
-    // it's a pain in the ass to test for updates using mocks
-    val saver = new JsonableSaver
-    val $ = fromSaver(saver)
     val album1 = Models.mockAlbum(title = "album1")
     val song1 = Models.mockSong(title = "song1", album = album1, artistName = "artist1")
-    $.!(addSong(song1)).get
-    saver.loadArray[Song] shouldReturn Seq(song1)
-    saver.loadArray[Album] shouldReturn Seq(album1)
-    saver.loadArray[Artist] shouldReturn Seq(Artist("artist1", Set(album1)))
+    $.!(mf.addSong(song1)).get
+    verifyData(song1)
+    verifyData(album1)
+    verifyData(Artist("artist1", Set(album1)))
     val album2 = Models.mockAlbum(title = "album2")
     val song2 = Models.mockSong(title = "song2", album = album2, artistName = "artist1")
-    $.!(addSong(song2)).get
+    $.!(mf.addSong(song2)).get
 
-    saver.loadArray[Song].toSet shouldReturn Set(song1, song2)
-    saver.loadArray[Album].toSet shouldReturn Set(album1, album2)
-    saver.loadArray[Artist].toSet shouldReturn Set(Artist("artist1", Set(album1, album2)))
+    verifyData(song1, song2)
+    verifyData(album1, album2)
+    verifyData(Artist("artist1", Set(album1, album2)))
     val album3 = Models.mockAlbum(title = "album3")
     val song3 = Models.mockSong(title = "song3", album = album3, artistName = "artist2")
-    $.!(addSong(song3)).get
-    saver.loadArray[Song].toSet shouldReturn Set(song1, song2, song3)
-    saver.loadArray[Album].toSet shouldReturn Set(album1, album2, album3)
-    saver.loadArray[Artist].toSet shouldReturn Set(Artist("artist1", Set(album1, album2)), Artist("artist2", Set(album3)))
+    $.!(mf.addSong(song3)).get
+    verifyData(song1, song2, song3)
+    verifyData(album1, album2, album3)
+    verifyData(Artist("artist1", Set(album1, album2)), Artist("artist2", Set(album3)))
   }
 
   "quickRefresh" in {
+    def quickRefreshAndWait() = awaitCompletion($.quickRefresh())
     // setup
-    val saver = new JsonableSaver
-    val $ = fromSaver(saver)
     val album1 = Models.mockAlbum(title = "album1")
     val song1 = Models.mockSong(title = "song1", album = album1, artistName = "artist1")
-    addSong(song1)
-    awaitCompletion($.quickRefresh())
-    saver.loadArray[Song] shouldReturn Seq(song1)
-    saver.loadArray[Album] shouldReturn Seq(album1)
-    saver.loadArray[Artist] shouldReturn Seq(Artist("artist1", Set(album1)))
+    mf.addSong(song1)
+
+    quickRefreshAndWait()
+
+    verifyData(song1)
+    verifyData(album1)
+    verifyData(Artist("artist1", Set(album1)))
 
     // song shouldn't be found because it belongs to an album that was already parsed
     val hiddenSong = Models.mockSong(album = album1, artistName = song1.artistName)
-    addSong(hiddenSong)
+    mf.addSong(hiddenSong)
     Thread sleep 1
     val album2 = Models.mockAlbum(title = "album2")
     val song2 = Models.mockSong(title = "song2", album = album2, artistName = "artist1")
-    addSong(song2)
+    mf.addSong(song2)
 
-    awaitCompletion($.quickRefresh())
-    saver.loadArray[Song].toSet shouldReturn Set(song1, song2)
-    saver.loadArray[Album].toSet shouldReturn Set(album1, album2)
-    saver.loadArray[Artist].toSet shouldReturn Set(Artist("artist1", Set(album1, album2)))
+    quickRefreshAndWait()
+
+    verifyData(song1, song2)
+    verifyData(album1, album2)
+    verifyData(Artist("artist1", Set(album1, album2)))
   }
 }
