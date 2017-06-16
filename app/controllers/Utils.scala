@@ -15,7 +15,7 @@ import common.RichJson._
 import scala.concurrent.ExecutionContext
 
 private[controllers] object Utils {
-  implicit val config = new RealConfig {
+  implicit val config: RealConfig = new RealConfig {
     override implicit val ec: ExecutionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
     override implicit val logger: Logger =
       new CompositeLogger(new ConsoleLogger with FilteringLogger {

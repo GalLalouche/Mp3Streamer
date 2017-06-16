@@ -3,6 +3,7 @@ package search
 import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
 import backend.configs.{Configuration, TestConfiguration}
+import common.rich.RichFuture._
 import common.io.{JsonableSaver, MemoryDir, MemoryRoot}
 import common.{AuxSpecs, Jsonable}
 import models.{Album, Artist, MusicFinder, Song}
@@ -30,10 +31,10 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
     override def albumDirs = dir.dirs
   })
   private val pathToSongs = mutable.HashMap[String, Song]()
-  private def fromSaver(saver: JsonableSaver)(implicit c: Configuration) = new MetadataCacher(saver) {
+  private def fromSaver(saver: JsonableSaver) = new MetadataCacher(saver)(c) {
     override protected def parseSong(filePath: String): Song = pathToSongs(filePath)
   }
-  private def addSong(s: Song) = {
+  private def addSong(s: Song): MemoryDir = {
     val dir = songs addSubDir s.album.title
     val file = dir addFile s.file.getName
     pathToSongs += file.path -> s
@@ -122,20 +123,20 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with MockitoSu
     val $ = fromSaver(saver)
     val album1 = Models.mockAlbum(title = "album1")
     val song1 = Models.mockSong(title = "song1", album = album1, artistName = "artist1")
-    $(addSong(song1))
+    $.!(addSong(song1).asInstanceOf[$.D]).get
     saver.loadArray[Song] shouldReturn Seq(song1)
     saver.loadArray[Album] shouldReturn Seq(album1)
     saver.loadArray[Artist] shouldReturn Seq(Artist("artist1", Set(album1)))
     val album2 = Models.mockAlbum(title = "album2")
     val song2 = Models.mockSong(title = "song2", album = album2, artistName = "artist1")
-    $(addSong(song2))
+    $.!(addSong(song2).asInstanceOf[$.D]).get
 
     saver.loadArray[Song].toSet shouldReturn Set(song1, song2)
     saver.loadArray[Album].toSet shouldReturn Set(album1, album2)
     saver.loadArray[Artist].toSet shouldReturn Set(Artist("artist1", Set(album1, album2)))
     val album3 = Models.mockAlbum(title = "album3")
     val song3 = Models.mockSong(title = "song3", album = album3, artistName = "artist2")
-    $(addSong(song3))
+    $.!(addSong(song3).asInstanceOf[$.D]).get
     saver.loadArray[Song].toSet shouldReturn Set(song1, song2, song3)
     saver.loadArray[Album].toSet shouldReturn Set(album1, album2, album3)
     saver.loadArray[Artist].toSet shouldReturn Set(Artist("artist1", Set(album1, album2)), Artist("artist2", Set(album3)))

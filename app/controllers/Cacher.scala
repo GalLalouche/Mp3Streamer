@@ -2,7 +2,7 @@ package controllers
 
 import backend.logging.LoggingLevel
 import common.RichJson._
-import common.io.DirectoryRef
+import common.io.IODirectory
 import common.rich.func.MoreMonadPlus._
 import controllers.websockets.WebSocketController
 import play.api.libs.json.{JsObject, JsValue}
@@ -11,7 +11,7 @@ import rx.lang.scala.Observable
 import search.MetadataCacher
 import search.MetadataCacher.IndexUpdate
 
-import scala.concurrent.Promise
+import scala.concurrent.{Future, Promise}
 import scalaz.syntax.ToBindOps
 
 /** used for running manual commands from the client side */
@@ -47,7 +47,7 @@ object Cacher extends WebSocketController
     Ok(views.html.refresh())
   }
 
-  def newDir(d: DirectoryRef) = cacher ! d
+  def newDir(d: IODirectory): Future[Unit] = cacher ! d.asInstanceOf[cacher.D]
   def forceRefresh() = Action {
     toRefreshStatus(cacher.indexAll())
   }

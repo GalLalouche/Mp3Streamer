@@ -5,7 +5,7 @@ import common.rich.path.Directory
 
 /** Can be extended to override its values in tests */
 class IOMusicFinder extends MusicFinder {
-	override type D = IODirectory
+	override final type D = IODirectory
 	override val dir = IODirectory("d:/media/music")
 	override protected val subDirNames = List("Rock", "New Age", "Classical", "Metal", "Jazz")
 	override val extensions = Set("mp3", "flac")

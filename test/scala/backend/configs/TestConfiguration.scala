@@ -4,7 +4,7 @@ import java.net.HttpURLConnection
 
 import backend.Url
 import backend.logging.{Logger, StringBuilderLogger}
-import common.io.MemoryRoot
+import common.io.{MemoryDir, MemoryRoot}
 import models.MusicFinder
 import org.jsoup.nodes.Document
 
