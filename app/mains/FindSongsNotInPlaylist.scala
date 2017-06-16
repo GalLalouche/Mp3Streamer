@@ -2,18 +2,16 @@ package mains
 
 import java.io.File
 
-import common.io.{IODirectory, IOFile}
+import common.io.IOFile
 import common.rich.RichT.richT
 import common.rich.path.RichFile._
-import models.MusicFinder
+import models.IOMusicFinder
 import org.joda.time.Duration
 
 // finds songs that are in the music directory but are not saved in the playlist file
 object FindSongsNotInPlaylist {
-  val musicFiles = new MusicFinder {
-    val dir = IODirectory("D:/Media/Music")
-    protected val subDirNames = List("Metal", "Rock", "Classical", "New Age", "Jazz")
-    val extensions = Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
+  val musicFiles = new IOMusicFinder {
+    override val extensions = Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
   }
   def main(args: Array[String]): Unit = {
     val file = musicFiles.dir.addFile("playlist.m3u8").asInstanceOf[IOFile].file
