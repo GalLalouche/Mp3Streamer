@@ -43,6 +43,8 @@ $(function () {
   }
 
   function showLinks(externalLinks, debugLink) {
+    artistReconBox.val("")
+    albumReconBox.val("")
     externalDiv.html("")
     $.each(externalLinks, (entityName, externalLinksForEntity) => {
       const isValid = externalLinksForEntity.timestamp
