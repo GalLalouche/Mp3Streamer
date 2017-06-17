@@ -23,25 +23,18 @@ object Cacher extends WebSocketController
     "currentDir" -> u.dir.name))
   import Utils.config
   private val cacher = MetadataCacher.create
-  // TODO move this parent if the need arise, i.e., there's more than 1 use.
-  // TODO bah, state! this should be refactored to somehow extract an observable from a blocking queue or something
-  // will be fulfilled when a new WebSocket connection is made
-  private var connectionPromise: Promise[Unit] = _
   private def toRefreshStatus(o: Observable[IndexUpdate]) = {
-    connectionPromise = Promise()
     config.logger.log("Awaiting connection", LoggingLevel.Verbose)
-    Observable.from(connectionPromise.future)
-        .>>(o)
-        .map(toJson).map(_.toString).doOnCompleted {
+    o.map(toJson).map(_.toString).doOnCompleted {
       config.logger.log("Finished caching", LoggingLevel.Verbose)
       Player.update()
       broadcast("Reloading searcher")
-      Searcher.! onComplete { _ =>
+      Searcher.! onComplete {_ =>
         broadcast("Finished")
         Thread.sleep(1000)
         closeConnections()
       }
-    } subscribe { e =>
+    } subscribe {e =>
       broadcast(e)
     }
     Ok(views.html.refresh())
@@ -53,13 +46,5 @@ object Cacher extends WebSocketController
   }
   def quickRefresh() = Action {
     toRefreshStatus(cacher.quickRefresh())
-  }
-  override protected def onConnection(): Unit = {
-    Option(connectionPromise).foreach { p =>
-      if (p.isCompleted)
-        config.logger.log("Can't complete promise again!", LoggingLevel.Warn)
-      else
-        p.success(())
-    }
   }
 }
