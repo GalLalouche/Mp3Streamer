@@ -4,7 +4,7 @@ import java.net.HttpURLConnection
 
 import backend.Url
 import backend.logging.{Logger, StringBuilderLogger}
-import common.io.{MemoryDir, MemoryRoot}
+import common.io.{MemoryDir, MemoryRoot, MemorySystem}
 import models.MusicFinder
 import org.jsoup.nodes.Document
 
@@ -15,17 +15,18 @@ case class TestConfiguration(private val _ec: ExecutionContext = new ExecutionCo
                                override def reportFailure(cause: Throwable): Unit = ???
                                override def execute(runnable: Runnable): Unit = runnable.run()
                              },
-                             private val _mf: MusicFinder {type D = MemoryDir} = null,
-                             private val _documentDownloader: Url => Document = e => ???,
-                             private val _httpTransformer: HttpURLConnection => HttpURLConnection = e => ???,
+                             private val _mf: MusicFinder {type S = MemorySystem} = null,
+                             private val _documentDownloader: Url => Document = _ => ???,
+                             private val _httpTransformer: HttpURLConnection => HttpURLConnection = _ => ???,
                              private val _root: MemoryRoot = new MemoryRoot)
     extends NonPersistentConfig {
-  override final type D = MemoryDir
+  override final type S = MemorySystem
   override implicit val ec: ExecutionContext = _ec
   override implicit val mf = _mf
   override def downloadDocument(url: Url): Future[Document] = Future successful _documentDownloader(url)
   override def connect(http: HttpURLConnection): Future[HttpURLConnection] = Future successful _httpTransformer(http)
   override implicit val logger: Logger = new StringBuilderLogger(TestConfiguration.loggingHistory)
+  override implicit lazy val rootDirectory: MemoryRoot = _root
 }
 
 object TestConfiguration {

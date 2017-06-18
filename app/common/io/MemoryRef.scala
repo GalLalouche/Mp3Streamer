@@ -4,8 +4,17 @@ import java.time.LocalDateTime
 
 import scala.collection.mutable
 
-abstract sealed class MemoryFile(parent: MemoryDir, val name: String) extends FileRef {
+trait MemorySystem extends RefSystem {
+  override type S = MemorySystem
+  override type P = MemoryPath
   override type F = MemoryFile
+  override type D = MemoryDir
+}
+trait MemoryPath extends PathRef {
+  override type S = MemorySystem
+}
+
+abstract class MemoryFile(val parent: MemoryDir, val name: String) extends FileRef with MemoryPath {
   private var content: String = ""
   private var lastUpdatedTime: LocalDateTime = _
   touch()
@@ -34,9 +43,7 @@ abstract sealed class MemoryFile(parent: MemoryDir, val name: String) extends Fi
 
 private class MemoryFileImpl(parent: MemoryDir, name: String) extends MemoryFile(parent, name)
 
-abstract sealed class MemoryDir(val path: String) extends DirectoryRef {
-  override type F = MemoryFile
-  override type D = MemoryDir
+abstract sealed class MemoryDir(val path: String) extends DirectoryRef with MemoryPath {
   private val filesByName = mutable.Map[String, MemoryFile]()
   private val dirsByName = mutable.Map[String, SubDir]()
   override def getFile(name: String) = filesByName get name

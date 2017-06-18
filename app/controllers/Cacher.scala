@@ -3,7 +3,6 @@ package controllers
 import backend.logging.LoggingLevel
 import common.RichJson._
 import common.io.IODirectory
-import common.rich.func.MoreMonadPlus._
 import controllers.websockets.WebSocketController
 import play.api.libs.json.{JsObject, JsValue}
 import play.api.mvc.Action
@@ -11,7 +10,7 @@ import rx.lang.scala.Observable
 import search.MetadataCacher
 import search.MetadataCacher.IndexUpdate
 
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.Future
 import scalaz.syntax.ToBindOps
 
 /** used for running manual commands from the client side */

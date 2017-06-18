@@ -6,7 +6,7 @@ import backend.configs.{Configuration, RealConfig}
 import common.Jsonable
 import common.concurrency.SimpleTypedActor
 import common.ds.{Collectable, IndexedSet}
-import common.io.{DirectoryRef, IODirectory, JsonableSaver}
+import common.io._
 import models._
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
@@ -20,8 +20,9 @@ import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
 // Possible source of bugs: indexAll and apply(DirectoryRef) work on different threads. This solution is forced
 // due to type erasure.
-class MetadataCacher[Dir <: DirectoryRef](saver: JsonableSaver)(implicit val c: Configuration {type D = Dir})
-    extends OptionInstances with ListInstances with AnyValInstances with ToTraverseOps with FutureInstances with ToBindOps {
+class MetadataCacher[Sys <: RefSystem](saver: JsonableSaver)(implicit val c: Configuration {type S = Sys})
+    extends OptionInstances with ListInstances with AnyValInstances
+        with ToTraverseOps with FutureInstances with ToBindOps {
   import MetadataCacher._
   private sealed trait UpdateType {
     def apply(): Observable[IndexUpdate]
@@ -47,7 +48,7 @@ class MetadataCacher[Dir <: DirectoryRef](saver: JsonableSaver)(implicit val c: 
       }
     }
   }
-  private case class UpdateDir(dir: Dir) extends UpdateType {
+  private case class UpdateDir(dir: Sys#D) extends UpdateType {
     override def apply(): Observable[IndexUpdate] =
       Observable.from(Future {
         val info = getDirectoryInfo(dir, () => ())
@@ -59,7 +60,7 @@ class MetadataCacher[Dir <: DirectoryRef](saver: JsonableSaver)(implicit val c: 
   }
 
   // TODO handle empty directories
-  private def getDirectoryInfo(d: Dir, onParsingCompleted: () => Unit): DirectoryInfo = {
+  private def getDirectoryInfo(d: Sys#D, onParsingCompleted: () => Unit): DirectoryInfo = {
     val songs = c.mf getSongFilePathsInDir d map c.mf.parseSong
     val album = songs.head.album
     onParsingCompleted()
@@ -71,12 +72,12 @@ class MetadataCacher[Dir <: DirectoryRef](saver: JsonableSaver)(implicit val c: 
 
   private def update(u: UpdateType): Observable[IndexUpdate] = Observable.from(updatingActor ! u).flatten
 
-  def processDirectory(dir: Dir): Future[Unit] = {
+  def processDirectory(dir: Sys#D): Future[Unit] = {
     import common.rich.RichObservable._
     update(UpdateDir(dir)).toFuture.>|(Unit)
   }
 
-  private def updateIndex(dirs: GenSeq[Dir], allInfoHandler: AllInfoHandler): Observable[IndexUpdate] = {
+  private def updateIndex(dirs: GenSeq[Sys#D], allInfoHandler: AllInfoHandler): Observable[IndexUpdate] = {
     val $ = ReplaySubject[IndexUpdate]
     Observable.apply[IndexUpdate](obs => {
       val totalSize = dirs.length
@@ -128,7 +129,7 @@ object MetadataCacher {
     def apply(artists: IndexedSet[Artist]): Unit
   }
 
-  def create(implicit c: RealConfig): MetadataCacher[IODirectory] = {
+  def create(implicit c: RealConfig): MetadataCacher[IOSystem] = {
     import c._
     new MetadataCacher(new JsonableSaver)(c)
   }

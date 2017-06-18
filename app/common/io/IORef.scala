@@ -6,7 +6,7 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.time.{Clock, LocalDateTime}
 
 import common.rich.RichT._
-import common.rich.path.{Directory, RichFile}
+import common.rich.path.{Directory, RichFile, RichPath}
 
 private[this] object FileUtils {
   private val currentZone = Clock.systemDefaultZone().getZone
@@ -14,9 +14,22 @@ private[this] object FileUtils {
     LocalDateTime.ofInstant(Files.readAttributes(f.toPath, classOf[BasicFileAttributes]).lastModifiedTime().toInstant, currentZone)
   }
 }
-/** For production; actual files on the disk */
-class IOFile(val file: File) extends FileRef {
+
+trait IOSystem extends RefSystem {
+  override type S = IOSystem
+  override type P = IOPath
   override type F = IOFile
+  override type D = IODirectory
+}
+
+abstract class IOPath(rp: RichPath) extends PathRef {
+  override type S = IOSystem
+  override def path = rp.path
+  override def name = rp.name
+}
+
+/** For production; actual files on the disk */
+class IOFile(val file: File) extends IOPath(RichPath richPath file) with FileRef {
   private lazy val rich = RichFile(file)
   override def bytes: Array[Byte] = rich.bytes
   override def write(bs: Array[Byte]) = {
@@ -37,9 +50,7 @@ class IOFile(val file: File) extends FileRef {
   override def lastModified: LocalDateTime = file |> FileUtils.lastModified
 }
 
-class IODirectory(val dir: Directory) extends DirectoryRef {
-  override type F = IOFile
-  override type D = IODirectory
+class IODirectory(val dir: Directory) extends IOPath(dir) with DirectoryRef {
   def this(path: String) = this(Directory(path))
   override def addFile(name: String) = new IOFile(dir addFile name)
   private def optionalFile(name: String) = Some(new File(dir.dir, name)).filter(_.exists)

@@ -4,15 +4,14 @@ import java.time.LocalDateTime
 import java.util.concurrent.{Semaphore, TimeUnit, TimeoutException}
 
 import backend.configs.{NewThreatExecutionContext, TestConfiguration}
-import common.io.FileRef
+import common.io.MemoryFile
 import common.rich.collections.RichTraversableOnce._
 import org.scalatest.concurrent.TimeLimitedTests
-import org.scalatest.time.{Seconds, Span}
+import org.scalatest.time.{Second, Span}
 import org.scalatest.{FreeSpec, ShouldMatchers}
 
-/** A special kind of file that can block reads and writes. */
-private[this] class BlockFileRef(val f: FileRef) extends FileRef {
-  override type F = f.F
+/** A special kind of file that blocks on reads and writes. */
+private[this] class BlockFileRef(val f: MemoryFile) extends MemoryFile(f.parent, f.name) {
   private val lock = new Semaphore(0)
   private val changeLock = new Semaphore(0)
   def waitForChange(): Unit = {
@@ -60,12 +59,6 @@ private[this] class BlockFileRef(val f: FileRef) extends FileRef {
     lock.release()
     $
   }
-  override def name: String = {
-    lock.acquire()
-    val $ = f.name
-    lock.release()
-    $
-  }
   override def lastModified: LocalDateTime = {
     lock.acquire()
     val $ = f.lastModified
@@ -74,17 +67,19 @@ private[this] class BlockFileRef(val f: FileRef) extends FileRef {
   }
 }
 class FileLoggerTest extends FreeSpec with ShouldMatchers with TimeLimitedTests {
-  override val timeLimit = Span.apply(1, Seconds)
+  override val timeLimit = Span.apply(1, Second)
   private implicit val c = new TestConfiguration
-  private val file: FileRef = c.rootDirectory.addFile("foobar")
+  private val file = c.rootDirectory.addFile("foobar")
   private val $ = new FileLogger(file)
 
   "writing" - {
-    "foo" in {
+    "should write to file" in {
       $ info "foobar"
       file.lines.single should endWith("foobar")
     }
-    "blocking" in {
+    "should run in its own thread" in {
+      // this is tested by having a file that blocks on writing. If the writing isn't done in its
+      // own thread, this method will timeout since it won't reach the semaphore release command.
       val blockingFile = new BlockFileRef(file)
       val $ = new FileLogger(blockingFile)(NewThreatExecutionContext)
       $.info("foobar")

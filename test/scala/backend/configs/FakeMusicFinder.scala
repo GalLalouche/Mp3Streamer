@@ -1,12 +1,12 @@
 package backend.configs
 
-import common.io.{DirectoryRef, MemoryDir}
+import common.io.{DirectoryRef, MemoryDir, MemorySystem}
 import models.{MusicFinder, Song}
 
 import scala.collection.mutable
 
 class FakeMusicFinder(val dir: MemoryDir) extends MusicFinder {
-  override type D = MemoryDir
+  override type S = MemorySystem
   override val extensions = Set("mp3")
   protected override val subDirNames: List[String] = List("music")
   private val musicDir = dir addSubDir subDirNames.head

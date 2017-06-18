@@ -3,29 +3,28 @@ package common.io
 import java.time.LocalDateTime
 
 import common.rich.RichT._
+
+trait RefSystem { self =>
+  type S <: RefSystem
+  type P <: PathRef {type S = self.S}
+  type F <: FileRef {type S = self.S}
+  type D <: DirectoryRef {type S = self.S}
+}
 /** Either a file or a dir */
-abstract class PathRef {
+trait PathRef {
+  type S <: RefSystem
   def path: String
   def name: String
   override def toString: String = s"${this.simpleName}: $name"
 }
 
-/** a place holder for a directory */
-private final class TempRef(dir: DirectoryRef) extends PathRef {
-  throw new UnsupportedOperationException(s"This instance is only a placeholder for dir <$dir>")
-  override def path: String =
-    throw new UnsupportedOperationException(s"This instance is only a placeholder for dir <$dir>")
-  override def name: String =
-    throw new UnsupportedOperationException(s"This instance is only a placeholder for dir <$dir>")
-}
-
 /** must exist */
 trait FileRef extends PathRef {
-  type F <: FileRef
+  type S <: RefSystem
   def bytes: Array[Byte]
-  def write(s: String): F
-  def write(bs: Array[Byte]): F
-  def appendLine(line: String): F
+  def write(s: String): S#F
+  def write(bs: Array[Byte]): S#F
+  def appendLine(line: String): S#F
   def readAll: String
   final def lines: Seq[String] = {
     val content = readAll
@@ -41,16 +40,14 @@ trait FileRef extends PathRef {
 }
 
 trait DirectoryRef extends PathRef { self =>
-  type F <: FileRef
-  // F-bounded type parameter magic
-  type D <: DirectoryRef {type D = self.D; type F = self.F}
-  def addFile(name: String): F
-  def getFile(name: String): Option[F]
-  def addSubDir(name: String): D
-  def getDir(name: String): Option[D]
-  def dirs: Seq[D]
-  def files: Seq[F]
-  def deepDirs: Seq[D] = dirs ++ (dirs flatMap (_.deepDirs))
-  def deepFiles: Seq[F] = files ++ (dirs flatMap (_.deepFiles))
+  type S <: RefSystem
+  def addFile(name: String): S#F
+  def getFile(name: String): Option[S#F]
+  def addSubDir(name: String): S#D
+  def getDir(name: String): Option[S#D]
+  def dirs: Seq[S#D]
+  def files: Seq[S#F]
+  def deepDirs: Seq[S#D] = dirs ++ dirs.flatMap(_.deepDirs).asInstanceOf[Seq[S#D]]
+  def deepFiles: Seq[S#F] = files ++ dirs.flatMap(_.deepFiles).asInstanceOf[Seq[S#F]]
   def lastModified: LocalDateTime
 }
