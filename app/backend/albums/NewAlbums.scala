@@ -74,16 +74,6 @@ class NewAlbums(implicit c: Configuration)
         .map(_._1)
         .toFuture[Traversable]
         .consume(jsonableSaver save _)
-  def recent: Future[Seq[Album]] = {
-    // TODO move to Album.apply?
-    def toAlbum(d: c.mf.S#D): Album =
-      Reconcilable.SongExtractor(Song(new File(c.mf.getSongFilePathsInDir(d).head))).release
-    Future(c.mf.genreDirs
-        .flatMap(_.deepDirs)
-        .filter(e => c.mf.getSongFilePathsInDir(e).nonEmpty)
-        .sortBy(_.lastModified)(Ordering.by(-_.toEpochSecond(ZoneOffset.UTC)))
-        .map(toAlbum))
-  }
 }
 
 object NewAlbums {

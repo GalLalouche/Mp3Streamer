@@ -54,12 +54,4 @@ object Albums extends Controller with Debug
   def newAlbums = Action {
     Ok(views.html.new_albums())
   }
-
-  def recent = Action.async {
-    $.recent
-        .map(_.take(10)
-            .map(a => s"${a.artistName} - ${a.year} ${a.title}")
-            .mkString("\n")
-        ).map(Ok(_))
-  }
 }
