@@ -37,7 +37,7 @@ $(function() {
     obj.albums.forEach(processAlbum)
   }
 
-  $.get("albums", function(e) {
+  $.get("albums/", function(e) {
     e.forEach(addArtist)
   })
 

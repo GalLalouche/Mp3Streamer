@@ -52,12 +52,12 @@ GET        /debug/slow_refresh           controllers.Cacher.forceRefresh()
 GET        /debug/fast_refresh           controllers.Cacher.quickRefresh()
 
 # Albums
-GET        /albums/albums                controllers.Albums.albums
-GET        /albums/new                   controllers.Albums.newAlbums
-PUT        /albums/artist/remove         controllers.Albums.removeArtist
-PUT        /albums/artist/ignore         controllers.Albums.ignoreArtist
-PUT        /albums/album/remove          controllers.Albums.removeAlbum
-PUT        /albums/album/ignore          controllers.Albums.ignoreAlbum
+GET        /new_albums/index.html        controllers.NewAlbums.index
+GET        /new_albums/albums/           controllers.NewAlbums.albums
+PUT        /new_albums/artist/remove     controllers.NewAlbums.removeArtist
+PUT        /new_albums/artist/ignore     controllers.NewAlbums.ignoreArtist
+PUT        /new_albums/album/remove      controllers.NewAlbums.removeAlbum
+PUT        /new_albums/album/ignore      controllers.NewAlbums.ignoreAlbum
 
 # Recent
 GET        /recent/albums/               controllers.Recent.recent(amount: Int = 10)

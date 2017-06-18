@@ -19,7 +19,7 @@ import scalaz.syntax.ToFunctorOps
 
 /** A web interface to new albums finder. Displays new albums and can update the current file / ignoring policy. */
 //noinspection MutatorLikeMethodIsParameterless
-object Albums extends Controller with Debug
+object NewAlbums extends Controller with Debug
     with FutureInstances with ToFunctorOps {
   import Utils.config
   private val $ = new NewAlbums()
@@ -51,7 +51,7 @@ object Albums extends Controller with Debug
   def removeAlbum = updateNewAlbums(extractAlbum, $.removeAlbum)
   def ignoreAlbum = updateNewAlbums(extractAlbum, $.ignoreAlbum)
 
-  def newAlbums = Action {
+  def index = Action {
     Ok(views.html.new_albums())
   }
 }
