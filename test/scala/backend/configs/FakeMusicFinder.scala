@@ -1,6 +1,6 @@
 package backend.configs
 
-import common.io.{DirectoryRef, MemoryDir, MemorySystem}
+import common.io.{DirectoryRef, MemoryDir, MemoryFile, MemorySystem}
 import models.{MusicFinder, Song}
 
 import scala.collection.mutable
@@ -18,6 +18,5 @@ class FakeMusicFinder(val dir: MemoryDir) extends MusicFinder {
     pathToSongs += file.path -> s
     $
   }
-
-  override def parseSong(filePath: String): Song = pathToSongs(filePath)
+  override protected def parseSongInternal(f: MemoryFile) = pathToSongs(f.path)
 }

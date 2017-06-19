@@ -20,6 +20,6 @@ trait MusicFinder { self =>
     d.asInstanceOf[S#D].files.filter(f => extensions.contains(f.extension))
 
 
-  def parseSong(filePath: String): Song
-  def parseSong(f: FileRef): Song = parseSong(f.path)
+  protected def parseSongInternal(f: S#F): Song
+  def parseSong(f: FileRef): Song = parseSongInternal(f.asInstanceOf[S#F])
 }
