@@ -26,8 +26,8 @@ private class SongSelectorImpl(songs: IndexedSeq[File], musicFinder: IOMusicFind
   def followingSong(song: Song): Song =
     song.file.parent
         .mapTo(IODirectory.apply)
-        .mapTo(musicFinder.getSongFilePathsInDir)
-        .map(new File(_))
+        .mapTo(musicFinder.getSongFilesInDir)
+        .map(_.file)
         .fproduct(Song(_).track).map(_.swap).toMap
         .apply(song.track + 1)
         .mapTo(Song.apply)

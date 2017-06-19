@@ -61,7 +61,7 @@ class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration)
 
   // TODO handle empty directories
   private def getDirectoryInfo(d: DirectoryRef, onParsingCompleted: () => Unit): DirectoryInfo = {
-    val songs = c.mf getSongFilePathsInDir d map c.mf.parseSong
+    val songs = c.mf getSongFilesInDir d map c.mf.parseSong
     val album = songs.head.album
     onParsingCompleted()
     DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))

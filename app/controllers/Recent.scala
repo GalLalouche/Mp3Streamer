@@ -15,7 +15,7 @@ object Recent extends Controller {
   private def recentAlbums(amount: Int): Future[Seq[Album]] = {
     Future(mf.genreDirs
         .flatMap(_.deepDirs)
-        .filter(e => mf.getSongFilePathsInDir(e).nonEmpty)
+        .filter(e => mf.getSongFilesInDir(e).nonEmpty)
         .sortBy(_.lastModified)(Ordering.by(-_.toEpochSecond(ZoneOffset.UTC)))
         .map(_.dir)
         .map(Album.apply)

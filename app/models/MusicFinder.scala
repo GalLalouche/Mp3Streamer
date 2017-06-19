@@ -1,6 +1,6 @@
 package models
 
-import common.io.{DirectoryRef, RefSystem}
+import common.io.{DirectoryRef, FileRef, RefSystem}
 
 import scala.collection.GenSeq
 
@@ -15,9 +15,12 @@ trait MusicFinder { self =>
       .flatMap(_.deepDirs)
       .toVector
       .filter(_.files.exists(f => extensions.contains(f.extension)))
-  def getSongFilePaths: Seq[String] = albumDirs.par.flatMap(getSongFilePathsInDir).seq
-  def getSongFilePathsInDir(d: DirectoryRef): Seq[String] =
-    d.files.filter(f => extensions.contains(f.extension)).map(_.path)
+  def getSongFilePaths: Seq[String] = getSongFiles.map(_.path)
+  def getSongFiles: Seq[S#F] = albumDirs.par.flatMap(getSongFilesInDir).seq
+  def getSongFilesInDir(d: DirectoryRef): Seq[S#F] =
+    d.asInstanceOf[S#D].files.filter(f => extensions.contains(f.extension))
+
 
   def parseSong(filePath: String): Song
+  def parseSong(f: FileRef): Song = parseSong(f.path)
 }
