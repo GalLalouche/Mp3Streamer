@@ -24,8 +24,8 @@ object FindSongsNotInPlaylist {
         .map(_.toLowerCase.replaceAll("\\\\", "/"))
         .toSet
     println(s"playlist songs |${playlistSongs.size}|")
-    val realSongs = musicFiles.getSongFilePaths
-        .map(_.toLowerCase.replaceAll("\\\\", "/"))
+    val realSongs = musicFiles.getSongFiles
+        .map(_.path.toLowerCase.replaceAll("\\\\", "/"))
         .toSet
     println(s"actual songs |${realSongs.size}|")
     val playlistMissing = realSongs.diff(playlistSongs).toList.sorted

@@ -1,11 +1,12 @@
 package models
 
 import common.io.IODirectory
-import common.rich.path.{Directory, TempDirectory}
+import common.rich.path.TempDirectory
 import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 
 class MusicFinderTest extends FreeSpec with OneInstancePerTest with Matchers {
-  private val (tempDir, mf): (Directory, MusicFinder) = {
+  // TODO make work using memory dirs
+  private val (tempDir, mf) = {
     val tempDir = TempDirectory()
     val dirs = List("a", "b", "c")
     dirs foreach tempDir.addSubDir
@@ -19,7 +20,7 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with Matchers {
 
   "MusicFinder" - {
     "find nothing" - {
-      def verifyIsEmpty() = mf.getSongFilePaths shouldBe 'empty
+      def verifyIsEmpty() = mf.getSongFiles shouldBe 'empty
       "when subdirs are empty" in {
         tempDir.addSubDir("a").addSubDir("b").addSubDir("c")
         tempDir.addSubDir("b").addSubDir("b").addSubDir("c")
@@ -41,7 +42,7 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with Matchers {
     }
     "Find song" in {
       tempDir.addSubDir("a").addSubDir("b").addFile("foo.mp3")
-      mf.getSongFilePaths should contain((tempDir / """a/b/foo.mp3""").path)
+      mf.getSongFiles.map(_.file) should contain(tempDir / """a/b/foo.mp3""")
     }
   }
 }

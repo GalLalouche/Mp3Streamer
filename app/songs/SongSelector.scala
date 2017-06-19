@@ -41,7 +41,7 @@ object SongSelector
   /** A mutable-updateable wrapper of SongSelector */
   private class SongSelectorProxy(implicit c: RealConfig) extends SongSelector {
     def update(): Future[_] = {
-      val $ = Future(new SongSelectorImpl(c.mf.getSongFilePaths.toVector.map(new File(_)), c.mf))
+      val $ = Future(new SongSelectorImpl(c.mf.getSongFiles.toVector.map(_.file), c.mf))
       if (songSelector == null)
         songSelector = $
       else // don't override until complete

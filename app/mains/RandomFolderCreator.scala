@@ -22,7 +22,7 @@ import scalaz.syntax.{ToBindOps, ToTraverseOps}
 private object RandomFolderCreator extends
     ToBindOps with FutureInstances with ListInstances with ToTraverseOps {
   implicit val c = StandaloneConfig
-  private val songs = c.mf.getSongFilePaths.map(new File(_))
+  private val songs = c.mf.getSongFiles.map(_.file)
 
   private def createPlaylistFile(outputDir: Directory): Future[File] = Future {
     val files = outputDir.files
