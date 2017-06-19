@@ -62,7 +62,8 @@ abstract sealed class MemoryDir(val path: String) extends DirectoryRef with Memo
   override def dirs: Seq[MemoryDir] = dirsByName.values.toSeq.sortBy(_.name)
   override def files = filesByName.values.toSeq.sortBy(_.name)
 }
-private class SubDir(parent: MemoryDir, val name: String) extends MemoryDir(parent.path + "/" + name)
+private class SubDir(val parent: MemoryDir, val name: String) extends MemoryDir(parent.path + "/" + name)
 class MemoryRoot extends MemoryDir("/") {
   override def name: String = "/"
+  override def parent = throw new UnsupportedOperationException("MemoryRoot has no parent")
 }

@@ -26,6 +26,7 @@ abstract class IOPath(rp: RichPath) extends PathRef {
   override type S = IOSystem
   override def path = rp.path
   override def name = rp.name
+  override def parent = IODirectory(rp.parent)
 }
 
 /** For production; actual files on the disk */

@@ -16,6 +16,7 @@ trait PathRef {
   def path: String
   def name: String
   override def toString: String = s"${this.simpleName}: $name"
+  def parent: S#D
 }
 
 /** must exist */
