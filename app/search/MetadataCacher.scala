@@ -2,7 +2,7 @@ package search
 
 import java.time.{LocalDateTime, ZoneOffset}
 
-import backend.configs.{Configuration, RealConfig}
+import backend.configs.Configuration
 import common.Jsonable
 import common.concurrency.SimpleTypedActor
 import common.ds.{Collectable, IndexedSet}
@@ -20,7 +20,7 @@ import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
 // Possible source of bugs: indexAll and apply(DirectoryRef) work on different threads. This solution is forced
 // due to type erasure.
-class MetadataCacher[Sys <: RefSystem](saver: JsonableSaver)(implicit val c: Configuration {type S = Sys})
+class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration)
     extends OptionInstances with ListInstances with AnyValInstances
         with ToTraverseOps with FutureInstances with ToBindOps {
   import MetadataCacher._
@@ -48,7 +48,7 @@ class MetadataCacher[Sys <: RefSystem](saver: JsonableSaver)(implicit val c: Con
       }
     }
   }
-  private case class UpdateDir(dir: Sys#D) extends UpdateType {
+  private case class UpdateDir(dir: DirectoryRef) extends UpdateType {
     override def apply(): Observable[IndexUpdate] =
       Observable.from(Future {
         val info = getDirectoryInfo(dir, () => ())
@@ -60,7 +60,7 @@ class MetadataCacher[Sys <: RefSystem](saver: JsonableSaver)(implicit val c: Con
   }
 
   // TODO handle empty directories
-  private def getDirectoryInfo(d: Sys#D, onParsingCompleted: () => Unit): DirectoryInfo = {
+  private def getDirectoryInfo(d: DirectoryRef, onParsingCompleted: () => Unit): DirectoryInfo = {
     val songs = c.mf getSongFilePathsInDir d map c.mf.parseSong
     val album = songs.head.album
     onParsingCompleted()
@@ -72,12 +72,12 @@ class MetadataCacher[Sys <: RefSystem](saver: JsonableSaver)(implicit val c: Con
 
   private def update(u: UpdateType): Observable[IndexUpdate] = Observable.from(updatingActor ! u).flatten
 
-  def processDirectory(dir: Sys#D): Future[Unit] = {
+  def processDirectory(dir: DirectoryRef): Future[Unit] = {
     import common.rich.RichObservable._
     update(UpdateDir(dir)).toFuture.>|(Unit)
   }
 
-  private def updateIndex(dirs: GenSeq[Sys#D], allInfoHandler: AllInfoHandler): Observable[IndexUpdate] = {
+  private def updateIndex(dirs: GenSeq[DirectoryRef], allInfoHandler: AllInfoHandler): Observable[IndexUpdate] = {
     val $ = ReplaySubject[IndexUpdate]
     Observable.apply[IndexUpdate](obs => {
       val totalSize = dirs.length
@@ -129,7 +129,7 @@ object MetadataCacher {
     def apply(artists: IndexedSet[Artist]): Unit
   }
 
-  def create(implicit c: RealConfig): MetadataCacher[IOSystem] = {
+  def create(implicit c: Configuration): MetadataCacher = {
     import c._
     new MetadataCacher(new JsonableSaver)(c)
   }
