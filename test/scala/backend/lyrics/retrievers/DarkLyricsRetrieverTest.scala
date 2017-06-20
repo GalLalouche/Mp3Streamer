@@ -5,11 +5,11 @@ import search.FakeModelFactory
 class DarkLyricsRetrieverTest extends LyricsSpec {
   private val $ = new DarkLyricsRetriever
   "getUrl" in {
-    $.getUrl(FakeModelFactory.mockSong(artistName = "foo bar", albumName = "bazz qux", track = 5)) shouldReturn
+    $.getUrl(FakeModelFactory.song(artistName = "foo bar", albumName = "bazz qux", track = 5)) shouldReturn
         "http://www.darklyrics.com/lyrics/foobar/bazzqux.html#5"
   }
   "fromHtml" - {
-    def getHtml(trackNumber: Int) = $.fromHtml(getDocument("dark_lyrics.html"), FakeModelFactory.mockSong(track = trackNumber))
+    def getHtml(trackNumber: Int) = $.fromHtml(getDocument("dark_lyrics.html"), FakeModelFactory.song(track = trackNumber))
     "first song" in {
       verifyLyrics(getHtml(1),
         "<i>[Samples from the film \"The Dead\", an adaptation of James Joyce's short story from his book]</i>",

@@ -8,7 +8,7 @@ import scala.concurrent.duration.DurationInt
 
 class PlaylistStateTest extends FreeSpec with AuxSpecs {
   "jsonify and parse" in {
-    val $ = PlaylistState(Seq(FakeModelFactory.mockSong(), FakeModelFactory.mockSong()), 0, 100.seconds)
+    val $ = PlaylistState(Seq(FakeModelFactory.song(), FakeModelFactory.song()), 0, 100.seconds)
     val jsonable = PlaylistState.PlaylistStateJsonable
     jsonable.parse(jsonable.jsonify($)) shouldReturn $
   }
