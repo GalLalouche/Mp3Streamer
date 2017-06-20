@@ -5,7 +5,7 @@ import java.util.UUID
 
 import models.{Album, Artist, Song}
 
-object Models {
+object FakeModelFactory {
   def mockAlbum(dir: File = new File("./foobar"), title: String = "album", artistName: String = "artist",
                 year: Int = 2000) =
     new Album(new File("foobar").getAbsoluteFile, title = title, artistName = artistName, year = year)

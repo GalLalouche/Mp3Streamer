@@ -1,15 +1,15 @@
 package backend.lyrics.retrievers
 
-import search.Models
+import search.FakeModelFactory
 
 class DarkLyricsRetrieverTest extends LyricsSpec {
   private val $ = new DarkLyricsRetriever
   "getUrl" in {
-    $.getUrl(Models.mockSong(artistName = "foo bar", albumName = "bazz qux", track = 5)) shouldReturn
+    $.getUrl(FakeModelFactory.mockSong(artistName = "foo bar", albumName = "bazz qux", track = 5)) shouldReturn
         "http://www.darklyrics.com/lyrics/foobar/bazzqux.html#5"
   }
   "fromHtml" - {
-    def getHtml(trackNumber: Int) = $.fromHtml(getDocument("dark_lyrics.html"), Models.mockSong(track = trackNumber))
+    def getHtml(trackNumber: Int) = $.fromHtml(getDocument("dark_lyrics.html"), FakeModelFactory.mockSong(track = trackNumber))
     "first song" in {
       verifyLyrics(getHtml(1),
         "<i>[Samples from the film \"The Dead\", an adaptation of James Joyce's short story from his book]</i>",
