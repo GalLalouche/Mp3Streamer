@@ -10,12 +10,12 @@ class FakeModelFactory {
             year: Int = 2000) =
     new Album(new File("foobar").getAbsoluteFile, title = title, artistName = artistName, year = year)
   def song(file: String = s"./foobar/${UUID.randomUUID()}.mp3", title: String = "title", artistName: String = "artist",
-           albumName: String = "album", track: Int = 1, year: Int = 2000, bitrate: String = "320",
+           albumName: String = "album", track: Int = 1, year: Int = 2000, bitRate: String = "320",
            duration: Int = 3600, size: Long = 1000, album: Album = null, discNumber: Option[String] = None,
            trackGain: Option[Double] = None): Song = {
     val _album = album
     new Song(new File(file).getAbsoluteFile, title, artistName,
-      Option(album).map(_.title).getOrElse(albumName), track, year, bitrate, duration, size, discNumber, trackGain) {
+      Option(album).map(_.title).getOrElse(albumName), track, year, bitRate, duration, size, discNumber, trackGain) {
       override lazy val album = _album
     }
   }

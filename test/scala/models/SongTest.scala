@@ -16,7 +16,7 @@ class SongTest extends FreeSpec with AuxSpecs {
       $.albumName shouldReturn "Crimson"
       $.track shouldReturn 12
       $.year shouldReturn 2000
-      $.bitrate shouldReturn "192"
+      $.bitRate shouldReturn "192"
       $.duration shouldReturn 3
       $.size shouldReturn 75522L
       $.discNumber shouldReturn None

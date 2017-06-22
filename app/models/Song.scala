@@ -11,7 +11,7 @@ import org.jaudiotagger.tag.FieldKey
 import scala.collection.JavaConversions._
 
 case class Song(file: File, title: String, artistName: String, albumName: String,
-                track: Int, year: Int, bitrate: String, duration: Int, size: Long,
+                track: Int, year: Int, bitRate: String, duration: Int, size: Long,
                 discNumber: Option[String], trackGain: Option[Double]) {
   override def toString = s"$artistName - $title [$albumName #$track] ($year)"
   lazy val album = Album(dir = file.getParentFile, title = albumName, artistName = artistName, year = year)
@@ -42,7 +42,7 @@ object Song {
 
     new Song(file = file, title = tag.getFirst(FieldKey.TITLE), artistName = tag.getFirst(FieldKey.ARTIST),
       albumName = tag.getFirst(FieldKey.ALBUM), track = tag.getFirst(FieldKey.TRACK).toInt,
-      year = year, bitrate = header.getBitRate, duration = header.getTrackLength, size = file.length,
+      year = year, bitRate = header.getBitRate, duration = header.getTrackLength, size = file.length,
       discNumber = discNumber, trackGain = trackGain)
   }
 }
