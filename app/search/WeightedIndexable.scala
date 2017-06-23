@@ -1,18 +1,13 @@
 package search
 
 import models._
+import simulacrum.typeclass
 
-private trait WeightedIndexable[T] {
+@typeclass private trait WeightedIndexable[T] {
   protected def mainName(t: T): String
   protected def secondaryName(t: T): String
   private def split(s: String, weight: Double) = s split " " map (_ -> weight)
   def terms(t: T): Seq[(String, Double)] = split(mainName(t), 1.0) ++ split(secondaryName(t), 0.1)
-}
-
-trait ToWeightedIndexableOps {
-  implicit class toWeightedIndexableOps[T]($: T)(implicit ev: WeightedIndexable[T]) {
-    def terms: Seq[(String, Double)] = ev terms $
-  }
 }
 
 private object WeightedIndexable {

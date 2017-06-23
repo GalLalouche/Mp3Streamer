@@ -10,7 +10,8 @@ import scalaz.syntax.ToSemigroupOps
 
 /** to allow artist's name to be factored in the song search */
 private object WeightedIndexBuilder
-    extends ToSemigroupOps with ToWeightedIndexableOps {
+    extends ToSemigroupOps {
+  import WeightedIndexable.ops._
   // TODO replace with some kind of map builder from RichTraversableOnce
   def buildIndexFor[T: WeightedIndexable : Indexable](ts: TraversableOnce[T]): Index[T] = ts
       ./:(Map[String, Set[(T, Double)]]()) {(map, indexable) =>
