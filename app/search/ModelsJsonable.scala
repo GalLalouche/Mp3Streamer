@@ -26,7 +26,7 @@ object ModelsJsonable {
       new Song(file = new File(json str "file"), title = json str "title", artistName = json str "artistName",
         albumName = json str "albumName", track = json int "track", year = json int "year", bitrate = json str "bitrate",
         duration = json int "duration", size = json int "size", discNumber = json ostr "discNumber",
-        trackGain = json.\("trackGain").asOpt[Double] map (_.as[Double]))
+        trackGain = json.\("trackGain").asOpt[Double])
   }
 
   implicit object AlbumJsonifier extends Jsonable[Album] {

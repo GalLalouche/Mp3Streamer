@@ -25,7 +25,7 @@ private[controllers] object Utils {
   def toJson(s: Song): JsObject = {
     // TODO lenses?
     val $ = SongJsonifier.jsonify(s)
-    $ + ("file" -> URLEncoder.encode($.str("file"), "UTF-8")) +
+    $ + ("file" -> JsString(URLEncoder.encode($.str("file"), "UTF-8"))) +
         ("poster" -> JsString("/posters/" + Poster.getCoverArt(s).path)) +
         (s.file.extension -> JsString("/stream/download/" + URLEncoder.encode(s.file.path, "UTF-8")))
   }

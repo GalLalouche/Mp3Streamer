@@ -1,33 +1,13 @@
 package common
 
-import RichJson._
-import rich.RichT._
-import org.scalatest.FreeSpec
-import play.api.libs.json.{JsNull, JsObject, JsValue, Json}
+import common.RichJson._
+import common.rich.RichT._
+import org.scalatest.{FreeSpec, ShouldMatchers}
+import play.api.libs.json.Json.JsValueWrapper
+import play.api.libs.json.{JsNull, JsObject, Json}
 
-class RichJsonTest extends FreeSpec with AuxSpecs {
-  def withObject(a: Any) = JsObject(Map("foo" -> toJsValue(a)))
-  "to primitive" - {
-    def get(js: JsObject): JsValue = js.\("foo").get
-    "int" in {
-      get(withObject(1)) shouldReturn 1
-    }
-    "seq" in {
-      get(withObject(List(1, 2))) shouldReturn List(1, 2)
-    }
-    "jsObject" in {
-      get(withObject(withObject(1))) shouldReturn Json.obj("foo" -> 1)
-    }
-    "double" in {
-      get(withObject(2.5)) shouldReturn 2.5
-    }
-    "boolean" in {
-      get(withObject(true)) shouldReturn true
-    }
-    "string" in {
-      get(withObject("bar")) shouldReturn "bar"
-    }
-  }
+class RichJsonTest extends FreeSpec with AuxSpecs with ShouldMatchers {
+  private def withObject(a: JsValueWrapper): JsObject = Json.obj("foo" -> a)
   "dynamic json" - {
     "exists" in {
       withObject(1) int "foo" shouldReturn 1
