@@ -14,7 +14,6 @@ import scala.io.Source
 
 trait RealConfig extends Configuration {
   override lazy implicit val driver: JdbcProfile = SQLiteDriver
-  override type S = IOSystem
   override implicit lazy val db: driver.backend.DatabaseDef = driver.api.Database.forURL("jdbc:sqlite:d:/media/music/MBRecon.sqlite", driver = "org.sqlite.JDBC")
   override implicit lazy val mf: IOMusicFinder = IOMusicFinder
   override def downloadDocument(url: Url): Future[Document] =
