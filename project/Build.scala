@@ -8,8 +8,9 @@ object ApplicationBuild extends Build {
   val main = Project("Mp3Streamer", file(".")).enablePlugins(PlayScala).settings(
     scalaVersion := "2.11.8",
     version := "1.0-SNAPSHOT",
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     libraryDependencies ++= Seq(
-      // Add your project dependencies here,
+      "com.github.mpilquist" %% "simulacrum" % "0.10.0",
       "com.h2database" % "h2" % "1.4.192",
       "com.typesafe.akka" %% "akka-actor" % "2.4.8",
       "com.typesafe.akka" %% "akka-testkit" % "2.4.8" % "test",
@@ -21,6 +22,7 @@ object ApplicationBuild extends Build {
       "org.apache.commons" % "commons-io" % "1.3.2",
       "org.jsoup" % "jsoup" % "1.8.3",
       "org.me" %% "scalacommon" % "1.0" changing(),
+      "org.scalamacros" % "paradise_2.11.8" % "2.1.0",
       "org.mockito" % "mockito-all" % "1.9.5",
       "org.scala-js" %% "scalajs-library" % "0.6.8",
       "org.scala-lang" % "scala-actors" % "2.11.0",

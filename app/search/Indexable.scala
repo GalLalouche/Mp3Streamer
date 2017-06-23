@@ -1,19 +1,12 @@
 package search
 
 import models._
+import simulacrum.typeclass
 
-private trait Indexable[T] {
+@typeclass private trait Indexable[T] {
   def sortBy(t: T): Product
   def name(t: T): String
   def terms(t: T): Seq[String] = name(t) split " "
-}
-
-trait ToIndexableOps {
-  implicit class toIndexableOps[T]($: T)(implicit ev: Indexable[T]) {
-    def name: String = ev name $
-    def terms: Seq[String] = ev terms $
-    def sortBy: Product = ev sortBy $
-  }
 }
 
 private object Indexable {
