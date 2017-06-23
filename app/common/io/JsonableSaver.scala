@@ -12,8 +12,8 @@ import play.api.libs.json._
 class JsonableSaver(implicit rootDir: DirectoryRef)
     extends Jsonable.ToJsonableOps {
   private val workingDir = rootDir addSubDir "data" addSubDir "json"
-  protected def jsonFileName[T: Manifest]: String =
-    s"${implicitly[Manifest[T]].runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
+  protected def jsonFileName[T](implicit manifest: Manifest[T]): String =
+    s"${manifest.runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
   private def save[T: Manifest](js: JsValue) {
     workingDir addFile jsonFileName write js.toString
   }
@@ -22,9 +22,9 @@ class JsonableSaver(implicit rootDir: DirectoryRef)
    * All files of the same type will be saved in the same file. Last save overwrites
    * previous save. Saves in the same order that was traversed, so load will return in the same order as well.
    */
+  // TODO replace TraversableOnce with a Non-Empty list?
   def save[T: Jsonable : Manifest](data: TraversableOnce[T]) {
-    val m = implicitly[Manifest[T]]
-    require(data.nonEmpty, s"Can't save empty data of type <$m>")
+    require(data.nonEmpty, s"Can't save empty data of type <${implicitly[Manifest[T]]}>")
     save(data.toSeq.jsonify)
   }
   def save[T: Jsonable : Manifest](obj: T): Unit = save(obj.jsonify)
