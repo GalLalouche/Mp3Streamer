@@ -1,6 +1,5 @@
 package controllers
 
-import backend.logging.LoggingLevel
 import common.RichJson._
 import common.io.IODirectory
 import controllers.websockets.WebSocketController
@@ -11,11 +10,10 @@ import search.MetadataCacher
 import search.MetadataCacher.IndexUpdate
 
 import scala.concurrent.Future
-import scalaz.syntax.ToBindOps
 
-/** used for running manual commands from the client side */
-object Cacher extends WebSocketController
-    with ToBindOps {
+/** Used for running manual commands from the client side. */
+object Cacher extends WebSocketController {
+  // TODO extract apply.map to apply with varargs
   private def toJson(u: IndexUpdate): JsObject = JsObject(Map[String, JsValue](
     "finished" -> u.currentIndex,
     "total" -> u.totalNumber,
@@ -23,19 +21,13 @@ object Cacher extends WebSocketController
   import Utils.config
   private val cacher = MetadataCacher.create
   private def toRefreshStatus(o: Observable[IndexUpdate]) = {
-    config.logger.log("Awaiting connection", LoggingLevel.Verbose)
     o.map(toJson).map(_.toString).doOnCompleted {
-      config.logger.log("Finished caching", LoggingLevel.Verbose)
       Player.update()
       broadcast("Reloading searcher")
       Searcher.! onComplete {_ =>
         broadcast("Finished")
-        Thread.sleep(1000)
-        closeConnections()
       }
-    } subscribe {e =>
-      broadcast(e)
-    }
+    } subscribe {broadcast(_)}
     Ok(views.html.refresh())
   }
 
