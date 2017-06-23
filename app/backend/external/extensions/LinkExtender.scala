@@ -10,8 +10,11 @@ import backend.recon.Reconcilable
 * nor do they involve Futures.
 */
 private trait LinkExtender[-R <: Reconcilable] {
-  protected implicit def stringExtension(s: String): (String, String) = s -> s
+  // When the name of the extended link is identical to the URL suffix.
+  // For example, create a discography link with the URL www.foo.com/some_artist/discography.
+  protected def appendSameSuffix[T <: R](e: ExternalLink[T], suffixes: String*): Seq[LinkExtension[T]] =
+    append(e, suffixes.map(e => e -> e): _*)
   protected def append[T <: R](e: ExternalLink[T], suffixes: (String, String)*): Seq[LinkExtension[T]] =
-    suffixes.map(x => x._1 -> (e.link +/ "/" +/ x._2)).map((LinkExtension.apply[T]_ ).tupled)
+    suffixes.map(x => x._1 -> (e.link +/ "/" +/ x._2)).map((LinkExtension.apply[T] _).tupled)
   def apply[T <: R](t: T, e: ExternalLink[T]): Seq[LinkExtension[T]]
 }
