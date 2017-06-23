@@ -19,9 +19,7 @@ object RichMap {
   }
   implicit class RichMapSemi[K, V: Semigroup]($: Map[K, V]) {
     private val append: Merger[V] = implicitly[Semigroup[V]].append(_, _)
-    // TODO Figure out why this filters...
-    def merge(other: Map[K, V]): Map[K, V] =
-      $.filterKeys(other.contains).map(e => (e._1, implicitly[Semigroup[V]].append(e._2, other(e._1))))
+    def merge(other: Map[K, V]): Map[K, V] = richMap($).merge(other, append)
     def updateAppend(k: K, v: V): Map[K, V] = richMap($).updateWith(k, v, append)
     def updateAppend(kv: Seq[(K, V)]): Map[K, V] = richMap($).updateWith(kv, append)
   }
