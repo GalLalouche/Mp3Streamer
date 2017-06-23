@@ -9,6 +9,12 @@ private trait WeightedIndexable[T] {
   def terms(t: T): Seq[(String, Double)] = split(mainName(t), 1.0) ++ split(secondaryName(t), 0.1)
 }
 
+trait ToWeightedIndexableOps {
+  implicit class toWeightedIndexableOps[T]($: T)(implicit ev: WeightedIndexable[T]) {
+    def terms: Seq[(String, Double)] = ev terms $
+  }
+}
+
 private object WeightedIndexable {
   implicit object SongIndexer extends WeightedIndexable[Song] {
     override protected def mainName(t: Song): String = t.title
