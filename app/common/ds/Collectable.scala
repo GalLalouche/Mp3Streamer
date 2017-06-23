@@ -2,6 +2,7 @@ package common.ds
 
 import scala.collection.GenTraversable
 import scalaz.Semigroup
+import scalaz.syntax.ToSemigroupOps
 
 
 trait SemiCollectable[T, S] { // a semigroup that's a collectable
@@ -22,8 +23,8 @@ object Collectable {
     override def +(s: Set[T], t: T): Set[T] = s + t
     override def empty: Set[T] = Set()
   }
-  implicit def semigroupCollectable[T: Semigroup] = new SemiCollectable[T, T] {
-    override def +(s: T, t: T): T = implicitly[Semigroup[T]].append(s, t)
+  implicit def semigroupCollectable[T: Semigroup] = new SemiCollectable[T, T] with ToSemigroupOps {
+    override def +(s: T, t: T): T = s |+| t
     override def pure(t: T): T = t
   }
   def fromList[T, S](xs: GenTraversable[T])(implicit s: Collectable[T, S]): S =

@@ -1,10 +1,12 @@
 package common.ds
 
 import scalaz.Semigroup
+import scalaz.syntax.ToSemigroupOps
 
 // TODO move to common project
 // TODO a lot of this can be probably be replaced with lenses
-object RichMap {
+object RichMap
+   extends ToSemigroupOps {
   type Merger[V] = (V, V) => V
   implicit class richMap[K, V]($: Map[K, V]) {
     def updateWith(k: K, v: V, merge: Merger[V]): Map[K, V] = $.updated(k, $.get(k).map(merge(v, _)).getOrElse(v))
@@ -18,7 +20,7 @@ object RichMap {
     def append(k: K, v: V): Map[K, C] = $.updated(k, $.get(k).map(c.+(_, v)).getOrElse(c pure v))
   }
   implicit class RichMapSemi[K, V: Semigroup]($: Map[K, V]) {
-    private val append: Merger[V] = implicitly[Semigroup[V]].append(_, _)
+    private val append: Merger[V] = _ |+| _
     def merge(other: Map[K, V]): Map[K, V] = richMap($).merge(other, append)
     def updateAppend(k: K, v: V): Map[K, V] = richMap($).updateWith(k, v, append)
     def updateAppend(kv: Seq[(K, V)]): Map[K, V] = richMap($).updateWith(kv, append)
