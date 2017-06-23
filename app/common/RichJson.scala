@@ -14,25 +14,20 @@ object RichJson {
     case o: AnyRef => toJsValue(o.toString)
   }
 
-  // implicit casts from a JsValue to a primitive
-  implicit def jsValueToInt(js: JsValue): Int = js.as[Int]
-  implicit def jsValueToSeq(js: JsValue): Seq[JsValue] = js.as[JsArray].value
-  implicit def jsValueToJsObject(js: JsValue): JsObject = js.as[JsObject]
-  implicit def jsValueToLong(js: JsValue): Long = js.as[Long]
-  implicit def jsValueToDouble(js: JsValue): Double = js.as[Double]
-  implicit def jsValueToBoolean(js: JsValue): Boolean = js.as[Boolean]
-  implicit def jsValueToString(js: JsValue): String = js.as[String]
-
   implicit class DynamicJson(js: JsValue) {
+    private def jsValue(s: String): JsValue = js \ s get
     def has(str: String): Boolean = {
       val $ = js \ str
       false == $.isInstanceOf[JsUndefined] && $.get != JsNull &&
           ($.get.isInstanceOf[JsString] == false || $.as[String].nonEmpty)
     }
-    def /(s: String): JsValue = js \ s get
-    def str(s: String): String = /(s)
-    def int(s: String): Int = /(s)
+    def asObj: JsObject = js.as[JsObject]
+    def /(s: String): JsObject = jsValue(s).as[JsObject]
+    def str(s: String): String = jsValue(s).as[String]
+    def int(s: String): Int = jsValue(s).as[Int]
+    def double(s: String): Double = jsValue(s).as[Double]
     def ostr(s: String): Option[String] = js.\(s).asOpt[String]
-    def array(s: String): JsArray = /(s).as[JsArray]
+    def array(s: String): JsArray = jsValue(s).as[JsArray]
+    def objects(s: String): Seq[JsObject] = jsValue(s).as[JsArray].value.map(_.as[JsObject])
   }
 }

@@ -13,6 +13,7 @@ object PlaylistQueue {
 
   implicit object PlaylistJsonable extends Jsonable[PlaylistQueue] {
     override def jsonify(p: PlaylistQueue): JsObject = Json obj "songs" -> SongJsonifier.jsonify(p.songs)
-    override def parse(json: JsObject): PlaylistQueue = json / "songs" |> (_.as[JsArray]) |> SongJsonifier.parse |> PlaylistQueue.apply
+    override def parse(json: JsObject): PlaylistQueue =
+      json.array("songs") |> SongJsonifier.parse |> PlaylistQueue.apply
   }
 }

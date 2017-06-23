@@ -3,7 +3,7 @@ package common
 import RichJson._
 import rich.RichT._
 import org.scalatest.FreeSpec
-import play.api.libs.json.{JsNull, JsObject, JsValue}
+import play.api.libs.json.{JsNull, JsObject, JsValue, Json}
 
 class RichJsonTest extends FreeSpec with AuxSpecs {
   def withObject(a: Any) = JsObject(Map("foo" -> toJsValue(a)))
@@ -16,7 +16,7 @@ class RichJsonTest extends FreeSpec with AuxSpecs {
       get(withObject(List(1, 2))) shouldReturn List(1, 2)
     }
     "jsObject" in {
-      get(get(withObject(withObject(1)))) shouldReturn 1
+      get(withObject(withObject(1))) shouldReturn Json.obj("foo" -> 1)
     }
     "double" in {
       get(withObject(2.5)) shouldReturn 2.5
@@ -30,10 +30,10 @@ class RichJsonTest extends FreeSpec with AuxSpecs {
   }
   "dynamic json" - {
     "exists" in {
-      withObject(1) / "foo" shouldReturn 1
+      withObject(1) int "foo" shouldReturn 1
     }
     "if does not exist should throw an exception" in {
-      a[NoSuchElementException] should be thrownBy withObject(1)./("bar")
+      a[NoSuchElementException] should be thrownBy withObject(1).str("bar")
     }
   }
   "has" - {

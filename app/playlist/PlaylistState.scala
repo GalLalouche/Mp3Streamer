@@ -26,8 +26,8 @@ object PlaylistState {
       "currentIndex" -> t.currentIndex)
     override def parse(json: JsObject): PlaylistState = PlaylistState(
       songs = json array "songs" mapTo SongJsonifier.parse,
-      currentIndex = json / "currentIndex",
-      currentDuration = Duration.apply(json / "duration", TimeUnit.SECONDS))
+      currentIndex = json int "currentIndex",
+      currentDuration = Duration.apply(json int "duration", TimeUnit.SECONDS))
   }
 }
 

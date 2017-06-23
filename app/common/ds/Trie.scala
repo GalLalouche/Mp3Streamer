@@ -1,7 +1,7 @@
 package common.ds
 import scala.annotation.tailrec
 
-class Trie[+T] private(map: Map[Char, Trie[T]], private val values: List[T]) {
+sealed class Trie[+T] private(map: Map[Char, Trie[T]], private val values: List[T]) {
   private def orDefault(c: Char): Trie[T] = map.getOrElse(c, EmptyTrie)
   def this() = this(Map(), Nil)
   final def +[S >: T](key: String, v: S): Trie[S] =

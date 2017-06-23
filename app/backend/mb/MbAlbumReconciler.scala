@@ -13,9 +13,9 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit ec: ExecutionContext) extends OnlineReconciler[Album] {
   private val scorer = ReconScorers.AlbumReconScorer
-  private def toAlbum(js: JsObject, a: Artist): Album = Album(js / "title", js str "first-release-date" take 4 toInt, a)
+  private def toAlbum(js: JsObject, a: Artist): Album = Album(js str "title", js str "first-release-date" take 4 toInt, a)
   private def parse(js: JsValue, a: Album): Option[ReconID] =
-    js.array("release-groups")
+    js.objects("release-groups")
         .filter(_ has "first-release-date")
         .filter(_ ostr "primary-type" exists Set("Album", "EP"))
         .find(0.9 <= _.mapTo(toAlbum(_, a.artist)).mapTo(scorer(_, a)))

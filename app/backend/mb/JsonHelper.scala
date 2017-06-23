@@ -11,6 +11,7 @@ import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
+import common.RichJson._
 
 private object JsonHelper {
   def retry[T](f: () => Future[T], times: Int, retryWait: Duration)(implicit ec: ExecutionContext): Future[T] =
@@ -27,7 +28,7 @@ private object JsonHelper {
 
   private implicit val system = ActorSystem("JsonHelper", ConfigFactory.parseString("akka.daemonic=on"))
   private implicit val materializer = ActorMaterializer()
-  def getJson(method: String, other: (String, String)*)(implicit ec: ExecutionContext): Future[JsValue] = {
+  def getJson(method: String, other: (String, String)*)(implicit ec: ExecutionContext): Future[JsObject] = {
     val client = AhcWSClient()
     client.url("http://musicbrainz.org/ws/2/" + method)
         .withQueryString(("fmt", "json")).withQueryString(other: _*)
@@ -38,6 +39,6 @@ private object JsonHelper {
           e
         })
         .filterWithMessage(_.status == Status.OK, "HTTP response wasn't 200: " + _.body)
-        .map(_.json)
+        .map(_.json.asObj)
   }
 }

@@ -37,8 +37,8 @@ object Playlist extends Controller {
   def setState() = Action { request =>
     val json = request.body.asJson.get
     val songs = json array "songs" mapTo arrayOfPathsToSong
-    val duration: Double = json / "duration"
-    val index: Int = json / "index"
+    val duration: Double = json double "duration"
+    val index: Int = json int "index"
     saver save PlaylistState(songs, index, duration.toInt.seconds)
     Created.withHeaders("Location" -> "playlist/state")
   }

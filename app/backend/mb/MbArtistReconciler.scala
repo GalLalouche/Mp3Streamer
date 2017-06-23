@@ -19,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class MbArtistReconciler(implicit ec: ExecutionContext) extends OnlineReconciler[Artist] {
   override def apply(a: Artist): Future[Option[ReconID]] =
     retry(() => getJson("artist/", ("query", a.name)), 5, 2 seconds)
-        .map(_.array("artists").find(_ has "type").get)
+        .map(_.objects("artists").find(_ has "type").get)
         .filterWith(_ str "score" equals "100", "could not find a 100 match")
         .map(_ ostr "id" map ReconID)
 
@@ -29,13 +29,12 @@ class MbArtistReconciler(implicit ec: ExecutionContext) extends OnlineReconciler
 
   def getAlbumsMetadata(artistKey: ReconID): Future[Seq[MbAlbumMetadata]] =
     retry(() => getJson("release-group", ("artist", artistKey.id), ("limit", "100")), 10, 2 seconds)
-        .map(_.array("release-groups")
+        .map(_.objects("release-groups")
             .filter(_ has "first-release-date")
             .filter(_ ostr "primary-type" exists Set("Album", "EP", "Live"))
             .filter(_.array("secondary-types").value.isEmpty) // why?
             .sortBy(_ str "first-release-date")
-            .mapTo(JsArray))
-        .map(_.flatMap {json =>
+        ).map(_.flatMap {json =>
           for (date <- parseDate(json)) yield {
             MbAlbumMetadata(title = json str "title",
               releaseDate = date,

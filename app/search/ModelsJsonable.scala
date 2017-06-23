@@ -6,7 +6,7 @@ import common.Jsonable
 import common.RichJson._
 import models.{Album, Artist, Song}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsArray, JsObject, Json}
 
 object ModelsJsonable {
   implicit object SongJsonifier extends Jsonable[Song] {
@@ -23,9 +23,9 @@ object ModelsJsonable {
         "discNumber" -> s.discNumber,
         "trackGain" -> s.trackGain)
     def parse(json: JsObject): Song =
-      new Song(file = new File(json str "file"), title = json str "title", artistName = json str "artistName", albumName = json str "albumName",
-        track = json / "track", year = json / "year", bitrate = json str "bitrate",
-        duration = json / "duration", size = json / "size", discNumber = json ostr "discNumber",
+      new Song(file = new File(json str "file"), title = json str "title", artistName = json str "artistName",
+        albumName = json str "albumName", track = json int "track", year = json int "year", bitrate = json str "bitrate",
+        duration = json int "duration", size = json int "size", discNumber = json ostr "discNumber",
         trackGain = json.\("trackGain").asOpt[Double] map (_.as[Double]))
   }
 
@@ -36,10 +36,10 @@ object ModelsJsonable {
         "artistName" -> a.artistName,
         "year" -> a.year)
     def parse(json: JsObject): Album = {
-      new Album(new File(json / "dir"),
-        title = json / "title",
-        artistName = json / "artistName",
-        year = json / "year")
+      new Album(new File(json str "dir"),
+        title = json str "title",
+        artistName = json str "artistName",
+        year = json int "year")
     }
   }
 
@@ -48,8 +48,8 @@ object ModelsJsonable {
         "name" -> a.name,
         "albums" -> AlbumJsonifier.jsonify(a.albums))
     def parse(json: JsObject): Artist = {
-      val albums = json / "albums" map (AlbumJsonifier.parse(_))
-      Artist(json / "name", albums.toSet)
+      val albums: Seq[Album] = json objects "albums" map AlbumJsonifier.parse
+      Artist(json str "name", albums.toSet)
     }
   }
 }

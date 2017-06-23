@@ -12,15 +12,14 @@ object Recent extends Controller {
   import Utils.config._
   private val mf = Utils.config.mf
   // TODO move to a backend class
-  private def recentAlbums(amount: Int): Future[Seq[Album]] = {
-    Future(mf.genreDirs
+  private def recentAlbums(amount: Int): Future[Seq[Album]] = Future {
+    mf.genreDirs
         .flatMap(_.deepDirs)
         .filter(e => mf.getSongFilesInDir(e).nonEmpty)
         .sortBy(_.lastModified)(Ordering.by(-_.toEpochSecond(ZoneOffset.UTC)))
         .map(_.dir)
         .map(Album.apply)
         .take(amount)
-    )
   }
   def recent(amount: Int) = Action.async {
     recentAlbums(amount).map(AlbumJsonifier.jsonify).map(Ok(_))
