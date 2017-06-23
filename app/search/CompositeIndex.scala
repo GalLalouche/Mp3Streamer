@@ -6,7 +6,7 @@ import models.{Album, Artist, Song}
 import search.ModelsJsonable._
 
 /** Index for songs, albums and artists */
-class CompositeIndex(implicit r: DirectoryRef) {
+class CompositeIndex(implicit r: DirectoryRef) extends ToIndexableOps {
   import Index.ProductOrdering
   private val indexBuilder = WeightedIndexBuilder
   private val saver = new JsonableSaver()
@@ -14,7 +14,7 @@ class CompositeIndex(implicit r: DirectoryRef) {
     indexBuilder.buildIndexFor(saver.loadArray[T]) // don't know why [T] is needed here
   private def find(terms: Seq[String]) = new { // currying because Scala isn't functional enough :(
     def apply[T: Jsonable : Indexable : WeightedIndexable : Manifest](index: Index[T]): Seq[T] =
-      index findIntersection terms take 10 sortBy implicitly[Indexable[T]].sortBy
+      index findIntersection terms take 10 sortBy (_.sortBy)
   }
   private val songIndex = buildIndexFromCache[Song]
   private val albumIndex = buildIndexFromCache[Album]

@@ -8,6 +8,14 @@ private trait Indexable[T] {
   def terms(t: T): Seq[String] = name(t) split " "
 }
 
+trait ToIndexableOps {
+  implicit class toIndexableOps[T]($: T)(implicit ev: Indexable[T]) {
+    def name: String = ev name $
+    def terms: Seq[String] = ev terms $
+    def sortBy: Product = ev sortBy $
+  }
+}
+
 private object Indexable {
   implicit object SongIndexer extends Indexable[Song] {
     override def sortBy(s: Song): Product = (s.artistName, s.title, s.year, s.albumName, s.track)
