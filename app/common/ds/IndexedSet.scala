@@ -1,6 +1,7 @@
 package common.ds
 
 import scalaz.Semigroup
+import RichMap._
 
 /** Sums values whose key function is equal. */
 trait IndexedSet[T] extends Traversable[T] {
@@ -10,12 +11,8 @@ trait IndexedSet[T] extends Traversable[T] {
 }
 
 private class IndexedSetImpl[Value: Semigroup, Key](map: Map[Key, Value], index: Value => Key) extends IndexedSet[Value] {
-  def +(v: Value): IndexedSet[Value] = {
-    val key = index(v)
-    val newV = map.get(key).map(implicitly[Semigroup[Value]].append(_, v)).getOrElse(v)
-    assert(key == index(newV), s"Inconsistent keys for $v ($key) and new $newV (${index(newV)})")
-    new IndexedSetImpl(map.updated(key, newV), index)
-  }
+  def +(v: Value): IndexedSet[Value] =
+    new IndexedSetImpl(map.updateWith(index(v), v, implicitly[Semigroup[Value]].append(_, _)), index)
   def ++(vs: TraversableOnce[Value]): IndexedSet[Value] = vs.foldLeft(this: IndexedSet[Value])(_ + _)
   override def foreach[U](f: Value => U) {map.values foreach f}
 }

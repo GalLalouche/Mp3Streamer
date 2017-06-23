@@ -2,8 +2,9 @@ package common.ds
 
 import scalaz.Semigroup
 
+// TODO move to common project
 object RichMap {
-  implicit class RichMap[K, V]($: Map[K, V]) {
+  implicit class richMap[K, V]($: Map[K, V]) {
     def updateWith(k: K, v: V, merge: (V, V) => V): Map[K, V] = $.updated(k, $.get(k).map(merge(v, _)).getOrElse(v))
     def modified(k: K, f: V => V): Map[K, V] = $.updated(k, f($(k)))
   }
