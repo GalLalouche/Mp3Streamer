@@ -4,9 +4,9 @@ import common.{AuxSpecs, Jsonable}
 import org.scalatest.FreeSpec
 import search.ModelsJsonable._
 
-class JsonableTest extends FreeSpec with AuxSpecs {
+class JsonableTest extends FreeSpec with AuxSpecs with Jsonable.ToJsonableOps {
   def test[T: Jsonable](t: T) {
-    implicitly[Jsonable[T]].parse(implicitly[Jsonable[T]].jsonify(t)) shouldReturn t
+    parseObject[T](t.jsonify).parse shouldReturn t
   }
   "Song" - {
     "Song without optionals" in { test(Models.mockSong(discNumber = None, trackGain = None)) }

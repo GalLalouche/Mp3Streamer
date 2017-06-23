@@ -9,10 +9,11 @@ import common.rich.primitives.RichOption._
 import play.api.libs.json._
 
 /** Saves in json format to a file. */
-class JsonableSaver(implicit rootDir: DirectoryRef) {
+class JsonableSaver(implicit rootDir: DirectoryRef)
+    extends Jsonable.ToJsonableOps {
   private val workingDir = rootDir addSubDir "data" addSubDir "json"
   protected def jsonFileName[T: Manifest]: String =
-    s"${implicitly[Manifest[T]].runtimeClass.getSimpleName.replaceAll("\\$", "") }s.json"
+    s"${implicitly[Manifest[T]].runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
   private def save[T: Manifest](js: JsValue) {
     workingDir addFile jsonFileName write js.toString
   }
@@ -24,11 +25,9 @@ class JsonableSaver(implicit rootDir: DirectoryRef) {
   def save[T: Jsonable : Manifest](data: TraversableOnce[T]) {
     val m = implicitly[Manifest[T]]
     require(data.nonEmpty, s"Can't save empty data of type <$m>")
-    save(data.toSeq |> implicitly[Jsonable[T]].jsonify)
+    save(data.toSeq.jsonify)
   }
-  def save[T: Jsonable : Manifest](obj: T) {
-    save(implicitly[Jsonable[T]].jsonify(obj))
-  }
+  def save[T: Jsonable : Manifest](obj: T): Unit = save(obj.jsonify)
 
   /**
    * Similar to save, but doesn't overwrite the data
@@ -44,12 +43,11 @@ class JsonableSaver(implicit rootDir: DirectoryRef) {
     workingDir getFile jsonFileName map (_.readAll |> Json.parse)
   /** Loads the previously saved entries, or returns an empty list. */
   def loadArray[T: Jsonable : Manifest]: Seq[T] =
-    load.map(_.as[JsArray] |> implicitly[Jsonable[T]].parse)
-        .getOrElse(Nil)
+    load.map(_.as[JsArray].parse).getOrElse(Nil)
   /** Loads the previously saved entry, or throws an exception if no file has been found */
   def loadObject[T: Jsonable : Manifest]: T = {
-    val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <${implicitly[Manifest[T]] }>")
-    js.asInstanceOf[JsObject] |> implicitly[Jsonable[T]].parse
+    val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <${implicitly[Manifest[T]]}>")
+    js.asInstanceOf[JsObject].parse
   }
 
   // Require T: Jsonable, otherwise T will always be inferred as Nothing
