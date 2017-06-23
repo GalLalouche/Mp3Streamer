@@ -42,7 +42,7 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with Matchers {
     }
     "Find song" in {
       tempDir.addSubDir("a").addSubDir("b").addFile("foo.mp3")
-      mf.getSongFiles.map(_.file) should contain(tempDir / """a/b/foo.mp3""")
+      mf.getSongFiles.map(_.file) should contain((tempDir / "a" / "b" / "foo.mp3").p)
     }
   }
 }
