@@ -18,7 +18,7 @@ private object WeightedIndexBuilder
     override def append(f1: Double, f2: => Double): Double = f1 + f2
   }
 
-  def buildIndexFor[T: WeightedIndexable : Indexable](ts: TraversableOnce[T]): Index[T] = ts
+  def buildIndexFor[T: WeightedIndexable](ts: TraversableOnce[T]): Index[T] = ts
       .flatMap(e => e.terms.map(e -> _))
       .map(toLowerCase)
       .aggregateMap(_._2._1, e => Set(e._1 -> e._2._2))
@@ -26,7 +26,7 @@ private object WeightedIndexBuilder
       .mapTo(Trie.fromSeqMap)
       .mapTo(new WeightedIndex(_))
 
-  private class WeightedIndex[T: WeightedIndexable : Indexable](trie: Trie[(T, Double)]) extends Index[T] {
+  private class WeightedIndex[T: WeightedIndexable](trie: Trie[(T, Double)]) extends Index[T] {
     private def mergeIntersectingKeys[K, V: Semigroup](m1: Map[K, V], m2: Map[K, V]): Map[K, V] =
       m1.filterKeys(m2.contains).map(e => (e._1, e._2 |+| m2(e._1)))
     override def findIntersection(ss: Traversable[String]): Seq[T] = {

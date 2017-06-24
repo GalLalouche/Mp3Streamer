@@ -18,8 +18,6 @@ import scalaz.Semigroup
 import scalaz.std.{AnyValInstances, FutureInstances, ListInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
-// Possible source of bugs: indexAll and apply(DirectoryRef) work on different threads. This solution is forced
-// due to type erasure.
 class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration)
     extends OptionInstances with ListInstances with AnyValInstances
         with ToTraverseOps with FutureInstances with ToBindOps {

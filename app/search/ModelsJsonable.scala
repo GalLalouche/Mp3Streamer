@@ -6,7 +6,7 @@ import common.Jsonable
 import common.RichJson._
 import models.{Album, Artist, Song}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.libs.json.{JsArray, JsObject, Json}
+import play.api.libs.json.{JsObject, Json}
 
 object ModelsJsonable {
   implicit object SongJsonifier extends Jsonable[Song] {
