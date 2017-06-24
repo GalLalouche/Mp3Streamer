@@ -15,9 +15,9 @@ object Searcher extends Controller with Extra
     with Jsonable.ToJsonableOps {
   private implicit val c = Utils.config
   import c._
-  private var index: CompositeIndex = new CompositeIndex
+  private var index: CompositeIndex = CompositeIndex.create
   override def apply() {
-    index = new CompositeIndex
+    index = CompositeIndex.create
     Logger info "Search engine has been updated"
   }
   def search(path: String) = Action {
