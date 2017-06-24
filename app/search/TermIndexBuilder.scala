@@ -1,12 +1,11 @@
 package search
 
+import common.ds.Collectable.setCollectable
+import common.ds.RichMap.RichMapCollectable
 import common.rich.RichT._
 
-/** extracts several terms from each song to match against */
+/** Extracts several terms from each song to match against. */
 private object TermIndexBuilder extends IndexBuilder with Indexable.ToIndexableOps {
-  implicit class RichMap[T, S](map: Map[T, Set[S]]) {
-    def append(t: T, s: S) = map.updated(t, map(t) + s)
-  }
   // TODO replace with some kind of map builder from RichTraversableOnce
   def buildIndexFor[T: Indexable](ts: TraversableOnce[T]): Index[T] = ts
       ./:(Map[String, Set[T]]().withDefault(Set[T]().const)) {(map, indexable) =>
