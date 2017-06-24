@@ -6,7 +6,6 @@ object RichJson {
   implicit class DynamicJson(js: JsValue) {
     private def jsValue(s: String): JsValue = js.\(s).get
     def has(str: String): Boolean = js.\(str).toOption.exists(e => e != JsNull && e.asOpt[String].forall(_.nonEmpty))
-    def asObj: JsObject = js.as[JsObject]
     def /(s: String): JsObject = jsValue(s).as[JsObject]
     def str(s: String): String = jsValue(s).as[String]
     def int(s: String): Int = jsValue(s).as[Int]

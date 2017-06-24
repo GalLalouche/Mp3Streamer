@@ -11,7 +11,6 @@ import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
-import common.RichJson._
 
 private object JsonHelper {
   def retry[T](f: () => Future[T], times: Int, retryWait: Duration)(implicit ec: ExecutionContext): Future[T] =
@@ -39,6 +38,6 @@ private object JsonHelper {
           e
         })
         .filterWithMessage(_.status == Status.OK, "HTTP response wasn't 200: " + _.body)
-        .map(_.json.asObj)
+        .map(_.json.as[JsObject])
   }
 }
