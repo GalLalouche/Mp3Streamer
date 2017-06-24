@@ -13,7 +13,7 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
     icon = new ImageIcon(image.file.path)
     listenTo(mouse.clicks)
     reactions += {
-      case e: MouseClicked => AsyncFolderImagePanel.this.publish(Selected(image))
+      case _: MouseClicked => AsyncFolderImagePanel.this.publish(Selected(image))
     }
   }
 

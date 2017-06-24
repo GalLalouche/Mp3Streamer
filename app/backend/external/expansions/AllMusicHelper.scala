@@ -29,9 +29,7 @@ private class AllMusicHelper(implicit ec: ExecutionContext, it: InternetTalker) 
       .map(_.hasClass("rating-allmusic-0"))
       .map(!_)
   // TODO this should only be invoked once, from the external pipe
-  def isValidLink(u: Url): Future[Boolean] = u
-      .mapTo(e => hasRating(u) zip hasStaffReview(u))
-      .map(_.all(identity))
+  def isValidLink(u: Url): Future[Boolean] = hasRating(u) zip hasStaffReview(u) map (_.all(identity))
   def isCanonical(link: String): Boolean = canonicalRe.findAllMatchIn(link).hasNext
   def canonize[R <: Reconcilable](e: ExternalLink[R]): Future[ExternalLink[R]] = {
     def aux(url: Url): Future[Url] =
