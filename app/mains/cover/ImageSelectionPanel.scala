@@ -46,7 +46,7 @@ private object ImageSelectionPanel {
       override def next(): Future[FolderImage] = {
         Future {
           FolderImage(
-            new IOFile(
+            IOFile(
               new File("""D:\Incoming\Bittorrent\Completed\Music\Bob Dylan\1 - Studio Albums\1963 - The Freewheelin Bob Dylan\folder.jpg""")))
         }
       }

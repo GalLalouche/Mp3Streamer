@@ -31,7 +31,7 @@ abstract class IOPath(f: File) extends PathRef {
 }
 
 /** For production; actual files on the disk */
-class IOFile(val file: File) extends IOPath(file) with FileRef {
+case class IOFile(file: File) extends IOPath(file) with FileRef {
   private lazy val rich = RichFile(file)
   override def bytes: Array[Byte] = rich.bytes
   override def write(bs: Array[Byte]) = {
@@ -50,17 +50,17 @@ class IOFile(val file: File) extends IOPath(file) with FileRef {
   override def lastModified: LocalDateTime = file |> FileUtils.lastModified
 }
 
-class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
+case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
   lazy val dir: Directory = Directory(file)
-  def this(path: String) = this(new File(path))
-  override def addFile(name: String) = new IOFile(dir addFile name)
+  def this(path: String) = this(new File(path).getAbsoluteFile)
+  override def addFile(name: String) = IOFile(dir addFile name)
   private def optionalFile(name: String) = Some(new File(dir.dir, name)).filter(_.exists)
   override def getDir(name: String) =
     optionalFile(name).filter(_.isDirectory).map(e => new IODirectory(new Directory(e)))
   override def addSubDir(name: String) = new IODirectory(dir addSubDir name)
-  override def getFile(name: String) = optionalFile(name).map(new IOFile(_))
+  override def getFile(name: String) = optionalFile(name).map(IOFile)
   override def dirs = dir.dirs.map(new IODirectory(_))
-  override def files = dir.files.map(new IOFile(_))
+  override def files = dir.files.map(IOFile)
   override def lastModified: LocalDateTime = dir.dir |> FileUtils.lastModified
   override def hasParent = file.getParentFile != null
 }
