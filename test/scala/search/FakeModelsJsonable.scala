@@ -2,18 +2,17 @@ package scala.search
 import java.util.concurrent.atomic.AtomicInteger
 
 import common.Jsonable
-import models.{Album, Artist, Song}
-import org.scalatest.mock.MockitoSugar
 import common.rich.primitives.RichOption._
-import play.api.libs.json.JsObject
+import models.{Album, Artist, Song}
+import play.api.libs.json.{JsObject, Json}
 
 import scala.collection.mutable
 
-class FakeModelsJsonable extends MockitoSugar {
+class FakeModelsJsonable {
   private implicit val counter = new AtomicInteger
   private implicit val parsedModels = mutable.Map[JsObject, Any]()
   private def fakeJsonify(a: Any): JsObject = {
-    val $ = mock[JsObject]
+    val $ = Json.obj("index" -> counter.getAndIncrement())
     parsedModels += $ -> a
     $
   }

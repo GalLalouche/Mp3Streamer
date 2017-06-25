@@ -5,8 +5,12 @@ import common.AuxSpecs
 import org.scalatest.FreeSpec
 import search.FakeModelFactory
 
+import scala.search.FakeModelsJsonable
+
 class SongGroupsTest extends FreeSpec with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory
+  private val fakeJsonable = new FakeModelsJsonable
+  import fakeJsonable._
   private val song1 = fakeModelFactory.song()
   private val song2 = fakeModelFactory.song()
   private val song3 = fakeModelFactory.song()
@@ -26,7 +30,8 @@ class SongGroupsTest extends FreeSpec with AuxSpecs {
   "save and load" in {
     implicit val c = TestConfiguration()
     import c._
-    SongGroups.save(groups)
-    SongGroups.load shouldReturn Set(group1, group2)
+    val $ = new SongGroups()
+    $.save(groups)
+    $.load shouldReturn Set(group1, group2)
   }
 }

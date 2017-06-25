@@ -18,7 +18,9 @@ private object SongGroupsUpdater {
   def main(args: Array[String]): Unit = {
     implicit val c = StandaloneConfig
     import c._
-    def append(g: SongGroup) = (g :: SongGroups.load.toList).toSet |> SongGroups.save
+    import search.ModelsJsonable._
+    val sg = new SongGroups
+    def append(g: SongGroup) = (g :: sg.load.toList).toSet |> sg.save
     val group: SongGroup = trackNumbers("""D:\Media\Music\Rock\Punk\Pistolita\2010 The Paper Boy""", 1, 2)
     append(group)
     println("Done")
