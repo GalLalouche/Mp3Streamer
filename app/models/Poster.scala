@@ -1,14 +1,11 @@
 package models
 
-import java.io.File
-
-import common.rich.path.Directory
-import common.rich.path.RichPath._
+import common.io.{DirectoryRef, FileRef}
 
 object Poster {
-	private def getCoverArt(dir: Directory): File = {
+	private def getCoverArt(dir: DirectoryRef): FileRef = {
 		val f = dir.files.find(_.name.toLowerCase.matches("folder.(jpg)|(png)"))
 		f.getOrElse(getCoverArt(dir.parent))
 	}
-	def getCoverArt(s: Song): File = getCoverArt(s.iofile.parent)
+	def getCoverArt(s: Song): FileRef = getCoverArt(s.file.parent)
 }

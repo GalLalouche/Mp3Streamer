@@ -3,6 +3,7 @@ package mains
 import java.io.File
 
 import backend.configs.StandaloneConfig
+import common.io.IOFile
 import common.rich.RichFuture._
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
@@ -41,7 +42,8 @@ private object RandomFolderCreator extends
   }
 
   @tailrec
-  private def addSongs(maxSize: Int, forEachEntry: (File, Int) => Unit, existing: Set[File] = Set(), futures: List[Future[Unit]] = Nil): Future[_] = {
+  private def addSongs(maxSize: Int, forEachEntry: (File, Int) => Unit, existing: Set[File] = Set(),
+                       futures: List[Future[Unit]] = Nil): Future[_] = {
     val index = existing.size
     if (index == maxSize)
       return futures.sequenceU map (_.reduce((_, _) => Unit))
@@ -56,7 +58,8 @@ private object RandomFolderCreator extends
       val newFile = new File(outputDir.dir, f.name)
       FileUtils.copyFile(f, newFile)
       val audioFile = AudioFileIO.read(newFile)
-      audioFile.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(Song(f))))
+      val coverArt: File = Poster.getCoverArt(Song(f)).asInstanceOf[IOFile].file
+      audioFile.getTag.setField(StandardArtwork.createArtworkFromFile(coverArt))
       try {
         audioFile.commit()
       } catch {
