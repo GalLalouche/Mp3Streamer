@@ -9,11 +9,12 @@ object PlaylistQueue {
   import common.RichJson._
   import common.rich.RichT._
   import play.api.libs.json.{JsArray, JsObject, Json}
-  import search.ModelsJsonable.SongJsonifier
 
-  implicit object PlaylistJsonable extends Jsonable[PlaylistQueue] {
-    override def jsonify(p: PlaylistQueue): JsObject = Json obj "songs" -> SongJsonifier.jsonify(p.songs)
-    override def parse(json: JsObject): PlaylistQueue =
-      json.array("songs") |> SongJsonifier.parse |> PlaylistQueue.apply
-  }
+  implicit def PlaylistJsonable(implicit songJsonable: Jsonable[Song]): Jsonable[PlaylistQueue] =
+    new Jsonable[PlaylistQueue] {
+      override def jsonify(p: PlaylistQueue): JsObject =
+        Json obj "songs" -> songJsonable.jsonify(p.songs)
+      override def parse(json: JsObject): PlaylistQueue =
+        json.array("songs") |> songJsonable.parse |> PlaylistQueue.apply
+    }
 }
