@@ -11,22 +11,24 @@ import org.scalatest.matchers.{MatchResult, Matcher}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import rx.lang.scala.Observable
 import search.MetadataCacher.IndexUpdate
-import search.ModelsJsonable._
 
 import scala.concurrent.{Await, Promise}
+import scala.search.FakeModelsJsonable
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory
   private implicit val root = new MemoryRoot
   private val songs = root.addSubDir("songs")
   private val jsonableSaver = new JsonableSaver
+  private val fakeJsonable = new FakeModelsJsonable
+  import fakeJsonable._
   private def verifyData[T: Jsonable : Manifest](xs: T*) {
     jsonableSaver.loadArray[T].toSet shouldReturn xs.toSet
   }
 
   private val mf = new FakeMusicFinder(songs)
   private implicit val c = TestConfiguration().copy(_root = root, _mf = mf)
-  private val $ = new MetadataCacher(jsonableSaver)(c)
+  private val $ = new MetadataCacher(jsonableSaver)
 
   private def awaitCompletion($: Observable[Any]) = {
     val p = Promise[Unit]

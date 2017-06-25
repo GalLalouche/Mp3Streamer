@@ -10,7 +10,6 @@ import common.io._
 import models._
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
-import search.ModelsJsonable._
 
 import scala.collection.GenSeq
 import scala.concurrent.Future
@@ -18,7 +17,10 @@ import scalaz.Semigroup
 import scalaz.std.{AnyValInstances, FutureInstances, ListInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
-class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration)
+class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration,
+                                           songJsonable: Jsonable[Song],
+                                           albumJsonable: Jsonable[Album],
+                                           artistJsonable: Jsonable[Artist])
     extends OptionInstances with ListInstances with AnyValInstances
         with ToTraverseOps with FutureInstances with ToBindOps {
   import MetadataCacher._
@@ -38,7 +40,7 @@ class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration)
         List(saver.lastUpdateTime[Song], saver.lastUpdateTime[Album], saver.lastUpdateTime[Artist])
             .sequence[Option, LocalDateTime]
             .flatMap(_.minimumBy(_.toEpochSecond(ZoneOffset.UTC)))
-      lastUpdateTime.fold(indexAll()) {lastUpdateTime =>
+      lastUpdateTime.fold(indexAll()) { lastUpdateTime =>
         updateIndex(c.mf.albumDirs.filter(_.lastModified isAfter lastUpdateTime), new AllInfoHandler {
           override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver.update[T](_ ++ xs)
           override def apply(artists: IndexedSet[Artist]): Unit = saver.update[Artist](artists ++ _)
@@ -81,12 +83,12 @@ class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration)
       val totalSize = dirs.length
       Future {
         import common.concurrency.toRunnable
-        gatherInfo(dirs.zipWithIndex.map {case (d, j) =>
+        gatherInfo(dirs.zipWithIndex.map { case (d, j) =>
           getDirectoryInfo(d, onParsingCompleted = () => {
             c execute (() => obs onNext IndexUpdate(j + 1, totalSize, d))
           })
         })
-      } map {info =>
+      } map { info =>
         allInfoHandler(info.songs)
         allInfoHandler(info.albums)
         allInfoHandler(info.artists)
@@ -103,10 +105,10 @@ class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration)
 }
 
 /**
- * Caches all music metadata on disk. Since extracting the metadata requires processing hundreds of gigabytes, but
- * the actual metadata is only in megabytes. Also allows for incremental updates, in the case of new data added during
- * production.
- */
+  * Caches all music metadata on disk. Since extracting the metadata requires processing hundreds of gigabytes, but
+  * the actual metadata is only in megabytes. Also allows for incremental updates, in the case of new data added during
+  * production.
+  */
 object MetadataCacher {
   private implicit object ArtistSemigroup extends Semigroup[Artist] {
     override def append(f1: Artist, f2: => Artist): Artist = f1 merge f2
@@ -127,8 +129,11 @@ object MetadataCacher {
     def apply(artists: IndexedSet[Artist]): Unit
   }
 
-  def create(implicit c: Configuration): MetadataCacher = {
+  def create(implicit c: Configuration,
+             songJsonable: Jsonable[Song],
+             albumJsonable: Jsonable[Album],
+             artistJsonable: Jsonable[Artist]): MetadataCacher = {
     import c._
-    new MetadataCacher(new JsonableSaver)(c)
+    new MetadataCacher(new JsonableSaver)
   }
 }
