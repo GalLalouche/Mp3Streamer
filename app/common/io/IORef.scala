@@ -62,6 +62,7 @@ class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
   override def dirs = dir.dirs.map(new IODirectory(_))
   override def files = dir.files.map(new IOFile(_))
   override def lastModified: LocalDateTime = dir.dir |> FileUtils.lastModified
+  override def hasParent = file.getParentFile != null
 }
 object IODirectory {
   def apply(str: String): IODirectory = this (Directory(str))

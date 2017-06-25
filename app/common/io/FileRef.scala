@@ -51,4 +51,5 @@ trait DirectoryRef extends PathRef { self =>
   def deepDirs: Seq[S#D] = dirs ++ dirs.flatMap(_.deepDirs).asInstanceOf[Seq[S#D]]
   def deepFiles: Seq[S#F] = files ++ dirs.flatMap(_.deepFiles).asInstanceOf[Seq[S#F]]
   def lastModified: LocalDateTime
+  def hasParent: Boolean
 }
