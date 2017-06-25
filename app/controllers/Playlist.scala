@@ -5,7 +5,7 @@ import common.io.JsonableSaver
 import common.rich.RichT._
 import models.Song
 import play.api.libs.json.{JsArray, JsObject, Json}
-import play.api.mvc.{Action, AnyContent, Controller}
+import play.api.mvc.{Action, Controller}
 import playlist.PlaylistQueue._
 import playlist.PlaylistState.PlaylistStateJsonable
 import playlist.{PlaylistQueue, PlaylistState}
@@ -17,6 +17,7 @@ object Playlist extends Controller {
 
   private def arrayOfPathsToSong(a: JsArray): Seq[Song] = a.value.map(_.as[String]).map(Utils.parseSong)
 
+  import search.ModelsJsonable._
   def getQueue = Action {
     Ok(saver.loadObject[PlaylistQueue].songs map Utils.toJson mapTo JsArray.apply)
   }

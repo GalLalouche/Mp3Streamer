@@ -17,17 +17,17 @@ object PlaylistState {
   import common.RichJson._
   import common.rich.RichT._
   import play.api.libs.json.{JsObject, Json}
-  import search.ModelsJsonable.SongJsonifier
 
-  implicit object PlaylistStateJsonable extends Jsonable[PlaylistState] {
-    override def jsonify(t: PlaylistState): JsObject = Json.obj(
-      "songs" -> SongJsonifier.jsonify(t.songs),
-      "duration" -> t.currentDuration.toSeconds,
-      "currentIndex" -> t.currentIndex)
-    override def parse(json: JsObject): PlaylistState = PlaylistState(
-      songs = json array "songs" mapTo SongJsonifier.parse,
-      currentIndex = json int "currentIndex",
-      currentDuration = Duration.apply(json int "duration", TimeUnit.SECONDS))
-  }
+  implicit def PlaylistStateJsonable(implicit songJsonable: Jsonable[Song]): Jsonable[PlaylistState] =
+    new Jsonable[PlaylistState] {
+      override def jsonify(t: PlaylistState): JsObject = Json.obj(
+        "songs" -> songJsonable.jsonify(t.songs),
+        "duration" -> t.currentDuration.toSeconds,
+        "currentIndex" -> t.currentIndex)
+      override def parse(json: JsObject): PlaylistState = PlaylistState(
+        songs = json array "songs" mapTo songJsonable.parse,
+        currentIndex = json int "currentIndex",
+        currentDuration = Duration.apply(json int "duration", TimeUnit.SECONDS))
+    }
 }
 
