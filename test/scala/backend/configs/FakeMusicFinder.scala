@@ -14,7 +14,7 @@ class FakeMusicFinder(val dir: MemoryDir) extends MusicFinder {
   /** Adds a song under root / songs / $artist_name / $album_time / $file_name. */
   def addSong(s: Song): MemoryDir = {
     val $ = musicDir addSubDir s.artistName addSubDir s.albumName
-    val file = $ addFile s.file.getName
+    val file = $ addFile s.file.name
     pathToSongs += file.path -> s
     $
   }

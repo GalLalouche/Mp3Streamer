@@ -4,6 +4,7 @@ import java.io.File
 
 import common.Jsonable
 import common.RichJson._
+import common.io.IOFile
 import models.{Album, Artist, Song}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsObject, Json}
@@ -11,7 +12,7 @@ import play.api.libs.json.{JsObject, Json}
 object ModelsJsonable {
   implicit object SongJsonifier extends Jsonable[Song] {
     def jsonify(s: Song) = Json obj(
-        "file" -> s.file.getAbsolutePath,
+        "file" -> s.file.path,
         "title" -> s.title,
         "artistName" -> s.artistName,
         "albumName" -> s.albumName,
@@ -22,11 +23,14 @@ object ModelsJsonable {
         "size" -> s.size,
         "discNumber" -> s.discNumber,
         "trackGain" -> s.trackGain)
-    def parse(json: JsObject): Song =
-      new Song(file = new File(json str "file"), title = json str "title", artistName = json str "artistName",
-        albumName = json str "albumName", track = json int "track", year = json int "year",
-        bitRate = json str "bitrate", duration = json int "duration", size = json int "size",
-        discNumber = json ostr "discNumber", trackGain = json.\("trackGain").asOpt[Double])
+    def parse(json: JsObject): Song = {
+      val file = new File(json str "file")
+      new Song(file = IOFile(file), iofile = file, title = json str "title",
+        artistName = json str "artistName", albumName = json str "albumName",
+        track = json int "track", year = json int "year", bitRate = json str "bitrate",
+        duration = json int "duration", size = json int "size", discNumber = json ostr "discNumber",
+        trackGain = json.\("trackGain").asOpt[Double])
+    }
   }
 
   implicit object AlbumJsonifier extends Jsonable[Album] {

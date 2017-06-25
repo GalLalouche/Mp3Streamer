@@ -13,7 +13,7 @@ object Streamer extends Controller {
     // assumed format: [bytes=<start>-]
     def parseRange(s: String): Long = s dropAfterLast '=' takeWhile (_ isDigit) toLong
     val bytesToSkip = request.headers get "Range" map parseRange getOrElse 0L
-    val file = Utils.parseSong(s).file
+    val file = Utils.parseSong(s).iofile
     val codec = if(file.extension == "flac") "audio/x-flac" else "audio/mpeg"
     val fis = new FileInputStream(file)
     fis.skip(bytesToSkip)

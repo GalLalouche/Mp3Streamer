@@ -3,6 +3,7 @@ package models
 import java.io.File
 import java.util.logging.{Level, Logger}
 
+import common.io.{FileRef, IOFile}
 import common.rich.RichT._
 import common.rich.primitives.RichString._
 import org.jaudiotagger.audio.AudioFileIO
@@ -10,11 +11,10 @@ import org.jaudiotagger.tag.FieldKey
 
 import scala.collection.JavaConversions._
 
-case class Song(file: File, title: String, artistName: String, albumName: String,
+case class Song(file: FileRef, iofile: File, title: String, artistName: String, albumName: String,
                 track: Int, year: Int, bitRate: String, duration: Int, size: Long,
                 discNumber: Option[String], trackGain: Option[Double]) {
-  override def toString = s"$artistName - $title [$albumName #$track] ($year)"
-  lazy val album = Album(dir = file.getParentFile, title = albumName, artistName = artistName, year = year)
+  lazy val album = Album(dir = iofile.getParentFile, title = albumName, artistName = artistName, year = year)
 }
 
 object Song {
@@ -40,9 +40,9 @@ object Song {
         .orElse(tag getFields "TXXX" map (_.toString) find (_ contains "track_gain") map parseReplayGain)
         .map(_.split(' ').apply(0).toDouble) // handle the case of "1.43 dB"
 
-    new Song(file = file, title = tag.getFirst(FieldKey.TITLE), artistName = tag.getFirst(FieldKey.ARTIST),
-      albumName = tag.getFirst(FieldKey.ALBUM), track = tag.getFirst(FieldKey.TRACK).toInt,
-      year = year, bitRate = header.getBitRate, duration = header.getTrackLength, size = file.length,
-      discNumber = discNumber, trackGain = trackGain)
+    new Song(file = IOFile(file), iofile = file, title = tag.getFirst(FieldKey.TITLE),
+      artistName = tag.getFirst(FieldKey.ARTIST), albumName = tag.getFirst(FieldKey.ALBUM),
+      track = tag.getFirst(FieldKey.TRACK).toInt, year = year, bitRate = header.getBitRate,
+      duration = header.getTrackLength, size = file.length, discNumber = discNumber, trackGain = trackGain)
   }
 }

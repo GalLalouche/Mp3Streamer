@@ -15,7 +15,7 @@ private[lyrics] object DefaultClassicalInstrumental extends LyricsRetriever {
       case null => false
       case e => if (e.getName == "Classical") true else isClassical(f.getParentFile)
     }
-    if (isClassical(s.file))
+    if (isClassical(s.iofile))
       Future.successful(Instrumental("Default"))
     else
       Future.failed(new IllegalArgumentException("Not a classical song"))
