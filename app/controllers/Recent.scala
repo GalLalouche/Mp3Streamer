@@ -10,14 +10,12 @@ import scala.concurrent.Future
 
 object Recent extends Controller {
   import Utils.config._
-  private val mf = Utils.config.mf
   // TODO move to a backend class
   private def recentAlbums(amount: Int): Future[Seq[Album]] = Future {
-    mf.genreDirs
+    Utils.config.mf.genreDirs // mf is inlined because otherwise it doesn't pick up the implicit :(
         .flatMap(_.deepDirs)
-        .filter(e => mf.getSongFilesInDir(e).nonEmpty)
+        .filter(e => Utils.config.mf.getSongFilesInDir(e).nonEmpty)
         .sortBy(_.lastModified)(Ordering.by(-_.toEpochSecond(ZoneOffset.UTC)))
-        .map(_.dir)
         .map(Album.apply)
         .take(amount)
   }

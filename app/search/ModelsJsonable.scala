@@ -4,7 +4,7 @@ import java.io.File
 
 import common.Jsonable
 import common.RichJson._
-import common.io.IOFile
+import common.io.{IODirectory, IOFile}
 import models.{Album, Artist, Song}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsObject, Json}
@@ -35,12 +35,12 @@ object ModelsJsonable {
 
   implicit object AlbumJsonifier extends Jsonable[Album] {
     def jsonify(a: Album) = Json obj(
-        "dir" -> a.dir.getAbsolutePath,
+        "dir" -> a.dir.asInstanceOf[IODirectory].path,
         "title" -> a.title,
         "artistName" -> a.artistName,
         "year" -> a.year)
     def parse(json: JsObject): Album = {
-      new Album(new File(json str "dir"),
+      new Album(new IODirectory(json str "dir"),
         title = json str "title",
         artistName = json str "artistName",
         year = json int "year")

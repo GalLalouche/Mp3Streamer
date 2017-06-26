@@ -1,18 +1,15 @@
 package models
 
-import java.io.File
+import common.io.DirectoryRef
 
-import common.io.IODirectory
-import common.rich.path.Directory
-import common.rich.path.RichFile._
-
-case class Album(dir: File, title: String, artistName: String, year: Int) {
-  def songs(implicit mf: MusicFinder): Seq[Song] = mf.getSongsInDir(new IODirectory(dir))
+// TODO make songs a class field, and transform Song.album to require an implicit MF
+case class Album(dir: DirectoryRef, title: String, artistName: String, year: Int) {
+  def songs(implicit mf: MusicFinder): Seq[Song] = mf.getSongsInDir(dir)
 }
 
 object Album {
-  def apply(dir: Directory) = new Album(dir,
-      dir.name.replaceAll("\\d+\\w? ?", ""),
-      dir.parent.name,
-      dir.files.iterator.filter(x => List("mp3", "flac").contains(x.extension)).map(Song(_).year).next)
+  def apply(dir: DirectoryRef)(implicit mf: MusicFinder) = new Album(dir,
+    dir.name.replaceAll("\\d+\\w? ?", ""),
+    dir.parent.name,
+    mf.getSongsInDir(dir).head.year)
 }

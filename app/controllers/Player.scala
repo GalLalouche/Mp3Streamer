@@ -1,6 +1,7 @@
 package controllers
 
 import common.Debug
+import common.io.IODirectory
 import common.rich.RichT._
 import common.rich.path.Directory
 import common.rich.primitives.RichEither._
@@ -34,7 +35,7 @@ object Player extends Controller with Debug {
   }
 
   def album(path: String) = Action {
-    Ok(Utils.parseFile(path) |> Directory.apply |> Album.apply |> (_.songs.map(Utils.toJson)) |> JsArray.apply)
+    Ok(Utils.parseFile(path) |> IODirectory.apply |> Album.apply |> (_.songs.map(Utils.toJson)) |> JsArray.apply)
   }
 
   def song(path: String) = Action {

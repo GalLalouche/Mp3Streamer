@@ -7,7 +7,9 @@ import search.ModelsJsonable._
 class JsonableTest extends FreeSpec with AuxSpecs with Jsonable.ToJsonableOps {
   private val fakeModelFactory = new FakeModelFactory
   def test[T: Jsonable](t: T) {
-    parseObject[T](t.jsonify).parse shouldReturn t
+    val actual = parseObject[T](t.jsonify).parse
+    val expected = t
+    actual shouldReturn expected
   }
   "Song" - {
     "Song without optionals" in {

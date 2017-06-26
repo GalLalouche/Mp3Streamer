@@ -14,7 +14,7 @@ import scala.collection.JavaConversions._
 case class Song(file: FileRef, iofile: File, title: String, artistName: String, albumName: String,
                 track: Int, year: Int, bitRate: String, duration: Int, size: Long,
                 discNumber: Option[String], trackGain: Option[Double]) {
-  lazy val album = Album(dir = iofile.getParentFile, title = albumName, artistName = artistName, year = year)
+  lazy val album = Album(dir = file.parent, title = albumName, artistName = artistName, year = year)
 }
 
 object Song {
