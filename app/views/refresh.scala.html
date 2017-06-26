@@ -6,13 +6,15 @@
     <script type="text/javascript" src="/assets/javascripts/ws/common.js"></script>
     <script type="text/javascript">
       $(function () {
-        openConnection("refresh", function (msg) {
+        openConnection("refresh", function (msg, connection) {
           try {
             const json = JSON.parse(msg.data);
             document.title = `${Math.floor(100 * json.finished / json.total)}%`
             $("#status").text(msg.data);
           } catch (err) {
             document.title = msg.data
+            if (msg.data === "Finished")
+              connection.close()
           }
         });
       });

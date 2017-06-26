@@ -51,12 +51,13 @@ $(function() {
 
   function scan() {
     $.get("debug/fast_refresh", function() {
-      openConnection("refresh", function(msg) {
+      openConnection("refresh", function(msg, connection) {
         try {
           $.toast("Found new directory: " + JSON.parse(msg.data).currentDir)
         } catch (e) {
           $.toast(msg.data)
           if (msg.data.includes("Finished")) {
+            connection.close()
             search()
           }
         }

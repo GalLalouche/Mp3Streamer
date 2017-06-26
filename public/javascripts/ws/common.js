@@ -3,7 +3,7 @@ function openConnection(path, onMessage) {
   connection.onopen = function() {
     console.log(path + " connection opened");
   };
-  connection.onmessage = onMessage;
+  connection.onmessage = e => onMessage(e, connection);
   connection.onclose = function(event) {
     switch (event.code) {
       case 1000:
