@@ -135,7 +135,10 @@
         itemClass: "jp-playlist-item",
         freeGroupClass: "jp-free-media",
         freeItemClass: "jp-playlist-item-free",
-        removeItemClass: "jp-playlist-item-remove"
+        removeItemClass: "jp-playlist-item-remove",
+        removeThisClass: "jp-playlist-item-remove-this",
+        removeUpClass: "jp-playlist-item-remove-up",
+        removeDownClass: "jp-playlist-item-remove-down"
       }
     },
     _getDisplayedIndex: function (index) {
@@ -237,9 +240,14 @@
       // Wrap the <li> contents in a <div>
       var listItem = "<li><div>";
 
-      // Create remove control
-      listItem += "<a href='javascript:;' class='" + this.options.playlistOptions.removeItemClass
-          + "'>&times;</a>";
+      const options = this.options.playlistOptions
+      // Create remove controls
+      function appendRemoveItem(clazz, char) {
+        listItem += `<a href='javascript:;' class='${options.removeItemClass} ${clazz}'>${char}</a>`;
+      }
+      appendRemoveItem(options.removeThisClass, "&times;")
+      appendRemoveItem(options.removeUpClass, "&uparrow;")
+      appendRemoveItem(options.removeDownClass, "&downarrow;")
 
       // Create links to free media
       if (media.free) {
@@ -296,12 +304,19 @@
             return false;
           });
 
-      $(self.cssSelector.playlist + " a." + this.options.playlistOptions.removeItemClass).livequery(function() {
-        $(this).attr("title", "shift-click removes down, alt-click removes up")
-      })
+      function tooltip(selector, text) {
+        $(self.cssSelector.playlist + " a." + selector).livequery(function() {
+          $(this).attr("title", text)
+        })
+      }
+      const options = this.options.playlistOptions
+      tooltip(options.removeThisClass, "remove this item from the playlist")
+      tooltip(options.removeUpClass, "remove this item and all items above it from the playlist")
+      tooltip(options.removeDownClass, "remove this item and all items below it from the playlist")
+
       // Create .live() handlers for the remove controls
-      $(self.cssSelector.playlist + " a." + this.options.playlistOptions.removeItemClass).die("click").live(
-          "click", function (e) {
+      $(self.cssSelector.playlist).on("click", "a." + this.options.playlistOptions.removeItemClass, function() {
+            const triggerer = $(this)
             function removeItemAux(nextFunction, who) {
               // This has to be calculated before the removal, otherwise the who element is empty
               const next = nextFunction(who)
@@ -312,12 +327,13 @@
               });
             }
 
-            removeItemAux(
-                // Shift-click is remove down (for cleaning playlists); alt-click is remove up (accidental enqueue).
-                e.shiftKey ? x => x.next()
-                    : e.altKey ? x => x.prev()
-                    : _ => $(),
-                $(this).parent().parent())
+            function getNextFunction() {
+              if (triggerer.hasClass(options.removeThisClass)) return _ => $()
+              if (triggerer.hasClass(options.removeUpClass)) return x => x.prev()
+              if (triggerer.hasClass(options.removeDownClass)) return x => x.next()
+            }
+
+            removeItemAux(getNextFunction(), triggerer.parent().parent())
             return false;
           });
     },
