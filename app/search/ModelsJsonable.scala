@@ -5,7 +5,7 @@ import java.io.File
 import common.Jsonable
 import common.RichJson._
 import common.io.{IODirectory, IOFile}
-import models.{Album, Artist, Song}
+import models.{Album, Artist, IOSong, Song}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsObject, Json}
 
@@ -25,7 +25,7 @@ object ModelsJsonable {
         "trackGain" -> s.trackGain)
     def parse(json: JsObject): Song = {
       val file = new File(json str "file")
-      new Song(file = IOFile(file), iofile = file, title = json str "title",
+      IOSong(file = IOFile(file), title = json str "title",
         artistName = json str "artistName", albumName = json str "albumName",
         track = json int "track", year = json int "year", bitRate = json str "bitrate",
         duration = json int "duration", size = json int "size", discNumber = json ostr "discNumber",

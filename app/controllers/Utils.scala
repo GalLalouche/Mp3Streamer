@@ -6,7 +6,7 @@ import java.net.{URLDecoder, URLEncoder}
 import backend.configs.RealConfig
 import backend.logging._
 import common.rich.path.RichFile._
-import models.{Poster, Song}
+import models.{IOSong, Poster, Song}
 import play.api.libs.json.{JsObject, JsString}
 import play.api.mvc.AnyContent
 import search.ModelsJsonable.SongJsonifier
@@ -29,6 +29,6 @@ private[controllers] object Utils {
         ("poster" -> JsString("/posters/" + Poster.getCoverArt(s).path)) +
         (s.file.extension -> JsString("/stream/download/" + URLEncoder.encode(s.file.path, "UTF-8")))
   }
-  def parseSong(path: String): Song = Song(parseFile(path))
+  def parseSong(path: String): IOSong = Song(parseFile(path))
   def parseFile(path: String): File = new File(URLDecoder.decode(path, "UTF-8"))
 }

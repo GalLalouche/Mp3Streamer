@@ -3,7 +3,7 @@ package models
 import java.io.File
 import java.util.logging.{Level, Logger}
 
-import common.io.{FileRef, IOFile}
+import common.io.{FileRef, IOFile, MemoryFile}
 import common.rich.RichT._
 import common.rich.primitives.RichString._
 import org.jaudiotagger.audio.AudioFileIO
@@ -11,17 +11,30 @@ import org.jaudiotagger.tag.FieldKey
 
 import scala.collection.JavaConversions._
 
-case class Song(file: FileRef, iofile: File, title: String, artistName: String, albumName: String,
-                track: Int, year: Int, bitRate: String, duration: Int, size: Long,
-                discNumber: Option[String], trackGain: Option[Double]) {
+trait Song {
+  def file: FileRef
+  def title: String
+  def artistName: String
+  def albumName: String
+  def track: Int
+  def year: Int
+  def bitRate: String
+  def duration: Int
+  def size: Long
+  def discNumber: Option[String]
+  def trackGain: Option[Double]
   lazy val album = Album(dir = file.parent, title = albumName, artistName = artistName, year = year)
 }
+
+case class IOSong(file: FileRef, title: String, artistName: String, albumName: String,
+                  track: Int, year: Int, bitRate: String, duration: Int, size: Long,
+                  discNumber: Option[String], trackGain: Option[Double]) extends Song
 
 object Song {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
 
   /** Parses ID3 data */
-  def apply(file: File): Song = {
+  def apply(file: File): IOSong = {
     require(file != null)
     require(file.exists, file + " doesn't exist")
     require(file.isDirectory == false, file + " is a directory")
@@ -40,7 +53,7 @@ object Song {
         .orElse(tag getFields "TXXX" map (_.toString) find (_ contains "track_gain") map parseReplayGain)
         .map(_.split(' ').apply(0).toDouble) // handle the case of "1.43 dB"
 
-    new Song(file = IOFile(file), iofile = file, title = tag.getFirst(FieldKey.TITLE),
+    IOSong(file = IOFile(file), title = tag.getFirst(FieldKey.TITLE),
       artistName = tag.getFirst(FieldKey.ARTIST), albumName = tag.getFirst(FieldKey.ALBUM),
       track = tag.getFirst(FieldKey.TRACK).toInt, year = year, bitRate = header.getBitRate,
       duration = header.getTrackLength, size = file.length, discNumber = discNumber, trackGain = trackGain)

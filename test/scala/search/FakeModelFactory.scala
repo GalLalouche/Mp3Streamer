@@ -4,7 +4,7 @@ import java.io.File
 import java.util.UUID
 
 import common.io.{IODirectory, IOFile}
-import models.{Album, Artist, Song}
+import models._
 
 class FakeModelFactory {
   def album(dir: File = new File("./foobar"), title: String = "album", artistName: String = "artist",
@@ -16,8 +16,9 @@ class FakeModelFactory {
            trackGain: Option[Double] = None): Song = {
     val _album = album
     val file = new File(filePath).getAbsoluteFile
-    new Song(IOFile(file), file, title, artistName,
-      Option(album).map(_.title).getOrElse(albumName), track, year, bitRate, duration, size, discNumber, trackGain) {
+    new IOSong(IOFile(file), title, artistName,
+      Option(album).map(_.title).getOrElse(albumName), track, year, bitRate, duration, size,
+      discNumber, trackGain) {
       override lazy val album = _album
     }
   }
