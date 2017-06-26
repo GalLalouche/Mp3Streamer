@@ -8,7 +8,7 @@ class IOMusicFinder extends MusicFinder {
   override val dir = IODirectory("d:/media/music")
   override protected val subDirNames = List("Rock", "New Age", "Classical", "Metal", "Jazz")
   override val extensions = Set("mp3", "flac")
-  override protected def parseSongInternal(f: IOFile) = Song(f.file)
+  override protected def parseSong(f: IOFile) = Song(f.file)
 }
 
 /** The actual locations, as opposed to mocked ones. This is used by scripts as well as the real controllers. */
