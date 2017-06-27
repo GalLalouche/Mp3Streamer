@@ -17,7 +17,7 @@ object Cacher extends WebSocketController {
     "total" -> u.totalNumber,
     "currentDir" -> u.dir.name)
   implicit val c = Utils.config
-  import search.ModelsJsonable._
+  import search.ModelJsonable._
   private val cacher = MetadataCacher.create
   private def toRefreshStatus(o: Observable[IndexUpdate]) = {
     o.map(toJson).map(_.toString).doOnCompleted {

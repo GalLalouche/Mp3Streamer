@@ -9,7 +9,7 @@ import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.PropSpec
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import search.ModelsJsonable._
+import search.ModelJsonable._
 
 class JsonableTest extends PropSpec with GeneratorDrivenPropertyChecks with AuxSpecs with Jsonable.ToJsonableOps {
   implicit override val generatorDrivenConfig = PropertyCheckConfig(minSuccessful = 10, workers = 5)

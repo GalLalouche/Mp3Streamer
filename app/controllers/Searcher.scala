@@ -9,7 +9,7 @@ import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, Controller}
 import search.CompositeIndex
-import search.ModelsJsonable._
+import search.ModelJsonable._
 
 object Searcher extends Controller with Extra
     with Jsonable.ToJsonableOps {

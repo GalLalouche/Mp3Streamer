@@ -8,7 +8,7 @@ import play.api.libs.json.{JsObject, Json}
 
 import scala.collection.mutable
 
-class FakeModelsJsonable {
+class FakeModelJsonable {
   private implicit val counter = new AtomicInteger
   private implicit val parsedModels = mutable.Map[JsObject, Any]()
   private def fakeJsonify(a: Any): JsObject = {

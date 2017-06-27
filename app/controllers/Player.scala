@@ -14,7 +14,7 @@ import songs.{SongGroup, SongGroups, SongSelector}
 object Player extends Controller with Debug {
   private implicit val c = Utils.config
   import c._
-  import search.ModelsJsonable._
+  import search.ModelJsonable._
   private val songGroups: Map[Song, SongGroup] = {
     SongGroups.fromGroups(new SongGroups().load)
   }

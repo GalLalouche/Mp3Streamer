@@ -9,7 +9,7 @@ import common.rich.path.RichFile._
 import models.{IOSong, Poster, Song}
 import play.api.libs.json.{JsObject, JsString}
 import play.api.mvc.AnyContent
-import search.ModelsJsonable.SongJsonifier
+import search.ModelJsonable.SongJsonifier
 import common.RichJson._
 
 import scala.concurrent.ExecutionContext

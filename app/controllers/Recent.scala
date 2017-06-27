@@ -4,7 +4,7 @@ import java.time.ZoneOffset
 
 import models.Album
 import play.api.mvc.{Action, Controller}
-import search.ModelsJsonable.AlbumJsonifier
+import search.ModelJsonable.AlbumJsonifier
 
 import scala.concurrent.Future
 

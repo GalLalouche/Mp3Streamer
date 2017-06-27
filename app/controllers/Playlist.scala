@@ -17,7 +17,7 @@ object Playlist extends Controller {
 
   private def arrayOfPathsToSong(a: JsArray): Seq[Song] = a.value.map(_.as[String]).map(Utils.parseSong)
 
-  import search.ModelsJsonable._
+  import search.ModelJsonable._
   def getQueue = Action {
     Ok(saver.loadObject[PlaylistQueue].songs map Utils.toJson mapTo JsArray.apply)
   }

@@ -9,7 +9,7 @@ import models.{Album, Artist, IOSong, Song}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsObject, Json}
 
-object ModelsJsonable {
+object ModelJsonable {
   implicit object SongJsonifier extends Jsonable[Song] {
     def jsonify(s: Song) = Json obj(
         "file" -> s.file.path,

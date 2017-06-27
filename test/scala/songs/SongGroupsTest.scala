@@ -5,11 +5,11 @@ import common.AuxSpecs
 import org.scalatest.FreeSpec
 import search.FakeModelFactory
 
-import scala.search.FakeModelsJsonable
+import scala.search.FakeModelJsonable
 
 class SongGroupsTest extends FreeSpec with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory
-  private val fakeJsonable = new FakeModelsJsonable
+  private val fakeJsonable = new FakeModelJsonable
   import fakeJsonable._
   private val song1 = fakeModelFactory.song()
   private val song2 = fakeModelFactory.song()

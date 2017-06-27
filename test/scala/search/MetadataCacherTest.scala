@@ -13,14 +13,14 @@ import rx.lang.scala.Observable
 import search.MetadataCacher.IndexUpdate
 
 import scala.concurrent.{Await, Promise}
-import scala.search.FakeModelsJsonable
+import scala.search.FakeModelJsonable
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory
   private implicit val root = new MemoryRoot
   private val songs = root.addSubDir("songs")
   private val jsonableSaver = new JsonableSaver
-  private val fakeJsonable = new FakeModelsJsonable
+  private val fakeJsonable = new FakeModelJsonable
   import fakeJsonable._
   private def verifyData[T: Jsonable : Manifest](xs: T*) {
     jsonableSaver.loadArray[T].toSet shouldReturn xs.toSet
