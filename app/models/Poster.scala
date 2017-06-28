@@ -1,11 +1,18 @@
 package models
 
-import common.io.{DirectoryRef, FileRef}
+import java.io.File
+
+import common.rich.path.Directory
+import common.rich.path.RichFile._
+
+import scala.annotation.tailrec
 
 object Poster {
-	private def getCoverArt(dir: DirectoryRef): FileRef = {
-		val f = dir.files.find(_.name.toLowerCase.matches("folder.(jpg)|(png)"))
-		f.getOrElse(getCoverArt(dir.parent))
-	}
-	def getCoverArt(s: Song): FileRef = getCoverArt(s.file.parent)
+  @tailrec
+  private def getCoverArt(dir: Directory): File =
+    dir.files.find(_.name.toLowerCase.matches("folder.(jpg)|(png)")) match {
+      case Some(f) => f
+      case None => getCoverArt(dir.parent)
+    }
+  def getCoverArt(s: IOSong): File = getCoverArt(s.file.parent.dir)
 }

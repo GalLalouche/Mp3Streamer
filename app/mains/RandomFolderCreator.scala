@@ -58,7 +58,7 @@ private object RandomFolderCreator extends
       val newFile = new File(outputDir.dir, f.name)
       FileUtils.copyFile(f, newFile)
       val audioFile = AudioFileIO.read(newFile)
-      val coverArt: File = Poster.getCoverArt(Song(f)).asInstanceOf[IOFile].file
+      val coverArt: File = Poster.getCoverArt(Song(f))
       audioFile.getTag.setField(StandardArtwork.createArtworkFromFile(coverArt))
       try {
         audioFile.commit()
