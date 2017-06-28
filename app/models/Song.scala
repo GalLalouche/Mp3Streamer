@@ -26,9 +26,13 @@ trait Song {
   lazy val album = Album(dir = file.parent, title = albumName, artistName = artistName, year = year)
 }
 
-case class IOSong(file: FileRef, title: String, artistName: String, albumName: String,
+case class IOSong(file: IOFile, title: String, artistName: String, albumName: String,
                   track: Int, year: Int, bitRate: String, duration: Int, size: Long,
                   discNumber: Option[String], trackGain: Option[Double]) extends Song
+
+case class MemorySong(file: MemoryFile, title: String, artistName: String, albumName: String,
+                      track: Int, year: Int, bitRate: String, duration: Int, size: Long,
+                      discNumber: Option[String], trackGain: Option[Double]) extends Song
 
 object Song {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)

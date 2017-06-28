@@ -5,7 +5,7 @@ import backend.configs.TestConfiguration
 import backend.lyrics.Instrumental
 import common.io.{MemoryDir, MemoryRoot}
 import common.rich.RichFuture._
-import models.{IOSong, Song}
+import models.{MemorySong, Song}
 import org.scalatest.{FreeSpec, ShouldMatchers}
 import search.FakeModelFactory
 
@@ -19,7 +19,7 @@ class DefaultClassicalInstrumentalTest extends FreeSpec with ShouldMatchers {
     val file = split.dropRight(1)
         ./:(new MemoryRoot: MemoryDir)((dir, name) => dir addSubDir name)
         .addFile(filePath)
-    val $ = fakeModelFactory.song().asInstanceOf[IOSong]
+    val $ = fakeModelFactory.song().asInstanceOf[MemorySong]
     $.copy(file = file)
   }
 
