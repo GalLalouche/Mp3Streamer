@@ -12,7 +12,8 @@ import org.jaudiotagger.tag.FieldKey
 import scala.collection.JavaConversions._
 
 trait Song {
-  def file: FileRef
+  type F <: FileRef
+  def file: F
   def title: String
   def artistName: String
   def albumName: String
@@ -28,11 +29,15 @@ trait Song {
 
 case class IOSong(file: IOFile, title: String, artistName: String, albumName: String,
                   track: Int, year: Int, bitRate: String, duration: Int, size: Long,
-                  discNumber: Option[String], trackGain: Option[Double]) extends Song
+                  discNumber: Option[String], trackGain: Option[Double]) extends Song {
+  override type F = IOFile
+}
 
 case class MemorySong(file: MemoryFile, title: String, artistName: String, albumName: String,
                       track: Int, year: Int, bitRate: String, duration: Int, size: Long,
-                      discNumber: Option[String], trackGain: Option[Double]) extends Song
+                      discNumber: Option[String], trackGain: Option[Double]) extends Song {
+  override type F = MemoryFile
+}
 
 object Song {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
