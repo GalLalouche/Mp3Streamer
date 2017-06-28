@@ -6,7 +6,7 @@ import backend.configs.{FakeMusicFinder, TestConfiguration}
 import common.io.{JsonableSaver, MemoryRoot}
 import common.rich.RichFuture._
 import common.{AuxSpecs, Jsonable}
-import models.Artist
+import models.{Album, Artist, Song}
 import org.scalatest.matchers.{MatchResult, Matcher}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import rx.lang.scala.Observable
@@ -22,9 +22,19 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
   private val jsonableSaver = new JsonableSaver
   private val fakeJsonable = new FakeModelJsonable
   import fakeJsonable._
-  private def verifyData[T: Jsonable : Manifest](xs: T*) {
+
+  // TODO replace this hack with a less hacky hack
+  // This hack enforces an up-cast of memory models subtypes (e.g., MemorySong <: Song) to their
+  // base model. This is needed since MetadataCacher saves the data under Song, but because
+  // FakeModelFactory returns a MemorySong, the verifier will try to load a MemorySong, resulting in
+  // no data, since JsonableSaver loads data using a compile-time manifest. Yeah... :|
+  private def verifyData[T: Jsonable : Manifest](xs: Seq[T]) {
     jsonableSaver.loadArray[T].toSet shouldReturn xs.toSet
   }
+  def verifyData(data: Song*): Unit = verifyData(data)
+  // The increasing number of dummy implicits is needed because of type erasure.
+  def verifyData(data: Album*)(implicit d: DummyImplicit): Unit = verifyData(data)
+  def verifyData(data: Artist*)(implicit d1: DummyImplicit, d2: DummyImplicit): Unit = verifyData(data)
 
   private val mf = new FakeMusicFinder(songs)
   private implicit val c = TestConfiguration().copy(_root = root, _mf = mf)
