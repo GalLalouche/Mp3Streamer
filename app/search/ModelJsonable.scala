@@ -9,7 +9,7 @@ import models.{Album, Artist, IOSong, Song}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsObject, Json}
 
-object ModelJsonable {
+object ModelJsonable extends Jsonable.ToJsonableOps {
   implicit object SongJsonifier extends Jsonable[Song] {
     def jsonify(s: Song) = Json obj(
         "file" -> s.file.path,
@@ -50,7 +50,7 @@ object ModelJsonable {
   implicit object ArtistJsonifier extends Jsonable[Artist] {
     def jsonify(a: Artist) = Json obj(
         "name" -> a.name,
-        "albums" -> AlbumJsonifier.jsonify(a.albums))
+        "albums" -> a.albums.jsonify)
     def parse(json: JsObject): Artist = {
       val albums: Seq[Album] = json objects "albums" map AlbumJsonifier.parse
       Artist(json str "name", albums.toSet)

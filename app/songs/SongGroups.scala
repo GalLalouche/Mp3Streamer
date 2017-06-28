@@ -8,14 +8,14 @@ import play.api.libs.json.{JsArray, Json}
 
 import scala.concurrent.ExecutionContext
 
-class SongGroups(implicit songJsonable: Jsonable[Song]) {
+class SongGroups(implicit songJsonable: Jsonable[Song]) extends Jsonable.ToJsonableOps {
   private def getJsonFile(implicit root: DirectoryRef, ec: ExecutionContext): FileRef =
     root addFile "song_groups.json"
   private def writeToJsonFile(s: String)(implicit root: DirectoryRef, ec: ExecutionContext) =
     getJsonFile write s
   def save(groups: Traversable[SongGroup])(implicit root: DirectoryRef, ec: ExecutionContext): Unit =
     groups
-        .map(_.songs |> songJsonable.jsonify)
+        .map(_.songs.jsonify)
         .map(_.toString)
         .mkString("\n") |> writeToJsonFile
   def load(implicit root: DirectoryRef, ec: ExecutionContext): Set[SongGroup] = getJsonFile.lines

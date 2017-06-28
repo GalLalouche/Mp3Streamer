@@ -2,13 +2,14 @@ package controllers
 
 import java.time.ZoneOffset
 
+import common.Jsonable
 import models.Album
 import play.api.mvc.{Action, Controller}
 import search.ModelJsonable.AlbumJsonifier
 
 import scala.concurrent.Future
 
-object Recent extends Controller {
+object Recent extends Controller with Jsonable.ToJsonableOps {
   import Utils.config._
   // TODO move to a backend class
   private def recentAlbums(amount: Int): Future[Seq[Album]] = Future {
@@ -20,9 +21,9 @@ object Recent extends Controller {
         .take(amount)
   }
   def recent(amount: Int) = Action.async {
-    recentAlbums(amount).map(AlbumJsonifier.jsonify).map(Ok(_))
+    recentAlbums(amount).map(_.jsonify).map(Ok(_))
   }
   def last = Action.async {
-    recentAlbums(1).map(AlbumJsonifier.jsonify).map(Ok(_))
+    recentAlbums(1).map(_.jsonify).map(Ok(_))
   }
 }

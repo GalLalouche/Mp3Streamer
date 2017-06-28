@@ -5,12 +5,10 @@ import java.net.{URLDecoder, URLEncoder}
 
 import backend.configs.RealConfig
 import backend.logging._
-import common.rich.path.RichFile._
+import common.RichJson._
 import models.{IOSong, Poster, Song}
 import play.api.libs.json.{JsObject, JsString}
-import play.api.mvc.AnyContent
-import search.ModelJsonable.SongJsonifier
-import common.RichJson._
+import search.ModelJsonable
 
 import scala.concurrent.ExecutionContext
 
@@ -22,13 +20,11 @@ private[controllers] object Utils {
         setCurrentLevel(LoggingLevel.Verbose)
       }, new DirectoryLogger()(this))
   }
-  def toJson(s: Song): JsObject = {
-    // TODO lenses?
-    val $ = SongJsonifier.jsonify(s)
-    $ + ("file" -> JsString(URLEncoder.encode($.str("file"), "UTF-8"))) +
-        ("poster" -> JsString("/posters/" + Poster.getCoverArt(s).path)) +
-        (s.file.extension -> JsString("/stream/download/" + URLEncoder.encode(s.file.path, "UTF-8")))
-  }
+  import ModelJsonable._
+  def toJson(s: Song): JsObject = s.jsonify +
+      ("file" -> JsString(URLEncoder.encode(s.jsonify.str("file"), "UTF-8"))) +
+      ("poster" -> JsString("/posters/" + Poster.getCoverArt(s).path)) +
+      (s.file.extension -> JsString("/stream/download/" + URLEncoder.encode(s.file.path, "UTF-8")))
   def parseSong(path: String): IOSong = Song(parseFile(path))
   def parseFile(path: String): File = new File(URLDecoder.decode(path, "UTF-8"))
 }
