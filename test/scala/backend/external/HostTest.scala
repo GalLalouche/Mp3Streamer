@@ -3,8 +3,17 @@ package backend.external
 import backend.Url
 import common.AuxSpecs
 import org.scalatest.FreeSpec
+import common.rich.primitives.RichBoolean._
 
 class HostTest extends FreeSpec with AuxSpecs {
+  "hosts includes all hosts" in {
+    import scala.reflect.runtime.{universe => u}
+    val hostsByReflection: Traversable[Host] = u.typeOf[Host.type]
+        .decls
+        .flatMap(e => e.isModule.ifTrue(e.asModule))
+        .map(e => u.runtimeMirror(getClass.getClassLoader).reflectModule(e).instance.asInstanceOf[Host])
+    hostsByReflection shouldSetEqual Host.hosts
+  }
   "fromUrl" - {
     "existing" - {
       "MetalArchives" in {
