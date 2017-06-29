@@ -15,7 +15,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
-private class LastFmReconciler(implicit ec: ExecutionContext, it: InternetTalker) extends Reconciler[Artist](Host.LastFm)
+private class LastFmReconciler(millisBetweenRedirects: Long = 100)
+    (implicit ec: ExecutionContext, it: InternetTalker) extends Reconciler[Artist](Host.LastFm)
     with ToBindOps with FutureInstances {
   private class TempRedirect extends Exception
   private def handleReply(h: HttpURLConnection): Option[ExternalLink[Artist]] = h.getResponseCode match {
@@ -31,10 +32,9 @@ private class LastFmReconciler(implicit ec: ExecutionContext, it: InternetTalker
   }
 
   override def apply(a: Artist): Future[Option[ExternalLink[Artist]]] = {
-    val httpConnection = a.name.toLowerCase.replaceAll(" ", "+")
-        .mapTo(e => new URL(s"https://www.last.fm/music/$e").openConnection().asInstanceOf[HttpURLConnection])
-    it connect httpConnection map handleReply recoverWith {
-      case _: TempRedirect => Future(Thread sleep 100).>>(apply(a))
+    val url = Url(s"https://www.last.fm/music/" + a.name.toLowerCase.replaceAll(" ", "+"))
+    it connect url map handleReply recoverWith {
+      case _: TempRedirect => Future(Thread sleep millisBetweenRedirects).>>(apply(a))
       case e: MatchError => Future.failed(new UnsupportedOperationException("last.fm returned an unsupported status code", e))
     }
   }

@@ -23,7 +23,15 @@ case class TestConfiguration(private val _ec: ExecutionContext = new ExecutionCo
   override implicit val ec: ExecutionContext = _ec
   override implicit val mf: FakeMusicFinder = _mf
   override def downloadDocument(url: Url): Future[Document] = Future successful _documentDownloader(url)
-  override def connect(http: HttpURLConnection): Future[HttpURLConnection] = Future successful _httpTransformer(http)
+  override def connect(url: Url, config: (HttpURLConnection) => Unit) = Future successful {
+    val $ = new HttpURLConnection(url.toURL) {
+      override def disconnect() = ???
+      override def usingProxy() = ???
+      override def connect() = ???
+    }
+    config($)
+    _httpTransformer($)
+  }
   override implicit val logger: Logger = new StringBuilderLogger(TestConfiguration.loggingHistory)
   override implicit lazy val rootDirectory: MemoryRoot = _root
   override implicit val clock: FakeClock = new FakeClock

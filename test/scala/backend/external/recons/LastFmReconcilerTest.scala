@@ -18,7 +18,7 @@ class LastFmReconcilerTest extends FreeSpec with AuxSpecs {
       override def getResponseCode: Int = HttpURLConnection.HTTP_NOT_FOUND
     })
     val $ = new LastFmReconciler
-    $(Artist("Foobar")).get shouldReturn None
+    $(Artist("Foobar")).get shouldBe 'empty
   }
   "200" in {
     implicit val c = this.c.copy(_httpTransformer = new FakeHttpURLConnection(_) {
@@ -37,10 +37,11 @@ class LastFmReconcilerTest extends FreeSpec with AuxSpecs {
           HttpURLConnection.HTTP_MOVED_TEMP
         } else
           HttpURLConnection.HTTP_OK
-        override def getContent: AnyRef = if (!firstAttempt) new FileInputStream(getResourceFile("last_fm.html")) else null
+        override def getContent: AnyRef =
+          if (!firstAttempt) new FileInputStream(getResourceFile("last_fm.html")) else null
       }
     })
-    new LastFmReconciler().apply(Artist("Foobar")).get.get shouldReturn
+    new LastFmReconciler(1).apply(Artist("Foobar")).get.get shouldReturn
         ExternalLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm)
 
   }

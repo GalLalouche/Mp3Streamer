@@ -36,9 +36,7 @@ private class AllMusicHelper(implicit ec: ExecutionContext, it: InternetTalker) 
       if (canonicalLink.matcher(url.address dropAfterLast '/').matches)
         Future successful url
       else {
-        val http = new URL(url.address).openConnection.asInstanceOf[HttpURLConnection]
-        http.setInstanceFollowRedirects(false)
-        it.connect(http)
+        it.connect(url, _ setInstanceFollowRedirects false)
             .filterWithMessage(_.getResponseCode == HttpURLConnection.HTTP_MOVED_PERM,
               e => s"Expected response code ${HttpURLConnection.HTTP_MOVED_PERM}, but was ${e.getResponseCode}")
             .map(_ getHeaderField "location")

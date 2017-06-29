@@ -1,6 +1,9 @@
 package backend
+import java.net.URL
 
 case class Url(address: String) {
+  def toURL: URL = new URL(address)
+
   require(!address.matches("\\s*"), "empty address")
   def host = Url(
     if (address startsWith "http")

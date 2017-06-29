@@ -1,6 +1,6 @@
 package backend.configs
 
-import java.net.HttpURLConnection
+import java.net.{HttpURLConnection, URL}
 
 import backend.Url
 import common.JodaClock
@@ -20,10 +20,12 @@ trait RealConfig extends Configuration {
   override def downloadDocument(url: Url): Future[Document] =
     Future(Source.fromURL(url.address, "UTF-8"))
         .map(_.mkString)
-        .map(Jsoup parse)
-  override def connect(http: HttpURLConnection): Future[HttpURLConnection] = Future {
-    http.connect()
-    http
+        .map(Jsoup.parse)
+  override def connect(u: Url, config: HttpURLConnection => Unit) = Future {
+    val $ = u.toURL.openConnection().asInstanceOf[HttpURLConnection]
+    config($)
+    $.connect()
+    $
   }
   override implicit lazy val rootDirectory: DirectoryRef = IODirectory.apply("D:/media/streamer/")
   override implicit val clock = JodaClock.real
