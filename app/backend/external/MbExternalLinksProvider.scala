@@ -20,6 +20,7 @@ import scalaz.syntax.{ToBindOps, ToFunctorOps}
 
 class MbExternalLinksProvider(implicit c: Configuration)
     extends FutureInstances with ToFunctorOps with ToBindOps {
+  import c._
   private class TimeStamper[R <: Reconcilable](foo: RefreshableStorage[R, Links[R]]) extends Retriever[R, TimestampedLinks[R]] {
     override def apply(r: R): Future[TimestampedLinks[R]] = foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }

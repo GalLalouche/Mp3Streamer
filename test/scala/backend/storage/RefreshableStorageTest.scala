@@ -12,6 +12,7 @@ import scala.concurrent.Future
 
 class RefreshableStorageTest extends FreeSpec with MockitoSugar with AuxSpecs with OneInstancePerTest {
   private implicit val c = new TestConfiguration
+  implicit val clock = c.clock
   private var i = 0
   private val freshnessStorage = new FreshnessStorage[String, String](new MemoryBackedStorage)
   private val $ =
@@ -32,14 +33,14 @@ class RefreshableStorageTest extends FreeSpec with MockitoSugar with AuxSpecs wi
     }
     "existing value is stale should refresh" in {
       freshnessStorage.store("foobar", "bazqux")
-      Thread sleep 100
+      clock advance 100
       $("foobar").get shouldReturn "raboof1"
       freshnessStorage.load("foobar").get.get shouldReturn "raboof1"
       $("foobar").get shouldReturn "raboof1"
     }
     "existing value has no datetime" in {
       freshnessStorage.storeWithoutTimestamp("foobar", "bazqux")
-      Thread sleep 100
+
       $("foobar").get shouldReturn "bazqux"
     }
     "reuse existing value on failure" in {
@@ -48,7 +49,7 @@ class RefreshableStorageTest extends FreeSpec with MockitoSugar with AuxSpecs wi
         Duration.millis(50))
       freshnessStorage.store("foo", "bar")
       val dataFreshness = freshnessStorage.freshness("foo").get
-      Thread sleep 100
+      clock advance 100
       assert($.needsRefresh("foo").get)
       $.apply("foo").get shouldReturn "bar"
       freshnessStorage.freshness("foo").get shouldReturn dataFreshness

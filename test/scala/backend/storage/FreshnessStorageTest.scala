@@ -12,10 +12,8 @@ import scalaz.syntax.ToBindOps
 class FreshnessStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest
     with FutureInstances with ToBindOps {
   private implicit val c = TestConfiguration()
-  private var now = new DateTime(0)
-  private val $ = new FreshnessStorage[Int, Int](new MemoryBackedStorage) {
-    override protected def now = FreshnessStorageTest.this.now
-  }
+  private implicit val clock = c.clock
+  private val $ = new FreshnessStorage[Int, Int](new MemoryBackedStorage)
 
   "store and load" - {
     "Can load stored data" in {
@@ -33,12 +31,12 @@ class FreshnessStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTes
       $.storeWithoutTimestamp(1, 2).>>($ freshness 1).get.get shouldReturn None
     }
     "existing data with timestamp" in {
-      $.store(1, 2).>>($ freshness 1).get.get.get shouldReturn now
+      $.store(1, 2).>>($ freshness 1).get.get.get shouldReturn clock.now.toDateTime
     }
   }
   "mapStore updates timestamp" in {
     $.store(1, 2).get
-    now = new DateTime(1)
+    clock advance 1
     $.freshness(1).get.get.get shouldReturn new DateTime(0)
 
     $.mapStore(1, _ * 2, ???).get.get shouldReturn 2

@@ -1,5 +1,6 @@
 package backend.storage
 
+import common.JodaClock
 import common.rich.RichT._
 import org.joda.time.DateTime
 
@@ -11,8 +12,9 @@ import scala.concurrent.{ExecutionContext, Future}
  * that the value does not need to be updated.
  */
 class FreshnessStorage[Key, Value](storage: Storage[Key, (Value, Option[DateTime])])
-                                  (implicit ec: ExecutionContext) extends Storage[Key, Value] {
-  protected def now: DateTime = DateTime.now
+                                  (implicit ec: ExecutionContext, clock: JodaClock)
+    extends Storage[Key, Value] {
+  private def now: DateTime = clock.now.toDateTime
   private def now(v: Value): (Value, Option[DateTime]) = v -> Some(now)
   private def toValue(v: Future[Option[(Value, Any)]]) = v.map(_.map(_._1))
   // 1st option: the data may not be there; 2nd option: it might be there but null

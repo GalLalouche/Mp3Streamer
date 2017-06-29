@@ -1,6 +1,7 @@
 package backend.storage
 
 import backend.Retriever
+import common.JodaClock
 import common.rich.RichFuture._
 import common.rich.RichT._
 import org.joda.time.{DateTime, Duration}
@@ -10,8 +11,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class RefreshableStorage[Key, Value](freshnessStorage: FreshnessStorage[Key, Value],
                                      onlineRetriever: Retriever[Key, Value],
                                      maxAge: Duration)
-                                    (implicit ec: ExecutionContext) extends Retriever[Key, Value] {
-  private def age(dt: DateTime): Duration = Duration.millis(DateTime.now().getMillis - dt.getMillis)
+                                    (implicit ec: ExecutionContext, clock: JodaClock) extends Retriever[Key, Value] {
+  private def age(dt: DateTime): Duration = new Duration(dt, clock.now.toDateTime)
   def needsRefresh(k: Key): Future[Boolean] =
     freshnessStorage.freshness(k)
         .map(_.forall(_.exists(_.mapTo(age).isLongerThan(maxAge))))
