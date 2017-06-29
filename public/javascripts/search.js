@@ -4,7 +4,6 @@ $(function() {
 
   function setResults(jsArray, requestTime) {
     results.show()
-    const icon = name => `<i class="fa fa-${name}"/>`
     const playIcon = icon("play")
     const addIcon = icon("plus")
 

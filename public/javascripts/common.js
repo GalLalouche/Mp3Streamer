@@ -9,6 +9,7 @@ String.prototype.format = String.prototype.f = function() {
 const button = text => elem("button", text)
 const div = () => elem('div')
 const br = () => elem('br')
+const icon = name => `<i class="fa fa-${name}"/>`
 function appendBr(elementToAppendTo) { elementToAppendTo.append(br()) }
 Number.prototype.timeFormat = function() {
   let hours = Math.floor(this / 3600);

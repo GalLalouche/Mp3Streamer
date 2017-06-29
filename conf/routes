@@ -63,4 +63,5 @@ PUT        /new_albums/album/ignore      controllers.NewAlbums.ignoreAlbum
 GET        /recent/albums/               controllers.Recent.recent(amount: Int = 10)
 GET        /recent/albums/:amount        controllers.Recent.recent(amount: Int)
 GET        /recent/last                  controllers.Recent.last
+GET        /ws/last_album                controllers.Recent.accept
 

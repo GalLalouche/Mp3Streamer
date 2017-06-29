@@ -17,6 +17,7 @@ object Cacher extends WebSocketController {
   import search.ModelJsonable._
   private val cacher = MetadataCacher.create
   private def toRefreshStatus(o: Observable[IndexUpdate]) = {
+    o.map(_.dir).foreach(Recent.newDir)
     o.map(toJson).map(_.toString).doOnCompleted {
       Player.update()
       broadcast("Reloading searcher")

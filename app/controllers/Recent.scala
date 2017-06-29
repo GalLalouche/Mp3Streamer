@@ -3,13 +3,15 @@ package controllers
 import java.time.ZoneOffset
 
 import common.Jsonable
+import common.io.DirectoryRef
+import controllers.websockets.WebSocketController
 import models.Album
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.Action
 import search.ModelJsonable.AlbumJsonifier
 
 import scala.concurrent.Future
 
-object Recent extends Controller with Jsonable.ToJsonableOps {
+object Recent extends WebSocketController with Jsonable.ToJsonableOps {
   import Utils.config._
   // TODO move to a backend class
   private def recentAlbums(amount: Int): Future[Seq[Album]] = Future {
@@ -26,4 +28,6 @@ object Recent extends Controller with Jsonable.ToJsonableOps {
   def last = Action.async {
     recentAlbums(1).map(_.jsonify).map(Ok(_))
   }
+
+  def newDir(dir: DirectoryRef) = broadcast(Album(dir).jsonify.toString)
 }
