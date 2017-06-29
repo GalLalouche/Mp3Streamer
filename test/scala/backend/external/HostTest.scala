@@ -4,9 +4,10 @@ import backend.Url
 import common.AuxSpecs
 import org.scalatest.FreeSpec
 import common.rich.primitives.RichBoolean._
+import org.scalatest.tagobjects.Slow
 
 class HostTest extends FreeSpec with AuxSpecs {
-  "hosts includes all hosts" in {
+  "hosts includes all hosts" taggedAs Slow in {
     import scala.reflect.runtime.{universe => u}
     val hostsByReflection: Traversable[Host] = u.typeOf[Host.type]
         .decls
