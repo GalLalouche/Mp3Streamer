@@ -8,8 +8,11 @@ case class Album(dir: DirectoryRef, title: String, artistName: String, year: Int
 }
 
 object Album {
-  def apply(dir: DirectoryRef)(implicit mf: MusicFinder) = new Album(dir,
-    dir.name.replaceAll("\\d+\\w? ?", ""),
-    dir.parent.name,
-    mf.getSongsInDir(dir).head.year)
+  def apply(dir: DirectoryRef)(implicit mf: MusicFinder) = {
+    val firstSong = mf.getSongsInDir(dir).head
+    new Album(dir = dir,
+      title = firstSong.albumName,
+      artistName = firstSong.artistName,
+      year = firstSong.year)
+  }
 }
