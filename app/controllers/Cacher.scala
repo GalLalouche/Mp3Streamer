@@ -1,14 +1,11 @@
 package controllers
 
-import common.io.IODirectory
 import controllers.websockets.WebSocketController
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Action
 import rx.lang.scala.Observable
 import search.MetadataCacher
 import search.MetadataCacher.IndexUpdate
-
-import scala.concurrent.Future
 
 /** Used for running manual commands from the client side. */
 object Cacher extends WebSocketController {
@@ -30,7 +27,6 @@ object Cacher extends WebSocketController {
     Ok(views.html.refresh())
   }
 
-  def newDir(d: IODirectory): Future[Unit] = cacher processDirectory d
   def forceRefresh() = Action {
     toRefreshStatus(cacher.indexAll())
   }
