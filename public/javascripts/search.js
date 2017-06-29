@@ -25,7 +25,7 @@ $(function() {
       const song = $(this).data()
       $(this).attr("title", `${song.year}, ${song.albumName}, ${song.track}`)
     })
-    const albumItem = a => `${playIcon} ${a.artistName}: ${a.title} (${a.year || "N/A"})`
+    const albumItem = a => `${addIcon} ${a.artistName}: ${a.title} (${a.year || "N/A"})`
     specificResults("album", albumItem)
     specificResults("artist", _ => "")
     $.each($(".artist-result"), function() {
