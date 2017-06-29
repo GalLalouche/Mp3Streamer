@@ -4,8 +4,8 @@ import java.net.HttpURLConnection
 
 import backend.Url
 import backend.logging.{Logger, StringBuilderLogger}
-import common.io.{MemoryDir, MemoryRoot, MemorySystem}
-import models.MusicFinder
+import common.FakeClock
+import common.io.MemoryRoot
 import org.jsoup.nodes.Document
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -26,6 +26,7 @@ case class TestConfiguration(private val _ec: ExecutionContext = new ExecutionCo
   override def connect(http: HttpURLConnection): Future[HttpURLConnection] = Future successful _httpTransformer(http)
   override implicit val logger: Logger = new StringBuilderLogger(TestConfiguration.loggingHistory)
   override implicit lazy val rootDirectory: MemoryRoot = _root
+  override implicit val clock: FakeClock = new FakeClock
 }
 
 object TestConfiguration {

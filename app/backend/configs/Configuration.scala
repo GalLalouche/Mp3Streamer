@@ -1,7 +1,8 @@
 package backend.configs
 
 import backend.logging.Logger
-import common.io.{DirectoryRef, InternetTalker, RefSystem}
+import common.JodaClock
+import common.io.{DirectoryRef, InternetTalker}
 import models.MusicFinder
 import slick.driver.JdbcProfile
 
@@ -16,4 +17,5 @@ trait Configuration extends ExecutionContext with InternetTalker { self =>
   implicit val mf: MusicFinder
   implicit val rootDirectory: DirectoryRef
   implicit val logger: Logger
+  implicit val clock: JodaClock
 }

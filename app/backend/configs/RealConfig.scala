@@ -3,7 +3,8 @@ package backend.configs
 import java.net.HttpURLConnection
 
 import backend.Url
-import common.io.{DirectoryRef, IODirectory, IOSystem}
+import common.JodaClock
+import common.io.{DirectoryRef, IODirectory}
 import models.IOMusicFinder
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -25,4 +26,5 @@ trait RealConfig extends Configuration {
     http
   }
   override implicit lazy val rootDirectory: DirectoryRef = IODirectory.apply("D:/media/streamer/")
+  override implicit val clock = JodaClock.real
 }
