@@ -10,7 +10,7 @@ $(function () {
   });
   // Modify next to fetch a random song if in shuffle mode and at the last song
   playlist.oldNext = playlist.next;
-  const shouldLoadNextSongFromRandom = () => playlist.shuffled && playlist.isLastSongPlaying()
+  const shouldLoadNextSongFromRandom = () => playlist.isLastSongPlaying()
   playlist.next = function () {
     if (shouldLoadNextSongFromRandom())
       loadNextRandom(true);
@@ -38,7 +38,6 @@ $(function () {
     $(".jp-mute").click()
   else
     $(".jp-volume-max").click();
-  $(".jp-shuffle").click(); // default to shuffle
   function loadNextRandom(playNow) {
     $.get(randomSongUrl, function (data) {
       playlist.add(data, playNow);
