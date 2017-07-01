@@ -10,7 +10,7 @@ class DarkLyricsRetrieverTest extends LyricsSpec {
         "http://www.darklyrics.com/lyrics/foobar/bazzqux.html#5"
   }
   "fromHtml" - {
-    def getHtml(trackNumber: Int) = $.fromHtml(getDocument("dark_lyrics.html"), fakeModelFactory.song(track = trackNumber))
+    def getHtml(trackNumber: Int, html: String = "dark_lyrics.html") = $.fromHtml(getDocument(html), fakeModelFactory.song(track = trackNumber))
     "first song" in {
       verifyLyrics(getHtml(1),
         "<i>[Samples from the film \"The Dead\", an adaptation of James Joyce's short story from his book]</i>",
@@ -24,6 +24,9 @@ class DarkLyricsRetrieverTest extends LyricsSpec {
     }
     "instrumental" in {
       getHtml(4) should be an instrumental
+    }
+    "instrumental in part of song" in {
+      verifyLyrics(getHtml(9, "dark_lyrics2.html"), "<i>[I. The Message]</i>", "How will it be?")
     }
   }
 }

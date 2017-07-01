@@ -13,6 +13,7 @@ import scala.concurrent.ExecutionContext
 
 private[lyrics] class DarkLyricsRetriever(implicit ec: ExecutionContext, it: InternetTalker) extends HtmlRetriever {
   override protected val source: String = "DarkLyrics"
+  private def isInstrumental(html: String) = html.replaceAll("((<br>)|\\n)", "") == "<i>[Instrumental]</i>"
   private def removeWrappingWhiteSpace(s: String) = s.replaceAll("^\\s+", "").replaceAll("\\s$", "")
   private def removeEndingBreaklines(ss: Seq[String]) = ss.reverse.dropWhile(_.matches("<br>")).reverse
   // HTML is structured for shit, so might as well parse it by hand
@@ -25,7 +26,7 @@ private[lyrics] class DarkLyricsRetriever(implicit ec: ExecutionContext, it: Int
       .mapTo(removeEndingBreaklines)
       .mkString("\n")
       .mapTo(Some.apply)
-      .filterNot(_ contains "[Instrumental]")
+      .filterNot(isInstrumental)
 
   private def normalize(s: String): String = s.toLowerCase.filter(_.isLetter)
   override protected val hostPrefix: String = "http://www.darklyrics.com/lyrics"

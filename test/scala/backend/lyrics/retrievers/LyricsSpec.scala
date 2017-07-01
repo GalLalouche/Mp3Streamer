@@ -13,7 +13,7 @@ trait LyricsSpec extends FreeSpec with DocumentSpecs {
   }
   def verifyLyrics(html: Option[String], firstLine: String, lastLine: String) = {
     if (html.isEmpty)
-      fail("Returned html is empty, i.e., is instrumental")
+      fail("Returned HTML is empty, i.e., is instrumental")
     val lines = html.get.replaceAll("<br>\\s*", "").split("\n").filter(_.nonEmpty).toVector
     lines.head shouldReturn firstLine
     lines.last shouldReturn lastLine
