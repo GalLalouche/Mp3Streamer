@@ -7,4 +7,4 @@ import org.joda.time.DateTime
 import scala.concurrent.ExecutionContext
 
 private[external] abstract class ExternalStorage[Key <: Reconcilable](implicit ec: ExecutionContext)
-    extends StorageTemplate[Key, (BaseLinks[Key], Option[DateTime])]
+    extends StorageTemplate[Key, (MarkedLinks[Key], Option[DateTime])]

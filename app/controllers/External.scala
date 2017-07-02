@@ -26,7 +26,7 @@ object External extends Controller
 
   private def toJson(e: LinkExtension[_]): KVPair = e.name -> e.link.address
   private def toJson(e: ExtendedLink[_]): KVPair = e.host.name -> Json.obj(
-    "host" -> e.host.name,
+    "host" -> e.host.name.mapIf(e.isNew.const).to(_ + "*"),
     "main" -> e.link.address,
     "extensions" -> Json.obj(e.extensions.map(toJson).toSeq: _*))
   private def toJson(e: Traversable[ExtendedLink[_]]): JsObject =
@@ -51,7 +51,7 @@ object External extends Controller
     ) yield Json.obj("Artist links" -> artistJson, "Album links" -> albumJson)
     f.map(Ok(_))
   }
-  def updateRecon(path: String) = Action.async {request =>
+  def updateRecon(path: String) = Action.async { request =>
     val json = request.body.asJson.get
     def getReconId(s: String) = json ostr s map ReconID
     val song: Song = Utils parseSong path

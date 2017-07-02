@@ -21,7 +21,7 @@ import scalaz.syntax.{ToBindOps, ToFunctorOps}
 class MbExternalLinksProvider(implicit c: Configuration)
     extends FutureInstances with ToFunctorOps with ToBindOps {
   import c._
-  private class TimeStamper[R <: Reconcilable](foo: RefreshableStorage[R, BaseLinks[R]])
+  private class TimeStamper[R <: Reconcilable](foo: RefreshableStorage[R, MarkedLinks[R]])
       extends Retriever[R, TimestampedLinks[R]] {
     override def apply(r: R): Future[TimestampedLinks[R]] = foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
@@ -31,7 +31,7 @@ class MbExternalLinksProvider(implicit c: Configuration)
                                                                         expander: Traversable[ExternalLinkExpander[R]],
                                                                         additionalReconciler: Traversable[Reconciler[R]]
                                                                        ): Retriever[R, TimestampedLinks[R]] =
-    new RefreshableStorage(
+    new RefreshableStorage[R, MarkedLinks[R]](
       new FreshnessStorage(storage),
       new ExternalPipe[R](
         a => reconciler(a)
@@ -54,13 +54,13 @@ class MbExternalLinksProvider(implicit c: Configuration)
 
   private val albumReconStorage: AlbumReconStorage = new AlbumReconStorage
   private val albumExternalStorage = new AlbumExternalStorage
-  private def getAlbumLinks(artistLinks: BaseLinks[Artist], album: Album): Future[TimestampedLinks[Album]] =
+  private def getAlbumLinks(artistLinks: MarkedLinks[Artist], album: Album): Future[TimestampedLinks[Album]] =
     wrapExternalPipeWithStorage(
       new ReconcilerCacher[Album](albumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get))),
       albumExternalStorage,
       new AlbumLinkExtractor,
       LinkExpanders.albums,
-      CompositeSameHostExpander.default.toReconcilers(artistLinks) ++ Reconcilers.album) apply album
+      CompositeSameHostExpander.default.toReconcilers(artistLinks.map(_.toBase)) ++ Reconcilers.album) apply album
 
   private val extender = CompositeExtender.default
 
