@@ -12,22 +12,22 @@ import scala.concurrent.{ExecutionContext, Future}
 private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String)(implicit ec: ExecutionContext, it: InternetTalker)
     extends ExternalLinkProvider[T] {
   private def getMbUrl(reconId: ReconID): Url = Url(s"https://musicbrainz.org/$metadataType/${reconId.id}")
-  private def extractLink(e: Element): ExternalLink[T] = {
+  private def extractLink(e: Element): BaseLink[T] = {
     val url: Url = Url(e.select("a").attr("href").mapIf(_.startsWith("//")).to("https:" + _))
     val sourceName = e.className
         .takeWhile(_ != '-')
         .mapIf(_ == "no").to(x => e.child(0).text())
-    ExternalLink(url, Host fromUrl url getOrElse Host(sourceName, url.host))
+    BaseLink(url, Host fromUrl url getOrElse Host(sourceName, url.host))
   }
-  private def extractLinks(d: Document): List[ExternalLink[T]] =
+  private def extractLinks(d: Document): List[BaseLink[T]] =
     d.select(".external_links")
         .select("li")
         .filterNot(_.className() == "all-relationships")
         .map(extractLink)
         .toList
 
-  override def apply(id: ReconID): Future[Traversable[ExternalLink[T]]] = {
-    val mbLink = ExternalLink[T](getMbUrl(id), Host.MusicBrainz)
+  override def apply(id: ReconID): Future[Traversable[BaseLink[T]]] = {
+    val mbLink = BaseLink[T](getMbUrl(id), Host.MusicBrainz)
     it.downloadDocument(getMbUrl(id)).map(extractLinks).map(mbLink :: _)
   }
 }

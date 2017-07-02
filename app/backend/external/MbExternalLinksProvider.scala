@@ -21,13 +21,13 @@ import scalaz.syntax.{ToBindOps, ToFunctorOps}
 class MbExternalLinksProvider(implicit c: Configuration)
     extends FutureInstances with ToFunctorOps with ToBindOps {
   import c._
-  private class TimeStamper[R <: Reconcilable](foo: RefreshableStorage[R, Links[R]])
+  private class TimeStamper[R <: Reconcilable](foo: RefreshableStorage[R, BaseLinks[R]])
       extends Retriever[R, TimestampedLinks[R]] {
     override def apply(r: R): Future[TimestampedLinks[R]] = foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](reconciler: Retriever[R, (Option[ReconID], Boolean)],
                                                                         storage: ExternalStorage[R],
-                                                                        provider: Retriever[ReconID, Links[R]],
+                                                                        provider: Retriever[ReconID, BaseLinks[R]],
                                                                         expander: Traversable[ExternalLinkExpander[R]],
                                                                         additionalReconciler: Traversable[Reconciler[R]]
                                                                        ): Retriever[R, TimestampedLinks[R]] =
@@ -54,7 +54,7 @@ class MbExternalLinksProvider(implicit c: Configuration)
 
   private val albumReconStorage: AlbumReconStorage = new AlbumReconStorage
   private val albumExternalStorage = new AlbumExternalStorage
-  private def getAlbumLinks(artistLinks: Links[Artist], album: Album): Future[TimestampedLinks[Album]] =
+  private def getAlbumLinks(artistLinks: BaseLinks[Artist], album: Album): Future[TimestampedLinks[Album]] =
     wrapExternalPipeWithStorage(
       new ReconcilerCacher[Album](albumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get))),
       albumExternalStorage,

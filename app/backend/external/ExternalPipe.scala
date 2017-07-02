@@ -22,21 +22,21 @@ import scalaz.syntax.ToTraverseOps
  */
 //TODO recursively deep?
 private class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
-                                              linksRetriever: Retriever[ReconID, Links[R]],
+                                              linksRetriever: Retriever[ReconID, BaseLinks[R]],
                                               expanders: Traversable[ExternalLinkExpander[R]],
                                               additionalReconcilers: Traversable[Reconciler[R]])
-                                             (implicit ec: ExecutionContext) extends Retriever[R, Links[R]]
+                                             (implicit ec: ExecutionContext) extends Retriever[R, BaseLinks[R]]
     with ToTraverseOps with FutureInstances {
-  private def markDiff(el: ExternalLink[R]): ExternalLink[R] =
+  private def markDiff(el: BaseLink[R]): BaseLink[R] =
     el.copy(host = el.host.copy(name = el.host.name + "*"))
-  private def filterLinksWithNewHosts(existingLinks: Links[R], newLinks: Links[R]): Links[R] = {
+  private def filterLinksWithNewHosts(existingLinks: BaseLinks[R], newLinks: BaseLinks[R]): BaseLinks[R] = {
     val map = existingLinks.map(_.host).toSet
     newLinks.filterNot(map contains _.host)
   }
 
   // remove expanders that can only returns existing hosts
   private def filterExpanders(existingHosts: Set[Host]) = {
-    def compose(es: Traversable[ExternalLinkExpander[R]])(links: Links[R]): Future[Links[R]] = {
+    def compose(es: Traversable[ExternalLinkExpander[R]])(links: BaseLinks[R]): Future[BaseLinks[R]] = {
       val map = es.mapBy(_.sourceHost)
       links.flatMap(e => map.get(e.host).map(_ (e))).sequenceU map (_.flatten)
     }
@@ -49,8 +49,8 @@ private class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
     filterReconcilers(existingHosts).traverse(_ (r)).map(_.flatten)
   }
 
-  private def expand(r: R, existing: Links[R]): Future[Links[R]] = {
-    def extractHosts(ls: Links[R]) = ls.map(_.host).toSet
+  private def expand(r: R, existing: BaseLinks[R]): Future[BaseLinks[R]] = {
+    def extractHosts(ls: BaseLinks[R]) = ls.map(_.host).toSet
     val existingHosts = existing |> extractHosts
     for (newLinks <- filterExpanders(existingHosts)(existing);
          additionalLinks <- applyFilteredReconcilers(r, existingHosts ++ extractHosts(newLinks))) yield {
@@ -59,7 +59,7 @@ private class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
       existingSet ++ (filterLinksWithNewHosts(existingSet, newSet) map markDiff)
     }
   }
-  override def apply(r: R): Future[Links[R]] =
+  override def apply(r: R): Future[BaseLinks[R]] =
     reconciler(r)
         .flatMap(linksRetriever)
         .flatMap(expand(r, _))

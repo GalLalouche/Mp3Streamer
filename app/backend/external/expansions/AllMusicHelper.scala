@@ -4,7 +4,7 @@ import java.net.{HttpURLConnection, URL}
 import java.util.regex.Pattern
 
 import backend.Url
-import backend.external.ExternalLink
+import backend.external.BaseLink
 import backend.recon.Reconcilable
 import common.io.InternetTalker
 import common.rich.RichFuture._
@@ -31,7 +31,7 @@ private class AllMusicHelper(implicit ec: ExecutionContext, it: InternetTalker) 
   // TODO this should only be invoked once, from the external pipe
   def isValidLink(u: Url): Future[Boolean] = hasRating(u) zip hasStaffReview(u) map (_.all(identity))
   def isCanonical(link: String): Boolean = canonicalRe.findAllMatchIn(link).hasNext
-  def canonize[R <: Reconcilable](e: ExternalLink[R]): Future[ExternalLink[R]] = {
+  def canonize[R <: Reconcilable](e: BaseLink[R]): Future[BaseLink[R]] = {
     def aux(url: Url): Future[Url] =
       if (canonicalLink.matcher(url.address dropAfterLast '/').matches)
         Future successful url
@@ -42,6 +42,6 @@ private class AllMusicHelper(implicit ec: ExecutionContext, it: InternetTalker) 
             .map(_ getHeaderField "location")
             .map(Url)
       }
-    aux(e.link).map(x => ExternalLink[R](x, e.host))
+    aux(e.link).map(x => BaseLink[R](x, e.host))
   }
 }

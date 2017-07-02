@@ -23,8 +23,8 @@ class AlbumExternalStorageTest extends FreeSpec with AuxSpecs with BeforeAndAfte
   }
   val album: Album = Album("the spam album", 2000, Artist("foo and the bar band"))
 
-  val link1 = ExternalLink[Album](Url("www.foobar.com/foo/bar.html"), Host("foobar", Url("www.foobar.com")))
-  val link2 = ExternalLink[Album](Url("www.bazqux.com/baz/qux.html"), Host("bazqux", Url("www.bazqux.com")))
+  val link1 = BaseLink[Album](Url("www.foobar.com/foo/bar.html"), Host("foobar", Url("www.foobar.com")))
+  val link2 = BaseLink[Album](Url("www.bazqux.com/baz/qux.html"), Host("bazqux", Url("www.bazqux.com")))
   "Can load what is stored" in {
     val value = List(link1, link2) -> Some(DateTime.now)
     $.store(album, value).get shouldReturn true
@@ -37,14 +37,14 @@ class AlbumExternalStorageTest extends FreeSpec with AuxSpecs with BeforeAndAfte
   }
   "Can force store" in {
     $.store(album, Nil -> None).get shouldReturn true
-    val link1 = ExternalLink[Album](Url("www.foobar.com/foo/bar.html"), Host("foobar", Url("www.foobar.com")))
+    val link1 = BaseLink[Album](Url("www.foobar.com/foo/bar.html"), Host("foobar", Url("www.foobar.com")))
     $.forceStore(album, List(link1) -> Some(DateTime.now)).get.get shouldReturn (Nil -> None)
   }
   "Delete all links by artist" in {
-    val value1: (List[ExternalLink[Album]], None.type) = List(link1) -> None
+    val value1: (List[BaseLink[Album]], None.type) = List(link1) -> None
     $.store(album, value1).get
     val album2 = album.copy(title = "sophomore effort")
-    val value2: (List[ExternalLink[Album]], Some[DateTime]) = List(link2) -> Some(DateTime.now)
+    val value2: (List[BaseLink[Album]], Some[DateTime]) = List(link2) -> Some(DateTime.now)
     $.store(album2, value2).get
     $.deleteAllLinks(album.artist).get.toSet shouldReturn
         Set((album.normalize, value1._1, value1._2), (album2.normalize, value2._1, value2._2))

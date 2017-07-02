@@ -14,16 +14,16 @@ import scala.concurrent.Future
 class ExternalPipeTest extends FreeSpec with AuxSpecs {
   private implicit val c = new TestConfiguration
   private val existingHost: Host = Host("existinghost", Url("existinghosturl"))
-  private val existingLink: ExternalLink[Album] = ExternalLink(Url("existing"), existingHost)
-  private val rehashedLinks: ExternalLink[Album] = existingLink.copy(link = Url("shouldbeignored"))
-  private val expandedLink: ExternalLink[Album] = ExternalLink(Url("new"), Host("newhost", Url("newhosturl")))
-  private val reconciledLink: ExternalLink[Album] = ExternalLink(Url("new2"), Host("newhost2", Url("newhosturl2")))
-  private val expectedNewLinks: Links[Album] = List(ExternalLink(Url("new"), Host("newhost*", Url("newhosturl"))),
-    ExternalLink(Url("new2"), Host("newhost2*", Url("newhosturl2"))))
-  def constExpander(links: ExternalLink[Album]*) = new ExternalLinkExpander[Album] {
+  private val existingLink: BaseLink[Album] = BaseLink(Url("existing"), existingHost)
+  private val rehashedLinks: BaseLink[Album] = existingLink.copy(link = Url("shouldbeignored"))
+  private val expandedLink: BaseLink[Album] = BaseLink(Url("new"), Host("newhost", Url("newhosturl")))
+  private val reconciledLink: BaseLink[Album] = BaseLink(Url("new2"), Host("newhost2", Url("newhosturl2")))
+  private val expectedNewLinks: BaseLinks[Album] = List(BaseLink(Url("new"), Host("newhost*", Url("newhosturl"))),
+    BaseLink(Url("new2"), Host("newhost2*", Url("newhosturl2"))))
+  def constExpander(links: BaseLink[Album]*) = new ExternalLinkExpander[Album] {
     override def sourceHost: Host = existingHost
     override def potentialHostsExtracted: Traversable[Host] = links.map(_.host)
-    override def apply(v1: ExternalLink[Album]): Future[Links[Album]] = Future successful links
+    override def apply(v1: BaseLink[Album]): Future[BaseLinks[Album]] = Future successful links
   }
   val newLinkExpander = constExpander(expandedLink)
   val newLinkReconciler = new Reconciler[Album](reconciledLink.host) {
@@ -45,7 +45,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
       val failedExpander = new ExternalLinkExpander[Album] {
         override val sourceHost: Host = existingHost
         override val potentialHostsExtracted: Traversable[Host] = List(existingHost)
-        override def apply(v1: ExternalLink[Album]): Future[Links[Album]] = failed
+        override def apply(v1: BaseLink[Album]): Future[BaseLinks[Album]] = failed
       }
       val $ = new ExternalPipe[Album](x => Future successful ReconID("foobar"),
         x => Future successful List(existingLink),

@@ -13,18 +13,18 @@ import scalaz.syntax.ToTraverseOps
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums */
 private[external] class CompositeSameHostExpander private(cb: HostMap[SameHostExpander])(implicit ec: ExecutionContext)
-    extends ((Links[Artist], Album) => Future[Links[Album]])
+    extends ((BaseLinks[Artist], Album) => Future[BaseLinks[Album]])
         with FutureInstances with ToTraverseOps {
   def this(expanders: SameHostExpander*)(implicit ec: ExecutionContext) = this(expanders.mapBy(_.host))
 
-  def apply(e: ExternalLink[Artist], a: Album): Future[Option[ExternalLink[Album]]] =
+  def apply(e: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] =
     cb.get(e.host)
         .map(_.apply(e, a))
         .getOrElse(Future successful None)
 
-  override def apply(v1: Links[Artist], a: Album): Future[Links[Album]] =
+  override def apply(v1: BaseLinks[Artist], a: Album): Future[BaseLinks[Album]] =
     v1.toTraversable.traverse(apply(_, a)) map (_.flatten)
-  def toReconcilers(ls: Links[Artist]): Traversable[Reconciler[Album]] = {
+  def toReconcilers(ls: BaseLinks[Artist]): Traversable[Reconciler[Album]] = {
     val availableHosts = ls.toMultiMap(_.host).mapValues(_.head)
     cb.flatMap(e => availableHosts.get(e._1).map(e._2.toReconciler))
   }

@@ -4,7 +4,7 @@ import java.net.HttpURLConnection
 
 import backend.Url
 import backend.configs.TestConfiguration
-import backend.external.{DocumentSpecs, ExternalLink, FakeHttpURLConnection, Host}
+import backend.external.{DocumentSpecs, BaseLink, FakeHttpURLConnection, Host}
 import common.rich.RichFuture._
 import common.rich.collections.RichTraversableOnce._
 import org.scalatest.FreeSpec
@@ -28,7 +28,7 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpec
       override def getHeaderField(s: String): String = throw new AssertionError() // makes sure it isn't called
     })
     new WikipediaAlbumExternalLinksExpander()
-        .apply(ExternalLink(Url("allmusic_rlink.html"), Host.Wikipedia))
+        .apply(BaseLink(Url("allmusic_rlink.html"), Host.Wikipedia))
         .get shouldReturn Nil
   }
   "succeed even if there is no link" in {

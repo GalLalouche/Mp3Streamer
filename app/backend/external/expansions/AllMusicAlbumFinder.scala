@@ -1,7 +1,7 @@
 package backend.external.expansions
 
 import backend.Url
-import backend.external.{ExternalLink, Host}
+import backend.external.{BaseLink, Host}
 import backend.recon.ReconScorers.AlbumReconScorer
 import backend.recon.{Album, Artist, StringReconScorer}
 import common.io.InternetTalker
@@ -25,7 +25,7 @@ private class AllMusicAlbumFinder(implicit ec: ExecutionContext, it: InternetTal
           .map(_.select("td a").head.attr("href").mapIf(!_.startsWith("http")).to("http://www.allmusic.com" + _).mapTo(Url))
   }
 
-  override def apply(e: ExternalLink[Artist], a: Album): Future[Option[ExternalLink[Album]]] =
+  override def apply(e: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] =
     it.downloadDocument(e.link +/ "discography")
         .map(findAlbum(_, a))
         .map(_.map(url => e.copy[Album](link = url)))

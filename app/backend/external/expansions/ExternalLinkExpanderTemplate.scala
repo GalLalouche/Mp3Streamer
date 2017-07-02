@@ -1,6 +1,6 @@
 package backend.external.expansions
 
-import backend.external.{ExternalLink, Host, Links}
+import backend.external.{BaseLink, Host, BaseLinks}
 import backend.recon.Reconcilable
 import common.io.InternetTalker
 import org.jsoup.nodes.Document
@@ -12,6 +12,6 @@ private abstract class ExternalLinkExpanderTemplate[T <: Reconcilable](override 
                                                                        override val potentialHostsExtracted: Traversable[Host])
                                                                       (implicit ec: ExecutionContext, it: InternetTalker)
     extends ExternalLinkExpander[T] {
-  protected def parseDocument(d: Document): Links[T]
-  override def apply(l: ExternalLink[T]): Future[Links[T]] = it downloadDocument l.link map parseDocument
+  protected def parseDocument(d: Document): BaseLinks[T]
+  override def apply(l: BaseLink[T]): Future[BaseLinks[T]] = it downloadDocument l.link map parseDocument
 }

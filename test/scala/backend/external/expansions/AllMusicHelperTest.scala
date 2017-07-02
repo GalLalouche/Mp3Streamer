@@ -4,7 +4,7 @@ import java.net.HttpURLConnection
 
 import backend.Url
 import backend.configs.TestConfiguration
-import backend.external.{DocumentSpecs, ExternalLink, FakeHttpURLConnection, Host}
+import backend.external.{DocumentSpecs, BaseLink, FakeHttpURLConnection, Host}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import org.scalatest.FreeSpec
@@ -64,7 +64,7 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
   "canonize" - {
     "mw link" in {
       $.canonize(
-        ExternalLink(Url("http://www.allmusic.com/album/born-in-the-usa-mw0000191830"), Host.Wikipedia))
+        BaseLink(Url("http://www.allmusic.com/album/born-in-the-usa-mw0000191830"), Host.Wikipedia))
           .get.link.address shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
     }
     "rlink" - {
@@ -82,13 +82,13 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
       "regular" in {
         withRedirection("http://www.allmusic.com/album/r827504",
           "http://www.allmusic.com/album/home-mw0000533017")
-            .canonize(ExternalLink(Url("http://www.allmusic.com/album/r827504"), Host.Wikipedia))
+            .canonize(BaseLink(Url("http://www.allmusic.com/album/r827504"), Host.Wikipedia))
             .get.link.address shouldReturn "http://www.allmusic.com/album/home-mw0000533017"
       }
       "without www" in {
         withRedirection("http://www.allmusic.com/album/ghost-r2202519",
           "http://www.allmusic.com/album/ghost-mw0002150605")
-            .canonize(ExternalLink(Url("http://www.allmusic.com/album/ghost-r2202519"), Host.Wikipedia))
+            .canonize(BaseLink(Url("http://www.allmusic.com/album/ghost-r2202519"), Host.Wikipedia))
             .get.link.address shouldReturn "http://www.allmusic.com/album/ghost-mw0002150605"
       }
     }

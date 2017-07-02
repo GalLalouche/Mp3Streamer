@@ -5,7 +5,7 @@ import java.net.HttpURLConnection
 
 import backend.Url
 import backend.configs.TestConfiguration
-import backend.external.{ExternalLink, FakeHttpURLConnection, Host}
+import backend.external.{BaseLink, FakeHttpURLConnection, Host}
 import backend.recon.Artist
 import common.AuxSpecs
 import common.rich.RichFuture._
@@ -26,7 +26,7 @@ class LastFmReconcilerTest extends FreeSpec with AuxSpecs {
       override def getContent: AnyRef = new FileInputStream(getResourceFile("last_fm.html"))
     })
     new LastFmReconciler().apply(Artist("dreamtheater")).get.get shouldReturn
-        ExternalLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm)
+        BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm)
   }
   "302" in {
     implicit val c = this.c.copy(_httpTransformer = {
@@ -42,7 +42,7 @@ class LastFmReconcilerTest extends FreeSpec with AuxSpecs {
       }
     })
     new LastFmReconciler(1).apply(Artist("Foobar")).get.get shouldReturn
-        ExternalLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm)
+        BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm)
 
   }
 }
