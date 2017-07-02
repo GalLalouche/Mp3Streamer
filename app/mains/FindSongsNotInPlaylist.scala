@@ -35,7 +35,9 @@ object FindSongsNotInPlaylist {
         .take(10)
         .foreach(IOUtils.focus)
     val serverMissing = playlistSongs.diff(realSongs).toList.sorted
-    println(s"Server is missing ${serverMissing.size} songs. ${"It's possible that these songs are in the playlist but the files themselves have been deleted, or were added from a different folder, e.g., bittorent.".onlyIf(serverMissing.nonEmpty)}")
+    println(s"Server is missing ${serverMissing.size} songs. " +
+        s"${("It's possible that these songs are in the playlist but the files themselves have been deleted, " +
+            "or were added from a different folder, e.g., bittorent.").onlyIf(serverMissing.nonEmpty)}")
     println(serverMissing mkString "\n")
     println(s"Playlist is missing ${playlistMissing.size} songs")
     println(playlistMissing mkString "\n")

@@ -84,9 +84,9 @@ object FixLabels {
     require(musicFiles.nonEmpty, s"Could not find any songs in $dir - maybe they're in subfolders...")
 
     // as opposed to 1/1 - Fuck those guys.
-    val hasNonTrivialDiscNumber = false == (musicFiles
+    val hasNonTrivialDiscNumber = false == musicFiles
         .map(AudioFileIO.read)
-        .hasSameValues(_.getTag getFirst FieldKey.DISC_NO))
+        .hasSameValues(_.getTag getFirst FieldKey.DISC_NO)
 
     val (year, album) = musicFiles.head.mapTo(Song.apply)
         .mapTo(firstSong => retrieveYear(firstSong) -> StringFixer(firstSong.albumName))

@@ -21,7 +21,8 @@ import scalaz.syntax.{ToBindOps, ToFunctorOps}
 class MbExternalLinksProvider(implicit c: Configuration)
     extends FutureInstances with ToFunctorOps with ToBindOps {
   import c._
-  private class TimeStamper[R <: Reconcilable](foo: RefreshableStorage[R, Links[R]]) extends Retriever[R, TimestampedLinks[R]] {
+  private class TimeStamper[R <: Reconcilable](foo: RefreshableStorage[R, Links[R]])
+      extends Retriever[R, TimestampedLinks[R]] {
     override def apply(r: R): Future[TimestampedLinks[R]] = foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](reconciler: Retriever[R, (Option[ReconID], Boolean)],
@@ -47,7 +48,8 @@ class MbExternalLinksProvider(implicit c: Configuration)
   private val artistReconciler =
     new ReconcilerCacher[Artist](artistReconStorage, new MbArtistReconciler)
   private val artistPipe =
-    wrapExternalPipeWithStorage[Artist](artistReconciler, artistExternalStorage, new ArtistLinkExtractor, Nil, Reconcilers.artist)
+    wrapExternalPipeWithStorage[Artist](
+      artistReconciler, artistExternalStorage, new ArtistLinkExtractor, Nil, Reconcilers.artist)
   private def getArtistLinks(a: Artist): Future[TimestampedLinks[Artist]] = artistPipe(a)
 
   private val albumReconStorage: AlbumReconStorage = new AlbumReconStorage
@@ -94,7 +96,8 @@ object MbExternalLinksProvider {
   import common.rich.path.Directory
   import common.rich.path.RichFile._
 
-  private def fromDir(path: String): Song = Directory(path).files.filter(f => Set("mp3", "flac").contains(f.extension)).head |> Song.apply
+  private def fromDir(path: String): Song =
+    Directory(path).files.filter(f => Set("mp3", "flac").contains(f.extension)).head |> Song.apply
 
   def main(args: Array[String]): Unit = {
     implicit val c = CleanConfiguration

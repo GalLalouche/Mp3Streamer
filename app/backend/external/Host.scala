@@ -4,11 +4,10 @@ import backend.Url
 import common.rich.collections.RichTraversableOnce._
 
 case class Host(name: String, url: Url) {
-
   import Host._
-
   def canonize: Host = hostsByName.getOrElse(name.toLowerCase.replaceAll("[*?]$", ""), defaultFor(url))
 }
+
 object Host {
   object AllMusic extends Host("AllMusic", Url("www.allmusic.com"))
   object Facebook extends Host("Facebook", Url("www.facebook.com"))
@@ -31,12 +30,11 @@ object Host {
 
   def fromUrl(url: Url): Option[Host] = hostsByUrl get url.host
   def defaultFor(url: Url): Host = {
-    val extractedHostName = url.address
+    Host(name = url.address
         .toLowerCase
         .replaceAll("^https?://", "")
         .replaceAll("^www\\.", "")
-        .takeWhile(_ != '.')
-    Host(extractedHostName, url.host)
+        .takeWhile(_ != '.'), url = url.host)
   }
 }
 

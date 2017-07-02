@@ -1,8 +1,7 @@
 package backend.recon
 
 
-trait ReconScorer[T <: Reconcilable] extends ((T, T) => Double) {
-}
+trait ReconScorer[T <: Reconcilable] extends ((T, T) => Double)
 
 object ReconScorers {
   private val stringMatcher = StringReconScorer

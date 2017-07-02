@@ -6,7 +6,7 @@ import scalaz.syntax.ToFunctorOps
 
 abstract class StorageTemplate[Key, Value](implicit ec: ExecutionContext) extends Storage[Key, Value]
     with ToFunctorOps with FutureInstances {
-  /** If an existing value exists, override it. */
+  /** If a previous value exists, override it. */
   protected def internalForceStore(k: Key, v: Value): Future[_]
   protected def internalDelete(k: Key): Future[_]
   override def forceStore(k: Key, v: Value): Future[Option[Value]] =
