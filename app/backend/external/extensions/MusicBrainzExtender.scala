@@ -1,10 +1,9 @@
 package backend.external.extensions
-
-import backend.external.{MarkedLink, Host}
+import backend.external.{Host, MarkedLink}
 import backend.recon.Reconcilable
 
-private object MusicBrainzExtender extends StaticExtender[Reconcilable] {
+abstract private class MusicBrainzExtender[R <: Reconcilable] extends StaticExtender[R] {
   override val host = Host.MusicBrainz
-  override def apply[T <: Reconcilable](a: T, v: MarkedLink[T]): Seq[LinkExtension[T]] =
+  override def apply(a: R, v: MarkedLink[R]): Seq[LinkExtension[R]] =
     appendSameSuffix(v, "edit") ++ SearchExtension.apply(Host.MusicBrainz, a).extensions
 }

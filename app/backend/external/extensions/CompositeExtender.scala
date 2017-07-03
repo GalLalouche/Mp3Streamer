@@ -30,6 +30,6 @@ private[external] class CompositeExtender private(
 private[external] object CompositeExtender {
   lazy val default =
     new CompositeExtender(
-      Seq(MusicBrainzExtender, AllMusicArtistExtender, LastFmArtistExtender),
-      Seq(MusicBrainzExtender, AllMusicAlbumExtender))
+      Seq(MusicBrainzArtistExtender, AllMusicArtistExtender, LastFmArtistExtender),
+      Seq(MusicBrainzAlbumExtender, AllMusicAlbumExtender))
 }

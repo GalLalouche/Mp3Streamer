@@ -5,6 +5,6 @@ import backend.recon.Album
 
 private object AllMusicAlbumExtender extends StaticExtender[Album] {
   override val host = Host.AllMusic
-  override def apply[T <: Album](a: T, v: MarkedLink[T]): Seq[LinkExtension[T]] =
+  override def apply(a: Album, v: MarkedLink[Album]): Seq[LinkExtension[Album]] =
     appendSameSuffix(v, "similar")
 }

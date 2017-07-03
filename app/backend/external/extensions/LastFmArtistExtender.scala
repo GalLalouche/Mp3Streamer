@@ -5,6 +5,6 @@ import backend.recon.Artist
 
 private object LastFmArtistExtender extends StaticExtender[Artist] {
   override val host = Host.LastFm
-  override def apply[T <: Artist](a: T, v: MarkedLink[T]): Seq[LinkExtension[T]] =
+  override def apply(a: Artist, v: MarkedLink[Artist]): Seq[LinkExtension[Artist]] =
     append(v, "similar" -> "+similar")
 }
