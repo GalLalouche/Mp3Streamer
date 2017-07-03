@@ -2,30 +2,34 @@ package backend.external.extensions
 
 import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
+import common.rich.collections.RichTraversableOnce._
 
-private[external] class CompositeExtender private(artistExtensions: HostMap[LinkExtender[Artist]], albumExtensions: HostMap[LinkExtender[Album]]) {
-  private def auxExtend[R <: Reconcilable](entity: R, e: MarkedLink[R], map: HostMap[LinkExtender[R]]): ExtendedLink[R] =
-    ExtendedLink.extend(e).withLinks(map.get(e.host.canonize).map(_ (entity, e)).getOrElse(Nil))
+private[external] class CompositeExtender private(
+    artistExtenders: Seq[LinkExtender[Artist]],
+    albumExtenders: Seq[LinkExtender[Album]]) {
+  private val artistExtendersMap: HostMap[LinkExtender[Artist]] =
+    artistExtenders.mapBy(_.host)
+  private val albumExtenderMap: HostMap[LinkExtender[Album]] =
+    albumExtenders.mapBy(_.host)
 
   private val artistClass = classOf[Artist]
   private val albumClass = classOf[Album]
-  def apply[R <: Reconcilable : Manifest](entity: R, e: MarkedLink[R]): ExtendedLink[R] = {
-    val map = implicitly[Manifest[R]].runtimeClass match {
-      case `artistClass` => artistExtensions
-      case `albumClass` => albumExtensions
-    }
-    auxExtend(entity, e, map.asInstanceOf[HostMap[LinkExtender[R]]])
+  private def extendLink[R <: Reconcilable : Manifest](
+      entity: R, link: MarkedLink[R], allLinks: MarkedLinks[R]): ExtendedLink[R] = {
+    val map: HostMap[LinkExtender[R]] = (implicitly[Manifest[R]].runtimeClass match {
+      case `artistClass` => artistExtendersMap
+      case `albumClass` => albumExtenderMap
+    }).asInstanceOf[HostMap[LinkExtender[R]]]
+    val extendedLinks = map.get(link.host).map(_ (entity, allLinks)).getOrElse(Nil)
+    ExtendedLink.extend(link).withLinks(extendedLinks)
   }
   def apply[R <: Reconcilable : Manifest](entity: R, e: TimestampedLinks[R]): TimestampedExtendedLinks[R] =
-    TimestampedExtendedLinks(e.links.map(apply[R](entity, _)), e.timestamp)
+    TimestampedExtendedLinks(e.links.map(extendLink(entity, _, e.links)), e.timestamp)
 }
 
 private[external] object CompositeExtender {
   lazy val default =
     new CompositeExtender(
-      Map(Host.MusicBrainz -> MusicBrainzExtender,
-        Host.AllMusic -> AllMusicArtistExtender,
-        Host.LastFm -> LastFmArtistExtender),
-      Map(Host.MusicBrainz -> MusicBrainzExtender,
-        Host.AllMusic -> AllMusicAlbumExtender))
+      Seq(MusicBrainzExtender, AllMusicArtistExtender, LastFmArtistExtender),
+      Seq(MusicBrainzExtender, AllMusicAlbumExtender))
 }

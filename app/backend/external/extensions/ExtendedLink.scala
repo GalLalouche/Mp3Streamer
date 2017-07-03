@@ -10,6 +10,7 @@ case class ExtendedLink[R <: Reconcilable](link: Url, host: Host, isNew: Boolean
 
 
 private object ExtendedLink {
+  // TODO generify
   def extend[R <: Reconcilable](e: MarkedLink[R]) = new {
     def withLinks(links: Traversable[LinkExtension[R]]) =
       ExtendedLink[R](e.link, e.host, e.isNew, links)
