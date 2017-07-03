@@ -27,37 +27,35 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
     actual.links.filter(_.extensions.nonEmpty).map(e => e.host -> e.extensions) shouldSetEqual expected
   }
 
-  "default" - {
-    "adds all links" - {
-      "artist" in {
-        val artist = Artist("Foobar")
-        val links = Host.hosts.map(MarkedLink[Artist](Url("foo.bar"), _, true))
-            .mapTo(TimestampedLinks(_, DateTime.now()))
-        val result = $.apply(artist, links)
+  "default adds all links" - {
+    "artist" in {
+      val artist = Artist("Foobar")
+      val links = Host.hosts.map(MarkedLink[Artist](Url("foo.bar"), _, false))
+          .mapTo(TimestampedLinks(_, DateTime.now()))
+      val result = $.apply(artist, links)
 
-        val expected: Map[Host, Seq[LinkExtension[Artist]]] = Map(
-          Host.MusicBrainz -> Seq(LinkExtension("edit", Url("foo.bar/edit")),
-            LinkExtension("Google", Url("http://www.google.com/search?q=foobar MusicBrainz"))),
-          Host.AllMusic -> Seq(LinkExtension("discography", Url("foo.bar/discography"))),
-          Host.LastFm -> Seq(LinkExtension("similar", Url("foo.bar/+similar")))
-        )
+      val expected: Map[Host, Seq[LinkExtension[Artist]]] = Map(
+        Host.MusicBrainz -> Seq(LinkExtension("edit", Url("foo.bar/edit")),
+          LinkExtension("Google", Url("http://www.google.com/search?q=foobar MusicBrainz"))),
+        Host.AllMusic -> Seq(LinkExtension("discography", Url("foo.bar/discography"))),
+        Host.LastFm -> Seq(LinkExtension("similar", Url("foo.bar/+similar")))
+      )
 
-        verify(links, result, expected)
-      }
-      "album" in {
-        val album = Album("Foo", 2000, Artist("Bar"))
-        val links = Host.hosts.map(MarkedLink[Album](Url("foo.bar"), _, true))
-            .mapTo(TimestampedLinks(_, DateTime.now()))
-        val result = $.apply(album, links)
+      verify(links, result, expected)
+    }
+    "album" in {
+      val album = Album("Foo", 2000, Artist("Bar"))
+      val links = Host.hosts.map(MarkedLink[Album](Url("foo.bar"), _, false))
+          .mapTo(TimestampedLinks(_, DateTime.now))
+      val result = $.apply(album, links)
 
-        val expected: Map[Host, Seq[LinkExtension[Album]]] = Map(
-          Host.MusicBrainz -> Seq(LinkExtension("edit", Url("foo.bar/edit")),
-            LinkExtension("Google", Url("http://www.google.com/search?q=bar - foo MusicBrainz"))),
-          Host.AllMusic -> Seq(LinkExtension("similar", Url("foo.bar/similar")))
-        )
+      val expected: Map[Host, Seq[LinkExtension[Album]]] = Map(
+        Host.MusicBrainz -> Seq(LinkExtension("edit", Url("foo.bar/edit")),
+          LinkExtension("Google", Url("http://www.google.com/search?q=bar - foo MusicBrainz"))),
+        Host.AllMusic -> Seq(LinkExtension("similar", Url("foo.bar/similar")))
+      )
 
-        verify(links, result, expected)
-      }
+      verify(links, result, expected)
     }
   }
 }
