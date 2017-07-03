@@ -1,4 +1,5 @@
-function openConnection(path, onMessage) {
+function openConnection(path, onMessage, autoReconnectOnClose, autoConnectionInterval) {
+  autoConnectionInterval |= 10000
   const connection = new WebSocket("ws://" + window.location.host + "/ws/" + path);
   connection.onopen = function() {
     console.log(path + " connection opened");
@@ -12,7 +13,21 @@ function openConnection(path, onMessage) {
       default:
         console.log(path + " connection closed for some reason")
         console.log(event)
+        if (autoReconnectOnClose)
+          connection.reconnect()
     }
+  }
+  connection.reconnect = function() {
+    setTimeout(function() {
+      console.log("Retrying connection...")
+      const new_connection = new WebSocket(connection.url)
+      new_connection.onopen = connection.onopen
+      new_connection.onmessage = connection.onmessage
+      new_connection.onclose = connection.onclose
+      new_connection.reconnect = connection.reconnect
+      new_connection.onerror = connection.onerror
+      new_connection.send = connection.send
+    }, autoConnectionInterval)
   }
   return connection;
 }

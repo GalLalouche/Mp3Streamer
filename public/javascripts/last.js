@@ -15,5 +15,6 @@ $(function() {
     last_albums.append(listElement)
   }
 
-  openConnection("last_album", onMessage)
+  // TODO instead of sleep-wait reconnecting, do this on search/scan
+  openConnection("last_album", onMessage, true)
 })
