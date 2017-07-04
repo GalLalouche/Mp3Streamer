@@ -10,6 +10,8 @@ object ApplicationBuild extends Build {
     version := "1.0-SNAPSHOT",
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     libraryDependencies ++= Seq(
+      "com.github.julien-truffaut" %% "monocle-core" % "1.3.2",
+      "com.github.julien-truffaut" %% "monocle-macro" % "1.3.2",
       "com.github.mpilquist" %% "simulacrum" % "0.10.0",
       "com.h2database" % "h2" % "1.4.192",
       "com.typesafe.akka" %% "akka-actor" % "2.4.8",

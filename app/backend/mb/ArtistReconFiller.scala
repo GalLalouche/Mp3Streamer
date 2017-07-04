@@ -22,7 +22,7 @@ private object ArtistReconFiller {
         .map(_.find(e => mf.extensions.contains(e.extension)).get)
         .map(_.file)
         .map(Song.apply)
-        .map(_.artistName |> Artist)
+        .map(_.artistName |> Artist.apply)
         .toSet
     for (artist <- artists) {
       val recon1: Future[Option[ReconID]] =

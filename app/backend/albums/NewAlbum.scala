@@ -5,8 +5,10 @@ import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.{Album, Artist}
 import common.Jsonable
 import common.RichJson._
+import monocle.macros.Lenses
 import play.api.libs.json.{JsObject, Json}
 
+@Lenses
 case class NewAlbum(title: String, year: Int, artist: Artist, albumType: AlbumType) {
   def toAlbum: Album = Album(title = title, year = year, artist = artist)
 }

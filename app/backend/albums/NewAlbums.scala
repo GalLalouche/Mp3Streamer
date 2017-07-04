@@ -32,7 +32,7 @@ class NewAlbums(implicit c: Configuration)
 
   private def ignore[R <: Reconcilable](r: R, reconStorage: ReconStorage[R]): Future[Unit] = {
     logger.debug(s"Ignoring $r")
-    reconStorage.load(r).map {existing =>
+    reconStorage.load(r).map { existing =>
       assert(existing.isDefined)
       val existingData = existing.get
       assert(existingData._1.isDefined)
@@ -41,8 +41,7 @@ class NewAlbums(implicit c: Configuration)
   }
 
   def load: Future[Map[Artist, Seq[NewAlbum]]] = Future(jsonableSaver.loadArray)
-      //TODO lenses
-      .map(_.map(e => e.copy(artist = Artist(StringFixer(e.artist.name))))
+      .map(_.map(NewAlbum.artist ^|-> Artist.name modify StringFixer.apply)
       .groupBy(_.artist)
       .mapValues(_.sortBy(_.year)))
 

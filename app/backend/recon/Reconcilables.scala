@@ -1,10 +1,12 @@
 package backend.recon
 
 import models.Song
+import monocle.macros.Lenses
 
 sealed trait Reconcilable {
   def normalize: String
 }
+@Lenses
 case class Artist(name: String) extends Reconcilable {
   override def normalize: String = name.toLowerCase
 }

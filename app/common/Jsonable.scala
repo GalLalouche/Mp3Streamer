@@ -19,7 +19,6 @@ object Jsonable {
     implicit class jsonifySequence[T]($: Seq[T])(implicit ev: Jsonable[T]) {
       def jsonify: JsArray = ev jsonify $
     }
-    // TODO the below two aren't used... figure out how to use them or remove them and use @typeclass.
     implicit class parseObject[T]($: JsObject)(implicit ev: Jsonable[T]) {
       def parse: T = ev parse $
     }

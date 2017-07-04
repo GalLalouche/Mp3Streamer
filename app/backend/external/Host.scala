@@ -2,7 +2,9 @@ package backend.external
 
 import backend.Url
 import common.rich.collections.RichTraversableOnce._
+import monocle.macros.Lenses
 
+@Lenses
 case class Host(name: String, url: Url) {
   import Host._
   def canonize: Host = hostsByName.getOrElse(name.toLowerCase.replaceAll("[*?]$", ""), defaultFor(url))

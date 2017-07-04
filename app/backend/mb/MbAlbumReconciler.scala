@@ -32,7 +32,7 @@ object MbAlbumReconciler {
   def main(args: Array[String]) {
     implicit val c = StandaloneConfig
     val $ = new MbAlbumReconciler(_ => "6b335658-22c8-485d-93de-0bc29a1d0349" |> ReconID |> Future.successful)
-    val f = $(Album("Hell Bent for Leather", 1979, "Judas Priest" |> Artist))
+    val f = $(Album("Hell Bent for Leather", 1979, "Judas Priest" |> Artist.apply))
     Await.result(f, 10 seconds).log()
   }
 }

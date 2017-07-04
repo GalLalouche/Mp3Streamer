@@ -8,7 +8,7 @@ import common.rich.collections.RichSet._
 
 object SearchExtension {
   def apply[R <: Reconcilable](h: Host, r: R): ExtendedLink[R] =
-    ExtendedLink(Url("javascript:void(0)"), h.copy(name = h.name + "?"), isNew = false,
+    ExtendedLink(Url("javascript:void(0)"), Host.name.modify(_ + "?")(h), isNew = false,
       List(LinkExtension("Google",
         s"http://www.google.com/search?q=${r.normalize} ${h.name}" |> Url)))
 

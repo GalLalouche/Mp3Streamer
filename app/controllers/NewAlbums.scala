@@ -34,7 +34,8 @@ object NewAlbums extends Controller with Debug
       action(extractor(request)).>|(NoContent)
     }
 
-  private def extractArtist(request: Request[AnyContent]): Artist = request.body.asText.get |> Artist
+  private def extractArtist(request: Request[AnyContent]): Artist =
+    request.body.asText.get |> Artist.apply
   def removeArtist() = updateNewAlbums(extractArtist, $.removeArtist)
   def ignoreArtist() = updateNewAlbums(extractArtist, $.ignoreArtist)
 
