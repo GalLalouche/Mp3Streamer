@@ -45,8 +45,9 @@ object External extends Controller
 
   def getLinks(song: Song): Future[Result] = {
     val links = external(song)
+    val extendMissing = TimestampedExtendedLinks.links.modify(SearchExtension.extendMissing(hosts, song.artist))
     val f = for (
-      artistJson <- links.artistLinks.map(SearchExtension.extendMissing(hosts, song.artist, _)) |> toJsonOrError;
+      artistJson <- links.artistLinks.map(extendMissing) |> toJsonOrError;
       albumJson <- links.albumLinks |> toJsonOrError
     ) yield Json.obj("Artist links" -> artistJson, "Album links" -> albumJson)
     f.map(Ok(_))
