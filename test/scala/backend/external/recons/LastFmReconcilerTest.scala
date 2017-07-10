@@ -12,16 +12,16 @@ import common.rich.RichFuture._
 import org.scalatest.FreeSpec
 
 class LastFmReconcilerTest extends FreeSpec with AuxSpecs {
-  private val c = new TestConfiguration
+  private val config = new TestConfiguration
   "404" in {
-    implicit val c = this.c.copy(_httpTransformer = new FakeHttpURLConnection(_) {
+    implicit val c = config.copy(_httpTransformer = new FakeHttpURLConnection(_) {
       override def getResponseCode: Int = HttpURLConnection.HTTP_NOT_FOUND
     })
     val $ = new LastFmReconciler
     $(Artist("Foobar")).get shouldBe 'empty
   }
   "200" in {
-    implicit val c = this.c.copy(_httpTransformer = new FakeHttpURLConnection(_) {
+    implicit val c = config.copy(_httpTransformer = new FakeHttpURLConnection(_) {
       override def getResponseCode: Int = HttpURLConnection.HTTP_OK
       override def getContent: AnyRef = new FileInputStream(getResourceFile("last_fm.html"))
     })
@@ -29,7 +29,7 @@ class LastFmReconcilerTest extends FreeSpec with AuxSpecs {
         BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm)
   }
   "302" in {
-    implicit val c = this.c.copy(_httpTransformer = {
+    implicit val c = config.copy(_httpTransformer = {
       var firstAttempt = true
       new FakeHttpURLConnection(_) {
         override def getResponseCode: Int = if (firstAttempt) {

@@ -3,12 +3,14 @@ package backend.albums
 import backend.configs.{Configuration, StandaloneConfig}
 import backend.mb.MbArtistReconciler
 import backend.recon._
-import common.ds.RichMap._
 import common.io.JsonableSaver
 import common.rich.RichFuture._
 import common.rich.RichObservable._
 import mains.fixer.StringFixer
 import models.IOMusicFinder
+import monocle.function.IndexFunctions
+import monocle.std.MapOptics
+import monocle.syntax.ApplySyntax
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future
@@ -16,7 +18,7 @@ import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
 class NewAlbums(implicit c: Configuration)
-    extends ToBindOps with FutureInstances {
+    extends ToBindOps with FutureInstances with MapOptics with ApplySyntax with IndexFunctions {
   import NewAlbum.NewAlbumJsonable
   private val logger = c.logger
   import c._
@@ -52,7 +54,7 @@ class NewAlbums(implicit c: Configuration)
   def ignoreArtist(a: Artist): Future[Unit] = ignore(a, artistReconStorage) >> removeArtist(a)
   def removeAlbum(a: Album): Future[Unit] = {
     logger.debug(s"Removing $a")
-    load.map(_.modified(a.artist, _.filterNot(_.title == a.title))).map(save)
+    load.map(_ &|-? index(a.artist) modify (_.filterNot(_.title == a.title))).map(save)
   }
   def ignoreAlbum(a: Album): Future[Unit] = ignore(a, albumReconStorage) >> removeAlbum(a)
   implicit val locations = new IOMusicFinder {
