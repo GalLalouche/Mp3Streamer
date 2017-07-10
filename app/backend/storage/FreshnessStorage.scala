@@ -19,7 +19,7 @@ class FreshnessStorage[Key, Value](storage: Storage[Key, (Value, Option[DateTime
   private def toValue(v: Future[Option[(Value, Any)]]) = v.map(_.map(_._1))
   // 1st option: the data may not be there; 2nd option: it might be there but null
   def freshness(k: Key): Future[Option[Option[DateTime]]] = storage load k map (_ map (_._2))
-  def storeWithoutTimestamp(k: Key, v: Value) = storage.store(k, v -> None)
+  def storeWithoutTimestamp(k: Key, v: Value): Future[Boolean] = storage.store(k, v -> None)
   override def store(k: Key, v: Value) =
     storage.store(k, now(v))
   override def load(k: Key): Future[Option[Value]] =

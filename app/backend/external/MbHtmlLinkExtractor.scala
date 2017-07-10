@@ -16,7 +16,7 @@ private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String
     val url: Url = Url(e.select("a").attr("href").mapIf(_.startsWith("//")).to("https:" + _))
     val sourceName = e.className
         .takeWhile(_ != '-')
-        .mapIf(_ == "no").to(x => e.child(0).text())
+        .mapIf(_ == "no").to(e.child(0).text().const)
     BaseLink(url, Host fromUrl url getOrElse Host(sourceName, url.host))
   }
   private def extractLinks(d: Document): List[BaseLink[T]] =

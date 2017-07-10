@@ -55,6 +55,6 @@ object MbArtistReconciler {
   }
 
   case class MbAlbumMetadata(title: String, releaseDate: LocalDate, albumType: AlbumType, reconId: ReconID) {
-    def isOut = releaseDate.toDateTimeAtCurrentTime isBefore System.currentTimeMillis
+    def isOut: Boolean = releaseDate.toDateTimeAtCurrentTime isBefore System.currentTimeMillis
   }
 }

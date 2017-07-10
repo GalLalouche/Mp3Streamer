@@ -4,7 +4,7 @@ import org.joda.time.DateTime
 
 trait FilteringLogger extends Logger {
   private var currentLevel: LoggingLevel = LoggingLevel.Info
-  def setCurrentLevel(l: LoggingLevel) = {
+  def setCurrentLevel(l: LoggingLevel): this.type = {
     require(l != null)
     currentLevel = l
     this
