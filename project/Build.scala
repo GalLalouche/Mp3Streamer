@@ -20,7 +20,7 @@ object ApplicationBuild extends Build {
       "com.typesafe.play" %% "play-ws" % "2.5.4",
       "com.typesafe.slick" %% "slick" % "3.0.0",
       "io.reactivex" %% "rxscala" % "0.26.2",
-      "my.net.jthink" % "jaudiotagger" % "2.2.6-SNAPSHOT" changing(),
+      "my.net.jthink" % "jaudiotagger" % "2.2.6-SNAPSHOT",
       "org.apache.commons" % "commons-io" % "1.3.2",
       "org.jsoup" % "jsoup" % "1.8.3",
       "org.me" %% "scalacommon" % "1.0" changing(),
