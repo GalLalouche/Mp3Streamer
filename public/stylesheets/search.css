@@ -1,16 +1,17 @@
-#search *{
-  font-size:15px !important;
-} 
-#search li {
-  font-size:12px !important;
+#search .ui-tabs-panel * {
+  font-size: 12px
 }
+
+#search :not(li) {
+  font-size: 15px
+}
+
 #search-results .fa {
   zoom: 1.2;
   cursor: pointer;
 }
 
 #search-results ul {
-  list-style-type:none;
-  padding-left:0;
+  list-style-type: none;
+  padding-left: 0;
 }
-

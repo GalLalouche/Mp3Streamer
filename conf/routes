@@ -13,6 +13,7 @@ GET        /client/*file                 controllers.Application.sjsClient(file)
 # Player!
 GET        /data/randomSong              controllers.Player.randomSong
 GET        /data/albums/*path            controllers.Player.album(path)
+GET        /data/discs/:disc/*path       controllers.Player.discNumber(path, disc)
 GET        /data/songs/*path             controllers.Player.song(path)
 GET        /data/nextSong                controllers.Player.nextSong(path)
 # Streamer

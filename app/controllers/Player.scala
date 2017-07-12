@@ -3,7 +3,6 @@ package controllers
 import common.Debug
 import common.io.IODirectory
 import common.rich.RichT._
-import common.rich.path.Directory
 import common.rich.primitives.RichEither._
 import models._
 import play.api.libs.json.{JsArray, JsValue}
@@ -19,7 +18,7 @@ object Player extends Controller with Debug {
     SongGroups.fromGroups(new SongGroups().load)
   }
   private var songSelector: SongSelector = _
-  def update() = {
+  def update(): Unit = {
     songSelector = SongSelector.create
   }
   //TODO hide this, shouldn't be a part of the controller
@@ -34,8 +33,15 @@ object Player extends Controller with Debug {
     Ok(songSelector.randomSong |> group |> toJson)
   }
 
+  private def songsInAlbum(path: String): Seq[Song] =
+    Utils.parseFile(path) |> IODirectory.apply |> Album.apply |> Album.songs.get
+  private def songsAsJsArray(ss: Seq[Song]) =
+    Ok(ss.map(Utils.toJson) |> JsArray)
   def album(path: String) = Action {
-    Ok(Utils.parseFile(path) |> IODirectory.apply |> Album.apply |> (_.songs.map(Utils.toJson)) |> JsArray.apply)
+    songsInAlbum(path) |> songsAsJsArray
+  }
+  def discNumber(path: String, discNumber: String) = Action {
+    songsInAlbum(path).filter(_.discNumber.exists(discNumber ==)).ensuring(_.nonEmpty) |> songsAsJsArray
   }
 
   def song(path: String) = Action {

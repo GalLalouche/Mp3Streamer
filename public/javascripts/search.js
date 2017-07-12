@@ -1,11 +1,13 @@
 $(function() {
   const searchBox = $("#searchbox");
   const results = $("#search-results")
+  const play = "play"
+  const add = "plus"
+  const addEntireAlbum = "plus-square"
+  const addDisc = "plus-circle"
 
   function setResults(jsArray, requestTime) {
     results.show()
-    const playIcon = icon("play")
-    const addIcon = icon("plus")
 
     function specificResults(name, itemProducer, appendTo, array) {
       const ul = elem("ul").appendTo(appendTo || $(`#${name}-results`).empty())
@@ -20,19 +22,26 @@ $(function() {
       return // a later request has already set the result
     results.attr("time", requestTime)
     specificResults("song", s =>
-        `${addIcon} ${playIcon} ${s.artistName}: ${s.title} (${s.duration.timeFormat()})`)
+        `${icon(add)} ${icon(play)} ${s.artistName}: ${s.title} (${s.duration.timeFormat()})`)
     $.each($(".song-result"), function() {
       const song = $(this).data()
       $(this).attr("title", `${song.year}, ${song.albumName}, ${song.track}`)
     })
-    const albumItem = a => `${addIcon} ${a.artistName}: ${a.title} (${a.year || "N/A"})`
+    const albumItem = function(album) {
+      const item = `${icon(addEntireAlbum)} ${album.artistName}: ${album.title} (${album.year || "N/A"})`
+      if (album.discNumbers) {
+        const discNumberElements = album.discNumbers.map(d => `<span>${icon(addDisc)}${d}</span>`).join(" ")
+        return item + "<br>&emsp;&emsp;" + discNumberElements
+      } else
+        return item
+    }
     specificResults("album", albumItem)
     specificResults("artist", _ => "")
     $.each($(".artist-result"), function() {
       const li = $(this)
       const artist = li.data()
       const albums = div().appendTo(li)
-      specificResults("album", a => `${addIcon} ${a.year} ${a.title}`, albums, artist.albums)
+      specificResults("album", a => `${icon(add)} ${a.year} ${a.title}`, albums, artist.albums)
       li.accordion({
         collapsible: true,
         active: false,
@@ -64,21 +73,28 @@ $(function() {
     })
   }
 
-  results.on("click", "#song-results .fa", function(e) {
+  results.on("click", `#song-results .fa-${add}`, function(e) {
     const song = $(this).parent().data()
     const isPlay = e.target.classList.contains("fa-play")
     $.get("data/songs/" + song.file, e => gplaylist.add(e, isPlay))
   })
-  results.on("click", ".album-result .fa", function() {
+  results.on("click", `.album-result .fa-${addEntireAlbum}`, function() {
     const album = $(this).parent().data()
     $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
   })
+  results.on("click", `.album-result .fa-${addDisc}`, function() {
+    const album = $(this).parent().parent().data()
+    const discNumber = $(this).parent().text()
+    $.get(`data/discs/${discNumber}/${album.dir}`, e => gplaylist.add(e, false))
+  })
 
   let timeOfLastInput = 0
+
   function updateTimeOfLastInput() {
     timeOfLastInput = Date.now()
     return timeOfLastInput
   }
+
   searchBox.bind('input change', search)
   function search() {
     const searchTime = updateTimeOfLastInput()

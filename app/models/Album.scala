@@ -1,6 +1,7 @@
 package models
 
 import common.io.DirectoryRef
+import monocle.Getter
 
 // TODO make songs a class field, and transform Song.album to require an implicit MF
 case class Album(dir: DirectoryRef, title: String, artistName: String, year: Int) {
@@ -15,4 +16,5 @@ object Album {
       artistName = firstSong.artistName,
       year = firstSong.year)
   }
+  def songs(implicit mf: MusicFinder): Getter[Album, Seq[Song]] = Getter.apply(_.songs)
 }
