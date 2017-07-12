@@ -13,7 +13,7 @@ private[lyrics] object DefaultClassicalInstrumental extends LyricsRetriever {
   override def find(s: Song) = {
     @tailrec
     def isClassical(f: DirectoryRef): Boolean =
-      f.name == "Classical" || (f.hasParent && isClassical(f.parent))
+      f.name == "Classical" || f.name == "New Age" || (f.hasParent && isClassical(f.parent))
     if (isClassical(s.file.parent))
       Future.successful(Instrumental("Default"))
     else
