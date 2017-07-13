@@ -1,5 +1,6 @@
 package controllers
 
+import common.rich.RichT._
 import controllers.websockets.WebSocketController
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Action
@@ -16,22 +17,23 @@ object Cacher extends WebSocketController {
   implicit val c = Utils.config
   import search.ModelJsonable._
   private val cacher = MetadataCacher.create
-  private def toRefreshStatus(o: Observable[IndexUpdate]) = {
-    o.map(_.dir).foreach(Recent.newDir)
-    o.map(toJson).map(_.toString).doOnCompleted {
-      Player.update()
-      broadcast("Reloading searcher")
-      Searcher.! onComplete {_ =>
-        broadcast("Finished")
-      }
-    } subscribe {broadcast(_)}
+  private def toRefreshStatus(o: Observable[IndexUpdate], updateRecent: Boolean) = {
+    if (updateRecent)
+      o.map(_.dir) foreach Recent.newDir
+    o.map(toJson).map(_.toString)
+        .doOnNext(broadcast)
+        .doOnCompleted {
+          Player.update()
+          broadcast("Reloading searcher")
+          Searcher.!() foreach broadcast("Finished").const
+        }.subscribe()
     Ok(views.html.refresh())
   }
 
   def forceRefresh() = Action {
-    toRefreshStatus(cacher.indexAll())
+    toRefreshStatus(cacher.indexAll(), updateRecent = false)
   }
   def quickRefresh() = Action {
-    toRefreshStatus(cacher.quickRefresh())
+    toRefreshStatus(cacher.quickRefresh(), updateRecent = true)
   }
 }
