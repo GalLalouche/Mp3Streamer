@@ -16,7 +16,7 @@ private[external] class CompositeExtender private(
   private val albumClass = classOf[Album]
   private def extendLink[R <: Reconcilable : Manifest](
       entity: R, link: MarkedLink[R], allLinks: MarkedLinks[R]): ExtendedLink[R] = {
-    val map: HostMap[LinkExtender[R]] = (implicitly[Manifest[R]].runtimeClass match {
+    val map: HostMap[LinkExtender[R]] = (manifest.runtimeClass match {
       case `artistClass` => artistExtendersMap
       case `albumClass` => albumExtenderMap
     }).asInstanceOf[HostMap[LinkExtender[R]]]

@@ -12,7 +12,7 @@ import play.api.libs.json._
 class JsonableSaver(implicit rootDir: DirectoryRef)
     extends Jsonable.ToJsonableOps {
   private val workingDir = rootDir addSubDir "data" addSubDir "json"
-  protected def jsonFileName[T](implicit manifest: Manifest[T]): String =
+  protected def jsonFileName[T: Manifest]: String =
     s"${manifest.runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
   private def save[T: Manifest](js: JsValue) {
     workingDir addFile jsonFileName write js.toString
@@ -24,7 +24,7 @@ class JsonableSaver(implicit rootDir: DirectoryRef)
    */
   // TODO replace TraversableOnce with a Non-Empty list?
   def save[T: Jsonable : Manifest](data: TraversableOnce[T]) {
-    require(data.nonEmpty, s"Can't save empty data of type <${implicitly[Manifest[T]]}>")
+    require(data.nonEmpty, s"Can't save empty data of type <$manifest>")
     save(data.toSeq.jsonify)
   }
   def save[T: Jsonable : Manifest](obj: T): Unit = save(obj.jsonify)
@@ -46,7 +46,7 @@ class JsonableSaver(implicit rootDir: DirectoryRef)
     load.map(_.as[JsArray].parse).getOrElse(Nil)
   /** Loads the previously saved entry, or throws an exception if no file has been found */
   def loadObject[T: Jsonable : Manifest]: T = {
-    val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <${implicitly[Manifest[T]]}>")
+    val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <$manifest>")
     js.asInstanceOf[JsObject].parse
   }
 
