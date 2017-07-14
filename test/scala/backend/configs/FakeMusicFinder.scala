@@ -11,11 +11,15 @@ class FakeMusicFinder(val dir: MemoryDir) extends MusicFinder {
   protected override def subDirNames: List[String] = List("music")
   private val dirToAddSongsTo = dir addSubDir subDirNames.head
   private val pathToSongs = mutable.HashMap[String, MemorySong]()
-  /** Adds a song under root / songs / $artist_name / $album_time / $file_name. */
-  def addSong(s: MemorySong): MemoryDir = {
-    val $ = dirToAddSongsTo addSubDir s.artistName addSubDir s.albumName
-    val file = $ addFile s.file.name
-    pathToSongs += file.path -> s
+
+  /**
+  * Adds a song under root / songs / $artist_name / $album_time / $file_name.
+  * Ensures the song's file matches the music finder directory structure.
+  */
+  def copySong(s: MemorySong): MemorySong = {
+    val newFile = dirToAddSongsTo addSubDir s.artistName addSubDir s.albumName addFile s.file.name
+    val $ = s.copy(file = newFile)
+    pathToSongs += newFile.path -> $
     $
   }
   override def parseSong(f: MemoryFile): MemorySong = pathToSongs(f.path)

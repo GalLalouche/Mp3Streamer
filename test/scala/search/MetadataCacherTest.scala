@@ -52,42 +52,30 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
 
   "index" - {
     "all" in {
-      val album = fakeModelFactory.album()
-      val song = fakeModelFactory.song(album = album)
-      mf.addSong(song)
+      val song = mf.copySong(fakeModelFactory.song())
+      val album = song.album
       indexAllAndWait()
       verifyData(song)
       verifyData(album)
       verifyData(Artist(album.artistName, Set(album)))
     }
-    val album = fakeModelFactory.album()
     "no album duplicates" in {
-      val song1 = fakeModelFactory.song(title = "song1", album = album)
-      val song2 = fakeModelFactory.song(title = "song2", album = album)
-      mf.addSong(song1)
-      mf.addSong(song2)
+      val song1 = mf.copySong(fakeModelFactory.song(title = "song1", albumName = "album"))
+      mf.copySong(fakeModelFactory.song(title = "song2", albumName = "album"))
       indexAllAndWait()
-      verifyData(album)
+      verifyData(song1.album)
     }
     "no artist duplicates" in {
-      val album1 = fakeModelFactory.album(title = "a1")
-      val album2 = fakeModelFactory.album(title = "a2")
-      val song1 = fakeModelFactory.song(title = "song1", album = album1)
-      val song2 = fakeModelFactory.song(title = "song2", album = album2)
-      mf.addSong(song1)
-      mf.addSong(song2)
+      val song1 = mf.copySong(fakeModelFactory.song(title = "song1", albumName = "a1"))
+      val song2 = mf.copySong(fakeModelFactory.song(title = "song2", albumName = "a2"))
       indexAllAndWait()
-      verifyData(Artist(song1.artistName, Set(album1, album2)))
+      verifyData(Artist(song1.artistName, Set(song1.album, song2.album)))
     }
     "with sink" in {
-      val album1 = fakeModelFactory.album(title = "a1")
-      val album2 = fakeModelFactory.album(title = "a2")
-      val song1 = fakeModelFactory.song(title = "song1", album = album1)
-      val song2 = fakeModelFactory.song(title = "song2", album = album2)
-      mf.addSong(song1)
-      mf.addSong(song2)
+      mf.copySong(fakeModelFactory.song(title = "song1", albumName = "a1"))
+      mf.copySong(fakeModelFactory.song(title = "song2", albumName = "a2"))
       val q = new LinkedBlockingQueue[IndexUpdate]()
-      $.indexAll().subscribe(onNext = q put _)
+      $.indexAll().foreach(q.put)
       def matchWithIndices(current: Int, total: Int) = new Matcher[IndexUpdate] {
         override def apply(left: IndexUpdate): MatchResult = {
           MatchResult(
@@ -102,22 +90,23 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
   }
 
   "incremental (integration)" in {
-    val album1 = fakeModelFactory.album(title = "album1")
-    val song1 = fakeModelFactory.song(title = "song1", album = album1, artistName = "artist1")
-    $.processDirectory(mf.addSong(song1)).get
+    val song1 = mf.copySong(fakeModelFactory.song(title = "song1", albumName = "album1", artistName = "artist1"))
+    val album1 = song1.album
+    $.processDirectory(album1.dir).get
     verifyData(song1)
     verifyData(album1)
     verifyData(Artist("artist1", Set(album1)))
-    val album2 = fakeModelFactory.album(title = "album2")
-    val song2 = fakeModelFactory.song(title = "song2", album = album2, artistName = "artist1")
-    $.processDirectory(mf.addSong(song2)).get
 
+    val song2 = mf.copySong(fakeModelFactory.song(title = "song2", albumName = "album2", artistName = "artist1"))
+    val album2 = song2.album
+    $.processDirectory(album2.dir).get
     verifyData(song1, song2)
     verifyData(album1, album2)
     verifyData(Artist("artist1", Set(album1, album2)))
-    val album3 = fakeModelFactory.album(title = "album3")
-    val song3 = fakeModelFactory.song(title = "song3", album = album3, artistName = "artist2")
-    $.processDirectory(mf.addSong(song3)).get
+
+    val song3 = mf.copySong(fakeModelFactory.song(title = "song3", albumName = "album3", artistName = "artist2"))
+    val album3 = song3.album
+    $.processDirectory(album3.dir).get
     verifyData(song1, song2, song3)
     verifyData(album1, album2, album3)
     verifyData(Artist("artist1", Set(album1, album2)), Artist("artist2", Set(album3)))
@@ -126,9 +115,8 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
   "quickRefresh" in {
     def quickRefreshAndWait() = awaitCompletion($.quickRefresh())
     // setup
-    val album1 = fakeModelFactory.album(title = "album1")
-    val song1 = fakeModelFactory.song(title = "song1", album = album1, artistName = "artist1")
-    mf.addSong(song1)
+    val song1 = mf.copySong(fakeModelFactory.song(title = "song1", albumName = "album1", artistName = "artist1"))
+    val album1 = song1.album
 
     quickRefreshAndWait()
 
@@ -137,12 +125,10 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
     verifyData(Artist("artist1", Set(album1)))
 
     // song shouldn't be found because it belongs to an album that was already parsed
-    val hiddenSong = fakeModelFactory.song(album = album1, artistName = song1.artistName)
-    mf.addSong(hiddenSong)
+    mf.copySong(fakeModelFactory.song(albumName = album1.title, artistName = song1.artistName))
     Thread sleep 1
-    val album2 = fakeModelFactory.album(title = "album2")
-    val song2 = fakeModelFactory.song(title = "song2", album = album2, artistName = "artist1")
-    mf.addSong(song2)
+    val song2 = mf.copySong(fakeModelFactory.song(title = "song2", albumName = "album2", artistName = "artist1"))
+    val album2 = song2.album
 
     quickRefreshAndWait()
 
