@@ -15,3 +15,6 @@
   list-style-type: none;
   padding-left: 0;
 }
+#search .ui-widget-header {
+  border: 0 !important;
+}
