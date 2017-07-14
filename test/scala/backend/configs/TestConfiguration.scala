@@ -9,6 +9,7 @@ import common.io.MemoryRoot
 import org.jsoup.nodes.Document
 
 import scala.concurrent.{ExecutionContext, Future}
+import common.rich.RichT._
 
 // It's a case class so its copy constructor could be used by clients in order to configure it.
 case class TestConfiguration(private val _ec: ExecutionContext = new ExecutionContext {
@@ -21,7 +22,7 @@ case class TestConfiguration(private val _ec: ExecutionContext = new ExecutionCo
                              private val _root: MemoryRoot = new MemoryRoot)
     extends NonPersistentConfig {
   override implicit val ec: ExecutionContext = _ec
-  override implicit val mf: FakeMusicFinder = _mf
+  override implicit val mf: FakeMusicFinder = _mf.opt.getOrElse(new FakeMusicFinder(_root))
   override def downloadDocument(url: Url): Future[Document] = Future successful _documentDownloader(url)
   override def connect(url: Url, config: (HttpURLConnection) => Unit) = Future successful {
     val $ = new HttpURLConnection(url.toURL) {
@@ -32,11 +33,7 @@ case class TestConfiguration(private val _ec: ExecutionContext = new ExecutionCo
     config($)
     _httpTransformer($)
   }
-  override implicit val logger: Logger = new StringBuilderLogger(TestConfiguration.loggingHistory)
+  override implicit val logger: Logger = new StringBuilderLogger(new StringBuilder)
   override implicit lazy val rootDirectory: MemoryRoot = _root
   override implicit val clock: FakeClock = new FakeClock
-}
-
-object TestConfiguration {
-  val loggingHistory = new StringBuilder
 }

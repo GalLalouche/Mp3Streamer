@@ -3,7 +3,6 @@ package songs
 import backend.configs.Configuration
 import common.io.RefSystem
 import common.rich.RichT._
-import common.rich.func.MoreMonadPlus.SeqMonadPlus
 import models.{MusicFinder, Song}
 
 import scala.concurrent.Future
@@ -13,7 +12,7 @@ import scalaz.syntax.{ToBindOps, ToFunctorOps}
 
 trait SongSelector {
   def randomSong: Song
-  def followingSong(song: Song): Song
+  def followingSong(song: Song): Option[Song]
 }
 
 private class SongSelectorImpl[Sys <: RefSystem](
@@ -21,17 +20,15 @@ private class SongSelectorImpl[Sys <: RefSystem](
     extends SongSelector with ToFunctorOps {
   private val random = new Random()
   def randomSong: Song = random.nextInt(songs.length) mapTo songs.apply mapTo musicFinder.parseSong
-  def followingSong(song: Song): Song =
+  def followingSong(song: Song): Option[Song] =
     song.file.parent
         .mapTo(musicFinder.getSongsInDir)
-        .fproduct(_.track)
-        .map(_.swap).toMap
-        .apply(song.track + 1)
+        .sortBy(_.track)
+        .lift(song.track)
 }
 
 object SongSelector
     extends ToBindOps with FutureInstances {
-
   import common.rich.RichFuture._
 
   /** A mutable-updateable wrapper of SongSelector */
@@ -46,8 +43,8 @@ object SongSelector
     }
     private var songSelector: Future[SongSelector] = _
     private lazy val ss = songSelector.get
-    override def randomSong: Song = ss.randomSong
-    override def followingSong(song: Song): Song = ss followingSong song
+    override def randomSong = ss.randomSong
+    override def followingSong(song: Song) = ss followingSong song
   }
 
   def create(implicit c: Configuration): SongSelector = {

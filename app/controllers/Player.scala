@@ -7,13 +7,13 @@ import common.rich.primitives.RichEither._
 import models._
 import play.api.libs.json.{JsArray, JsValue}
 import play.api.mvc._
+import search.ModelJsonable._
 import songs.{SongGroup, SongGroups, SongSelector}
 
 /** Handles fetch requests of JSON information, and listens to directory changes. */
 object Player extends Controller with Debug {
   private implicit val c = Utils.config
   import c._
-  import search.ModelJsonable._
   private val songGroups: Map[Song, SongGroup] = {
     SongGroups.fromGroups(new SongGroups().load)
   }
@@ -49,6 +49,8 @@ object Player extends Controller with Debug {
   }
 
   def nextSong(path: String) = Action {
-    Ok(path |> Utils.parseSong |> songSelector.followingSong |> Utils.toJson)
+    val song = path |> Utils.parseSong
+    val nextSong: Option[Song] = songSelector followingSong song
+    Ok(nextSong.get |> Utils.toJson)
   }
 }
