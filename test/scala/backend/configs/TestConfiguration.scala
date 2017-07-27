@@ -21,6 +21,8 @@ case class TestConfiguration(private val _ec: ExecutionContext = new ExecutionCo
                              private val _httpTransformer: HttpURLConnection => HttpURLConnection = _ => ???,
                              private val _root: MemoryRoot = new MemoryRoot)
     extends NonPersistentConfig {
+  override implicit lazy val db: driver.backend.DatabaseDef =
+    driver.api.Database.forURL(s"jdbc:h2:mem:test${System.identityHashCode(this)};DB_CLOSE_DELAY=-1", driver = "org.H2.JDBC")
   override implicit val ec: ExecutionContext = _ec
   override implicit val mf: FakeMusicFinder = _mf.opt.getOrElse(new FakeMusicFinder(_root))
   override def downloadDocument(url: Url): Future[Document] = Future successful _documentDownloader(url)
