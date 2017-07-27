@@ -1,9 +1,11 @@
 package controllers
 
 import backend.Url
-import backend.lyrics.{Lyrics, LyricsCache}
+import backend.lyrics.{Instrumental, Lyrics, LyricsCache}
 import common.rich.RichFuture._
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{Action, Controller, Result}
+
+import scala.concurrent.Future
 
 object Lyrics extends Controller {
   import Utils.config
@@ -17,7 +19,7 @@ object Lyrics extends Controller {
         .orElse("Failed to get lyrics :(")
         .map(Ok(_))
   }
-  def push(path: String) = Action.async {request =>
+  def push(path: String) = Action.async { request =>
     val song = Utils.parseSong(path)
     val url = request.body.asText.map(Url).get
     backend.parse(url, song)
@@ -25,9 +27,11 @@ object Lyrics extends Controller {
         .orElse("Failed to parse lyrics")
         .map(Ok(_))
   }
-  def setInstrumental(path: String) = Action.async {
-    backend.setInstrumental(Utils.parseSong(path))
-        .map(toString)
-        .map(Ok(_))
+  private def fromInstrumental(i: Instrumental): Result = ???
+  def setInstrumentalSong(path: String) = Action.async {
+    backend setInstrumentalSong Utils.parseSong(path) map fromInstrumental
+  }
+  def setInstrumentalArtist(path: String) = Action.async {
+    backend setInstrumentalArtist Utils.parseSong(path) map fromInstrumental
   }
 }
