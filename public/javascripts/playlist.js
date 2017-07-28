@@ -1,7 +1,7 @@
 $(function () {
   $("#update_playlist").click(function () {
     const playlist = gplaylist.songs().slice(gplaylist.currentIndex()).map(x => x.file);
-    postJson("playlist/queue", playlist)
+    postJson("playlist/queue", playlist, () => $.toast("State successfully updated"))
   })
   $("#load_playlist").click(function () {
     $.get("playlist/queue", x => x.forEach(e => gplaylist.add(e, false)))
@@ -12,7 +12,7 @@ $(function () {
       index: gplaylist.currentIndex(),
       duration: gplayer.currentPlayingInSeconds()
     }
-    postJson("playlist/state", data)
+    postJson("playlist/state", data, () => $.toast("State successfully updated"))
   })
   $("#load_state").click(function () {
     $.get("playlist/state", data => {
