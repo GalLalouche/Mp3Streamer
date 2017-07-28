@@ -11,19 +11,22 @@ import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
+private[this] class OldStorageEntry extends Exception
 private[this] class Serializer[R <: Reconcilable] {
   private val splitChar = ";"
   private val splitString = ";;"
   // TODO handle lists in a less hacky way
   private def encode(e: MarkedLink[R]): String =
     List(e.host.name, e.host.url.address, e.link.address, e.isNew) mkString splitChar
-  private def decode(s: String): MarkedLink[R] = s
-      .split(splitChar)
-      .ensuring(_.length == 4)
-      .mapTo(e => MarkedLink[R](
-        link = Url(e(2)),
-        host = Host(name = e(0), url = Url(e(1))),
-        isNew = e(3).toBoolean))
+  private def decode(s: String): MarkedLink[R] = {
+    val split = s split splitChar
+    if (split.length != 4)
+      throw new OldStorageEntry
+    split.mapTo(e => MarkedLink[R](
+      link = Url(e(2)),
+      host = Host(name = e(0), url = Url(e(1))),
+      isNew = e(3).toBoolean))
+  }
 
   def toString(els: MarkedLinks[R]): String = els map encode mkString splitString
   def fromString(s: String): MarkedLinks[R] = s split splitString filterNot (_.isEmpty) map decode
@@ -47,8 +50,14 @@ private[backend] class ArtistExternalStorage(implicit c: Configuration) extends 
     db.run(rows
         .filter(_.name === k.normalize)
         .map(e => e.encodedLinks -> e.timestamp)
-        .result
-        .map(_.headOption.map(_.mapTo(e => e._1.mapTo(serializer.fromString) -> e._2.map(new DateTime(_))))))
+        .result)
+        .map(_.headOption.map(_.mapTo(e => e._1.mapTo(serializer.fromString) -> e._2.map(new DateTime(_)))))
+        .recoverWith {
+          case _: OldStorageEntry =>
+            c.logger.error(s"Encountered an old storage entry for artist $k; removing entry")
+            // Using internalDelete since regular delete also loads which results in an infinite recursion.
+            internalDelete(k).>|(None)
+        }
   override protected def internalForceStore(a: Artist, v: (MarkedLinks[Artist], Option[DateTime])) =
     db.run(rows.insertOrUpdate(a.normalize, serializer.toString(v._1), v._2.map(_.getMillis)))
   override def internalDelete(k: Artist) =
