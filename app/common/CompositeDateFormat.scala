@@ -4,7 +4,6 @@ import java.util.Date
 
 import common.rich.func.MoreMonadPlus._
 import common.rich.func.RichMonadPlus._
-import common.rich.primitives.RichOption._
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import org.joda.time.{DateTime, DateTimeZone}
 

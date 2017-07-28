@@ -79,7 +79,7 @@ class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration,
 
   private def updateIndex(dirs: GenSeq[DirectoryRef], allInfoHandler: AllInfoHandler): Observable[IndexUpdate] = {
     val $ = ReplaySubject[IndexUpdate]
-    Observable.apply[IndexUpdate](obs => {
+    Observable[IndexUpdate](obs => {
       val totalSize = dirs.length
       Future {
         import common.concurrency.toRunnable

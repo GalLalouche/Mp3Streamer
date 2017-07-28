@@ -15,7 +15,7 @@ trait PathRef {
   type S <: RefSystem
   def path: String
   def name: String
-  override def toString: String = s"${this.simpleName}: $name"
+  override def toString: String = s"${this.simpleName}: $path"
   def parent: S#D
 }
 

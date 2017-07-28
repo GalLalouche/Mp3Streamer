@@ -25,23 +25,21 @@ class MbExternalLinksProvider(implicit c: Configuration)
       extends Retriever[R, TimestampedLinks[R]] {
     override def apply(r: R): Future[TimestampedLinks[R]] = foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
-  private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](reconciler: Retriever[R, (Option[ReconID], Boolean)],
-                                                                        storage: ExternalStorage[R],
-                                                                        provider: Retriever[ReconID, BaseLinks[R]],
-                                                                        expander: Traversable[ExternalLinkExpander[R]],
-                                                                        additionalReconciler: Traversable[Reconciler[R]]
-                                                                       ): Retriever[R, TimestampedLinks[R]] =
-    new RefreshableStorage[R, MarkedLinks[R]](
-      new FreshnessStorage(storage),
-      new ExternalPipe[R](
-        a => reconciler(a)
-            .filterWith(_._1.isDefined, s"Couldn't reconcile <$a>")
-            .map(_._1.get),
-        provider,
-        expander,
-        additionalReconciler),
-      Duration standardDays 7)
-        .mapTo(new TimeStamper(_))
+  private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](
+      reconciler: Retriever[R, (Option[ReconID], Boolean)],
+      storage: ExternalStorage[R],
+      provider: Retriever[ReconID, BaseLinks[R]],
+      expander: Traversable[ExternalLinkExpander[R]],
+      additionalReconciler: Traversable[Reconciler[R]]
+  ): Retriever[R, TimestampedLinks[R]] = new RefreshableStorage[R, MarkedLinks[R]](
+    new FreshnessStorage(storage),
+    new ExternalPipe[R](
+      a => reconciler(a)
+          .filterWith(_._1.isDefined, s"Couldn't reconcile <$a>")
+          .map(_._1.get),
+      provider, expander, additionalReconciler),
+    Duration standardDays 28)
+      .mapTo(new TimeStamper(_))
 
   private val artistReconStorage: ArtistReconStorage = new ArtistReconStorage
   private val artistExternalStorage = new ArtistExternalStorage
