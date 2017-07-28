@@ -15,11 +15,13 @@ import scalaz.syntax.ToFunctorOps
 
 class LyricsCache(implicit c: Configuration)
     extends FutureInstances with ToFunctorOps {
+  private val defaultArtistInstrumental = new InstrumentalArtist
   private val retriever: LyricsRetriever = new CompositeLyricsRetriever(
     DefaultClassicalInstrumental,
     new LyricsWikiaRetriever(),
     new DarkLyricsRetriever(),
-    new AzLyricsRetriever())
+    new AzLyricsRetriever(),
+    defaultArtistInstrumental)
   private val cache = new OnlineRetrieverCacher[Song, Lyrics](
     new LyricsStorage(), new Retriever[Song, Lyrics] {override def apply(v1: Song) = retriever find v1})
   def find(s: Song): Future[Lyrics] = cache(s)
@@ -33,14 +35,12 @@ class LyricsCache(implicit c: Configuration)
     cache.forceStore(s, instrumental).>|(instrumental)
   }
   def setInstrumentalArtist(s: Song): Future[Instrumental] = defaultArtistInstrumental add s
-    ???
-  }
 }
 
 object LyricsCache {
   private implicit val c = StandaloneConfig
 
   def main(args: Array[String]) {
-    println(new LyricsCache().find(Song(new File("""D:\Media\Music\Rock\Hard-Rock\Led Zeppelin\1971 Led Zeppelin IV\02 - Rock and Roll.mp3"""))).get)
+    println(new InstrumentalArtistStorage().delete("satyricon").get)
   }
 }

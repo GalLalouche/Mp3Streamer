@@ -7,11 +7,11 @@ import common.rich.RichFuture._
 import org.scalatest.{BeforeAndAfter, FreeSpec}
 import search.FakeModelFactory
 
-class DefaultArtistInstrumentalTest extends FreeSpec with AuxSpecs with BeforeAndAfter {
+class InstrumentalArtistTest extends FreeSpec with AuxSpecs with BeforeAndAfter {
   private implicit val c = TestConfiguration()
   private val factory = new FakeModelFactory
   private val storage = new InstrumentalArtistStorage
-  private val $ = new DefaultArtistInstrumental
+  private val $ = new InstrumentalArtist
   storage.utils.createTable().get
 
   after {

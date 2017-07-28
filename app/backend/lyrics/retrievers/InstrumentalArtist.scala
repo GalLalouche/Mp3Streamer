@@ -9,9 +9,9 @@ import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
-private[lyrics] class DefaultArtistInstrumental(implicit c: Configuration) extends DefaultInstrumental
+private[lyrics] class InstrumentalArtist(implicit c: Configuration) extends DefaultInstrumental
     with FutureInstances with ToBindOps {
-  private val storage = new InstrumentalArtistStorage()
+  private val storage = new InstrumentalArtistStorage
 
   override protected def isInstrumental(s: Song) =
     storage.load(s.artistName).map(_.isDefined).get
