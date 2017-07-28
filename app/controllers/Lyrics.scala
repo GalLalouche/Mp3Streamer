@@ -3,9 +3,8 @@ package controllers
 import backend.Url
 import backend.lyrics.{Instrumental, Lyrics, LyricsCache}
 import common.rich.RichFuture._
+import common.rich.RichT._
 import play.api.mvc.{Action, Controller, Result}
-
-import scala.concurrent.Future
 
 object Lyrics extends Controller {
   import Utils.config
@@ -27,7 +26,7 @@ object Lyrics extends Controller {
         .orElse("Failed to parse lyrics")
         .map(Ok(_))
   }
-  private def fromInstrumental(i: Instrumental): Result = ???
+  private def fromInstrumental(i: Instrumental): Result = Ok(i |> toString)
   def setInstrumentalSong(path: String) = Action.async {
     backend setInstrumentalSong Utils.parseSong(path) map fromInstrumental
   }

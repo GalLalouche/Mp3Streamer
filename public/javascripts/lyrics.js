@@ -5,16 +5,24 @@ $(function () {
   const lyricsPusher = div().appendTo(lyricsDiv)
   const lyricsUrlBox = $("<input id='lyrics-url' placeholder='Lyrics URL' type='text'/>").appendTo(lyricsPusher)
   const updateLyricsButton = button("Update lyrics").appendTo(lyricsPusher)
-  const instrumentalButton = button("Instrumental").appendTo(lyricsPusher)
+  const instrumentalSongButton = button("Instrumental Song").appendTo(lyricsPusher)
+  const instrumentalArtistButton = button("Instrumental Artist").appendTo(lyricsPusher)
   validateBoxAndButton(lyricsUrlBox, updateLyricsButton, isValidUrl, updateLyrics)
 
   lyricsUrlBox.keyup(function() { // the validateBoxAndButton only applies to updateLyricsButton
-    instrumentalButton.prop('disabled', $(this).val() !== "")
+    const box = $(this)
+    function disable(b) {
+      b.prop('disabled', box.val() !== "")
+    }
+    disable(instrumentalArtistButton)
+    disable(instrumentalSongButton)
   })
 
-  instrumentalButton.click(function() {
-    $.post("lyrics/instrumental/" + gplaylist.currentPlayingSong().file, null, c => showLyrics(c))
-  })
+  function setInstrumental(type) {
+    $.post(`lyrics/instrumental/${type}/${gplaylist.currentPlayingSong().file}`, null, c => showLyrics(c))
+  }
+  instrumentalSongButton.click(() => setInstrumental("song"))
+  instrumentalArtistButton.click(() => setInstrumental("artist"))
   function updateLyrics() {
     const url = lyricsUrlBox.val()
     const songPath = gplaylist.currentPlayingSong().file

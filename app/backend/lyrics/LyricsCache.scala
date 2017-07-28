@@ -32,7 +32,7 @@ class LyricsCache(implicit c: Configuration)
     val instrumental = Instrumental("Manual override")
     cache.forceStore(s, instrumental).>|(instrumental)
   }
-  def setInstrumentalArtist(s: Song): Future[Instrumental] = {
+  def setInstrumentalArtist(s: Song): Future[Instrumental] = defaultArtistInstrumental add s
     ???
   }
 }

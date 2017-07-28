@@ -21,7 +21,7 @@ class DefaultArtistInstrumentalTest extends FreeSpec with AuxSpecs with BeforeAn
   "exists" in {
     val song = factory.song(artistName = "foo")
     storage.store("foo").get
-    $.find(song).get shouldReturn Instrumental("Artist")
+    $.find(song).get shouldReturn Instrumental("Default for Artist")
   }
   "doesn't exist" in {
     val song = factory.song(artistName = "foo")
