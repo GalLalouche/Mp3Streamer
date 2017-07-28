@@ -44,7 +44,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
     val p = Promise[Unit]
     $.doOnCompleted(p success Unit) subscribe()
     import scala.concurrent.duration.DurationInt
-    Await.ready(p.future, 1 second)
+    Await.ready(p.future, 2 second)
   }
   private def indexAllAndWait() = {
     awaitCompletion($.indexAll())
