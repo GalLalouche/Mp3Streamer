@@ -1,8 +1,9 @@
 package common.io
 
 import java.time.LocalDateTime
+import java.util.concurrent.ConcurrentHashMap
 
-import scala.collection.mutable
+import scala.collection.JavaConverters._
 
 trait MemorySystem extends RefSystem {
   override type S = MemorySystem
@@ -42,8 +43,8 @@ case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with Memo
 }
 
 abstract sealed class MemoryDir(val path: String) extends DirectoryRef with MemoryPath {
-  private val filesByName = mutable.Map[String, MemoryFile]()
-  private val dirsByName = mutable.Map[String, SubDir]()
+  private val filesByName = new ConcurrentHashMap[String, MemoryFile]().asScala
+  private val dirsByName = new ConcurrentHashMap[String, MemoryDir]().asScala
   override def getFile(name: String) = filesByName get name
   override def addFile(name: String) = getFile(name).getOrElse {
     val $ = MemoryFile(this, name)
