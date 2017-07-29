@@ -12,9 +12,13 @@ $(function() {
     function specificResults(name, itemProducer, appendTo, array) {
       const ul = elem("ul").appendTo(appendTo || $(`#${name}-results`).empty())
       $.each(array || jsArray[`${name}s`], function(_, e) {
-        $(`<li class="${name}-result">${itemProducer(e)}</li>`)
-            .appendTo(ul)
-            .data(e)
+        const li = $(`<li class="${name}-result search-result">${itemProducer(e)}</li>`)
+        li.appendTo(ul).data(e)
+        li.attr("title", "")
+        li.mouseover(function() {
+          if (li.custom_overflown())
+            li.custom_tooltip(`${itemProducer(e).split(">").custom_last().trim()}`)
+        })
       })
     }
 
@@ -25,7 +29,7 @@ $(function() {
         `${icon(add)} ${icon(play)} ${s.artistName}: ${s.title} (${s.duration.timeFormat()})`)
     $.each($(".song-result"), function() {
       const song = $(this).data()
-      $(this).attr("title", `${song.year}, ${song.albumName}, ${song.track}`)
+      $(this).custom_tooltip(`${song.year}, ${song.albumName}, ${song.track}`)
     })
     const albumItem = function(album) {
       const item = `${icon(addEntireAlbum)} ${album.artistName}: ${album.title} (${album.year || "N/A"})`

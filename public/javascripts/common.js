@@ -138,3 +138,6 @@ $.fn.custom_overflown = function() {
 $.fn.custom_tooltip = function(text) {
   this.attr('title', text)
 }
+Array.prototype.custom_last = function() {
+  return this[this.length - 1]
+}

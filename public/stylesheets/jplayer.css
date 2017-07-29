@@ -27,6 +27,14 @@ body {
   left: 800px;
   float: right;
 }
+#search-results {
+  width: 400px
+}
+.search-result {
+  white-space: nowrap;
+  text-overflow:ellipsis;
+  overflow: hidden;
+}
 
 #last_albums {
   position: absolute;
