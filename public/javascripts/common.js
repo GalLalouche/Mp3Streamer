@@ -130,3 +130,11 @@ function validateBoxAndButton(textBox, button, validationFunction, buttonFunctio
       button.prop('disabled', false === validationFunction($(this).val()))
   })
 }
+
+$.fn.custom_overflown = function() {
+  const e = this[0]
+  return e.scrollHeight > e.clientHeight || e.scrollWidth > e.clientWidth;
+}
+$.fn.custom_tooltip = function(text) {
+  this.attr('title', text)
+}

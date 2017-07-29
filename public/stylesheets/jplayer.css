@@ -34,6 +34,12 @@ body {
   left: 800px;
   float: right;
 }
+.last-album {
+  width: 300px;
+  white-space: nowrap;
+  text-overflow:ellipsis;
+  overflow: hidden;
+}
 
 #external {
   position: absolute;

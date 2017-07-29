@@ -4,7 +4,7 @@ $(function() {
   const remove = "times"
   function onMessage(msg) {
     const album = JSON.parse(msg.data)
-    const listElement = elem("li", `${icon(add)} ${icon(remove)} ${album.artistName}: ${album.title}`)
+    const listElement = elem("li", `${icon(add)} ${icon(remove)} ${album.artistName}: ${album.title}`).addClass("last-album")
     listElement.find(".fa-" + add).click(function() {
       listElement.remove()
       $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
@@ -13,6 +13,8 @@ $(function() {
       listElement.remove()
     })
     last_albums.append(listElement)
+    if (listElement.custom_overflown())
+      listElement.custom_tooltip(`${album.artistName}: ${album.year} ${album.title}`)
   }
 
   // TODO instead of sleep-wait reconnecting, do this on search/scan
