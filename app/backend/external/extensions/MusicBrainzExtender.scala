@@ -8,16 +8,15 @@ private sealed trait MusicBrainzExtender[R <: Reconcilable] extends DynamicExten
   protected val externalTypeIds: Map[Host, Int]
 
   override protected def apply(t: R, linkToModify: MarkedLink[R], otherLinks: MarkedLinks[R]) = {
-    // todo replace with a fold or other immutable algorithm
-    var i = 0
-    def preseededEdit(e: MarkedLink[R]): String = {
-      val $ = s"edit-$reconcilableType.url.$i.text=${e.link.address}" +
+    def preseededEdit(e: MarkedLink[R], i: Int): String = {
+      s"edit-$reconcilableType.url.$i.text=${e.link.address}" +
           s"&edit-$reconcilableType.url.$i.link_type_id=${externalTypeIds(e.host)}"
-      i += 1
-      $
     }
-    val preseed =
-      otherLinks.filter(_.isNew).map(preseededEdit).mkString("&")
+    val preseed = otherLinks
+        .filter(_.isNew).toSeq
+        .zipWithIndex
+        .map(e => preseededEdit(e._1, e._2))
+        .mkString("&")
     val editUrl = "edit" + (if (preseed.isEmpty) "" else "?" + preseed)
     append(linkToModify, "edit" -> editUrl) ++ SearchExtension.apply(Host.MusicBrainz, t).extensions.toList
   }
