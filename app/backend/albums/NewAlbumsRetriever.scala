@@ -1,5 +1,7 @@
 package backend.albums
 
+import java.time.Duration
+
 import backend.configs.{Configuration, StandaloneConfig}
 import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
@@ -11,7 +13,6 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.MoreTraverse._
 import models.{IOMusicFinder, Song}
-import org.joda.time.Duration
 import rx.lang.scala.Observable
 
 import scala.concurrent.Future
@@ -52,7 +53,7 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
         .flatMap(removeIgnoredAlbums(artist, _))
         .map(cache.filterNewAlbums(artist, _))
         .consume(e => {
-          val totalTime = Duration.millis(System.currentTimeMillis - start)
+          val totalTime = Duration.ofMillis(System.currentTimeMillis - start)
           val newAlbumsCount = if (e.isEmpty) "no" else e.size
           log(s"Finished working on $artist; Found $newAlbumsCount new albums; Took $totalTime.")
         })

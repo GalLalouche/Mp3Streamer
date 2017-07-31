@@ -1,11 +1,13 @@
 package backend.external
 
-import backend.Url
+import java.time.LocalDateTime
+
+import backend.RichTime._
 import backend.configs.Configuration
 import backend.recon.{Album, Artist, Reconcilable}
 import backend.storage.SlickStorageUtils
+import backend.{RichTime, Url}
 import common.rich.RichT._
-import org.joda.time.DateTime
 
 import scala.concurrent.Future
 import scalaz.std.FutureInstances
@@ -46,20 +48,20 @@ private[backend] class ArtistExternalStorage(implicit c: Configuration) extends 
   private val db = c.db
   private val serializer = new Serializer[Artist]
 
-  override def load(k: Artist): Future[Option[(MarkedLinks[Artist], Option[DateTime])]] =
+  override def load(k: Artist): Future[Option[(MarkedLinks[Artist], Option[LocalDateTime])]] =
     db.run(rows
         .filter(_.name === k.normalize)
         .map(e => e.encodedLinks -> e.timestamp)
         .result)
-        .map(_.headOption.map(_.mapTo(e => e._1.mapTo(serializer.fromString) -> e._2.map(new DateTime(_)))))
+        .map(_.headOption.map(_.mapTo(e => e._1.mapTo(serializer.fromString) -> e._2.map(_.toLocalDateTime))))
         .recoverWith {
           case _: OldStorageEntry =>
             c.logger.error(s"Encountered an old storage entry for artist $k; removing entry")
             // Using internalDelete since regular delete also loads which results in an infinite recursion.
             internalDelete(k).>|(None)
         }
-  override protected def internalForceStore(a: Artist, v: (MarkedLinks[Artist], Option[DateTime])) =
-    db.run(rows.insertOrUpdate(a.normalize, serializer.toString(v._1), v._2.map(_.getMillis)))
+  override protected def internalForceStore(a: Artist, v: (MarkedLinks[Artist], Option[LocalDateTime])) =
+    db.run(rows.insertOrUpdate(a.normalize, serializer.toString(v._1), v._2.map(_.toMillis)))
   override def internalDelete(k: Artist) =
     db.run(rows.filter(_.name === k.normalize).delete)
   override def utils = SlickStorageUtils(c)(rows)
@@ -81,23 +83,24 @@ private[backend] class AlbumExternalStorage(implicit c: Configuration) extends E
   private val db = c.db
   private val serializer = new Serializer[Album]
 
-  override def load(k: Album): Future[Option[(MarkedLinks[Album], Option[DateTime])]] =
+  override def load(k: Album): Future[Option[(MarkedLinks[Album], Option[LocalDateTime])]] =
     db.run(rows
         .filter(_.album === k.normalize)
         .map(e => e.encodedLinks -> e.timestamp)
         .result
-        .map(_.headOption.map(_.mapTo(e => e._1.mapTo(serializer.fromString) -> e._2.map(new DateTime(_))))))
-  override protected def internalForceStore(a: Album, v: (MarkedLinks[Album], Option[DateTime])) =
-    db.run(rows.insertOrUpdate(a.normalize, a.artist.normalize, serializer.toString(v._1), v._2.map(_.getMillis)))
+        .map(_.headOption.map(_.mapTo(e => e._1.mapTo(serializer.fromString) -> e._2.map(_.toLocalDateTime)))))
+  override protected def internalForceStore(a: Album, v: (MarkedLinks[Album], Option[LocalDateTime])) =
+    db.run(rows.insertOrUpdate(
+      a.normalize, a.artist.normalize, serializer.toString(v._1), v._2.map(_.toMillis)))
   override def internalDelete(k: Album) =
     db.run(rows.filter(_.album === k.normalize).delete)
   override def utils = SlickStorageUtils(c)(rows)
-  def deleteAllLinks(a: Artist): Future[Traversable[(String, MarkedLinks[Album], Option[DateTime])]] = {
+  def deleteAllLinks(a: Artist): Future[Traversable[(String, MarkedLinks[Album], Option[LocalDateTime])]] = {
     val artistRows = rows.filter(_.artist === a.normalize)
     for (existingRows <- db.run(artistRows
         .map(e => (e.album, e.encodedLinks, e.timestamp))
         .result
-        .map(_.map(_.mapTo(e => (e._1, serializer.fromString(e._2), e._3.map(new DateTime(_)))))));
+        .map(_.map(_.mapTo(e => (e._1, serializer.fromString(e._2), e._3.map(_.toLocalDateTime))))));
          _ <- db.run(artistRows.delete)) yield existingRows
   }
 }

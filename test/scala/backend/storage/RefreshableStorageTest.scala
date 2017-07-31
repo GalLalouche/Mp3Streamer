@@ -1,10 +1,11 @@
 package backend.storage
 
+import java.time.Duration
+
 import backend.configs.TestConfiguration
 import common.rich.RichT._
 import common.AuxSpecs
 import common.rich.RichFuture._
-import org.joda.time.Duration
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
@@ -19,7 +20,7 @@ class RefreshableStorageTest extends FreeSpec with MockitoSugar with AuxSpecs wi
     new RefreshableStorage[String, String](freshnessStorage, e => {
       i += 1
       Future successful (e.reverse + i)
-    }, Duration.millis(50))
+    }, Duration ofMillis 50)
   "apply" - {
     "no previous value should insert new value in" in {
       freshnessStorage.load("foobar").get shouldReturn None
@@ -46,7 +47,7 @@ class RefreshableStorageTest extends FreeSpec with MockitoSugar with AuxSpecs wi
     "reuse existing value on failure" in {
       val $ = new RefreshableStorage[String, String](freshnessStorage,
         Future.failed(new RuntimeException()).const,
-        Duration.millis(50))
+        Duration ofMillis 50)
       freshnessStorage.store("foo", "bar")
       val dataFreshness = freshnessStorage.freshness("foo").get
       clock advance 100

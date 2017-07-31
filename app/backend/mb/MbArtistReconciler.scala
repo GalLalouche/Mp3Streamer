@@ -1,5 +1,7 @@
 package backend.mb
 
+import java.time.{Clock, LocalDate}
+
 import backend.albums.NewAlbum.AlbumType
 import backend.albums.NewAlbum.AlbumType.AlbumType
 import backend.configs.StandaloneConfig
@@ -10,7 +12,7 @@ import common.CompositeDateFormat
 import common.RichJson._
 import common.rich.RichFuture._
 import common.rich.RichT._
-import org.joda.time.LocalDate
+import backend.RichTime._
 import play.api.libs.json._
 
 import scala.concurrent.duration._
@@ -55,6 +57,6 @@ object MbArtistReconciler {
   }
 
   case class MbAlbumMetadata(title: String, releaseDate: LocalDate, albumType: AlbumType, reconId: ReconID) {
-    def isOut: Boolean = releaseDate.toDateTimeAtCurrentTime isBefore System.currentTimeMillis
+    def isOut: Boolean = releaseDate.atStartOfDay < Clock.systemDefaultZone().toLocalDateTime
   }
 }

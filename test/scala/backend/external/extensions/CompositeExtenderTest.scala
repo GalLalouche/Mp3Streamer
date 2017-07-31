@@ -1,11 +1,12 @@
 package backend.external.extensions
+import java.time.LocalDateTime
+
 import backend.Url
 import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
 import common.AuxSpecs
 import common.rich.RichT._
 import common.rich.collections.RichSet._
-import org.joda.time.DateTime
 import org.scalatest.FreeSpec
 
 class CompositeExtenderTest extends FreeSpec with AuxSpecs {
@@ -31,7 +32,7 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
     "artist" in {
       val artist = Artist("Foobar")
       val links = Host.hosts.map(MarkedLink[Artist](Url("foo.bar"), _, false))
-          .mapTo(TimestampedLinks(_, DateTime.now()))
+          .mapTo(TimestampedLinks(_, LocalDateTime.now))
       val result = $.apply(artist, links)
 
       val expected: Map[Host, Seq[LinkExtension[Artist]]] = Map(
@@ -46,7 +47,7 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
     "album" in {
       val album = Album("Foo", 2000, Artist("Bar"))
       val links = Host.hosts.map(MarkedLink[Album](Url("foo.bar"), _, false))
-          .mapTo(TimestampedLinks(_, DateTime.now))
+          .mapTo(TimestampedLinks(_, LocalDateTime.now))
       val result = $.apply(album, links)
 
       val expected: Map[Host, Seq[LinkExtension[Album]]] = Map(

@@ -1,10 +1,11 @@
 package backend.albums
 
+import java.time.LocalDate
+
 import backend.albums.ArtistLastYearCache.Year
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon._
 import common.rich.RichT._
-import org.joda.time.LocalDate
 
 private class ArtistLastYearCache private(lastReleaseYear: Map[Artist, Year]) {
   def artists: Iterable[Artist] = lastReleaseYear.keys

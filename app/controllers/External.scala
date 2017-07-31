@@ -1,5 +1,8 @@
 package controllers
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 import backend.external.extensions.{ExtendedLink, LinkExtension, SearchExtension}
 import backend.external.{Host, MbExternalLinksProvider, TimestampedExtendedLinks}
 import backend.recon.Reconcilable.SongExtractor
@@ -8,7 +11,6 @@ import common.RichJson._
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
 import models.Song
-import org.joda.time.format.ISODateTimeFormat
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc.{Action, Controller, Result}
 
@@ -31,8 +33,11 @@ object External extends Controller
     "extensions" -> Json.obj(e.extensions.map(toJson).toSeq: _*))
   private def toJson(e: Traversable[ExtendedLink[_]]): JsObject =
     e.filterAndSortBy(_.host.canonize, hosts).map(toJson) |> Json.obj
+
+  private def toDateString(l: LocalDateTime): String = f"${l.getMonthValue}%02d/${l.getDayOfMonth}%02d"
+
   private def toJson(e: TimestampedExtendedLinks[_]): JsObject =
-    toJson(e.links).mapTo(_ + ("timestamp" -> JsString(e.timestamp.toString(ISODateTimeFormat.basicDate))))
+    toJson(e.links).mapTo(_ + ("timestamp" -> JsString(e.timestamp |> toDateString)))
   private def toJsonOrError(f: Future[TimestampedExtendedLinks[_]]): Future[JsObject] =
     f.map(toJson).recover {
       case e => Json.obj("error" -> e.getMessage)

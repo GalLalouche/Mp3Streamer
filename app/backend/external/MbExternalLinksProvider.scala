@@ -1,5 +1,7 @@
 package backend.external
 
+import java.time.Duration
+
 import backend.Retriever
 import backend.configs.{CleanConfiguration, Configuration}
 import backend.external.expansions.{CompositeSameHostExpander, ExternalLinkExpander, LinkExpanders}
@@ -12,7 +14,6 @@ import backend.storage.{FreshnessStorage, RefreshableStorage}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import models.Song
-import org.joda.time.Duration
 
 import scala.concurrent.Future
 import scalaz.std.FutureInstances
@@ -20,11 +21,12 @@ import scalaz.syntax.{ToBindOps, ToFunctorOps}
 
 class MbExternalLinksProvider(implicit c: Configuration)
     extends FutureInstances with ToFunctorOps with ToBindOps {
-  import c._
   private class TimeStamper[R <: Reconcilable](foo: RefreshableStorage[R, MarkedLinks[R]])
       extends Retriever[R, TimestampedLinks[R]] {
-    override def apply(r: R): Future[TimestampedLinks[R]] = foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
+    override def apply(r: R): Future[TimestampedLinks[R]] =
+      foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
+  import c._
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](
       reconciler: Retriever[R, (Option[ReconID], Boolean)],
       storage: ExternalStorage[R],
@@ -38,7 +40,7 @@ class MbExternalLinksProvider(implicit c: Configuration)
           .filterWith(_._1.isDefined, s"Couldn't reconcile <$a>")
           .map(_._1.get),
       provider, expander, additionalReconciler),
-    Duration standardDays 28)
+    Duration ofDays 28)
       .mapTo(new TimeStamper(_))
 
   private val artistReconStorage: ArtistReconStorage = new ArtistReconStorage

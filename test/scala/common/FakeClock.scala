@@ -1,8 +1,10 @@
 package common
-import org.joda.time.Instant
+import java.time.{Clock, Instant, ZoneId}
 
-class FakeClock extends JodaClock {
+class FakeClock extends Clock {
   private var currentMillis = 0L
   def advance(millis: Long) = currentMillis += millis
-  override def now = new Instant(currentMillis)
+  override def withZone(zone: ZoneId) = ???
+  override def getZone = ???
+  override def instant() = Instant ofEpochMilli currentMillis
 }

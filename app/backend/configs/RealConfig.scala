@@ -1,9 +1,9 @@
 package backend.configs
 
-import java.net.{HttpURLConnection, URL}
+import java.net.HttpURLConnection
+import java.time.Clock
 
 import backend.Url
-import common.JodaClock
 import common.io.{DirectoryRef, IODirectory}
 import models.IOMusicFinder
 import org.jsoup.Jsoup
@@ -28,5 +28,5 @@ trait RealConfig extends Configuration {
     $
   }
   override implicit lazy val rootDirectory: DirectoryRef = IODirectory.apply("D:/media/streamer/")
-  override implicit val clock = JodaClock.real
+  override implicit val clock = Clock.systemDefaultZone
 }

@@ -1,30 +1,29 @@
 package common
 
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, ZoneId}
 import java.util.Date
 
+import backend.RichTime._
 import common.rich.func.MoreMonadPlus._
 import common.rich.func.RichMonadPlus._
-import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-import org.joda.time.{DateTime, DateTimeZone}
-
 
 /** Tries several parsers in a sequence until the first one succeeds. Isn't total. */
 class CompositeDateFormat private(formatters: Seq[DateTimeFormatter]) {
   require(formatters.nonEmpty)
 
-  def parse(source: String): Option[DateTime] = formatters
-      .tryMap(_.parseDateTime(source))
+  def parse(source: String): Option[LocalDateTime] = formatters
+      .tryMap(LocalDateTime.parse(source, _))
       .headOption
 
   def print(date: Date): String = print(date.getTime)
-  def print(date: DateTime): String = print(date.getMillis)
-  def print(time: Long): String = formatters.head.print(time)
+  def print(date: LocalDateTime): String = formatters.head.format(date)
+  def print(time: Long): String = print(time.toLocalDateTime)
 }
 
 object CompositeDateFormat {
   def apply(patterns: String*) = new CompositeDateFormat(patterns
-      .map(DateTimeFormat.forPattern)
-      .map(_.withZone(DateTimeZone.UTC))
-  )
+      .map(DateTimeFormatter.ofPattern)
+      .map(_.withZone(ZoneId.systemDefault)))
 }
 

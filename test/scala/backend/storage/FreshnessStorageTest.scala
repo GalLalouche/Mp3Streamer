@@ -1,9 +1,9 @@
 package backend.storage
 
+import backend.RichTime._
 import backend.configs.TestConfiguration
 import common.AuxSpecs
 import common.rich.RichFuture._
-import org.joda.time.DateTime
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import scalaz.std.FutureInstances
@@ -31,16 +31,16 @@ class FreshnessStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTes
       $.storeWithoutTimestamp(1, 2).>>($ freshness 1).get.get shouldReturn None
     }
     "existing data with timestamp" in {
-      $.store(1, 2).>>($ freshness 1).get.get.get shouldReturn clock.now.toDateTime
+      $.store(1, 2).>>($ freshness 1).get.get.get shouldReturn clock.instant.toLocalDateTime
     }
   }
   "mapStore updates timestamp" in {
     $.store(1, 2).get
     clock advance 1
-    $.freshness(1).get.get.get shouldReturn new DateTime(0)
+    $.freshness(1).get.get.get shouldReturn 0.toLocalDateTime
 
     $.mapStore(1, _ * 2, ???).get.get shouldReturn 2
     $.load(1).get.get shouldReturn 4
-    $.freshness(1).get.get.get shouldReturn new DateTime(1)
+    $.freshness(1).get.get.get shouldReturn 1.toLocalDateTime
   }
 }

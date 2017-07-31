@@ -1,10 +1,9 @@
 package backend.logging
-
-import org.joda.time.DateTime
+import java.time.LocalDateTime
 
 trait Logger {
-  def log(what: String, level: LoggingLevel, when: DateTime): Unit
-  def log(what: String, level: LoggingLevel): Unit = log(what, level, DateTime.now)
+  def log(what: String, level: LoggingLevel, when: LocalDateTime): Unit
+  def log(what: String, level: LoggingLevel): Unit = log(what, level, LocalDateTime.now)
   def verbose(what: String): Unit = log(what, LoggingLevel.Verbose)
   def debug(what: String): Unit = log(what, LoggingLevel.Debug)
   def info(what: String): Unit = log(what, LoggingLevel.Info)

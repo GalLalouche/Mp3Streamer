@@ -1,8 +1,9 @@
 package backend.logging
 
+import java.time.LocalDateTime
+
 import backend.configs.Configuration
 import common.rich.RichT._
-import org.joda.time.DateTime
 
 /** Logs each item in its own file, including all lower level tier files */
 class DirectoryLogger(implicit val c: Configuration) extends Logger {
@@ -12,6 +13,6 @@ class DirectoryLogger(implicit val c: Configuration) extends Logger {
     $ setCurrentLevel l
     $
   })
-  override def log(what: String, level: LoggingLevel, when: DateTime): Unit =
+  override def log(what: String, level: LoggingLevel, when: LocalDateTime): Unit =
     files.foreach(_.log(what, level, when))
 }
