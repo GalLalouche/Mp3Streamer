@@ -1,6 +1,5 @@
 package backend.lyrics.retrievers
 
-import backend.Url
 import backend.configs.TestConfiguration
 import backend.lyrics.Instrumental
 import common.io.{MemoryDir, MemoryRoot}
@@ -34,11 +33,5 @@ class DefaultClassicalInstrumentalTest extends FreeSpec with ShouldMatchers {
     val nonClassicalSong = songWithPath(
       """D:/Media/Music/Rock/Pop/My Lame Band/01 - My crappy pop song.mp3""")
     $.find(nonClassicalSong).getFailure should not be null
-  }
-
-  "Parse URL should fail" - {
-    "doesUrlMatchHost" in {
-      $.parse(Url("Some url"), classicalSong).getFailure should not be null
-    }
   }
 }

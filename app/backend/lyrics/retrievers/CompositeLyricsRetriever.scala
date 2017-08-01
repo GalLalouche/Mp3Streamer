@@ -1,30 +1,20 @@
 package backend.lyrics.retrievers
 
-import backend.Url
 import backend.lyrics.Lyrics
-import models.Song
-
-import scala.collection.LinearSeq
 import common.rich.RichFuture._
+import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private[lyrics] class CompositeLyricsRetriever(retrievers: LinearSeq[LyricsRetriever])(implicit ec: ExecutionContext) extends LyricsRetriever {
-  // TODO extract
+private[lyrics] class CompositeLyricsRetriever(retrievers: List[LyricsRetriever])
+    (implicit ec: ExecutionContext) extends LyricsRetriever {
   override def find(s: Song): Future[Lyrics] = {
-    def aux(rs: LinearSeq[LyricsRetriever]): Future[Lyrics] = rs match {
-      case Nil => Future.failed(new NoSuchElementException("No retriever could find lyrics for " + s))
-      case x :: xs => x.find(s) orElseTry aux(xs)
+    // TODO move to somewhere more general
+    def first[T](fs: List[() => Future[T]]): Future[T] = fs match {
+      case Nil => Future failed new NoSuchElementException
+      case x :: xs => x() orElseTry first(xs)
     }
-    aux(retrievers)
+    first(retrievers.map(r => () => r find s))
   }
   def this(retrievers: LyricsRetriever*)(implicit ec: ExecutionContext) = this(retrievers.toList)
-  override def doesUrlMatchHost(url: Url): Boolean = {
-    retrievers.exists(_ doesUrlMatchHost url)
-  }
-  override def parse(url: Url, s: Song): Future[Lyrics] =
-    retrievers.find(_ doesUrlMatchHost url)
-      .fold(Future.failed[Lyrics](new NoSuchElementException(s"No retriever could parse host <${url.host}>"))) {
-        r => r.parse(url, s)
-      }
 }

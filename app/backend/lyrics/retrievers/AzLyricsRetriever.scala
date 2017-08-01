@@ -8,7 +8,7 @@ import org.jsoup.nodes.Document
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
 
-private[lyrics] class AzLyricsRetriever(implicit ec: ExecutionContext, it: InternetTalker) extends HtmlRetriever {
+private[lyrics] class AzLyricsRetriever(implicit ec: ExecutionContext, it: InternetTalker) extends SingleHostHtmlRetriever {
   private def normalize(s: String): String = s.filter(e => e.isDigit || e.isLetter).toLowerCase
   // AZ lyrics don't support instrumental :\
   override def fromHtml(html: Document, s: Song): Option[String] = Some(

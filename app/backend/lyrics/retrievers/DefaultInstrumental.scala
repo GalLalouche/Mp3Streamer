@@ -1,5 +1,4 @@
 package backend.lyrics.retrievers
-import backend.Url
 import backend.lyrics.Instrumental
 import models.Song
 
@@ -14,7 +13,4 @@ private[lyrics] trait DefaultInstrumental extends LyricsRetriever {
     else
       Future.failed(new IllegalArgumentException(s"Not a $defaultType song"))
   }
-  override def doesUrlMatchHost(url: Url) = false
-  override def parse(url: Url, s: Song) =
-    Future.failed(new UnsupportedOperationException("NoUrls"))
 }
