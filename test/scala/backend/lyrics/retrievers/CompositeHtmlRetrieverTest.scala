@@ -18,7 +18,7 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
   private def fakeLyricsRetriever(
       songsToFind: Song, urlToMatch: Url, instrumentalText: String): HtmlRetriever = {
     class FakeLyricsRetriever extends HtmlRetriever {
-      override def find(s: Song) = parse(urlToMatch, s)
+      override def apply(s: Song) = parse(urlToMatch, s)
       override def doesUrlMatchHost(url: Url) = url == urlToMatch
       override def parse(url: Url, s: Song) =
         Future.successful(Instrumental(instrumentalText))
@@ -49,11 +49,11 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
   }
   "find" - {
     "when one of the URLs match" in {
-      $.find(song2).get shouldReturn Instrumental("bar")
-      Mockito.verify(r3, Mockito.never()).find(Matchers.any())
+      $(song2).get shouldReturn Instrumental("bar")
+      Mockito.verify(r3, Mockito.never()).apply(Matchers.any())
     }
     "when none of the URLs match" in {
-      $.find(unfoundSong).getFailure shouldBe a[NoSuchElementException]
+      $(unfoundSong).getFailure shouldBe a[NoSuchElementException]
     }
   }
   "parse" - {
@@ -62,7 +62,7 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
       Mockito.verify(r3, Mockito.never()).parse(Matchers.any(), Matchers.any())
     }
     "when none of the URLs match" in {
-      $.find(unfoundSong).getFailure shouldBe a[NoSuchElementException]
+      $(unfoundSong).getFailure shouldBe a[NoSuchElementException]
     }
   }
 }

@@ -21,11 +21,11 @@ class InstrumentalArtistTest extends FreeSpec with AuxSpecs with BeforeAndAfter 
   "exists" in {
     val song = factory.song(artistName = "foo")
     storage.store("foo").get
-    $.find(song).get shouldReturn Instrumental("Default for Artist")
+    $(song).get shouldReturn Instrumental("Default for Artist")
   }
   "doesn't exist" in {
     val song = factory.song(artistName = "foo")
     storage.store("bar").get
-    $.find(song).getFailure
+    $(song).getFailure
   }
 }

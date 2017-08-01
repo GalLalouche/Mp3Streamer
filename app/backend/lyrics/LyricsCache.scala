@@ -23,7 +23,7 @@ class LyricsCache(implicit c: Configuration)
   private val lastDefaultRetrievers = defaultArtistInstrumental
   val allComposite =
     new CompositeLyricsRetriever(firstDefaultRetrievers, htmlComposites, lastDefaultRetrievers)
-  private val cache = new OnlineRetrieverCacher[Song, Lyrics](new LyricsStorage(), allComposite.find)
+  private val cache = new OnlineRetrieverCacher[Song, Lyrics](new LyricsStorage(), allComposite)
   def find(s: Song): Future[Lyrics] = cache(s)
   def parse(url: Url, s: Song): Future[Lyrics] =
     htmlComposites.parse(url, s).map(lyrics => {

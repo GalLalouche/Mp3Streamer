@@ -38,6 +38,6 @@ private[lyrics] object DarkLyricsRetriever {
   def main(args: Array[String]) {
     implicit val c = StandaloneConfig
     val $ = new DarkLyricsRetriever
-    println($.find(Song(new File( """D:\Media\Music\Metal\Progressive Metal\Dream Theater\2003 Train of Thought\05 - Vacant.mp3"""))).get)
+    println($(Song(new File( """D:\Media\Music\Metal\Progressive Metal\Dream Theater\2003 Train of Thought\05 - Vacant.mp3"""))).get)
   }
 }

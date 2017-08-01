@@ -1,10 +1,7 @@
 package backend.lyrics.retrievers
 
+import backend.Retriever
 import backend.lyrics.Lyrics
 import models.Song
 
-import scala.concurrent.Future
-
-private[lyrics] trait LyricsRetriever {
-  def find(s: Song): Future[Lyrics]
-}
+private[lyrics] trait LyricsRetriever extends Retriever[Song, Lyrics]

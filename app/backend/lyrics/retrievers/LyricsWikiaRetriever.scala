@@ -36,7 +36,7 @@ private object LyricsWikiaRetriever {
     val $ = new LyricsWikiaRetriever()
     val file: File = new File("""D:\Media\Music\Metal\Black Metal\Watain\2010 Lawless Darkness\06 - Lawless Darkness.mp3""")
     println(file.exists())
-    println($.find(Song(file)).get)
+    println($(Song(file)).get)
     println("Done")
   }
 }

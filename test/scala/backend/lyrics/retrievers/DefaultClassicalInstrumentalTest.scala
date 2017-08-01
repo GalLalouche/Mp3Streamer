@@ -26,12 +26,12 @@ class DefaultClassicalInstrumentalTest extends FreeSpec with ShouldMatchers {
     """D:/Media/Music/Classical/Glenn Gould/1955 Goldberg Variations/01 - Aria.flac""")
 
   "Classical file" in {
-    $.find(classicalSong).get shouldBe an[Instrumental]
+    $(classicalSong).get shouldBe an[Instrumental]
   }
 
   "Non classical file" in {
     val nonClassicalSong = songWithPath(
       """D:/Media/Music/Rock/Pop/My Lame Band/01 - My crappy pop song.mp3""")
-    $.find(nonClassicalSong).getFailure should not be null
+    $(nonClassicalSong).getFailure should not be null
   }
 }

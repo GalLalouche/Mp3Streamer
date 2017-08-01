@@ -16,7 +16,7 @@ private[lyrics] abstract class SingleHostHtmlRetriever
   protected val source: String
   protected val hostPrefix: String
 
-  override def find(s: Song): Future[Lyrics] = parse(Url(getUrl(s)), s)
+  override def apply(s: Song): Future[Lyrics] = parse(Url(getUrl(s)), s)
   override def doesUrlMatchHost(url: Url): Boolean = url.address.startsWith(hostPrefix)
   override def parse(url: Url, s: Song): Future[Lyrics] = {
     it.downloadDocument(url)
