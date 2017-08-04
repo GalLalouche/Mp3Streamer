@@ -1,6 +1,6 @@
 @CHARSET "windows-1255";
 .poster {
-  margin-left: 55px;
+  margin-left: 0px;
   background-color: transparent !important;
 }
 
@@ -13,7 +13,7 @@ body {
 }
 
 .jp-video, .jstree {
-  width: 720px !important;
+  width: 760px !important;
 }
 
 .jstree {
