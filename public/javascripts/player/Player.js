@@ -87,6 +87,12 @@ class Playlist {
   length() {
     return this.songs().length
   }
+  toString(song) {
+    return `${song.title} by ${song.artistName} (${song.albumName}, ${song.track}, ${song.year}, ${song.bitrate}kbps, ${song.duration.timeFormat()}`
+  }
+  getDisplayedIndex(index) {
+    return this.length() - 1 - index
+  }
 }
 gplayer = new Player()
 gplaylist = new Playlist()

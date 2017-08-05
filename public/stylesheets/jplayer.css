@@ -8,6 +8,19 @@ body {
   background-color: #eee;
 }
 
+.playlist-item {
+  width: 650px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.playlist-item a {
+  display: block
+}
+
 .fa {
   cursor: pointer
 }

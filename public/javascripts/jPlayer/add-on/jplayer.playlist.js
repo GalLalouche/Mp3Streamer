@@ -235,23 +235,20 @@
       }
     },
     _createListItem: function (media) {
-      var self = this;
+      const self = this;
 
       // Wrap the <li> contents in a <div>
-      var listItem = "<li><div>";
+      let listItem = "<li><div>"
 
       const options = this.options.playlistOptions
       // Create remove controls
       function appendRemoveItem(clazz, char) {
         listItem += `<a href='javascript:;' class='${options.removeItemClass} ${clazz}'>${char}</a>`;
       }
-      appendRemoveItem(options.removeThisClass, "&times;")
-      appendRemoveItem(options.removeUpClass, "&uparrow;")
-      appendRemoveItem(options.removeDownClass, "&downarrow;")
 
       // Create links to free media
       if (media.free) {
-        var first = true;
+        let first = true;
         listItem += "<span class='" + this.options.playlistOptions.freeGroupClass + "'>(";
         $.each(media, function (property, value) {
           if ($.jPlayer.prototype.format[property]) { // Check
@@ -269,24 +266,27 @@
       }
 
       // The title is given next in the HTML otherwise the float:right on the free media corrupts in IE6/7
-      listItem += "<a href='javascript:;' class='"
+      listItem += "<span class='playlist-item'><a href='javascript:;' class='"
           + this.options.playlistOptions.itemClass
           + "' tabindex='1'>"
           + media.title
-          + " <span class='jp-artist'>by {0} ({1}, {2}, {3}, {4}kbps, {5}) </span>"
-              .f(media.artistName, media.albumName + (media.discNumber ? `[${media.discNumber}]` : ""),
-                  media.track, media.year, media.bitrate, media.duration.timeFormat());
+          + " <span class='jp-artist'>by {0} ({1}, {2}, {3}, {4}kbps, {5}) </span></a></span>"
+              .f(media.artistName, media.albumName, media.track, media.year, media.bitrate, media.duration.timeFormat());
+      appendRemoveItem(options.removeThisClass, "&times;")
+      appendRemoveItem(options.removeUpClass, "&uparrow;")
+      appendRemoveItem(options.removeDownClass, "&downarrow;")
       listItem += "</div></li>";
 
       return listItem;
     },
     _createItemHandlers: function () {
-      var self = this;
+      const self = this;
       // Create .live() handlers for the playlist items
       $(this.cssSelector.playlist + " a." + this.options.playlistOptions.itemClass).die("click").live("click",
           function () {
-            var index = $(this).parent().parent().index();
-            var displayIndex = self._getDisplayedIndex(index);
+            const index = $(this).closest("li").index()
+            // Need to swap since songs are in reverse
+            const displayIndex = self._getDisplayedIndex(index);
             if (self.current !== displayIndex) {
               self.play(displayIndex);
             } else {
@@ -380,8 +380,15 @@
         return
       }
       // GAL - changed here to add to beginning of list
-      $(this.cssSelector.playlist + " ul").prepend(this._createListItem(media)).find("li:first-child").hide()
-          .slideDown(this.options.playlistOptions.addTime);
+      const playlistUl = $(this.cssSelector.playlist + " ul")
+      playlistUl.prepend(this._createListItem(media)).find("li:first-child").hide()
+          .slideDown(this.options.playlistOptions.addTime, function() {
+            const regularHeightThreshold = 30
+            const lastSong = playlistUl.find("li:first_child")
+            if (lastSong.height() > regularHeightThreshold)
+              console.log("too big, need to shorten")
+          });
+      const foo = playlistUl.find("li:first-child")
       this._updateControls();
       this.original.push(media);
       // Both array elements share the same object pointer. Comforms with _initPlaylist(p) system.
