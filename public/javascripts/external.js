@@ -23,8 +23,6 @@ $(function () {
     externalDiv.html("Fetching links...")
   }
 
-  const formatTimestamp = s => `${s.slice(6)}/${s.slice(4, 6)}/${s.slice(0, 4)}`
-
   function updateRecon() {
     const json = {}
     function addIfNotEmpty(elem) {
@@ -49,7 +47,7 @@ $(function () {
     $.each(externalLinks, (entityName, externalLinksForEntity) => {
       const isValid = externalLinksForEntity.timestamp
       const timestampOrError = `${entityName} (${isValid ?
-          formatTimestamp(externalLinksForEntity.timestamp) : href(debugLink, externalLinksForEntity.error)})`
+          externalLinksForEntity.timestamp : href(debugLink, externalLinksForEntity.error)})`
       const ul = elem("ul", timestampOrError)
       if (isValid) {
         $.each(externalLinksForEntity, (linkName, link) => {

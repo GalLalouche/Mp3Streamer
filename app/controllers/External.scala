@@ -34,7 +34,7 @@ object External extends Controller
   private def toJson(e: Traversable[ExtendedLink[_]]): JsObject =
     e.filterAndSortBy(_.host.canonize, hosts).map(toJson) |> Json.obj
 
-  private def toDateString(l: LocalDateTime): String = f"${l.getMonthValue}%02d/${l.getDayOfMonth}%02d"
+  private def toDateString(l: LocalDateTime): String = f"${l.getDayOfMonth}%02d/${l.getMonthValue}%02d"
 
   private def toJson(e: TimestampedExtendedLinks[_]): JsObject =
     toJson(e.links).mapTo(_ + ("timestamp" -> JsString(e.timestamp |> toDateString)))
