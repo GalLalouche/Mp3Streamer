@@ -16,10 +16,10 @@
 /*jshint asi:false, bitwise:false, boss:false, browser:true, curly:true, debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false, jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true, nonew:true, onevar:false, passfail:false, plusplus:false, regexp:false, undef:true, sub:false, strict:false, white:false smarttabs:true */
 /*global jQuery:false, ActiveXObject:false, alert:false */
 
-(function ($, undefined) {
+(function($, undefined) {
 
   // Adapted from jquery.ui.widget.js (1.8.7): $.widget.bridge
-  $.fn.jPlayer = function (options) {
+  $.fn.jPlayer = function(options) {
     var name = "jPlayer";
     var isMethodCall = typeof options === "string",
         args = Array.prototype.slice.call(arguments, 1),
@@ -36,7 +36,7 @@
     }
 
     if (isMethodCall) {
-      this.each(function () {
+      this.each(function() {
         var instance = $.data(this, name),
             methodValue = instance && $.isFunction(instance[options]) ?
                 instance[options].apply(instance, args) :
@@ -47,7 +47,7 @@
         }
       });
     } else {
-      this.each(function () {
+      this.each(function() {
         var instance = $.data(this, name);
         if (instance) {
           // instance.option( options || {} )._init(); // Orig jquery.ui.widget.js code: Not recommend for jPlayer. ie., Applying new options to an existing instance (via the jPlayer constructor) and performing the _init(). The _init() is what concerns me. It would leave a lot of event handlers acting on jPlayer instance and the interface.
@@ -61,7 +61,7 @@
     return returnValue;
   };
 
-  $.jPlayer = function (options, element) {
+  $.jPlayer = function(options, element) {
     // allow instantiation without initializing for simple inheritance
     if (arguments.length) {
       this.element = $(element);
@@ -70,7 +70,7 @@
           options
       );
       var self = this;
-      this.element.bind("remove.jPlayer", function () {
+      this.element.bind("remove.jPlayer", function() {
         self.destroy();
       });
       this._init();
@@ -147,16 +147,16 @@
 
   $.jPlayer.status = status;
 
-  $.jPlayer.pause = function () {
-    $.each($.jPlayer.prototype.instances, function (i, element) {
+  $.jPlayer.pause = function() {
+    $.each($.jPlayer.prototype.instances, function(i, element) {
       if (element.data("jPlayer").status.srcSet) { // Check that media is set otherwise would cause error event.
         element.jPlayer("pause");
       }
     });
   };
 
-  $.jPlayer.play = function () {
-    $.each($.jPlayer.prototype.instances, function (i, element) {
+  $.jPlayer.play = function() {
+    $.each($.jPlayer.prototype.instances, function(i, element) {
       if (element.data("jPlayer").status.srcSet) { // Check that media is set otherwise would cause error event.
         element.jPlayer("play");
       }
@@ -175,7 +175,7 @@
     sepSec: ""
   };
 
-  $.jPlayer.convertTime = function (s) {
+  $.jPlayer.convertTime = function(s) {
     var myTime = new Date(s * 1000);
     var hour = myTime.getUTCHours();
     var min = myTime.getUTCMinutes();
@@ -187,7 +187,7 @@
   };
 
   // Adapting jQuery 1.4.4 code for jQuery.browser. Required since jQuery 1.3.2 does not detect Chrome as webkit.
-  $.jPlayer.uaBrowser = function (userAgent) {
+  $.jPlayer.uaBrowser = function(userAgent) {
     var ua = userAgent.toLowerCase();
 
     // Useragent RegExp
@@ -206,7 +206,7 @@
   };
 
   // Platform sniffer for detecting mobile devices
-  $.jPlayer.uaPlatform = function (userAgent) {
+  $.jPlayer.uaPlatform = function(userAgent) {
     var ua = userAgent.toLowerCase();
 
     // Useragent RegExp
@@ -290,9 +290,9 @@
         hold: 1000 // Milliseconds. The period of the pause before autohide beings.
       },
       loop: false,
-      repeat: function (event) { // The default jPlayer repeat event handler
+      repeat: function(event) { // The default jPlayer repeat event handler
         if (event.jPlayer.options.loop) {
-          $(this).unbind(".jPlayerRepeat").bind($.jPlayer.event.ended + ".jPlayer.jPlayerRepeat", function () {
+          $(this).unbind(".jPlayerRepeat").bind($.jPlayer.event.ended + ".jPlayer.jPlayerRepeat", function() {
             $(this).jPlayer("play");
           });
         } else {
@@ -469,7 +469,7 @@
       }
 
     },
-    _init: function () {
+    _init: function() {
       var self = this;
 
       this.element.empty();
@@ -498,11 +498,11 @@
       this.options.volume = this._limitValue(this.options.volume, 0, 1); // Limit volume value's bounds.
 
       // Create the formats array, with prority based on the order of the supplied formats string
-      $.each(this.options.supplied.toLowerCase().split(","), function (index1, value1) {
+      $.each(this.options.supplied.toLowerCase().split(","), function(index1, value1) {
         var format = value1.replace(/^\s+|\s+$/g, ""); //trim
         if (self.format[format]) { // Check format is valid.
           var dupFound = false;
-          $.each(self.formats, function (index2, value2) { // Check for duplicates
+          $.each(self.formats, function(index2, value2) { // Check for duplicates
             if (format === value2) {
               dupFound = true;
               return false;
@@ -515,11 +515,11 @@
       });
 
       // Create the solutions array, with prority based on the order of the solution string
-      $.each(this.options.solution.toLowerCase().split(","), function (index1, value1) {
+      $.each(this.options.solution.toLowerCase().split(","), function(index1, value1) {
         var solution = value1.replace(/^\s+|\s+$/g, ""); //trim
         if (self.solution[solution]) { // Check solution is valid.
           var dupFound = false;
-          $.each(self.solutions, function (index2, value2) { // Check for duplicates
+          $.each(self.solutions, function(index2, value2) { // Check for duplicates
             if (solution === value2) {
               dupFound = true;
               return false;
@@ -562,7 +562,7 @@
       });
 
       // Register listeners defined in the constructor
-      $.each($.jPlayer.event, function (eventName, eventType) {
+      $.each($.jPlayer.event, function(eventName, eventType) {
         if (self.options[eventName] !== undefined) {
           self.element.bind(eventType + ".jPlayer", self.options[eventName]); // With .jPlayer namespace.
           self.options[eventName] = undefined; // Destroy the handler pointer copy on the options. Reason, events can be added/removed in other ways so this could be obsolete and misleading.
@@ -572,7 +572,7 @@
       // Determine if we require solutions for audio, video or both media types.
       this.require.audio = false;
       this.require.video = false;
-      $.each(this.formats, function (priority, format) {
+      $.each(this.formats, function(priority, format) {
         self.require[self.format[format].media] = true;
       });
 
@@ -601,7 +601,7 @@
       // Create the poster image.
       this.htmlElement.poster = document.createElement('img');
       this.htmlElement.poster.id = this.internal.poster.id;
-      this.htmlElement.poster.onload = function () { // Note that this did not work on Firefox 3.6: poster.addEventListener("onload", function() {}, false); Did not investigate x-browser.
+      this.htmlElement.poster.onload = function() { // Note that this did not work on Firefox 3.6: poster.addEventListener("onload", function() {}, false); Did not investigate x-browser.
         if (!self.status.video || self.status.waitForPlay) {
           self.internal.poster.jq.show();
         }
@@ -610,7 +610,7 @@
       this.internal.poster.jq = $("#" + this.internal.poster.id);
       this.internal.poster.jq.css({'width': this.status.width, 'height': this.status.height});
       this.internal.poster.jq.hide();
-      this.internal.poster.jq.bind("click.jPlayer", function () {
+      this.internal.poster.jq.bind("click.jPlayer", function() {
         self._trigger($.jPlayer.event.click);
       });
 
@@ -632,7 +632,7 @@
 
       this.html.canPlay = {};
       this.flash.canPlay = {};
-      $.each(this.formats, function (priority, format) {
+      $.each(this.formats, function(priority, format) {
         self.html.canPlay[format] = self.html[self.format[format].media].available && "" !== self.htmlElement[self.format[format].media].canPlayType(self.format[format].codec);
         self.flash.canPlay[format] = self.format[format].flashCanPlay && self.flash.available;
       });
@@ -640,13 +640,13 @@
       self.html.canPlay["flac"] = true;
       this.html.desired = false;
       this.flash.desired = false;
-      $.each(this.solutions, function (solutionPriority, solution) {
+      $.each(this.solutions, function(solutionPriority, solution) {
         if (solutionPriority === 0) {
           self[solution].desired = true;
         } else {
           var audioCanPlay = false;
           var videoCanPlay = false;
-          $.each(self.formats, function (formatPriority, format) {
+          $.each(self.formats, function(formatPriority, format) {
             if (self[self.solutions[0]].canPlay[format]) { // The other solution can play
               if (self.format[format].media === 'video') {
                 videoCanPlay = true;
@@ -661,15 +661,15 @@
       // This is what jPlayer will support, based on solution and supplied.
       this.html.support = {};
       this.flash.support = {};
-      $.each(this.formats, function (priority, format) {
+      $.each(this.formats, function(priority, format) {
         self.html.support[format] = self.html.canPlay[format] && self.html.desired;
         self.flash.support[format] = self.flash.canPlay[format] && self.flash.desired;
       });
       // If jPlayer is supporting any format in a solution, then the solution is used.
       this.html.used = false;
       this.flash.used = false;
-      $.each(this.solutions, function (solutionPriority, solution) {
-        $.each(self.formats, function (formatPriority, format) {
+      $.each(this.solutions, function(solutionPriority, solution) {
+        $.each(self.formats, function(formatPriority, format) {
           if (self[solution].support[format]) {
             self[solution].used = true;
             return false;
@@ -725,7 +725,7 @@
             htmlObj.appendChild(document.createElement(paramStr[i]));
           }
         } else {
-          var createParam = function (el, n, v) {
+          var createParam = function(el, n, v) {
             var p = document.createElement("param");
             p.setAttribute("name", n);
             p.setAttribute("value", v);
@@ -768,7 +768,7 @@
           } else {
             this.internal.video.jq.css({'width': '0px', 'height': '0px'}); // Using size 0x0 since a .hide() causes issues in iOS
           }
-          this.internal.video.jq.bind("click.jPlayer", function () {
+          this.internal.video.jq.bind("click.jPlayer", function() {
             self._trigger($.jPlayer.event.click);
           });
         }
@@ -780,7 +780,7 @@
       }
 
       if (this.html.used && !this.flash.used) { // If only HTML, then emulate flash ready() call after 100ms.
-        setTimeout(function () {
+        setTimeout(function() {
           self.internal.ready = true;
           self.version.flash = "n/a";
           self._trigger($.jPlayer.event.repeat); // Trigger the repeat event so its handler can initialize itself with the loop option.
@@ -801,7 +801,7 @@
 
       $.jPlayer.prototype.count++; // Change static variable via prototype.
     },
-    destroy: function () {
+    destroy: function() {
       // MJP: The background change remains. Would need to store the original to restore it correctly.
       // MJP: The jPlayer element's size change remains.
 
@@ -817,7 +817,7 @@
         this.css.jq.duration.text("");
       }
       // Remove any bindings from the interface controls.
-      $.each(this.css.jq, function (fn, jq) {
+      $.each(this.css.jq, function(fn, jq) {
         // Check selector is valid before trying to execute method.
         if (jq.length) {
           jq.unbind(".jPlayer");
@@ -838,13 +838,13 @@
 
       delete this.instances[this.internal.instance]; // Clear the instance on the static instance object
     },
-    enable: function () { // Plan to implement
+    enable: function() { // Plan to implement
       // options.disabled = false
     },
-    disable: function () { // Plan to implement
+    disable: function() { // Plan to implement
       // options.disabled = true
     },
-    _testCanPlayType: function (elem) {
+    _testCanPlayType: function(elem) {
       // IE9 on Win Server 2008 did not implement canPlayType(), but it has the property.
       try {
         elem.canPlayType(this.format.mp3.codec); // The type is irrelevant.
@@ -853,13 +853,13 @@
         return false;
       }
     },
-    _uaBlocklist: function (list) {
+    _uaBlocklist: function(list) {
       // list : object with properties that are all regular expressions. Property names are irrelevant.
       // Returns true if the user agent is matched in list.
       var ua = navigator.userAgent.toLowerCase(),
           block = false;
 
-      $.each(list, function (p, re) {
+      $.each(list, function(p, re) {
         if (re && re.test(ua)) {
           block = true;
           return false; // exit $.each.
@@ -867,7 +867,7 @@
       });
       return block;
     },
-    _restrictNativeVideoControls: function () {
+    _restrictNativeVideoControls: function() {
       // Fallback to noFullScreen when nativeVideoControls is true and audio media is being used. Affects when both media types are used.
       if (this.require.audio) {
         if (this.status.nativeVideoControls) {
@@ -876,7 +876,7 @@
         }
       }
     },
-    _updateNativeVideoControls: function () {
+    _updateNativeVideoControls: function() {
       if (this.html.video.available && this.html.used) {
         // Turn the HTML Video controls on/off
         this.htmlElement.video.controls = this.status.nativeVideoControls;
@@ -892,7 +892,7 @@
         }
       }
     },
-    _addHtmlEventListeners: function (mediaElement, entity) {
+    _addHtmlEventListeners: function(mediaElement, entity) {
       var self = this;
       mediaElement.preload = this.options.preload;
       mediaElement.muted = this.options.muted;
@@ -902,66 +902,66 @@
       // Only want the active entity to affect jPlayer and bubble events.
       // Using entity.gate so that object is referenced and gate property always current
 
-      mediaElement.addEventListener("progress", function () {
+      mediaElement.addEventListener("progress", function() {
         if (entity.gate) {
           self._getHtmlStatus(mediaElement);
           self._updateInterface();
           self._trigger($.jPlayer.event.progress);
         }
       }, false);
-      mediaElement.addEventListener("timeupdate", function () {
+      mediaElement.addEventListener("timeupdate", function() {
         if (entity.gate) {
           self._getHtmlStatus(mediaElement);
           self._updateInterface();
           self._trigger($.jPlayer.event.timeupdate);
         }
       }, false);
-      mediaElement.addEventListener("durationchange", function () {
+      mediaElement.addEventListener("durationchange", function() {
         if (entity.gate) {
           self._getHtmlStatus(mediaElement);
           self._updateInterface();
           self._trigger($.jPlayer.event.durationchange);
         }
       }, false);
-      mediaElement.addEventListener("play", function () {
+      mediaElement.addEventListener("play", function() {
         if (entity.gate) {
           self._updateButtons(true);
           self._html_checkWaitForPlay(); // So the native controls update this variable and puts the hidden interface in the correct state. Affects toggling native controls.
           self._trigger($.jPlayer.event.play);
         }
       }, false);
-      mediaElement.addEventListener("playing", function () {
+      mediaElement.addEventListener("playing", function() {
         if (entity.gate) {
           self._updateButtons(true);
           self._seeked();
           self._trigger($.jPlayer.event.playing);
         }
       }, false);
-      mediaElement.addEventListener("pause", function () {
+      mediaElement.addEventListener("pause", function() {
         if (entity.gate) {
           self._updateButtons(false);
           self._trigger($.jPlayer.event.pause);
         }
       }, false);
-      mediaElement.addEventListener("waiting", function () {
+      mediaElement.addEventListener("waiting", function() {
         if (entity.gate) {
           self._seeking();
           self._trigger($.jPlayer.event.waiting);
         }
       }, false);
-      mediaElement.addEventListener("seeking", function () {
+      mediaElement.addEventListener("seeking", function() {
         if (entity.gate) {
           self._seeking();
           self._trigger($.jPlayer.event.seeking);
         }
       }, false);
-      mediaElement.addEventListener("seeked", function () {
+      mediaElement.addEventListener("seeked", function() {
         if (entity.gate) {
           self._seeked();
           self._trigger($.jPlayer.event.seeked);
         }
       }, false);
-      mediaElement.addEventListener("volumechange", function () {
+      mediaElement.addEventListener("volumechange", function() {
         if (entity.gate) {
           // Read the values back from the element as the Blackberry PlayBook shares the volume with the physical buttons master volume control.
           // However, when tested 6th July 2011, those buttons do not generate an event. The physical play/pause button does though.
@@ -972,13 +972,13 @@
           self._trigger($.jPlayer.event.volumechange);
         }
       }, false);
-      mediaElement.addEventListener("suspend", function () { // Seems to be the only way of capturing that the iOS4 browser did not actually play the media from the page code. ie., It needs a user gesture.
+      mediaElement.addEventListener("suspend", function() { // Seems to be the only way of capturing that the iOS4 browser did not actually play the media from the page code. ie., It needs a user gesture.
         if (entity.gate) {
           self._seeked();
           self._trigger($.jPlayer.event.suspend);
         }
       }, false);
-      mediaElement.addEventListener("ended", function () {
+      mediaElement.addEventListener("ended", function() {
         if (entity.gate) {
           // Order of the next few commands are important. Change the time and then pause.
           // Solves a bug in Firefox, where issuing pause 1st causes the media to play from the start. ie., The pause is ignored.
@@ -992,7 +992,7 @@
           self._trigger($.jPlayer.event.ended);
         }
       }, false);
-      mediaElement.addEventListener("error", function () {
+      mediaElement.addEventListener("error", function() {
         if (entity.gate) {
           self._updateButtons(false);
           self._seeked();
@@ -1019,15 +1019,15 @@
         }
       }, false);
       // Create all the other event listeners that bubble up to a jPlayer event from html, without being used by jPlayer.
-      $.each($.jPlayer.htmlEvent, function (i, eventType) {
-        mediaElement.addEventListener(this, function () {
+      $.each($.jPlayer.htmlEvent, function(i, eventType) {
+        mediaElement.addEventListener(this, function() {
           if (entity.gate) {
             self._trigger($.jPlayer.event[eventType]);
           }
         }, false);
       });
     },
-    _getHtmlStatus: function (media, override) {
+    _getHtmlStatus: function(media, override) {
       var ct = 0, cpa = 0, sp = 0, cpr = 0;
 
       // Fixes the duration bug in iOS, where the durationchange event occurs when media.duration is not always correct.
@@ -1062,10 +1062,10 @@
       this.status.playbackRate = media.playbackRate;
       this.status.ended = media.ended;
     },
-    _resetStatus: function () {
+    _resetStatus: function() {
       this.status = $.extend({}, this.status, $.jPlayer.prototype.status); // Maintains the status properties that persist through a reset.
     },
-    _trigger: function (eventType, error, warning) { // eventType always valid as called using $.jPlayer.event.eventType
+    _trigger: function(eventType, error, warning) { // eventType always valid as called using $.jPlayer.event.eventType
       var event = $.Event(eventType);
       event.jPlayer = {};
       event.jPlayer.version = $.extend({}, this.version);
@@ -1081,7 +1081,7 @@
       }
       this.element.trigger(event);
     },
-    jPlayerFlashEvent: function (eventType, status) { // Called from Flash
+    jPlayerFlashEvent: function(eventType, status) { // Called from Flash
       if (eventType === $.jPlayer.event.ready) {
         if (!this.internal.ready) {
           this.internal.ready = true;
@@ -1196,7 +1196,7 @@
       }
       return false;
     },
-    _getFlashStatus: function (status) {
+    _getFlashStatus: function(status) {
       this.status.seekPercent = status.seekPercent;
       this.status.currentPercentRelative = status.currentPercentRelative;
       this.status.currentPercentAbsolute = status.currentPercentAbsolute;
@@ -1209,7 +1209,7 @@
       this.status.playbackRate = 1; // status.playbackRate;
       this.status.ended = false; // status.ended;
     },
-    _updateButtons: function (playing) {
+    _updateButtons: function(playing) {
       if (playing !== undefined) {
         this.status.paused = !playing;
         if (this.css.jq.play.length && this.css.jq.pause.length) {
@@ -1244,7 +1244,7 @@
         }
       }
     },
-    _updateInterface: function () {
+    _updateInterface: function() {
       if (this.css.jq.seekBar.length) {
         this.css.jq.seekBar.width(this.status.seekPercent + "%");
       }
@@ -1258,26 +1258,26 @@
         this.css.jq.duration.text($.jPlayer.convertTime(this.status.duration));
       }
     },
-    _seeking: function () {
+    _seeking: function() {
       if (this.css.jq.seekBar.length) {
         this.css.jq.seekBar.addClass("jp-seeking-bg");
       }
     },
-    _seeked: function () {
+    _seeked: function() {
       if (this.css.jq.seekBar.length) {
         this.css.jq.seekBar.removeClass("jp-seeking-bg");
       }
     },
-    _resetGate: function () {
+    _resetGate: function() {
       this.html.audio.gate = false;
       this.html.video.gate = false;
       this.flash.gate = false;
     },
-    _resetActive: function () {
+    _resetActive: function() {
       this.html.active = false;
       this.flash.active = false;
     },
-    setMedia: function (media) {
+    setMedia: function(media) {
 
       /*	media[format] = String: URL of format. Must contain all of the supplied option's video or audio formats.
        *	media.poster = String: Video poster URL.
@@ -1294,9 +1294,9 @@
       this._resetGate();
       this._resetActive();
 
-      $.each(this.formats, function (formatPriority, format) {
+      $.each(this.formats, function(formatPriority, format) {
         var isVideo = self.format[format].media === 'video';
-        $.each(self.solutions, function (solutionPriority, solution) {
+        $.each(self.solutions, function(solutionPriority, solution) {
           if (self[solution].support[format] && self._validString(media[format])) { // Format supported in solution and url given for format.
             var isHtml = solution === 'html';
 
@@ -1366,7 +1366,7 @@
         });
       }
     },
-    _resetMedia: function () {
+    _resetMedia: function() {
       this._resetStatus();
       this._updateButtons(false);
       this._updateInterface();
@@ -1381,7 +1381,7 @@
         this._flash_resetMedia();
       }
     },
-    clearMedia: function () {
+    clearMedia: function() {
       this._resetMedia();
 
       if (this.html.active) {
@@ -1393,7 +1393,7 @@
       this._resetGate();
       this._resetActive();
     },
-    load: function () {
+    load: function() {
       if (this.status.srcSet) {
         if (this.html.active) {
           this._html_load();
@@ -1404,7 +1404,7 @@
         this._urlNotSetError("load");
       }
     },
-    play: function (time) {
+    play: function(time) {
       time = (typeof time === "number") ? time : NaN; // Remove jQuery event from click handler
       if (this.status.srcSet) {
         if (this.html.active) {
@@ -1419,10 +1419,10 @@
         this.onPlay();
       }
     },
-    videoPlay: function () { // Handles clicks on the play button over the video poster
+    videoPlay: function() { // Handles clicks on the play button over the video poster
       this.play();
     },
-    pause: function (time) {
+    pause: function(time) {
       time = (typeof time === "number") ? time : NaN; // Remove jQuery event from click handler
       if (this.status.srcSet) {
         if (this.html.active) {
@@ -1434,9 +1434,9 @@
         this._urlNotSetError("pause");
       }
     },
-    pauseOthers: function () {
+    pauseOthers: function() {
       var self = this;
-      $.each(this.instances, function (i, element) {
+      $.each(this.instances, function(i, element) {
         if (self.element !== element) { // Do not this instance.
           if (element.data("jPlayer").status.srcSet) { // Check that media is set otherwise would cause error event.
             element.jPlayer("pause");
@@ -1444,7 +1444,7 @@
         }
       });
     },
-    stop: function () {
+    stop: function() {
       if (this.status.srcSet) {
         if (this.html.active) {
           this._html_pause(0);
@@ -1455,7 +1455,7 @@
         this._urlNotSetError("stop");
       }
     },
-    playHead: function (p) {
+    playHead: function(p) {
       p = this._limitValue(p, 0, 100);
       if (this.status.srcSet) {
         if (this.html.active) {
@@ -1467,7 +1467,7 @@
         this._urlNotSetError("playHead");
       }
     },
-    _muted: function (muted) {
+    _muted: function(muted) {
       this.options.muted = muted;
       if (this.html.used) {
         this._html_mute(muted);
@@ -1483,15 +1483,15 @@
         this._trigger($.jPlayer.event.volumechange);
       }
     },
-    mute: function (mute) { // mute is either: undefined (true), an event object (true) or a boolean (muted).
+    mute: function(mute) { // mute is either: undefined (true), an event object (true) or a boolean (muted).
       mute = mute === undefined ? true : !!mute;
       this._muted(mute);
     },
-    unmute: function (unmute) { // unmute is either: undefined (true), an event object (true) or a boolean (!muted).
+    unmute: function(unmute) { // unmute is either: undefined (true), an event object (true) or a boolean (!muted).
       unmute = unmute === undefined ? true : !!unmute;
       this._muted(!unmute);
     },
-    _updateMute: function (mute) {
+    _updateMute: function(mute) {
       if (mute === undefined) {
         mute = this.options.muted;
       }
@@ -1508,7 +1508,7 @@
         }
       }
     },
-    volume: function (v) {
+    volume: function(v) {
       v = this._limitValue(v, 0, 1);
       this.options.volume = v;
 
@@ -1525,7 +1525,7 @@
         this._trigger($.jPlayer.event.volumechange);
       }
     },
-    volumeBar: function (e) { // Handles clicks on the volumeBar
+    volumeBar: function(e) { // Handles clicks on the volumeBar
       if (this.css.jq.volumeBar.length) {
         var offset = this.css.jq.volumeBar.offset(),
             x = e.pageX - offset.left,
@@ -1541,10 +1541,10 @@
         this._muted(false);
       }
     },
-    volumeBarValue: function (e) { // Handles clicks on the volumeBarValue
+    volumeBarValue: function(e) { // Handles clicks on the volumeBarValue
       this.volumeBar(e);
     },
-    _updateVolume: function (v) {
+    _updateVolume: function(v) {
       if (v === undefined) {
         v = this.options.volume;
       }
@@ -1573,13 +1573,13 @@
         }
       }
     },
-    volumeMax: function () { // Handles clicks on the volume max
+    volumeMax: function() { // Handles clicks on the volume max
       this.volume(1);
       if (this.options.muted) {
         this._muted(false);
       }
     },
-    _cssSelectorAncestor: function (ancestor) {
+    _cssSelectorAncestor: function(ancestor) {
       var self = this;
       this.options.cssSelectorAncestor = ancestor;
       this._removeUiClass();
@@ -1593,11 +1593,11 @@
         });
       }
       this._addUiClass();
-      $.each(this.options.cssSelector, function (fn, cssSel) {
+      $.each(this.options.cssSelector, function(fn, cssSel) {
         self._cssSelector(fn, cssSel);
       });
     },
-    _cssSelector: function (fn, cssSel) {
+    _cssSelector: function(fn, cssSel) {
       var self = this;
       if (typeof cssSel === 'string') {
         if ($.jPlayer.prototype.options.cssSelector[fn]) {
@@ -1614,7 +1614,7 @@
           }
 
           if (this.css.jq[fn].length) {
-            var handler = function (e) {
+            var handler = function(e) {
               self[fn](e);
               $(this).blur();
               return false;
@@ -1647,7 +1647,7 @@
         });
       }
     },
-    seekBar: function (e) { // Handles clicks on the seekBar
+    seekBar: function(e) { // Handles clicks on the seekBar
       if (this.css.jq.seekBar) {
         var offset = this.css.jq.seekBar.offset();
         var x = e.pageX - offset.left;
@@ -1656,16 +1656,16 @@
         this.playHead(p);
       }
     },
-    playBar: function (e) { // Handles clicks on the playBar
+    playBar: function(e) { // Handles clicks on the playBar
       this.seekBar(e);
     },
-    repeat: function () { // Handle clicks on the repeat button
+    repeat: function() { // Handle clicks on the repeat button
       this._loop(true);
     },
-    repeatOff: function () { // Handle clicks on the repeatOff button
+    repeatOff: function() { // Handle clicks on the repeatOff button
       this._loop(false);
     },
-    _loop: function (loop) {
+    _loop: function(loop) {
       if (this.options.loop !== loop) {
         this.options.loop = loop;
         this._updateButtons();
@@ -1675,21 +1675,21 @@
 
     // Plan to review the cssSelector method to cope with missing associated functions accordingly.
 
-    currentTime: function () { // Handles clicks on the text
+    currentTime: function() { // Handles clicks on the text
       // Added to avoid errors using cssSelector system for the text
     },
-    duration: function () { // Handles clicks on the text
+    duration: function() { // Handles clicks on the text
       // Added to avoid errors using cssSelector system for the text
     },
-    gui: function () { // Handles clicks on the gui
+    gui: function() { // Handles clicks on the gui
       // Added to avoid errors using cssSelector system for the gui
     },
-    noSolution: function () { // Handles clicks on the error message
+    noSolution: function() { // Handles clicks on the error message
       // Added to avoid errors using cssSelector system for no-solution
     },
 
     // Options code adapted from ui.widget.js (1.8.7).  Made changes so the key can use dot notation. To match previous getData solution in jPlayer 1.
-    option: function (key, value) {
+    option: function(key, value) {
       var options = key;
 
       // Enables use: options().  Returns a copy of options object
@@ -1743,15 +1743,15 @@
 
       return this;
     },
-    _setOptions: function (options) {
+    _setOptions: function(options) {
       var self = this;
-      $.each(options, function (key, value) { // This supports the 2 level depth that the options of jPlayer has. Would review if we ever need more depth.
+      $.each(options, function(key, value) { // This supports the 2 level depth that the options of jPlayer has. Would review if we ever need more depth.
         self._setOption(key, value);
       });
 
       return this;
     },
-    _setOption: function (key, value) {
+    _setOption: function(key, value) {
       var self = this;
 
       // The ability to set options is limited at this time.
@@ -1767,7 +1767,7 @@
           this._cssSelectorAncestor(value); // Set and refresh all associations for the new ancestor.
           break;
         case "cssSelector" :
-          $.each(value, function (fn, cssSel) {
+          $.each(value, function(fn, cssSel) {
             self._cssSelector(fn, cssSel); // NB: The option is set inside this function, after further validity checks.
           });
           break;
@@ -1834,7 +1834,7 @@
     },
     // End of: (Options code adapted from ui.widget.js)
 
-    _refreshSize: function () {
+    _refreshSize: function() {
       this._setSize(); // update status and jPlayer element size
       this._addUiClass(); // update the ui class
       this._updateSize(); // update internal sizes
@@ -1842,7 +1842,7 @@
       this._updateAutohide();
       this._trigger($.jPlayer.event.resize);
     },
-    _setSize: function () {
+    _setSize: function() {
       // Determine the current size from the options
       if (this.options.fullScreen) {
         this.status.width = this.options.sizeFull.width;
@@ -1857,17 +1857,17 @@
       // Set the size of the jPlayer area.
       this.element.css({'width': this.status.width, 'height': this.status.height});
     },
-    _addUiClass: function () {
+    _addUiClass: function() {
       if (this.ancestorJq.length) {
         this.ancestorJq.addClass(this.status.cssClass);
       }
     },
-    _removeUiClass: function () {
+    _removeUiClass: function() {
       if (this.ancestorJq.length) {
         this.ancestorJq.removeClass(this.status.cssClass);
       }
     },
-    _updateSize: function () {
+    _updateSize: function() {
       // The poster uses show/hide so can simply resize it.
       this.internal.poster.jq.css({'width': this.status.width, 'height': this.status.height});
 
@@ -1879,15 +1879,15 @@
         this.internal.flash.jq.css({'width': this.status.width, 'height': this.status.height});
       }
     },
-    _updateAutohide: function () {
+    _updateAutohide: function() {
       var self = this,
           event = "mousemove.jPlayer",
           namespace = ".jPlayerAutohide",
           eventType = event + namespace,
-          handler = function () {
-            self.css.jq.gui.fadeIn(self.options.autohide.fadeIn, function () {
+          handler = function() {
+            self.css.jq.gui.fadeIn(self.options.autohide.fadeIn, function() {
               clearTimeout(self.internal.autohideId);
-              self.internal.autohideId = setTimeout(function () {
+              self.internal.autohideId = setTimeout(function() {
                 self.css.jq.gui.fadeOut(self.options.autohide.fadeOut);
               }, self.options.autohide.hold);
             });
@@ -1918,13 +1918,13 @@
         }
       }
     },
-    fullScreen: function () {
+    fullScreen: function() {
       this._setOption("fullScreen", true);
     },
-    restoreScreen: function () {
+    restoreScreen: function() {
       this._setOption("fullScreen", false);
     },
-    _html_initMedia: function () {
+    _html_initMedia: function() {
       this.htmlElement.media.src = this.status.src;
 
       if (this.options.preload !== 'none') {
@@ -1932,10 +1932,10 @@
       }
       this._trigger($.jPlayer.event.timeupdate); // The flash generates this event for its solution.
     },
-    _html_setAudio: function (media) {
+    _html_setAudio: function(media) {
       var self = this;
       // Always finds a format due to checks in setMedia()
-      $.each(this.formats, function (priority, format) {
+      $.each(this.formats, function(priority, format) {
         if (self.html.support[format] && media[format]) {
           self.status.src = media[format];
           self.status.format[format] = true;
@@ -1946,10 +1946,10 @@
       this.htmlElement.media = this.htmlElement.audio;
       this._html_initMedia();
     },
-    _html_setVideo: function (media) {
+    _html_setVideo: function(media) {
       var self = this;
       // Always finds a format due to checks in setMedia()
-      $.each(this.formats, function (priority, format) {
+      $.each(this.formats, function(priority, format) {
         if (self.html.support[format] && media[format]) {
           self.status.src = media[format];
           self.status.format[format] = true;
@@ -1963,7 +1963,7 @@
       this.htmlElement.media = this.htmlElement.video;
       this._html_initMedia();
     },
-    _html_resetMedia: function () {
+    _html_resetMedia: function() {
       if (this.htmlElement.media) {
         if (this.htmlElement.media.id === this.internal.video.id && !this.status.nativeVideoControls) {
           this.internal.video.jq.css({'width': '0px', 'height': '0px'});
@@ -1971,13 +1971,13 @@
         this.htmlElement.media.pause();
       }
     },
-    _html_clearMedia: function () {
+    _html_clearMedia: function() {
       if (this.htmlElement.media) {
         this.htmlElement.media.src = "";
         this.htmlElement.media.load(); // Stops an old, "in progress" download from continuing the download. Triggers the loadstart, error and emptied events, due to the empty src. Also an abort event if a download was in progress.
       }
     },
-    _html_load: function () {
+    _html_load: function() {
       // This function remains to allow the early HTML5 browsers to work, such as Firefox 3.6
       // A change in the W3C spec for the media.load() command means that this is no longer necessary.
       // This command should be removed and actually causes minor undesirable effects on some browsers. Such as loading the whole file and not only the metadata.
@@ -1987,7 +1987,7 @@
       }
       clearTimeout(this.internal.htmlDlyCmdId);
     },
-    _html_play: function (time) {
+    _html_play: function(time) {
       var self = this;
       this._html_load(); // Loads if required and clears any delayed commands.
 
@@ -1997,7 +1997,7 @@
         try {
           this.htmlElement.media.currentTime = time;
         } catch (err) {
-          this.internal.htmlDlyCmdId = setTimeout(function () {
+          this.internal.htmlDlyCmdId = setTimeout(function() {
             self.play(time);
           }, 100);
           return; // Cancel execution and wait for the delayed command.
@@ -2005,7 +2005,7 @@
       }
       this._html_checkWaitForPlay();
     },
-    _html_pause: function (time) {
+    _html_pause: function(time) {
       var self = this;
 
       if (time > 0) { // We do not want the stop() command, which does pause(0), causing a load operation.
@@ -2021,7 +2021,7 @@
         try {
           this.htmlElement.media.currentTime = time;
         } catch (err) {
-          this.internal.htmlDlyCmdId = setTimeout(function () {
+          this.internal.htmlDlyCmdId = setTimeout(function() {
             self.pause(time);
           }, 100);
           return; // Cancel execution and wait for the delayed command.
@@ -2031,7 +2031,7 @@
         this._html_checkWaitForPlay();
       }
     },
-    _html_playHead: function (percent) {
+    _html_playHead: function(percent) {
       var self = this;
       this._html_load(); // Loads if required and clears any delayed commands.
       try {
@@ -2044,7 +2044,7 @@
           throw "e";
         }
       } catch (err) {
-        this.internal.htmlDlyCmdId = setTimeout(function () {
+        this.internal.htmlDlyCmdId = setTimeout(function() {
           self.playHead(percent);
         }, 100);
         return; // Cancel execution and wait for the delayed command.
@@ -2053,7 +2053,7 @@
         this._html_checkWaitForPlay();
       }
     },
-    _html_checkWaitForPlay: function () {
+    _html_checkWaitForPlay: function() {
       if (this.status.waitForPlay) {
         this.status.waitForPlay = false;
         if (this.css.jq.videoPlay.length) {
@@ -2065,7 +2065,7 @@
         }
       }
     },
-    _html_volume: function (v) {
+    _html_volume: function(v) {
       if (this.html.audio.available) {
         this.htmlElement.audio.volume = v;
       }
@@ -2073,7 +2073,7 @@
         this.htmlElement.video.volume = v;
       }
     },
-    _html_mute: function (m) {
+    _html_mute: function(m) {
       if (this.html.audio.available) {
         this.htmlElement.audio.muted = m;
       }
@@ -2081,11 +2081,11 @@
         this.htmlElement.video.muted = m;
       }
     },
-    _flash_setAudio: function (media) {
+    _flash_setAudio: function(media) {
       var self = this;
       try {
         // Always finds a format due to checks in setMedia()
-        $.each(this.formats, function (priority, format) {
+        $.each(this.formats, function(priority, format) {
           if (self.flash.support[format] && media[format]) {
             switch (format) {
               case "m4a" :
@@ -2114,11 +2114,11 @@
         this._flashError(err);
       }
     },
-    _flash_setVideo: function (media) {
+    _flash_setVideo: function(media) {
       var self = this;
       try {
         // Always finds a format due to checks in setMedia()
-        $.each(this.formats, function (priority, format) {
+        $.each(this.formats, function(priority, format) {
           if (self.flash.support[format] && media[format]) {
             switch (format) {
               case "m4v" :
@@ -2144,18 +2144,18 @@
         this._flashError(err);
       }
     },
-    _flash_resetMedia: function () {
+    _flash_resetMedia: function() {
       this.internal.flash.jq.css({'width': '0px', 'height': '0px'}); // Must do via CSS as setting attr() to zero causes a jQuery error in IE.
       this._flash_pause(NaN);
     },
-    _flash_clearMedia: function () {
+    _flash_clearMedia: function() {
       try {
         this._getMovie().fl_clearMedia();
       } catch (err) {
         this._flashError(err);
       }
     },
-    _flash_load: function () {
+    _flash_load: function() {
       try {
         this._getMovie().fl_load();
       } catch (err) {
@@ -2163,7 +2163,7 @@
       }
       this.status.waitForLoad = false;
     },
-    _flash_play: function (time) {
+    _flash_play: function(time) {
       try {
         this._getMovie().fl_play(time);
       } catch (err) {
@@ -2172,7 +2172,7 @@
       this.status.waitForLoad = false;
       this._flash_checkWaitForPlay();
     },
-    _flash_pause: function (time) {
+    _flash_pause: function(time) {
       try {
         this._getMovie().fl_pause(time);
       } catch (err) {
@@ -2183,7 +2183,7 @@
         this._flash_checkWaitForPlay();
       }
     },
-    _flash_playHead: function (p) {
+    _flash_playHead: function(p) {
       try {
         this._getMovie().fl_play_head(p);
       } catch (err) {
@@ -2193,7 +2193,7 @@
         this._flash_checkWaitForPlay();
       }
     },
-    _flash_checkWaitForPlay: function () {
+    _flash_checkWaitForPlay: function() {
       if (this.status.waitForPlay) {
         this.status.waitForPlay = false;
         if (this.css.jq.videoPlay.length) {
@@ -2205,24 +2205,24 @@
         }
       }
     },
-    _flash_volume: function (v) {
+    _flash_volume: function(v) {
       try {
         this._getMovie().fl_volume(v);
       } catch (err) {
         this._flashError(err);
       }
     },
-    _flash_mute: function (m) {
+    _flash_mute: function(m) {
       try {
         this._getMovie().fl_mute(m);
       } catch (err) {
         this._flashError(err);
       }
     },
-    _getMovie: function () {
+    _getMovie: function() {
       return document[this.internal.flash.id];
     },
-    _checkForFlash: function (version) {
+    _checkForFlash: function(version) {
       // Function checkForFlash adapted from FlashReplace by Robert Nyman
       // http://code.google.com/p/flashreplace/
       var flashIsInstalled = false;
@@ -2247,13 +2247,13 @@
       }
       return flashIsInstalled;
     },
-    _validString: function (url) {
+    _validString: function(url) {
       return (url && typeof url === "string"); // Empty strings return false
     },
-    _limitValue: function (value, min, max) {
+    _limitValue: function(value, min, max) {
       return (value < min) ? min : ((value > max) ? max : value);
     },
-    _urlNotSetError: function (context) {
+    _urlNotSetError: function(context) {
       this._error({
         type: $.jPlayer.error.URL_NOT_SET,
         context: context,
@@ -2261,7 +2261,7 @@
         hint: $.jPlayer.errorHint.URL_NOT_SET
       });
     },
-    _flashError: function (error) {
+    _flashError: function(error) {
       var errorType;
       if (!this.internal.ready) {
         errorType = "FLASH";
@@ -2278,7 +2278,7 @@
       // This really only affects audio in a media player, as an audio player could easily move the jPlayer element away from such issues.
       this.internal.flash.jq.css({'width': '1px', 'height': '1px'});
     },
-    _error: function (error) {
+    _error: function(error) {
       this._trigger($.jPlayer.event.error, error);
       const errorMsg = "Error!" + (error.message ? "\n\n" + error.message : "") + (error.hint ? "\n\n" + error.hint : "") + "\n\nContext: " + error.context
       if (this.options.errorAlerts) {
@@ -2287,7 +2287,7 @@
         console.log(errorMsg)
       }
     },
-    _warning: function (warning) {
+    _warning: function(warning) {
       this._trigger($.jPlayer.event.warning, undefined, warning);
       const errorMsg = "Warning!" + (warning.message ? "\n\n" + warning.message : "") + (warning.hint ? "\n\n" + warning.hint : "") + "\n\nContext: " + warning.context
       if (this.options.warningAlerts) {
@@ -2296,31 +2296,31 @@
         console.log(errorMsg)
       }
     },
-    _alert: function (message) {
+    _alert: function(message) {
       alert("jPlayer " + this.version.script + " : id='" + this.internal.self.id + "' : " + message);
     },
-    _emulateHtmlBridge: function () {
+    _emulateHtmlBridge: function() {
       var self = this;
 
       // Emulate methods on jPlayer's DOM element.
-      $.each($.jPlayer.emulateMethods.split(/\s+/g), function (i, name) {
-        self.internal.domNode[name] = function (arg) {
+      $.each($.jPlayer.emulateMethods.split(/\s+/g), function(i, name) {
+        self.internal.domNode[name] = function(arg) {
           self[name](arg);
         };
 
       });
 
       // Bubble jPlayer events to its DOM element.
-      $.each($.jPlayer.event, function (eventName, eventType) {
+      $.each($.jPlayer.event, function(eventName, eventType) {
         var nativeEvent = true;
-        $.each($.jPlayer.reservedEvent.split(/\s+/g), function (i, name) {
+        $.each($.jPlayer.reservedEvent.split(/\s+/g), function(i, name) {
           if (name === eventName) {
             nativeEvent = false;
             return false;
           }
         });
         if (nativeEvent) {
-          self.element.bind(eventType + ".jPlayer.jPlayerHtml", function () { // With .jPlayer & .jPlayerHtml namespaces.
+          self.element.bind(eventType + ".jPlayer.jPlayerHtml", function() { // With .jPlayer & .jPlayerHtml namespaces.
             self._emulateHtmlUpdate();
             var domEvent = document.createEvent("Event");
             domEvent.initEvent(eventName, false, true);
@@ -2332,17 +2332,17 @@
 
       // IE9 has a readyState property on all elements. The document should have it, but all (except media) elements inherit it in IE9. This conflicts with Popcorn, which polls the readyState.
     },
-    _emulateHtmlUpdate: function () {
+    _emulateHtmlUpdate: function() {
       var self = this;
 
-      $.each($.jPlayer.emulateStatus.split(/\s+/g), function (i, name) {
+      $.each($.jPlayer.emulateStatus.split(/\s+/g), function(i, name) {
         self.internal.domNode[name] = self.status[name];
       });
-      $.each($.jPlayer.emulateOptions.split(/\s+/g), function (i, name) {
+      $.each($.jPlayer.emulateOptions.split(/\s+/g), function(i, name) {
         self.internal.domNode[name] = self.options[name];
       });
     },
-    _destroyHtmlBridge: function () {
+    _destroyHtmlBridge: function() {
       var self = this;
 
       // Bridge event handlers are also removed by destroy() through .jPlayer namespace.
@@ -2350,7 +2350,7 @@
 
       // Remove the methods and properties
       var emulated = $.jPlayer.emulateMethods + " " + $.jPlayer.emulateStatus + " " + $.jPlayer.emulateOptions;
-      $.each(emulated.split(/\s+/g), function (i, name) {
+      $.each(emulated.split(/\s+/g), function(i, name) {
         delete self.internal.domNode[name];
       });
     }

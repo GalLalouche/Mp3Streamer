@@ -1,5 +1,5 @@
-$(function () {
-  $(document).keyup(function (e) {
+$(function() {
+  $(document).keyup(function(e) {
     {
       const tag = e.target.tagName.toLowerCase()
       const isFromInput = tag == 'input' || tag == 'textarea'
@@ -37,6 +37,7 @@ $(function () {
         Search.quickSearch()
     }
   });
+
   function loadNextSong() {
     const songs = gplaylist.songs()
     // verify that the sequence of queued songs, starting from the current song, are continuous in the same album
@@ -54,7 +55,7 @@ $(function () {
   }
 
   // pauses on poster click
-  $(document).on("click", ".poster", function (e) {
+  $(document).on("click", ".poster", function(e) {
     gplayer.togglePause()
   });
 });

@@ -16,9 +16,9 @@
  */
 /* global jPlayerPlaylist: true, jQuery:false, alert:false */
 
-(function ($, undefined) {
+(function($, undefined) {
 
-  jPlayerPlaylist = function (cssSelector, playlist, options) {
+  jPlayerPlaylist = function(cssSelector, playlist, options) {
     var self = this;
 
     this.current = 0;
@@ -52,27 +52,27 @@
     this.options.cssSelectorAncestor = this.cssSelector.cssSelectorAncestor;
 
     // Override the default repeat event handler
-    this.options.repeat = function (event) {
+    this.options.repeat = function(event) {
       self.loop = event.jPlayer.options.loop;
     };
 
     // Create a ready event handler to initialize the playlist
-    $(this.cssSelector.jPlayer).bind($.jPlayer.event.ready, function (event) {
+    $(this.cssSelector.jPlayer).bind($.jPlayer.event.ready, function(event) {
       self._init();
     });
 
     // Create an ended event handler to move to the next item
-    $(this.cssSelector.jPlayer).bind($.jPlayer.event.ended, function (event) {
+    $(this.cssSelector.jPlayer).bind($.jPlayer.event.ended, function(event) {
       self.next();
     });
 
     // Create a play event handler to pause other instances
-    $(this.cssSelector.jPlayer).bind($.jPlayer.event.play, function (event) {
+    $(this.cssSelector.jPlayer).bind($.jPlayer.event.play, function(event) {
       $(this).jPlayer("pauseOthers");
     });
 
     // Create a resize event handler to show the title in full screen mode.
-    $(this.cssSelector.jPlayer).bind($.jPlayer.event.resize, function (event) {
+    $(this.cssSelector.jPlayer).bind($.jPlayer.event.resize, function(event) {
       if (event.jPlayer.options.fullScreen) {
         $(self.cssSelector.title).show();
       } else {
@@ -81,23 +81,23 @@
     });
 
     // Create click handlers for the extra buttons that do playlist functions.
-    $(this.cssSelector.previous).click(function () {
+    $(this.cssSelector.previous).click(function() {
       self.previous();
       $(this).blur();
       return false;
     });
 
-    $(this.cssSelector.next).click(function () {
+    $(this.cssSelector.next).click(function() {
       self.next();
       $(this).blur();
       return false;
     });
 
-    $(this.cssSelector.shuffle).click(function () {
+    $(this.cssSelector.shuffle).click(function() {
       self.shuffle(true);
       return false;
     });
-    $(this.cssSelector.shuffleOff).click(function () {
+    $(this.cssSelector.shuffleOff).click(function() {
       self.shuffle(false);
       return false;
     }).hide();
@@ -141,10 +141,10 @@
         removeDownClass: "jp-playlist-item-remove-down"
       }
     },
-    _getDisplayedIndex: function (index) {
+    _getDisplayedIndex: function(index) {
       return this.playlist.length - 1 - index;
     },
-    option: function (option, value) { // For changing playlist options
+    option: function(option, value) { // For changing playlist options
       // only
       if (value === undefined) {
         return this.options.playlistOptions[option];
@@ -166,13 +166,13 @@
       }
       return this;
     },
-    _init: function (instant) {
+    _init: function(instant) {
       var self = this;
       if (instant) {
         this._refresh(true);
         self.play(self.current);
       } else {
-        this._refresh(function () {
+        this._refresh(function() {
           if (self.options.playlistOptions.autoPlay) {
             self.play(self.current);
           } else {
@@ -181,7 +181,7 @@
         });
       }
     },
-    _initPlaylist: function (playlist) {
+    _initPlaylist: function(playlist) {
       this.current = 0;
       this.shuffled = true;
       this.removing = false;
@@ -189,7 +189,7 @@
       // Objects
       this._originalPlaylist();
     },
-    _originalPlaylist: function () {
+    _originalPlaylist: function() {
       this.playlist = [];
       // Make both arrays point to the same object elements. Gives us 2
       // different arrays, each pointing to the same actual object. ie.,
@@ -197,7 +197,7 @@
       for (var i = 0; i < this.original.length; i++)
         this.playlist[i] = this.original[this.original.length - i - 1];
     },
-    _refresh: function (instant) {
+    _refresh: function(instant) {
       /*
        * instant: Can be undefined, true or a function. undefined -> use
        * animation timings true -> no animation function -> use animation
@@ -207,7 +207,7 @@
 
       if (instant && !$.isFunction(instant)) {
         $(this.cssSelector.playlist + " ul").empty();
-        $.each(this.playlist, function (i, v) {
+        $.each(this.playlist, function(i, v) {
           $(self.cssSelector.playlist + " ul").append(self._createListItem(self.playlist[i]));
         });
         this._updateControls();
@@ -215,11 +215,11 @@
         var displayTime = $(this.cssSelector.playlist + " ul").children().length ? this.options.playlistOptions.displayTime
             : 0;
 
-        $(this.cssSelector.playlist + " ul").slideUp(displayTime, function () {
+        $(this.cssSelector.playlist + " ul").slideUp(displayTime, function() {
           var $this = $(this);
           $(this).empty();
 
-          $.each(self.playlist, function (i, v) {
+          $.each(self.playlist, function(i, v) {
             $this.append(self._createListItem(self.playlist[i]));
           });
           self._updateControls();
@@ -234,7 +234,7 @@
         });
       }
     },
-    _createListItem: function (media) {
+    _createListItem: function(media) {
       const self = this;
 
       // Wrap the <li> contents in a <div>
@@ -250,7 +250,7 @@
       if (media.free) {
         let first = true;
         listItem += "<span class='" + this.options.playlistOptions.freeGroupClass + "'>(";
-        $.each(media, function (property, value) {
+        $.each(media, function(property, value) {
           if ($.jPlayer.prototype.format[property]) { // Check
             // property is a media format.
             if (first) {
@@ -279,11 +279,11 @@
 
       return listItem;
     },
-    _createItemHandlers: function () {
+    _createItemHandlers: function() {
       const self = this;
       // Create .live() handlers for the playlist items
       $(this.cssSelector.playlist + " a." + this.options.playlistOptions.itemClass).die("click").live("click",
-          function () {
+          function() {
             const index = $(this).closest("li").index()
             // Need to swap since songs are in reverse
             const displayIndex = self._getDisplayedIndex(index);
@@ -298,7 +298,7 @@
 
       // Create .live() handlers that disable free media links to force access via right click
       $(self.cssSelector.playlist + " a." + this.options.playlistOptions.freeItemClass).die("click").live(
-          "click", function () {
+          "click", function() {
             $(this).parent().parent().find("." + self.options.playlistOptions.itemClass).click();
             $(this).blur();
             return false;
@@ -316,28 +316,28 @@
 
       // Create .live() handlers for the remove controls
       $(self.cssSelector.playlist).on("click", "a." + this.options.playlistOptions.removeItemClass, function() {
-            const triggerer = $(this)
-            function removeItemAux(nextFunction, who) {
-              // This has to be calculated before the removal, otherwise the who element is empty
-              const next = nextFunction(who)
-              self.remove(who.index(), function () {
-                // if there is another next element to remove, enqueue a removal after this current element is removed
-                if (next.length > 0)
-                  removeItemAux(nextFunction, next)
-              });
-            }
-
-            function getNextFunction() {
-              if (triggerer.hasClass(options.removeThisClass)) return _ => $()
-              if (triggerer.hasClass(options.removeUpClass)) return x => x.prev()
-              if (triggerer.hasClass(options.removeDownClass)) return x => x.next()
-            }
-
-            removeItemAux(getNextFunction(), triggerer.parent().parent())
-            return false;
+        const triggerer = $(this)
+        function removeItemAux(nextFunction, who) {
+          // This has to be calculated before the removal, otherwise the who element is empty
+          const next = nextFunction(who)
+          self.remove(who.index(), function() {
+            // if there is another next element to remove, enqueue a removal after this current element is removed
+            if (next.length > 0)
+              removeItemAux(nextFunction, next)
           });
+        }
+
+        function getNextFunction() {
+          if (triggerer.hasClass(options.removeThisClass)) return _ => $()
+          if (triggerer.hasClass(options.removeUpClass)) return x => x.prev()
+          if (triggerer.hasClass(options.removeDownClass)) return x => x.next()
+        }
+
+        removeItemAux(getNextFunction(), triggerer.parent().parent())
+        return false;
+      });
     },
-    _updateControls: function () {
+    _updateControls: function() {
       if (this.options.playlistOptions.enableRemoveControls) {
         $(this.cssSelector.playlist + " ." + this.options.playlistOptions.removeItemClass).show();
       } else {
@@ -351,7 +351,7 @@
         $(this.cssSelector.shuffle).show();
       }
     },
-    _highlight: function (index) {
+    _highlight: function(index) {
       if (this.playlist.length && index !== undefined) {
         $(this.cssSelector.playlist + " .jp-playlist-current").removeClass("jp-playlist-current");
         $(this.cssSelector.playlist + " li:nth-child(" + (index + 1) + ")").addClass("jp-playlist-current")
@@ -362,15 +362,15 @@
             + this.playlist[index].artistName + "</span>" : ""));
       }
     },
-    setPlaylist: function (playlist, instant) {
+    setPlaylist: function(playlist, instant) {
       playlist = playlist
       this._initPlaylist(playlist);
       this._init(instant);
     },
-    add: function (media, playNow) {
+    add: function(media, playNow) {
       var that = this;
       if ($.isArray(media)) {
-        $.each(media, function (i, track) {
+        $.each(media, function(i, track) {
           that.add(track);
         });
         return;
@@ -402,12 +402,12 @@
         }
       }
     },
-    remove: function (index, onEnd) {
+    remove: function(index, onEnd) {
       var self = this;
 
       if (index === undefined) {
         this._initPlaylist([]);
-        this._refresh(function () {
+        this._refresh(function() {
           $(self.cssSelector.jPlayer).jPlayer("clearMedia");
         });
         return true;
@@ -423,13 +423,13 @@
 
             $(this.cssSelector.playlist + " li:nth-child(" + (index + 1) + ")").slideUp(
                 this.options.playlistOptions.removeTime,
-                function () {
+                function() {
                   $(this).remove();
 
                   if (self.shuffled) {
                     index = self.playlist.length - index - 1
                     var item = self.playlist[index];
-                    $.each(self.original, function (i, v) {
+                    $.each(self.original, function(i, v) {
                       if (self.original[i] === item) {
                         self.original.splice(i, 1);
                         return false; // Exit $.each
@@ -466,7 +466,7 @@
         }
       }
     },
-    select: function (index) {
+    select: function(index) {
       index = (index < 0) ? this.original.length + index : index; // Negative
       // index relates to end of array.
       var displayIndex = this._getDisplayedIndex(index);
@@ -478,7 +478,7 @@
         this.current = 0;
       }
     },
-    play: function (index) {
+    play: function(index) {
       index = (index < 0) ? this.original.length + index : index; // Negative
       // index relates to end of array.
       if (0 <= index && index < this.playlist.length) {
@@ -490,10 +490,10 @@
         $(this.cssSelector.jPlayer).jPlayer("play");
       }
     },
-    pause: function () {
+    pause: function() {
       $(this.cssSelector.jPlayer).jPlayer("pause");
     },
-    next: function () {
+    next: function() {
       var index = (this.current + 1 < this.playlist.length) ? this.current + 1 : 0;
       if (this.loop) {
         // See if we need to shuffle before looping to start, and only shuffle if more than 1 item.
@@ -510,14 +510,14 @@
         }
       }
     },
-    previous: function () {
+    previous: function() {
       var index = (this.current - 1 >= 0) ? this.current - 1 : this.playlist.length - 1;
 
       if (this.loop && this.options.playlistOptions.loopOnPrevious || index < this.playlist.length - 1) {
         this.play(index);
       }
     },
-    shuffle: function (shuffled, playNow) {
+    shuffle: function(shuffled, playNow) {
       var self = this;
 
       if (shuffled === undefined) {
@@ -526,10 +526,10 @@
 
       if (shuffled || shuffled !== this.shuffled) {
 
-        $(this.cssSelector.playlist + " ul").slideUp(this.options.playlistOptions.shuffleTime, function () {
+        $(this.cssSelector.playlist + " ul").slideUp(this.options.playlistOptions.shuffleTime, function() {
           self.shuffled = shuffled;
           if (shuffled) {
-            self.playlist.sort(function () {
+            self.playlist.sort(function() {
               return 0.5 - Math.random();
             });
           } else {
@@ -547,10 +547,10 @@
         });
       }
     },
-    isLastSongPlaying: function () {
+    isLastSongPlaying: function() {
       return this.current == this.playlist.length - 1;
     },
-    currentPlayingSong: function () {
+    currentPlayingSong: function() {
       return this.playlist[this.current];
     }
   };

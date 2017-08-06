@@ -1,4 +1,4 @@
-$(function () {
+$(function() {
   const lyricsDiv = $('#lyrics')
   const lyricsContent = $('<div style="overflow-y: scroll; height:770px;"/>').appendTo(lyricsDiv)
   appendBr(lyricsDiv)
@@ -54,11 +54,11 @@ $(function () {
     timeBaseline = 0
   }
 
-  Lyrics.show = function (song) {
+  Lyrics.show = function(song) {
     clearButtons()
     autoScroll = true
     lyricsContent.html("Fetching lyrics...")
-    $.get("lyrics/" + song.file, function (l) {
+    $.get("lyrics/" + song.file, function(l) {
       showLyrics(l)
       scrollLyrics()
     })
@@ -79,7 +79,7 @@ $(function () {
 
   setInterval(scrollLyrics, 100)
 
-  lyricsContent.scroll(function () { // When the user scrolls manually, reset the baselines
+  lyricsContent.scroll(function() { // When the user scrolls manually, reset the baselines
     if (!autoScroll) {
       scrollBaseline = lyricsContent.scrollTop()
       timeBaseline = scrollBaseline && gplayer.currentPlayingRelative()

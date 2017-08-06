@@ -64,11 +64,11 @@ $(function () {
     // TODO this shouldn't really be created every time
   }
 
-  External.show = function (song) {
+  External.show = function(song) {
     resetLinks()
     const externalUrl = remotePath + song.file
     $.get(externalUrl, l => showLinks(l, externalUrl))
-        .fail(function () {
+        .fail(function() {
           externalDiv.html("Error occurred while fetching links")
         })
   }
@@ -78,7 +78,7 @@ $(function () {
   const reconRegex = new RegExp(`^${hexa}{8}-(?:${hexa}{4}-){3}${hexa}{12}$`)
   // Update recon on pressing Enter
   validateBoxAndButton($(".external-recon-id"), updateReconButton, s => reconRegex.test(s), updateRecon)
-  externalDiv.on("click", ".copy-to-clipboard", function () {
+  externalDiv.on("click", ".copy-to-clipboard", function() {
     copyTextToClipboard($(this).attr("url"))
   })
 })
