@@ -3,7 +3,7 @@ package backend.external
 import java.time.Duration
 
 import backend.Retriever
-import backend.configs.{CleanConfiguration, Configuration}
+import backend.configs.{CleanConfiguration, Configuration, StandaloneConfig}
 import backend.external.expansions.{CompositeSameHostExpander, ExternalLinkExpander, LinkExpanders}
 import backend.external.extensions._
 import backend.external.recons.{Reconciler, Reconcilers}
@@ -89,20 +89,5 @@ class MbExternalLinksProvider(implicit c: Configuration)
         albumReconStorage.delete(song.release) >>
             albumExternalStorage.delete(song.release)
       }).>>(update(song.release, albumReconId, albumReconStorage))
-  }
-}
-
-object MbExternalLinksProvider {
-  import common.rich.path.Directory
-  import common.rich.path.RichFile._
-
-  private def fromDir(path: String): Song =
-    Directory(path).files.filter(f => Set("mp3", "flac").contains(f.extension)).head |> Song.apply
-
-  def main(args: Array[String]): Unit = {
-    implicit val c = CleanConfiguration
-    val $ = new MbExternalLinksProvider()
-    val s = fromDir("""D:\Media\Music\Metal\Blackgaze\Empyrium\2014 the turn of the tides""")
-    println($(s).albumLinks.get)
   }
 }
