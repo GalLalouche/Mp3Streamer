@@ -77,7 +77,7 @@ $(function() {
     })
   }
 
-  results.on("click", `#song-results .fa-${add}`, function(e) {
+  results.on("click", '#song-results .fa', function(e) {
     const song = $(this).parent().data()
     const isPlay = e.target.classList.contains("fa-play")
     $.get("data/songs/" + song.file, e => gplaylist.add(e, isPlay))
