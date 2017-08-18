@@ -1,7 +1,7 @@
 package backend.lyrics
 
 import backend.Url
-import backend.configs.{Configuration, StandaloneConfig}
+import backend.configs.{CleanConfiguration, Configuration}
 import backend.lyrics.retrievers._
 import backend.storage.OnlineRetrieverCacher
 import common.rich.RichFuture._
@@ -38,9 +38,13 @@ class LyricsCache(implicit c: Configuration)
 }
 
 object LyricsCache {
-  private implicit val c = StandaloneConfig
+  import java.io.File
 
-  def main(args: Array[String]) {
-    println(new InstrumentalArtistStorage().delete("satyricon").get)
+  private implicit val c: Configuration = CleanConfiguration
+
+  def main(args: Array[String]): Unit = {
+    val s = Song(new File("""D:\Media\Music\Rock\Punk\Heartsounds\2013 Internal Eyes\01 - A Total Separation of Self.mp3"""))
+    val cache = new LyricsCache()
+    println(cache.find(s).get)
   }
 }

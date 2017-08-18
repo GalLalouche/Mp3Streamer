@@ -1,6 +1,8 @@
 package backend.configs
 
 import backend.external.{AlbumExternalStorage, ArtistExternalStorage}
+import backend.lyrics.LyricsStorage
+import backend.lyrics.retrievers.InstrumentalArtistStorage
 import backend.recon.{AlbumReconStorage, ArtistReconStorage}
 import backend.storage.Storage
 import common.rich.RichFuture._
@@ -17,10 +19,12 @@ object CleanConfiguration extends RealConfig with NonPersistentConfig
     c.utils.createTable()
   }
   private def createTables() {
-    implicit val c = this
+    implicit val c: Configuration = this
     List(createTable(new ArtistReconStorage()),
       createTable(new AlbumReconStorage()),
       createTable(new ArtistExternalStorage()),
+      createTable(new LyricsStorage()),
+      createTable(new InstrumentalArtistStorage()),
       createTable(new AlbumExternalStorage())).sequenceU.get
   }
   createTables()

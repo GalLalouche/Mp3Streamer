@@ -6,7 +6,7 @@ import models.Song
 
 import scala.concurrent.Future
 
-private class LyricsStorage(implicit c: Configuration) extends StorageTemplate[Song, Lyrics] {
+class LyricsStorage(implicit c: Configuration) extends StorageTemplate[Song, Lyrics] {
   import c.driver.api._
   private val db = c.db
 

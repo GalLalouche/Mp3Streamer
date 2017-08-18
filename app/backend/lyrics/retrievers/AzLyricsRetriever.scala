@@ -17,10 +17,9 @@ private[lyrics] class AzLyricsRetriever(implicit ec: ExecutionContext, it: Inter
         .filter(_.classNames.isEmpty)
         .single
         .html
+        // TODO replace with parsec
         .replaceAll("<!--.*?-->\\s*", ""))
-  override protected val hostPrefix: String = "http://www.azlyrics.com/lyrics"
-  override def getUrl(s: Song) =
-    s"$hostPrefix/${normalize(s.artistName)}/${normalize(s.title)}.html"
+  override protected val hostPrefix: String = "https://www.azlyrics.com/lyrics"
+  override def getUrl(s: Song) = s"$hostPrefix/${normalize(s.artistName)}/${normalize(s.title)}.html"
   override protected val source = "AZLyrics"
-
 }

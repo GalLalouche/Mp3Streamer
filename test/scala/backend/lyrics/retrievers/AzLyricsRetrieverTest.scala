@@ -7,7 +7,7 @@ class AzLyricsRetrieverTest extends LyricsSpec {
   private val $ = new AzLyricsRetriever()
   "getUrl" in {
     $.getUrl(fakeModelFactory.song(artistName = "Guns n' Roses", title = "Paradise City")) shouldReturn
-        "http://www.azlyrics.com/lyrics/gunsnroses/paradisecity.html"
+        "https://www.azlyrics.com/lyrics/gunsnroses/paradisecity.html"
   }
   "fromHtml" - {
     "has lyrics" in {
