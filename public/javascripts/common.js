@@ -87,8 +87,10 @@ function _ajaxJson(method, url, data, success) {
     type: method,
     contentType: "application/json; charset=utf-8",
     dataType: "json",
-    success: success})
+    success: success
+  })
 }
+
 function postJson(url, data, success) {
   _ajaxJson("POST", url, data, success)
 }
@@ -96,6 +98,7 @@ function postJson(url, data, success) {
 function putJson(url, data, success) {
   _ajaxJson("PUT", url, data, success)
 }
+
 function isValidUrl(urlString) {
   const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
       '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name

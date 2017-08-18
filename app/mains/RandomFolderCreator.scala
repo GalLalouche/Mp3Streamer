@@ -79,7 +79,7 @@ private object RandomFolderCreator extends
       d.clear()
       d
     }
-    addSongs(300, copyFileToOutputDir(outputDir)).>>(createPlaylistFile(outputDir)).get
+    addSongs(maxSize = 300, copyFileToOutputDir(outputDir)).>>(createPlaylistFile(outputDir)).get
     println("\rDone!")
   }
 }

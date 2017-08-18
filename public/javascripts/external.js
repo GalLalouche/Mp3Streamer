@@ -1,4 +1,4 @@
-$(function () {
+$(function() {
   const href = (target, name) => `<a target=_blank href="${target}">${name}</a>`
   const externalDivParent = $("#external")
   const externalDiv = div().appendTo(externalDivParent)

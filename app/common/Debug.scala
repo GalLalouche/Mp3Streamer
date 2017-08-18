@@ -29,7 +29,7 @@ trait Debug {
 	}
 
 
-	protected def echoLocation(implicit l: Logger) = {
+	protected def echoLocation(implicit l: Logger): Unit = {
 		val trace = Thread.currentThread.getStackTrace()(3)
 		l.verbose(s"${Thread.currentThread.getName}: ${trace.getClassName}@${trace.getLineNumber}")
 	}

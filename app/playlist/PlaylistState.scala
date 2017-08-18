@@ -1,6 +1,5 @@
 package playlist
 
-
 import java.util.concurrent.TimeUnit
 
 import common.Jsonable
@@ -12,8 +11,8 @@ case class PlaylistState(songs: Seq[Song], currentIndex: Int, currentDuration: D
   require(currentIndex < songs.length && currentIndex >= 0, s"currentIndex <$currentIndex> out of range (0-${songs.length})")
   require(currentDuration != null)
 }
-object PlaylistState extends Jsonable.ToJsonableOps {
 
+object PlaylistState extends Jsonable.ToJsonableOps {
   import common.Jsonable
   import common.RichJson._
   import play.api.libs.json.{JsObject, Json}

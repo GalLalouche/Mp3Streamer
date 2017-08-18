@@ -1,6 +1,6 @@
 package backend.external.expansions
 
-import java.net.{HttpURLConnection, URL}
+import java.net.HttpURLConnection
 import java.util.regex.Pattern
 
 import backend.Url
@@ -8,14 +8,13 @@ import backend.external.BaseLink
 import backend.recon.Reconcilable
 import common.io.InternetTalker
 import common.rich.RichFuture._
-import common.rich.RichT._
+import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
 
+import scala.collection.JavaConversions._
 import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.TupleInstances
 import scalaz.syntax.ToFoldableOps
-import common.rich.collections.RichTraversableOnce._
-import scala.collection.JavaConversions._
 
 private class AllMusicHelper(implicit ec: ExecutionContext, it: InternetTalker) extends ToFoldableOps with TupleInstances {
   private val canonicalLink = Pattern compile "[a-zA-Z\\-0-9]+-mw\\d+"

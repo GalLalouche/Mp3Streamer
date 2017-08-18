@@ -27,6 +27,7 @@ trait Song {
   lazy val album = Album(dir = file.parent, title = albumName, artistName = artistName, year = year)
 }
 
+// TODO remove code duplication? hmm...
 case class IOSong(file: IOFile, title: String, artistName: String, albumName: String,
                   track: Int, year: Int, bitRate: String, duration: Int, size: Long,
                   discNumber: Option[String], trackGain: Option[Double]) extends Song {
@@ -55,7 +56,7 @@ object Song {
         println(s"No year in $file")
         0 // Some songs, e.g., classical, don't have a year yet.
     }
-    val discNumber = Option(tag.getFirst(FieldKey.DISC_NO)).filterNot(_.isEmpty)
+    val discNumber = Option(tag.getFirst(FieldKey.DISC_NO)).map(_.trim).filterNot(_.isEmpty)
     def parseReplayGain(s: String): String = s.dropAfterLast('=').drop(1).takeWhile(_ != '"')
     // in flac files, REPLAYGAIN_TRACK_GAIN works. In regular files, it doesn't so it needs to be parsed manually :\
     val trackGain = (tag.getFields("REPLAYGAIN_TRACK_GAIN").headOption map (_.toString))

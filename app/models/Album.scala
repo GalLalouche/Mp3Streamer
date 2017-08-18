@@ -9,7 +9,7 @@ case class Album(dir: DirectoryRef, title: String, artistName: String, year: Int
 }
 
 object Album {
-  def apply(dir: DirectoryRef)(implicit mf: MusicFinder) = {
+  def apply(dir: DirectoryRef)(implicit mf: MusicFinder): Album = {
     val firstSong = mf.getSongsInDir(dir).head
     new Album(dir = dir,
       title = firstSong.albumName,

@@ -13,8 +13,7 @@ object PlaylistQueue extends Jsonable.ToJsonableOps {
 
   implicit def PlaylistJsonable(implicit songJsonable: Jsonable[Song]): Jsonable[PlaylistQueue] =
     new Jsonable[PlaylistQueue] {
-      override def jsonify(p: PlaylistQueue): JsObject =
-        Json obj "songs" -> p.songs.jsonify
+      override def jsonify(p: PlaylistQueue): JsObject = Json obj "songs" -> p.songs.jsonify
       override def parse(json: JsObject): PlaylistQueue =
         json.objects("songs").map(songJsonable.parse) |> PlaylistQueue.apply
     }
