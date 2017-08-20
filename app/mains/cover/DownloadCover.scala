@@ -32,17 +32,17 @@ object DownloadCover {
    */
   def apply(albumDir: Directory): Future[Directory => Unit] = new SearchUrlProvider(albumDir) |> {urlProvider =>
     downloader.download(urlProvider.automaticSearchUrl, "UTF-8")
-    .map(new String(_, "UTF-8"))
-    .map(extractImageURLs)
-    .flatMap(selectImage)
-    .map {
-      case Selected(img) => fileMover(img)
-      case OpenBrowser =>
-        // String interpolation is acting funky for some reason (will fail at runtime)
-        Process("""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe "%s"""".format(urlProvider.manualSearchUrl)).!!
-        throw new RuntimeException("User opened browser")
-      case Cancelled => throw new RuntimeException("User opted out")
-    }
+        .map(new String(_, "UTF-8"))
+        .map(extractImageURLs)
+        .flatMap(selectImage)
+        .map {
+          case Selected(img) => fileMover(img)
+          case OpenBrowser =>
+            // String interpolation is acting funky for some reason (will fail at runtime)
+            Process("""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe "%s"""".format(urlProvider.manualSearchUrl)).!!
+            throw new RuntimeException("User opened browser")
+          case Cancelled => throw new RuntimeException("User opted out")
+        }
   }
 
   private class SearchUrlProvider(albumDir: Directory) {
@@ -67,13 +67,14 @@ object DownloadCover {
 
   private def extractImageURLs(html: String): Seq[Url] =
     """"ou":"[^"]+"""".r
-    .findAllIn(html) // assumes format "ou":"<url>". fucking closure :\
-    .map(_.dropWhile(_ != ':').drop(2).dropRight(1))
-    .toVector
-    .map(Url)
+        .findAllIn(html) // assumes format "ou":"<url>". fucking closure :\
+        .map(_.dropWhile(_ != ':').drop(2).dropRight(1))
+        .toVector
+        .map(Url)
 
   private def selectImage(imageURLs: Seq[Url]): Future[ImageChoice] =
-    ImageSelectionPanel(ImagesSupplier.withCache(imageURLs.iterator,
+    ImageSelectionPanel(ImagesSupplier.withCache(
+      imageURLs.iterator,
       new ImageDownloader(IODirectory.apply(tempFolder), downloader),
       12))
 

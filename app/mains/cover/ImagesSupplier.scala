@@ -39,8 +39,7 @@ private object ImagesSupplier {
       })
     }
   }
-  def withCache(urls: Iterator[Url], downloader: FolderImageDownloader,
-      cacheSize: Int, timeoutInMillis: Int = 5000)
+  def withCache(urls: Iterator[Url], downloader: FolderImageDownloader, cacheSize: Int, timeoutInMillis: Int = 5000)
       (implicit ec: ExecutionContext): ImagesSupplier = {
     val $ = new ImagesSupplierWithCache(urls, downloader, cacheSize, timeoutInMillis)
     $.fillCache()
