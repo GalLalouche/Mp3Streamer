@@ -3,6 +3,7 @@ package mains.cover
 import java.net.URLEncoder
 import java.nio.file.Files
 
+import backend.Url
 import backend.configs.StandaloneConfig
 import common.io.IODirectory
 import common.rich.RichT.richT
@@ -31,17 +32,17 @@ object DownloadCover {
    */
   def apply(albumDir: Directory): Future[Directory => Unit] = new SearchUrlProvider(albumDir) |> {urlProvider =>
     downloader.download(urlProvider.automaticSearchUrl, "UTF-8")
-        .map(new String(_, "UTF-8"))
-        .map(extractImageURLs)
-        .flatMap(selectImage)
-        .map {
-          case Selected(img) => fileMover(img)
-          case OpenBrowser =>
-            // String interpolation is acting funky for some reason (will fail at runtime)
-            Process("""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe "%s"""".format(urlProvider.manualSearchUrl)).!!
-            throw new RuntimeException("User opened browser")
-          case Cancelled => throw new RuntimeException("User opted out")
-        }
+    .map(new String(_, "UTF-8"))
+    .map(extractImageURLs)
+    .flatMap(selectImage)
+    .map {
+      case Selected(img) => fileMover(img)
+      case OpenBrowser =>
+        // String interpolation is acting funky for some reason (will fail at runtime)
+        Process("""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe "%s"""".format(urlProvider.manualSearchUrl)).!!
+        throw new RuntimeException("User opened browser")
+      case Cancelled => throw new RuntimeException("User opted out")
+    }
   }
 
   private class SearchUrlProvider(albumDir: Directory) {
@@ -50,7 +51,7 @@ object DownloadCover {
     // tbm=isch => image search
     private val prefix = s"https://www.google.com/search?tbm=isch&q=$query"
     // tbs=isz%3Aex%2Ciszw%3A500%2Ciszh%3A500 => required image size is 500x500
-    val automaticSearchUrl: String = prefix + "&tbs=isz%3Aex%2Ciszw%3A500%2Ciszh%3A500"
+    val automaticSearchUrl: Url = Url(prefix + "&tbs=isz%3Aex%2Ciszw%3A500%2Ciszh%3A500")
     // tbs=iar:s => relax the automatic requirement, and search for sqaure images
     val manualSearchUrl: String = prefix + "&tbs=iar:s"
   }
@@ -64,22 +65,23 @@ object DownloadCover {
     assert(tempFolder.exists == false)
   }
 
-  private def extractImageURLs(html: String): Seq[String] =
+  private def extractImageURLs(html: String): Seq[Url] =
     """"ou":"[^"]+"""".r
-        .findAllIn(html) // assumes format "ou":"<url>". fucking closure :\
-        .map(_.dropWhile(_ != ':').drop(2).dropRight(1))
-        .toVector
+    .findAllIn(html) // assumes format "ou":"<url>". fucking closure :\
+    .map(_.dropWhile(_ != ':').drop(2).dropRight(1))
+    .toVector
+    .map(Url)
 
-  private def selectImage(imageURLs: Seq[String]): Future[ImageChoice] =
+  private def selectImage(imageURLs: Seq[Url]): Future[ImageChoice] =
     ImageSelectionPanel(ImagesSupplier.withCache(imageURLs.iterator,
       new ImageDownloader(IODirectory.apply(tempFolder), downloader),
       12))
 
   def main(args: Array[String]) {
     val path = if (args.nonEmpty)
-      args(0)
-    else
-      """D:\Media\Music\Rock\Progressive Rock\Mostly Autumn\2012 The Ghost Moon Orchestra"""
+                 args(0)
+               else
+                 """D:\Media\Music\Rock\Progressive Rock\Mostly Autumn\2012 The Ghost Moon Orchestra"""
     val folder = Directory(path)
     println("Downloading cover image for " + path)
     Await.result(apply(folder), Duration.Inf)(folder)

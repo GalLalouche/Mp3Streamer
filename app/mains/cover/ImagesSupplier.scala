@@ -2,6 +2,7 @@ package mains.cover
 
 import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
+import backend.Url
 import common.rich.RichT._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -10,16 +11,17 @@ private trait ImagesSupplier {
   def next(): Future[FolderImage]
 }
 private object ImagesSupplier {
-  private class SimpleImagesSupplier(urls: Iterator[String],
-                                     imageDownloader: String => Future[FolderImage]) extends ImagesSupplier {
-    def next(): Future[FolderImage] = urls.next() |> imageDownloader.apply
+  type FolderImageDownloader = Url => Future[FolderImage]
+  private class SimpleImagesSupplier(urls: Iterator[Url],
+      downloader: FolderImageDownloader) extends ImagesSupplier {
+    def next(): Future[FolderImage] = urls.next() |> downloader
   }
-  def apply(urls: Iterator[String], imageDownloader: String => Future[FolderImage]): ImagesSupplier =
+  def apply(urls: Iterator[Url], imageDownloader: FolderImageDownloader): ImagesSupplier =
     new SimpleImagesSupplier(urls, imageDownloader)
 
-  private class ImagesSupplierWithCache(urls: Iterator[String], downloader: String => Future[FolderImage],
-                                        cacheSize: Int, timeoutInMillis: Int)
-                                       (implicit ec: ExecutionContext) extends ImagesSupplier {
+  private class ImagesSupplierWithCache(urls: Iterator[Url], downloader: FolderImageDownloader,
+      cacheSize: Int, timeoutInMillis: Int)
+      (implicit ec: ExecutionContext) extends ImagesSupplier {
     private val cache = new LinkedBlockingQueue[Future[FolderImage]](cacheSize)
     override def next(): Future[FolderImage] = {
       val $ = cache.poll(timeoutInMillis, TimeUnit.MILLISECONDS)
@@ -37,10 +39,10 @@ private object ImagesSupplier {
       })
     }
   }
-  def withCache(urls: Iterator[String], imageDownloader: String => Future[FolderImage],
-                cacheSize: Int, timeoutInMillis: Int = 5000)
-               (implicit ec: ExecutionContext): ImagesSupplier = {
-    val $ = new ImagesSupplierWithCache(urls, imageDownloader, cacheSize, timeoutInMillis)
+  def withCache(urls: Iterator[Url], downloader: FolderImageDownloader,
+      cacheSize: Int, timeoutInMillis: Int = 5000)
+      (implicit ec: ExecutionContext): ImagesSupplier = {
+    val $ = new ImagesSupplierWithCache(urls, downloader, cacheSize, timeoutInMillis)
     $.fillCache()
     $
   }

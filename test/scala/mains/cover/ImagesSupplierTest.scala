@@ -1,17 +1,16 @@
 package mains.cover
 
-import backend.configs.TestConfiguration
+import backend.Url
+import backend.configs.{Configuration, TestConfiguration}
 import common.rich.RichFuture._
 import common.{AuxSpecs, MockitoHelper}
-import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import scala.concurrent.Future
 
-class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoSugar
-    with MockitoHelper with AuxSpecs {
-  private implicit val c = TestConfiguration()
-  private def downloadImage(url: String): Future[FolderImage] = Future successful mockWithId(url)
+class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoHelper with AuxSpecs {
+  private implicit val c: Configuration = TestConfiguration()
+  private def downloadImage(url: Url): Future[FolderImage] = Future successful mockWithId(url.address)
   private class RemainingIterator[T](ts: T*) extends Iterator[T] {
     private val iterator = ts.iterator
     private var iterated = 0
@@ -23,7 +22,7 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoSu
     }
     def remaining: Int = ts.size - iterated
   }
-  private val urls = new RemainingIterator("foo", "bar")
+  private val urls = new RemainingIterator(Url("foo"), Url("bar"))
   "Simple" - {
     val $ = ImagesSupplier(urls, downloadImage)
     "Should fetch when needed" in {
@@ -40,10 +39,10 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoSu
   }
   "Cached" - {
     "Should prefetch" in {
-      class TogellableImageDownloader extends (String => Future[FolderImage]) {
+      class TogellableImageDownloader extends (Url => Future[FolderImage]) {
         var stopped = false
-        override def apply(url: String) =
-          if (!stopped) Future successful mockWithId(url)
+        override def apply(url: Url) =
+          if (!stopped) Future successful mockWithId(url.address)
           else Future failed new IllegalStateException("Stopped")
         def stop() = stopped = true
       }
