@@ -1,26 +1,20 @@
 package mains.cover
 
-import java.awt.Dimension
-import javax.swing.ImageIcon
-
-import backend.configs.CleanConfiguration
-import common.io.IODirectory
-
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 import scala.swing.event.MouseClicked
 import scala.swing.{Button, GridPanel, Label, TextArea}
 
 /** Eventually publishes an ImageChoice event. */
 private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: ImagesSupplier)
     (implicit ec: ExecutionContext) extends GridPanel(rows0 = rows, cols0 = cols) {
-  private def createImagePanel(image: FolderImage): Label = new Label {
-    icon = new ImageIcon(image.file.path)
+  private def createImagePanel(folderImage: FolderImage): Label = new Label {
+    // TODO extract
+    icon = folderImage.toIcon(500, 500)
     listenTo(mouse.clicks)
     reactions += {
-      case _: MouseClicked => AsyncFolderImagePanel.this.publish(Selected(image))
+      case _: MouseClicked => AsyncFolderImagePanel.this.publish(Selected(folderImage))
     }
-    preferredSize = new Dimension(500, 500)
-    tooltip = s"${icon.getIconHeight}✕${icon.getIconWidth}"
+    tooltip = s"${folderImage.height}✕${folderImage.width}"
   }
 
   // TODO consider creating a new panel instead
@@ -37,8 +31,6 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
     for (currentIndex <- 0 until (rows * cols);
          image <- imagesSupplier.next().map(createImagePanel)) {
       contents.synchronized {
-        val height = image.size.height
-        val width = image.size.width
         image.size
         contents.update(currentIndex, image)
         // forces a redrawing of the panel
@@ -47,16 +39,5 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
         visible = true
       }
     }
-  }
-}
-
-object AsyncFolderImagePanel {
-  def main(args: Array[String]): Unit = {
-    implicit val c = CleanConfiguration
-    val dir = IODirectory("""D:\Media\Music\Rock\Classic Rock""")
-    val $ = new AsyncFolderImagePanel(2, 4, new ImagesSupplier {
-      val iterator = dir.deepFiles.iterator.filter(_.extension == "jpg").map(FolderImage.apply)
-      override def next(): Future[FolderImage] = Future {iterator.next()}
-    })
   }
 }

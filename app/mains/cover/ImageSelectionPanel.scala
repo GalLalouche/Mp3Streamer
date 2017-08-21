@@ -42,7 +42,7 @@ private object ImageSelectionPanel {
   def main(args: Array[String]): Unit = {
     import common.rich.RichFuture._
     implicit val c = StandaloneConfig
-    val dir = IODirectory("""D:\Media\Music\Rock\Classic Rock""")
+    val dir = IODirectory("""/usr/local/google/home/lalouche/Downloads""")
     val is = new ImagesSupplier {
       val iterator = dir.deepFiles.iterator.filter(_.extension == "jpg").map(FolderImage.apply)
       override def next(): Future[FolderImage] = Future {iterator.next()}
