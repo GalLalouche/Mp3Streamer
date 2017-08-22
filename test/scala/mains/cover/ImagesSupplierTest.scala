@@ -10,7 +10,11 @@ import scala.concurrent.Future
 
 class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoHelper with AuxSpecs {
   private implicit val c: Configuration = TestConfiguration()
-  private def downloadImage(url: Url): Future[FolderImage] = Future successful mockWithId(url.address)
+  private def downloadImage(is: ImageSource): Future[FolderImage] =
+    Future successful mockWithId(is match {
+      case UrlSource(url) => url.address
+      case LocalSource(file) => file.path
+    })
   private class RemainingIterator[T](ts: T*) extends Iterator[T] {
     private val iterator = ts.iterator
     private var iterated = 0
@@ -22,7 +26,7 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoHe
     }
     def remaining: Int = ts.size - iterated
   }
-  private val urls = new RemainingIterator(Url("foo"), Url("bar"))
+  private val urls = new RemainingIterator(Seq("foo", "bar").map(e => UrlSource(Url(e))): _*)
   "Simple" - {
     val $ = ImagesSupplier(urls, downloadImage)
     "Should fetch when needed" in {
@@ -39,10 +43,10 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoHe
   }
   "Cached" - {
     "Should prefetch" in {
-      class TogellableImageDownloader extends (Url => Future[FolderImage]) {
+      class TogellableImageDownloader extends (ImageSource => Future[FolderImage]) {
         var stopped = false
-        override def apply(url: Url) =
-          if (!stopped) Future successful mockWithId(url.address)
+        override def apply(is: ImageSource) =
+          if (!stopped) downloadImage(is)
           else Future failed new IllegalStateException("Stopped")
         def stop() = stopped = true
       }

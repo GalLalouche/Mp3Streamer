@@ -17,7 +17,7 @@ import scala.concurrent.Future
 class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar with OneInstancePerTest with AuxSpecs {
   private val tempDir = new MemoryRoot
   private implicit val c = new TestConfiguration
-  "ImageDownloader" - {
+  "Remote" - {
     def createDownloaderThatOnlyWorksFor(encoding: String) =
       new Downloader() {
         override def download(url: Url, encoding: String) = {
@@ -27,7 +27,7 @@ class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar
           }
         }
       }
-    val url = Url("url")
+    val url = UrlSource(Url("url"))
     "try with several different encodings" - {
       "like UTF-8" in {
         val $ = new ImageDownloader(tempDir, createDownloaderThatOnlyWorksFor("UTF-8"))
@@ -45,5 +45,13 @@ class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar
       val $ = new ImageDownloader(tempDir, downloader)
       $(url).value.get shouldBe 'failure
     }
+  }
+  "Local" in {
+    val downloader = mock[Downloader]
+    when(downloader.download(Matchers.any[Url], Matchers.anyString()))
+        .thenThrow(new NotImplementedError)
+    val $ = new ImageDownloader(tempDir, downloader)
+    val file = tempDir addFile "foo"
+    $(LocalSource(file)).get shouldReturn FolderImage(file, isLocal = true)
   }
 }
