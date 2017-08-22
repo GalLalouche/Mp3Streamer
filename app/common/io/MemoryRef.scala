@@ -40,6 +40,7 @@ case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with Memo
   override def readAll: String = content
   override def path: String = parent.path + "/" + name
   override def lastModified = lastUpdatedTime
+  override def size = bytes.length
 }
 
 abstract sealed class MemoryDir(val path: String) extends DirectoryRef with MemoryPath {

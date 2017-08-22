@@ -21,6 +21,8 @@ trait PathRef {
 
 /** must exist */
 trait FileRef extends PathRef {
+  def size: Long
+
   type S <: RefSystem
   def bytes: Array[Byte]
   def write(s: String): S#F

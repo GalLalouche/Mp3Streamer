@@ -48,6 +48,7 @@ case class IOFile(file: File) extends IOPath(file) with FileRef {
   }
   override def readAll: String = rich.readAll
   override def lastModified: LocalDateTime = file |> FileUtils.lastModified
+  override def size = file.length
 }
 
 case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
