@@ -1,20 +1,48 @@
 package mains.cover
 
+import java.awt.event.{MouseEvent, MouseListener}
+import java.awt.{Color, GridLayout}
+import javax.swing.{JLabel, SwingConstants}
+
+import common.rich.RichT._
+
 import scala.concurrent.ExecutionContext
-import scala.swing.event.MouseClicked
-import scala.swing.{Button, GridPanel, Label, TextArea}
+import scala.swing._
 
 /** Eventually publishes an ImageChoice event. */
 private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: ImagesSupplier)
     (implicit ec: ExecutionContext) extends GridPanel(rows0 = rows, cols0 = cols) {
-  private def createImagePanel(folderImage: FolderImage): Label = new Label {
-    // TODO extract
-    icon = folderImage.toIcon(500, 500)
-    listenTo(mouse.clicks)
-    reactions += {
-      case _: MouseClicked => AsyncFolderImagePanel.this.publish(Selected(folderImage))
+  private def createImagePanel(folderImage: FolderImage): Component = {
+    case class TextLabelProps(verticalAlignment: Int, horizontalAlignment: Int, color: Color) {
+      def label(text: String): JLabel = {
+        val $ = new JLabel(text)
+        $.setFont($.getFont.deriveFont(10))
+        $.setVerticalAlignment(verticalAlignment)
+        $.setHorizontalAlignment(horizontalAlignment)
+        $.setForeground(color)
+        $
+      }
     }
-    tooltip = s"${folderImage.height}✕${folderImage.width}"
+    val textProps = Seq(
+      // multiple colors and locations to ensure visibility
+      TextLabelProps(SwingConstants.TOP, SwingConstants.LEFT, Color.BLACK),
+      TextLabelProps(SwingConstants.TOP, SwingConstants.RIGHT, Color.GREEN),
+      TextLabelProps(SwingConstants.BOTTOM, SwingConstants.RIGHT, Color.WHITE),
+      TextLabelProps(SwingConstants.BOTTOM, SwingConstants.LEFT, Color.BLUE)
+    )
+    val imageIcon = folderImage.toIcon(500, 500)
+    val text = s"${folderImage.width}✕${folderImage.height} ${"(LOCAL)".onlyIf(folderImage.isLocal)}"
+    val imageLabel = new JLabel(imageIcon)
+    imageLabel.setLayout(new GridLayout())
+    textProps.map(_.label(text)).foreach(imageLabel.add)
+    imageLabel.addMouseListener(new MouseListener {
+      override def mouseExited(e: MouseEvent) = ()
+      override def mousePressed(e: MouseEvent) = ()
+      override def mouseReleased(e: MouseEvent) = ()
+      override def mouseEntered(e: MouseEvent) = ()
+      override def mouseClicked(e: MouseEvent) = AsyncFolderImagePanel.this.publish(Selected(folderImage))
+    })
+    Component wrap imageLabel
   }
 
   // TODO consider creating a new panel instead

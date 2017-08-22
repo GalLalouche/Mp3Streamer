@@ -10,7 +10,7 @@ import javax.swing.ImageIcon
 import common.io.{FileRef, IOFile}
 import common.rich.path.Directory
 
-private case class FolderImage(file: FileRef) {
+private case class FolderImage(file: FileRef, isLocal: Boolean) {
   private lazy val image = ImageIO.read(file.asInstanceOf[IOFile].file)
   def width = image.getWidth
   def height = image.getHeight

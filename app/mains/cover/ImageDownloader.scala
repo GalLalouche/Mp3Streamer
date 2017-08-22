@@ -25,5 +25,5 @@ private class ImageDownloader(outputDirectory: DirectoryRef, downloader: Downloa
     List("ISO-8859-1", "Cp1252", "UTF-8", "UTF-16"),
     enc => downloader.download(url, enc)
       .map(toFile)
-      .map(FolderImage.apply))
+      .map(FolderImage(_, isLocal = false)))
 }

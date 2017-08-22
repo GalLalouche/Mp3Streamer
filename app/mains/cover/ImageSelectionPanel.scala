@@ -2,7 +2,6 @@ package mains.cover
 
 import javax.swing.ToolTipManager
 
-import backend.configs.StandaloneConfig
 import common.io.IODirectory
 import common.rich.RichT._
 
@@ -36,15 +35,19 @@ private class ImageSelectionPanel private(imagesSupplier: ImagesSupplier)(implic
 }
 
 private object ImageSelectionPanel {
+  import backend.configs.StandaloneConfig
+  import scala.util.Random
+
   def apply(imagesSupplier: ImagesSupplier)(implicit ec: ExecutionContext): Future[ImageChoice] =
     new ImageSelectionPanel(imagesSupplier).choose()
 
   def main(args: Array[String]): Unit = {
     import common.rich.RichFuture._
     implicit val c = StandaloneConfig
-    val dir = IODirectory("""/usr/local/google/home/lalouche/Downloads""")
+    val dir = IODirectory("""/usr/local/google/home/lalouche/Pictures""")
     val is = new ImagesSupplier {
-      val iterator = dir.deepFiles.iterator.filter(_.extension == "jpg").map(FolderImage.apply)
+      val iterator =
+        dir.deepFiles.iterator.filter(_.extension == "png").map(FolderImage(_, Random.nextBoolean()))
       override def next(): Future[FolderImage] = Future {iterator.next()}
     }
 
