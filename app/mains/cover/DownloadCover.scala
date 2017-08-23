@@ -23,8 +23,6 @@ object DownloadCover {
   private lazy val tempFolder: Directory =
     Directory.apply(Files.createTempDirectory("images").toFile)
   tempFolder.dir.deleteOnExit()
-  // TODO replace with InternetTalker
-  private val downloader = new Downloader()
 
   /**
     * Downloads a new image for the album
@@ -37,9 +35,7 @@ object DownloadCover {
   def apply(albumDir: Directory): Future[Directory => Unit] = {
     val urlProvider = new SearchUrlProvider(albumDir)
     val localUrls = LocalImageFetcher(IODirectory(albumDir))
-    val imageUrls = downloader.download(urlProvider.automaticSearchUrl, "UTF-8")
-        .map(new String(_, "UTF-8"))
-        .map(extractImageURLs)
+    val imageUrls = c.asBrowser.bytes(urlProvider.automaticSearchUrl).map(new String(_, "UTF-8")).map(extractImageURLs)
     for (urls <- imageUrls;
          locals <- localUrls;
          selection <- selectImage(locals ++ urls)) yield selection match {
@@ -88,16 +84,14 @@ object DownloadCover {
 
         .map(e => UrlSource(Url(e)))
   private def selectImage(imageURLs: Seq[ImageSource]): Future[ImageChoice] =
-    ImageSelectionPanel(ImagesSupplier.withCache(
-      imageURLs.iterator,
-      new ImageDownloader(IODirectory.apply(tempFolder), downloader),
-      12))
+    ImageSelectionPanel(
+      ImagesSupplier.withCache(imageURLs.iterator, new ImageDownloader(IODirectory.apply(tempFolder)), 12))
 
   def main(args: Array[String]) {
     val path = if (args.nonEmpty)
-      args(0)
-    else
-      """D:\Media\Music\Rock\Progressive Rock\Mostly Autumn\2012 The Ghost Moon Orchestra"""
+                 args(0)
+               else
+                 """D:\Media\Music\Rock\Progressive Rock\Mostly Autumn\2012 The Ghost Moon Orchestra"""
     val folder = Directory(path)
     println("Downloading cover image for " + path)
     Await.result(apply(folder), Duration.Inf)(folder)

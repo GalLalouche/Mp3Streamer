@@ -18,6 +18,8 @@ trait InternetTalker {
     override implicit def ec: ExecutionContext = that.ec
     override protected def connection(url: Url) = that connection url applyAndReturn c
   }
+  def asBrowser: InternetTalker = config(_.setRequestProperty("user-agent",
+    """user-agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36"""))
   final def bytes(url: Url): Future[Array[Byte]] = connect(url).map(_.getInputStream).map(IOUtils.toByteArray)
   final def downloadDocument(url: Url): Future[Document] = bytes(url).map(new String(_, "UTF-8")).map(Jsoup.parse)
   protected def connection(url: Url): HttpURLConnection
