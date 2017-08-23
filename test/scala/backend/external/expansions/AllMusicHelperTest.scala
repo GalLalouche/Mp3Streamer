@@ -4,14 +4,14 @@ import java.net.HttpURLConnection
 
 import backend.Url
 import backend.configs.TestConfiguration
-import backend.external.{DocumentSpecs, BaseLink, FakeHttpURLConnection, Host}
+import backend.external.{BaseLink, DocumentSpecs, FakeHttpURLConnection, Host}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import org.scalatest.FreeSpec
 
 class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
   private implicit val config = TestConfiguration()
-  private def withDocument(s: String) = config.copy(_documentDownloader = getDocument(s).const)
+  private def withDocument(s: String) = config.copy(_inputStreamer = getStream(s).const)
   private val $ = new AllMusicHelper
   "isCanonical" - {
     "yes" in {
@@ -35,28 +35,29 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
       implicit val config = withDocument("allmusic_no_rating.html")
       new AllMusicHelper()
     }
+    val url = Url("http://foobar")
     "hasRating" - {
       "yes" in {
-        helperPointsToValid.hasRating(null).get shouldReturn true
+        helperPointsToValid.hasRating(url).get shouldReturn true
       }
       "no" in {
-        helperPointsToEmpty.hasRating(null).get shouldReturn false
+        helperPointsToEmpty.hasRating(url).get shouldReturn false
       }
     }
     "hasStaffReview" - {
       "yes" in {
-        helperPointsToValid.hasStaffReview(null).get shouldReturn true
+        helperPointsToValid.hasStaffReview(url).get shouldReturn true
       }
       "no" in {
-        helperPointsToEmpty.hasStaffReview(null).get shouldReturn false
+        helperPointsToEmpty.hasStaffReview(url).get shouldReturn false
       }
     }
     "isValid" - {
       "yes" in {
-        helperPointsToValid.isValidLink(null).get shouldReturn true
+        helperPointsToValid.isValidLink(url).get shouldReturn true
       }
       "no" in {
-        helperPointsToEmpty.isValidLink(null).get shouldReturn false
+        helperPointsToEmpty.isValidLink(url).get shouldReturn false
       }
     }
   }
@@ -69,13 +70,16 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
     }
     "rlink" - {
       def withRedirection(source: String, destination: String) = {
-        def redirect(source: String, destination: String)(http: HttpURLConnection) =
-          new FakeHttpURLConnection(http) {
-            assert(http.getURL.toString.equals(source) && !http.getInstanceFollowRedirects)
-            override def getResponseCode: Int = HttpURLConnection.HTTP_MOVED_PERM
-            override def getHeaderField(s: String): String =
-              if (s == "location") destination else throw new AssertionError()
+        def redirect(source: String, destination: String)(http: HttpURLConnection) = new FakeHttpURLConnection(http) {
+          override def getResponseCode: Int = {
+            assert(http.getURL.toString.equals(source) && !getInstanceFollowRedirects)
+            HttpURLConnection.HTTP_MOVED_PERM
           }
+          override def getHeaderField(s: String): String = {
+            assert(http.getURL.toString.equals(source) && !getInstanceFollowRedirects)
+            if (s == "location") destination else throw new AssertionError()
+          }
+        }
         implicit val config = this.config.copy(_httpTransformer = redirect(source, destination))
         new AllMusicHelper
       }

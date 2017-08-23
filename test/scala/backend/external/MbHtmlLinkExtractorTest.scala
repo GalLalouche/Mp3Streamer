@@ -3,15 +3,13 @@ package backend.external
 import backend.Url
 import backend.configs.TestConfiguration
 import backend.recon.{Album, Artist, ReconID}
-import common.AuxSpecs
 import common.rich.RichFuture._
-import common.rich.path.RichFile._
-import org.jsoup.Jsoup
+import common.rich.RichT._
 import org.scalatest.FreeSpec
 
-class MbHtmlLinkExtractorTest extends FreeSpec with AuxSpecs {
+class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
   private def withDocument(name: String) =
-    TestConfiguration().copy(_documentDownloader = _ => Jsoup.parse(getResourceFile(name + ".html").readAll))
+    TestConfiguration().copy(_inputStreamer = getStream(name + ".html").const)
 
   "parse artist links" in {
     implicit val c = withDocument("artist")

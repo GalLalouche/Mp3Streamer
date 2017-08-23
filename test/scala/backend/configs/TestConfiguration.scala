@@ -1,5 +1,6 @@
 package backend.configs
 
+import java.io.InputStream
 import java.net.HttpURLConnection
 
 import backend.Url
@@ -17,22 +18,21 @@ case class TestConfiguration(private val _ec: ExecutionContext = new ExecutionCo
                                override def execute(runnable: Runnable): Unit = runnable.run()
                              },
                              private val _mf: FakeMusicFinder = null,
-                             private val _documentDownloader: Url => Document = _ => ???,
-                             private val _httpTransformer: HttpURLConnection => HttpURLConnection = _ => ???,
+                             private val _inputStreamer: Url => InputStream = _ => ???,
+                             private val _httpTransformer: HttpURLConnection => HttpURLConnection = identity,
                              private val _root: MemoryRoot = new MemoryRoot)
     extends NonPersistentConfig {
   override implicit lazy val db: driver.backend.DatabaseDef =
     driver.api.Database.forURL(s"jdbc:h2:mem:test${System.identityHashCode(this)};DB_CLOSE_DELAY=-1", driver = "org.H2.JDBC")
   override implicit val ec: ExecutionContext = _ec
   override implicit val mf: FakeMusicFinder = _mf.opt.getOrElse(new FakeMusicFinder(_root))
-  override def downloadDocument(url: Url): Future[Document] = Future successful _documentDownloader(url)
-  override def connect(url: Url, config: (HttpURLConnection) => Unit) = Future successful {
-    val $ = new HttpURLConnection(url.toURL) {
+  override def connection(u: Url) = {
+    val $ = new HttpURLConnection(u.toURL) {
       override def disconnect() = ???
       override def usingProxy() = ???
       override def connect() = ???
+      override def getInputStream = _inputStreamer(u)
     }
-    config($)
     _httpTransformer($)
   }
   override implicit val logger: Logger = new StringBuilderLogger(new StringBuilder)
