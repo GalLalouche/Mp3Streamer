@@ -6,7 +6,7 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.time.{Clock, LocalDateTime}
 
 import common.rich.RichT._
-import common.rich.path.{Directory, RichFile, RichPath}
+import common.rich.path.{Directory, RichFile}
 
 private[this] object FileUtils {
   private val currentZone = Clock.systemDefaultZone().getZone
@@ -23,11 +23,10 @@ trait IOSystem extends RefSystem {
 }
 
 abstract class IOPath(f: File) extends PathRef {
-  private lazy val rp = RichPath.richPath(f)
   override type S = IOSystem
   override def path = f.getAbsolutePath
   override def name = f.getName
-  override def parent = IODirectory(rp.parent)
+  override def parent = IODirectory(f.getParent)
 }
 
 /** For production; actual files on the disk */

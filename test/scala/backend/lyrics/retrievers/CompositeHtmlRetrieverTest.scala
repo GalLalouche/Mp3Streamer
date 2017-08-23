@@ -22,8 +22,8 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
       override def doesUrlMatchHost(url: Url) = url == urlToMatch
       override def parse(url: Url, s: Song) =
         Future.successful(Instrumental(instrumentalText))
-            .filter(s.==(songsToFind).const)
-            .filter(url.==(urlToMatch).const)
+            .filter((s == songsToFind).const)
+            .filter((url == urlToMatch).const)
     }
     Mockito.spy(new FakeLyricsRetriever)
   }

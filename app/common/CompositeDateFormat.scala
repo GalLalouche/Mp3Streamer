@@ -6,10 +6,10 @@ import java.util.Date
 
 import backend.RichTime._
 import common.rich.func.MoreMonadPlus._
-import common.rich.func.RichMonadPlus._
+import common.rich.func.ToMoreMonadPlusOps
 
 /** Tries several parsers in a sequence until the first one succeeds. Isn't total. */
-class CompositeDateFormat private(formatters: Seq[DateTimeFormatter]) {
+class CompositeDateFormat private(formatters: Seq[DateTimeFormatter]) extends ToMoreMonadPlusOps {
   require(formatters.nonEmpty)
 
   def parse(source: String): Option[LocalDateTime] = formatters

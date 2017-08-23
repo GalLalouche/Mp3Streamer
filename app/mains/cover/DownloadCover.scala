@@ -7,7 +7,7 @@ import backend.Url
 import backend.configs.StandaloneConfig
 import common.io.{IODirectory, IOFile}
 import common.rich.path.RichFile.richFile
-import common.rich.path.{Directory, RichFile}
+import common.rich.path.{Directory, RichFileUtils}
 import models.Song
 
 import scala.concurrent.duration.Duration
@@ -65,12 +65,12 @@ object DownloadCover {
   private def fileMover(f: FolderImage)(outputDirectory: Directory): Unit = {
     val file = f.file.asInstanceOf[IOFile].file
     if (file.parent == outputDirectory && file.name.toLowerCase == "folder.jpg") {
-      file renameTo "folder.jpg"
+      RichFileUtils.move(file, "folder.jpg")
       return // This can happen if a local file named folder.jpg is chosen.
     }
     val oldFile = outputDirectory \ "folder.jpg"
     if (oldFile.exists)
-      oldFile renameTo "folder.bak.jpg"
+      RichFileUtils.move(oldFile, "folder.bak.jpg")
     f.move(outputDirectory)
     tempFolder.deleteAll()
     assert(tempFolder.exists == false)
