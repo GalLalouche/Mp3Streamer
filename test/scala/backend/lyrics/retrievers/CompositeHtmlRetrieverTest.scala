@@ -57,7 +57,7 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
     }
   }
   "parse" - {
-    "when one of the URLs match" in {
+    "when one of the URLs match it doesn't try to the others" in {
       $.parse(Url("bar"), song2).get shouldReturn Instrumental("bar")
       Mockito.verify(r3, Mockito.never()).parse(Matchers.any(), Matchers.any())
     }
