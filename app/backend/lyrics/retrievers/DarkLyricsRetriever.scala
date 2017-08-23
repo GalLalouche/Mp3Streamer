@@ -9,9 +9,7 @@ import common.rich.RichT._
 import models.Song
 import org.jsoup.nodes.Document
 
-import scala.concurrent.ExecutionContext
-
-private[lyrics] class DarkLyricsRetriever(implicit ec: ExecutionContext, it: InternetTalker) extends SingleHostHtmlRetriever {
+private[lyrics] class DarkLyricsRetriever(implicit it: InternetTalker) extends SingleHostHtmlRetriever {
   override protected val source: String = "DarkLyrics"
   private def isInstrumental(html: String) = html.replaceAll("((<br>)|\\n)", "") == "<i>[Instrumental]</i>"
   private def removeWrappingWhiteSpace(s: String) = s.replaceAll("^\\s+", "").replaceAll("\\s$", "")

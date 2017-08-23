@@ -9,7 +9,7 @@ import slick.driver.JdbcProfile
 
 import scala.concurrent.ExecutionContext
 
-trait Configuration extends ExecutionContext with InternetTalker {
+trait Configuration extends InternetTalker {
   implicit val ec: ExecutionContext
   override def execute(runnable: Runnable): Unit = ec execute runnable
   override def reportFailure(cause: Throwable): Unit = ec reportFailure cause

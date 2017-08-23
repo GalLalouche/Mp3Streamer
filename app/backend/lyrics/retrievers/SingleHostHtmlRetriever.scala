@@ -6,10 +6,9 @@ import common.io.InternetTalker
 import models.Song
 import org.jsoup.nodes.Document
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-private[lyrics] abstract class SingleHostHtmlRetriever
-    (implicit ec: ExecutionContext, it: InternetTalker) extends HtmlRetriever {
+private[lyrics] abstract class SingleHostHtmlRetriever(implicit it: InternetTalker) extends HtmlRetriever {
   // return None if instrumental
   protected def fromHtml(html: Document, s: Song): Option[String]
   protected def getUrl(s: Song): String

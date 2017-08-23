@@ -11,12 +11,13 @@ import org.jsoup.nodes.Document
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Things that talk to the outside world */
-trait InternetTalker {
-  implicit def ec: ExecutionContext
+trait InternetTalker extends ExecutionContext {
+  private implicit val ec: ExecutionContext = this
   def config(c: HttpURLConnection => Unit): InternetTalker = new InternetTalker {
     val that = InternetTalker.this
-    override implicit def ec: ExecutionContext = that.ec
     override protected def connection(url: Url) = that connection url applyAndReturn c
+    override def execute(runnable: Runnable): Unit = that.execute(runnable)
+    override def reportFailure(cause: Throwable): Unit = that.reportFailure(cause)
   }
   def asBrowser: InternetTalker = config(_.setRequestProperty("user-agent",
     """user-agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36"""))

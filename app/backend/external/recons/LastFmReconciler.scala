@@ -1,22 +1,21 @@
 package backend.external.recons
 
 import java.io.InputStream
-import java.net.{HttpURLConnection, URL}
+import java.net.HttpURLConnection
 
 import backend.Url
 import backend.external.{BaseLink, Host}
 import backend.recon.Artist
 import common.io.InternetTalker
-import common.rich.RichT._
 import org.jsoup.Jsoup
 
 import scala.collection.JavaConversions._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
 private class LastFmReconciler(millisBetweenRedirects: Long = 100)
-    (implicit ec: ExecutionContext, it: InternetTalker) extends Reconciler[Artist](Host.LastFm)
+    (implicit it: InternetTalker) extends Reconciler[Artist](Host.LastFm)
     with ToBindOps with FutureInstances {
   private class TempRedirect extends Exception
   private def handleReply(h: HttpURLConnection): Option[BaseLink[Artist]] = h.getResponseCode match {

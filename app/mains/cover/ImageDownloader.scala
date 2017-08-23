@@ -1,9 +1,8 @@
 package mains.cover
 
 import common.io.{DirectoryRef, FileRef, InternetTalker}
-import common.rich.RichFuture._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /**
   * Downloads images and saves them to a directory. Tries several different unicode encodings. Why an image needs
@@ -12,9 +11,8 @@ import scala.concurrent.{ExecutionContext, Future}
   * @param outputDirectory The directory to save images to
   * @param downloader      Used to download the images
   */
-private class ImageDownloader(outputDirectory: DirectoryRef)(implicit ec: ExecutionContext, it: InternetTalker)
+private class ImageDownloader(outputDirectory: DirectoryRef)(implicit it: InternetTalker)
     extends (ImageSource => Future[FolderImage]) {
-  private val unicodes = List("ISO-8859-1", "Cp1252", "UTF-8", "UTF-16")
   private def toFile(bytes: Array[Byte]): FileRef =
     outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
 

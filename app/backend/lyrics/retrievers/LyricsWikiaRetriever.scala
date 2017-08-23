@@ -10,9 +10,7 @@ import common.rich.RichT._
 import models.Song
 import org.jsoup.nodes.Document
 
-import scala.concurrent.ExecutionContext
-
-private[lyrics] class LyricsWikiaRetriever(implicit ec: ExecutionContext, it: InternetTalker) extends SingleHostHtmlRetriever {
+private[lyrics] class LyricsWikiaRetriever(implicit it: InternetTalker) extends SingleHostHtmlRetriever {
   override val source = "LyricsWikia"
   override def fromHtml(html: Document, s: Song) = html
       .select(".lyricbox")

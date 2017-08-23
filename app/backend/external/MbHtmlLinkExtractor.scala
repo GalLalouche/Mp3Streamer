@@ -7,9 +7,9 @@ import common.rich.RichT._
 import org.jsoup.nodes.{Document, Element}
 
 import scala.collection.JavaConversions._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String)(implicit ec: ExecutionContext, it: InternetTalker)
+private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String)(implicit it: InternetTalker)
     extends ExternalLinkProvider[T] {
   private def getMbUrl(reconId: ReconID): Url = Url(s"https://musicbrainz.org/$metadataType/${reconId.id}")
   private def extractLink(e: Element): BaseLink[T] = {
@@ -32,6 +32,6 @@ private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String
   }
 }
 
-private class ArtistLinkExtractor(implicit ec: ExecutionContext, it: InternetTalker) extends MbHtmlLinkExtractor[Artist]("artist")
-private class AlbumLinkExtractor(implicit ec: ExecutionContext, it: InternetTalker) extends MbHtmlLinkExtractor[Album]("release-group")
+private class ArtistLinkExtractor(implicit it: InternetTalker) extends MbHtmlLinkExtractor[Artist]("artist")
+private class AlbumLinkExtractor(implicit it: InternetTalker) extends MbHtmlLinkExtractor[Album]("release-group")
 

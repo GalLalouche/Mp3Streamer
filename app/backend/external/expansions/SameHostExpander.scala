@@ -7,10 +7,10 @@ import backend.recon.{Album, Artist}
 import common.io.InternetTalker
 import org.jsoup.nodes.Document
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums */
-private abstract class SameHostExpander(val host: Host)(implicit ec: ExecutionContext, it: InternetTalker)
+private abstract class SameHostExpander(val host: Host)(implicit it: InternetTalker)
     extends ((BaseLink[Artist], Album) => Future[Option[BaseLink[Album]]]) {
   protected def findAlbum(d: Document, a: Album): Option[Url]
 

@@ -4,13 +4,12 @@ import backend.Url
 import backend.external.Host
 import backend.recon.{Album, StringReconScorer}
 import common.io.InternetTalker
-import scala.collection.JavaConversions._
+import common.rich.RichT._
 import org.jsoup.nodes.Document
 
-import scala.concurrent.ExecutionContext
-import common.rich.RichT._
+import scala.collection.JavaConversions._
 
-private class WikipediaAlbumFinder(implicit ec: ExecutionContext, it: InternetTalker) extends SameHostExpander(Host.Wikipedia) {
+private class WikipediaAlbumFinder(implicit it: InternetTalker) extends SameHostExpander(Host.Wikipedia) {
   override def findAlbum(d: Document, a: Album): Option[Url] = {
     def score(linkName: String): Double = StringReconScorer(a.title, linkName)
     d.select("a")

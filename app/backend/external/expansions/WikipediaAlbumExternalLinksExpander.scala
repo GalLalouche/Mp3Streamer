@@ -12,11 +12,11 @@ import common.rich.func.MoreTraverse._
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConversions._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.{ToMonadOps, ToTraverseOps}
 
-private class WikipediaAlbumExternalLinksExpander(implicit ec: ExecutionContext, it: InternetTalker)
+private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
     extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic))
         with FutureInstances with ToMonadOps with ToTraverseOps {
   protected val allMusicHelper = new AllMusicHelper
