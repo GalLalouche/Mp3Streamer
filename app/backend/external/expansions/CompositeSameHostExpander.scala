@@ -5,16 +5,15 @@ import backend.external.recons.Reconciler
 import backend.recon.{Album, Artist}
 import common.io.InternetTalker
 import common.rich.collections.RichTraversableOnce._
-import common.rich.func.MoreTraverse._
+import common.rich.func.{MoreFutureInstances, MoreTraversableInstances}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scalaz.std.FutureInstances
 import scalaz.syntax.ToTraverseOps
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums */
 private[external] class CompositeSameHostExpander private(cb: HostMap[SameHostExpander])(implicit ec: ExecutionContext)
     extends ((BaseLinks[Artist], Album) => Future[BaseLinks[Album]])
-        with FutureInstances with ToTraverseOps {
+        with MoreFutureInstances with ToTraverseOps with MoreTraversableInstances {
   def this(expanders: SameHostExpander*)(implicit ec: ExecutionContext) = this(expanders.mapBy(_.host))
 
   def apply(e: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] =

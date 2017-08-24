@@ -11,17 +11,17 @@ import common.io.IODirectory
 import common.rich.RichFuture
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.func.MoreTraverse._
+import common.rich.func.{MoreFutureInstances, MoreSeqInstances}
 import models.{IOMusicFinder, Song}
 import rx.lang.scala.Observable
 
 import scala.concurrent.Future
-import scalaz.std.{FutureInstances, ListInstances}
+import scalaz.std.ListInstances
 import scalaz.syntax.ToTraverseOps
 
 private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReconStorage: AlbumReconStorage)(
     implicit c: Configuration, mf: IOMusicFinder)
-    extends FutureInstances with ToTraverseOps with ListInstances {
+    extends ToTraverseOps with ListInstances with MoreFutureInstances with MoreSeqInstances {
   private val log = c.logger.verbose _
   private val meta = new MbArtistReconciler
   private def getExistingAlbums: Seq[Album] = mf.genreDirs

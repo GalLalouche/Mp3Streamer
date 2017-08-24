@@ -7,10 +7,9 @@ import backend.recon.{ReconID, Reconcilable}
 import common.rich.RichT._
 import common.rich.collections.RichSet._
 import common.rich.collections.RichTraversableOnce._
+import common.rich.func.{MoreFutureInstances, MoreTraversableInstances}
 
 import scala.concurrent.{ExecutionContext, Future}
-import common.rich.func.MoreTraverse._
-import scalaz.std.FutureInstances
 import scalaz.syntax.ToTraverseOps
 
 /**
@@ -27,7 +26,7 @@ private class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
                                               expanders: Traversable[ExternalLinkExpander[R]],
                                               additionalReconcilers: Traversable[Reconciler[R]])
                                              (implicit ec: ExecutionContext) extends Retriever[R, MarkedLinks[R]]
-    with ToTraverseOps with FutureInstances {
+    with ToTraverseOps with MoreFutureInstances with MoreTraversableInstances {
   private def filterLinksWithNewHosts(existingLinks: BaseLinks[R], newLinks: BaseLinks[R]): BaseLinks[R] = {
     val map = existingLinks.map(_.host).toSet
     newLinks.filterNot(map contains _.host)
