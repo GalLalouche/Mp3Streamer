@@ -44,10 +44,10 @@ GET        /ws/console                   controllers.websockets.ConsoleSocket.ac
 GET        /ws/refresh                   controllers.Cacher.accept
 
 # Playlist
-GET         /playlist/queue                 controllers.Playlist.getQueue
-POST        /playlist/queue                 controllers.Playlist.setQueue()
-GET         /playlist/state                 controllers.Playlist.getState
-POST        /playlist/state                 controllers.Playlist.setState()
+GET         /playlist/queue                 playlist.PlaylistController.getQueue
+POST        /playlist/queue                 playlist.PlaylistController.setQueue()
+GET         /playlist/state                 playlist.PlaylistController.getState
+POST        /playlist/state                 playlist.PlaylistController.setState()
 
 # Debug
 GET        /debug/slow_refresh              controllers.Cacher.forceRefresh()

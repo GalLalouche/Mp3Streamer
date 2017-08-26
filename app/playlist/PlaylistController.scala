@@ -1,18 +1,18 @@
-package controllers
+package playlist
 
 import common.RichJson._
 import common.io.JsonableSaver
 import common.rich.RichT._
+import controllers.Utils
 import models.Song
 import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.mvc.{Action, Controller}
 import playlist.PlaylistQueue._
 import playlist.PlaylistState.PlaylistStateJsonable
-import playlist.{PlaylistQueue, PlaylistState}
 
 import scala.concurrent.duration.DurationInt
 
-object Playlist extends Controller {
+object PlaylistController extends Controller {
   private val saver = new JsonableSaver()(Utils.config.rootDirectory) // since implicit importing is auto-removed
 
   private def arrayOfPathsToSong(a: JsArray): Seq[Song] = a.value.map(_.as[String]).map(Utils.parseSong)
@@ -35,7 +35,7 @@ object Playlist extends Controller {
   def getState = Action {
     Ok(saver.loadObject[PlaylistState] |> toJson)
   }
-  def setState() = Action { request =>
+  def setState() = Action {request =>
     val json = request.body.asJson.get
     val songs = json array "songs" mapTo arrayOfPathsToSong
     val duration: Double = json double "duration"

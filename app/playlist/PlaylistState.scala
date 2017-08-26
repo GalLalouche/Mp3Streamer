@@ -7,12 +7,12 @@ import models.Song
 
 import scala.concurrent.duration.Duration
 
-case class PlaylistState(songs: Seq[Song], currentIndex: Int, currentDuration: Duration) {
+private case class PlaylistState(songs: Seq[Song], currentIndex: Int, currentDuration: Duration) {
   require(currentIndex < songs.length && currentIndex >= 0, s"currentIndex <$currentIndex> out of range (0-${songs.length})")
   require(currentDuration != null)
 }
 
-object PlaylistState extends Jsonable.ToJsonableOps {
+private object PlaylistState extends Jsonable.ToJsonableOps {
   import common.Jsonable
   import common.RichJson._
   import play.api.libs.json.{JsObject, Json}

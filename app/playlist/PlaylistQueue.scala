@@ -3,9 +3,9 @@ package playlist
 import common.Jsonable
 import models.Song
 
-case class PlaylistQueue(songs: Seq[Song])
+private case class PlaylistQueue(songs: Seq[Song])
 
-object PlaylistQueue extends Jsonable.ToJsonableOps {
+private object PlaylistQueue extends Jsonable.ToJsonableOps {
   import common.Jsonable
   import common.RichJson._
   import common.rich.RichT._
