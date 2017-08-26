@@ -44,26 +44,26 @@ GET        /ws/console                   controllers.websockets.ConsoleSocket.ac
 GET        /ws/refresh                   controllers.Cacher.accept
 
 # Playlist
-GET         /playlist/queue              controllers.Playlist.getQueue
-POST        /playlist/queue              controllers.Playlist.setQueue()
-GET         /playlist/state              controllers.Playlist.getState
-POST        /playlist/state              controllers.Playlist.setState()
+GET         /playlist/queue                 controllers.Playlist.getQueue
+POST        /playlist/queue                 controllers.Playlist.setQueue()
+GET         /playlist/state                 controllers.Playlist.getState
+POST        /playlist/state                 controllers.Playlist.setState()
 
 # Debug
-GET        /debug/slow_refresh           controllers.Cacher.forceRefresh()
-GET        /debug/fast_refresh           controllers.Cacher.quickRefresh()
+GET        /debug/slow_refresh              controllers.Cacher.forceRefresh()
+GET        /debug/fast_refresh              controllers.Cacher.quickRefresh()
 
 # Albums
-GET        /new_albums/index.html        controllers.NewAlbums.index
-GET        /new_albums/albums/           controllers.NewAlbums.albums
-PUT        /new_albums/artist/remove     controllers.NewAlbums.removeArtist
-PUT        /new_albums/artist/ignore     controllers.NewAlbums.ignoreArtist
-PUT        /new_albums/album/remove      controllers.NewAlbums.removeAlbum
-PUT        /new_albums/album/ignore      controllers.NewAlbums.ignoreAlbum
+GET        /new_albums/index.html           backend.albums.AlbumsController.index
+GET        /new_albums/albums/              backend.albums.AlbumsController.albums
+PUT        /new_albums/artist/remove        backend.albums.AlbumsController.removeArtist
+PUT        /new_albums/artist/ignore        backend.albums.AlbumsController.ignoreArtist
+PUT        /new_albums/album/remove         backend.albums.AlbumsController.removeAlbum
+PUT        /new_albums/album/ignore         backend.albums.AlbumsController.ignoreAlbum
 
 # Recent
-GET        /recent/albums/               controllers.Recent.recent(amount: Int = 10)
-GET        /recent/albums/:amount        controllers.Recent.recent(amount: Int)
-GET        /recent/last                  controllers.Recent.last
-GET        /ws/last_album                controllers.Recent.accept
+GET        /recent/albums/                  controllers.Recent.recent(amount: Int = 10)
+GET        /recent/albums/:amount           controllers.Recent.recent(amount: Int)
+GET        /recent/last                     controllers.Recent.last
+GET        /ws/last_album                   controllers.Recent.accept
 

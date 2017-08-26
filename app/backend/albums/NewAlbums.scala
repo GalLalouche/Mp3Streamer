@@ -17,7 +17,7 @@ import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
-class NewAlbums(implicit c: Configuration)
+private class NewAlbums(implicit c: Configuration)
     extends ToBindOps with FutureInstances with MapOptics with ApplySyntax with IndexFunctions {
   import NewAlbum.NewAlbumJsonable
   private val logger = c.logger

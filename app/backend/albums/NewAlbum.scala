@@ -1,6 +1,5 @@
 package backend.albums
 
-import backend.albums.NewAlbum.AlbumType.AlbumType
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.{Album, Artist}
 import common.Jsonable
@@ -8,8 +7,9 @@ import common.RichJson._
 import monocle.macros.Lenses
 import play.api.libs.json.{JsObject, Json}
 
+// Has to be public in order to use @Lenses
 @Lenses
-case class NewAlbum(title: String, year: Int, artist: Artist, albumType: AlbumType) {
+case class NewAlbum(title: String, year: Int, artist: Artist, albumType: NewAlbum.AlbumType.AlbumType) {
   def toAlbum: Album = Album(title = title, year = year, artist = artist)
 }
 

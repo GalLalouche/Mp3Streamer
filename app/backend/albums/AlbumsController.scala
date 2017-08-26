@@ -1,19 +1,19 @@
-package controllers
+package backend.albums
 
-import backend.albums.{NewAlbum, NewAlbums}
 import backend.recon._
 import common.Debug
 import common.RichJson._
 import common.rich.RichT._
+import controllers.Utils
 import play.api.libs.json._
-import play.api.mvc._
+import play.api.mvc.{Action, AnyContent, Controller, Request}
 
 import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
 /** A web interface to new albums finder. Displays new albums and can update the current file / ignoring policy. */
-object NewAlbums extends Controller with Debug
+object AlbumsController extends Controller with Debug
     with FutureInstances with ToFunctorOps {
   import Utils.config
   private val $ = new NewAlbums()
