@@ -1,9 +1,9 @@
-package search
+package backend.search
 
 import common.Jsonable
 import common.io.{DirectoryRef, JsonableSaver}
 import models.{Album, Artist, Song}
-import search.ModelJsonable._
+import ModelJsonable._
 
 /** Index for songs, albums and artists. */
 // TODO HLists ;)

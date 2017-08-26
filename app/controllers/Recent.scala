@@ -7,7 +7,7 @@ import common.io.DirectoryRef
 import controllers.websockets.WebSocketController
 import models.Album
 import play.api.mvc.Action
-import search.ModelJsonable.AlbumJsonifier
+import backend.search.ModelJsonable.AlbumJsonifier
 
 import scala.concurrent.Future
 

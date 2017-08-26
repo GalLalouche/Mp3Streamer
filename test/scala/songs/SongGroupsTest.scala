@@ -1,11 +1,9 @@
 package songs
 
 import backend.configs.TestConfiguration
+import backend.search.{FakeModelFactory, FakeModelJsonable}
 import common.AuxSpecs
 import org.scalatest.FreeSpec
-import search.FakeModelFactory
-
-import scala.search.FakeModelJsonable
 
 class SongGroupsTest extends FreeSpec with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory

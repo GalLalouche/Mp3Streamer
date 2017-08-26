@@ -1,10 +1,8 @@
 package playlist
 
+import backend.search.{FakeModelFactory, FakeModelJsonable}
 import common.{AuxSpecs, Jsonable}
 import org.scalatest.FreeSpec
-import search.FakeModelFactory
-
-import scala.search.FakeModelJsonable
 
 class PlaylistQueueTest extends FreeSpec with AuxSpecs with Jsonable.ToJsonableOps {
   private val fakeModelFactory = new FakeModelFactory

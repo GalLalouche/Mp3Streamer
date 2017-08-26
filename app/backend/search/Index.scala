@@ -1,4 +1,4 @@
-package search
+package backend.search
 
 private trait Index[T] {
   def find(s: String): Seq[T] = findIntersection(List(s))

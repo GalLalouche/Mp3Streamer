@@ -1,4 +1,4 @@
-package search
+package backend.search
 
 import java.io.File
 

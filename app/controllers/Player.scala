@@ -7,7 +7,7 @@ import common.rich.primitives.RichEither._
 import models._
 import play.api.libs.json.{JsArray, JsValue}
 import play.api.mvc._
-import search.ModelJsonable._
+import backend.search.ModelJsonable._
 import songs.{SongGroup, SongGroups, SongSelector}
 
 /** Handles fetch requests of JSON information, and listens to directory changes. */

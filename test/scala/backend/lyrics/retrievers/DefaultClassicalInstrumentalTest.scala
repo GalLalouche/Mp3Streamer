@@ -6,7 +6,7 @@ import common.io.{MemoryDir, MemoryRoot}
 import common.rich.RichFuture._
 import models.Song
 import org.scalatest.{FreeSpec, ShouldMatchers}
-import search.FakeModelFactory
+import backend.search.FakeModelFactory
 
 class DefaultClassicalInstrumentalTest extends FreeSpec with ShouldMatchers {
   private val fakeModelFactory = new FakeModelFactory

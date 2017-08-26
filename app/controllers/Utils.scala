@@ -8,7 +8,7 @@ import backend.logging._
 import common.rich.path.RichFile._
 import models.{IOSong, Poster, Song}
 import play.api.libs.json.{JsObject, JsString}
-import search.ModelJsonable
+import backend.search.ModelJsonable
 
 import scala.concurrent.ExecutionContext
 

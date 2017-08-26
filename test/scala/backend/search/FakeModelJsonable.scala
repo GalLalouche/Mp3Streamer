@@ -1,4 +1,4 @@
-package scala.search
+package backend.search
 import java.util.concurrent.atomic.AtomicInteger
 
 import common.Jsonable

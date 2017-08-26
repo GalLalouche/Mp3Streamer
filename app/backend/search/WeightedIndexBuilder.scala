@@ -1,4 +1,4 @@
-package search
+package backend.search
 
 import common.ds.Trie
 import common.rich.RichT._

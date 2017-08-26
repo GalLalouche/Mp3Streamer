@@ -5,8 +5,8 @@ import controllers.websockets.WebSocketController
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Action
 import rx.lang.scala.Observable
-import search.MetadataCacher
-import search.MetadataCacher.IndexUpdate
+import backend.search.{MetadataCacher, SearchController}
+import backend.search.MetadataCacher.IndexUpdate
 
 /** Used for running manual commands from the client side. */
 object Cacher extends WebSocketController {
@@ -15,7 +15,7 @@ object Cacher extends WebSocketController {
     "total" -> u.totalNumber,
     "currentDir" -> u.dir.name)
   implicit val c = Utils.config
-  import search.ModelJsonable._
+  import backend.search.ModelJsonable._
   private val cacher = MetadataCacher.create
   private def toRefreshStatus(o: Observable[IndexUpdate], updateRecent: Boolean) = {
     if (updateRecent)
@@ -25,7 +25,7 @@ object Cacher extends WebSocketController {
         .doOnCompleted {
           Player.update()
           broadcast("Reloading searcher")
-          Searcher.!() foreach broadcast("Finished").const
+          SearchController.!() foreach broadcast("Finished").const
         }.subscribe()
     Ok(views.html.refresh())
   }

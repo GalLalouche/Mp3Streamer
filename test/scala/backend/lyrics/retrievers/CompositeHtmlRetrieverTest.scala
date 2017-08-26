@@ -10,7 +10,7 @@ import models.Song
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest}
-import search.FakeModelFactory
+import backend.search.FakeModelFactory
 
 import scala.concurrent.Future
 

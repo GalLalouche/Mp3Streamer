@@ -1,8 +1,9 @@
-package search
+package backend.search
 
 import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
 import backend.configs.{FakeMusicFinder, TestConfiguration}
+import backend.search.MetadataCacher.IndexUpdate
 import common.io.{JsonableSaver, MemoryRoot}
 import common.rich.RichFuture._
 import common.{AuxSpecs, Jsonable}
@@ -10,10 +11,8 @@ import models.{Album, Artist, Song}
 import org.scalatest.matchers.{MatchResult, Matcher}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import rx.lang.scala.Observable
-import search.MetadataCacher.IndexUpdate
 
 import scala.concurrent.{Await, Promise}
-import scala.search.FakeModelJsonable
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory
