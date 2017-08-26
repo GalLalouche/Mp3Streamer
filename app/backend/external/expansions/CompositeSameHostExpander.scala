@@ -8,6 +8,7 @@ import common.rich.collections.RichTraversableOnce._
 import common.rich.func.{MoreFutureInstances, MoreTraversableInstances}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scalaz.Traverse
 import scalaz.syntax.ToTraverseOps
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums */
@@ -21,8 +22,8 @@ private[external] class CompositeSameHostExpander private(cb: HostMap[SameHostEx
         .map(_.apply(e, a))
         .getOrElse(Future successful None)
 
-  override def apply(v1: BaseLinks[Artist], a: Album): Future[BaseLinks[Album]] =
-    v1.toTraversable.traverse(apply(_, a)) map (_.flatten)
+  override def apply(links: BaseLinks[Artist], a: Album): Future[BaseLinks[Album]] =
+    Traverse[Traversable].traverse(links)(apply(_, a)).map(_.flatten)
   def toReconcilers(ls: BaseLinks[Artist]): Traversable[Reconciler[Album]] = {
     val availableHosts = ls.toMultiMap(_.host).mapValues(_.head)
     cb.flatMap(e => availableHosts.get(e._1).map(e._2.toReconciler))

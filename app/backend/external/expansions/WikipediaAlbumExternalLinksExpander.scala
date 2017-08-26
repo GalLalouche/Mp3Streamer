@@ -2,28 +2,21 @@ package backend.external.expansions
 
 import backend.Url
 import backend.configs.CleanConfiguration
-import backend.external.Host.AllMusic
 import backend.external._
 import backend.recon.Album
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.func.{MoreFutureInstances, MoreTraversableInstances}
+import common.rich.func.{MoreFutureInstances, MoreTraversableInstances, ToTraverseMonadPlusOps}
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConversions._
-import scala.concurrent.Future
-import scalaz.syntax.{ToMonadOps, ToTraverseOps}
+import scalaz.Traverse
 
 private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
     extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic))
-        with MoreFutureInstances with MoreTraversableInstances with ToMonadOps with ToTraverseOps {
+        with MoreFutureInstances with MoreTraversableInstances with ToTraverseMonadPlusOps {
   protected val allMusicHelper = new AllMusicHelper
-  def canonize(e: BaseLink[Album]): Future[BaseLink[Album]] =
-    if (e.host == AllMusic)
-      allMusicHelper.canonize(e)
-    else
-      Future successful e
 
   // semi-canonical = guaranteed to start with http://www.allmusic.com/album
   private def extractSemiCanonicalAllMusicLink(s: String): Option[String] = Option(s)
@@ -49,13 +42,10 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
   override def parseDocument(d: Document): BaseLinks[Album] =
     extractAllMusicLink(d).map(BaseLink[Album](_, Host.AllMusic))
 
-  // TODO move this to somewhere more common
-  private def filterFutures[T](fs: Traversable[T], p: T => Future[Boolean]): Future[Traversable[T]] =
-    fs.traverse(e => p(e).map(e -> _)).map(_.filter(_._2).map(_._1))
   override def apply(e: BaseLink[Album]) = super.apply(e)
-      // explicitly changing Links to Traversable is needed for some reason
-      .flatMap(_.toTraversable.traverse(allMusicHelper.canonize))
-      .flatMap(links => filterFutures[BaseLink[Album]](links, link => allMusicHelper.isValidLink(link.link)))
+      // Compiler won't pick up type definitions, so explicitly naming Traverse is necessary
+      .flatMap(Traverse[Traversable].traverse(_)(allMusicHelper.canonize))
+      .flatMap(_.filterTraverse(link => allMusicHelper isValidLink link.link))
       .orElse(Nil)
 }
 
