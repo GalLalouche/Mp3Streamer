@@ -1,13 +1,14 @@
-package controllers
+package backend.lyrics
 
 import backend.Url
-import backend.lyrics.{Instrumental, Lyrics, LyricsCache}
+import backend.configs.Configuration
 import common.rich.RichFuture._
 import common.rich.RichT._
+import controllers.Utils
 import play.api.mvc.{Action, Controller, Result}
 
-object Lyrics extends Controller {
-  import Utils.config
+object LyricsController extends Controller {
+  private implicit val c: Configuration = Utils.config
 
   private val backend = new LyricsCache
   // TODO replace with Writable typeclass?
@@ -18,7 +19,7 @@ object Lyrics extends Controller {
         .orElse("Failed to get lyrics :(")
         .map(Ok(_))
   }
-  def push(path: String) = Action.async { request =>
+  def push(path: String) = Action.async {request =>
     val song = Utils.parseSong(path)
     val url = request.body.asText.map(Url).get
     backend.parse(url, song)

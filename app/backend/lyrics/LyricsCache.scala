@@ -11,7 +11,7 @@ import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
-class LyricsCache(implicit c: Configuration)
+private class LyricsCache(implicit c: Configuration)
     extends FutureInstances with ToFunctorOps {
   private val defaultArtistInstrumental = new InstrumentalArtist
   private val firstDefaultRetrievers = DefaultClassicalInstrumental

@@ -1,7 +1,6 @@
 package controllers
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 import backend.external.extensions.{ExtendedLink, LinkExtension, SearchExtension}
 import backend.external.{Host, MbExternalLinksProvider, TimestampedExtendedLinks}
