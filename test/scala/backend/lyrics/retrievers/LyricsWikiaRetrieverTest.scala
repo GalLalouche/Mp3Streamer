@@ -1,6 +1,6 @@
 package backend.lyrics.retrievers
 
-import backend.search.FakeModelFactory
+import models.FakeModelFactory
 
 class LyricsWikiaRetrieverTest extends LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory

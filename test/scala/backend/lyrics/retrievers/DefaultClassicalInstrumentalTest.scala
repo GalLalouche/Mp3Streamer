@@ -4,9 +4,8 @@ import backend.configs.TestConfiguration
 import backend.lyrics.Instrumental
 import common.io.{MemoryDir, MemoryRoot}
 import common.rich.RichFuture._
-import models.Song
+import models.{FakeModelFactory, Song}
 import org.scalatest.{FreeSpec, ShouldMatchers}
-import backend.search.FakeModelFactory
 
 class DefaultClassicalInstrumentalTest extends FreeSpec with ShouldMatchers {
   private val fakeModelFactory = new FakeModelFactory

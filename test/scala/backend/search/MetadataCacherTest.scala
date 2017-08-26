@@ -7,7 +7,7 @@ import backend.search.MetadataCacher.IndexUpdate
 import common.io.{JsonableSaver, MemoryRoot}
 import common.rich.RichFuture._
 import common.{AuxSpecs, Jsonable}
-import models.{Album, Artist, Song}
+import models.{Album, Artist, FakeModelFactory, FakeModelJsonable, Song}
 import org.scalatest.matchers.{MatchResult, Matcher}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import rx.lang.scala.Observable

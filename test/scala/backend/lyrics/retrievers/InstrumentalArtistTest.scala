@@ -4,8 +4,8 @@ import backend.configs.TestConfiguration
 import backend.lyrics.Instrumental
 import common.AuxSpecs
 import common.rich.RichFuture._
+import models.FakeModelFactory
 import org.scalatest.{BeforeAndAfter, FreeSpec}
-import backend.search.FakeModelFactory
 
 class InstrumentalArtistTest extends FreeSpec with AuxSpecs with BeforeAndAfter {
   private implicit val c = TestConfiguration()

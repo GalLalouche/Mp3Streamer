@@ -1,9 +1,8 @@
 package songs
 
 import backend.configs.{FakeMusicFinder, TestConfiguration}
-import backend.search.FakeModelFactory
 import common.AuxSpecs
-import models.MemorySong
+import models.{FakeModelFactory, MemorySong}
 import org.scalacheck.Arbitrary._
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}

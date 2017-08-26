@@ -1,4 +1,5 @@
-package backend.search
+package models
+
 import java.util.concurrent.atomic.AtomicInteger
 
 import common.Jsonable

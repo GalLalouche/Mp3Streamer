@@ -6,11 +6,10 @@ import backend.lyrics.Instrumental
 import common.AuxSpecs
 import common.rich.RichFuture._
 import common.rich.RichT._
-import models.Song
+import models.{FakeModelFactory, Song}
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest}
-import backend.search.FakeModelFactory
 
 import scala.concurrent.Future
 

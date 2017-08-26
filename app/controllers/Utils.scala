@@ -6,9 +6,8 @@ import java.net.{URLDecoder, URLEncoder}
 import backend.configs.RealConfig
 import backend.logging._
 import common.rich.path.RichFile._
-import models.{IOSong, Poster, Song}
+import models.{IOSong, ModelJsonable, Poster, Song}
 import play.api.libs.json.{JsObject, JsString}
-import backend.search.ModelJsonable
 
 import scala.concurrent.ExecutionContext
 

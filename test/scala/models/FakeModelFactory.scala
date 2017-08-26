@@ -1,11 +1,10 @@
-package backend.search
+package models
 
 import java.util.UUID
 
 import common.io.MemoryRoot
-import models._
-import org.scalacheck.{Arbitrary, Gen}
-import Arbitrary.arbitrary
+import org.scalacheck.Arbitrary
+import org.scalacheck.Arbitrary.arbitrary
 
 class FakeModelFactory {
   private val root = new MemoryRoot

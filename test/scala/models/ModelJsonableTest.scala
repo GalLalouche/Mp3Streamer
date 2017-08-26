@@ -1,11 +1,10 @@
-package backend.search
+package models
 
 import java.io.File
 
-import backend.search.ModelJsonable._
 import common.io.{IODirectory, IOFile}
 import common.{AuxSpecs, Jsonable}
-import models.{Album, Artist, IOSong, Song}
+import models.ModelJsonable._
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.PropSpec

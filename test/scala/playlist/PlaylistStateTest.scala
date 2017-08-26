@@ -1,7 +1,7 @@
 package playlist
 
-import backend.search.{FakeModelFactory, FakeModelJsonable}
 import common.{AuxSpecs, Jsonable}
+import models.{FakeModelFactory, FakeModelJsonable}
 import org.scalatest.FreeSpec
 
 import scala.concurrent.duration.DurationInt

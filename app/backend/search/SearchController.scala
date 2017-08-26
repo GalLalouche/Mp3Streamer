@@ -3,11 +3,11 @@ package backend.search
 import java.net.URLDecoder
 
 import backend.configs.Configuration
-import backend.search.ModelJsonable.{ArtistJsonifier, SongJsonifier}
+import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
 import common.Jsonable
 import common.concurrency.Extra
 import controllers.Utils
-import models.Album
+import models.{Album, ModelJsonable}
 import play.api.Logger
 import play.api.libs.json.{JsArray, JsObject, JsString, Json}
 import play.api.mvc.{Action, Controller}

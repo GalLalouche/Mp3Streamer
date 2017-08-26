@@ -1,8 +1,8 @@
 package songs
 
 import backend.configs.TestConfiguration
-import backend.search.{FakeModelFactory, FakeModelJsonable}
 import common.AuxSpecs
+import models.{FakeModelFactory, FakeModelJsonable}
 import org.scalatest.FreeSpec
 
 class SongGroupsTest extends FreeSpec with AuxSpecs {

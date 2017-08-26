@@ -1,6 +1,6 @@
 package backend.lyrics.retrievers
 
-import backend.search.FakeModelFactory
+import models.FakeModelFactory
 
 class DarkLyricsRetrieverTest extends LyricsSpec {
   private val $ = new DarkLyricsRetriever

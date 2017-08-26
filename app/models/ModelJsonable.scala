@@ -1,11 +1,10 @@
-package backend.search
+package models
 
 import java.io.File
 
 import common.Jsonable
 import common.RichJson._
 import common.io.{IODirectory, IOFile}
-import models.{Album, Artist, IOSong, Song}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsObject, Json}
 
