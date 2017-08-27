@@ -3,7 +3,7 @@ package backend.external
 import java.time.Duration
 
 import backend.Retriever
-import backend.configs.{CleanConfiguration, Configuration, StandaloneConfig}
+import backend.configs.Configuration
 import backend.external.expansions.{CompositeSameHostExpander, ExternalLinkExpander, LinkExpanders}
 import backend.external.extensions._
 import backend.external.recons.{Reconciler, Reconcilers}
@@ -19,7 +19,7 @@ import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.{ToBindOps, ToFunctorOps}
 
-class MbExternalLinksProvider(implicit c: Configuration)
+private class MbExternalLinksProvider(implicit c: Configuration)
     extends FutureInstances with ToFunctorOps with ToBindOps {
   private class TimeStamper[R <: Reconcilable](foo: RefreshableStorage[R, MarkedLinks[R]])
       extends Retriever[R, TimestampedLinks[R]] {

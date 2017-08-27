@@ -1,14 +1,14 @@
-package controllers
+package backend.external
 
 import java.time.LocalDateTime
 
 import backend.external.extensions.{ExtendedLink, LinkExtension, SearchExtension}
-import backend.external.{Host, MbExternalLinksProvider, TimestampedExtendedLinks}
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon._
 import common.RichJson._
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
+import controllers.Utils
 import models.Song
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc.{Action, Controller, Result}
@@ -17,7 +17,7 @@ import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
-object External extends Controller
+object ExternalController extends Controller
     with FutureInstances with ToBindOps {
   import Utils.config
   private type KVPair = (String, play.api.libs.json.Json.JsValueWrapper)

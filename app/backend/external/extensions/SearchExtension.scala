@@ -6,7 +6,7 @@ import backend.recon.Reconcilable
 import common.rich.RichT._
 import common.rich.collections.RichSet._
 
-object SearchExtension {
+private[external] object SearchExtension {
   def apply[R <: Reconcilable](h: Host, r: R): ExtendedLink[R] =
     ExtendedLink(Url("javascript:void(0)"), Host.name.modify(_ + "?")(h), isNew = false,
       List(LinkExtension("Google",

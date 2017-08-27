@@ -28,8 +28,8 @@ POST       /lyrics/push/*path                    backend.lyrics.LyricsController
 POST       /lyrics/instrumental/song/*path       backend.lyrics.LyricsController.setInstrumentalSong(path)
 POST       /lyrics/instrumental/artist/*path     backend.lyrics.LyricsController.setInstrumentalArtist(path)
 # External
-GET        /external/*path               controllers.External.get(path)
-POST       /external/recons/*path        controllers.External.updateRecon(path)
+GET        /external/*path               backend.external.ExternalController.get(path)
+POST       /external/recons/*path        backend.external.ExternalController.updateRecon(path)
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file                 controllers.Assets.at(path="/public", file)
