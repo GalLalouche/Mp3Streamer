@@ -41,7 +41,7 @@ GET        /search/*path                 backend.search.SearchController.search(
 
 # Web sockets
 GET        /ws/console                   controllers.websockets.ConsoleSocket.accept
-GET        /ws/refresh                   controllers.Cacher.accept
+GET        /ws/refresh                   backend.search.CacherController.accept
 
 # Playlist
 GET         /playlist/queue              playlist.PlaylistController.getQueue
@@ -50,8 +50,8 @@ GET         /playlist/state              playlist.PlaylistController.getState
 POST        /playlist/state              playlist.PlaylistController.setState()
 
 # Debug
-GET        /debug/slow_refresh           controllers.Cacher.forceRefresh()
-GET        /debug/fast_refresh           controllers.Cacher.quickRefresh()
+GET        /debug/slow_refresh           backend.search.CacherController.forceRefresh()
+GET        /debug/fast_refresh           backend.search.CacherController.quickRefresh()
 
 # Albums
 GET        /new_albums/index.html        backend.albums.AlbumsController.index

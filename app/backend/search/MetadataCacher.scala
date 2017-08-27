@@ -17,7 +17,7 @@ import scalaz.Semigroup
 import scalaz.std.{AnyValInstances, FutureInstances, ListInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
-class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration,
+private class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration,
                                            songJsonable: Jsonable[Song],
                                            albumJsonable: Jsonable[Album],
                                            artistJsonable: Jsonable[Artist])
@@ -109,7 +109,7 @@ class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration,
   * the actual metadata is only in megabytes. Also allows for incremental updates, in the case of new data added during
   * production.
   */
-object MetadataCacher {
+private object MetadataCacher {
   private implicit object ArtistSemigroup extends Semigroup[Artist] {
     override def append(f1: Artist, f2: => Artist): Artist = f1 merge f2
   }
