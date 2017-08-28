@@ -8,6 +8,7 @@ import backend.logging.{Logger, StringBuilderLogger}
 import common.FakeClock
 import common.io.MemoryRoot
 import common.rich.RichT._
+import play.api.libs.ws._
 
 import scala.concurrent.ExecutionContext
 
@@ -19,11 +20,13 @@ case class TestConfiguration(
     },
     private val _mf: FakeMusicFinder = null,
     private val _urlToBytesMapper: PartialFunction[Url, Array[Byte]] = PartialFunction.empty,
+    private val _urlToResponseMapper: PartialFunction[Url, WSResponse] = PartialFunction.empty,
     private val _httpTransformer: HttpURLConnection => HttpURLConnection = identity,
     private val _root: MemoryRoot = new MemoryRoot)
     extends NonPersistentConfig {
-  override implicit lazy val db: driver.backend.DatabaseDef =
-    driver.api.Database.forURL(s"jdbc:h2:mem:test${System.identityHashCode(this)};DB_CLOSE_DELAY=-1", driver = "org.H2.JDBC")
+  override implicit lazy val db: driver.backend.DatabaseDef = driver.api.Database.forURL(
+    s"jdbc:h2:mem:test${System.identityHashCode(this)};DB_CLOSE_DELAY=-1",
+    driver = "org.H2.JDBC")
   override implicit val ec: ExecutionContext = _ec
   override implicit val mf: FakeMusicFinder = _mf.opt.getOrElse(new FakeMusicFinder(_root))
   override def connection(u: Url) = {
@@ -40,4 +43,22 @@ case class TestConfiguration(
   override implicit val logger: Logger = new StringBuilderLogger(new StringBuilder)
   override implicit lazy val rootDirectory: MemoryRoot = _root
   override implicit val clock: FakeClock = new FakeClock
+
+  override def ws = new WSClient {
+    override def underlying[T] = this.asInstanceOf[T]
+
+    override def url(url: String): WSRequest = {
+      val u = Url(url)
+      FakeWSRequest(response =
+          if (_urlToBytesMapper isDefinedAt u)
+            FakeWSResponse(status = 200, bytes = _urlToBytesMapper(u))
+          else
+            _urlToResponseMapper(u),
+        u = u
+      )
+    }
+    override def close() = ???
+  }
 }
+
+
