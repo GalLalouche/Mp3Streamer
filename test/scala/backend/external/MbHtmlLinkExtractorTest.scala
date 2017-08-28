@@ -9,7 +9,7 @@ import org.scalatest.FreeSpec
 
 class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
   private def withDocument(name: String) =
-    TestConfiguration().copy(_urlToBytesMapper = getBytes(name + ".html").const)
+    TestConfiguration().copy(_urlToBytesMapper = PartialFunction(getBytes(name + ".html").const))
 
   "parse artist links" in {
     implicit val c = withDocument("artist")

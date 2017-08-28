@@ -10,7 +10,8 @@ import common.rich.collections.RichTraversableOnce._
 import org.scalatest.FreeSpec
 
 class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpecs {
-  private implicit val config = TestConfiguration().copy(_urlToBytesMapper = getBytes)
+  private implicit val config =
+    TestConfiguration().copy(_urlToBytesMapper = PartialFunction(getBytes))
 
   private val $: WikipediaAlbumExternalLinksExpander = new WikipediaAlbumExternalLinksExpander()
   private def getAllMusicLinkAddress(s: String): String =
@@ -20,7 +21,8 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpec
         .single
 
   "extract allmusic link" in {
-    getAllMusicLinkAddress("allmusic_link.html") shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
+    getAllMusicLinkAddress("allmusic_link.html") shouldReturn
+        "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
   }
   "Return nothing on error" in {
     implicit val config = this.config.copy(_httpTransformer = new FakeHttpURLConnection(_) {
