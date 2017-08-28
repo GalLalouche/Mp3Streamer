@@ -35,11 +35,13 @@ private class AllMusicHelper(implicit it: InternetTalker) extends ToFoldableOps 
       if (canonicalLink.matcher(url.address dropAfterLast '/').matches)
         Future successful url
       else {
-        it.config(_ setInstanceFollowRedirects false)
-            .connect(url)
-            .filterWithMessage(_.getResponseCode == HttpURLConnection.HTTP_MOVED_PERM,
-              e => s"Expected response code ${HttpURLConnection.HTTP_MOVED_PERM}, but was ${e.getResponseCode}")
-            .map(_ getHeaderField "location")
+        it.ws.url(url.address)
+            .withFollowRedirects(false)
+            .get()
+            .filterWithMessage(_.status == HttpURLConnection.HTTP_MOVED_PERM,
+              e => s"Expected response code HTTP_MOVED_PERM (${HttpURLConnection.HTTP_MOVED_PERM}), " +
+                  s"but was ${e.statusText} (${e.status}")
+            .map(_.header("location").get)
             .map(Url)
       }
     aux(e.link).map(x => BaseLink[R](x, e.host))

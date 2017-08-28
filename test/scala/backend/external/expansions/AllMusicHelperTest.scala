@@ -3,8 +3,8 @@ package backend.external.expansions
 import java.net.HttpURLConnection
 
 import backend.Url
-import backend.configs.TestConfiguration
-import backend.external.{BaseLink, DocumentSpecs, FakeHttpURLConnection, Host}
+import backend.configs.{FakeWSResponse, TestConfiguration}
+import backend.external.{BaseLink, DocumentSpecs, Host}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import org.scalatest.FreeSpec
@@ -71,17 +71,11 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
     }
     "rlink" - {
       def withRedirection(source: String, destination: String) = {
-        def redirect(source: String, destination: String)(http: HttpURLConnection) = new FakeHttpURLConnection(http) {
-          override def getResponseCode: Int = {
-            assert(http.getURL.toString.equals(source) && !getInstanceFollowRedirects)
-            HttpURLConnection.HTTP_MOVED_PERM
-          }
-          override def getHeaderField(s: String): String = {
-            assert(http.getURL.toString.equals(source) && !getInstanceFollowRedirects)
-            if (s == "location") destination else throw new AssertionError()
-          }
-        }
-        implicit val config = this.config.copy(_httpTransformer = redirect(source, destination))
+        implicit val config = this.config.copy(_urlToResponseMapper = {
+          case Url(`source`) => FakeWSResponse(
+            status = HttpURLConnection.HTTP_MOVED_PERM,
+            allHeaders = Map("location" -> Seq(destination)))
+        })
         new AllMusicHelper
       }
       "regular" in {

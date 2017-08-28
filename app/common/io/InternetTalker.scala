@@ -28,7 +28,7 @@ trait InternetTalker extends ExecutionContext {
   }
   final def downloadDocument(url: Url): Future[Document] = bytes(url).map(new String(_, "UTF-8")).map(Jsoup.parse)
   protected def connection(url: Url): HttpURLConnection
-  def connect(url: Url): Future[HttpURLConnection] = Future {connection(url)}
+  private def connect(url: Url): Future[HttpURLConnection] = Future(connection(url))
   def ws: WSClient
   def get(u: Url) = ws.url(u.address).get()
 }

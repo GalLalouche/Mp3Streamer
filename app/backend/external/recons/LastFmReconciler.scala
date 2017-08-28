@@ -1,6 +1,5 @@
 package backend.external.recons
 
-import java.io.InputStream
 import java.net.HttpURLConnection
 
 import backend.Url
@@ -8,6 +7,7 @@ import backend.external.{BaseLink, Host}
 import backend.recon.Artist
 import common.io.InternetTalker
 import org.jsoup.Jsoup
+import play.api.libs.ws.WSResponse
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future
@@ -18,11 +18,11 @@ private class LastFmReconciler(millisBetweenRedirects: Long = 100)
     (implicit it: InternetTalker) extends Reconciler[Artist](Host.LastFm)
     with ToBindOps with FutureInstances {
   private class TempRedirect extends Exception
-  private def handleReply(h: HttpURLConnection): Option[BaseLink[Artist]] = h.getResponseCode match {
+  private def handleReply(h: WSResponse): Option[BaseLink[Artist]] = h.status match {
     case HttpURLConnection.HTTP_NOT_FOUND => None
     case HttpURLConnection.HTTP_MOVED_TEMP => throw new TempRedirect
     case HttpURLConnection.HTTP_OK =>
-      Jsoup.parse(h.getContent.asInstanceOf[InputStream], h.getContentEncoding, h.getURL.getFile)
+      Jsoup.parse(h.body)
           .select("link")
           .find(_.attr("rel") == "canonical")
           .map(_.attr("href"))
@@ -32,7 +32,7 @@ private class LastFmReconciler(millisBetweenRedirects: Long = 100)
 
   override def apply(a: Artist): Future[Option[BaseLink[Artist]]] = {
     val url = Url(s"https://www.last.fm/music/" + a.name.toLowerCase.replaceAll(" ", "+"))
-    it connect url map handleReply recoverWith {
+    it.get(url) map handleReply recoverWith {
       case _: TempRedirect => Future(Thread sleep millisBetweenRedirects).>>(apply(a))
       case e: MatchError => Future.failed(new UnsupportedOperationException("last.fm returned an unsupported status code", e))
     }

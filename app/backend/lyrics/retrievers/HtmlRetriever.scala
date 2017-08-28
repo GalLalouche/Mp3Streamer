@@ -1,12 +1,10 @@
 package backend.lyrics.retrievers
 
 import backend.Url
-import backend.lyrics.{HtmlLyrics, Instrumental, Lyrics}
-import common.io.InternetTalker
+import backend.lyrics.Lyrics
 import models.Song
-import org.jsoup.nodes.Document
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 private[lyrics] trait HtmlRetriever extends LyricsRetriever {
   def doesUrlMatchHost(url: Url): Boolean
