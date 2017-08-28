@@ -4,7 +4,7 @@ import backend.recon._
 import common.Debug
 import common.RichJson._
 import common.rich.RichT._
-import controllers.Utils
+import controllers.ControllerUtils
 import play.api.libs.json._
 import play.api.mvc.{Action, AnyContent, Controller, Request}
 
@@ -15,7 +15,7 @@ import scalaz.syntax.ToFunctorOps
 /** A web interface to new albums finder. Displays new albums and can update the current file / ignoring policy. */
 object AlbumsController extends Controller with Debug
     with FutureInstances with ToFunctorOps {
-  import Utils.config
+  import ControllerUtils.config
   private val $ = new NewAlbums()
 
   private def toJson(a: NewAlbum): JsObject =

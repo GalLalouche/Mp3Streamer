@@ -8,7 +8,7 @@ import backend.recon._
 import common.RichJson._
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
-import controllers.Utils
+import controllers.ControllerUtils
 import models.Song
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc.{Action, Controller, Result}
@@ -19,7 +19,7 @@ import scalaz.syntax.ToBindOps
 
 object ExternalController extends Controller
     with FutureInstances with ToBindOps {
-  import Utils.config
+  import ControllerUtils.config
   private type KVPair = (String, play.api.libs.json.Json.JsValueWrapper)
   private val hosts: Seq[Host] =
     Seq(Host.MusicBrainz, Host.Wikipedia, Host.AllMusic, Host.Facebook, Host.LastFm, Host.RateYourMusic)
@@ -43,7 +43,7 @@ object ExternalController extends Controller
     }
 
   def get(path: String) = Action.async {
-    val song: Song = Utils parseSong path
+    val song: Song = ControllerUtils parseSong path
     getLinks(song)
   }
 
@@ -59,7 +59,7 @@ object ExternalController extends Controller
   def updateRecon(path: String) = Action.async { request =>
     val json = request.body.asJson.get
     def getReconId(s: String) = json ostr s map ReconID
-    val song: Song = Utils parseSong path
+    val song: Song = ControllerUtils parseSong path
     external.updateRecon(song, artistReconId = getReconId("artist"), albumReconId = getReconId("album"))
         .>>(getLinks(song))
   }

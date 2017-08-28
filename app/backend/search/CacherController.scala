@@ -3,7 +3,7 @@ package backend.search
 import backend.search.MetadataCacher.IndexUpdate
 import common.rich.RichT._
 import controllers.websockets.WebSocketController
-import controllers.{Player, Recent, Utils}
+import controllers.{Player, Recent, ControllerUtils}
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Action
 import rx.lang.scala.Observable
@@ -14,7 +14,7 @@ object CacherController extends WebSocketController {
     "finished" -> u.currentIndex,
     "total" -> u.totalNumber,
     "currentDir" -> u.dir.name)
-  implicit val c = Utils.config
+  implicit val c = ControllerUtils.config
   import models.ModelJsonable._
   private val cacher = MetadataCacher.create
   private def toRefreshStatus(o: Observable[IndexUpdate], updateRecent: Boolean) = {

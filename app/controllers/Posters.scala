@@ -4,7 +4,7 @@ import play.api.mvc.{Action, Controller}
 
 object Posters extends Controller {
 	def image(path: String) = Action {
-		Ok sendFile Utils.parseFile(path)
+		Ok sendFile ControllerUtils.parseFile(path)
 	}
 
 	def displayImage(path: String) = Action {

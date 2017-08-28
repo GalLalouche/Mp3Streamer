@@ -3,7 +3,7 @@ package playlist
 import common.RichJson._
 import common.io.JsonableSaver
 import common.rich.RichT._
-import controllers.Utils
+import controllers.ControllerUtils
 import models.Song
 import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.mvc.{Action, Controller}
@@ -13,13 +13,13 @@ import playlist.PlaylistState.PlaylistStateJsonable
 import scala.concurrent.duration.DurationInt
 
 object PlaylistController extends Controller {
-  private val saver = new JsonableSaver()(Utils.config.rootDirectory) // since implicit importing is auto-removed
+  private val saver = new JsonableSaver()(ControllerUtils.config.rootDirectory) // since implicit importing is auto-removed
 
-  private def arrayOfPathsToSong(a: JsArray): Seq[Song] = a.value.map(_.as[String]).map(Utils.parseSong)
+  private def arrayOfPathsToSong(a: JsArray): Seq[Song] = a.value.map(_.as[String]).map(ControllerUtils.parseSong)
 
   import models.ModelJsonable._
   def getQueue = Action {
-    Ok(saver.loadObject[PlaylistQueue].songs map Utils.toJson mapTo JsArray.apply)
+    Ok(saver.loadObject[PlaylistQueue].songs map ControllerUtils.toJson mapTo JsArray.apply)
   }
   def setQueue() = Action { request =>
     val playlist = request.body.asJson.get.as[JsArray] |> arrayOfPathsToSong |> PlaylistQueue.apply
@@ -28,7 +28,7 @@ object PlaylistController extends Controller {
   }
 
   private def toJson(state: PlaylistState): JsObject = Json.obj(
-    "songs" -> JsArray(state.songs.map(Utils.toJson)),
+    "songs" -> JsArray(state.songs.map(ControllerUtils.toJson)),
     "index" -> state.currentIndex,
     "duration" -> state.currentDuration.toSeconds
   )

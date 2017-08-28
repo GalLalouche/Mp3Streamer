@@ -3,7 +3,7 @@ package controllers.websockets
 import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
 import akka.stream.ActorMaterializer
 import common.rich.RichT._
-import controllers.Utils
+import controllers.ControllerUtils
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.{Controller, WebSocket}
 
@@ -17,7 +17,7 @@ object WebSocketController {
 }
 
 trait WebSocketController extends Controller {
-  import Utils.config
+  import ControllerUtils.config
   import WebSocketController._
   private val actors = new mutable.HashSet[ActorRef]
   protected def broadcast(msg: String): Unit = actors.foreach(_ ! MessageToClient(msg))

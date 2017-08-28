@@ -6,7 +6,7 @@ import backend.configs.Configuration
 import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
 import common.Jsonable
 import common.concurrency.Extra
-import controllers.Utils
+import controllers.ControllerUtils
 import models.{Album, ModelJsonable}
 import play.api.Logger
 import play.api.libs.json.{JsArray, JsObject, JsString, Json}
@@ -14,7 +14,7 @@ import play.api.mvc.{Action, Controller}
 
 object SearchController extends Controller with Extra
     with Jsonable.ToJsonableOps {
-  private implicit val c: Configuration = Utils.config
+  private implicit val c: Configuration = ControllerUtils.config
   import c._
   private var index: CompositeIndex = CompositeIndex.create
   override def apply() {

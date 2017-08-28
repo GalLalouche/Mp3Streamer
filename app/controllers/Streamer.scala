@@ -10,12 +10,12 @@ import play.api.libs.streams.Streams
 import play.api.mvc.{Action, Controller}
 
 object Streamer extends Controller {
-  import Utils.config
+  import ControllerUtils.config
   def download(s: String) = Action { request =>
     // assumed format: [bytes=<start>-]
     def parseRange(s: String): Long = s dropAfterLast '=' takeWhile (_ isDigit) toLong
     val bytesToSkip = request.headers get "Range" map parseRange getOrElse 0L
-    val file = Utils.parseSong(s).file.file
+    val file = ControllerUtils.parseSong(s).file.file
     val codec = if (file.extension == "flac") "audio/x-flac" else "audio/mpeg"
     val fis = new FileInputStream(file)
     fis.skip(bytesToSkip)
