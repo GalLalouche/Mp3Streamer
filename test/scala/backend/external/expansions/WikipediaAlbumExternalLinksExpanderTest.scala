@@ -10,7 +10,7 @@ import common.rich.collections.RichTraversableOnce._
 import org.scalatest.FreeSpec
 
 class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpecs {
-  private implicit val config = TestConfiguration().copy(_inputStreamer = getStream)
+  private implicit val config = TestConfiguration().copy(_urlToBytesMapper = getBytes)
 
   private val $: WikipediaAlbumExternalLinksExpander = new WikipediaAlbumExternalLinksExpander()
   private def getAllMusicLinkAddress(s: String): String =

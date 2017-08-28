@@ -11,7 +11,7 @@ import org.scalatest.FreeSpec
 
 class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
   private implicit val config = TestConfiguration()
-  private def withDocument(s: String) = config.copy(_inputStreamer = getStream(s).const)
+  private def withDocument(s: String) = config.copy(_urlToBytesMapper = getBytes(s).const)
   private val $ = new AllMusicHelper
   "isCanonical" - {
     "yes" in {

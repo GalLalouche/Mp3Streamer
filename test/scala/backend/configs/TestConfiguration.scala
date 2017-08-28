@@ -1,16 +1,15 @@
 package backend.configs
 
-import java.io.InputStream
+import java.io.ByteArrayInputStream
 import java.net.HttpURLConnection
 
 import backend.Url
 import backend.logging.{Logger, StringBuilderLogger}
 import common.FakeClock
 import common.io.MemoryRoot
-import org.jsoup.nodes.Document
-
-import scala.concurrent.{ExecutionContext, Future}
 import common.rich.RichT._
+
+import scala.concurrent.ExecutionContext
 
 // It's a case class so its copy constructor could be used by clients in order to configure it.
 case class TestConfiguration(private val _ec: ExecutionContext = new ExecutionContext {
@@ -18,7 +17,7 @@ case class TestConfiguration(private val _ec: ExecutionContext = new ExecutionCo
                                override def execute(runnable: Runnable): Unit = runnable.run()
                              },
                              private val _mf: FakeMusicFinder = null,
-                             private val _inputStreamer: Url => InputStream = _ => ???,
+                             private val _urlToBytesMapper: Url => Array[Byte] = _ => ???,
                              private val _httpTransformer: HttpURLConnection => HttpURLConnection = identity,
                              private val _root: MemoryRoot = new MemoryRoot)
     extends NonPersistentConfig {
@@ -31,7 +30,9 @@ case class TestConfiguration(private val _ec: ExecutionContext = new ExecutionCo
       override def disconnect() = ???
       override def usingProxy() = ???
       override def connect() = ???
-      override def getInputStream = _inputStreamer(u)
+      override def getInputStream = {
+        new ByteArrayInputStream(_urlToBytesMapper(u))
+      }
     }
     _httpTransformer($)
   }
