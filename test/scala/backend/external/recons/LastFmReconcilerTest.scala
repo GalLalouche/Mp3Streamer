@@ -15,13 +15,12 @@ class LastFmReconcilerTest extends FreeSpec with AuxSpecs with DocumentSpecs {
   private val config = new TestConfiguration
   "404" in {
     implicit val c = config.copy(_urlToResponseMapper =
-        PartialFunction(FakeWSResponse(status = HttpURLConnection.HTTP_NOT_FOUND).const))
+        FakeWSResponse(status = HttpURLConnection.HTTP_NOT_FOUND).partialConst)
     val $ = new LastFmReconciler
     $(Artist("Foobar")).get shouldBe 'empty
   }
   "200" in {
-    implicit val c =
-      config.copy(_urlToBytesMapper = PartialFunction(getBytes("last_fm.html").const))
+    implicit val c = config.copy(_urlToBytesMapper = getBytes("last_fm.html").partialConst)
     new LastFmReconciler().apply(Artist("dreamtheater")).get.get shouldReturn
         BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm)
   }

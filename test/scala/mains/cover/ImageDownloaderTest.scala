@@ -12,8 +12,7 @@ import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
 
 class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar with OneInstancePerTest with AuxSpecs {
   private val tempDir = new MemoryRoot
-  private implicit val c =
-    TestConfiguration(_urlToBytesMapper = PartialFunction("foobar".getBytes.const))
+  private implicit val c = TestConfiguration(_urlToBytesMapper = "foobar".getBytes.partialConst)
   "Remote" in {
     val $ = new ImageDownloader(tempDir)
     val f = $(UrlSource(Url("http://foobar"))).get.file
