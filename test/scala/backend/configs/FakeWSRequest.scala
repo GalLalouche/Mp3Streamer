@@ -1,5 +1,10 @@
 package backend.configs
+
 import backend.Url
+import common.rich.collections.RichMap._
+import common.rich.collections.RichSeq._
+import common.rich.func.MoreSeqInstances
+import monocle.macros.GenLens
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.ws._
 
@@ -11,20 +16,20 @@ private case class FakeWSRequest(
     u: Url,
     method: String = "GET",
     body: WSBody = EmptyBody,
-    headers: Map[String, List[String]] = Map(),
+    headers: Map[String, Seq[String]] = Map(),
     queryString: Map[String, Seq[String]] = Map(),
     calc: Option[WSSignatureCalculator] = None,
     auth: Option[(String, String, WSAuthScheme)] = None,
     followRedirects: Option[Boolean] = None,
     requestTimeout: Option[Int] = None,
     virtualHost: Option[String] = None,
-    proxyServer: Option[WSProxyServer] = None) extends WSRequest {
+    proxyServer: Option[WSProxyServer] = None) extends WSRequest with MoreSeqInstances {
   override val url: String = u.address
 
   override def sign(calc: WSSignatureCalculator): WSRequest = ???
   override def withAuth(username: String, password: String, scheme: WSAuthScheme): WSRequest = ???
-  override def withHeaders(hdrs: (String, String)*): WSRequest = copy(headers =
-      hdrs.foldLeft(headers)((map, e) => map.updated(e._1, e._2 :: map.getOrElse(e._1, Nil))))
+  override def withHeaders(hdrs: (String, String)*): WSRequest =
+    GenLens[FakeWSRequest](_.headers).modify(_.merge(hdrs.toMultiMap))(this)
   override def withQueryString(parameters: (String, String)*): WSRequest = ???
   override def withFollowRedirects(follow: Boolean): WSRequest =
     this.copy(followRedirects = Some(follow))
