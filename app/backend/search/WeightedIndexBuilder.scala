@@ -2,6 +2,7 @@ package backend.search
 
 import common.ds.Trie
 import common.rich.RichT._
+import common.rich.collections.RichMap._
 import common.rich.collections.RichTraversableOnce._
 import monocle.std.Tuple2Optics
 import monocle.syntax.{ApplySyntax, FieldsSyntax}
@@ -28,13 +29,11 @@ private object WeightedIndexBuilder
       .mapTo(new WeightedIndex(_))
 
   private class WeightedIndex[T: WeightedIndexable](trie: Trie[(T, Double)]) extends Index[T] {
-    private def mergeIntersectingKeys[K, V: Semigroup](m1: Map[K, V], m2: Map[K, V]): Map[K, V] =
-      m1.filterKeys(m2.contains).map(e => (e._1, e._2 |+| m2(e._1)))
     override def findIntersection(ss: Traversable[String]): Seq[T] = {
       val lastQuery :: allButLast = ss.toList.reverse
       allButLast
           .map(trie.exact(_).toMap)
-          ./:(trie.prefixes(lastQuery).toMap)(mergeIntersectingKeys(_, _))
+          ./:(trie.prefixes(lastQuery).toMap)(_ mergeIntersecting _)
           .toSeq.sortBy(-_._2)
           .map(_._1)
     }
