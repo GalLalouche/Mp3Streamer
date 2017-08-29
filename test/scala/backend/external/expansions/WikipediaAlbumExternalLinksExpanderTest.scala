@@ -3,9 +3,10 @@ package backend.external.expansions
 import java.net.HttpURLConnection
 
 import backend.Url
-import backend.configs.TestConfiguration
-import backend.external.{DocumentSpecs, BaseLink, FakeHttpURLConnection, Host}
+import backend.configs.{FakeWSResponse, TestConfiguration}
+import backend.external.{BaseLink, DocumentSpecs, Host}
 import common.rich.RichFuture._
+import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
 import org.scalatest.FreeSpec
 
@@ -25,10 +26,8 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpec
         "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
   }
   "Return nothing on error" in {
-    implicit val config = this.config.copy(_httpTransformer = new FakeHttpURLConnection(_) {
-      override def getResponseCode: Int = HttpURLConnection.HTTP_INTERNAL_ERROR
-      override def getHeaderField(s: String): String = throw new AssertionError() // makes sure it isn't called
-    })
+    implicit val config = this.config.copy(_urlToResponseMapper =
+        PartialFunction(FakeWSResponse(status = HttpURLConnection.HTTP_INTERNAL_ERROR).const))
     new WikipediaAlbumExternalLinksExpander()
         .apply(BaseLink(Url("allmusic_rlink.html"), Host.Wikipedia))
         .get shouldReturn Nil
