@@ -13,6 +13,7 @@ import models.Song
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import scala.sys.process.Process
+import common.io.RichWSRequest._
 
 // Uses google image search (not API, actual site) to find images, then displays the images for the user to select a
 // good picture. The site is used since the API doesn't allow for a size filter.
@@ -35,7 +36,9 @@ object DownloadCover {
   def apply(albumDir: Directory): Future[Directory => Unit] = {
     val urlProvider = new SearchUrlProvider(albumDir)
     val localUrls = LocalImageFetcher(IODirectory(albumDir))
-    val imageUrls = c.asBrowser.bytes(urlProvider.automaticSearchUrl).map(new String(_, "UTF-8")).map(extractImageURLs)
+    val imageUrls = c.asBrowser(urlProvider.automaticSearchUrl)
+        .bytes
+        .map(new String(_, "UTF-8")).map(extractImageURLs)
     for (urls <- imageUrls;
          locals <- localUrls;
          selection <- selectImage(locals ++ urls)) yield selection match {
@@ -89,9 +92,9 @@ object DownloadCover {
 
   def main(args: Array[String]) {
     val path = if (args.nonEmpty)
-                 args(0)
-               else
-                 """D:\Media\Music\Rock\Progressive Rock\Mostly Autumn\2012 The Ghost Moon Orchestra"""
+      args(0)
+    else
+      """D:\Media\Music\Rock\Progressive Rock\Mostly Autumn\2012 The Ghost Moon Orchestra"""
     val folder = Directory(path)
     println("Downloading cover image for " + path)
     Await.result(apply(folder), Duration.Inf)(folder)

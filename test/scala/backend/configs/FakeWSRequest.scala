@@ -11,7 +11,7 @@ private case class FakeWSRequest(
     u: Url,
     method: String = "GET",
     body: WSBody = EmptyBody,
-    headers: Map[String, Seq[String]] = Map(),
+    headers: Map[String, List[String]] = Map(),
     queryString: Map[String, Seq[String]] = Map(),
     calc: Option[WSSignatureCalculator] = None,
     auth: Option[(String, String, WSAuthScheme)] = None,
@@ -23,7 +23,8 @@ private case class FakeWSRequest(
 
   override def sign(calc: WSSignatureCalculator): WSRequest = ???
   override def withAuth(username: String, password: String, scheme: WSAuthScheme): WSRequest = ???
-  override def withHeaders(hdrs: (String, String)*): WSRequest = ???
+  override def withHeaders(hdrs: (String, String)*): WSRequest = copy(headers =
+      hdrs.foldLeft(headers)((map, e) => map.updated(e._1, e._2 :: map.getOrElse(e._1, Nil))))
   override def withQueryString(parameters: (String, String)*): WSRequest = ???
   override def withFollowRedirects(follow: Boolean): WSRequest =
     this.copy(followRedirects = Some(follow))
