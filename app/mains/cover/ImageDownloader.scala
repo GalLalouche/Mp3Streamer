@@ -12,7 +12,8 @@ private class ImageDownloader(outputDirectory: DirectoryRef)(implicit it: Intern
     outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
 
   override def apply(imageSource: ImageSource): Future[FolderImage] = imageSource match {
-    case UrlSource(url) => it.asBrowser(url).bytes.map(toFile).map(FolderImage(_, isLocal = false))
+    case UrlSource(url) =>
+      it.asBrowser(url, _.bytes).map(toFile).map(FolderImage(_, isLocal = false))
     case LocalSource(file) => Future successful FolderImage(file, isLocal = true)
   }
 }

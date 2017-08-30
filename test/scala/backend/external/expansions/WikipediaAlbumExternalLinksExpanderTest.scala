@@ -26,8 +26,8 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpec
         "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
   }
   "Return nothing on error" in {
-    implicit val config = this.config.copy(_urlToResponseMapper =
-        FakeWSResponse(status = HttpURLConnection.HTTP_INTERNAL_ERROR).partialConst)
+    implicit val config = this.config.copy(_urlToBytesMapper = PartialFunction.empty,
+      _urlToResponseMapper = FakeWSResponse(status = HttpURLConnection.HTTP_INTERNAL_ERROR).partialConst)
     new WikipediaAlbumExternalLinksExpander()
         .apply(BaseLink(Url("allmusic_rlink.html"), Host.Wikipedia))
         .get shouldReturn Nil

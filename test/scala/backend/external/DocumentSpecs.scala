@@ -7,8 +7,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.Suite
 
-trait DocumentSpecs extends AuxSpecs {
-  self: Suite =>
+trait DocumentSpecs extends AuxSpecs { self: Suite =>
 
   def getDocument(name: String): Document = Jsoup.parse(getResourceFile(name), "UTF-8")
   def getBytes(name: String): Array[Byte] = getResourceFile(name).bytes

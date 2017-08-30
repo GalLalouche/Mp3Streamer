@@ -36,8 +36,7 @@ object DownloadCover {
   def apply(albumDir: Directory): Future[Directory => Unit] = {
     val urlProvider = new SearchUrlProvider(albumDir)
     val localUrls = LocalImageFetcher(IODirectory(albumDir))
-    val imageUrls = c.asBrowser(urlProvider.automaticSearchUrl)
-        .bytes
+    val imageUrls = c.asBrowser(urlProvider.automaticSearchUrl, _.bytes)
         .map(new String(_, "UTF-8")).map(extractImageURLs)
     for (urls <- imageUrls;
          locals <- localUrls;

@@ -30,19 +30,34 @@ case class TestConfiguration(
   override implicit val clock: FakeClock = new FakeClock
 
   override def createWsClient() = new WSClient {
+    // For printing if the client wasn't closed
+    private val stackTrace = Thread.currentThread.getStackTrace drop 3
+    private var wasClosed = false
     override def underlying[T] = this.asInstanceOf[T]
 
     override def url(url: String): WSRequest = {
+      if (wasClosed)
+        throw new IllegalStateException("WSClient is closed")
       val u = Url(url)
       FakeWSRequest(response =
           if (_urlToBytesMapper isDefinedAt u)
             FakeWSResponse(status = 200, bytes = _urlToBytesMapper(u))
+          else if (_urlToResponseMapper isDefinedAt u)
+            _urlToResponseMapper(u)
           else
-            _urlToResponseMapper(u),
+            throw new IllegalArgumentException(s"No match found for URL <$u>"),
         u = u
       )
     }
-    override def close() = ???
+    override def close() =
+      if (wasClosed) throw new IllegalStateException("WSClient was already closed")
+      else wasClosed = true
+    override def finalize() =
+      if (!wasClosed) {
+        println("WSClient wasn't closed :( printing stack-trace")
+        println(stackTrace mkString "\n")
+        println("-----------------------------------------------")
+      }
   }
 }
 

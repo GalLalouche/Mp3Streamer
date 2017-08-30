@@ -70,6 +70,7 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
     }
     "rlink" - {
       def withRedirection(source: String, destination: String) = {
+        // TODO requestToResponseMapper
         implicit val config = this.config.copy(_urlToResponseMapper = {
           case Url(`source`) => FakeWSResponse(
             status = HttpURLConnection.HTTP_MOVED_PERM,

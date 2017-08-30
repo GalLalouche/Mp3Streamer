@@ -16,6 +16,6 @@ trait RealConfig extends Configuration {
   override implicit lazy val mf: IOMusicFinder = IOMusicFinder
   override implicit lazy val rootDirectory: DirectoryRef = IODirectory.apply("D:/media/streamer/")
   override implicit val clock = Clock.systemDefaultZone
-  override def createWsClient() =
-    AhcWSClient()(ActorMaterializer()(ActorSystem.create("RealConfigWS-System")))
+  private lazy val materializer = ActorMaterializer()(ActorSystem.create("RealConfigWS-System"))
+  override def createWsClient() = AhcWSClient()(materializer)
 }

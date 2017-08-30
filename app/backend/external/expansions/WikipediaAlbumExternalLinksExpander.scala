@@ -23,7 +23,8 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
       .map(_.toLowerCase)
       .filter(_ contains "allmusic.com/album")
       // Canonize links, specifically the case where www. is missing, because trolls.
-      .map(_.replaceFirst("^(https?://)?(www.)?allmusic.com/album/", "")).map("http://www.allmusic.com/album/" + _)
+      .map(_.replaceFirst("^(https?://)?(www.)?allmusic.com/album/", ""))
+      .map("http://www.allmusic.com/album/" + _)
 
   /** Returns the first canonical link if one exists, otherwise returns the entire list */
   private def preferCanonical(xs: Seq[String]): Seq[String] = xs
@@ -37,7 +38,8 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
       .flatMap(extractSemiCanonicalAllMusicLink)
       .mapTo(preferCanonical)
       .map(_.mapTo(Url))
-      .mapTo(us => if (us.size <= 1) us.headOption else throw new IllegalStateException("extracted too many AllMusic links"))
+      .mapTo(us => if (us.size <= 1) us.headOption
+                   else throw new IllegalStateException("extracted too many AllMusic links"))
 
   override def parseDocument(d: Document): BaseLinks[Album] =
     extractAllMusicLink(d).map(BaseLink[Album](_, Host.AllMusic))
@@ -46,6 +48,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
       // Compiler won't pick up type definitions, so explicitly naming Traverse is necessary
       .flatMap(Traverse[Traversable].traverse(_)(allMusicHelper.canonize))
       .flatMap(_.filterTraverse(link => allMusicHelper isValidLink link.link))
+      // TODO log error here
       .orElse(Nil)
 }
 
