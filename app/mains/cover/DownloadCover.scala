@@ -36,8 +36,8 @@ object DownloadCover {
   def apply(albumDir: Directory): Future[Directory => Unit] = {
     val urlProvider = new SearchUrlProvider(albumDir)
     val localUrls = LocalImageFetcher(IODirectory(albumDir))
-    val imageUrls = c.asBrowser(urlProvider.automaticSearchUrl, _.bytes)
-        .map(new String(_, "UTF-8")).map(extractImageURLs)
+    val imageFinder = new ImageFinder
+    val imageUrls = imageFinder.find(urlProvider.automaticSearchUrl)
     for (urls <- imageUrls;
          locals <- localUrls;
          selection <- selectImage(locals ++ urls)) yield selection match {
@@ -78,13 +78,6 @@ object DownloadCover {
     assert(tempFolder.exists == false)
   }
 
-  private def extractImageURLs(html: String): Seq[UrlSource] =
-    """"ou":"[^"]+"""".r
-        .findAllIn(html) // assumes format "ou":"<url>". fucking closure :\
-        .map(_.dropWhile(_ != ':').drop(2).dropRight(1))
-        .toVector
-
-        .map(e => UrlSource(Url(e)))
   private def selectImage(imageURLs: Seq[ImageSource]): Future[ImageChoice] =
     ImageSelectionPanel(
       ImagesSupplier.withCache(imageURLs.iterator, new ImageDownloader(IODirectory.apply(tempFolder)), 12))
@@ -93,7 +86,7 @@ object DownloadCover {
     val path = if (args.nonEmpty)
       args(0)
     else
-      """D:\Media\Music\Rock\Progressive Rock\Mostly Autumn\2012 The Ghost Moon Orchestra"""
+      """/usr/local/google/home/lalouche/dev/git/mp3streamer/test/resources/models"""
     val folder = Directory(path)
     println("Downloading cover image for " + path)
     Await.result(apply(folder), Duration.Inf)(folder)
