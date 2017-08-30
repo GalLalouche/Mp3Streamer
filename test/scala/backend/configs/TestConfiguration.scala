@@ -29,7 +29,7 @@ case class TestConfiguration(
   override implicit lazy val rootDirectory: MemoryRoot = _root
   override implicit val clock: FakeClock = new FakeClock
 
-  override def ws = new WSClient {
+  override def createWsClient() = new WSClient {
     override def underlying[T] = this.asInstanceOf[T]
 
     override def url(url: String): WSRequest = {

@@ -35,7 +35,7 @@ private class AllMusicHelper(implicit it: InternetTalker) extends ToFoldableOps 
       if (canonicalLink.matcher(url.address dropAfterLast '/').matches)
         Future successful url
       else {
-        it.ws.url(url.address)
+        it.createWsClient.url(url.address)
             .withFollowRedirects(false)
             .get()
             .filterWithMessage(_.status == HttpURLConnection.HTTP_MOVED_PERM,
