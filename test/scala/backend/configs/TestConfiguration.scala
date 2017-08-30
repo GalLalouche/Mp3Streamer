@@ -18,6 +18,7 @@ case class TestConfiguration(
     private val _mf: FakeMusicFinder = null,
     private val _urlToBytesMapper: PartialFunction[Url, Array[Byte]] = PartialFunction.empty,
     private val _urlToResponseMapper: PartialFunction[Url, WSResponse] = PartialFunction.empty,
+    private val _requestToResponseMapper: PartialFunction[WSRequest, WSResponse] = PartialFunction.empty,
     private val _root: MemoryRoot = new MemoryRoot)
     extends NonPersistentConfig {
   override implicit lazy val db: driver.backend.DatabaseDef = driver.api.Database.forURL(
@@ -30,28 +31,30 @@ case class TestConfiguration(
   override implicit val clock: FakeClock = new FakeClock
 
   override def createWsClient() = new WSClient {
+    private var wasClosed = false
     // For printing if the client wasn't closed
     private val stackTrace = Thread.currentThread.getStackTrace drop 3
-    private var wasClosed = false
+
     override def underlying[T] = this.asInstanceOf[T]
 
     override def url(url: String): WSRequest = {
       if (wasClosed)
         throw new IllegalStateException("WSClient is closed")
       val u = Url(url)
-      FakeWSRequest(response =
-          if (_urlToBytesMapper isDefinedAt u)
-            FakeWSResponse(status = 200, bytes = _urlToBytesMapper(u))
-          else if (_urlToResponseMapper isDefinedAt u)
-            _urlToResponseMapper(u)
-          else
-            throw new IllegalArgumentException(s"No match found for URL <$u>"),
-        u = u
-      )
+      val partialBuilder: Url => FakeWSRequest =
+        if (_urlToBytesMapper isDefinedAt u)
+          FakeWSRequest(FakeWSResponse(status = 200, bytes = _urlToBytesMapper(u)))
+        else if (_urlToResponseMapper isDefinedAt u)
+          FakeWSRequest(_urlToResponseMapper(u))
+        else
+          FakeWSRequest(_requestToResponseMapper)
+      partialBuilder(u)
     }
+
     override def close() =
       if (wasClosed) throw new IllegalStateException("WSClient was already closed")
       else wasClosed = true
+
     override def finalize() =
       if (!wasClosed) {
         println("WSClient wasn't closed :( printing stack-trace")

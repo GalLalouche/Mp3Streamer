@@ -8,6 +8,7 @@ import backend.external.{BaseLink, DocumentSpecs, Host}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import org.scalatest.FreeSpec
+import play.api.libs.ws.WSRequest
 
 class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
   private implicit val config = TestConfiguration()
@@ -70,11 +71,11 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
     }
     "rlink" - {
       def withRedirection(source: String, destination: String) = {
-        // TODO requestToResponseMapper
-        implicit val config = this.config.copy(_urlToResponseMapper = {
-          case Url(`source`) => FakeWSResponse(
-            status = HttpURLConnection.HTTP_MOVED_PERM,
-            allHeaders = Map("location" -> Seq(destination)))
+        implicit val config = this.config.copy(_requestToResponseMapper = {
+          case r: WSRequest if r.url == source && r.followRedirects.exists(!_) =>
+            FakeWSResponse(
+              status = HttpURLConnection.HTTP_MOVED_PERM,
+              allHeaders = Map("location" -> Seq(destination)))
         })
         new AllMusicHelper
       }

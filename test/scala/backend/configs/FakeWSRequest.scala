@@ -1,6 +1,7 @@
 package backend.configs
 
 import backend.Url
+import common.rich.RichT._
 import common.rich.collections.RichMap._
 import common.rich.collections.RichSeq._
 import common.rich.func.MoreSeqInstances
@@ -11,8 +12,8 @@ import play.api.libs.ws._
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 
-private case class FakeWSRequest(
-    response: WSResponse,
+private case class FakeWSRequest private(
+    response: WSRequest => WSResponse,
     u: Url,
     method: String = "GET",
     body: WSBody = EmptyBody,
@@ -39,7 +40,14 @@ private case class FakeWSRequest(
   override def withProxyServer(proxyServer: WSProxyServer): WSRequest = ???
   override def withBody(body: WSBody): WSRequest = ???
   override def withMethod(method: String): WSRequest = this.ensuring(method == "GET")
-  override def execute(): Future[WSResponse] = Future successful response
+  override def execute(): Future[WSResponse] = Future successful response(this)
   override def stream(): Future[StreamedResponse] = ???
   override def streamWithEnumerator(): Future[(WSResponseHeaders, Enumerator[Array[Byte]])] = ???
+}
+
+private object FakeWSRequest {
+  def apply(f: WSRequest => WSResponse)(url: Url): FakeWSRequest =
+    FakeWSRequest(response = f, u = url)
+  def apply(response: => WSResponse)(url: Url): FakeWSRequest =
+    FakeWSRequest(response = response.const, u = url)
 }
