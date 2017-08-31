@@ -6,22 +6,23 @@ import common.AuxSpecs
 import common.io.MemoryRoot
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.primitives.RichString._
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
+import org.scalatest.FreeSpec
 
-class ImageDownloaderTest extends FreeSpec with ShouldMatchers with MockitoSugar with OneInstancePerTest with AuxSpecs {
+class ImageDownloaderTest extends FreeSpec with AuxSpecs {
   private val tempDir = new MemoryRoot
   private implicit val c = TestConfiguration(_urlToBytesMapper = "foobar".getBytes.partialConst)
   "Remote" in {
     val $ = new ImageDownloader(tempDir)
-    val f = $(UrlSource(Url("http://foobar"))).get.file
-    f.bytes shouldReturn "foobar".getBytes
-    f.parent shouldBe tempDir
+    val fi = $(UrlSource(Url("http://foobar"), 500, 500)).get
+    fi.file.bytes shouldReturn "foobar".getBytes
+    fi.file.parent shouldBe tempDir
+    fi.isLocal shouldReturn false
   }
   "Local" in {
     val $ = new ImageDownloader(tempDir)
     val file = tempDir addFile "foo"
-    $(LocalSource(file)).get shouldReturn FolderImage(file, isLocal = true)
+    val fi = $(LocalSource(file)).get
+    fi.file shouldReturn file
+    fi.isLocal shouldReturn true
   }
 }

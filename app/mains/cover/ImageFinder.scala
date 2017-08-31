@@ -1,18 +1,21 @@
 package mains.cover
 
 import backend.Url
+import common.RichJson._
 import common.io.InternetTalker
-import common.io.RichWSRequest._
+import org.jsoup.nodes.{Document, Element}
+import play.api.libs.json.Json
 
+import scala.collection.JavaConverters._
 import scala.concurrent.Future
 
 private class ImageFinder(implicit it: InternetTalker) {
-  def find(url: Url): Future[Seq[UrlSource]] = it.asBrowser(url, _.string) map parse
-  def parse(html: String): Seq[UrlSource] = {
-    """"ou":"[^"]+"""".r
-        .findAllIn(html) // assumes format "ou":"<url>". fucking closure :\
-        .map(_.dropWhile(_ != ':').drop(2).dropRight(1))
-        .toVector
-        .map(e => UrlSource(Url(e)))
+  def find(url: Url): Future[Seq[UrlSource]] = it downloadDocument url map parse
+
+  private def parse(d: Document): Seq[UrlSource] =
+    d.select("div.rg_meta.notranslate").asScala map toSource
+  private def toSource(e: Element): UrlSource = {
+    val json = Json.parse(e.html())
+    UrlSource(Url(json str "ou"), width = json int "ow", height = json int "oh")
   }
 }

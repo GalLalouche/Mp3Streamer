@@ -12,7 +12,7 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoHe
   private implicit val c: Configuration = TestConfiguration()
   private def downloadImage(is: ImageSource): Future[FolderImage] =
     Future successful mockWithId(is match {
-      case UrlSource(url) => url.address
+      case UrlSource(url, _, _) => url.address
       case LocalSource(file) => file.path
     })
   private class RemainingIterator[T](ts: T*) extends Iterator[T] {
@@ -26,7 +26,8 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoHe
     }
     def remaining: Int = ts.size - iterated
   }
-  private val urls = new RemainingIterator(Seq("foo", "bar").map(e => UrlSource(Url(e))): _*)
+  private val urls =
+    new RemainingIterator(Seq("foo", "bar").map(e => UrlSource(Url(e), 500, 500)): _*)
   "Simple" - {
     val $ = ImagesSupplier(urls, downloadImage)
     "Should fetch when needed" in {

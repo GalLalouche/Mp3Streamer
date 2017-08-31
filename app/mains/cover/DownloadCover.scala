@@ -37,7 +37,7 @@ object DownloadCover {
     val urlProvider = new SearchUrlProvider(albumDir)
     val localUrls = LocalImageFetcher(IODirectory(albumDir))
     val imageFinder = new ImageFinder
-    val imageUrls = imageFinder.find(urlProvider.automaticSearchUrl)
+    val imageUrls = imageFinder find urlProvider.automaticSearchUrl
     for (urls <- imageUrls;
          locals <- localUrls;
          selection <- selectImage(locals ++ urls)) yield selection match {
