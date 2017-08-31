@@ -47,8 +47,8 @@ private object ImageSelectionPanel {
     val dir = IODirectory("""/usr/local/google/home/lalouche/Pictures""")
     val is = new ImagesSupplier {
       val iterator =
-        dir.deepFiles.iterator.filter(_.extension == "png").map(
-          ImageDownloader.fromLocalSource(_, isLocal = Random.nextBoolean()))
+        dir.deepFiles.iterator.filter(_.extension == "png").map(LocalSource).map(l =>
+          ImageDownloader.folderImage(l.file, Random.nextBoolean(), l.width, l.height, l.image))
       override def next(): Future[FolderImage] = Future successful iterator.next()
     }
 

@@ -26,18 +26,18 @@ object DownloadCover {
   tempFolder.dir.deleteOnExit()
 
   /**
-    * Downloads a new image for the album
-    *
-    * @param albumDir Should contain the songs. The songs' metadata will be used to search for the
-    *                 correct picture.
-    * @return A future command to move the downloaded file to the directory and delete all temporary
-    *         files.
-    */
+   * Downloads a new image for the album
+   *
+   * @param albumDir Should contain the songs. The songs' metadata will be used to search for the
+   *                 correct picture.
+   * @return A future command to move the downloaded file to the directory and delete all temporary
+   *         files.
+   */
   def apply(albumDir: Directory): Future[Directory => Unit] = {
     val urlProvider = new SearchUrlProvider(albumDir)
     val localUrls = LocalImageFetcher(IODirectory(albumDir))
     val imageFinder = new ImageFinder
-    val imageUrls = imageFinder find urlProvider.automaticSearchUrl
+    val imageUrls = imageFinder find Url(urlProvider.manualSearchUrl)
     for (urls <- imageUrls;
          locals <- localUrls;
          selection <- selectImage(locals ++ urls)) yield selection match {
@@ -58,9 +58,7 @@ object DownloadCover {
     private val query = URLEncoder.encode(s"${album.artistName} ${album.title}", "UTF-8")
     // tbm=isch => image search
     private val prefix = s"https://www.google.com/search?tbm=isch&q=$query"
-    // tbs=isz%3Aex%2Ciszw%3A500%2Ciszh%3A500 => required image size is 500x500
-    val automaticSearchUrl: Url = Url(prefix + "&tbs=isz%3Aex%2Ciszw%3A500%2Ciszh%3A500")
-    // tbs=iar:s => relax the automatic requirement, and search for sqaure images
+    // tbs=iar:s => search for square images
     val manualSearchUrl: String = prefix + "&tbs=iar:s"
   }
 
@@ -78,9 +76,11 @@ object DownloadCover {
     assert(tempFolder.exists == false)
   }
 
-  private def selectImage(imageURLs: Seq[ImageSource]): Future[ImageChoice] =
-    ImageSelectionPanel(
-      ImagesSupplier.withCache(imageURLs.iterator, new ImageDownloader(IODirectory.apply(tempFolder)), 12))
+  private def selectImage(imageURLs: Seq[ImageSource]): Future[ImageChoice] = ImageSelectionPanel(
+    ImagesSupplier.withCache(
+      imageURLs.iterator.filter(i => i.width == i.height && i.width >= 500 && i.height >= 500),
+      new ImageDownloader(IODirectory apply tempFolder),
+      cacheSize = 12))
 
   def main(args: Array[String]) {
     val path = if (args.nonEmpty)

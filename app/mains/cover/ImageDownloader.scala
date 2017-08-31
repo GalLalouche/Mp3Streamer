@@ -2,11 +2,10 @@ package mains.cover
 
 import java.awt.image.BufferedImage
 import java.awt.{Image, RenderingHints}
-import javax.imageio.ImageIO
 import javax.swing.ImageIcon
 
 import common.io.RichWSRequest._
-import common.io.{DirectoryRef, FileRef, IOFile, InternetTalker}
+import common.io.{DirectoryRef, FileRef, InternetTalker}
 import mains.cover.ImageDownloader._
 
 import scala.concurrent.Future
@@ -20,17 +19,13 @@ private class ImageDownloader(outputDirectory: DirectoryRef)(implicit it: Intern
   override def apply(imageSource: ImageSource): Future[FolderImage] = imageSource match {
     case UrlSource(url, width, height) => it.asBrowser(url, _.bytes)
         .map(toFile)
-        .map(f => folderImage(f, local = false, w = width, h = height, toImage(f)))
-    case LocalSource(f) => Future successful fromLocalSource(f)
+        .map(f => folderImage(f, local = false, w = width, h = height, ImageSource toImage f))
+    case l: LocalSource =>
+      Future successful folderImage(l.file, local = true, l.width, l.height, l.image)
   }
 }
 
 object ImageDownloader {
-  private def toImage(f: FileRef) = ImageIO.read(f.asInstanceOf[IOFile].file)
-  def fromLocalSource(f: FileRef, isLocal: Boolean = true): FolderImage = {
-    lazy val image = toImage(f)
-    folderImage(f, local = isLocal, image.getWidth, image.getHeight, image)
-  }
   def folderImage(f: FileRef, local: Boolean, w: => Int, h: => Int, image: => Image) =
     new FolderImage {
       override def toIcon(requestedWidth: Int, requestedHeight: Int) = {
