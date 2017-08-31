@@ -5,6 +5,7 @@ import java.nio.file.Files
 
 import backend.Url
 import backend.configs.StandaloneConfig
+import common.io.RichWSRequest._
 import common.io.{IODirectory, IOFile}
 import common.rich.path.RichFile.richFile
 import common.rich.path.{Directory, RichFileUtils}
@@ -13,16 +14,12 @@ import models.Song
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import scala.sys.process.Process
-import common.io.RichWSRequest._
 
-// Uses google image search (not API, actual site) to find images, then displays the images for the user to select a
-// good picture. The site is used since the API doesn't allow for a size filter.
 object DownloadCover {
   private implicit val c = StandaloneConfig
   private case class CoverException(str: String, e: Exception) extends Exception(e)
 
-  private lazy val tempFolder: Directory =
-    Directory.apply(Files.createTempDirectory("images").toFile)
+  private lazy val tempFolder: Directory = Directory.apply(Files.createTempDirectory("images").toFile)
   tempFolder.dir.deleteOnExit()
 
   /**
@@ -83,7 +80,6 @@ object DownloadCover {
         .findAllIn(html) // assumes format "ou":"<url>". fucking closure :\
         .map(_.dropWhile(_ != ':').drop(2).dropRight(1))
         .toVector
-
         .map(e => UrlSource(Url(e)))
   private def selectImage(imageURLs: Seq[ImageSource]): Future[ImageChoice] =
     ImageSelectionPanel(
@@ -91,9 +87,9 @@ object DownloadCover {
 
   def main(args: Array[String]) {
     val path = if (args.nonEmpty)
-      args(0)
-    else
-      """D:\Media\Music\Rock\Progressive Rock\Mostly Autumn\2012 The Ghost Moon Orchestra"""
+                 args.mkString(" ")
+               else
+                 """/usr/local/google/home/lalouche/dev/git/mp3streamer/test/resources/models"""
     val folder = Directory(path)
     println("Downloading cover image for " + path)
     Await.result(apply(folder), Duration.Inf)(folder)
