@@ -7,7 +7,6 @@ public class JavaMainUtils {
   public static void turnOffLogging() {
     LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
     context.stop();
-    context.setPackagingDataEnabled(false);
   }
   public static void waitForCarriageReturn() {
     System.console().readLine();
