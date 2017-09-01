@@ -6,6 +6,7 @@ import sbt._
 
 object ApplicationBuild extends Build {
   val main = Project("Mp3Streamer", file(".")).enablePlugins(PlayScala).settings(
+    resourceDirectory in Test := baseDirectory.value / "test-resources",
     scalaVersion := "2.11.8",
     version := "1.0-SNAPSHOT",
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
