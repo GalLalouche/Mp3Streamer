@@ -2,6 +2,7 @@ package backend.mb
 
 import java.time.{Clock, LocalDate}
 
+import backend.RichTime._
 import backend.albums.NewAlbum.AlbumType
 import backend.albums.NewAlbum.AlbumType.AlbumType
 import backend.configs.StandaloneConfig
@@ -10,15 +11,15 @@ import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon._
 import common.CompositeDateFormat
 import common.RichJson._
+import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
-import backend.RichTime._
 import play.api.libs.json._
 
+import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
 
-class MbArtistReconciler(implicit ec: ExecutionContext) extends OnlineReconciler[Artist] {
+class MbArtistReconciler(implicit it: InternetTalker) extends OnlineReconciler[Artist] {
   override def apply(a: Artist): Future[Option[ReconID]] =
     retry(() => getJson("artist/", ("query", a.name)), 5, 2 seconds)
         .map(_.objects("artists").find(_ has "type").get)
