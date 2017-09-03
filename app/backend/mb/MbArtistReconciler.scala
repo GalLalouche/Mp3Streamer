@@ -1,6 +1,6 @@
 package backend.mb
 
-import java.time.{Clock, LocalDate}
+import java.time.{Clock, LocalDate, Year, YearMonth}
 
 import backend.RichTime._
 import backend.albums.NewAlbum.AlbumType
@@ -26,9 +26,16 @@ class MbArtistReconciler(implicit it: InternetTalker) extends OnlineReconciler[A
         .filterWith(_ str "score" equals "100", "could not find a 100 match")
         .map(_ ostr "id" map ReconID)
 
-  private def parseDate(js: JsValue): Option[LocalDate] =
-    MbArtistReconciler.compositeDateFormat.parse(js.str("first-release-date"))
-        .map(_.toLocalDate)
+  private def parseDate(js: JsValue): LocalDate =
+    MbArtistReconciler.compositeDateFormat.parse(js.str("first-release-date")).get.toLocalDate
+
+  private def parseJson(json: JsObject): MbAlbumMetadata = {
+    val date = parseDate(json)
+    MbAlbumMetadata(title = json str "title",
+      releaseDate = date,
+      albumType = AlbumType.withName(json str "primary-type"),
+      reconId = ReconID(json str "id"))
+  }
 
   def getAlbumsMetadata(artistKey: ReconID): Future[Seq[MbAlbumMetadata]] =
     retry(() => getJson("release-group", ("artist", artistKey.id), ("limit", "100")), 10, 2 seconds)
@@ -37,18 +44,12 @@ class MbArtistReconciler(implicit it: InternetTalker) extends OnlineReconciler[A
             .filter(_ ostr "primary-type" exists Set("Album", "EP", "Live"))
             .filter(_.array("secondary-types").value.isEmpty) // why?
             .sortBy(_ str "first-release-date")
-        ).map(_.flatMap {json =>
-          for (date <- parseDate(json)) yield {
-            MbAlbumMetadata(title = json str "title",
-              releaseDate = date,
-              albumType = AlbumType.withName(json str "primary-type"),
-              reconId = ReconID(json str "id"))
-          }
-        })
+            .map(parseJson))
 }
 
 object MbArtistReconciler {
-  private val compositeDateFormat = CompositeDateFormat("yyyy-MM-dd", "yyyy-MM", "yyyy")
+  private val compositeDateFormat =
+    CompositeDateFormat[LocalDate]("yyyy-MM-dd").orElse[YearMonth]("yyyy-MM").orElse[Year]("yyyy")
 
   def main(args: Array[String]) {
     implicit val c = StandaloneConfig
