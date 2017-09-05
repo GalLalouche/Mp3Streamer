@@ -13,16 +13,12 @@ import models.Song
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import scala.sys.process.Process
-import common.io.RichWSRequest._
 
-// Uses google image search (not API, actual site) to find images, then displays the images for the user to select a
-// good picture. The site is used since the API doesn't allow for a size filter.
 object DownloadCover {
   private implicit val c = StandaloneConfig
   private case class CoverException(str: String, e: Exception) extends Exception(e)
 
-  private lazy val tempFolder: Directory =
-    Directory.apply(Files.createTempDirectory("images").toFile)
+  private lazy val tempFolder: Directory = Directory.apply(Files.createTempDirectory("images").toFile)
   tempFolder.dir.deleteOnExit()
 
   /**
@@ -83,10 +79,10 @@ object DownloadCover {
       cacheSize = 12))
 
   def main(args: Array[String]) {
-    val path = if (args.nonEmpty)
-      args(0)
-    else
-      """/usr/local/google/home/lalouche/dev/git/mp3streamer/test/resources/models"""
+    // TODO move to a debugging class
+    val path =
+      if (args.nonEmpty) args.mkString(" ")
+      else """D:\Media\Music\Metal\Progressive Metal\Leprous\2017 Malina"""
     val folder = Directory(path)
     println("Downloading cover image for " + path)
     Await.result(apply(folder), Duration.Inf)(folder)

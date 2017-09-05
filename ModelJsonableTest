@@ -1,3 +1,0 @@
-[TModels 2d85674] JsonableTest -
- 1 file changed, 2 insertions(+), 1 deletion(-)
- rename test/scala/search/{JsonableTest.scala => ModelJsonableTest.scala} (94%)

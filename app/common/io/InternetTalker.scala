@@ -20,7 +20,7 @@ trait InternetTalker extends ExecutionContext {
   final def useWs[T](f: WSClient => Future[T]): Future[T] = {
     val $ = createWsClient()
     try
-      f($).andThen({ $.close() }.partialConst)
+      f($).andThen($.close().partialConst)
     catch {
       // In case an error occurs while applying f
       case e: Throwable =>

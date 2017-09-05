@@ -1,6 +1,6 @@
 package backend.mb
 
-import backend.configs.StandaloneConfig
+import backend.configs.{RealConfig, StandaloneConfig}
 import backend.recon.{Artist, ArtistReconStorage, ReconID, ReconcilerCacher}
 import common.io.{IODirectory, IOSystem}
 import common.rich.RichFuture._
@@ -10,7 +10,7 @@ import models.{IOMusicFinder, MusicFinder, Song}
 import scala.concurrent.{ExecutionContext, Future}
 
 private object ArtistReconFiller {
-  private implicit val config = StandaloneConfig
+  private implicit val config: RealConfig = StandaloneConfig
 
   private val reconciler = new ReconcilerCacher[Artist](new ArtistReconStorage(), new MbArtistReconciler())
   private def fill(mf: MusicFinder {type S = IOSystem})(implicit ec: ExecutionContext) {

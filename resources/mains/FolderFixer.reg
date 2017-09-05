@@ -1,9 +1,0 @@
-Windows Registry Editor Version 5.00
-
-[-HKEY_CLASSES_ROOT\Directory\shell\FixMp3]
-
-[HKEY_CLASSES_ROOT\Directory\shell\FixMp3]
-@="Fix Mp3"
-
-[HKEY_CLASSES_ROOT\Directory\shell\FixMp3\command]
-@="cmd.exe /d /c java.exe -cp D:/FolderFixer.jar;C:/dev/web/play-2.1.2/repository/local/org.jsoup/jsoup/jars/jsoup-1.8.3.jar;C:/dev/web/play-2.1.2/repository/local/commons-logging/commons-logging/1.1.1/jars/commons-logging.jar;C:/Users/Gal/.IntelliJIdea2016.1/config/plugins/Scala/lib/scala-library.jar;C:/Users/Gal/.IntelliJIdea2016.1/config/plugins/Scala/lib/scala-swing.jar;C:/dev/lang/scala/lib/scala-reflect.jar;C:/dev/web/play-2.1.2/repository/local/com.jsuereth/scala-arm_2.10/1.3/jars/scala-arm_2.10.jar;C:/dev/web/play-2.1.2/repository/local/org.apache.httpcomponents/httpclient/4.0.1/jars/httpclient.jar;C:/dev/web/play-2.1.2/repository/cache/org.jsoup/jsoup/jars/jsoup-1.8.1.jar;C:/dev/web/play-2.1.2/repository/local/org.apache.httpcomponents/httpcore/4.0.1/jars/httpcore.jar;C:/dev/web/play-2.1.2/repository/local/play/play_2.10/2.1.2/jars/play_2.10.jar;C:/dev/web/play-2.1.2/Mp3Streamer/lib/jaudiotagger-2.0.4-20130131.171158-16.jar;C:/dev/web/play-2.1.2/repository/local/joda-time/joda-time/2.1/jars/joda-time.jar;C:/dev/web/play-2.1.2/repository/local/org.codehaus.jackson/jackson-core-asl/1.9.10/jars/jackson-core-asl.jar;C:/dev/web/play-2.1.2/repository/local/org.codehaus.jackson/jackson-mapper-asl/1.9.10/jars/jackson-mapper-asl.jar;C:/dev/web/play-2.1.2/repository/local/commons-io/commons-io/2.0.1/jars/commons-io.jar;C:/Users/Gal/.ivy2/local/org.me/scalacommon_2.11/1.0/jars/scalacommon_2.11.jar;C:/Users/Gal/.ivy2/cache/com.typesafe.slick/slick_2.11/bundles/slick_2.11-3.0.0.jar;C:/Users/Gal/.ivy2/cache/org.xerial/sqlite-jdbc/jars/sqlite-jdbc-3.7.2.jar mains.fixer.FolderFixerJava \"%1\""
