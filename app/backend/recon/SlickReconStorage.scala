@@ -30,7 +30,7 @@ class ArtistReconStorage(implicit c: Configuration) extends ReconStorage[Artist]
         .filter(_.name === a.normalize)
         .map(e => e.isIgnored -> e.reconId)
         .result
-        .map(_.headOption.map(_.swap.mapTo(e => e._1.map(ReconID) -> e._2))))
+        .map(_.headOption.map(e => e.copy(_2 = e._2.map(ReconID)).swap)))
   override def internalDelete(a: Artist) =
     db.run(rows.filter(_.name === a.normalize).delete)
   override def utils = SlickStorageUtils(c)(rows)
@@ -56,7 +56,7 @@ class AlbumReconStorage(implicit c: Configuration) extends ReconStorage[Album]
         .filter(_.album === a.normalize)
         .map(e => e.isIgnored -> e.reconId)
         .result
-        .map(_.headOption.map(_.swap.mapTo(e => e._1.map(ReconID) -> e._2))))
+        .map(_.headOption.map(e => e.copy(_2 = e._2.map(ReconID)).swap)))
   override def internalDelete(a: Album) =
     db.run(rows.filter(_.album === a.normalize).delete)
   override def utils = SlickStorageUtils(c)(rows)
@@ -66,7 +66,7 @@ class AlbumReconStorage(implicit c: Configuration) extends ReconStorage[Album]
     for (existingRows <- db.run(artistRows
         .map(e => (e.album, e.reconId, e.isIgnored))
         .result
-        .map(_.map(_.mapTo(e => (e._1, e._2.map(ReconID), e._3)))));
+        .map(_.map(e => (e._1, e._2.map(ReconID), e._3))));
          _ <- db.run(artistRows.delete)) yield existingRows
   }
 }

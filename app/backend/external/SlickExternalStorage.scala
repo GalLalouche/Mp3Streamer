@@ -53,7 +53,7 @@ private[backend] class ArtistExternalStorage(implicit c: Configuration) extends 
         .filter(_.name === k.normalize)
         .map(e => e.encodedLinks -> e.timestamp)
         .result)
-        .map(_.headOption.map(_.mapTo(e => e._1.mapTo(serializer.fromString) -> e._2.map(_.toLocalDateTime))))
+        .map(_.headOption.map(e => e._1.mapTo(serializer.fromString) -> e._2.map(_.toLocalDateTime)))
         .recoverWith {
           case _: OldStorageEntry =>
             c.logger.error(s"Encountered an old storage entry for artist $k; removing entry")
@@ -88,14 +88,14 @@ private[backend] class AlbumExternalStorage(implicit c: Configuration) extends E
         .filter(_.album === k.normalize)
         .map(e => e.encodedLinks -> e.timestamp)
         .result
-        .map(_.headOption.map(_.mapTo(e => e._1.mapTo(serializer.fromString) -> e._2.map(_.toLocalDateTime)))))
+        .map(_.headOption.map(e => e._1.mapTo(serializer.fromString) -> e._2.map(_.toLocalDateTime))))
         // TODO handle duplication with above recovery :\
         .recoverWith {
-          case _: OldStorageEntry =>
-            c.logger.error(s"Encountered an old storage entry for album $k; removing entry")
-            // Using internalDelete since regular delete also loads which results in an infinite recursion.
-            internalDelete(k).>|(None)
-        }
+      case _: OldStorageEntry =>
+        c.logger.error(s"Encountered an old storage entry for album $k; removing entry")
+        // Using internalDelete since regular delete also loads which results in an infinite recursion.
+        internalDelete(k).>|(None)
+    }
   override protected def internalForceStore(a: Album, v: (MarkedLinks[Album], Option[LocalDateTime])) =
     db.run(rows.insertOrUpdate(
       a.normalize, a.artist.normalize, serializer.toString(v._1), v._2.map(_.toMillis)))
@@ -107,7 +107,7 @@ private[backend] class AlbumExternalStorage(implicit c: Configuration) extends E
     for (existingRows <- db.run(artistRows
         .map(e => (e.album, e.encodedLinks, e.timestamp))
         .result
-        .map(_.map(_.mapTo(e => (e._1, serializer.fromString(e._2), e._3.map(_.toLocalDateTime))))));
+        .map(_.map(e => (e._1, serializer.fromString(e._2), e._3.map(_.toLocalDateTime)))));
          _ <- db.run(artistRows.delete)) yield existingRows
   }
 }

@@ -9,7 +9,7 @@ import models.IOMusicFinder
 
 // finds songs that are in the music directory but are not saved in the playlist file
 object FindSongsNotInPlaylist {
-  val musicFiles = new IOMusicFinder {
+  private val musicFiles = new IOMusicFinder {
     override val extensions = Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
   }
   def main(args: Array[String]): Unit = {

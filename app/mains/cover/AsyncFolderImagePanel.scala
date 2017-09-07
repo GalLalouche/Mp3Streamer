@@ -35,13 +35,13 @@ private[this] object AsyncFolderImagePanel {
 }
 
 /** Eventually publishes an ImageChoice event. */
-private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: ImagesSupplier)
-    (implicit ec: ExecutionContext) extends GridPanel(rows0 = rows, cols0 = cols) {
+private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: ImagesSupplier)(implicit ec: ExecutionContext)
+    extends GridPanel(rows0 = rows, cols0 = cols) {
   import AsyncFolderImagePanel._
   private def createImagePanel(folderImage: FolderImage): Component = {
     val imageIcon = folderImage.toIcon(width, height)
-    val text =
-      s"${folderImage.width}x${folderImage.height} ${fileSize(folderImage.file.size)}${" LOCAL".onlyIf(folderImage.isLocal)}"
+    val text = s"${folderImage.width}x${folderImage.height} ${fileSize(folderImage.file.size)}" +
+        " LOCAL".onlyIf(folderImage.isLocal)
     val imageLabel = new JLabel(imageIcon)
     imageLabel.setLayout(new SpringLayout())
     textProps.map(_ label text) foreach imageLabel.add
@@ -59,20 +59,16 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
   def refresh() {
     contents.clear()
     // Pre-populate the grid to avoid images moving around.
-    (0 until rows * cols).foreach(i => contents += new TextArea(s"Placeholder for image #$i"))
-    contents += Button.apply("Fuck it, I'll do it myself!") {
-      AsyncFolderImagePanel.this.publish(OpenBrowser)
-    }
-    contents += Button("Show me more...") {
-      refresh()
-    }
-    for (currentIndex <- 0 until (rows * cols);
+    val range = 0 until rows * cols
+    range.map("Placeholder for image #" +).map(new TextArea(_)).foreach(contents +=)
+    contents += Button.apply("Fuck it, I'll do it myself!")(AsyncFolderImagePanel.this.publish(OpenBrowser))
+    contents += Button("Show me more...")(refresh())
+    for (currentIndex <- range;
          image <- imagesSupplier.next().map(createImagePanel)) {
       contents.synchronized {
-        image.size
         contents.update(currentIndex, image)
-        // forces a redrawing of the panel
         visible = false
+        // forces a redrawing of the panel
         Thread sleep 10
         visible = true
       }

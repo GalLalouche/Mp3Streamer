@@ -17,6 +17,7 @@ object FolderFixer
     extends ToFunctorOps with FutureInstances {
   private implicit val c = StandaloneConfig
   import c._
+
   private def findArtistFolder(artist: String): Option[Directory] = {
     println("finding matching folder")
     Directory("d:/media/music")
@@ -44,7 +45,7 @@ object FolderFixer
       println("Copying folder image")
       f(source)
       val $ = RichFileUtils.move(source, d, expectedName)
-      IOUtils focus d.f
+      IOUtils focus d
       $
     }
   }

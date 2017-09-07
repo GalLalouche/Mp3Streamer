@@ -3,10 +3,12 @@ package songs
 import common.Jsonable
 import common.io.{DirectoryRef, FileRef}
 import common.rich.RichT._
+import common.rich.func.MoreSeqInstances
 import models.Song
 import play.api.libs.json.{JsArray, Json}
 
 import scala.concurrent.ExecutionContext
+import scalaz.syntax.ToFunctorOps
 
 class SongGroups(implicit songJsonable: Jsonable[Song]) extends Jsonable.ToJsonableOps {
   private def getJsonFile(implicit root: DirectoryRef, ec: ExecutionContext): FileRef =
@@ -24,7 +26,7 @@ class SongGroups(implicit songJsonable: Jsonable[Song]) extends Jsonable.ToJsona
       .toSet
 }
 
-object SongGroups {
+object SongGroups extends MoreSeqInstances with ToFunctorOps {
   def fromGroups(groups: Traversable[SongGroup]): Map[Song, SongGroup] =
-    groups.foldLeft(Map[Song, SongGroup]())(_ ++ _.mapTo(e => e.songs.map(_ -> e)).toMap)
+    groups.foldLeft(Map[Song, SongGroup]())((agg, group) => agg ++ group.songs.fproduct(group.const))
 }

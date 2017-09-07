@@ -37,7 +37,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
       .map(_.attr("href"))
       .flatMap(extractSemiCanonicalAllMusicLink)
       .mapTo(preferCanonical)
-      .map(_.mapTo(Url))
+      .map(_ |> Url)
       .mapTo(us => if (us.size <= 1) us.headOption
                    else throw new IllegalStateException("extracted too many AllMusic links"))
 
