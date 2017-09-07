@@ -1,14 +1,10 @@
 package mains.fixer
 
-import java.io.File
-import java.nio.file.Files
-
 import backend.configs.StandaloneConfig
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
-import common.rich.path.RichPath.poorPath
+import common.rich.path.{Directory, RichFileUtils}
 import mains.IOUtils
 import mains.cover.DownloadCover
 import models.Song
@@ -47,9 +43,8 @@ object FolderFixer
     for (d <- destinationParent; f <- folderImage) yield {
       println("Copying folder image")
       f(source)
-      val dest = new File(d, expectedName).toPath
-      val $ = Files.move(source.toPath, dest).toFile |> Directory.apply
-      IOUtils focus dest.toFile
+      val $ = RichFileUtils.move(source, d, expectedName)
+      IOUtils focus d.f
       $
     }
   }
