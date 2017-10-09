@@ -7,10 +7,10 @@ import akka.stream.ActorMaterializer
 import common.io.{DirectoryRef, IODirectory}
 import models.IOMusicFinder
 import play.api.libs.ws.ahc.AhcWSClient
-import slick.driver.{JdbcProfile, SQLiteDriver}
+import slick.jdbc.{JdbcProfile, SQLiteProfile}
 
 trait RealConfig extends Configuration {
-  override lazy implicit val driver: JdbcProfile = SQLiteDriver
+  override lazy implicit val driver: JdbcProfile = SQLiteProfile
   override implicit lazy val db: driver.backend.DatabaseDef =
     driver.api.Database.forURL("jdbc:sqlite:d:/media/music/MBRecon.sqlite", driver = "org.sqlite.JDBC")
   override implicit lazy val mf: IOMusicFinder = IOMusicFinder

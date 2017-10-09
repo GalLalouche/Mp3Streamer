@@ -5,7 +5,7 @@ import java.time.Clock
 import backend.logging.Logger
 import common.io.{DirectoryRef, InternetTalker}
 import models.MusicFinder
-import slick.driver.JdbcProfile
+import slick.jdbc.JdbcProfile
 
 import scala.concurrent.ExecutionContext
 

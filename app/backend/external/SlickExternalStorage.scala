@@ -53,7 +53,7 @@ private[backend] class ArtistExternalStorage(implicit c: Configuration) extends 
         .filter(_.name === k.normalize)
         .map(e => e.encodedLinks -> e.timestamp)
         .result)
-        .map(_.headOption.map(e => e._1.mapTo(serializer.fromString) -> e._2.map(_.toLocalDateTime)))
+        .map(_.headOption.map(e => e._1.|>(serializer.fromString) -> e._2.map(_.toLocalDateTime)))
         .recoverWith {
           case _: OldStorageEntry =>
             c.logger.error(s"Encountered an old storage entry for artist $k; removing entry")
@@ -88,7 +88,7 @@ private[backend] class AlbumExternalStorage(implicit c: Configuration) extends E
         .filter(_.album === k.normalize)
         .map(e => e.encodedLinks -> e.timestamp)
         .result
-        .map(_.headOption.map(e => e._1.mapTo(serializer.fromString) -> e._2.map(_.toLocalDateTime))))
+        .map(_.headOption.map(e => e._1.|>(serializer.fromString) -> e._2.map(_.toLocalDateTime))))
         // TODO handle duplication with above recovery :\
         .recoverWith {
       case _: OldStorageEntry =>

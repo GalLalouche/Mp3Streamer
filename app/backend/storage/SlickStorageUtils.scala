@@ -10,13 +10,12 @@ import scalaz.syntax.ToFunctorOps
 
 object SlickStorageUtils
     extends ToFunctorOps with FutureInstances {
-  private def toBoolean(f: Future[_])(implicit ec: ExecutionContext): Future[Boolean] =
-    f.>|(true) orElse false
-  def apply(implicit c: Configuration) = {
+  private def toBoolean(f: Future[_])(implicit ec: ExecutionContext): Future[Boolean] = f >| true orElse false
+  def apply(implicit c: Configuration): c.driver.api.TableQuery[_ <: c.driver.api.Table[_]] => StorageUtils = {
     import c.driver.api._
     val db = c.db
-    new {
-      def apply(table: TableQuery[_ <: Table[_]]): StorageUtils = new StorageUtils {
+    table =>
+      new StorageUtils {
         override def createTable(): Future[Boolean] =
           toBoolean(db run table.schema.create)
         override def clearTable(): Future[Boolean] =
@@ -26,6 +25,5 @@ object SlickStorageUtils
         override def doesTableExist: Future[Boolean] =
           db run MTable.getTables map (tables => tables.exists(_.name.name == table.baseTableRow.tableName))
       }
-    }
   }
 }
