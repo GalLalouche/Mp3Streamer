@@ -8,7 +8,7 @@ import common.io.MemoryFile
 import common.rich.collections.RichTraversableOnce._
 import org.scalatest.concurrent.TimeLimitedTests
 import org.scalatest.time.{Second, Span}
-import org.scalatest.{FreeSpec, ShouldMatchers}
+import org.scalatest.{FreeSpec, Matchers}
 
 import scala.concurrent.ExecutionContext
 
@@ -68,7 +68,7 @@ private[this] class BlockFileRef(val f: MemoryFile) extends MemoryFile(f.parent,
     $
   }
 }
-class FileLoggerTest extends FreeSpec with ShouldMatchers with TimeLimitedTests {
+class FileLoggerTest extends FreeSpec with TimeLimitedTests with Matchers {
   override val timeLimit = Span.apply(1, Second)
   private implicit val c = new TestConfiguration
   private val file = c.rootDirectory.addFile("foobar")

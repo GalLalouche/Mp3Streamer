@@ -9,6 +9,9 @@ GET        /sjs                          controllers.Application.sjs()
 GET        /client/*file                 controllers.Application.sjsClient(file)
 
 
+# Map static resources from the /public folder to the /assets URL path
+GET        /assets/*file                 controllers.MyAssets.asset(file)
+GET        /js/*file                     controllers.MyAssets.javascript(file)
 
 # Player!
 GET        /data/randomSong              controllers.Player.randomSong
@@ -30,11 +33,6 @@ POST       /lyrics/instrumental/artist/*path     backend.lyrics.LyricsController
 # External
 GET        /external/*path               backend.external.ExternalController.get(path)
 POST       /external/recons/*path        backend.external.ExternalController.updateRecon(path)
-
-# Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file                 controllers.Assets.at(path="/public", file)
-GET        /client/*file                 controllers.Assets.at(path="/client/scala-2.11/", file)
-GET        /js/*file                     controllers.Assets.at(path="/public/javascripts", file)
 
 # Searcher
 GET        /search/*path                 backend.search.SearchController.search(path)

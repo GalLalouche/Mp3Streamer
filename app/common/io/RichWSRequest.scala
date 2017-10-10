@@ -1,8 +1,8 @@
 package common.io
 
+import common.io.WSAliases._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.api.libs.ws.{WSRequest, WSResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 

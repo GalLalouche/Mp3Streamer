@@ -3,9 +3,9 @@ package controllers.websockets
 import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
 import akka.stream.ActorMaterializer
 import common.rich.RichT._
-import controllers.ControllerUtils
+import controllers.{ControllerUtils, LegacyController}
 import play.api.libs.streams.ActorFlow
-import play.api.mvc.{Controller, WebSocket}
+import play.api.mvc.WebSocket
 
 import scala.collection.mutable
 
@@ -16,7 +16,7 @@ object WebSocketController {
   private implicit val materializer = ActorMaterializer()(system)
 }
 
-trait WebSocketController extends Controller {
+trait WebSocketController extends LegacyController {
   import ControllerUtils.config
   import WebSocketController._
   private val actors = new mutable.HashSet[ActorRef]

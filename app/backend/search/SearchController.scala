@@ -3,18 +3,17 @@ package backend.search
 import java.net.URLDecoder
 
 import backend.configs.Configuration
-import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
 import common.Jsonable
 import common.concurrency.Extra
-import controllers.ControllerUtils
+import controllers.{ControllerUtils, LegacyController}
+import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
 import models.{Album, ModelJsonable}
 import play.api.Logger
 import play.api.libs.json.{JsArray, JsObject, JsString, Json}
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.Action
 
-object SearchController extends Controller with Extra
+object SearchController extends LegacyController with Extra
     with Jsonable.ToJsonableOps {
-  private implicit val c: Configuration = ControllerUtils.config
   import c._
   private var index: CompositeIndex = CompositeIndex.create
   override def apply() {

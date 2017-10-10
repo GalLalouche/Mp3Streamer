@@ -1,9 +1,7 @@
 package backend.configs
 import akka.util.ByteString
-import play.api.libs.json.Json
-import play.api.libs.ws.{WSCookie, WSResponse}
-
-import scala.xml.XML
+import common.io.WSAliases._
+import play.api.libs.ws.WSCookie
 
 case class FakeWSResponse(
     allHeaders: Map[String, Seq[String]] = Map(),
@@ -13,11 +11,11 @@ case class FakeWSResponse(
   override def underlying[T] = this.asInstanceOf[T]
   override def header(key: String) = allHeaders(key).headOption
   override def cookie(name: String) = cookies.find(_.name == name)
-  override def xml = XML loadString body
-  override def json = Json parse body
   override def statusText = {
     throw new UnsupportedOperationException("If you do this then you are stupid")
   }
   override def body = new String(bytes)
   override def bodyAsBytes = ByteString(bytes)
+  override def headers = allHeaders
+  override def bodyAsSource = ???
 }

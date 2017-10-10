@@ -5,6 +5,7 @@ import common.rich.RichFuture
 import common.rich.RichFuture._
 import play.api.http.Status
 import play.api.libs.json._
+import play.api.libs.ws.JsonBodyReadables._
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -24,9 +25,9 @@ private object JsonHelper {
 
   def getJson(method: String, other: (String, String)*)(implicit it: InternetTalker): Future[JsObject] =
     it.useWs(_.url("http://musicbrainz.org/ws/2/" + method)
-        .withQueryString(("fmt", "json")).withQueryString(other: _*)
+        .addQueryStringParameters(("fmt", "json")).addQueryStringParameters(other: _*)
         // see https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#How_can_I_be_a_good_citizen_and_be_smart_about_using_the_Web_Service.3FI
-        .withHeaders("User-Agent" -> "Mp3Streamer (glpkmtg@gmail.com)").get)
+        .addHttpHeaders("User-Agent" -> "Mp3Streamer (glpkmtg@gmail.com)").get)
         .filterWithMessage(_.status == Status.OK, "HTTP response wasn't 200: " + _.body)
-        .map(_.json.as[JsObject])
+        .map(_.body[JsValue].as[JsObject])
 }

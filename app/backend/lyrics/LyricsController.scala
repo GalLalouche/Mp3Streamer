@@ -4,12 +4,10 @@ import backend.Url
 import backend.configs.Configuration
 import common.rich.RichFuture._
 import common.rich.RichT._
-import controllers.ControllerUtils
+import controllers.{ControllerUtils, LegacyController}
 import play.api.mvc.{Action, Controller, Result}
 
-object LyricsController extends Controller {
-  private implicit val c: Configuration = ControllerUtils.config
-
+object LyricsController extends LegacyController {
   private val backend = new LyricsCache
   // TODO replace with Writable typeclass?
   private def toString(l: Lyrics): String = l.html + "<br><br>Source: " + l.source

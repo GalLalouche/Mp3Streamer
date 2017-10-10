@@ -6,8 +6,8 @@ import backend.Url
 import backend.external.{BaseLink, Host}
 import backend.recon.Artist
 import common.io.InternetTalker
+import common.io.WSAliases._
 import org.jsoup.Jsoup
-import play.api.libs.ws.WSResponse
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future

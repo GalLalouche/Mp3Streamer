@@ -6,7 +6,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import common.io.{DirectoryRef, IODirectory}
 import models.IOMusicFinder
-import play.api.libs.ws.ahc.AhcWSClient
+import play.api.libs.ws.ahc.StandaloneAhcWSClient
 import slick.jdbc.{JdbcProfile, SQLiteProfile}
 
 trait RealConfig extends Configuration {
@@ -17,5 +17,5 @@ trait RealConfig extends Configuration {
   override implicit lazy val rootDirectory: DirectoryRef = IODirectory.apply("D:/media/streamer/")
   override implicit val clock = Clock.systemDefaultZone
   private lazy val materializer = ActorMaterializer()(ActorSystem.create("RealConfigWS-System"))
-  override def createWsClient() = AhcWSClient()(materializer)
+  override protected def createWsClient() = StandaloneAhcWSClient()(materializer)
 }

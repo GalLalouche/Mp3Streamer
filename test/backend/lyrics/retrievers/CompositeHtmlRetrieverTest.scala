@@ -8,12 +8,12 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 import models.{FakeModelFactory, Song}
 import org.mockito.{Matchers, Mockito}
-import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import scala.concurrent.Future
 
-class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstancePerTest with MockitoSugar {
+class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
+  private implicit val c = TestConfiguration()
   private def fakeLyricsRetriever(
       songsToFind: Song, urlToMatch: Url, instrumentalText: String): HtmlRetriever = {
     class FakeLyricsRetriever extends HtmlRetriever {
@@ -26,7 +26,6 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
     }
     Mockito.spy(new FakeLyricsRetriever)
   }
-  private implicit val c = TestConfiguration()
   private val factory = new FakeModelFactory
   private val song1 = factory.song(title = "song 1")
   private val song2 = factory.song(title = "song 2")

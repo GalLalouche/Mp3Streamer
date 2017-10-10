@@ -5,10 +5,10 @@ import java.net.HttpURLConnection
 import backend.Url
 import backend.configs.{FakeWSResponse, TestConfiguration}
 import backend.external.{BaseLink, DocumentSpecs, Host}
+import common.io.WSAliases._
 import common.rich.RichFuture._
 import common.rich.RichT._
 import org.scalatest.FreeSpec
-import play.api.libs.ws.WSRequest
 
 class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
   private implicit val config = TestConfiguration()

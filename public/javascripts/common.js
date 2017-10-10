@@ -144,3 +144,9 @@ $.fn.custom_tooltip = function(text) {
 Array.prototype.custom_last = function() {
   return this[this.length - 1]
 }
+
+playlist = {};
+jPlayer = {};
+WAIT_DELAY = 25;
+isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) !== null;
+mute=window.location.href.endsWith("mute")

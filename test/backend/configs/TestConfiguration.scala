@@ -4,8 +4,8 @@ import backend.Url
 import backend.logging.{Logger, StringBuilderLogger}
 import common.FakeClock
 import common.io.MemoryRoot
+import common.io.WSAliases._
 import common.rich.RichT._
-import play.api.libs.ws._
 
 import scala.concurrent.ExecutionContext
 
@@ -17,8 +17,8 @@ case class TestConfiguration(
     },
     private val _mf: FakeMusicFinder = null,
     private val _urlToBytesMapper: PartialFunction[Url, Array[Byte]] = PartialFunction.empty,
-    private val _urlToResponseMapper: PartialFunction[Url, WSResponse] = PartialFunction.empty,
-    private val _requestToResponseMapper: PartialFunction[WSRequest, WSResponse] = PartialFunction.empty,
+    private val _urlToResponseMapper: PartialFunction[Url, FakeWSResponse] = PartialFunction.empty,
+    private val _requestToResponseMapper: PartialFunction[WSRequest, FakeWSResponse] = PartialFunction.empty,
     private val _root: MemoryRoot = new MemoryRoot)
     extends NonPersistentConfig {
   override implicit lazy val db: driver.backend.DatabaseDef = driver.api.Database.forURL(

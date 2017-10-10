@@ -4,7 +4,7 @@ import java.io.File
 
 import play.api.mvc._
 
-object Application extends Controller {
+object Application extends LegacyController {
   def index(mute: Boolean) = Action {
     Ok(views.html.main(mute))
   }
@@ -25,5 +25,4 @@ object Application extends Controller {
     val f: File = new File("C:/dev/web/Mp3Streamer/client/" + path)
     Ok(scala.io.Source.fromFile(f.getCanonicalPath).mkString).as("text/script")
   }
-
 }

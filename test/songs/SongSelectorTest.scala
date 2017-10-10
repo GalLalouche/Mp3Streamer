@@ -5,10 +5,10 @@ import common.AuxSpecs
 import models.{FakeModelFactory, MemorySong}
 import org.scalacheck.Arbitrary._
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
+import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 
 class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs with GeneratorDrivenPropertyChecks
-    with ShouldMatchers {
+    with Matchers {
   implicit override val generatorDrivenConfig = PropertyCheckConfig(minSuccessful = 10, workers = 5)
   private val factory = new FakeModelFactory()
   import factory.arbSong

@@ -1,10 +1,11 @@
 package backend.recon
+
 import backend.configs.TestConfiguration
 import common.AuxSpecs
-import org.scalatest.{FreeSpec, OneInstancePerTest, ShouldMatchers}
 import common.rich.RichFuture._
+import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 
-class AlbumReconStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest with ShouldMatchers {
+class AlbumReconStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest with Matchers {
   private implicit val c = new TestConfiguration
   private val $ = new AlbumReconStorage
   $.utils.createTable().get

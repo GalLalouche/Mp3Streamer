@@ -1,7 +1,7 @@
 package backend.configs
 
 import backend.Url
-import play.api.libs.ws.{WSClient, WSRequest}
+import common.io.WSAliases._
 
 private class FakeWSClient(getRequest: Url => WSRequest) extends WSClient{
   private var wasClosed = false

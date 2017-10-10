@@ -8,16 +8,16 @@ import backend.recon._
 import common.RichJson._
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
-import controllers.ControllerUtils
+import controllers.{ControllerUtils, LegacyController}
 import models.Song
 import play.api.libs.json.{JsObject, JsString, Json}
-import play.api.mvc.{Action, Controller, Result}
+import play.api.mvc.{Action, Result}
 
 import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
-object ExternalController extends Controller
+object ExternalController extends LegacyController
     with FutureInstances with ToBindOps {
   import ControllerUtils.config
   private type KVPair = (String, play.api.libs.json.Json.JsValueWrapper)

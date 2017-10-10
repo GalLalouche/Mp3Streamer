@@ -282,7 +282,7 @@
     _createItemHandlers: function() {
       const self = this;
       // Create .live() handlers for the playlist items
-      $(this.cssSelector.playlist + " a." + this.options.playlistOptions.itemClass).die("click").live("click",
+      $(this.cssSelector.playlist + " a." + this.options.playlistOptions.itemClass).off("click").on("click",
           function() {
             const index = $(this).closest("li").index()
             // Need to swap since songs are in reverse
@@ -297,7 +297,7 @@
           });
 
       // Create .live() handlers that disable free media links to force access via right click
-      $(self.cssSelector.playlist + " a." + this.options.playlistOptions.freeItemClass).die("click").live(
+      $(self.cssSelector.playlist + " a." + this.options.playlistOptions.freeItemClass).off("click").on(
           "click", function() {
             $(this).parent().parent().find("." + self.options.playlistOptions.itemClass).click();
             $(this).blur();
@@ -384,7 +384,7 @@
       playlistUl.prepend(this._createListItem(media)).find("li:first-child").hide()
           .slideDown(this.options.playlistOptions.addTime, function() {
             const regularHeightThreshold = 30
-            const lastSong = playlistUl.find("li:first_child")
+            const lastSong = playlistUl.find("li:first-child")
             if (lastSong.height() > regularHeightThreshold)
               console.log("too big, need to shorten")
           });

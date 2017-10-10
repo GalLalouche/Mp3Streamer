@@ -1,8 +1,8 @@
 package controllers
 
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.Action
 
-object Posters extends Controller {
+object Posters extends LegacyController {
 	def image(path: String) = Action {
 		Ok sendFile ControllerUtils.parseFile(path)
 	}
