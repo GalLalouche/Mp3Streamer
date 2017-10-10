@@ -2,6 +2,7 @@ package backend.storage
 
 import backend.configs.Configuration
 import common.rich.RichFuture._
+import common.storage.{TableUtils, TableUtilsTemplate}
 import slick.jdbc.meta.MTable
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -10,18 +11,14 @@ import scalaz.syntax.ToFunctorOps
 
 object SlickStorageUtils
     extends ToFunctorOps with FutureInstances {
-  private def toBoolean(f: Future[_])(implicit ec: ExecutionContext): Future[Boolean] = f >| true orElse false
-  def apply(implicit c: Configuration): c.profile.api.TableQuery[_ <: c.profile.api.Table[_]] => StorageUtils = {
+  def apply(implicit c: Configuration): c.profile.api.TableQuery[_ <: c.profile.api.Table[_]] => TableUtils = {
     import c.profile.api._
     val db = c.db
     table =>
-      new StorageUtils {
-        override def createTable(): Future[Boolean] =
-          toBoolean(db run table.schema.create)
-        override def clearTable(): Future[Boolean] =
-          toBoolean(db run table.delete)
-        override def dropTable(): Future[Boolean] =
-          toBoolean(db run table.schema.drop)
+      new TableUtilsTemplate() {
+        override def createTable(): Future[_] = db run table.schema.create
+        override protected def forceDropTable() = db run table.schema.drop
+        override def clearTable(): Future[_] = db run table.delete
         override def doesTableExist: Future[Boolean] =
           db run MTable.getTables map (tables => tables.exists(_.name.name == table.baseTableRow.tableName))
       }

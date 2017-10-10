@@ -27,5 +27,5 @@ class OnlineRetrieverCacher[Key, Value](
   override def mapStore(k: Key, f: (Value) => Value, default: => Value): Future[Option[Value]] = localStorage.mapStore(k ,f, default)
   override def load(k: Key): Future[Option[Value]] = localStorage.load(k)
   override def delete(k: Key): Future[Option[Value]] = localStorage.delete(k)
-  override def utils: StorageUtils = localStorage.utils
+  override def utils = localStorage.utils
 }

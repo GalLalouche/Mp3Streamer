@@ -14,7 +14,7 @@ class AlbumExternalStorageTest extends FreeSpec with AuxSpecs with BeforeAndAfte
   val $ = new AlbumExternalStorage()
   val utils = $.utils
   override def beforeAll: Unit = {
-    utils.createTable().get shouldReturn true
+    utils.createTable().get
   }
   before {
     utils.clearTable().get

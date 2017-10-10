@@ -1,5 +1,7 @@
 package backend.storage
 
+import common.storage.TableUtils
+
 import scala.concurrent.Future
 
 /** A SQL oriented store of key-value */
@@ -17,5 +19,5 @@ trait Storage[Key, Value] {
   def load(k: Key): Future[Option[Value]]
   /** Returns the value that was associated with the key. */
   def delete(k: Key): Future[Option[Value]]
-  def utils: StorageUtils
+  def utils: TableUtils
 }

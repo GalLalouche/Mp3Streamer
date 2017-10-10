@@ -20,7 +20,7 @@ class SlickStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAfter
     def * = (key, value)
   }
   private val table = TableQuery[Rows]
-  val $: StorageUtils = SlickStorageUtils(c)(table)
+  val $ = SlickStorageUtils(c)(table)
   before {
     $.dropTable().get
   }
@@ -46,28 +46,28 @@ class SlickStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAfter
     }
   }
   "create" - {
-    "should succeed when table doesn't exist" in {
-      $.createTable().get shouldReturn true
+    "should not throw when table doesn't exist" in {
+      $.createTable().get
     }
     "should fail when table exists" in {
-      $.createTable().get shouldReturn true
-      $.createTable().get shouldReturn false
+      $.createTable().get
+      an[Exception] should be thrownBy $.createTable().get
     }
     "succeed after drop" in {
       $.createTable()
           .>>($.dropTable())
-          .>>($.createTable()).get shouldReturn true
+          .>>($.createTable()).get
     }
   }
   "clear" - {
-    "when table does not exist returns false" in {
-      $.clearTable().get shouldReturn false
+    "when table throws" in {
+      an[Exception] should be thrownBy $.clearTable().get
     }
     "when table exists, returns true and crears the table" in {
       $.createTable().get
       c.db.run(table.+=("key" -> "value")).get
       c.db.run(table.result).get.toList shouldReturn List("key" -> "value")
-      $.clearTable().get shouldReturn true
+      $.clearTable().get
       c.db.run(table.result).get.toList shouldReturn Nil
     }
   }

@@ -36,5 +36,5 @@ class LyricsStorage(implicit c: Configuration) extends StorageTemplate[Song, Lyr
         .getOrElse(Instrumental(e._1))))
   override def internalDelete(s: Song) =
     db.run(rows.filter(_.song === normalize(s)).delete)
-  override def utils: StorageUtils = SlickStorageUtils(c)(rows)
+  override def utils = SlickStorageUtils(c)(rows)
 }
