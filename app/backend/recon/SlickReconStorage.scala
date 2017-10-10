@@ -11,7 +11,7 @@ import scalaz.syntax.ToFunctorOps
 //TODO so much code duplication :(
 class ArtistReconStorage(implicit c: Configuration) extends ReconStorage[Artist]
     with ToFunctorOps with FutureInstances {
-  import c.driver.api._
+  import c.profile.api._
 
   private class Rows(tag: Tag) extends Table[(String, Option[String], Boolean)](tag, "ARTISTS") {
     def name = column[String]("KEY", O.PrimaryKey)
@@ -38,7 +38,7 @@ class ArtistReconStorage(implicit c: Configuration) extends ReconStorage[Artist]
 
 class AlbumReconStorage(implicit c: Configuration) extends ReconStorage[Album]
     with ToFunctorOps with FutureInstances {
-  import c.driver.api._
+  import c.profile.api._
   private class Rows(tag: Tag) extends Table[(String, String, Option[String], Boolean)](tag, "ALBUMS") {
     def album = column[String]("ALBUM", O.PrimaryKey)
     def artist = column[String]("ARTIST")

@@ -13,8 +13,8 @@ trait Configuration extends InternetTalker {
   implicit val ec: ExecutionContext
   override def execute(runnable: Runnable): Unit = ec execute runnable
   override def reportFailure(cause: Throwable): Unit = ec reportFailure cause
-  implicit val driver: JdbcProfile
-  implicit val db: driver.backend.DatabaseDef
+  implicit val profile: JdbcProfile
+  implicit val db: profile.backend.DatabaseDef
   implicit val mf: MusicFinder
   implicit val rootDirectory: DirectoryRef
   implicit val logger: Logger

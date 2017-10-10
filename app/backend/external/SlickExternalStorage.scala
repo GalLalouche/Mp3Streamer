@@ -36,7 +36,7 @@ private[this] class Serializer[R <: Reconcilable] {
 
 private[backend] class ArtistExternalStorage(implicit c: Configuration) extends ExternalStorage[Artist]
     with ToFunctorOps with FutureInstances {
-  import c.driver.api._
+  import c.profile.api._
 
   private class Rows(tag: Tag) extends Table[(String, String, Option[Long])](tag, "ARTIST_LINKS") {
     def name = column[String]("KEY", O.PrimaryKey)
@@ -69,7 +69,7 @@ private[backend] class ArtistExternalStorage(implicit c: Configuration) extends 
 
 private[backend] class AlbumExternalStorage(implicit c: Configuration) extends ExternalStorage[Album]
     with ToFunctorOps with FutureInstances {
-  import c.driver.api._
+  import c.profile.api._
 
   private class Rows(tag: Tag) extends Table[(String, String, String, Option[Long])](tag, "ALBUM_LINKS") {
     def album = column[String]("ALBUM", O.PrimaryKey)

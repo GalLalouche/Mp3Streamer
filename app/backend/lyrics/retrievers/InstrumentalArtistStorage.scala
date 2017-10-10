@@ -6,7 +6,7 @@ import backend.storage.{SlickStorageUtils, StorageTemplate}
 import scala.concurrent.Future
 
 class InstrumentalArtistStorage(implicit c: Configuration) extends StorageTemplate[String, Unit] {
-  import c.driver.api._
+  import c.profile.api._
   private val db = c.db
 
   // instrumental songs have NULL in lyrics

@@ -7,7 +7,7 @@ import models.Song
 import scala.concurrent.Future
 
 class LyricsStorage(implicit c: Configuration) extends StorageTemplate[Song, Lyrics] {
-  import c.driver.api._
+  import c.profile.api._
   private val db = c.db
 
   // instrumental songs have NULL in lyrics

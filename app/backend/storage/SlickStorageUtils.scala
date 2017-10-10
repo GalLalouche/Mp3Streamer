@@ -11,8 +11,8 @@ import scalaz.syntax.ToFunctorOps
 object SlickStorageUtils
     extends ToFunctorOps with FutureInstances {
   private def toBoolean(f: Future[_])(implicit ec: ExecutionContext): Future[Boolean] = f >| true orElse false
-  def apply(implicit c: Configuration): c.driver.api.TableQuery[_ <: c.driver.api.Table[_]] => StorageUtils = {
-    import c.driver.api._
+  def apply(implicit c: Configuration): c.profile.api.TableQuery[_ <: c.profile.api.Table[_]] => StorageUtils = {
+    import c.profile.api._
     val db = c.db
     table =>
       new StorageUtils {

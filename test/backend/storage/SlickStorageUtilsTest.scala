@@ -12,7 +12,7 @@ class SlickStorageUtilsTest extends FreeSpec with AuxSpecs with BeforeAndAfter
     with ToBindOps with FutureInstances {
   val c = new TestConfiguration
   import c._
-  import c.driver.api._
+  import c.profile.api._
 
   private class Rows(tag: Tag) extends Table[(String, String)](tag, "TABLE") {
     def key = column[String]("KEY", O.PrimaryKey)
