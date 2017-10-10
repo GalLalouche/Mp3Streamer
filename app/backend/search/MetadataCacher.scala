@@ -82,7 +82,6 @@ private class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration
     Observable[IndexUpdate](obs => {
       val totalSize = dirs.length
       Future {
-        import common.concurrency.toRunnable
         gatherInfo(dirs.zipWithIndex.map { case (d, j) =>
           getDirectoryInfo(d, onParsingCompleted = () => {
             c execute (() => obs onNext IndexUpdate(j + 1, totalSize, d))

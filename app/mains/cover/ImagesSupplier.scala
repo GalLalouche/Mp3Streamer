@@ -30,11 +30,9 @@ private object ImagesSupplier {
       $
     }
     def fillCache() {
-      ec.execute(new Runnable {
-        override def run() {
-          while (urls.hasNext && cache.size < cacheSize)
-            cache.put(downloader(urls.next()))
-        }
+      ec.execute(() => {
+        while (urls.hasNext && cache.size < cacheSize)
+          cache.put(downloader(urls.next()))
       })
     }
   }
