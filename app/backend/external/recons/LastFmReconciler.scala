@@ -9,7 +9,7 @@ import common.io.InternetTalker
 import common.io.WSAliases._
 import org.jsoup.Jsoup
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
@@ -23,7 +23,7 @@ private class LastFmReconciler(millisBetweenRedirects: Long = 100)
     case HttpURLConnection.HTTP_MOVED_TEMP => throw new TempRedirect
     case HttpURLConnection.HTTP_OK =>
       Jsoup.parse(h.body)
-          .select("link")
+          .select("link").asScala
           .find(_.attr("rel") == "canonical")
           .map(_.attr("href"))
           .filter(_.nonEmpty)

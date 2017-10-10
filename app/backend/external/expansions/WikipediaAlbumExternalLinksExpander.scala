@@ -10,7 +10,7 @@ import common.rich.RichT._
 import common.rich.func.{MoreFutureInstances, MoreTraversableInstances, ToTraverseMonadPlusOps}
 import org.jsoup.nodes.Document
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scalaz.Traverse
 
 private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
@@ -33,7 +33,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
       .getOrElse(xs)
 
   private def extractAllMusicLink(d: Document): Option[Url] = d
-      .select("a")
+      .select("a").asScala
       .map(_.attr("href"))
       .flatMap(extractSemiCanonicalAllMusicLink)
       .mapTo(preferCanonical)

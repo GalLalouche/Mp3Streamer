@@ -11,7 +11,7 @@ import common.rich.RichFuture._
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.concurrent.Future
 import scalaz.std.TupleInstances
 import scalaz.syntax.ToFoldableOps
@@ -22,9 +22,9 @@ private class AllMusicHelper(implicit it: InternetTalker) extends ToFoldableOps 
   private val canonicalRe = s"$allmusicPrefx($canonicalLink)".r
 
   def hasStaffReview(u: Url): Future[Boolean] = it.downloadDocument(u)
-      .map(_.select("div[itemprop=reviewBody]").toTraversable.headOption.exists(_.html.nonEmpty))
+      .map(_.select("div[itemprop=reviewBody]").asScala.headOption.exists(_.html.nonEmpty))
   def hasRating(u: Url): Future[Boolean] = it.downloadDocument(u)
-      .map(_.select(".allmusic-rating").toTraversable.single)
+      .map(_.select(".allmusic-rating").asScala.single)
       .map(_.hasClass("rating-allmusic-0"))
       .map(!_)
   // TODO this should only be invoked once, from the external pipe

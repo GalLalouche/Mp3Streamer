@@ -12,7 +12,7 @@ import monocle.function.IndexFunctions
 import monocle.std.MapOptics
 import monocle.syntax.ApplySyntax
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
@@ -20,6 +20,7 @@ import scalaz.syntax.ToBindOps
 private class NewAlbums(implicit c: Configuration)
     extends ToBindOps with FutureInstances with MapOptics with ApplySyntax with IndexFunctions {
   import NewAlbum.NewAlbumJsonable
+
   private val logger = c.logger
   import c._
 
@@ -34,7 +35,7 @@ private class NewAlbums(implicit c: Configuration)
 
   private def ignore[R <: Reconcilable](r: R, reconStorage: ReconStorage[R]): Future[Unit] = {
     logger.debug(s"Ignoring $r")
-    reconStorage.load(r).map { existing =>
+    reconStorage.load(r).map {existing =>
       assert(existing.isDefined)
       val existingData = existing.get
       assert(existingData._1.isDefined)
@@ -44,8 +45,8 @@ private class NewAlbums(implicit c: Configuration)
 
   def load: Future[Map[Artist, Seq[NewAlbum]]] = Future(jsonableSaver.loadArray)
       .map(_.map(NewAlbum.artist ^|-> Artist.name modify StringFixer.apply)
-      .groupBy(_.artist)
-      .mapValues(_.sortBy(_.year)))
+          .groupBy(_.artist)
+          .mapValues(_.sortBy(_.year)))
 
   def removeArtist(a: Artist): Future[Unit] = {
     logger.debug(s"Removing $a")
@@ -80,6 +81,6 @@ object NewAlbums {
     val $ = new NewAlbums()
     $.fetchAndSave.get
     println("Done!")
-    Thread.getAllStackTraces.keySet.filterNot(_.isDaemon).foreach(println)
+    Thread.getAllStackTraces.keySet.asScala.filterNot(_.isDaemon).foreach(println)
   }
 }

@@ -6,7 +6,7 @@ import common.io.InternetTalker
 import common.rich.RichT._
 import org.jsoup.nodes.{Document, Element}
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.concurrent.Future
 
 private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String)(implicit it: InternetTalker)
@@ -21,7 +21,7 @@ private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String
   }
   private def extractLinks(d: Document): List[BaseLink[T]] =
     d.select(".external_links")
-        .select("li")
+        .select("li").asScala
         .filterNot(_.className() == "all-relationships")
         .map(extractLink)
         .toList

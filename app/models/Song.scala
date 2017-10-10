@@ -9,7 +9,7 @@ import common.rich.primitives.RichString._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 trait Song {
   type F <: FileRef
@@ -59,8 +59,8 @@ object Song {
     val discNumber = Option(tag.getFirst(FieldKey.DISC_NO)).map(_.trim).filterNot(_.isEmpty)
     def parseReplayGain(s: String): String = s.dropAfterLast('=').drop(1).takeWhile(_ != '"')
     // in flac files, REPLAYGAIN_TRACK_GAIN works. In regular files, it doesn't so it needs to be parsed manually :\
-    val trackGain = (tag.getFields("REPLAYGAIN_TRACK_GAIN").headOption map (_.toString))
-        .orElse(tag getFields "TXXX" map (_.toString) find (_ contains "track_gain") map parseReplayGain)
+    val trackGain = (tag.getFields("REPLAYGAIN_TRACK_GAIN").asScala.headOption map (_.toString))
+        .orElse(tag.getFields("TXXX").asScala map (_.toString) find (_ contains "track_gain") map parseReplayGain)
         .map(_.split(' ').apply(0).toDouble) // handle the case of "1.43 dB"
 
     IOSong(file = IOFile(file), title = tag.getFirst(FieldKey.TITLE),

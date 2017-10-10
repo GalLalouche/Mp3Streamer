@@ -9,7 +9,7 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 import org.jsoup.nodes.Document
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.concurrent.Future
 import scala.util.Try
 
@@ -17,12 +17,21 @@ private class AllMusicAlbumFinder(implicit it: InternetTalker) extends SameHostE
   val allMusicHelper = new AllMusicHelper
   override def findAlbum(d: Document, a: Album): Option[Url] = {
     def score(other: Album): Double = AlbumReconScorer.apply(a, other)
-    d.select(".discography table tbody tr")
-        .toSeq
-        .flatMap(e => Try(Album(e.select(".title").head.text, e.select(".year").head.text.toInt, a.artist)).toOption.map(e -> _))
+    d.select(".discography table tbody tr").asScala
+        .flatMap(e =>
+          Try(
+            Album(
+              title = e.select(".title").asScala.head.text,
+              year = e.select(".year").asScala.head.text.toInt,
+              artist = a.artist)
+          ).toOption.map(e -> _))
         .find(e => score(e._2) >= 0.95)
         .map(_._1)
-        .map(_.select("td a").head.attr("href").mapIf(!_.startsWith("http")).to("http://www.allmusic.com" + _).mapTo(Url))
+        .map(_.select("td a").asScala
+            .head
+            .attr("href")
+            .mapIf(!_.startsWith("http")).to("http://www.allmusic.com" + _)
+            .mapTo(Url))
   }
 
   override def apply(e: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] =

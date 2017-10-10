@@ -5,7 +5,7 @@
     <script type="text/javascript" src="/js/flac/mp3.js")></script>
     <body>Hello world</body>
     <script type="text/javascript">
-        var p = AV.Player.fromURL("/flac/raw")
+        const p = AV.Player.fromURL("/flac/raw")
         p.preload()
         p.on('ready', function() {
             console.log('ready');

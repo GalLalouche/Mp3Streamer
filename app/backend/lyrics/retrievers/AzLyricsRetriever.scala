@@ -5,14 +5,13 @@ import common.rich.collections.RichTraversableOnce._
 import models.Song
 import org.jsoup.nodes.Document
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 private[lyrics] class AzLyricsRetriever(implicit it: InternetTalker) extends SingleHostHtmlRetriever {
   private def normalize(s: String): String = s.filter(e => e.isDigit || e.isLetter).toLowerCase
   // AZ lyrics don't support instrumental :\
   override def fromHtml(html: Document, s: Song): Option[String] = Some(
-    html.select(".main-page .text-center div")
-        .toTraversable
+    html.select(".main-page .text-center div").asScala
         .filter(_.classNames.isEmpty)
         .single
         .html
