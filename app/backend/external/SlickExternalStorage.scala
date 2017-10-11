@@ -9,6 +9,7 @@ import backend.recon.{Album, Artist, Reconcilable}
 import backend.storage.SlickStorageTemplate
 import common.rich.RichT._
 import slick.ast.{BaseTypedType, ScalaBaseType}
+import slick.jdbc.JdbcType
 
 import scala.concurrent.Future
 
@@ -35,6 +36,9 @@ private[this] class Serializer[R <: Reconcilable] {
 
 private[external] abstract class SlickExternalStorage[R <: Reconcilable](implicit _c: Configuration)
     extends SlickStorageTemplate[R, (MarkedLinks[R], Option[LocalDateTime])] with ExternalStorage[R] {
+  import c.profile.api._
+  protected implicit val localDateTimeColumn: JdbcType[LocalDateTime] =
+    MappedColumnType.base[LocalDateTime, Long](_.toMillis, _.toLocalDateTime)
   override protected type Id = String
   override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
   override protected def extractId(r: R) = r.normalize
@@ -53,19 +57,19 @@ private[backend] class ArtistExternalStorage(implicit _c: Configuration) extends
 
   private val serializer = new Serializer[Artist]
 
-  override protected type Entity = (String, String, Option[Long])
+  override protected type Entity = (String, String, Option[LocalDateTime])
   protected class Rows(tag: Tag) extends Table[Entity](tag, "ARTIST_LINKS") {
     def name = column[String]("KEY", O.PrimaryKey)
     def encodedLinks = column[String]("LINKS_STRING")
-    def timestamp = column[Option[Long]]("TIMESTAMP")
+    def timestamp = column[Option[LocalDateTime]]("TIMESTAMP")
     def * = (name, encodedLinks, timestamp)
   }
   override protected type EntityTable = Rows
   override protected val tableQuery = TableQuery[EntityTable]
   override protected def toEntity(k: Artist, v: (MarkedLinks[Artist], Option[LocalDateTime])) =
-    (k.normalize, serializer.toString(v._1), v._2.map(_.toMillis))
+    (k.normalize, serializer.toString(v._1), v._2)
   override protected def toId(et: EntityTable) = et.name
-  override protected def extractValue(e: Entity) = serializer.fromString(e._2) -> e._3.map(_.toLocalDateTime)
+  override protected def extractValue(e: Entity) = serializer.fromString(e._2) -> e._3
 }
 
 private[backend] class AlbumExternalStorage(implicit _c: Configuration) extends
@@ -73,27 +77,27 @@ private[backend] class AlbumExternalStorage(implicit _c: Configuration) extends
   import c.profile.api._
 
   private val serializer = new Serializer[Album]
-  override protected type Entity = (String, String, String, Option[Long])
+  override protected type Entity = (String, String, String, Option[LocalDateTime])
   protected class Rows(tag: Tag) extends Table[Entity](tag, "ALBUM_LINKS") {
     def album = column[String]("ALBUM", O.PrimaryKey)
     def artist = column[String]("ARTIST")
     def encodedLinks = column[String]("LINKS_STRING")
-    def timestamp = column[Option[Long]]("TIMESTAMP")
+    def timestamp = column[Option[LocalDateTime]]("TIMESTAMP")
     def artist_index = index("artist_index", artist)
     def * = (album, artist, encodedLinks, timestamp)
   }
   override protected type EntityTable = Rows
   override protected val tableQuery = TableQuery[EntityTable]
   override protected def toEntity(k: Album, v: (MarkedLinks[Album], Option[LocalDateTime])) =
-    (k.normalize, k.artist.normalize, serializer.toString(v._1), v._2.map(_.toMillis))
+    (k.normalize, k.artist.normalize, serializer.toString(v._1), v._2)
   override protected def toId(et: EntityTable) = et.album
-  override protected def extractValue(e: Entity) = serializer.fromString(e._3) -> e._4.map(_.toLocalDateTime)
+  override protected def extractValue(e: Entity) = serializer.fromString(e._3) -> e._4
   def deleteAllLinks(a: Artist): Future[Traversable[(String, MarkedLinks[Album], Option[LocalDateTime])]] = {
     val artistRows = tableQuery.filter(_.artist === a.normalize)
     for (existingRows <- db.run(artistRows
         .map(e => (e.album, e.encodedLinks, e.timestamp))
         .result
-        .map(_.map(e => (e._1, serializer.fromString(e._2), e._3.map(_.toLocalDateTime)))));
+        .map(_.map(e => (e._1, serializer.fromString(e._2), e._3))));
          _ <- db.run(artistRows.delete)) yield existingRows
   }
 }
