@@ -1,9 +1,9 @@
 package backend.recon
 
-import backend.storage.StorageTemplate
+import backend.storage.Storage
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-abstract class ReconStorage[Key <: Reconcilable](implicit ec: ExecutionContext) extends StorageTemplate[Key, (Option[ReconID], Boolean)] {
-  def isIgnored(k: Key): Future[Option[Boolean]] = load(k).map(_.map(_._2))
+trait ReconStorage[Key <: Reconcilable] extends Storage[Key, (Option[ReconID], Boolean)] {
+  def isIgnored(k: Key): Future[Option[Boolean]]
 }
