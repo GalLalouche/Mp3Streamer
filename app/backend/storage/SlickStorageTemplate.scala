@@ -40,11 +40,10 @@ abstract class SlickStorageTemplate[Key, Value](implicit protected val c: Config
   override def load(k: Key) =
     db.run(tableQuery.filter(toId(_) === extractId(k)).result).map(_.headOption map extractValue)
   override def utils = new TableUtilsTemplate() {
-      override def createTable(): Future[_] = db run tableQuery.schema.create
-      override protected def forceDropTable() = db run tableQuery.schema.drop
-      override def clearTable(): Future[_] = db run tableQuery.delete
-      override def doesTableExist: Future[Boolean] =
-        db run MTable.getTables map (tables => tables.exists(_.name.name == tableQuery.baseTableRow.tableName))
-    }
-
+    override def createTable(): Future[_] = db run tableQuery.schema.create
+    override protected def forceDropTable() = db run tableQuery.schema.drop
+    override def clearTable(): Future[_] = db run tableQuery.delete
+    override def doesTableExist: Future[Boolean] =
+      db run MTable.getTables map (tables => tables.exists(_.name.name == tableQuery.baseTableRow.tableName))
+  }
 }
