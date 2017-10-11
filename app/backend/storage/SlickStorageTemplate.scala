@@ -20,7 +20,7 @@ abstract class SlickStorageTemplate[Key, Value](implicit protected val c: Config
   protected def toId(et: EntityTable): Rep[Id]
   protected def extractValue(e: Entity): Value
   protected implicit def btt: BaseTypedType[Id]
-  private val db = c.db
+  protected val db = c.db
   /** If a previous value exists, override it. */
   protected def internalForceStore(k: Key, v: Value): Future[_] =
     db.run(tableQuery.insertOrUpdate(toEntity(k, v)))

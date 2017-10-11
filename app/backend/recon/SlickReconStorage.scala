@@ -1,45 +1,42 @@
 package backend.recon
 
 import backend.configs.Configuration
-import backend.storage.SlickStorageUtils
-import common.rich.RichT._
+import backend.storage.SlickStorageTemplate
+import slick.ast.{BaseTypedType, ScalaBaseType}
 
 import scala.concurrent.Future
-import scalaz.std.FutureInstances
-import scalaz.syntax.ToFunctorOps
 
-//TODO so much code duplication :(
-class ArtistReconStorage(implicit c: Configuration) extends ReconStorage[Artist]
-    with ToFunctorOps with FutureInstances {
+abstract class SlickReconStorage[R <: Reconcilable](implicit _c: Configuration)
+    extends SlickStorageTemplate[R, (Option[ReconID], Boolean)] with ReconStorage[R] {
+  override protected type Id = String
+  override protected implicit def btt: BaseTypedType[String] = ScalaBaseType.stringType
+  override def isIgnored(k: R) = load(k).map(_.map(_._2))
+
+  override protected def extractId(r: R) = r.normalize
+}
+class ArtistReconStorage(implicit _c: Configuration) extends SlickReconStorage[Artist] {
   import c.profile.api._
 
-  private class Rows(tag: Tag) extends Table[(String, Option[String], Boolean)](tag, "ARTISTS") {
+  override protected type Entity = (String, Option[String], Boolean)
+  protected class Rows(tag: Tag) extends Table[Entity](tag, "ARTISTS") {
     def name = column[String]("KEY", O.PrimaryKey)
     def reconId = column[Option[String]]("RECON_ID")
     def isIgnored = column[Boolean]("IS_IGNORED", O.Default(false))
     def * = (name, reconId, isIgnored)
   }
-  private val rows = TableQuery[Rows]
-  private val db = c.db
-  def store(a: Artist, id: Option[String]): Future[Boolean] =
-    store(a, id.map(ReconID.apply) -> id.isEmpty)
-  override protected def internalForceStore(a: Artist, value: (Option[ReconID], Boolean)) =
-    db.run(rows.insertOrUpdate(a.normalize, value._1.map(_.id), value._2))
-  override def load(a: Artist): Future[Option[(Option[ReconID], Boolean)]] =
-    db.run(rows
-        .filter(_.name === a.normalize)
-        .map(e => e.isIgnored -> e.reconId)
-        .result
-        .map(_.headOption.map(e => e.copy(_2 = e._2.map(ReconID)).swap)))
-  override def internalDelete(a: Artist) =
-    db.run(rows.filter(_.name === a.normalize).delete)
-  override def utils = SlickStorageUtils(c)(rows)
+  override protected type EntityTable = Rows
+  override protected val tableQuery = TableQuery[Rows]
+  override protected def toEntity(a: Artist, v: (Option[ReconID], Boolean)) =
+    (a.normalize, v._1.map(_.id), v._2)
+  override protected def toId(et: EntityTable) = et.name
+  override protected def extractValue(e: Entity) = e._2.map(ReconID) -> e._3
 }
 
-class AlbumReconStorage(implicit c: Configuration) extends ReconStorage[Album]
-    with ToFunctorOps with FutureInstances {
+class AlbumReconStorage(implicit _c: Configuration) extends SlickReconStorage[Album] {
   import c.profile.api._
-  private class Rows(tag: Tag) extends Table[(String, String, Option[String], Boolean)](tag, "ALBUMS") {
+
+  override protected type Entity = (String, String, Option[String], Boolean)
+  protected class Rows(tag: Tag) extends Table[Entity](tag, "ALBUMS") {
     def album = column[String]("ALBUM", O.PrimaryKey)
     def artist = column[String]("ARTIST")
     def reconId = column[Option[String]]("RECON_ID")
@@ -47,22 +44,16 @@ class AlbumReconStorage(implicit c: Configuration) extends ReconStorage[Album]
     def artistIndex = index("ARTIST_INDEX", artist)
     def * = (album, artist, reconId, isIgnored)
   }
-  private val rows = TableQuery[Rows]
-  private val db = c.db
-  override protected def internalForceStore(a: Album, value: (Option[ReconID], Boolean)) =
-    db.run(rows.insertOrUpdate(a.normalize, a.artist.normalize, value._1.map(_.id), value._2))
-  override def load(a: Album): Future[Option[(Option[ReconID], Boolean)]] =
-    db.run(rows
-        .filter(_.album === a.normalize)
-        .map(e => e.isIgnored -> e.reconId)
-        .result
-        .map(_.headOption.map(e => e.copy(_2 = e._2.map(ReconID)).swap)))
-  override def internalDelete(a: Album) =
-    db.run(rows.filter(_.album === a.normalize).delete)
-  override def utils = SlickStorageUtils(c)(rows)
+  override protected type EntityTable = Rows
+  override protected val tableQuery = TableQuery[EntityTable]
+  override protected def toEntity(a: Album, v: (Option[ReconID], Boolean)) =
+    (a.normalize, a.artist.normalize, v._1.map(_.id), v._2)
+  override protected def toId(et: EntityTable) = et.album
+  override protected def extractValue(e: Entity) = e._3.map(ReconID) -> e._4
+
   /** Delete all recons for albums for that artist */
   def deleteAllRecons(a: Artist): Future[Traversable[(String, Option[ReconID], Boolean)]] = {
-    val artistRows = rows.filter(_.artist === a.normalize)
+    val artistRows = tableQuery.filter(_.artist === a.normalize)
     for (existingRows <- db.run(artistRows
         .map(e => (e.album, e.reconId, e.isIgnored))
         .result
