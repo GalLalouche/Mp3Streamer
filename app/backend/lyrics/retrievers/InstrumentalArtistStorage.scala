@@ -12,7 +12,7 @@ class InstrumentalArtistStorage(implicit _c: Configuration) extends SlickStorage
 
   override protected type Id = String
   override protected type Entity = String
-  protected class ArtistTable(tag: Tag) extends Table[(String)](tag, "INSTRUMENTAL_ARTISTS") {
+  protected class ArtistTable(tag: Tag) extends Table[Entity](tag, "INSTRUMENTAL_ARTISTS") {
     def artistName = column[String]("ARTIST_NAME", O.PrimaryKey)
     def * = artistName
   }

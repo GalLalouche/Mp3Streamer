@@ -3,15 +3,14 @@ package backend.external
 import java.time.LocalDateTime
 
 import backend.RichTime._
+import backend.Url
 import backend.configs.Configuration
 import backend.recon.{Album, Artist, Reconcilable}
-import backend.storage.SlickStorageUtils
-import backend.{RichTime, Url}
+import backend.storage.SlickStorageTemplate
 import common.rich.RichT._
+import slick.ast.{BaseTypedType, ScalaBaseType}
 
 import scala.concurrent.Future
-import scalaz.std.FutureInstances
-import scalaz.syntax.ToFunctorOps
 
 private[this] class OldStorageEntry extends Exception
 private[this] class Serializer[R <: Reconcilable] {
@@ -34,44 +33,50 @@ private[this] class Serializer[R <: Reconcilable] {
   def fromString(s: String): MarkedLinks[R] = s split splitString filterNot (_.isEmpty) map decode
 }
 
-private[backend] class ArtistExternalStorage(implicit c: Configuration) extends ExternalStorage[Artist]
-    with ToFunctorOps with FutureInstances {
+private[external] abstract class SlickExternalStorage[R <: Reconcilable](implicit _c: Configuration)
+    extends SlickStorageTemplate[R, (MarkedLinks[R], Option[LocalDateTime])] with ExternalStorage[R] {
+  override protected type Id = String
+  override protected implicit def btt: BaseTypedType[String] = ScalaBaseType.stringType
+
+  override protected def extractId(r: R) = r.normalize
+
+  override def load(r: R): Future[Option[(MarkedLinks[R], Option[LocalDateTime])]] =
+    super.load(r).recoverWith {
+      case _: OldStorageEntry =>
+        c.logger.error(s"Encountered an old storage entry for entity $r; removing entry")
+        // Using internalDelete since regular delete also loads which results in an infinite recursion.
+        internalDelete(r).>|(None)
+    }
+}
+
+private[backend] class ArtistExternalStorage(implicit _c: Configuration) extends
+    SlickExternalStorage[Artist] {
   import c.profile.api._
 
-  private class Rows(tag: Tag) extends Table[(String, String, Option[Long])](tag, "ARTIST_LINKS") {
+  private val serializer = new Serializer[Artist]
+
+  override protected type Entity = (String, String, Option[Long])
+  protected class Rows(tag: Tag) extends Table[Entity](tag, "ARTIST_LINKS") {
     def name = column[String]("KEY", O.PrimaryKey)
     def encodedLinks = column[String]("LINKS_STRING")
     def timestamp = column[Option[Long]]("TIMESTAMP")
     def * = (name, encodedLinks, timestamp)
   }
-  private val rows = TableQuery[Rows]
-  private val db = c.db
-  private val serializer = new Serializer[Artist]
-
-  override def load(k: Artist): Future[Option[(MarkedLinks[Artist], Option[LocalDateTime])]] =
-    db.run(rows
-        .filter(_.name === k.normalize)
-        .map(e => e.encodedLinks -> e.timestamp)
-        .result)
-        .map(_.headOption.map(e => e._1.|>(serializer.fromString) -> e._2.map(_.toLocalDateTime)))
-        .recoverWith {
-          case _: OldStorageEntry =>
-            c.logger.error(s"Encountered an old storage entry for artist $k; removing entry")
-            // Using internalDelete since regular delete also loads which results in an infinite recursion.
-            internalDelete(k).>|(None)
-        }
-  override protected def internalForceStore(a: Artist, v: (MarkedLinks[Artist], Option[LocalDateTime])) =
-    db.run(rows.insertOrUpdate(a.normalize, serializer.toString(v._1), v._2.map(_.toMillis)))
-  override def internalDelete(k: Artist) =
-    db.run(rows.filter(_.name === k.normalize).delete)
-  override def utils = SlickStorageUtils(c)(rows)
+  override protected type EntityTable = Rows
+  override protected val tableQuery = TableQuery[Rows]
+  override protected def toEntity(k: Artist, v: (MarkedLinks[Artist], Option[LocalDateTime])) =
+    (k.normalize, serializer.toString(v._1), v._2.map(_.toMillis))
+  override protected def toId(et: EntityTable) = et.name
+  override protected def extractValue(e: Entity) = serializer.fromString(e._2) -> e._3.map(_.toLocalDateTime)
 }
 
-private[backend] class AlbumExternalStorage(implicit c: Configuration) extends ExternalStorage[Album]
-    with ToFunctorOps with FutureInstances {
+private[backend] class AlbumExternalStorage(implicit _c: Configuration) extends
+    SlickExternalStorage[Album] {
   import c.profile.api._
 
-  private class Rows(tag: Tag) extends Table[(String, String, String, Option[Long])](tag, "ALBUM_LINKS") {
+  private val serializer = new Serializer[Album]
+  override protected type Entity = (String, String, String, Option[Long])
+  protected class Rows(tag: Tag) extends Table[Entity](tag, "ALBUM_LINKS") {
     def album = column[String]("ALBUM", O.PrimaryKey)
     def artist = column[String]("ARTIST")
     def encodedLinks = column[String]("LINKS_STRING")
@@ -79,31 +84,14 @@ private[backend] class AlbumExternalStorage(implicit c: Configuration) extends E
     def artist_index = index("artist_index", artist)
     def * = (album, artist, encodedLinks, timestamp)
   }
-  private val rows = TableQuery[Rows]
-  private val db = c.db
-  private val serializer = new Serializer[Album]
-
-  override def load(k: Album): Future[Option[(MarkedLinks[Album], Option[LocalDateTime])]] =
-    db.run(rows
-        .filter(_.album === k.normalize)
-        .map(e => e.encodedLinks -> e.timestamp)
-        .result
-        .map(_.headOption.map(e => e._1.|>(serializer.fromString) -> e._2.map(_.toLocalDateTime))))
-        // TODO handle duplication with above recovery :\
-        .recoverWith {
-      case _: OldStorageEntry =>
-        c.logger.error(s"Encountered an old storage entry for album $k; removing entry")
-        // Using internalDelete since regular delete also loads which results in an infinite recursion.
-        internalDelete(k).>|(None)
-    }
-  override protected def internalForceStore(a: Album, v: (MarkedLinks[Album], Option[LocalDateTime])) =
-    db.run(rows.insertOrUpdate(
-      a.normalize, a.artist.normalize, serializer.toString(v._1), v._2.map(_.toMillis)))
-  override def internalDelete(k: Album) =
-    db.run(rows.filter(_.album === k.normalize).delete)
-  override def utils = SlickStorageUtils(c)(rows)
+  override protected type EntityTable = Rows
+  override protected val tableQuery = TableQuery[EntityTable]
+  override protected def toEntity(k: Album, v: (MarkedLinks[Album], Option[LocalDateTime])) =
+    (k.normalize, k.artist.normalize, serializer.toString(v._1), v._2.map(_.toMillis))
+  override protected def toId(et: EntityTable) = et.album
+  override protected def extractValue(e: Entity) = serializer.fromString(e._3) -> e._4.map(_.toLocalDateTime)
   def deleteAllLinks(a: Artist): Future[Traversable[(String, MarkedLinks[Album], Option[LocalDateTime])]] = {
-    val artistRows = rows.filter(_.artist === a.normalize)
+    val artistRows = tableQuery.filter(_.artist === a.normalize)
     for (existingRows <- db.run(artistRows
         .map(e => (e.album, e.encodedLinks, e.timestamp))
         .result
