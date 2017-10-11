@@ -28,16 +28,16 @@ class AlbumExternalStorageTest extends FreeSpec with AuxSpecs with BeforeAndAfte
   val link2 = MarkedLink[Album](Url("www.bazqux.com/baz/qux.html"), Host("bazqux", Url("www.bazqux.com")), false)
   "Can load what is stored" in {
     val value = List(link1, link2) -> Some(LocalDateTime.now)
-    $.store(album, value).get shouldReturn true
+    $.store(album, value).get
     $.load(album).get.get shouldReturn value
   }
   "No problem with an empty list" in {
-    $.store(album, Nil -> None).get shouldReturn true
+    $.store(album, Nil -> None).get
     $.load(album).get.get._1 shouldReturn Nil
     $.load(album).get.get._2 shouldReturn None
   }
   "Can force store" in {
-    $.store(album, Nil -> None).get shouldReturn true
+    $.store(album, Nil -> None).get
     val link1 = MarkedLink[Album](Url("www.foobar.com/foo/bar.html"), Host("foobar", Url("www.foobar.com")), true)
     $.forceStore(album, List(link1) -> Some(LocalDateTime.now)).get.get shouldReturn (Nil -> None)
   }

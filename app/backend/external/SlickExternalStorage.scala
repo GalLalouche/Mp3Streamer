@@ -35,8 +35,9 @@ private[this] class Serializer[R <: Reconcilable] {
 
 private[external] abstract class SlickExternalStorage[R <: Reconcilable](implicit _c: Configuration)
     extends SlickStorageTemplate[R, (MarkedLinks[R], Option[LocalDateTime])] with ExternalStorage[R] {
+  override protected type Id = String
+  override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
   override protected def extractId(r: R) = r.normalize
-
   override def load(r: R): Future[Option[(MarkedLinks[R], Option[LocalDateTime])]] =
     super.load(r).recoverWith {
       case _: OldStorageEntry =>

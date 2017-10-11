@@ -3,10 +3,13 @@ package backend.lyrics
 import backend.configs.Configuration
 import backend.storage.SlickStorageTemplate
 import models.Song
+import slick.ast.{BaseTypedType, ScalaBaseType}
 
 class LyricsStorage(implicit _c: Configuration) extends SlickStorageTemplate[Song, Lyrics] {
   import c.profile.api._
 
+  override protected type Id = String
+  override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
   override protected type Entity = (String, String, Option[String])
   // instrumental songs have NULL in lyrics
   protected class LyricsTable(tag: Tag) extends Table[Entity](tag, "LYRICS") {

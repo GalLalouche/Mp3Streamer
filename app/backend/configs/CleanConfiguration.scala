@@ -4,8 +4,8 @@ import backend.external.{AlbumExternalStorage, ArtistExternalStorage}
 import backend.lyrics.LyricsStorage
 import backend.lyrics.retrievers.InstrumentalArtistStorage
 import backend.recon.{AlbumReconStorage, ArtistReconStorage}
-import backend.storage.Storage
 import common.rich.RichFuture._
+import common.storage.Storage
 
 import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.{FutureInstances, ListInstances}

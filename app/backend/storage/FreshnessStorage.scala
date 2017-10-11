@@ -4,9 +4,9 @@ import java.time.{Clock, LocalDateTime}
 
 import backend.RichTime._
 import common.rich.RichT._
+import common.storage.Storage
 
 import scala.concurrent.{ExecutionContext, Future}
-
 
 /**
   * Keep a timestamp for every value. If the timestamp does not exist (but the value does), it means
@@ -19,8 +19,9 @@ class FreshnessStorage[Key, Value](storage: Storage[Key, (Value, Option[LocalDat
   private def toValue(v: Future[Option[(Value, Any)]]): Future[Option[Value]] = v.map(_.map(_._1))
   // 1st option: the time data may not be there; 2nd option: it might be there but null
   def freshness(k: Key): Future[Option[Option[LocalDateTime]]] = storage load k map (_ map (_._2))
-  def storeWithoutTimestamp(k: Key, v: Value): Future[Boolean] = storage.store(k, v -> None)
+  def storeWithoutTimestamp(k: Key, v: Value): Future[Unit] = storage.store(k, v -> None)
   override def store(k: Key, v: Value) = storage.store(k, v |> now)
+  override def storeMultiple(kvs: Seq[(Key, Value)]) = storage.storeMultiple(kvs.map(e => e._1 -> now(e._2)))
   override def load(k: Key) = storage.load(k) |> toValue
   override def forceStore(k: Key, v: Value) = storage.forceStore(k, v |> now) |> toValue
   // Also updates the timestamp to now

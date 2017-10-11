@@ -1,6 +1,6 @@
 package backend.recon
 
-import backend.storage.Storage
+import common.storage.Storage
 
 import scala.concurrent.Future
 
