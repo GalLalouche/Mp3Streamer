@@ -14,7 +14,7 @@ trait Configuration extends InternetTalker {
   override def execute(runnable: Runnable): Unit = ec execute runnable
   override def reportFailure(cause: Throwable): Unit = ec reportFailure cause
   implicit val profile: JdbcProfile
-  implicit val db: profile.backend.DatabaseDef
+  implicit val db: profile.backend.Database
   implicit val mf: MusicFinder
   implicit val rootDirectory: DirectoryRef
   implicit val logger: Logger

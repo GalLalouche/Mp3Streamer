@@ -6,7 +6,7 @@ import backend.RichTime._
 import backend.Url
 import backend.configs.Configuration
 import backend.recon.{Album, Artist, Reconcilable}
-import backend.storage.SlickStorageTemplate
+import backend.storage.SlickStorageTemplateFromConf
 import common.storage.{ColumnMappers, StringSerializable}
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
@@ -14,9 +14,9 @@ import slick.jdbc.JdbcType
 import scala.concurrent.Future
 
 private[external] abstract class SlickExternalStorage[R <: Reconcilable](implicit _c: Configuration)
-    extends SlickStorageTemplate[R, (MarkedLinks[R], Option[LocalDateTime])] with ExternalStorage[R] {
+    extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Option[LocalDateTime])] with ExternalStorage[R] {
   private class OldStorageEntry extends Exception
-  import c.profile.api._
+  import this.profile.api._
 
   protected implicit val localDateTimeColumn: JdbcType[LocalDateTime] =
     MappedColumnType.base[LocalDateTime, Long](_.toMillis, _.toLocalDateTime)
@@ -53,7 +53,7 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](implici
 
 private[backend] class ArtistExternalStorage(implicit _c: Configuration) extends
     SlickExternalStorage[Artist] {
-  import c.profile.api._
+  import this.profile.api._
 
   override protected type Entity = (String, MarkedLinks[Artist], Option[LocalDateTime])
   protected class Rows(tag: Tag) extends Table[Entity](tag, "ARTIST_LINKS") {
@@ -72,7 +72,7 @@ private[backend] class ArtistExternalStorage(implicit _c: Configuration) extends
 
 private[backend] class AlbumExternalStorage(implicit _c: Configuration) extends
     SlickExternalStorage[Album] {
-  import c.profile.api._
+  import this.profile.api._
 
   override protected type Entity = (String, String, MarkedLinks[Album], Option[LocalDateTime])
   protected class Rows(tag: Tag) extends Table[Entity](tag, "ALBUM_LINKS") {

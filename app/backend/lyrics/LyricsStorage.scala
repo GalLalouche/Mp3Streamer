@@ -1,13 +1,14 @@
 package backend.lyrics
 
 import backend.configs.Configuration
-import backend.storage.SlickStorageTemplate
+import backend.storage.SlickStorageTemplateFromConf
 import models.Song
 import slick.ast.{BaseTypedType, ScalaBaseType}
 
-class LyricsStorage(implicit _c: Configuration) extends SlickStorageTemplate[Song, Lyrics] {
-  import c.profile.api._
+class LyricsStorage(implicit _c: Configuration) extends SlickStorageTemplateFromConf[Song, Lyrics] {
+  import this.profile.api._
 
+  override protected type Profile = c.profile.type
   override protected type Id = String
   override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
   override protected type Entity = (String, String, Option[String])
