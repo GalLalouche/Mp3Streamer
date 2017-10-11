@@ -1,7 +1,7 @@
 package backend.storage
 
 import backend.configs.Configuration
-import slick.ast.BaseTypedType
+import slick.ast.{BaseTypedType, ScalaBaseType}
 
 import scala.concurrent.Future
 import scalaz.std.FutureInstances
@@ -11,7 +11,7 @@ abstract class SlickStorageTemplate[Key, Value](implicit protected val c: Config
     StorageTemplate[Key, Value] with ToFunctorOps with FutureInstances {
   import c.profile.api._
 
-  protected type Id
+  protected type Id = String
   protected type Entity
   protected type EntityTable <: Table[Entity]
   protected val tableQuery: TableQuery[EntityTable]
@@ -19,7 +19,7 @@ abstract class SlickStorageTemplate[Key, Value](implicit protected val c: Config
   protected def extractId(k: Key): Id
   protected def toId(et: EntityTable): Rep[Id]
   protected def extractValue(e: Entity): Value
-  protected implicit def btt: BaseTypedType[Id]
+  protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
   protected val db = c.db
   /** If a previous value exists, override it. */
   protected def internalForceStore(k: Key, v: Value): Future[_] =

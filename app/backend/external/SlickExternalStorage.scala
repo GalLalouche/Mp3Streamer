@@ -35,9 +35,6 @@ private[this] class Serializer[R <: Reconcilable] {
 
 private[external] abstract class SlickExternalStorage[R <: Reconcilable](implicit _c: Configuration)
     extends SlickStorageTemplate[R, (MarkedLinks[R], Option[LocalDateTime])] with ExternalStorage[R] {
-  override protected type Id = String
-  override protected implicit def btt: BaseTypedType[String] = ScalaBaseType.stringType
-
   override protected def extractId(r: R) = r.normalize
 
   override def load(r: R): Future[Option[(MarkedLinks[R], Option[LocalDateTime])]] =
@@ -63,7 +60,7 @@ private[backend] class ArtistExternalStorage(implicit _c: Configuration) extends
     def * = (name, encodedLinks, timestamp)
   }
   override protected type EntityTable = Rows
-  override protected val tableQuery = TableQuery[Rows]
+  override protected val tableQuery = TableQuery[EntityTable]
   override protected def toEntity(k: Artist, v: (MarkedLinks[Artist], Option[LocalDateTime])) =
     (k.normalize, serializer.toString(v._1), v._2.map(_.toMillis))
   override protected def toId(et: EntityTable) = et.name

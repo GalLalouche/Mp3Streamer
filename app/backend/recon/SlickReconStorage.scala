@@ -25,7 +25,7 @@ class ArtistReconStorage(implicit _c: Configuration) extends SlickReconStorage[A
     def * = (name, reconId, isIgnored)
   }
   override protected type EntityTable = Rows
-  override protected val tableQuery = TableQuery[Rows]
+  override protected val tableQuery = TableQuery[EntityTable]
   override protected def toEntity(a: Artist, v: (Option[ReconID], Boolean)) =
     (a.normalize, v._1.map(_.id), v._2)
   override protected def toId(et: EntityTable) = et.name
