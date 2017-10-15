@@ -40,7 +40,7 @@ class JsonableSaver(implicit rootDir: DirectoryRef)
   }
 
   private def load[T: Manifest]: Option[JsObject] =
-    workingDir getFile jsonFileName map (_.readAll |> Json.parse |> (_.as[JsObject]))
+    workingDir getFile jsonFileName map (_.readAll.toJsonObj)
   /** Loads the previously saved entries, or returns an empty list. */
   def loadArray[T: Jsonable : Manifest]: Seq[T] = {
     load.map(_.parse[Seq[T]]) getOrElse Nil

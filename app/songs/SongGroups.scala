@@ -21,8 +21,7 @@ class SongGroups(implicit songJsonable: Jsonable[Song]) extends Jsonable.ToJsona
         .map(_.toString)
         .mkString("\n") |> writeToJsonFile
   def load(implicit root: DirectoryRef, ec: ExecutionContext): Set[SongGroup] = getJsonFile.lines
-      .map(Json.parse)
-      .map(_.as[JsObject].parse[Seq[Song]] |> SongGroup)
+      .map(_.toJsonObj.parse[Seq[Song]] |> SongGroup)
       .toSet
 }
 

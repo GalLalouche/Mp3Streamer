@@ -11,6 +11,9 @@ trait Jsonable[T] {
 // For consistency with simulacrum
 object Jsonable {
   trait ToJsonableOps {
+    implicit class parseString($: String) {
+      def toJsonObj: JsObject = Json.parse($).as[JsObject]
+    }
     implicit class jsonifySingle[T]($: T)(implicit ev: Jsonable[T]) {
       def jsonify: JsObject = ev jsonify $
     }
