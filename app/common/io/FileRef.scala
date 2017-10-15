@@ -21,18 +21,18 @@ trait PathRef {
 
 /** must exist */
 trait FileRef extends PathRef {
-  def size: Long
-
   type S <: RefSystem
+
+  def size: Long
   def bytes: Array[Byte]
   def write(s: String): S#F
   def write(bs: Array[Byte]): S#F
+  def clear(): Unit = write("")
   def appendLine(line: String): S#F
   def readAll: String
   final def lines: Seq[String] = {
     val content = readAll
-    if (content.isEmpty) Nil
-    else content split "\n"
+    if (content.isEmpty) Nil else content split "\n"
   }
   final def extension: String = {
     val i = name.lastIndexOf('.')
@@ -40,6 +40,7 @@ trait FileRef extends PathRef {
   }
 
   def lastModified: LocalDateTime
+  def exists: Boolean
 }
 
 trait DirectoryRef extends PathRef { self =>

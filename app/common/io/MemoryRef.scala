@@ -41,6 +41,7 @@ case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with Memo
   override def path: String = parent.path + "/" + name
   override def lastModified = lastUpdatedTime
   override def size = bytes.length
+  override def exists = parent.files.exists(_.name == this.name)
 }
 
 abstract sealed class MemoryDir(val path: String) extends DirectoryRef with MemoryPath {
