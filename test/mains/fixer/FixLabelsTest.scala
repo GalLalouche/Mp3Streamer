@@ -4,7 +4,7 @@ import common.AuxSpecs
 import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.scalatest.FreeSpec
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 class FixLabelsTest extends FreeSpec with AuxSpecs {
   private def getSongFile(path: String)  = getResourceFile("../../models/" + path)
@@ -23,7 +23,7 @@ class FixLabelsTest extends FreeSpec with AuxSpecs {
           getTag(FieldKey.YEAR).toInt shouldReturn 2000
         }
         "No extra attributes" in {
-          fixedTag.getFields.size shouldReturn 5
+          fixedTag.getFields.asScala.size shouldReturn 5
         }
       }
       "When asked to fix discNumber" - {

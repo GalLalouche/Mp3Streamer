@@ -5,11 +5,10 @@ import java.time.{LocalDateTime, ZoneOffset}
 
 import common.rich.RichT._
 import common.{AuxSpecs, Jsonable}
-import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, Json}
 
-class JsonableSaverTest extends FreeSpec with OneInstancePerTest with MockitoSugar with AuxSpecs {
+class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private implicit val root = new MemoryRoot
   private val $ = new JsonableSaver
   case class Person(age: Int, name: String)

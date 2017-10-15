@@ -69,7 +69,7 @@ private[this] class BlockFileRef(val f: MemoryFile) extends MemoryFile(f.parent,
   }
 }
 class FileLoggerTest extends FreeSpec with TimeLimitedTests with Matchers {
-  override val timeLimit = Span.apply(1, Second)
+  override val timeLimit = Span(1, Second)
   private implicit val c = new TestConfiguration
   private val file = c.rootDirectory.addFile("foobar")
   private val $ = new FileLogger(file)

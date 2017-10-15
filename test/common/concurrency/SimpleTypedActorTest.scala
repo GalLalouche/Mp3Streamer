@@ -9,7 +9,6 @@ import scala.concurrent._
 import scala.concurrent.duration._
 
 class SimpleTypedActorTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
-  val semaphore = new Semaphore(0)
   "SimpleTypedActor" - {
     "basic test" in {
       val $ = new SimpleTypedActor[String, Int] {

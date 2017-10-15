@@ -6,7 +6,6 @@ import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
 import common.AuxSpecs
 import common.rich.RichT._
-import common.rich.collections.RichSet._
 import org.scalatest.FreeSpec
 
 class CompositeExtenderTest extends FreeSpec with AuxSpecs {
@@ -22,7 +21,7 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
 
     val sourceHosts = source.links.map(_.host).toSet
     val extendedHosts = actual.links.filter(_.extensions.nonEmpty).map(_.host).toSet
-    val unexpectedExtendedHosts = (sourceHosts \ extendedHosts).filter(expected.contains)
+    val unexpectedExtendedHosts = (sourceHosts &~ extendedHosts).filter(expected.contains)
     unexpectedExtendedHosts shouldBe 'empty
 
     actual.links.filter(_.extensions.nonEmpty).map(e => e.host -> e.extensions) shouldSetEqual expected

@@ -6,12 +6,11 @@ import backend.configs.TestConfiguration
 import common.rich.RichT._
 import common.AuxSpecs
 import common.rich.RichFuture._
-import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import scala.concurrent.Future
 
-class RefreshableStorageTest extends FreeSpec with MockitoSugar with AuxSpecs with OneInstancePerTest {
+class RefreshableStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
   private implicit val c = new TestConfiguration
   implicit val clock = c.clock
   private var i = 0
