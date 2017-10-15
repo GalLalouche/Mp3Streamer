@@ -14,7 +14,7 @@ class ModelJsonableTest extends PropSpec with GeneratorDrivenPropertyChecks with
     with Jsonable.ToJsonableOps {
   implicit override val generatorDrivenConfig = PropertyCheckConfig(minSuccessful = 10, workers = 5)
   // Why the fuck is this not in library?!
-  private implicit def genToArb[T : Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])
+  private implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])
   private implicit lazy val arbSong: Gen[Song] = for {
     filePath <- arbitrary[String]
     title <- arbitrary[String]
@@ -47,12 +47,12 @@ class ModelJsonableTest extends PropSpec with GeneratorDrivenPropertyChecks with
   }
 
   private def test[T: Jsonable : Gen](): Unit = {
-    forAll { t: T => {
-      parseObject[T](t.jsonify).parse shouldReturn t
+    forAll {t: T => {
+      parseObject(t.jsonify).parse[T] shouldReturn t
     }
     }
   }
-  property("Songs") { test[Song]() }
-  property("Albums") { test[Album]() }
-  property("Artists") { test[Artist]() }
+  property("Songs") {test[Song]()}
+  property("Albums") {test[Album]()}
+  property("Artists") {test[Artist]()}
 }

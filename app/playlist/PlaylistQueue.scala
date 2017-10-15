@@ -15,6 +15,6 @@ private object PlaylistQueue extends Jsonable.ToJsonableOps {
     new Jsonable[PlaylistQueue] {
       override def jsonify(p: PlaylistQueue): JsObject = Json obj "songs" -> p.songs.jsonify
       override def parse(json: JsObject): PlaylistQueue =
-        json.objects("songs").map(songJsonable.parse) |> PlaylistQueue.apply
+        json./("songs").parse[Seq[Song]] |> PlaylistQueue.apply
     }
 }

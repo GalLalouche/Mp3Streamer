@@ -5,7 +5,7 @@ import common.io.{DirectoryRef, FileRef}
 import common.rich.RichT._
 import common.rich.func.MoreSeqInstances
 import models.Song
-import play.api.libs.json.{JsArray, Json}
+import play.api.libs.json.{JsObject, Json}
 
 import scala.concurrent.ExecutionContext
 import scalaz.syntax.ToFunctorOps
@@ -22,7 +22,7 @@ class SongGroups(implicit songJsonable: Jsonable[Song]) extends Jsonable.ToJsona
         .mkString("\n") |> writeToJsonFile
   def load(implicit root: DirectoryRef, ec: ExecutionContext): Set[SongGroup] = getJsonFile.lines
       .map(Json.parse)
-      .map(_.as[JsArray] |> songJsonable.parse |> SongGroup)
+      .map(_.as[JsObject].parse[Seq[Song]] |> SongGroup)
       .toSet
 }
 

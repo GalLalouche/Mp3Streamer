@@ -24,7 +24,7 @@ private object PlaylistState extends Jsonable.ToJsonableOps {
         "duration" -> t.currentDuration.toSeconds,
         "currentIndex" -> t.currentIndex)
       override def parse(json: JsObject): PlaylistState = PlaylistState(
-        songs = json objects "songs" map songJsonable.parse,
+        songs = json./("songs").parse[Seq[Song]],
         currentIndex = json int "currentIndex",
         currentDuration = Duration.apply(json int "duration", TimeUnit.SECONDS))
     }

@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 import common.Jsonable
 import common.rich.RichT._
 import common.rich.primitives.RichOption._
-import play.api.libs.json._
+import play.api.libs.json.{JsObject, Json}
 
 /** Saves in json format to a file. */
 class JsonableSaver(implicit rootDir: DirectoryRef)
@@ -14,7 +14,7 @@ class JsonableSaver(implicit rootDir: DirectoryRef)
   private val workingDir = rootDir addSubDir "data" addSubDir "json"
   protected def jsonFileName[T: Manifest]: String =
     s"${manifest.runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
-  private def save[T: Manifest](js: JsValue) {
+  private def save[T: Manifest](js: JsObject) {
     workingDir addFile jsonFileName write js.toString
   }
 
@@ -34,16 +34,17 @@ class JsonableSaver(implicit rootDir: DirectoryRef)
    * @param dataAppender A function that takes the old data and appends the new data. Since some constraints can exist
    *                     on the data save, e.g., uniqueness, a simple concatenation of old and new data isn't enough.
    */
-  //TODO this could perhaps be handled by a typeclass that would know its saving constraints?
+  //TODO this could perhaps be handled by a type class that would know its saving constraints?
   def update[T: Jsonable : Manifest](dataAppender: Seq[T] => TraversableOnce[T]) {
     save(dataAppender(loadArray))
   }
 
-  private def load[T: Manifest]: Option[JsValue] =
-    workingDir getFile jsonFileName map (_.readAll |> Json.parse)
+  private def load[T: Manifest]: Option[JsObject] =
+    workingDir getFile jsonFileName map (_.readAll |> Json.parse |> (_.as[JsObject]))
   /** Loads the previously saved entries, or returns an empty list. */
-  def loadArray[T: Jsonable : Manifest]: Seq[T] =
-    load.map(_.as[JsArray].parse).getOrElse(Nil)
+  def loadArray[T: Jsonable : Manifest]: Seq[T] = {
+    load.map(_.parse[Seq[T]]) getOrElse Nil
+  }
   /** Loads the previously saved entry, or throws an exception if no file has been found */
   def loadObject[T: Jsonable : Manifest]: T = {
     val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <$manifest>")

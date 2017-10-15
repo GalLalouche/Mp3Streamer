@@ -11,7 +11,7 @@ $(function() {
 
     function specificResults(name, itemProducer, appendTo, array) {
       const ul = elem("ul").appendTo(appendTo || $(`#${name}-results`).empty())
-      $.each(array || jsArray[`${name}s`], function(_, e) {
+      $.each(array || jsArray[`${name}s`].v, function(_, e) {
         const li = $(`<li class="${name}-result search-result">${itemProducer(e)}</li>`)
         li.appendTo(ul).data(e)
         li.attr("title", "")

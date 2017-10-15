@@ -51,7 +51,7 @@ object ModelJsonable extends Jsonable.ToJsonableOps {
         "name" -> a.name,
         "albums" -> a.albums.jsonify)
     def parse(json: JsObject): Artist = {
-      val albums: Seq[Album] = json objects "albums" map AlbumJsonifier.parse
+      val albums: Seq[Album] = json./("albums").parse[Seq[Album]]
       Artist(json str "name", albums.toSet)
     }
   }
