@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit
 
 import common.Jsonable
 import models.Song
+import play.api.libs.json.JsValue
 
 import scala.concurrent.duration.Duration
 
@@ -23,8 +24,8 @@ private object PlaylistState extends Jsonable.ToJsonableOps {
         "songs" -> t.songs.jsonify,
         "duration" -> t.currentDuration.toSeconds,
         "currentIndex" -> t.currentIndex)
-      override def parse(json: JsObject): PlaylistState = PlaylistState(
-        songs = json./("songs").parse[Seq[Song]],
+      override def parse(json: JsValue): PlaylistState = PlaylistState(
+        songs = json.value("songs").parse[Seq[Song]],
         currentIndex = json int "currentIndex",
         currentDuration = Duration.apply(json int "duration", TimeUnit.SECONDS))
     }

@@ -3,10 +3,10 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
 
-import common.Jsonable
 import common.rich.RichT._
+import common.Jsonable
 import common.rich.primitives.RichOption._
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 
 /** Saves in json format to a file. */
 class JsonableSaver(implicit rootDir: DirectoryRef)
@@ -14,7 +14,7 @@ class JsonableSaver(implicit rootDir: DirectoryRef)
   private val workingDir = rootDir addSubDir "data" addSubDir "json"
   protected def jsonFileName[T: Manifest]: String =
     s"${manifest.runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
-  private def save[T: Manifest](js: JsObject) {
+  private def save[T: Manifest](js: JsValue) {
     workingDir addFile jsonFileName write js.toString
   }
 
@@ -39,8 +39,8 @@ class JsonableSaver(implicit rootDir: DirectoryRef)
     save(dataAppender(loadArray))
   }
 
-  private def load[T: Manifest]: Option[JsObject] =
-    workingDir getFile jsonFileName map (_.readAll.toJsonObj)
+  private def load[T: Manifest]: Option[JsValue] =
+    workingDir getFile jsonFileName map (_.readAll |> Json.parse)
   /** Loads the previously saved entries, or returns an empty list. */
   def loadArray[T: Jsonable : Manifest]: Seq[T] = {
     load.map(_.parse[Seq[T]]) getOrElse Nil

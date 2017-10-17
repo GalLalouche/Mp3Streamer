@@ -20,7 +20,7 @@ object ControllerUtils {
       }, new DirectoryLogger()(this))
   }
   import ModelJsonable._
-  def toJson(s: Song): JsObject = s.jsonify +
+  def toJson(s: Song): JsObject = s.jsonify.as[JsObject] +
       ("file" -> JsString(URLEncoder.encode(s.file.path, "UTF-8"))) +
       ("poster" -> JsString("/posters/" + Poster.getCoverArt(s.asInstanceOf[IOSong]).path)) +
       (s.file.extension -> JsString("/stream/download/" + URLEncoder.encode(s.file.path, "UTF-8")))

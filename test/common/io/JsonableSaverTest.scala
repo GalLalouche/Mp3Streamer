@@ -3,10 +3,11 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.{LocalDateTime, ZoneOffset}
 
+import common.RichJson._
 import common.rich.RichT._
 import common.{AuxSpecs, Jsonable}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 
 class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private implicit val root = new MemoryRoot
@@ -14,7 +15,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   case class Person(age: Int, name: String)
   implicit object PersonJsonable extends Jsonable[Person] {
     override def jsonify(p: Person): JsObject = Json obj("age" -> p.age, "name" -> p.name)
-    override def parse(json: JsObject): Person = Person(json.\("age").as[Int], json.\("name").as[String])
+    override def parse(json: JsValue): Person = Person(json int "age", json str "name")
   }
   val p1 = Person(1, "name1")
   val p2 = Person(2, "name2")

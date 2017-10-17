@@ -2,20 +2,20 @@ package backend.search
 
 import java.net.URLDecoder
 
-import backend.configs.Configuration
 import common.Jsonable
 import common.concurrency.Extra
-import controllers.{ControllerUtils, LegacyController}
+import controllers.LegacyController
 import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
 import models.{Album, ModelJsonable}
 import play.api.Logger
-import play.api.libs.json.{JsArray, JsObject, JsString, Json}
+import play.api.libs.json.{JsArray, JsObject, JsString, JsValue, Json}
 import play.api.mvc.Action
 
 object SearchController extends LegacyController with Extra
     with Jsonable.ToJsonableOps {
   import c._
   private var index: CompositeIndex = CompositeIndex.create
+
   override def apply() {
     index = CompositeIndex.create
     Logger info "Search engine has been updated"
@@ -28,7 +28,7 @@ object SearchController extends LegacyController with Extra
       else
         $
     }
-    override def parse(json: JsObject): Album = ModelJsonable.AlbumJsonifier.parse(json)
+    override def parse(json: JsValue): Album = ModelJsonable.AlbumJsonifier.parse(json)
   }
   def search(path: String) = Action {
     val terms = URLDecoder.decode(path, "UTF-8") split " " map (_.toLowerCase)

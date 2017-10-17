@@ -48,7 +48,7 @@ class ModelJsonableTest extends PropSpec with GeneratorDrivenPropertyChecks with
 
   private def test[T: Jsonable : Gen](): Unit = {
     forAll {t: T => {
-      parseObject(t.jsonify).parse[T] shouldReturn t
+      t.jsonify.parse[T] shouldReturn t
     }
     }
   }

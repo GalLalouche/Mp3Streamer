@@ -5,7 +5,7 @@ import backend.recon.{Album, Artist}
 import common.Jsonable
 import common.RichJson._
 import monocle.macros.Lenses
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsValue, Json}
 
 // Has to be public in order to use @Lenses
 @Lenses
@@ -24,7 +24,7 @@ object NewAlbum {
   implicit object NewAlbumJsonable extends Jsonable[NewAlbum] {
     override def jsonify(a: NewAlbum) =
       Json.obj("title" -> a.title, "year" -> a.year, "artistName" -> a.artist.name, "albumType" -> a.albumType.toString)
-    override def parse(json: JsObject) = NewAlbum(
+    override def parse(json: JsValue) = NewAlbum(
       title = json str "title",
       year = json int "year",
       artist = Artist(json str "artistName"),
