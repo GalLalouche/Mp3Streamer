@@ -3,11 +3,11 @@ package backend.search
 import java.time.{LocalDateTime, ZoneOffset}
 
 import backend.configs.Configuration
-import common.Jsonable
 import common.concurrency.SimpleTypedActor
 import common.ds.{Collectable, IndexedSet}
 import common.io._
 import models._
+import play.api.libs.json.Format
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
 
@@ -18,9 +18,9 @@ import scalaz.std.{AnyValInstances, FutureInstances, ListInstances, OptionInstan
 import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
 private class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration,
-                                           songJsonable: Jsonable[Song],
-                                           albumJsonable: Jsonable[Album],
-                                           artistJsonable: Jsonable[Artist])
+                                           songJsonable: Format[Song],
+                                           albumJsonable: Format[Album],
+                                           artistJsonable: Format[Artist])
     extends OptionInstances with ListInstances with AnyValInstances
         with ToTraverseOps with FutureInstances with ToBindOps {
   import MetadataCacher._
@@ -30,7 +30,7 @@ private class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration
   private object UpdateAll extends UpdateType {
     override def apply(): Observable[IndexUpdate] =
       updateIndex(c.mf.albumDirs, new AllInfoHandler {
-        override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver save xs
+        override def apply[T: Manifest : Format](xs: Seq[T]): Unit = saver save xs
         override def apply(artists: IndexedSet[Artist]): Unit = apply(artists.toSeq)
       })
   }
@@ -42,7 +42,7 @@ private class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration
             .flatMap(_.minimumBy(_.toEpochSecond(ZoneOffset.UTC)))
       lastUpdateTime.fold(indexAll()) { lastUpdateTime =>
         updateIndex(c.mf.albumDirs.filter(_.lastModified isAfter lastUpdateTime), new AllInfoHandler {
-          override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver.update[T](_ ++ xs)
+          override def apply[T: Manifest : Format](xs: Seq[T]): Unit = saver.update[T](_ ++ xs)
           override def apply(artists: IndexedSet[Artist]): Unit = saver.update[Artist](artists ++ _)
         })
       }
@@ -124,14 +124,14 @@ private object MetadataCacher {
   case class IndexUpdate(currentIndex: Int, totalNumber: Int, dir: DirectoryRef)
   // Polymorphic functions? Hmmm...
   private trait AllInfoHandler {
-    def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit
+    def apply[T: Manifest : Format](xs: Seq[T]): Unit
     def apply(artists: IndexedSet[Artist]): Unit
   }
 
   def create(implicit c: Configuration,
-             songJsonable: Jsonable[Song],
-             albumJsonable: Jsonable[Album],
-             artistJsonable: Jsonable[Artist]): MetadataCacher = {
+             songJsonable: Format[Song],
+             albumJsonable: Format[Album],
+             artistJsonable: Format[Artist]): MetadataCacher = {
     import c._
     new MetadataCacher(new JsonableSaver)
   }

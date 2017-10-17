@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit
 
 import common.Jsonable
 import models.Song
-import play.api.libs.json.JsValue
+import play.api.libs.json.{Format, JsValue}
 
 import scala.concurrent.duration.Duration
 
@@ -18,7 +18,7 @@ private object PlaylistState extends Jsonable.ToJsonableOps {
   import common.RichJson._
   import play.api.libs.json.{JsObject, Json}
 
-  implicit def PlaylistStateJsonable(implicit songJsonable: Jsonable[Song]): Jsonable[PlaylistState] =
+  implicit def PlaylistStateJsonable(implicit songJsonable: Format[Song]): Jsonable[PlaylistState] =
     new Jsonable[PlaylistState] {
       override def jsonify(t: PlaylistState): JsObject = Json.obj(
         "songs" -> t.songs.jsonify,

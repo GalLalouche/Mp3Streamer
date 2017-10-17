@@ -34,7 +34,7 @@ object Jsonable {
     }
   }
 
-  implicit def seqJsonable[A](implicit ev: Format[A]): Jsonable[Seq[A]] = new Jsonable[Seq[A]] with ToJsonableOps {
+  implicit def seqJsonable[A: Format]: Jsonable[Seq[A]] = new Jsonable[Seq[A]] with ToJsonableOps {
     override def jsonify(as: Seq[A]): JsValue = JsArray(as.map(_.jsonify))
     override def parse(json: JsValue): Seq[A] = json.as[JsArray].value.map(_.parse[A])
   }
