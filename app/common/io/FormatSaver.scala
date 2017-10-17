@@ -9,8 +9,7 @@ import common.rich.primitives.RichOption._
 import play.api.libs.json.{Format, JsObject, JsValue, Json}
 
 /** Saves in json format to a file. */
-class JsonableSaver(implicit rootDir: DirectoryRef)
-    extends Jsonable.ToJsonableOps {
+class FormatSaver(implicit rootDir: DirectoryRef) extends Jsonable.ToJsonableOps {
   private val workingDir = rootDir addSubDir "data" addSubDir "json"
   protected def jsonFileName[T: Manifest]: String =
     s"${manifest.runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"

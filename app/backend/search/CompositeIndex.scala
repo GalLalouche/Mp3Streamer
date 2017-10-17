@@ -1,7 +1,7 @@
 package backend.search
 
 import common.Jsonable
-import common.io.{DirectoryRef, JsonableSaver}
+import common.io.{DirectoryRef, FormatSaver}
 import models.{Album, Artist, Song}
 import models.ModelJsonable._
 import play.api.libs.json.Format
@@ -23,7 +23,7 @@ class CompositeIndex private(songs: Index[Song], albums: Index[Album], artists: 
 
 object CompositeIndex {
   def create(implicit r: DirectoryRef): CompositeIndex = {
-    val saver = new JsonableSaver
+    val saver = new FormatSaver
     val indexBuilder = WeightedIndexBuilder
     def buildIndexFromCache[T: Format : WeightedIndexable : Manifest] =
       indexBuilder.buildIndexFor(saver.loadArray[T])

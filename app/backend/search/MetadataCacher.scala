@@ -17,7 +17,7 @@ import scalaz.Semigroup
 import scalaz.std.{AnyValInstances, FutureInstances, ListInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
-private class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration,
+private class MetadataCacher(saver: FormatSaver)(implicit val c: Configuration,
                                            songJsonable: Format[Song],
                                            albumJsonable: Format[Album],
                                            artistJsonable: Format[Artist])
@@ -133,6 +133,6 @@ private object MetadataCacher {
              albumJsonable: Format[Album],
              artistJsonable: Format[Artist]): MetadataCacher = {
     import c._
-    new MetadataCacher(new JsonableSaver)
+    new MetadataCacher(new FormatSaver)
   }
 }

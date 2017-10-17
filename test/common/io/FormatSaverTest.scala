@@ -9,9 +9,9 @@ import common.{AuxSpecs, Jsonable}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, JsValue, Json}
 
-class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
+class FormatSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private implicit val root = new MemoryRoot
-  private val $ = new JsonableSaver
+  private val $ = new FormatSaver
   case class Person(age: Int, name: String)
   implicit object PersonJsonable extends Jsonable[Person] {
     override def jsonify(p: Person): JsObject = Json obj("age" -> p.age, "name" -> p.name)
@@ -78,7 +78,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
     }
   }
   "override file name" in {
-    val $ = new JsonableSaver {
+    val $ = new FormatSaver {
       override protected def jsonFileName[T: Manifest] = "foobars.json"
     }
     $ save p1
