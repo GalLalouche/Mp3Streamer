@@ -7,10 +7,6 @@ class JsonableTest extends FreeSpec with AuxSpecs with ToJsonableOps {
   private def test[T: Jsonable](t: T): Unit = {
     t.jsonify.parse[T] shouldReturn t
   }
-  "primitives" - {
-    "int" in test(4)
-    "string" in test("foo")
-  }
   "derived instances" - {
     "Seq" - {
       "empty" in test(Seq[Int]())

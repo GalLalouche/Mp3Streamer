@@ -9,8 +9,8 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import scala.collection.mutable
 
 class FakeModelJsonable {
-  private implicit val counter = new AtomicInteger
-  private implicit val parsedModels = mutable.Map[JsValue, Any]()
+  private val counter = new AtomicInteger
+  private val parsedModels = mutable.Map[JsValue, Any]()
   private def fakeJsonify(a: Any): JsObject = {
     val $ = Json.obj("index" -> counter.getAndIncrement())
     parsedModels += $ -> a
@@ -20,7 +20,8 @@ class FakeModelJsonable {
     parsedModels.get(json)
         .getOrThrow("Tried to load a JSON that wasn't returned from an instance of this class")
         .asInstanceOf[T]
-  implicit def FakeJsonable[T]: Jsonable[T] = new Jsonable[T] {
+  // Requiring T <: AnyRef prevents infinite recursions with primitives
+  implicit def FakeJsonable[T <: AnyRef]: Jsonable[T] = new Jsonable[T] {
     override def jsonify(t: T) = fakeJsonify(t)
     override def parse(json: JsValue) = getOrThrow[T](json)
   }

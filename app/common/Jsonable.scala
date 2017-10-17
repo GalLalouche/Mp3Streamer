@@ -1,57 +1,54 @@
 package common
 
 import common.RichJson._
-import play.api.libs.json.{JsArray, JsNumber, JsObject, JsString, JsValue, Json}
+import play.api.libs.json._
 
 import scala.annotation.implicitNotFound
 
+/** Saner names for play's JSON trait, and less optionality. */
 @implicitNotFound("Could not prove that ${T} is Jsonable.")
-trait Jsonable[T] {
+trait Jsonable[T] extends Format[T] {
   def jsonify(t: T): JsValue
   def parse(json: JsValue): T
+
+  override def reads(json: JsValue) =
+    try
+      JsSuccess(parse(json))
+    catch {
+      case e: Exception => JsError(e.getMessage)
+    }
+  override def writes(o: T) = jsonify(o)
 }
 
 // For consistency with simulacrum
 object Jsonable {
   trait ToJsonableOps {
     implicit class parseString($: String) {
-      def parseJsonable[T: Jsonable]: T = parseJsValue(Json.parse($)).parse[T]
+      def parseJsonable[T: Format]: T = parseJsValue(Json.parse($)).parse[T]
     }
-    implicit class jsonifySingle[T]($: T)(implicit ev: Jsonable[T]) {
-      def jsonify: JsValue = ev jsonify $
+    implicit class jsonifySingle[T]($: T)(implicit ev: Format[T]) {
+      def jsonify: JsValue = ev writes $
     }
     implicit class parseJsValue($: JsValue) {
-      def parse[T](implicit ev: Jsonable[T]): T = ev parse $
+      def parse[T](implicit ev: Format[T]): T = ev.reads($).get
     }
   }
 
-  // Primivites
-  implicit object IntJsonable extends Jsonable[Int] {
-    override def jsonify(t: Int): JsValue = JsNumber(t)
-    override def parse(json: JsValue): Int = json.as[JsNumber].value.toInt
+  implicit def seqJsonable[A](implicit ev: Format[A]): Jsonable[Seq[A]] = new Jsonable[Seq[A]] with ToJsonableOps {
+    override def jsonify(as: Seq[A]): JsValue = JsArray(as.map(_.jsonify))
+    override def parse(json: JsValue): Seq[A] = json.as[JsArray].value.map(_.parse[A])
   }
-  implicit object StringJsonable extends Jsonable[String] {
-    override def jsonify(t: String): JsValue = JsString(t)
-    override def parse(json: JsValue): String = json.as[JsString].value
+  implicit def optionJsonable[A: Format]: Jsonable[Option[A]] = new Jsonable[Option[A]] with ToJsonableOps {
+    override def jsonify(o: Option[A]): JsValue = if (o.isDefined) o.get.jsonify else JsNull
+    override def parse(json: JsValue): Option[A] = implicitly[Format[A]].reads(json).asOpt
   }
-
-  // Derived instances
-  implicit def seqJsonable[A](implicit ev: Jsonable[A]): Jsonable[Seq[A]] = new Jsonable[Seq[A]] {
-    override def jsonify(as: Seq[A]): JsValue = JsArray(as.map(ev.jsonify))
-    override def parse(json: JsValue): Seq[A] = json.as[JsArray].value.map(ev.parse)
+  implicit def pairJsonable[A: Format, B: Format]: Jsonable[(A, B)] = new Jsonable[(A, B)] with ToJsonableOps {
+    private val firstKey = "1"
+    private val secondKey = "2"
+    override def jsonify(t: (A, B)): JsValue =
+      Json.obj(firstKey -> t._1, secondKey -> t._2.jsonify)
+    override def parse(json: JsValue): (A, B) =
+      json.value(firstKey).parse[A] -> json.value(secondKey).parse[B]
   }
-  implicit def optionJsonable[A: Jsonable]: Jsonable[Option[A]] = new Jsonable[Option[A]] with ToJsonableOps {
-    override def jsonify(o: Option[A]): JsValue = JsObject(o.map(e => Seq("v" -> e.jsonify)) getOrElse Nil)
-    override def parse(json: JsValue): Option[A] = json.\("v").asOpt[JsValue].map(_.parse[A])
-  }
-  implicit def pairJsonable[A: Jsonable, B: Jsonable]: Jsonable[(A, B)] =
-    new Jsonable[(A, B)] with ToJsonableOps {
-      private val firstKey = "1"
-      private val secondKey = "2"
-      override def jsonify(t: (A, B)): JsValue =
-        Json.obj(firstKey -> t._1.jsonify, secondKey -> t._2.jsonify)
-      override def parse(json: JsValue): (A, B) =
-        implicitly[Jsonable[A]].parse(json value firstKey) -> implicitly[Jsonable[B]].parse(json value secondKey)
-    }
 }
 
