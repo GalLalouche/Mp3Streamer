@@ -15,7 +15,9 @@ import common.rich.func.{MoreFutureInstances, MoreSeqInstances}
 import models.{IOMusicFinder, Song}
 import rx.lang.scala.Observable
 
+import scala.collection.JavaConverters._
 import scala.concurrent.Future
+import scala.util.{Failure, Success}
 import scalaz.std.ListInstances
 import scalaz.syntax.ToTraverseOps
 
@@ -49,28 +51,32 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
         .filterWith(!_._2, "Ignored")
         .filterWith(_._1.isDefined, s"Unreconcilable")
         .map(_._1.get)
-        .flatMap(meta.getAlbumsMetadata)
-        .flatMap(removeIgnoredAlbums(artist, _))
-        .map(cache.filterNewAlbums(artist, _))
-        .consume(e => {
-          val totalTime = Duration.ofMillis(System.currentTimeMillis - start)
-          val newAlbumsCount = if (e.isEmpty) "no" else e.size
-          log(s"Finished working on $artist; Found $newAlbumsCount new albums; Took $totalTime.")
-        })
-        .recover {
-          case e: Throwable =>
-            e match {
-              case e: RichFuture.FilteredException => log(s"$artist was filtered, reason: ${e.getMessage}")
-              case e: Throwable => e.printStackTrace()
+        .toTry.get match { // Ensures a single thread waits for the semaphore in NewAlbumsConfig
+      case Success(reconId) =>
+        reconId.mapTo(meta.getAlbumsMetadata)
+            .flatMap(removeIgnoredAlbums(artist, _))
+            .map(cache.filterNewAlbums(artist, _))
+            .consume(e => {
+              val totalTime = Duration.ofMillis(System.currentTimeMillis - start)
+              val newAlbumsCount = if (e.isEmpty) "no" else e.size
+              log(s"Finished working on $artist; found ${newAlbumsCount.toString.mapIf(_ == "0") to "no"} new albums.")
+            })
+            .recover {
+              case e: Throwable =>
+                e match {
+                  case e: RichFuture.FilteredException => log(s"$artist was filtered, reason: ${e.getMessage}")
+                  case e: Throwable => e.printStackTrace()
+                }
+                Nil
             }
-            Nil
-        }
+      case Failure(e) => Future.successful(Nil)
+    }
   }
 }
 
 object NewAlbumsRetriever {
   private def dirToAlbum(dir: IODirectory)(implicit mf: IOMusicFinder): Option[Album] = dir.files
-      .find(f => f.extension |> mf.extensions)
+      .find(_.extension |> mf.extensions)
       .map(_.file)
       .map(Song(_).release)
 
@@ -79,13 +85,15 @@ object NewAlbumsRetriever {
     import c._
     val artist: Artist = Artist("At the Gates")
     def cacheForArtist(a: Artist)(implicit mf: IOMusicFinder): ArtistLastYearCache = {
-      mf.genreDirs
+      val artistDir = mf.genreDirs
           .flatMap(_.deepDirs)
           .find(_.name.toLowerCase == a.name.toLowerCase)
           .get
-          .mapTo(dirToAlbum)
-          .get
-          .mapTo(Seq.apply(_) |> ArtistLastYearCache.from)
+      val lastAlbum = artistDir.dirs.mapIf(_.isEmpty).to(Seq(artistDir))
+          .flatMap(dirToAlbum(_))
+          .maxBy(_.year)
+
+      Seq.apply(lastAlbum) |> ArtistLastYearCache.from
     }
     def findNewAlbums(a: Artist): Future[Seq[NewAlbum]] = {
       val artistReconciler: ReconcilerCacher[Artist] =
@@ -94,5 +102,6 @@ object NewAlbumsRetriever {
       $.findNewAlbums(cacheForArtist(a), artist).map(_.map(_._1))
     }
     findNewAlbums(artist).get.log()
+    Thread.getAllStackTraces.keySet.asScala.filterNot(_.isDaemon).foreach(println)
   }
 }

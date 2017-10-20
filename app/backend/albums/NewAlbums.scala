@@ -1,6 +1,6 @@
 package backend.albums
 
-import backend.configs.{Configuration, StandaloneConfig}
+import backend.configs.Configuration
 import backend.mb.MbArtistReconciler
 import backend.recon._
 import common.io.FormatSaver
@@ -12,7 +12,6 @@ import monocle.function.IndexFunctions
 import monocle.std.MapOptics
 import monocle.syntax.ApplySyntax
 
-import scala.collection.JavaConverters._
 import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
@@ -77,10 +76,9 @@ private class NewAlbums(implicit c: Configuration)
 
 object NewAlbums {
   def main(args: Array[String]): Unit = {
-    implicit val c = StandaloneConfig
+    implicit val c: Configuration = NewAlbumsConfig
     val $ = new NewAlbums()
     $.fetchAndSave.get
     println("Done!")
-    Thread.getAllStackTraces.keySet.asScala.filterNot(_.isDaemon).foreach(println)
   }
 }

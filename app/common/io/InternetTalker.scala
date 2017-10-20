@@ -3,6 +3,7 @@ package common.io
 import backend.Url
 import common.io.RichWSRequest._
 import common.io.WSAliases._
+import common.rich.RichFuture._
 import common.rich.RichT._
 import org.jsoup.nodes.Document
 
@@ -21,16 +22,17 @@ trait InternetTalker extends ExecutionContext {
     })
   final def downloadDocument(url: Url): Future[Document] = asBrowser(url, _.document)
   final def get(url: Url): Future[WSResponse] = useWs(_.url(url.address).get())
-  final def useWs[T](f: WSClient => Future[T]): Future[T] = {
-    val $ = createWsClient()
-    try
-      f($).andThen($.close().partialConst)
-    catch {
-      // In case an error occurs while applying f
-      case e: Throwable =>
-        $.close()
-        throw e
-    }
+  def useWs[T](f: WSClient => Future[T]): Future[T] = {
+    val client = createWsClient()
+    val $ =
+      try f(client)
+      catch {
+        // In case an error occurs while applying f
+        case e: Throwable =>
+          client.close()
+          throw e
+      }
+    $ consumeTry client.close().const
   }
   protected def createWsClient(): WSClient
 }
