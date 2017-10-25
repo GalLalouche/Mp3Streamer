@@ -16,10 +16,11 @@ routesGenerator := StaticRoutesGenerator
 
 val playWsStandaloneVersion = "1.1.2"
 val akkaVersion = "2.5.4"
+val monocleVersion = "1.3.2"
 libraryDependencies ++= Seq(
   guice,
-  "com.github.julien-truffaut" %% "monocle-core" % "1.3.2",
-  "com.github.julien-truffaut" %% "monocle-macro" % "1.3.2",
+  "com.github.julien-truffaut" %% "monocle-core" % monocleVersion,
+  "com.github.julien-truffaut" %% "monocle-macro" % monocleVersion,
   "com.github.mpilquist" %% "simulacrum" % "0.10.0",
   "com.h2database" % "h2" % "1.4.196",
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
