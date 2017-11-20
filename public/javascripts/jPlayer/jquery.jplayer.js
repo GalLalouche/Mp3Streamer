@@ -1420,7 +1420,7 @@
       }
     },
     videoPlay: function() { // Handles clicks on the play button over the video poster
-      this.play();
+      this.play(this.status.currentTime)
     },
     pause: function(time) {
       time = (typeof time === "number") ? time : NaN; // Remove jQuery event from click handler
