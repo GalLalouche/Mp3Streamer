@@ -56,6 +56,14 @@ object FolderFixer
     }
   }
 
+  private def updateServer(): Future[Unit] = {
+    println("Updating remote server if exists...")
+    c.get(Url("http://localhost:9000/debug/fast_refresh"))
+        .>|(println("Updated!"))
+        .recover {case e => println("Failed to update server: " + e.getMessage)}
+        .void
+  }
+
   def main(args: Array[String]) {
     def extractArtistFromFile(folder: Directory): String = folder
         .files
@@ -71,6 +79,7 @@ object FolderFixer
     val fixedDirectory = FixLabels fix folder.cloneDir()
     moveDirectory(artist, location, folderImage, fixedDirectory._1, fixedDirectory._2)
         .map(FoobarGain.calculateTrackGain)
+        .>|(updateServer())
         .>|(println("--Done!--"))
         .get
   }
