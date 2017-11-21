@@ -12,6 +12,7 @@ object FindSongsNotInPlaylist {
   private val musicFiles = new IOMusicFinder {
     override val extensions = Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
   }
+  private val utfBytemarkPrefix = 65279
   def main(args: Array[String]): Unit = {
     val file = musicFiles.dir.addFile("playlist.m3u8").file
     if (Duration.ofMillis(System.currentTimeMillis() - file.lastModified()).toHours > 1)
@@ -19,7 +20,7 @@ object FindSongsNotInPlaylist {
     val playlistSongs = file // UTF-8 helps deal with Hebrew songs
         .lines
         // removes UTF-BOM at least until I fix it in ScalaCommon
-        .mapIf(_.head.head.toInt == 65279).to(e => e.tail :+ e.head.drop(1))
+        .mapIf(_.head.head.toInt == utfBytemarkPrefix).to(e => e.tail :+ e.head.drop(1))
         .map(musicFiles.dir.path + "/" + _)
         .map(_.toLowerCase.replaceAll("\\\\", "/"))
         .toSet

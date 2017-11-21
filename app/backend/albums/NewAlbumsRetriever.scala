@@ -1,7 +1,5 @@
 package backend.albums
 
-import java.time.Duration
-
 import backend.configs.{Configuration, StandaloneConfig}
 import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
@@ -56,10 +54,8 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
         reconId.mapTo(meta.getAlbumsMetadata)
             .flatMap(removeIgnoredAlbums(artist, _))
             .map(cache.filterNewAlbums(artist, _))
-            .consume(e => {
-              val totalTime = Duration.ofMillis(System.currentTimeMillis - start)
-              val newAlbumsCount = if (e.isEmpty) "no" else e.size
-              log(s"Finished working on $artist; found ${newAlbumsCount.toString.mapIf(_ == "0") to "no"} new albums.")
+            .consume(albums => {
+              log(s"Finished working on $artist; found ${if (albums.isEmpty) "no" else albums.size} new albums.")
             })
             .recover {
               case e: Throwable =>
@@ -69,7 +65,7 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
                 }
                 Nil
             }
-      case Failure(e) => Future.successful(Nil)
+      case Failure(_) => Future.successful(Nil)
     }
   }
 }
@@ -95,12 +91,12 @@ object NewAlbumsRetriever {
 
       Seq.apply(lastAlbum) |> ArtistLastYearCache.from
     }
-    def findNewAlbums(a: Artist): Future[Seq[NewAlbum]] = {
-      val artistReconciler: ReconcilerCacher[Artist] =
-        new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler())
-      val $ = new NewAlbumsRetriever(artistReconciler, new AlbumReconStorage())(c, c.mf)
-      $.findNewAlbums(cacheForArtist(a), artist).map(_.map(_._1))
-    }
+    def findNewAlbums(a: Artist): Future[Seq[NewAlbum]] =
+      new NewAlbumsRetriever(
+        new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()),
+        new AlbumReconStorage())(c, c.mf)
+          .findNewAlbums(cacheForArtist(a), artist)
+          .map(_.map(_._1))
     findNewAlbums(artist).get.log()
     Thread.getAllStackTraces.keySet.asScala.filterNot(_.isDaemon).foreach(println)
   }

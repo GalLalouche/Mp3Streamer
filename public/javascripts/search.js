@@ -67,7 +67,6 @@ $(function() {
         try {
           $.toast("Found new directory: " + JSON.parse(msg.data).currentDir)
         } catch (e) {
-          $.toast(msg.data)
           if (msg.data.includes("Finished")) {
             connection.close()
             search()

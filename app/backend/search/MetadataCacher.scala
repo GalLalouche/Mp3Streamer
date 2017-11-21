@@ -82,17 +82,17 @@ private class MetadataCacher(saver: FormatSaver)(implicit val c: Configuration,
     Observable[IndexUpdate](obs => {
       val totalSize = dirs.length
       Future {
-        gatherInfo(dirs.zipWithIndex.map { case (d, j) =>
-          getDirectoryInfo(d, onParsingCompleted = () => {
-            c execute (() => obs onNext IndexUpdate(j + 1, totalSize, d))
-          })
+        gatherInfo(dirs.zipWithIndex.map {case (dir, index) =>
+          getDirectoryInfo(dir, onParsingCompleted = () =>
+            c.execute(() => obs onNext IndexUpdate(index + 1, totalSize, dir)))
+        })
         })
       } map { info =>
         allInfoHandler(info.songs)
         allInfoHandler(info.albums)
         allInfoHandler(info.artists)
       }
-    }.>|(obs.onCompleted())) subscribe $
+    } >| obs.onCompleted()) subscribe $
     $
   }
 

@@ -11,7 +11,6 @@ class Player {
   pause() {
     throw new Error("Abstract")
   }
-  // one of PLAYING, PAUSED, STOPPED
   isPaused() {
     throw new Error("Abstract")
   }
@@ -90,6 +89,7 @@ class Playlist {
   toString(song) {
     return `${song.title} by ${song.artistName} (${song.albumName}, ${song.track}, ${song.year}, ${song.bitrate}kbps, ${song.duration.timeFormat()}`
   }
+  // The list presentation reversed, so song at index 0 is the actually the last song, not the first.
   getDisplayedIndex(index) {
     return this.length() - 1 - index
   }
