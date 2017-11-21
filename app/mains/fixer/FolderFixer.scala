@@ -1,5 +1,6 @@
 package mains.fixer
 
+import backend.Url
 import backend.configs.StandaloneConfig
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -45,7 +46,7 @@ object FolderFixer
       println("Copying folder image")
       f(source)
       val $ = RichFileUtils.move(source, d, expectedName)
-      IOUtils focus d
+      IOUtils focus $
       $
     }
   }
