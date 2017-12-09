@@ -1,10 +1,10 @@
 package mains.fixer
 
 import backend.Url
-import backend.configs.StandaloneConfig
+import backend.configs.{Configuration, StandaloneConfig}
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.path.RichFile.richFile
+import common.rich.path.RichFile._
 import common.rich.path.{Directory, RichFileUtils}
 import mains.IOUtils
 import mains.cover.DownloadCover
@@ -16,8 +16,7 @@ import scalaz.syntax.ToFunctorOps
 
 object FolderFixer
     extends ToFunctorOps with FutureInstances {
-  private implicit val c = StandaloneConfig
-  import c._
+  private implicit val c: Configuration = StandaloneConfig
 
   private def findArtistFolder(artist: String): Option[Directory] = {
     println("finding matching folder")
@@ -29,19 +28,7 @@ object FolderFixer
   private def moveDirectory(artist: String, destination: Future[Option[Directory]],
       folderImage: Future[Directory => Unit], source: Directory,
       expectedName: String): Future[Directory] = {
-    val destinationParent: Future[Directory] = destination.map(_.getOrElse {
-      val genreDirs = Directory("d:/media/music")
-          .dirs
-          .filter(e => Set("Rock", "Metal").map(_.toLowerCase).contains(e.name.toLowerCase))
-          .flatMap(_.dirs)
-      println("Could not find artist directory... what is the artist's genre?")
-      println(genreDirs.map(_.name).sorted mkString "\n")
-      val genre = scala.io.StdIn.readLine().toLowerCase
-      genreDirs
-          .find(_.name.toLowerCase == genre)
-          .get
-          .addSubDir(artist)
-    })
+    val destinationParent: Future[Directory] = destination.map(_ getOrElse NewArtistFolderCreator(artist).get)
     for (d <- destinationParent; f <- folderImage) yield {
       println("Copying folder image")
       f(source)
@@ -72,7 +59,7 @@ object FolderFixer
         .head
         .mapTo(Song.apply)
         .artistName
-    val folder = Directory(args(0))
+    val folder = Directory("""E:\Incoming\Bittorrent\Completed\Music\Organized Chaos - Inner Conflict (2011)""")
     val artist = extractArtistFromFile(folder)
     val location = Future(findArtistFolder(artist))
     val folderImage = downloadCover(folder)
