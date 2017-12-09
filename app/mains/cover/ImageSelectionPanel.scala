@@ -1,7 +1,5 @@
 package mains.cover
 
-import javax.swing.ToolTipManager
-
 import common.io.IODirectory
 import common.rich.RichT._
 
@@ -24,7 +22,6 @@ private class ImageSelectionPanel private(imagesSupplier: ImagesSupplier)(implic
         case e: ImageChoice => promise success e
       }
     }
-    ToolTipManager.sharedInstance().setInitialDelay(0)
     frame.contents = panel
     panel.refresh()
     frame.open()
@@ -36,6 +33,7 @@ private class ImageSelectionPanel private(imagesSupplier: ImagesSupplier)(implic
 
 private object ImageSelectionPanel {
   import backend.configs.StandaloneConfig
+
   import scala.util.Random
 
   def apply(imagesSupplier: ImagesSupplier)(implicit ec: ExecutionContext): Future[ImageChoice] =

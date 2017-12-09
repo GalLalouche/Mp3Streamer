@@ -1,10 +1,10 @@
 package mains.cover
 
-import java.awt.event.{MouseEvent, MouseListener}
 import java.awt.{Color, Font}
 import javax.swing.{JLabel, SpringLayout, SwingConstants}
 
 import common.rich.RichT._
+import mains.SwingUtils
 
 import scala.concurrent.ExecutionContext
 import scala.swing._
@@ -36,8 +36,9 @@ private[this] object AsyncFolderImagePanel {
 
 /** Eventually publishes an ImageChoice event. */
 private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: ImagesSupplier)(implicit ec: ExecutionContext)
-    extends GridPanel(rows0 = rows, cols0 = cols) {
+    extends GridPanel(rows0 = rows, cols0 = cols) with SwingUtils {
   import AsyncFolderImagePanel._
+
   private def createImagePanel(folderImage: FolderImage): Component = {
     val imageIcon = folderImage.toIcon(width, height)
     val text = s"${folderImage.width}x${folderImage.height} ${fileSize(folderImage.file.size)}" +
@@ -45,14 +46,7 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
     val imageLabel = new JLabel(imageIcon)
     imageLabel.setLayout(new SpringLayout())
     textProps.map(_ label text) foreach imageLabel.add
-    imageLabel.addMouseListener(new MouseListener {
-      override def mouseExited(e: MouseEvent) = ()
-      override def mousePressed(e: MouseEvent) = ()
-      override def mouseReleased(e: MouseEvent) = ()
-      override def mouseEntered(e: MouseEvent) = ()
-      override def mouseClicked(e: MouseEvent) = AsyncFolderImagePanel.this.publish(Selected(folderImage))
-    })
-    Component wrap imageLabel
+    Component.wrap(imageLabel).onMouseClick(() => AsyncFolderImagePanel.this.publish(Selected(folderImage)))
   }
 
   // TODO consider creating a new panel instead

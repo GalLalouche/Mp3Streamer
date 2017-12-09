@@ -1,18 +1,27 @@
 package mains.cover
 
-import java.awt.image.BufferedImage
-import java.awt.{Image, RenderingHints}
-import javax.swing.ImageIcon
+import java.awt.Image
 
 import common.io.RichWSRequest._
 import common.io.{DirectoryRef, FileRef, InternetTalker}
-import mains.cover.ImageDownloader._
+import mains.SwingUtils
 
 import scala.concurrent.Future
 
+private object ImageDownloader extends SwingUtils {
+  def folderImage(f: FileRef, local: Boolean, w: => Int, h: => Int, image: => Image): FolderImage = new FolderImage {
+    override def toIcon(requestedWidth: Int, requestedHeight: Int) =
+      image.toImageIcon(width = requestedWidth, height = requestedHeight)
+    override val isLocal = local
+    override lazy val file = f
+    override lazy val width = w
+    override lazy val height = h
+  }
+}
 /** Downloads images and saves them to a directory; local image sources will be noop-ed. */
 private class ImageDownloader(outputDirectory: DirectoryRef)(implicit it: InternetTalker)
     extends (ImageSource => Future[FolderImage]) {
+  import ImageDownloader._
   private def toFile(bytes: Array[Byte]): FileRef =
     outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
 
@@ -23,23 +32,4 @@ private class ImageDownloader(outputDirectory: DirectoryRef)(implicit it: Intern
     case l: LocalSource =>
       Future successful folderImage(l.file, local = true, l.width, l.height, l.image)
   }
-}
-
-object ImageDownloader {
-  def folderImage(f: FileRef, local: Boolean, w: => Int, h: => Int, image: => Image) =
-    new FolderImage {
-      override def toIcon(requestedWidth: Int, requestedHeight: Int) = {
-        val $ = new BufferedImage(requestedWidth, requestedHeight, BufferedImage.TYPE_INT_ARGB)
-        val graphics = $.createGraphics
-        graphics.setRenderingHint(
-          RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
-        graphics.drawImage(image, 0, 0, requestedWidth, requestedHeight, null)
-        graphics.dispose()
-        new ImageIcon($)
-      }
-      override val isLocal = local
-      override lazy val file = f
-      override lazy val width = w
-      override lazy val height = h
-    }
 }

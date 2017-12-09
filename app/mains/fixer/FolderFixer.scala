@@ -1,7 +1,7 @@
 package mains.fixer
 
 import backend.Url
-import backend.configs.{Configuration, StandaloneConfig}
+import backend.configs.{Configuration, RealConfig, StandaloneConfig}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.path.RichFile._
@@ -16,7 +16,7 @@ import scalaz.syntax.ToFunctorOps
 
 object FolderFixer
     extends ToFunctorOps with FutureInstances {
-  private implicit val c: Configuration = StandaloneConfig
+  private implicit val c: RealConfig = StandaloneConfig
 
   private def findArtistFolder(artist: String): Option[Directory] = {
     println("finding matching folder")
@@ -53,13 +53,15 @@ object FolderFixer
   }
 
   def main(args: Array[String]) {
+    import c._
+
     def extractArtistFromFile(folder: Directory): String = folder
         .files
         .filter(Set("mp3", "flac") contains _.extension)
         .head
         .mapTo(Song.apply)
         .artistName
-    val folder = Directory("""E:\Incoming\Bittorrent\Completed\Music\Organized Chaos - Inner Conflict (2011)""")
+    val folder = Directory(args(0))
     val artist = extractArtistFromFile(folder)
     val location = Future(findArtistFolder(artist))
     val folderImage = downloadCover(folder)
