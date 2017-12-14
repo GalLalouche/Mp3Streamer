@@ -7,7 +7,7 @@ import models.IOMusicFinder
 import scala.sys.process._
 
 
-object FoobarGain {
+private object FoobarGain {
   private val foobarPath = """C:\Program Files (x86)\foobar2000\foobar2000.exe"""
   private val replayGainCommand = "/context_command:\"ReplayGain/Scan per-file track gain\""
 
