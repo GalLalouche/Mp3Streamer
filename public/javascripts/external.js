@@ -20,62 +20,62 @@ $(function() {
         "")
   }
 
-  function resetLinks() {
-    externalDiv.html("Fetching links...")
-  }
-
   function updateRecon() {
     const json = {}
+
     function addIfNotEmpty(elem) {
       const id = elem[0].placeholder.split(" ")[0].toLowerCase()
       const text = elem.val()
       if (text.length !== 0) // the box is either empty, or is valid TODO replace with an assert
         json[id] = text
     }
+
     addIfNotEmpty(artistReconBox)
     addIfNotEmpty(albumReconBox)
     if (!isEmptyObject(json)) {
-      resetLinks()
       const songPath = gplaylist.currentPlayingSong().file
-      postJson(remotePath + "recons/" + songPath, json, l => showLinks(l, remotePath + songPath))
+      postJson(remotePath + "recons/" + songPath, json, showLinks(remotePath + songPath))
     }
   }
 
-  function showLinks(externalLinks, debugLink) {
-    artistReconBox.val("")
-    albumReconBox.val("")
-    externalDiv.html("")
-    $.each(externalLinks, (entityName, externalLinksForEntity) => {
-      const isValid = externalLinksForEntity.timestamp
-      const timestampOrError = `${entityName} (${isValid ?
-          externalLinksForEntity.timestamp : href(debugLink, externalLinksForEntity.error)})`
-      const ul = elem("ul", timestampOrError)
-      if (isValid) {
-        $.each(externalLinksForEntity, (linkName, link) => {
-          if (linkName === "timestamp")
-            return
-          const extensions = getExtensions(link)
-          const links = href(link.main, link.host) + (extensions ? ` (${extensions})` : "")
-          const imageIcon = `"list-style-image: url('assets/images/${link.host.replace(/[*?]$/g, "")}_icon.png')"`
-          ul.append($(`<li style=${imageIcon}>${links}</li>`))
-        })
-      }
-      externalDiv.append(ul)
-    })
-    // TODO this shouldn't really be created every time
+  // Yey, currying!
+  const showLinks = debugLink => {
+    externalDiv.html("Fetching links...")
+    return externalLinks => {
+      artistReconBox.val("")
+      albumReconBox.val("")
+      externalDiv.html("")
+      $.each(externalLinks, (entityName, externalLinksForEntity) => {
+        const isValid = externalLinksForEntity.timestamp
+        const timestampOrError = `${entityName} (${isValid ?
+            externalLinksForEntity.timestamp : href(debugLink, externalLinksForEntity.error)})`
+        const ul = elem("ul", timestampOrError)
+        if (isValid) {
+          $.each(externalLinksForEntity, (linkName, link) => {
+            if (linkName === "timestamp")
+              return
+            const extensions = getExtensions(link)
+            const links = href(link.main, link.host) + (extensions ? ` (${extensions})` : "")
+            const imageIcon = `"list-style-image: url('assets/images/${link.host.replace(/[*?]$/g, "")}_icon.png')"`
+            ul.append($(`<li style=${imageIcon}>${links}</li>`))
+          })
+        }
+        externalDiv.append(ul)
+      })
+      // TODO this shouldn't really be created every time
+    }
   }
 
   External.show = function(song) {
-    resetLinks()
     const externalUrl = remotePath + song.file
-    $.get(externalUrl, l => showLinks(l, externalUrl))
+    $.get(externalUrl, showLinks(externalUrl))
         .fail(function() {
           externalDiv.html("Error occurred while fetching links")
         })
   }
 
   const hexa = "[a-f0-9]"
-  // d8f63b51-73e0-4f65-8bd3-bcfe6892fb0e
+  // E.g., d8f63b51-73e0-4f65-8bd3-bcfe6892fb0e
   const reconRegex = new RegExp(`^${hexa}{8}-(?:${hexa}{4}-){3}${hexa}{12}$`)
   // Update recon on pressing Enter
   validateBoxAndButton($(".external-recon-id"), updateReconButton, s => reconRegex.test(s), updateRecon)
@@ -84,7 +84,7 @@ $(function() {
   })
   refreshButton.click(() => {
     const songPath = gplaylist.currentPlayingSong().file
-    $.get(remotePath + "refresh/" + songPath, l => showLinks(l, remotePath + songPath))
+    $.get(remotePath + "refresh/" + songPath, showLinks(remotePath + songPath))
   })
 })
 External = {}
