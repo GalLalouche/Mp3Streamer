@@ -10,6 +10,7 @@ $(function() {
       $("<input class='external-recon-id' placeholder='Album ID' type='text'/>").appendTo(externalDivParent)
   appendBr(externalDivParent)
   const updateReconButton = button("Update Recon").appendTo(externalDivParent)
+  const refreshButton = button("Refresh").appendTo(externalDivParent)
   const remotePath = "external/"
 
   function getExtensions(link) {
@@ -80,6 +81,10 @@ $(function() {
   validateBoxAndButton($(".external-recon-id"), updateReconButton, s => reconRegex.test(s), updateRecon)
   externalDiv.on("click", ".copy-to-clipboard", function() {
     copyTextToClipboard($(this).attr("url"))
+  })
+  refreshButton.click(() => {
+    const songPath = gplaylist.currentPlayingSong().file
+    $.get(remotePath + "refresh/" + songPath, l => showLinks(l, remotePath + songPath))
   })
 })
 External = {}

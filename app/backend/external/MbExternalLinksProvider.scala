@@ -77,6 +77,8 @@ private class MbExternalLinksProvider(implicit c: Configuration)
   private def update[R <: Reconcilable](key: R, recon: Option[ReconID], storage: ReconStorage[R]): Future[_] =
     optionalFuture(recon)(reconId => storage.mapStore(key, e => Some(reconId) -> e._2, Some(reconId) -> false))
 
+  def delete(song: Song): Future[_] =
+    artistExternalStorage.delete(song.artist) >> albumExternalStorage.delete(song.release)
   def updateRecon(song: Song, artistReconId: Option[ReconID], albumReconId: Option[ReconID]): Future[_] = {
     require(artistReconId.isDefined || albumReconId.isDefined, "No actual recon IDs given")
     update(song.artist, artistReconId, artistReconStorage).>>(

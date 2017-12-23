@@ -56,7 +56,11 @@ object ExternalController extends LegacyController
     ) yield Json.obj("Artist links" -> artistJson, "Album links" -> albumJson)
     f.map(Ok(_))
   }
-  def updateRecon(path: String) = Action.async { request =>
+  def refresh(path: String) = Action.async {
+    val song: Song = ControllerUtils parseSong path
+    external.delete(song) >> getLinks(song)
+  }
+  def updateRecon(path: String) = Action.async {request =>
     val json = request.body.asJson.get
     def getReconId(s: String) = json ostr s map ReconID
     val song: Song = ControllerUtils parseSong path

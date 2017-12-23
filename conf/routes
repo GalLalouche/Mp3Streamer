@@ -19,20 +19,25 @@ GET        /data/albums/*path            controllers.Player.album(path)
 GET        /data/discs/:disc/*path       controllers.Player.discNumber(path, disc)
 GET        /data/songs/*path             controllers.Player.song(path)
 GET        /data/nextSong                controllers.Player.nextSong(path)
+
 # Streamer
 GET        /stream/download/*path        controllers.Streamer.download(path)
 GET        /stream/play/*path            controllers.Streamer.playSong(path)
+
 # Posters
 GET        /posters/display/*path        controllers.Posters.displayImage(path)
 GET        /posters/*path                controllers.Posters.image(path)
+
 # Lyrics
 GET        /lyrics/*path                         backend.lyrics.LyricsController.get(path)
 POST       /lyrics/push/*path                    backend.lyrics.LyricsController.push(path)
 POST       /lyrics/instrumental/song/*path       backend.lyrics.LyricsController.setInstrumentalSong(path)
 POST       /lyrics/instrumental/artist/*path     backend.lyrics.LyricsController.setInstrumentalArtist(path)
+
 # External
-GET        /external/*path               backend.external.ExternalController.get(path)
+GET        /external/refresh/*path       backend.external.ExternalController.refresh(path)
 POST       /external/recons/*path        backend.external.ExternalController.updateRecon(path)
+GET        /external/*path               backend.external.ExternalController.get(path)
 
 # Searcher
 GET        /search/*path                 backend.search.SearchController.search(path)
