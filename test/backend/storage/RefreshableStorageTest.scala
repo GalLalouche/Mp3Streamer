@@ -3,9 +3,9 @@ package backend.storage
 import java.time.Duration
 
 import backend.configs.TestConfiguration
-import common.rich.RichT._
 import common.AuxSpecs
 import common.rich.RichFuture._
+import common.rich.RichT._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import scala.concurrent.Future
@@ -43,16 +43,25 @@ class RefreshableStorageTest extends FreeSpec with AuxSpecs with OneInstancePerT
 
       $("foobar").get shouldReturn "bazqux"
     }
-    "reuse existing value on failure" in {
-      val $ = new RefreshableStorage[String, String](freshnessStorage,
-        Future.failed(new RuntimeException()).const,
-        Duration ofMillis 50)
-      freshnessStorage.store("foo", "bar")
-      val dataFreshness = freshnessStorage.freshness("foo").get
-      clock advance 100
-      assert($.needsRefresh("foo").get)
-      $.apply("foo").get shouldReturn "bar"
-      freshnessStorage.freshness("foo").get shouldReturn dataFreshness
+    "reuse existing value on failure" - {
+      "previous value exists" in {
+        val $ = new RefreshableStorage[String, String](freshnessStorage,
+          Future.failed(new RuntimeException()).const,
+          Duration ofMillis 50)
+        freshnessStorage.store("foo", "bar")
+        val dataFreshness = freshnessStorage.freshness("foo").get
+        clock advance 100
+        assert($.needsRefresh("foo").get)
+        $.apply("foo").get shouldReturn "bar"
+        freshnessStorage.freshness("foo").get shouldReturn dataFreshness
+      }
+      "previous does not exist, returns the original failure" in {
+        val exception = new RuntimeException("failure")
+        val $ = new RefreshableStorage[String, String](freshnessStorage,
+          Future.failed(exception).const,
+          Duration ofMillis 50)
+        $.apply("foo").getFailure shouldReturn exception
+      }
     }
   }
   "withAge" in {

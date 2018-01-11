@@ -28,11 +28,14 @@ class RefreshableStorage[Key, Value](
 
   override def apply(k: Key): Future[Value] =
     needsRefresh(k).flatMap(isOld => {
-      lazy val oldData = freshnessStorage.load(k).map(_.get)
-      if (isOld)
-        refresh(k) orElseTry oldData
+      lazy val oldData = freshnessStorage load k
+      if (isOld) {
+        val r = refresh(k)
+        // TODO orElseTry that keeps original failure if the next try fails
+        r.orElseTry(oldData ifNoneTry r)
+      }
       else
-        oldData
+        oldData.map(_.get)
     })
 
   def withAge(k: Key): Future[(Value, Option[LocalDateTime])] =
