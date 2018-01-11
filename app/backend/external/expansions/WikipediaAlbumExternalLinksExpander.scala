@@ -7,15 +7,16 @@ import backend.recon.Album
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.func.{MoreFutureInstances, MoreTraversableInstances, ToTraverseMonadPlusOps}
+import common.rich.func.{MoreTraversableInstances, ToTraverseMonadPlusOps}
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
 import scalaz.Traverse
+import scalaz.std.FutureInstances
 
 private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
     extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic))
-        with MoreFutureInstances with MoreTraversableInstances with ToTraverseMonadPlusOps {
+        with FutureInstances with MoreTraversableInstances with ToTraverseMonadPlusOps {
   protected val allMusicHelper = new AllMusicHelper
 
   // semi-canonical = guaranteed to start with http://www.allmusic.com/album

@@ -86,7 +86,6 @@ private class MetadataCacher(saver: FormatSaver)(implicit val c: Configuration,
           getDirectoryInfo(dir, onParsingCompleted = () =>
             c.execute(() => obs onNext IndexUpdate(index + 1, totalSize, dir)))
         })
-        })
       } map { info =>
         allInfoHandler(info.songs)
         allInfoHandler(info.albums)

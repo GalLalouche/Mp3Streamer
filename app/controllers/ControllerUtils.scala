@@ -14,7 +14,7 @@ import play.api.libs.json.{JsObject, JsString}
 import scala.concurrent.ExecutionContext
 
 object ControllerUtils {
-  implicit val config: RealConfig = new RealConfig {
+  implicit lazy val config: RealConfig = new RealConfig {
     override implicit val ec: ExecutionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
     override implicit val logger: Logger =
       new CompositeLogger(new ConsoleLogger with FilteringLogger {
