@@ -13,6 +13,7 @@ import backend.recon._
 import backend.storage.{FreshnessStorage, RefreshableStorage}
 import common.rich.RichFuture._
 import common.rich.RichT._
+import common.rich.func.ToMoreMonadErrorOps
 import models.Song
 
 import scala.concurrent.Future
@@ -20,7 +21,7 @@ import scalaz.std.FutureInstances
 import scalaz.syntax.{ToBindOps, ToFunctorOps}
 
 private class MbExternalLinksProvider(implicit c: Configuration)
-    extends FutureInstances with ToFunctorOps with ToBindOps {
+    extends FutureInstances with ToFunctorOps with ToBindOps with ToMoreMonadErrorOps {
   private class TimeStamper[R <: Reconcilable](foo: RefreshableStorage[R, MarkedLinks[R]])
       extends Retriever[R, TimestampedLinks[R]] {
     override def apply(r: R): Future[TimestampedLinks[R]] =
@@ -36,8 +37,8 @@ private class MbExternalLinksProvider(implicit c: Configuration)
   ): Retriever[R, TimestampedLinks[R]] = new RefreshableStorage[R, MarkedLinks[R]](
     new FreshnessStorage(storage),
     new ExternalPipe[R](
-      a => reconciler(a)
-          .filterWith(_._1.isDefined, s"Couldn't reconcile <$a>")
+      r => reconciler(r)
+          .filterWithMessage(_._1.isDefined, s"Couldn't reconcile <$r>")
           .map(_._1.get),
       provider, expander, additionalReconciler),
     Duration ofDays 28)

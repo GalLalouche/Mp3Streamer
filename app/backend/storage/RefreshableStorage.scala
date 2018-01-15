@@ -3,17 +3,19 @@ package backend.storage
 import java.time.{Clock, Duration, LocalDateTime, ZoneId}
 
 import backend.Retriever
-import common.rich.RichFuture._
-import common.rich.RichT._
 import backend.RichTime._
+import common.rich.RichT._
+import common.rich.func.ToMoreMonadErrorOps
 
 import scala.concurrent.{ExecutionContext, Future}
+import scalaz.std.FutureInstances
 
 class RefreshableStorage[Key, Value](
     freshnessStorage: FreshnessStorage[Key, Value],
     onlineRetriever: Retriever[Key, Value],
     maxAge: Duration)
-    (implicit ec: ExecutionContext, clock: Clock) extends Retriever[Key, Value] {
+    (implicit ec: ExecutionContext, clock: Clock) extends Retriever[Key, Value]
+    with FutureInstances with ToMoreMonadErrorOps {
   private def age(dt: LocalDateTime): Duration =
     Duration.between(dt, clock.instant.atZone(ZoneId.systemDefault))
   def needsRefresh(k: Key): Future[Boolean] =

@@ -9,7 +9,7 @@ import common.io.IODirectory
 import common.rich.RichFuture
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.func.MoreSeqInstances
+import common.rich.func.{MoreSeqInstances, ToMoreFunctorOps, ToMoreMonadErrorOps}
 import models.{IOMusicFinder, Song}
 import rx.lang.scala.Observable
 
@@ -21,7 +21,8 @@ import scalaz.syntax.ToTraverseOps
 
 private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReconStorage: AlbumReconStorage)(
     implicit c: Configuration, mf: IOMusicFinder)
-    extends ToTraverseOps with ListInstances with FutureInstances with MoreSeqInstances {
+    extends ToTraverseOps with ListInstances with FutureInstances with MoreSeqInstances
+        with ToMoreMonadErrorOps with ToMoreFunctorOps {
   private val log = c.logger.verbose _
   private val meta = new MbArtistReconciler
   private def getExistingAlbums: Seq[Album] = mf.genreDirs
@@ -46,21 +47,21 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
   private def findNewAlbums(cache: ArtistLastYearCache, artist: Artist): Future[Seq[(NewAlbum, ReconID)]] = {
     val start = System.currentTimeMillis()
     reconciler(artist)
-        .filterWith(!_._2, "Ignored")
-        .filterWith(_._1.isDefined, s"Unreconcilable")
+        .filterWithMessage(!_._2, "Ignored")
+        .filterWithMessage(_._1.isDefined, s"Unreconcilable")
         .map(_._1.get)
         .toTry.get match { // Ensures a single thread waits for the semaphore in NewAlbumsConfig
       case Success(reconId) =>
         reconId.mapTo(meta.getAlbumsMetadata)
             .flatMap(removeIgnoredAlbums(artist, _))
             .map(cache.filterNewAlbums(artist, _))
-            .consume(albums => {
+            .listen(albums => {
               log(s"Finished working on $artist; found ${if (albums.isEmpty) "no" else albums.size} new albums.")
             })
             .recover {
               case e: Throwable =>
                 e match {
-                  case e: RichFuture.FilteredException => log(s"$artist was filtered, reason: ${e.getMessage}")
+                  case e: FilteredException => log(s"$artist was filtered, reason: ${e.getMessage}")
                   case e: Throwable => e.printStackTrace()
                 }
                 Nil

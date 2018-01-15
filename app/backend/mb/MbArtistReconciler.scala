@@ -14,16 +14,19 @@ import common.RichJson._
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
+import common.rich.func.ToMoreMonadErrorOps
 import play.api.libs.json._
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import scalaz.std.FutureInstances
 
-class MbArtistReconciler(implicit it: InternetTalker) extends OnlineReconciler[Artist] {
+class MbArtistReconciler(implicit it: InternetTalker) extends OnlineReconciler[Artist]
+    with FutureInstances with ToMoreMonadErrorOps {
   override def apply(a: Artist): Future[Option[ReconID]] =
     retry(() => getJson("artist/", ("query", a.name)), 5, 2 seconds)
         .map(_.objects("artists").find(_ has "type").get)
-        .filterWith(_ str "score" equals "100", "could not find a 100 match")
+        .filterWithMessage(_ str "score" equals "100", "could not find a 100 match")
         .map(_ ostr "id" map ReconID)
 
   private def parseDate(js: JsValue): LocalDate =

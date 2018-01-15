@@ -7,16 +7,17 @@ import backend.Url
 import backend.external.BaseLink
 import backend.recon.Reconcilable
 import common.io.InternetTalker
-import common.rich.RichFuture._
 import common.rich.collections.RichTraversableOnce._
+import common.rich.func.ToMoreMonadErrorOps
 import common.rich.primitives.RichString._
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
-import scalaz.std.TupleInstances
+import scalaz.std.{FutureInstances, TupleInstances}
 import scalaz.syntax.ToFoldableOps
 
-private class AllMusicHelper(implicit it: InternetTalker) extends ToFoldableOps with TupleInstances {
+private class AllMusicHelper(implicit it: InternetTalker) extends ToFoldableOps with TupleInstances
+    with FutureInstances with ToMoreMonadErrorOps {
   private val canonicalLink = Pattern compile "[a-zA-Z\\-0-9]+-mw\\d+"
   private val allmusicPrefx = "(?:http://www.)?allmusic.com/album/"
   private val canonicalRe = s"$allmusicPrefx($canonicalLink)".r
@@ -36,7 +37,7 @@ private class AllMusicHelper(implicit it: InternetTalker) extends ToFoldableOps 
         Future successful url
       else {
         it.useWs(_.url(url.address).withFollowRedirects(false).get())
-            .filterWithMessage(_.status == HttpURLConnection.HTTP_MOVED_PERM,
+            .filterWithMessageF(_.status == HttpURLConnection.HTTP_MOVED_PERM,
               e => s"Expected response code HTTP_MOVED_PERM (${HttpURLConnection.HTTP_MOVED_PERM}), " +
                   s"but was ${e.statusText} (${e.status})")
             .map(_.header("location").get)

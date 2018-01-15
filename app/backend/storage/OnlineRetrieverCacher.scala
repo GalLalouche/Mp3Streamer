@@ -1,7 +1,7 @@
 package backend.storage
 
 import backend.Retriever
-import common.rich.RichFuture._
+import common.rich.func.ToMoreMonadErrorOps
 import common.storage.Storage
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,7 +16,7 @@ class OnlineRetrieverCacher[Key, Value](
     localStorage: Storage[Key, Value],
     onlineRetriever: Retriever[Key, Value])
     (implicit ec: ExecutionContext) extends Retriever[Key, Value] with Storage[Key, Value]
-    with ToFunctorOps with FutureInstances {
+    with ToFunctorOps with FutureInstances with ToMoreMonadErrorOps {
   override def apply(k: Key): Future[Value] = localStorage.load(k)
       .ifNoneTry(onlineRetriever(k).flatMap(v =>
         localStorage.store(k, v)

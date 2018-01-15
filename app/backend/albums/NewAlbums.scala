@@ -6,6 +6,7 @@ import backend.recon._
 import common.io.FormatSaver
 import common.rich.RichFuture._
 import common.rich.RichObservable._
+import common.rich.func.ToMoreFunctorOps
 import mains.fixer.StringFixer
 import models.IOMusicFinder
 import monocle.function.IndexFunctions
@@ -17,7 +18,8 @@ import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
 private class NewAlbums(implicit c: Configuration)
-    extends ToBindOps with FutureInstances with MapOptics with ApplySyntax with IndexFunctions {
+    extends ToBindOps with FutureInstances with MapOptics with ApplySyntax with IndexFunctions
+        with ToMoreFunctorOps {
   import NewAlbum.NewAlbumJsonable
 
   private val logger = c.logger
@@ -71,7 +73,7 @@ private class NewAlbums(implicit c: Configuration)
         .doOnEach((store _).tupled)
         .map(_._1)
         .toFuture[Traversable]
-        .consume(jsonableSaver save _)
+        .listen(jsonableSaver save _)
 }
 
 object NewAlbums {
