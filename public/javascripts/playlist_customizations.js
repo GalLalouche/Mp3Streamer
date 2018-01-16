@@ -2,7 +2,8 @@
 $(function() {
   const playlistElement = $(".jp-playlist")
   const playlist = gplaylist
-  playlistElement.on("mouseover", ".playlist-item", function() {
+  const playlistItem = ".playlist-item"
+  playlistElement.on("mouseover", playlistItem, function() {
     const el = $(this)
     if (el.custom_overflown()) {
       const index = el.closest("li").index()
@@ -10,5 +11,13 @@ $(function() {
       const song = playlist.songs()[displayedIndex]
       el.custom_tooltip(playlist.toString(song))
     }
+  })
+  // I must have deleted this somehow :\ Oh well.
+  playlistElement.on("click", playlistItem, function() {
+    const el = $(this)
+    const clickedIndex = playlist.getDisplayedIndex(el.closest("li").index())
+    if (gplaylist.currentIndex() === clickedIndex)
+      return // Clicked song is currently playing
+    playlist.play(clickedIndex)
   })
 })
