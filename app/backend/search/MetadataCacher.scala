@@ -74,7 +74,7 @@ private class MetadataCacher(saver: FormatSaver)(implicit val c: Configuration,
 
   def processDirectory(dir: DirectoryRef): Future[Unit] = {
     import common.rich.RichObservable._
-    update(UpdateDir(dir)).toFuture.>|(Unit)
+    update(UpdateDir(dir)).toFuture.void
   }
 
   private def updateIndex(dirs: GenSeq[DirectoryRef], allInfoHandler: AllInfoHandler): Observable[IndexUpdate] = {
