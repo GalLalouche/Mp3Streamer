@@ -10,6 +10,7 @@ import scala.swing.event.WindowClosing
 import scala.swing.{BoxPanel, Component, Frame, GridPanel, Label, Orientation}
 
 private object NewArtistFolderCreator extends SwingUtils {
+  private val NumberOfLabelRows = 1
   def apply(artistName: String): Future[Directory] = {
     val promise = Promise[Directory]()
     val frame = new Frame {
@@ -18,8 +19,7 @@ private object NewArtistFolderCreator extends SwingUtils {
     def genres(genre: String) = Directory("d:/media/music/" + genre).dirs
     val rockDirs = genres("Rock")
     val metalDirs = genres("Metal")
-    val numberOfColumns = Math.max(rockDirs.length, metalDirs.length) + 1 // +1 for labels
-    frame.contents = new GridPanel(numberOfColumns, 2) {
+    frame.contents = new GridPanel(rows0 = Math.max(rockDirs.length, metalDirs.length) + NumberOfLabelRows, cols0 = 2) {
       private def genreComponent(d: Directory): Component =
         if (d == null) new Label("") else
           new BoxPanel(Orientation.Horizontal) {

@@ -59,13 +59,9 @@ private class NewAlbums(implicit c: Configuration)
     load.map(_ &|-? index(a.artist) modify (_.filterNot(_.title == a.title))).map(save)
   }
   def ignoreAlbum(a: Album): Future[Unit] = ignore(a, albumReconStorage) >> removeAlbum(a)
-  implicit val locations = new IOMusicFinder {
-    override val subDirNames: List[String] = List("Rock", "Metal")
-  }
-
   private val retriever =
     new NewAlbumsRetriever(new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()), albumReconStorage)(
-      c, locations)
+      c, new IOMusicFinder {override val subDirNames: List[String] = List("Rock", "Metal")})
 
   private def store(a: NewAlbum, r: ReconID): Unit = albumReconStorage.store(a.toAlbum, Some(r) -> false)
   def fetchAndSave: Future[Traversable[NewAlbum]] =

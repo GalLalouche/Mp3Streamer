@@ -16,8 +16,7 @@ object Streamer extends LegacyController {
 
   def download(s: String) = Action {request =>
     // assumed format: [bytes=<start>-]
-    def parseRange(s: String): Long = s dropAfterLast '=' takeWhile (_ isDigit) toLong
-    val bytesToSkip = request.headers get "Range" map parseRange getOrElse 0L
+    val bytesToSkip = request.headers get "Range" map (_ dropAfterLast '=' takeWhile (_ isDigit) toLong) getOrElse 0L
     val file = ControllerUtils.parseSong(s).file.file
     val fis = new FileInputStream(file)
     fis.skip(bytesToSkip)
@@ -32,14 +31,6 @@ object Streamer extends LegacyController {
         "Connection" -> "close",
         "Content-Range" -> s"bytes $bytesToSkip-${file.length}/${file.length}"
     )
-    //status.chunked(source).withHeaders(
-    //  "Access-Control-Allow-Headers" -> "range, accept-encoding",
-    //  "Access-Control-Allow-Origin" -> "*",
-    //  "Accept-Ranges" -> "bytes",
-    //  "Connection" -> "close",
-    //  "Content-Length" -> (file.length - bytesToSkip).toString,
-    //  "Content-Range" -> s"bytes $bytesToSkip-${file.length}/${file.length}"
-    //)
   }
 
   // for debugging; plays the song in the browser instead of downloading it

@@ -2,14 +2,16 @@ package backend.search
 
 import backend.search.MetadataCacher.IndexUpdate
 import common.rich.RichT._
+import controllers.ControllerUtils
 import controllers.websockets.WebSocketController
 import controllers.{Player, Recent}
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Action
 import rx.lang.scala.Observable
 
-/** Used for running manual commands from the client side. */
+/** Used for updating the cache from the client. */
 object CacherController extends WebSocketController {
+  import ControllerUtils.config
   private def toJson(u: IndexUpdate): JsObject = Json.obj(
     "finished" -> u.currentIndex,
     "total" -> u.totalNumber,
