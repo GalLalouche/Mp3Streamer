@@ -6,7 +6,7 @@ import backend.recon.ReconScorers.AlbumReconScorer
 import backend.recon.{Album, Artist}
 import common.io.InternetTalker
 import common.rich.RichT._
-import common.rich.func.ToMoreMonadErrorOps
+import common.rich.func.ToMoreMonadOps
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
@@ -16,7 +16,7 @@ import scalaz.std.{FutureInstances, OptionInstances}
 import scalaz.syntax.ToTraverseOps
 
 private class AllMusicAlbumFinder(implicit it: InternetTalker) extends SameHostExpander(Host.AllMusic)
-    with FutureInstances with OptionInstances with ToMoreMonadErrorOps with ToTraverseOps {
+    with FutureInstances with OptionInstances with ToTraverseOps with ToMoreMonadOps {
   val allMusicHelper = new AllMusicHelper
   override def findAlbum(d: Document, a: Album): Option[Url] = {
     def score(other: Album): Double = AlbumReconScorer.apply(a, other)
@@ -41,6 +41,5 @@ private class AllMusicAlbumFinder(implicit it: InternetTalker) extends SameHostE
     it.downloadDocument(e.link +/ "discography")
         .map(findAlbum(_, a))
         .map(_.map(url => e.copy[Album](link = url)))
-        .mFilterOpt(_.link |> allMusicHelper.isValidLink,
-          new FilteredException("Invalid AllMusic link").const)
+        .mFilterOpt(_.link |> allMusicHelper.isValidLink)
 }
