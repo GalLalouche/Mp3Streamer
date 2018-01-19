@@ -16,6 +16,7 @@ import scala.sys.process.Process
 
 object DownloadCover {
   private implicit val c = StandaloneConfig
+  import c._
   private case class CoverException(str: String, e: Exception) extends Exception(e)
 
   private lazy val tempFolder: Directory = {

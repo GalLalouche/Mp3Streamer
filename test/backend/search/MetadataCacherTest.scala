@@ -35,8 +35,8 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
   def verifyData(data: Album*)(implicit d: DummyImplicit): Unit = verifyData(data)
   def verifyData(data: Artist*)(implicit d1: DummyImplicit, d2: DummyImplicit): Unit = verifyData(data)
 
-  private val mf = new FakeMusicFinder(songs)
-  private implicit val c = TestConfiguration().copy(_root = root, _mf = mf)
+  private implicit val mf: FakeMusicFinder = new FakeMusicFinder(songs)
+  private implicit val c: TestConfiguration = TestConfiguration().copy(_root = root, _mf = mf)
   private val $ = new MetadataCacher(jsonableSaver)
 
   private def awaitCompletion($: Observable[Any]) = {

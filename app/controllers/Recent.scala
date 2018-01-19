@@ -21,6 +21,7 @@ object Recent extends WebSocketController with Jsonable.ToJsonableOps {
         .sortBy(_.lastModified)(Ordering.by(-_.toEpochSecond(ZoneOffset.UTC)))
         .take(amount)
         .map(Album.apply)
+        .map(Album.songs.set(Seq())) // recent doesn't care about songs
   }
   def recent(amount: Int) = Action.async {
     recentAlbums(amount).map(_.jsonify).map(Ok(_))

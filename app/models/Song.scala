@@ -24,7 +24,8 @@ trait Song {
   def size: Long
   def discNumber: Option[String]
   def trackGain: Option[Double]
-  lazy val album = Album(dir = file.parent, title = albumName, artistName = artistName, year = year)
+  def album(implicit mf: MusicFinder) =
+    Album(dir = file.parent, title = albumName, artistName = artistName, year = year, songs = mf getSongsInDir file.parent)
 }
 
 // TODO remove code duplication? hmm...

@@ -37,12 +37,14 @@ object ModelJsonable extends Jsonable.ToJsonableOps {
         "dir" -> a.dir.asInstanceOf[IODirectory].path,
         "title" -> a.title,
         "artistName" -> a.artistName,
-        "year" -> a.year)
+        "year" -> a.year,
+        "songs" -> a.songs)
     def parse(json: JsValue): Album = {
       new Album(new IODirectory(json str "dir"),
         title = json str "title",
         artistName = json str "artistName",
-        year = json int "year")
+        year = json int "year",
+        songs = json.array("songs").parse[Seq[Song]])
     }
   }
 

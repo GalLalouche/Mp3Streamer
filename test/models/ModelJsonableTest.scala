@@ -36,8 +36,9 @@ class ModelJsonableTest extends PropSpec with GeneratorDrivenPropertyChecks with
     title <- arbitrary[String]
     artistName <- arbitrary[String]
     year <- arbitrary[Int].map(_ % 3000)
+    songs <- arbitrary[Seq[Song]]
   } yield {
-    Album(IODirectory(new File(filePath).getAbsoluteFile), title, artistName, year)
+    Album(IODirectory(new File(filePath).getAbsoluteFile), title, artistName, year, songs)
   }
   private implicit lazy val arbArtist: Gen[Artist] = for {
     name <- arbitrary[String]
