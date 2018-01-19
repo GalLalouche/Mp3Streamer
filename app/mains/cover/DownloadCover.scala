@@ -58,14 +58,14 @@ object DownloadCover {
   private def fileMover(f: FolderImage)(outputDirectory: Directory): Unit = {
     val file = f.file.asInstanceOf[IOFile].file
     if (file.parent == outputDirectory && file.name.toLowerCase == "folder.jpg") {
-      RichFileUtils.move(file, "folder.jpg") // canonize casing
+      RichFileUtils.rename(file, "folder.jpg") // canonize casing
       return // This can happen if a local file named folder.jpg is chosen.
     }
 
     // backup old folder.jpg file if it exists
     val oldFile = outputDirectory \ "folder.jpg"
     if (oldFile.exists)
-      RichFileUtils.move(oldFile, "folder.bak.jpg")
+      RichFileUtils.rename(oldFile, "folder.bak.jpg")
 
     f.move(outputDirectory)
     tempFolder.deleteAll()

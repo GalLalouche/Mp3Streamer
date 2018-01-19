@@ -8,15 +8,14 @@ import common.rich.path.{Directory, RichFileUtils}
 private object PrefixAlbumDirsWithYears {
   private implicit val c = CleanConfiguration
   private def addYear(d: Directory): Unit = {
-    val songs = c.mf.getSongsInDir(IODirectory(d))
+    val songs = c.mf getSongsInDir IODirectory(d)
     val year = songs.map(_.year).toSet.single
-    // TODO add rename method
-    RichFileUtils.move(d, d.parent, s"$year ${d.name}")
+    RichFileUtils.rename(d, s"$year ${d.name}")
   }
   private def hasYear(d: Directory): Boolean = d.name.matches("^\\d{4}.*$")
 
   def main(args: Array[String]): Unit = {
     val dir = Directory("""D:\Incoming\Bittorrent\Completed\Music\A Silver Mt Zion""")
-    dir.dirs.filterNot(hasYear).foreach(addYear)
+    dir.dirs filterNot hasYear foreach addYear
   }
 }
