@@ -1,8 +1,9 @@
 package models
 
 import common.io.DirectoryRef
-import monocle.Getter
+import monocle.macros.Lenses
 
+@Lenses
 case class Album(dir: DirectoryRef, title: String, artistName: String, year: Int, songs: Seq[Song])
 
 object Album {
@@ -15,5 +16,4 @@ object Album {
       year = firstSong.year,
       songs = songs)
   }
-  def songs(implicit mf: MusicFinder): Getter[Album, Seq[Song]] = Getter(_.songs)
 }
