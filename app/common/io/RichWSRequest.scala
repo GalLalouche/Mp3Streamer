@@ -11,6 +11,6 @@ object RichWSRequest {
     private def mapGet[T](f: WSResponse => T): Future[T] = $.get() map f
     def bytes: Future[Array[Byte]] = mapGet(_.bodyAsBytes.toArray[Byte])
     def document: Future[Document] = string map Jsoup.parse
-    def string: Future[String] = mapGet(_.body)
+    def string: Future[String] = bytes map (new String(_, "UTF-8"))
   }
 }
