@@ -6,35 +6,35 @@ import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon._
 import common.io.IODirectory
-import common.rich.RichFuture
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.func.{MoreSeqInstances, ToMoreFunctorOps, ToMoreMonadErrorOps}
+import common.rich.func.{MoreSeqInstances, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 import models.{IOMusicFinder, Song}
 import rx.lang.scala.Observable
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
-import scalaz.std.{FutureInstances, ListInstances}
-import scalaz.syntax.ToTraverseOps
+import scalaz.Kleisli
+import scalaz.std.FutureInstances
 
 private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReconStorage: AlbumReconStorage)(
     implicit c: Configuration, mf: IOMusicFinder)
-    extends ToTraverseOps with ListInstances with FutureInstances with MoreSeqInstances
-        with ToMoreMonadErrorOps with ToMoreFunctorOps {
+    extends FutureInstances with MoreSeqInstances with ToMoreMonadErrorOps with ToMoreFunctorOps with ToTraverseMonadPlusOps {
   private val log = c.logger.verbose _
   private val meta = new MbArtistReconciler
   private def getExistingAlbums: Seq[Album] = mf.genreDirs
       .flatMap(_.deepDirs)
       .flatMap(NewAlbumsRetriever.dirToAlbum(_))
-  private def removeIgnoredAlbums(artist: Artist, as: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
+  private def removeIgnoredAlbums(artist: Artist, albums: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
     def toAlbum(album: MbAlbumMetadata): Album =
       Album(title = album.title, year = album.releaseDate.getYear, artist = artist)
-    // TODO generalize to RichFuture: should be filterable with a Future[Boolean]
-    as.map(e => albumReconStorage isIgnored toAlbum(e) strengthL e)
-        .sequenceU
-        .map(_.filterNot(_._2 getOrElse false).map(_._1))
+    val isNotIgnored = {
+      def isIgnored(album: MbAlbumMetadata): Future[Boolean] =
+        toAlbum(album) |> albumReconStorage.isIgnored |> (_.map(_ getOrElse false))
+      Kleisli(isIgnored).map(!_)
+    }
+    albums filterTraverse isNotIgnored
   }
 
   def findNewAlbums: Observable[(NewAlbum, ReconID)] = {
@@ -45,7 +45,6 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
   }
 
   private def findNewAlbums(cache: ArtistLastYearCache, artist: Artist): Future[Seq[(NewAlbum, ReconID)]] = {
-    val start = System.currentTimeMillis()
     reconciler(artist)
         .filterWithMessage(!_._2, "Ignored")
         .filterWithMessage(_._1.isDefined, s"Unreconcilable")
