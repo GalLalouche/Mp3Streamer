@@ -20,7 +20,7 @@ import scala.annotation.tailrec
 import scala.util.Try
 
 /** Fixes ID3 tags on mp3 (and flac) files to proper casing, etc. */
-object FixLabels {
+private object FixLabels {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   private def properTrackString(track: Int): String = if (track < 10) "0" + track else track.toString
   private[fixer] def fixTag(f: File, fixDiscNumber: Boolean): Tag = {
@@ -67,12 +67,7 @@ object FixLabels {
     if (source.dir renameTo file) Directory(file) else renameFolder(source, initialName + "_temp")
   }
 
-  // TODO this is ugly as fuck
-  /**
-   * Returns the output folder, and its correct name. The extra name output is needed in case the expected name is
-   * already in use by the original folder.
-   */
-  def fix(dir: Directory): (Directory, String) = {
+  def fix(dir: Directory): FixedDirectory = {
     def containsASingleFileWithExtension(extension: String) = dir.files.count(_.extension == extension) == 1
     require(!(containsASingleFileWithExtension("flac") && containsASingleFileWithExtension("cue")),
       "Folder contains an unsplit flac file; please split the file and try again.")
@@ -96,7 +91,7 @@ object FixLabels {
 
     val expectedName = s"$year ${album filterNot reservedDirCharacters}"
     try
-      renameFolder(dir, expectedName) -> expectedName
+      new FixedDirectory(renameFolder(dir, expectedName), expectedName)
     catch {
       case e: Exception => throw new Exception("could not rename the folder", e)
     }

@@ -1,11 +1,11 @@
 package mains.fixer
 
 import backend.Url
-import backend.configs.{Configuration, RealConfig, StandaloneConfig}
+import backend.configs.{RealConfig, StandaloneConfig}
 import common.rich.RichFuture._
 import common.rich.RichT._
+import common.rich.path.Directory
 import common.rich.path.RichFile._
-import common.rich.path.{Directory, RichFileUtils}
 import mains.IOUtils
 import mains.cover.DownloadCover
 import models.Song
@@ -32,13 +32,12 @@ object FolderFixer
   }
 
   private def moveDirectory(artist: String, destination: Future[Option[Directory]],
-      folderImage: Future[Directory => Unit], source: Directory,
-      expectedName: String): Future[Directory] = {
+      folderImage: Future[Directory => Unit], fixedDirectory: FixedDirectory): Future[Directory] = {
     val destinationParent: Future[Directory] = destination.map(_ getOrElse NewArtistFolderCreator(artist).get)
-    for (d <- destinationParent; f <- folderImage) yield {
+    for (d <- destinationParent; folderImageMover <- folderImage) yield {
       println("Copying folder image")
-      f(source)
-      val $ = RichFileUtils.move(source, d, expectedName)
+      val $ = fixedDirectory move d
+      folderImageMover($)
       IOUtils focus $
       $
     }
@@ -72,8 +71,8 @@ object FolderFixer
     val location = Future(findArtistFolder(artist))
     val folderImage = downloadCover(folder)
     println("fixing directory")
-    val (fixedDirectory, expectedName) = FixLabels fix folder.cloneDir()
-    moveDirectory(artist, location, folderImage, fixedDirectory, expectedName)
+    val fixedDirectory = FixLabels fix folder.cloneDir()
+    moveDirectory(artist, location, folderImage, fixedDirectory)
         .map(FoobarGain.calculateTrackGain)
         .>|(updateServer())
         .>|(println("--Done!--"))
