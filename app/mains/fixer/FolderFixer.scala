@@ -20,9 +20,15 @@ object FolderFixer
 
   private def findArtistFolder(artist: String): Option[Directory] = {
     println("finding matching folder")
+    val canonicalArtistFolderName = artist.toLowerCase
+        // A windows folder name cannot end in '.'.
+        .replaceAll("\\.*$", "")
+        // A windows folder name cannot contain '<', '>', ':', '"', '/', '\', '\', '|', '?', '*'.
+        .replaceAll("""[<>:"/\\|?*]""", "")
+
     Directory("d:/media/music")
         .deepDirs
-        .find(_.name.toLowerCase == artist.toLowerCase)
+        .find(_.name.toLowerCase == canonicalArtistFolderName)
   }
 
   private def moveDirectory(artist: String, destination: Future[Option[Directory]],
