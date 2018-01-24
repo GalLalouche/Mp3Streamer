@@ -17,6 +17,6 @@ trait Configuration extends InternetTalker {
   implicit val db: profile.backend.Database
   implicit val mf: MusicFinder
   implicit val rootDirectory: DirectoryRef
-  implicit val logger: Logger
+  override implicit val logger: Logger
   implicit val clock: Clock
 }

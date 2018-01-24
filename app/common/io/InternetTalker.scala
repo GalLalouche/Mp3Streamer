@@ -1,6 +1,7 @@
 package common.io
 
 import backend.Url
+import backend.logging.Logger
 import common.io.RichWSRequest._
 import common.io.WSAliases._
 import common.rich.RichFuture._
@@ -9,7 +10,7 @@ import org.jsoup.nodes.Document
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/** Things that talk to the outside world */
+/** Things that talk to the outside world. Spo-o-o-o-ky IO! */
 trait InternetTalker extends ExecutionContext {
   private implicit val ec: ExecutionContext = this
 
@@ -32,4 +33,6 @@ trait InternetTalker extends ExecutionContext {
     $ consumeTry client.close().const
   }
   protected def createWsClient(): WSClient
+  // TODO come up with a better hierarchy :\
+  def logger: Logger
 }

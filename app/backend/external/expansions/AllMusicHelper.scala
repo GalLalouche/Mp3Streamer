@@ -31,18 +31,28 @@ private class AllMusicHelper(implicit it: InternetTalker) extends ToFoldableOps 
   // TODO this should only be invoked once, from the external pipe
   def isValidLink(u: Url): Future[Boolean] = hasRating(u) zip hasStaffReview(u) map (_.all(identity))
   def isCanonical(link: String): Boolean = canonicalRe.findAllMatchIn(link).hasNext
-  def canonize[R <: Reconcilable](e: BaseLink[R]): Future[BaseLink[R]] = {
-    def aux(url: Url): Future[Url] =
+
+
+  def canonize[R <: Reconcilable](link: BaseLink[R]): Future[BaseLink[R]] = {
+    val MaxTries = 5
+    def followRedirect(currentTry: Int)(url: Url): Future[Url] =
       if (canonicalLink.matcher(url.address dropAfterLast '/').matches)
         Future successful url
-      else {
+      else if (currentTry < MaxTries)
         it.useWs(_.url(url.address).withFollowRedirects(false).get())
             .filterWithMessageF(_.status == HttpURLConnection.HTTP_MOVED_PERM,
-              e => s"Expected response code HTTP_MOVED_PERM (${HttpURLConnection.HTTP_MOVED_PERM}), " +
-                  s"but was ${e.statusText} (${e.status})")
+              e => {
+                println(e)
+                s"Expected response code HTTP_MOVED_PERM (${HttpURLConnection.HTTP_MOVED_PERM}), " +
+                    s"but was ${e.statusText} (${e.status})"
+              })
             .map(_.header("location").get)
             .map(Url)
+            .flatMap(followRedirect(currentTry + 1))
+      else {
+        it.logger.warn(s"AllMusic canonization gave up after <$MaxTries> tries")
+        Future successful url
       }
-    aux(e.link).map(x => BaseLink[R](x, e.host))
+    followRedirect(0)(link.link).map(x => BaseLink[R](x, link.host))
   }
 }
