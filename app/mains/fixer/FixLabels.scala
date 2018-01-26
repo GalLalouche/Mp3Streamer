@@ -29,8 +29,8 @@ private object FixLabels {
     val originalTag = audioFile.getTag
     val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
 
-    for (f <- List(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.ALBUM, FieldKey.YEAR))
-      newTag.setField(f, originalTag getFirst f mapTo StringFixer.apply)
+    Seq(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.ALBUM, FieldKey.YEAR)
+        .foreach(f => newTag.setField(f, originalTag getFirst f mapTo StringFixer.apply))
     newTag.setField(FieldKey.TRACK, originalTag.getFirst(FieldKey.TRACK).toInt mapTo properTrackString)
     // Not all track need to have a disc number property, e.g., bonus track
     if (fixDiscNumber && originalTag.hasField(FieldKey.DISC_NO))

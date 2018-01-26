@@ -89,13 +89,14 @@ private[backend] class AlbumExternalStorage(implicit _c: Configuration) extends
     (k.normalize, k.artist.normalize, v._1, v._2)
   override protected def toId(et: EntityTable) = et.album
   override protected def extractValue(e: Entity) = e._3 -> e._4
+
   def deleteAllLinks(a: Artist): Future[Traversable[(String, MarkedLinks[Album], Option[LocalDateTime])]] = {
     val artistRows = tableQuery.filter(_.artist === a.normalize)
-    for (existingRows <- db.run(artistRows
+    val existingRows = db.run(artistRows
         .map(e => (e.album, e.encodedLinks, e.timestamp))
         .result
-        .map(_.map(e => (e._1, e._2, e._3))));
-         _ <- db.run(artistRows.delete)) yield existingRows
+        .map(_.map(e => (e._1, e._2, e._3))))
+    existingRows `<*ByName` db.run(artistRows.delete)
   }
 }
 

@@ -9,13 +9,14 @@ import common.rich.func.ToMoreMonadErrorOps
 
 import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.FutureInstances
+import scalaz.syntax.ToBindOps
 
 class RefreshableStorage[Key, Value](
     freshnessStorage: FreshnessStorage[Key, Value],
     onlineRetriever: Retriever[Key, Value],
     maxAge: Duration)
     (implicit ec: ExecutionContext, clock: Clock) extends Retriever[Key, Value]
-    with FutureInstances with ToMoreMonadErrorOps {
+    with FutureInstances with ToMoreMonadErrorOps with ToBindOps {
   private def age(dt: LocalDateTime): Duration =
     Duration.between(dt, clock.instant.atZone(ZoneId.systemDefault))
   def needsRefresh(k: Key): Future[Boolean] =
@@ -23,9 +24,7 @@ class RefreshableStorage[Key, Value](
         .map(_.forall(_.exists(_.mapTo(age) > maxAge)))
 
   private def refresh(k: Key): Future[Value] =
-    for (v <- onlineRetriever(k);
-         _ <- freshnessStorage.forceStore(k, v))
-      yield v
+    onlineRetriever(k) >>! (freshnessStorage.forceStore(k, _))
   override def apply(k: Key): Future[Value] =
     needsRefresh(k).flatMap(isOld => {
       lazy val oldData = freshnessStorage load k map (_.get)

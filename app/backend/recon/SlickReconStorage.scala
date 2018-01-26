@@ -59,10 +59,10 @@ class AlbumReconStorage(implicit _c: Configuration) extends SlickReconStorage[Al
   /** Delete all recons for albums for that artist */
   def deleteAllRecons(a: Artist): Future[Traversable[(String, Option[ReconID], Boolean)]] = {
     val artistRows = tableQuery.filter(_.artist === a.normalize)
-    for (existingRows <- db.run(artistRows
+    val existingRows = db.run(artistRows
         .map(e => (e.album, e.reconId, e.isIgnored))
         .result
-        .map(_.map(e => (e._1, e._2, e._3))));
-         _ <- db.run(artistRows.delete)) yield existingRows
+        .map(_.map(e => (e._1, e._2, e._3))))
+    existingRows `<*ByName` db.run(artistRows.delete)
   }
 }
