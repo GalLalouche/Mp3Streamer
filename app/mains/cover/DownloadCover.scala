@@ -6,9 +6,9 @@ import java.nio.file.Files
 import backend.Url
 import backend.configs.StandaloneConfig
 import common.io.{IODirectory, IOFile}
-import common.rich.RichT._
 import common.rich.path.RichFile.richFile
 import common.rich.path.{Directory, RichFileUtils}
+import common.rich.primitives.RichBoolean._
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
@@ -69,7 +69,7 @@ object DownloadCover {
 
     f.move(outputDirectory)
     tempFolder.deleteAll()
-    assert(tempFolder.exists == false)
+    assert(tempFolder.exists.isFalse)
   }
 
   private def selectImage(imageURLs: Seq[ImageSource]): Future[ImageChoice] = ImageSelectionPanel(

@@ -5,6 +5,7 @@ import java.util.logging.{Level, Logger}
 
 import common.io.{FileRef, IOFile, MemoryFile}
 import common.rich.RichT._
+import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
@@ -48,7 +49,7 @@ object Song {
   def apply(file: File): IOSong = {
     require(file != null)
     require(file.exists, file + " doesn't exist")
-    require(file.isDirectory == false, file + " is a directory")
+    require(file.isDirectory.isFalse, file + " is a directory")
     val (tag, header) = AudioFileIO.read(file).mapTo(e => (e.getTag, e.getAudioHeader))
     val year = try {
       ".*(\\d{4}).*".r.findAllIn(tag.getFirst(FieldKey.YEAR)).matchData.next().group(1).toInt

@@ -6,6 +6,7 @@ import backend.configs.StandaloneConfig
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
+import common.rich.primitives.RichBoolean._
 import models.Song
 import org.jsoup.nodes.Document
 
@@ -17,9 +18,9 @@ private[lyrics] class DarkLyricsRetriever(implicit it: InternetTalker) extends S
   // HTML is structured for shit, so might as well parse it by hand
   override def fromHtml(html: Document, s: Song) = html.toString
       .split("\n").toList
-      .dropWhile(_.matches( s""".*a name="${s.track}".*""") == false)
+      .dropWhile(_.matches( s""".*a name="${s.track}".*""").isFalse)
       .drop(1)
-      .takeWhile(e => e.matches(".*<h3>.*") == false && e.matches(".*<div.*") == false) // this fucking site...
+      .takeWhile(e => e.matches(".*<h3>.*").isFalse && e.matches(".*<div.*").isFalse) // this fucking site...
       .map(removeWrappingWhiteSpace)
       .mapTo(removeEndingBreaklines)
       .mkString("\n")

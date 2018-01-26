@@ -2,6 +2,7 @@ package backend.mb
 
 import common.io.InternetTalker
 import common.rich.func.ToMoreMonadErrorOps
+import common.rich.primitives.RichBoolean._
 import play.api.http.Status
 import play.api.libs.json._
 import play.api.libs.ws.JsonBodyReadables._
@@ -16,7 +17,7 @@ private object JsonHelper extends ToMoreMonadErrorOps with FutureInstances {
       if (times <= 1)
         Future failed new Exception("Failed retry; last failure was: " + e.getMessage)
       else {
-        if (!e.isInstanceOf[FilteredException])
+        if (e.isInstanceOf[FilteredException].isFalse)
           println(e.getMessage)
         Thread sleep retryWait.toMillis
         retry(f, times - 1, retryWait)

@@ -9,6 +9,7 @@ import backend.recon.Reconcilable
 import common.io.InternetTalker
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.ToMoreMonadErrorOps
+import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 
 import scala.collection.JavaConverters._
@@ -27,7 +28,7 @@ private class AllMusicHelper(implicit it: InternetTalker) extends ToFoldableOps 
   def hasRating(u: Url): Future[Boolean] = it.downloadDocument(u)
       .map(_.select(".allmusic-rating").asScala.single)
       .map(_.hasClass("rating-allmusic-0"))
-      .map(!_)
+      .map(_.isFalse)
   // TODO this should only be invoked once, from the external pipe
   def isValidLink(u: Url): Future[Boolean] = hasRating(u) zip hasStaffReview(u) map (_.all(identity))
   def isCanonical(link: String): Boolean = canonicalRe.findAllMatchIn(link).hasNext

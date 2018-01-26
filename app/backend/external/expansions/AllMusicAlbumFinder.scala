@@ -33,7 +33,7 @@ private class AllMusicAlbumFinder(implicit it: InternetTalker) extends SameHostE
         .map(_.select("td a").asScala
             .head
             .attr("href")
-            .mapIf(!_.startsWith("http")).to("http://www.allmusic.com" + _)
+            .mapIf(_.startsWith("http").isFalse).to("http://www.allmusic.com" + _)
             .mapTo(Url))
   }
 

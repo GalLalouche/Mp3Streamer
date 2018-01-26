@@ -3,6 +3,7 @@ package mains.cover
 import backend.Url
 import backend.configs.{Configuration, TestConfiguration}
 import common.rich.RichFuture._
+import common.rich.primitives.RichBoolean._
 import common.{AuxSpecs, MockitoHelper}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
@@ -47,7 +48,7 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoHe
       class TogellableImageDownloader extends (ImageSource => Future[FolderImage]) {
         var stopped = false
         override def apply(is: ImageSource) =
-          if (!stopped) downloadImage(is)
+          if (stopped.isFalse) downloadImage(is)
           else Future failed new IllegalStateException("Stopped")
         def stop() = stopped = true
       }

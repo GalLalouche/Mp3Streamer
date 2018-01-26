@@ -6,6 +6,7 @@ import java.util.concurrent.{Semaphore, TimeUnit, TimeoutException}
 import backend.configs.TestConfiguration
 import common.io.MemoryFile
 import common.rich.collections.RichTraversableOnce._
+import common.rich.primitives.RichBoolean._
 import org.scalatest.concurrent.TimeLimitedTests
 import org.scalatest.time.{Second, Span}
 import org.scalatest.{FreeSpec, Matchers}
@@ -17,7 +18,7 @@ private[this] class BlockFileRef(val f: MemoryFile) extends MemoryFile(f.parent,
   private val lock = new Semaphore(0)
   private val changeLock = new Semaphore(0)
   def waitForChange(): Unit = {
-    if (!changeLock.tryAcquire(1, TimeUnit.SECONDS))
+    if (changeLock.tryAcquire(1, TimeUnit.SECONDS).isFalse)
       throw new TimeoutException()
   }
   def release(): Unit = lock.release()

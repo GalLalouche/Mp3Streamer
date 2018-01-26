@@ -3,6 +3,7 @@ package backend.lyrics.retrievers
 import backend.Url
 import backend.lyrics.{HtmlLyrics, Instrumental, Lyrics}
 import common.io.InternetTalker
+import common.rich.primitives.RichBoolean._
 import models.Song
 import org.jsoup.nodes.Document
 
@@ -22,7 +23,7 @@ private[lyrics] abstract class SingleHostHtmlRetriever(implicit it: InternetTalk
         .map(e => fromHtml(e, s))
         .map(_.map(HtmlLyrics(source, _)).getOrElse(Instrumental(source)))
         .filter {
-          case HtmlLyrics(_, h) => false == h.matches("[\\s<br>/]*")
+          case HtmlLyrics(_, h) => h.matches("[\\s<br>/]*").isFalse
           case _ => true
         }
   }

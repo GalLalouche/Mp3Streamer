@@ -1,10 +1,12 @@
 package backend
+
+import common.rich.primitives.RichBoolean._
 import java.net.URL
 
 case class Url(address: String) {
   def toURL: URL = new URL(address)
 
-  require(!address.matches("\\s*"), "empty address")
+  require(address.matches("\\s*").isFalse, "empty address")
   def host = Url(
     if (address startsWith "http")
       address split '/' apply 2

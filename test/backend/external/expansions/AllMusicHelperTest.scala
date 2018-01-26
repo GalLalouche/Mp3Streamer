@@ -1,5 +1,4 @@
 package backend.external.expansions
-
 import java.net.HttpURLConnection
 
 import backend.Url
@@ -8,6 +7,7 @@ import backend.external.{BaseLink, DocumentSpecs, Host}
 import common.io.WSAliases._
 import common.rich.RichFuture._
 import common.rich.RichT._
+import common.rich.primitives.RichBoolean._
 import org.scalatest.FreeSpec
 
 class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
@@ -73,7 +73,7 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
       def withRedirectingMock(sourceToDest: (String, String)*) = {
         val asMap = sourceToDest.toMap
         implicit val config = this.config.copy(_requestToResponseMapper = {
-          case r: WSRequest if asMap.contains(r.url) && r.followRedirects.exists(!_) =>
+          case r: WSRequest if asMap.contains(r.url) && r.followRedirects.exists(_.isFalse) =>
             FakeWSResponse(
               status = HttpURLConnection.HTTP_MOVED_PERM,
               allHeaders = Map("location" -> Seq(asMap(r.url))))

@@ -3,6 +3,7 @@ package mains.fixer
 import java.text.Normalizer
 
 import common.rich.RichT._
+import common.rich.primitives.RichBoolean._
 
 object StringFixer {
   private[fixer] val lowerCaseWords = List("a", "ain't", "all", "am", "an", "and", "are", "aren't", "as", "at", "be", "but", "by", "can", "can't",
@@ -16,7 +17,7 @@ object StringFixer {
   private def pascalCaseWord(w: String): String = w.toLowerCase.capitalize
 
   private def fixWord(word: String, isFirstWord: Boolean): String = word match {
-    case e if !isFirstWord && lowerCaseSet(e.toLowerCase) => e.toLowerCase
+    case e if isFirstWord.isFalse && lowerCaseSet(e.toLowerCase) => e.toLowerCase
     case e if word.matches(".*[A-Z].*") => e // mixed caps
     case e if e.head.isDigit => e.toLowerCase // 1st, 2nd, etc.
     case s if s matches "[IVXMLivxml]+" => s.toUpperCase // roman numbers, also handles pronoun "I"

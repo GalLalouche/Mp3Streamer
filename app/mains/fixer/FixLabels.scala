@@ -8,6 +8,7 @@ import common.rich.collections.RichTraversableOnce._
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
 import common.rich.path.RichPath.poorPath
+import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichOption._
 import common.rich.primitives.RichString.richString
 import models.Song
@@ -69,7 +70,7 @@ private object FixLabels {
 
   def fix(dir: Directory): FixedDirectory = {
     def containsASingleFileWithExtension(extension: String) = dir.files.count(_.extension == extension) == 1
-    require(!(containsASingleFileWithExtension("flac") && containsASingleFileWithExtension("cue")),
+    require((containsASingleFileWithExtension("flac") && containsASingleFileWithExtension("cue")).isFalse,
       "Folder contains an unsplit flac file; please split the file and try again.")
 
     dir.files.foreach(_ setWritable true) // stupid bittorrent
@@ -79,9 +80,10 @@ private object FixLabels {
     require(musicFiles.nonEmpty, s"Could not find any songs in $dir - maybe they're in subfolders...")
 
     // as opposed to 1/1 - Fuck those guys.
-    val hasNonTrivialDiscNumber = false == musicFiles
+    val hasNonTrivialDiscNumber = musicFiles
         .map(AudioFileIO.read)
         .hasSameValues(_.getTag getFirst FieldKey.DISC_NO)
+        .isFalse
 
     val (year, album) = musicFiles.head.mapTo(Song.apply)
         .mapTo(firstSong => retrieveYear(firstSong) -> StringFixer(firstSong.albumName))

@@ -7,6 +7,7 @@ import backend.configs.StandaloneConfig
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
+import common.rich.primitives.RichBoolean._
 import models.Song
 import org.jsoup.nodes.Document
 
@@ -16,14 +17,14 @@ private[lyrics] class LyricsWikiaRetriever(implicit it: InternetTalker) extends 
       .select(".lyricbox")
       .html
       .split("\n")
-      .takeWhile(_.startsWith("<!--") == false)
+      .takeWhile(_.startsWith("<!--").isFalse)
       .filterNot(_.matches("<div class=\"lyricsbreak\"></div>"))
       .mkString("\n")
       .mapTo(Some.apply)
       .filterNot(_ contains "TrebleClef")
   override protected val hostPrefix: String = "http://lyrics.wikia.com/wiki"
   override def getUrl(s: Song): String =
-    s"$hostPrefix/${normalize(s.artistName) }:${normalize(s.title) }"
+    s"$hostPrefix/${normalize(s.artistName)}:${normalize(s.title)}"
 
   private def normalize(s: String): String = s.replaceAll(" ", "_").mapTo(URLEncoder.encode(_, "UTF-8"))
 }
