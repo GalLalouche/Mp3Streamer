@@ -32,6 +32,8 @@ class RefreshableStorage[Key, Value](
       if (isOld) refresh(k) handleButKeepOriginal oldData.const else oldData
     })
 
-  def withAge(k: Key): Future[(Value, Option[LocalDateTime])] =
-    for (v <- apply(k); age <- freshnessStorage.freshness(k)) yield v -> age.get
+  def withAge(k: Key): Future[(Value, Option[LocalDateTime])] = for {
+      v <- apply(k)
+      age <- freshnessStorage.freshness(k)
+    } yield v -> age.get
 }

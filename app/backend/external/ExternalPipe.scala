@@ -51,8 +51,10 @@ private class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
   private def expand(r: R, existing: BaseLinks[R]): Future[MarkedLinks[R]] = {
     def extractHosts(ls: BaseLinks[R]) = ls.map(_.host).toSet
     val existingHosts = existing |> extractHosts
-    for (newLinks <- filterExpanders(existingHosts)(existing);
-         additionalLinks <- applyFilteredReconcilers(r, existingHosts ++ extractHosts(newLinks))) yield {
+    for {
+      newLinks <- filterExpanders(existingHosts)(existing)
+      additionalLinks <- applyFilteredReconcilers(r, existingHosts ++ extractHosts(newLinks))
+    } yield {
       val existingSet = existing.toSet
       val newSet = newLinks.++(additionalLinks).toSet
       existingSet.map(MarkedLink.markExisting) ++

@@ -33,9 +33,11 @@ object DownloadCover {
    * @return A future command that moves the downloaded file to the input directory and deletes all temporary files.
    */
   def apply(albumDir: Directory): Future[Directory => Unit] =
-    for (urls <- new ImageFinder find Url(new SearchUrlProvider(albumDir).searchUrl);
-         locals <- LocalImageFetcher(IODirectory(albumDir));
-         selection <- selectImage(locals ++ urls)) yield selection match {
+    for {
+      urls <- new ImageFinder find Url(new SearchUrlProvider(albumDir).searchUrl)
+      locals <- LocalImageFetcher(IODirectory(albumDir))
+      selection <- selectImage(locals ++ urls)
+    } yield selection match {
       case Selected(img) => fileMover(img)
       case OpenBrowser =>
         // String interpolation is acting funky for some reason (will fail at runtime)

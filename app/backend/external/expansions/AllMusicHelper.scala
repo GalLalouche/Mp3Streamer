@@ -30,7 +30,10 @@ private class AllMusicHelper(implicit it: InternetTalker) extends ToFoldableOps 
       .map(_.hasClass("rating-allmusic-0"))
       .map(_.isFalse)
   // TODO this should only be invoked once, from the external pipe
-  def isValidLink(u: Url): Future[Boolean] = hasRating(u) zip hasStaffReview(u) map (_.all(identity))
+  def isValidLink(u: Url): Future[Boolean] = for {
+    rated <- hasRating(u)
+    staffReviewed <- hasStaffReview(u)
+  } yield rated && staffReviewed
   def isCanonical(link: String): Boolean = canonicalRe.findAllMatchIn(link).hasNext
 
 

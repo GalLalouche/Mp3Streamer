@@ -50,10 +50,10 @@ object ExternalController extends LegacyController
   def getLinks(song: Song): Future[Result] = {
     val links = external(song)
     val extendMissing = TimestampedExtendedLinks.links.modify(SearchExtension.extendMissing(hosts, song.artist))
-    val f = for (
-      artistJson <- links.artistLinks.map(extendMissing) |> toJsonOrError;
+    val f = for {
+      artistJson <- links.artistLinks.map(extendMissing) |> toJsonOrError
       albumJson <- links.albumLinks |> toJsonOrError
-    ) yield Json.obj("Artist links" -> artistJson, "Album links" -> albumJson)
+    } yield Json.obj("Artist links" -> artistJson, "Album links" -> albumJson)
     f.map(Ok(_))
   }
   def refresh(path: String) = Action.async {

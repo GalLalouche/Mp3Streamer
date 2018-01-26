@@ -34,7 +34,10 @@ object FolderFixer
   private def moveDirectory(artist: String, destination: Future[Option[Directory]],
       folderImage: Future[Directory => Unit], fixedDirectory: FixedDirectory): Future[Directory] = {
     val destinationParent: Future[Directory] = destination.map(_ getOrElse NewArtistFolderCreator(artist).get)
-    for (d <- destinationParent; folderImageMover <- folderImage) yield {
+    for {
+      d <- destinationParent
+      folderImageMover <- folderImage
+    } yield {
       println("Copying folder image")
       val $ = fixedDirectory move d
       folderImageMover($)
