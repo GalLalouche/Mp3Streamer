@@ -8,7 +8,8 @@ import backend.recon._
 import common.io.IODirectory
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.func.{MoreSeqInstances, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
+import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
+import common.rich.primitives.RichBoolean._
 import models.{IOMusicFinder, Song}
 import rx.lang.scala.Observable
 
@@ -20,7 +21,8 @@ import scalaz.std.FutureInstances
 
 private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReconStorage: AlbumReconStorage)(
     implicit c: Configuration, mf: IOMusicFinder)
-    extends FutureInstances with MoreSeqInstances with ToMoreMonadErrorOps with ToMoreFunctorOps with ToTraverseMonadPlusOps {
+    extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
+        with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances {
   private val log = c.logger.verbose _
   private val meta = new MbArtistReconciler
   private def getExistingAlbums: Seq[Album] = mf.genreDirs
@@ -32,7 +34,7 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
     val isNotIgnored = {
       def isIgnored(album: MbAlbumMetadata): Future[Boolean] =
         toAlbum(album) |> albumReconStorage.isIgnored |> (_.map(_ getOrElse false))
-      Kleisli(isIgnored).map(!_)
+      Kleisli(isIgnored).map(_.isFalse)
     }
     albums filterTraverse isNotIgnored
   }
