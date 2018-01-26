@@ -13,5 +13,5 @@ private[external] object SearchExtension {
         s"http://www.google.com/search?q=${r.normalize} ${h.name}" |> Url)))
 
   def extendMissing[R <: Reconcilable](allHosts: TraversableOnce[Host], r: R)(links: ExtendedLinks[R]): ExtendedLinks[R] =
-    links ++ (allHosts.toSet \ links.map(_.host.canonize).toSet map (apply(_, r)))
+    links ++ (allHosts.toSet &~ links.map(_.host.canonize).toSet map (apply(_, r)))
 }
