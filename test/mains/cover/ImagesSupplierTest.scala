@@ -4,15 +4,16 @@ import backend.Url
 import backend.configs.{Configuration, TestConfiguration}
 import common.rich.RichFuture._
 import common.rich.primitives.RichBoolean._
-import common.{AuxSpecs, MockitoHelper}
+import common.{AuxSpecs, MockerWithId}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import scala.concurrent.Future
 
-class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoHelper with AuxSpecs {
+class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
+  private val mockerWithId = new MockerWithId
   private implicit val c: Configuration = TestConfiguration()
   private def downloadImage(is: ImageSource): Future[FolderImage] =
-    Future successful mockWithId(is match {
+    Future successful mockerWithId(is match {
       case UrlSource(url, _, _) => url.address
       case LocalSource(file) => file.path
     })
@@ -28,14 +29,14 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoHe
     def remaining: Int = ts.size - iterated
   }
   private val urls =
-    new RemainingIterator(Seq("foo", "bar").map(e => UrlSource(Url(e), 500, 500)): _*)
+    new RemainingIterator(Seq("foo", "bar").map(e => UrlSource(Url(e), width = 500, height = 500)): _*)
   "Simple" - {
     val $ = ImagesSupplier(urls, downloadImage)
     "Should fetch when needed" in {
       urls.remaining shouldReturn 2
-      $.next().get shouldReturn mockWithId("foo")
+      $.next().get shouldReturn mockerWithId("foo")
       urls.remaining shouldReturn 1
-      $.next().get shouldReturn mockWithId("bar")
+      $.next().get shouldReturn mockerWithId("bar")
     }
     "Should throw an exception when out of nexts" in {
       $.next()
@@ -57,19 +58,19 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with MockitoHe
       // Should start downloading immediately; since it's on the same thread, it will block until done.
       downloader.stop()
       // If it didn't start, next would fail.
-      $.next().value.get.get shouldReturn mockWithId("foo")
-      $.next().value.get.get shouldReturn mockWithId("bar")
+      $.next().value.get.get shouldReturn mockerWithId("foo")
+      $.next().value.get.get shouldReturn mockerWithId("bar")
     }
     "Should not fetch more than allotted size" in {
       val $ = ImagesSupplier.withCache(urls, downloadImage, 1)
       urls.remaining shouldReturn 1
-      $.next().value.get.get shouldReturn mockWithId("foo")
+      $.next().value.get.get shouldReturn mockerWithId("foo")
       urls.remaining shouldReturn 0
-      $.next().value.get.get shouldReturn mockWithId("bar")
+      $.next().value.get.get shouldReturn mockerWithId("bar")
     }
     "Should not throw if tried to fetch more than available" in {
       val $ = ImagesSupplier.withCache(urls, downloadImage, 5)
-      $.next().value.get.get shouldReturn mockWithId("foo")
+      $.next().value.get.get shouldReturn mockerWithId("foo")
     }
     "But should throw on enough nexts" in {
       val $ = ImagesSupplier.withCache(urls, downloadImage, 5, 10)
