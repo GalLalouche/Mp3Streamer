@@ -3,6 +3,7 @@ package backend.external.extensions
 import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
 import common.rich.collections.RichTraversableOnce._
+import common.rich.primitives.RichOption._
 
 private[external] class CompositeExtender private(
     artistExtenders: Seq[LinkExtender[Artist]],
@@ -20,7 +21,7 @@ private[external] class CompositeExtender private(
       case `artistClass` => artistExtendersMap
       case `albumClass` => albumExtenderMap
     }).asInstanceOf[HostMap[LinkExtender[R]]]
-    val extendedLinks = map.get(link.host).map(_ (entity, allLinks)).getOrElse(Nil)
+    val extendedLinks = map.get(link.host).mapOrElse(_.apply(entity, allLinks), Nil)
     ExtendedLink.extend(link).withLinks(extendedLinks)
   }
   def apply[R <: Reconcilable : Manifest](entity: R, e: TimestampedLinks[R]): TimestampedExtendedLinks[R] =

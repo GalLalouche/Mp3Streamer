@@ -2,6 +2,7 @@ package backend.lyrics.retrievers
 
 import backend.Url
 import backend.lyrics.Lyrics
+import common.rich.primitives.RichOption._
 import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,7 +15,5 @@ private[lyrics] class CompositeHtmlRetriever(retrievers: List[HtmlRetriever])
   }
   override def parse(url: Url, s: Song): Future[Lyrics] = retrievers
       .find(_ doesUrlMatchHost url)
-      .fold(Future.failed[Lyrics](new NoSuchElementException(s"No retriever could parse host <${url.host}>"))) {
-        r => r.parse(url, s)
-      }
+      .mapOrElse(_.parse(url, s), Future failed new NoSuchElementException(s"No retriever could parse host <${url.host}>"))
 }

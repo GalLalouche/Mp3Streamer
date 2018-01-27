@@ -11,9 +11,9 @@ import backend.mb.{MbAlbumReconciler, MbArtistReconciler}
 import backend.recon.Reconcilable._
 import backend.recon._
 import backend.storage.{FreshnessStorage, RefreshableStorage}
-import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.ToMoreMonadErrorOps
+import common.rich.primitives.RichOption._
 import models.Song
 
 import scala.concurrent.Future
@@ -74,7 +74,7 @@ private class MbExternalLinksProvider(implicit c: Configuration)
   def apply(s: Song): ExtendedExternalLinks = apply(s.release)
 
   private def optionalFuture[T](o: Option[T])(f: T => Future[_]): Future[_] =
-    o.map(f(_).void).getOrElse(Future successful Unit)
+    o.mapOrElse(f, Future successful Unit)
   private def update[R <: Reconcilable](key: R, recon: Option[ReconID], storage: ReconStorage[R]): Future[_] =
     optionalFuture(recon)(reconId => storage.mapStore(key, e => Some(reconId) -> e._2, Some(reconId) -> false))
 

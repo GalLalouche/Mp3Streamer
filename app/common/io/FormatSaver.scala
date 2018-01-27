@@ -3,8 +3,8 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
 
-import common.rich.RichT._
 import common.Jsonable
+import common.rich.RichT._
 import common.rich.primitives.RichOption._
 import play.api.libs.json.{Format, JsObject, JsValue, Json}
 
@@ -41,9 +41,7 @@ class FormatSaver(implicit rootDir: DirectoryRef) extends Jsonable.ToJsonableOps
   private def load[T: Manifest]: Option[JsValue] =
     workingDir getFile jsonFileName map (_.readAll |> Json.parse)
   /** Loads the previously saved entries, or returns an empty list. */
-  def loadArray[T: Format : Manifest]: Seq[T] = {
-    load.map(_.parse[Seq[T]]) getOrElse Nil
-  }
+  def loadArray[T: Format : Manifest]: Seq[T] = load.mapOrElse(_.parse[Seq[T]], Nil)
   /** Loads the previously saved entry, or throws an exception if no file has been found */
   def loadObject[T: Format : Manifest]: T = {
     val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <$manifest>")

@@ -8,6 +8,7 @@ import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
+import common.rich.primitives.RichOption._
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
@@ -29,10 +30,8 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
       .map("http://www.allmusic.com/album/" + _)
 
   /** Returns the first canonical link if one exists, otherwise returns the entire list */
-  private def preferCanonical(xs: Seq[String]): Seq[String] = xs
-      .find(allMusicHelper.isCanonical)
-      .map(List(_))
-      .getOrElse(xs)
+  private def preferCanonical(xs: Seq[String]): Seq[String] =
+    xs.find(allMusicHelper.isCanonical).mapOrElse(List(_), xs)
 
   private def extractAllMusicLink(d: Document): Option[Url] = d
       .select("a").asScala
@@ -40,8 +39,8 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
       .flatMap(extractSemiCanonicalAllMusicLink)
       .mapTo(preferCanonical)
       .map(_ |> Url)
-      .mapTo(us =>
-        if (us.size <= 1) us.headOption
+      .mapTo(urls =>
+        if (urls.size <= 1) urls.headOption
         else throw new IllegalStateException("extracted too many AllMusic links"))
 
   override def parseDocument(d: Document): BaseLinks[Album] =

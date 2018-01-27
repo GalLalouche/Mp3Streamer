@@ -5,6 +5,7 @@ import java.io.FileInputStream
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import common.rich.path.RichFile._
+import common.rich.primitives.RichOption._
 import common.rich.primitives.RichString._
 import play.api.http.HttpEntity
 import play.api.libs.iteratee.Enumerator
@@ -16,7 +17,7 @@ object Streamer extends LegacyController {
 
   def download(s: String) = Action {request =>
     // assumed format: [bytes=<start>-]
-    val bytesToSkip = request.headers get "Range" map (_ dropAfterLast '=' takeWhile (_ isDigit) toLong) getOrElse 0L
+    val bytesToSkip = request.headers.get("Range").mapOrElse(_ dropAfterLast '=' takeWhile (_ isDigit) toLong, 0L)
     val file = ControllerUtils.parseSong(s).file.file
     val fis = new FileInputStream(file)
     fis.skip(bytesToSkip)
@@ -25,11 +26,11 @@ object Streamer extends LegacyController {
       Source.fromPublisher(IterateeStreams.enumeratorToPublisher(Enumerator fromStream fis)).map(ByteString.apply)
     val codec = if (file.extension == "flac") "audio/x-flac" else "audio/mpeg"
     status.sendEntity(HttpEntity.Streamed(source, Some(file.length - bytesToSkip), Some(codec))).withHeaders(
-        "Access-Control-Allow-Headers" -> "range, accept-encoding",
-        "Access-Control-Allow-Origin" -> "*",
-        "Accept-Ranges" -> "bytes",
-        "Connection" -> "close",
-        "Content-Range" -> s"bytes $bytesToSkip-${file.length}/${file.length}"
+      "Access-Control-Allow-Headers" -> "range, accept-encoding",
+      "Access-Control-Allow-Origin" -> "*",
+      "Accept-Ranges" -> "bytes",
+      "Connection" -> "close",
+      "Content-Range" -> s"bytes $bytesToSkip-${file.length}/${file.length}"
     )
   }
 
