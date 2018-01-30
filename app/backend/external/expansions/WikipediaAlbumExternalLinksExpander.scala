@@ -7,18 +7,17 @@ import backend.recon.Album
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
-import common.rich.primitives.RichOption._
+import common.rich.func._
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
 import scalaz.Traverse
-import scalaz.std.FutureInstances
+import scalaz.std.{FutureInstances, OptionInstances}
 
 private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
     extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic))
-        with FutureInstances with MoreTraversableInstances with MoreTraverseInstances
-        with ToTraverseMonadPlusOps with ToMoreMonadErrorOps {
+        with MoreTraversableInstances with MoreTraverseInstances with ToTraverseMonadPlusOps with ToMoreMonadErrorOps
+        with ToMoreFoldableOps with FutureInstances with OptionInstances {
   protected val allMusicHelper = new AllMusicHelper
 
   // semi-canonical = guaranteed to start with http://www.allmusic.com/album
@@ -31,7 +30,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
 
   /** Returns the first canonical link if one exists, otherwise returns the entire list */
   private def preferCanonical(xs: Seq[String]): Seq[String] =
-    xs.find(allMusicHelper.isCanonical).mapOrElse(List(_), xs)
+    xs.find(allMusicHelper.isCanonical).mapHeadOrElse(List(_), xs)
 
   private def extractAllMusicLink(d: Document): Option[Url] = d
       .select("a").asScala

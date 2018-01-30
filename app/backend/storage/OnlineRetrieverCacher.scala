@@ -1,12 +1,11 @@
 package backend.storage
 
 import backend.Retriever
-import common.rich.func.{ToMoreFunctorOps, ToMoreMonadErrorOps}
+import common.rich.func.{ToMoreFunctorOps, ToMoreMonadErrorOps, ToMoreMonadOps}
 import common.storage.Storage
 
 import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.FutureInstances
-import scalaz.syntax.ToFunctorOps
 
 /**
  * Tries to first retrieve information from a local repository.
@@ -16,7 +15,7 @@ class OnlineRetrieverCacher[Key, Value](
     localStorage: Storage[Key, Value],
     onlineRetriever: Retriever[Key, Value])
     (implicit ec: ExecutionContext) extends Retriever[Key, Value] with Storage[Key, Value]
-    with ToFunctorOps with FutureInstances with ToMoreMonadErrorOps with ToMoreFunctorOps {
+    with FutureInstances with ToMoreMonadOps with ToMoreMonadErrorOps with ToMoreFunctorOps {
   override def apply(k: Key): Future[Value] =
     localStorage.load(k)
         .ifNoneTry(

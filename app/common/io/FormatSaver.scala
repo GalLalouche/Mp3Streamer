@@ -5,11 +5,15 @@ import java.time.LocalDateTime
 
 import common.Jsonable
 import common.rich.RichT._
+import common.rich.func.ToMoreFoldableOps
 import common.rich.primitives.RichOption._
 import play.api.libs.json.{Format, JsObject, JsValue, Json}
 
+import scalaz.std.OptionInstances
+
 /** Saves in json format to a file. */
-class FormatSaver(implicit rootDir: DirectoryRef) extends Jsonable.ToJsonableOps {
+class FormatSaver(implicit rootDir: DirectoryRef) extends Jsonable.ToJsonableOps
+    with ToMoreFoldableOps with OptionInstances {
   private val workingDir = rootDir addSubDir "data" addSubDir "json"
   protected def jsonFileName[T: Manifest]: String =
     s"${manifest.runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
@@ -41,7 +45,7 @@ class FormatSaver(implicit rootDir: DirectoryRef) extends Jsonable.ToJsonableOps
   private def load[T: Manifest]: Option[JsValue] =
     workingDir getFile jsonFileName map (_.readAll |> Json.parse)
   /** Loads the previously saved entries, or returns an empty list. */
-  def loadArray[T: Format : Manifest]: Seq[T] = load.mapOrElse(_.parse[Seq[T]], Nil)
+  def loadArray[T: Format : Manifest]: Seq[T] = load.mapHeadOrElse(_.parse[Seq[T]], Nil)
   /** Loads the previously saved entry, or throws an exception if no file has been found */
   def loadObject[T: Format : Manifest]: T = {
     val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <$manifest>")

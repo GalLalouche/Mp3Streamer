@@ -12,16 +12,16 @@ import backend.recon.Reconcilable._
 import backend.recon._
 import backend.storage.{FreshnessStorage, RefreshableStorage}
 import common.rich.RichT._
-import common.rich.func.ToMoreMonadErrorOps
-import common.rich.primitives.RichOption._
+import common.rich.func.{ToMoreFoldableOps, ToMoreMonadErrorOps}
 import models.Song
 
 import scala.concurrent.Future
-import scalaz.std.FutureInstances
+import scalaz.std.{FutureInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToFunctorOps}
 
 private class MbExternalLinksProvider(implicit c: Configuration)
-    extends FutureInstances with ToFunctorOps with ToBindOps with ToMoreMonadErrorOps {
+    extends ToMoreFoldableOps with ToFunctorOps with ToBindOps with ToMoreMonadErrorOps
+        with FutureInstances with OptionInstances {
   private class TimeStamper[R <: Reconcilable](foo: RefreshableStorage[R, MarkedLinks[R]])
       extends Retriever[R, TimestampedLinks[R]] {
     override def apply(r: R): Future[TimestampedLinks[R]] =
@@ -74,7 +74,7 @@ private class MbExternalLinksProvider(implicit c: Configuration)
   def apply(s: Song): ExtendedExternalLinks = apply(s.release)
 
   private def optionalFuture[T](o: Option[T])(f: T => Future[_]): Future[_] =
-    o.mapOrElse(f, Future successful Unit)
+    o.mapHeadOrElse(f, Future successful Unit)
   private def update[R <: Reconcilable](key: R, recon: Option[ReconID], storage: ReconStorage[R]): Future[_] =
     optionalFuture(recon)(reconId => storage.mapStore(key, e => Some(reconId) -> e._2, Some(reconId) -> false))
 

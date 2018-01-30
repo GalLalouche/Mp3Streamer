@@ -1,8 +1,9 @@
 package common.ds
 
-import common.rich.primitives.RichOption._
+import common.rich.func.ToMoreFoldableOps
 
 import scalaz.Semigroup
+import scalaz.std.OptionInstances
 import scalaz.syntax.ToSemigroupOps
 
 /** Sums values whose key function is equal. */
@@ -13,10 +14,10 @@ trait IndexedSet[T] extends Traversable[T] {
 }
 
 private class IndexedSetImpl[Value: Semigroup, Key](map: Map[Key, Value], index: Value => Key)
-    extends IndexedSet[Value] with ToSemigroupOps {
+    extends IndexedSet[Value] with ToSemigroupOps with ToMoreFoldableOps with OptionInstances {
   def +(v: Value): IndexedSet[Value] = {
     val key = index(v)
-    new IndexedSetImpl(map.updated(key, map.get(key).mapOrElse(_ ⊹ v, v)), index)
+    new IndexedSetImpl(map.updated(key, map.get(key).mapHeadOrElse(_ ⊹ v, v)), index)
   }
   override def foreach[U](f: Value => U) = map.values foreach f
 }
