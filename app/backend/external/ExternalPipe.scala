@@ -20,7 +20,6 @@ import scalaz.syntax.{ToBindOps, ToTraverseOps}
  * @param expanders             Attempts to expand the links found by scraping the initial set
  * @param additionalReconcilers Any additional, standalone reconciliations that can be performed
  */
-//TODO recursively deep?
 private class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
     linksRetriever: Retriever[ReconID, BaseLinks[R]],
     expanders: Traversable[ExternalLinkExpander[R]],
@@ -31,26 +30,18 @@ private class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
   override def apply(r: R): Future[MarkedLinks[R]] = reconciler(r) >>= linksRetriever >>= expand(r)
 
   private def expand(r: R)(existingLinks: BaseLinks[R]): Future[MarkedLinks[R]] = {
-    def extractHosts(ls: BaseLinks[R]) = ls.map(_.host).toSet
-    val existingHosts = extractHosts(existingLinks)
     for {
-      newLinks <- applyNewHostExpanders(existingHosts, existingLinks)
-      additionalLinks <- applyNewHostReconcilers(r, existingHosts ++ extractHosts(newLinks))
+      reconciledLinks <- applyNewHostReconcilers(r, extractHosts(existingLinks))
+      newLinks <- applyNewHostExpanders(existingLinks ++ reconciledLinks)
     } yield {
       val existingSet = existingLinks.toSet
-      val newSet = newLinks.toSet ++ additionalLinks
+      val newSet = newLinks.toSet ++ reconciledLinks
       existingSet.map(MarkedLink.markExisting) ++
           filterLinksWithNewHosts(existingSet, newSet).map(MarkedLink.markNew)
     }
   }
 
-  private def applyNewHostExpanders(
-      existingHosts: Set[Host], links: Traversable[BaseLink[R]]): Future[BaseLinks[R]] = {
-    val nextExpandersByHost =
-      expanders.filterNot(_.potentialHostsExtracted.toSet <= existingHosts).mapBy(_.sourceHost)
-    links.mproduct(nextExpandersByHost get _.host)
-        .traverseM { case (link, expander) => expander(link) }
-  }
+  private def extractHosts(ls: BaseLinks[R]) = ls.map(_.host).toSet
 
   private def applyNewHostReconcilers(entity: R, existingHosts: Set[Host]): Future[BaseLinks[R]] =
     additionalReconcilers.filterNot(existingHosts apply _.host).traverse(_ (entity)).map(_.flatten)
@@ -58,5 +49,21 @@ private class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
   private def filterLinksWithNewHosts(existingLinks: BaseLinks[R], newLinks: BaseLinks[R]): BaseLinks[R] = {
     val map = existingLinks.map(_.host).toSet
     newLinks.filterNot(map contains _.host)
+  }
+
+  private def applyNewHostExpanders(links: BaseLinks[R]): Future[BaseLinks[R]] = {
+    def aux(result: Set[BaseLink[R]]): Future[Set[BaseLink[R]]] = {
+      val existingHosts = extractHosts(links ++ result)
+      val nextExpandersByHost =
+        expanders.filterNot(_.potentialHostsExtracted.toSet <= existingHosts).mapBy(_.sourceHost)
+      for {
+        newLinkSet <- result.toTraversable.mproduct(nextExpandersByHost get _.host)
+            .traverseM { case (link, expander) => expander(link) }
+            .map(_.toSet)
+        noNewLinks = newLinkSet <= result
+        result <- if (noNewLinks) Future successful result else aux(newLinkSet ++ result)
+      } yield result
+    }
+    aux(links.toSet)
   }
 }
