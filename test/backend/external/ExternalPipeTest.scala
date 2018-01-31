@@ -28,8 +28,8 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     override def potentialHostsExtracted: Traversable[Host] = links.map(_.host)
     override def apply(v1: BaseLink[Album]): Future[BaseLinks[Album]] = Future successful links
   }
-  val newLinkExpander = constExpander(expandedLink)
-  val newLinkReconciler = new Reconciler[Album](reconciledLink.host) {
+  private val newLinkExpander = constExpander(expandedLink)
+  private val newLinkReconciler = new Reconciler[Album](reconciledLink.host) {
     override def apply(a: Album) = Future successful Some(reconciledLink)
   }
   private def constFuture[T](t: T): Any => Future[T] = _ => Future successful t

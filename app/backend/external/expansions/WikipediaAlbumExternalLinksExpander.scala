@@ -16,8 +16,8 @@ import scalaz.std.{FutureInstances, OptionInstances}
 
 private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
     extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic))
-        with MoreTraversableInstances with MoreTraverseInstances with ToTraverseMonadPlusOps with ToMoreMonadErrorOps
-        with ToMoreFoldableOps with FutureInstances with OptionInstances {
+        with MoreTraversableInstances with ToTraverseMonadPlusOps with ToMoreMonadErrorOps
+        with ToMoreFoldableOps with FutureInstances with OptionInstances with MoreTraverseInstances {
   protected val allMusicHelper = new AllMusicHelper
 
   // semi-canonical = guaranteed to start with http://www.allmusic.com/album

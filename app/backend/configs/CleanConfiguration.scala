@@ -15,17 +15,16 @@ import scalaz.syntax.ToTraverseOps
 object CleanConfiguration extends RealConfig with NonPersistentConfig
     with FutureInstances with ListInstances with ToTraverseOps {
   override implicit val ec: ExecutionContext = ExecutionContext.global
-  private def createTable(c: Storage[_, _]): Future[_] = {
-    c.utils.createTable()
-  }
   private def createTables() {
     implicit val c: Configuration = this
-    List(createTable(new ArtistReconStorage()),
-      createTable(new AlbumReconStorage()),
-      createTable(new ArtistExternalStorage()),
-      createTable(new LyricsStorage()),
-      createTable(new InstrumentalArtistStorage()),
-      createTable(new AlbumExternalStorage())).sequenceU.get
+    List(
+      new ArtistReconStorage(),
+      new AlbumReconStorage(),
+      new ArtistExternalStorage(),
+      new LyricsStorage(),
+      new InstrumentalArtistStorage(),
+      new AlbumExternalStorage()
+    ).traverse(_.utils.createTable()).get
   }
   createTables()
 }

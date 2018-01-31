@@ -40,7 +40,7 @@ private class MetadataCacher(saver: FormatSaver)(implicit val c: Configuration,
     override def apply(): Observable[IndexUpdate] = {
       val lastUpdateTime: Option[LocalDateTime] =
         List(saver.lastUpdateTime[Song], saver.lastUpdateTime[Album], saver.lastUpdateTime[Artist])
-            .sequence[Option, LocalDateTime]
+            .sequenceU
             .flatMap(_.minimumBy(_.toEpochSecond(ZoneOffset.UTC)))
       lastUpdateTime.fold(indexAll()) { lastUpdateTime =>
         updateIndex(c.mf.albumDirs.filter(_.lastModified isAfter lastUpdateTime), new AllInfoHandler {
