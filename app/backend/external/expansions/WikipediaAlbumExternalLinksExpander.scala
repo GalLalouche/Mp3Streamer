@@ -7,6 +7,7 @@ import backend.recon.Album
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
+import common.rich.collections.RichSeq._
 import common.rich.func._
 import org.jsoup.nodes.Document
 
@@ -37,9 +38,9 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
       .map(_.attr("href"))
       .flatMap(extractSemiCanonicalAllMusicLink)
       .mapTo(preferCanonical)
-      .map(_ |> Url)
+      .map(Url)
       .mapTo(urls =>
-        if (urls.size <= 1) urls.headOption
+        if (urls hasAtMostSizeOf 1) urls.headOption
         else throw new IllegalStateException("extracted too many AllMusic links"))
 
   override def parseDocument(d: Document): BaseLinks[Album] =
