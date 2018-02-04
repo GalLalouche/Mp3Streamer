@@ -39,8 +39,8 @@ object Player extends LegacyController with Debug {
   def album(path: String) = Action {
     songsInAlbum(path) |> songsAsJsArray
   }
-  def discNumber(path: String, discNumber: String) = Action {
-    songsInAlbum(path).filter(_.discNumber.exists(discNumber.==)).ensuring(_.nonEmpty) |> songsAsJsArray
+  def discNumber(path: String, requestedDiscNumber: String) = Action {
+    songsInAlbum(path).filter(_.discNumber.exists(requestedDiscNumber ==)).ensuring(_.nonEmpty) |> songsAsJsArray
   }
 
   def song(path: String) = Action {

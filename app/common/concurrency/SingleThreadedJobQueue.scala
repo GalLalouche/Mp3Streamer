@@ -1,5 +1,5 @@
 package common.concurrency
-import java.util.concurrent.{Executors, ThreadFactory}
+import java.util.concurrent.Executors
 
 import common.rich.RichT._
 

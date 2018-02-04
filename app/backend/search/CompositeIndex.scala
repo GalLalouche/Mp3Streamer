@@ -1,9 +1,8 @@
 package backend.search
 
-import common.Jsonable
 import common.io.{DirectoryRef, FormatSaver}
-import models.{Album, Artist, Song}
 import models.ModelJsonable._
+import models.{Album, Artist, Song}
 import play.api.libs.json.Format
 
 /** Index for songs, albums and artists. */
