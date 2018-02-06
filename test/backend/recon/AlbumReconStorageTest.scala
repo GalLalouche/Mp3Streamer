@@ -1,31 +1,33 @@
 package backend.recon
 
+import backend.StorageSetup
 import backend.configs.TestConfiguration
 import common.AuxSpecs
 import common.rich.RichFuture._
-import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
+import org.scalatest.{FreeSpec, Matchers}
 
-class AlbumReconStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest with Matchers {
-  private implicit val c = new TestConfiguration
-  private val $ = new AlbumReconStorage
-  $.utils.createTable().get
+class AlbumReconStorageTest extends FreeSpec with AuxSpecs
+    with Matchers with StorageSetup {
+  override protected implicit val config = new TestConfiguration
+  override protected def storage = new AlbumReconStorage
+
   "deleteAllRecons" - {
     "No previous data" in {
-      $.deleteAllRecons(Artist("foobar")).get shouldBe empty
+      storage.deleteAllRecons(Artist("foobar")).get shouldBe empty
     }
     "has previous data" in {
       val artist: Artist = Artist("bar")
       val album1: Album = Album("foo", 2000, artist)
       val album2: Album = Album("spam", 2001, artist)
       val album3: Album = Album("eggs", 2002, artist)
-      $.store(album1, Some(ReconID("recon1")) -> true).get
-      $.store(album2, Some(ReconID("recon2")) -> false).get
-      $.store(album3, None -> true).get
-      $.deleteAllRecons(artist).get.toSet shouldReturn
+      storage.store(album1, Some(ReconID("recon1")) -> true).get
+      storage.store(album2, Some(ReconID("recon2")) -> false).get
+      storage.store(album3, None -> true).get
+      storage.deleteAllRecons(artist).get.toSet shouldReturn
           Set(("bar - foo", Some(ReconID("recon1")), true), ("bar - spam", Some(ReconID("recon2")), false), ("bar - eggs", None, true))
-      $.load(album1).get shouldReturn None
-      $.load(album2).get shouldReturn None
-      $.load(album3).get shouldReturn None
+      storage.load(album1).get shouldReturn None
+      storage.load(album2).get shouldReturn None
+      storage.load(album3).get shouldReturn None
     }
   }
 }

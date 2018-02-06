@@ -9,47 +9,38 @@ import common.AuxSpecs
 import common.rich.RichFuture._
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpec}
 
-class AlbumExternalStorageTest extends FreeSpec with AuxSpecs with BeforeAndAfter with BeforeAndAfterAll {
-  implicit val c = new TestConfiguration
-  val $ = new AlbumExternalStorage()
-  val utils = $.utils
-  override def beforeAll: Unit = {
-    utils.createTable().get
-  }
-  before {
-    utils.clearTable().get
-  }
-  after {
-    utils.clearTable().get
-  }
-  val album: Album = Album("the spam album", 2000, Artist("foo and the bar band"))
+class AlbumExternalStorageTest extends FreeSpec with AuxSpecs with StorageSetup {
+  override protected implicit val config = new TestConfiguration
+  override protected val storage = new AlbumExternalStorage()
 
-  val link1 = MarkedLink[Album](Url("www.foobar.com/foo/bar.html"), Host("foobar", Url("www.foobar.com")), true)
-  val link2 = MarkedLink[Album](Url("www.bazqux.com/baz/qux.html"), Host("bazqux", Url("www.bazqux.com")), false)
+  private val album: Album = Album("the spam album", 2000, Artist("foo and the bar band"))
+  private val link1 = MarkedLink[Album](Url("www.foobar.com/foo/bar.html"), Host("foobar", Url("www.foobar.com")), true)
+  private val link2 = MarkedLink[Album](Url("www.bazqux.com/baz/qux.html"), Host("bazqux", Url("www.bazqux.com")), false)
+
   "Can load what is stored" in {
     val value = List(link1, link2) -> Some(LocalDateTime.now)
-    $.store(album, value).get
-    $.load(album).get.get shouldReturn value
+    storage.store(album, value).get
+    storage.load(album).get.get shouldReturn value
   }
   "No problem with an empty list" in {
-    $.store(album, Nil -> None).get
-    $.load(album).get.get._1 shouldReturn Nil
-    $.load(album).get.get._2 shouldReturn None
+    storage.store(album, Nil -> None).get
+    storage.load(album).get.get._1 shouldReturn Nil
+    storage.load(album).get.get._2 shouldReturn None
   }
   "Can force store" in {
-    $.store(album, Nil -> None).get
+    storage.store(album, Nil -> None).get
     val link1 = MarkedLink[Album](Url("www.foobar.com/foo/bar.html"), Host("foobar", Url("www.foobar.com")), true)
-    $.forceStore(album, List(link1) -> Some(LocalDateTime.now)).get.get shouldReturn (Nil -> None)
+    storage.forceStore(album, List(link1) -> Some(LocalDateTime.now)).get.get shouldReturn (Nil -> None)
   }
   "Delete all links by artist" in {
     val value1: (List[MarkedLink[Album]], None.type) = List(link1) -> None
-    $.store(album, value1).get
+    storage.store(album, value1).get
     val album2 = album.copy(title = "sophomore effort")
     val value2: (List[MarkedLink[Album]], Some[LocalDateTime]) = List(link2) -> Some(LocalDateTime.now)
-    $.store(album2, value2).get
-    $.deleteAllLinks(album.artist).get.toSet shouldReturn
+    storage.store(album2, value2).get
+    storage.deleteAllLinks(album.artist).get.toSet shouldReturn
         Set((album.normalize, value1._1, value1._2), (album2.normalize, value2._1, value2._2))
-    $.load(album).get shouldReturn None
-    $.load(album2).get shouldReturn None
+    storage.load(album).get shouldReturn None
+    storage.load(album2).get shouldReturn None
   }
 }

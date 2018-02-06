@@ -1,22 +1,18 @@
 package backend.lyrics.retrievers
 
+import backend.StorageSetup
 import backend.configs.TestConfiguration
 import backend.lyrics.Instrumental
 import common.AuxSpecs
 import common.rich.RichFuture._
 import models.FakeModelFactory
-import org.scalatest.{BeforeAndAfter, FreeSpec}
+import org.scalatest.FreeSpec
 
-class InstrumentalArtistTest extends FreeSpec with AuxSpecs with BeforeAndAfter {
-  private implicit val c = TestConfiguration()
+class InstrumentalArtistTest extends FreeSpec with AuxSpecs with StorageSetup {
+  override protected implicit val config = TestConfiguration()
+  override protected lazy val storage = new InstrumentalArtistStorage
   private val factory = new FakeModelFactory
-  private val storage = new InstrumentalArtistStorage
   private val $ = new InstrumentalArtist
-  storage.utils.createTable().get
-
-  after {
-    storage.utils.clearTable().get
-  }
 
   "exists" in {
     val song = factory.song(artistName = "foo")
