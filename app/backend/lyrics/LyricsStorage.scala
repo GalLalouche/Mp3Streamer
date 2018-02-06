@@ -2,10 +2,14 @@ package backend.lyrics
 
 import backend.configs.Configuration
 import backend.storage.SlickStorageTemplateFromConf
+import common.rich.func.ToMoreFoldableOps
 import models.Song
 import slick.ast.{BaseTypedType, ScalaBaseType}
 
-class LyricsStorage(implicit _c: Configuration) extends SlickStorageTemplateFromConf[Song, Lyrics] {
+import scalaz.std.OptionInstances
+
+class LyricsStorage(implicit _c: Configuration) extends SlickStorageTemplateFromConf[Song, Lyrics]
+    with ToMoreFoldableOps with OptionInstances {
   import this.profile.api._
 
   override protected type Profile = c.profile.type
@@ -30,5 +34,6 @@ class LyricsStorage(implicit _c: Configuration) extends SlickStorageTemplateFrom
   }
   override protected def toId(et: LyricsTable) = et.song
   override protected def extractId(s: Song) = s"${s.artistName} - ${s.title}"
-  override protected def extractValue(e: Entity) = e._3.map(HtmlLyrics(e._2, _)).getOrElse(Instrumental(e._2))
+  override protected def extractValue(e: Entity) =
+    e._3.mapHeadOrElse(HtmlLyrics(e._2, _), Instrumental(e._2))
 }
