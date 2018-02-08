@@ -12,7 +12,7 @@ import org.jsoup.nodes.Document
 import scala.collection.JavaConverters._
 
 private class MetalArchivesAlbumsFinder(implicit it: InternetTalker) extends SameHostExpander(Host.MetalArchives) {
-  override def findAlbum(d: Document, a: Album): Option[Url] =
+  override protected def findAlbum(d: Document, a: Album): Option[Url] =
     d.select(".display.discog tr td a").asScala
         .find(_.text.toLowerCase == a.title.toLowerCase)
         .map(_.attr("href"))

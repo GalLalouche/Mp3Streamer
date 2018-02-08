@@ -10,7 +10,7 @@ import org.jsoup.nodes.Document
 import scala.collection.JavaConverters._
 
 private class WikipediaAlbumFinder(implicit it: InternetTalker) extends SameHostExpander(Host.Wikipedia) {
-  override def findAlbum(d: Document, a: Album): Option[Url] = {
+  override protected def findAlbum(d: Document, a: Album): Option[Url] = {
     def score(linkName: String): Double = StringReconScorer(a.title, linkName)
     d.select("a").asScala
         .find(e => score(e.text) > 0.95)

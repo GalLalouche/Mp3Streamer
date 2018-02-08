@@ -2,23 +2,19 @@ package backend.external.expansions
 
 import backend.Url
 import backend.configs.TestConfiguration
-import backend.external.DocumentSpecs
 import backend.recon.{Album, Artist}
-import org.scalatest.FreeSpec
 
-class MetalArchivesAlbumsFinderTest extends FreeSpec with DocumentSpecs {
-  private implicit val c = TestConfiguration()
-  private val $ = new MetalArchivesAlbumsFinder()
-  private def findAlbum(a: Album) = {
-    $.findAlbum(getDocument("metal-archives-discography.html"), a)
+class MetalArchivesAlbumsFinderTest extends SameHostExpanderSpec {
+  override private[expansions] def createExpander(implicit c: TestConfiguration) =
+    new MetalArchivesAlbumsFinder()
+  override protected val url = "https://www.metal-archives.com/bands/Cruachan/86"
+  override protected val expandingUrl = "http://www.metal-archives.com/band/discography/id/86/tab/all"
+
+  "return none when there is no matching album" in {
+    findAlbum("metal-archives-discography.html", Album("Let it Bleed", 1928, Artist("Cruachan"))) shouldBe 'empty
   }
-  "findAlbum" - {
-    "return none when there is no matching album" in {
-      findAlbum(Album("Let it Bleed", 1928, Artist("Cruachan"))) shouldBe 'empty
-    }
-    "find album" in {
-      findAlbum(Album("Blood for the Blood God", 2014, Artist("Cruachan"))).get shouldReturn
-          Url("http://www.metal-archives.com/albums/Cruachan/Blood_for_the_Blood_God/475926")
-    }
+  "find album" in {
+    findAlbum("metal-archives-discography.html", Album("Blood for the Blood God", 2014, Artist("Cruachan")))
+        .get.link shouldReturn Url("http://www.metal-archives.com/albums/Cruachan/Blood_for_the_Blood_God/475926")
   }
 }

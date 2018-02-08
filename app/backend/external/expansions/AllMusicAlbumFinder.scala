@@ -21,7 +21,7 @@ private class AllMusicAlbumFinder(allMusicHelper: AllMusicHelper)(implicit it: I
         with FutureInstances with ToMoreMonadOps with ToMoreMonadPlusOps with MoreSeqInstances {
   @VisibleForTesting
   private[expansions] def this()(implicit it: InternetTalker) = this(new AllMusicHelper)
-  override def findAlbum(d: Document, album: Album): Option[Url] = {
+  override protected def findAlbum(d: Document, album: Album): Option[Url] = {
     def score(other: Album): Double = AlbumReconScorer.apply(album, other)
     d.select(".discography table tbody tr").asScala.toSeq
         .tryMap(albumRow => albumRow ->
