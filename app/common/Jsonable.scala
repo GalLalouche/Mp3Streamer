@@ -1,6 +1,7 @@
 package common
 
 import common.RichJson._
+import monocle.Iso
 import play.api.libs.json._
 
 import scala.annotation.implicitNotFound
@@ -49,6 +50,10 @@ object Jsonable {
       Json.obj(firstKey -> t._1, secondKey -> t._2.jsonify)
     override def parse(json: JsValue): (A, B) =
       json.value(firstKey).parse[A] -> json.value(secondKey).parse[B]
+  }
+  def isoJsonable[A, B: Format](aToB: Iso[A, B]): Jsonable[A] = new Jsonable[A] with ToJsonableOps {
+    override def parse(json: JsValue): A = aToB.reverseGet(json.parse[B])
+    override def jsonify(t: A): JsValue = aToB.get(t).jsonify
   }
 }
 
