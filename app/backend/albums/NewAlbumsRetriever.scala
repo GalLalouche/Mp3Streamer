@@ -1,6 +1,6 @@
 package backend.albums
 
-import backend.configs.{Configuration, StandaloneConfig}
+import backend.configs.{Configuration, RealConfig, StandaloneConfig}
 import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.Reconcilable.SongExtractor
@@ -79,7 +79,7 @@ object NewAlbumsRetriever {
       .map(Song(_).release)
 
   def main(args: Array[String]): Unit = {
-    implicit val c = StandaloneConfig
+    implicit val c: RealConfig = StandaloneConfig
     import c._
     val artist: Artist = Artist("At the Gates")
     def cacheForArtist(a: Artist)(implicit mf: IOMusicFinder): ArtistLastYearCache = {

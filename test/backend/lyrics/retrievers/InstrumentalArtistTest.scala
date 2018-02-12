@@ -9,7 +9,7 @@ import models.FakeModelFactory
 import org.scalatest.FreeSpec
 
 class InstrumentalArtistTest extends FreeSpec with AuxSpecs with StorageSetup {
-  override protected implicit val config = TestConfiguration()
+  override protected implicit val config: TestConfiguration = TestConfiguration()
   override protected lazy val storage = new InstrumentalArtistStorage
   private val factory = new FakeModelFactory
   private val $ = new InstrumentalArtist

@@ -2,7 +2,7 @@ package backend.storage
 
 import backend.RichTime._
 import backend.configs.TestConfiguration
-import common.AuxSpecs
+import common.{AuxSpecs, FakeClock}
 import common.rich.RichFuture._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
@@ -11,8 +11,8 @@ import scalaz.syntax.ToBindOps
 
 class FreshnessStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest
     with FutureInstances with ToBindOps {
-  private implicit val c = TestConfiguration()
-  private implicit val clock = c.clock
+  private implicit val c: TestConfiguration = TestConfiguration()
+  private implicit val clock: FakeClock = c.clock
   private val $ = new FreshnessStorage[Int, Int](new MemoryBackedStorage)
 
   "store and load" - {

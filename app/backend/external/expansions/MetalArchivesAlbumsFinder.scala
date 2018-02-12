@@ -1,7 +1,7 @@
 package backend.external.expansions
 
 import backend.Url
-import backend.configs.StandaloneConfig
+import backend.configs.{Configuration, StandaloneConfig}
 import backend.external.Host
 import backend.recon.{Album, Artist}
 import common.io.InternetTalker
@@ -28,7 +28,7 @@ private class MetalArchivesAlbumsFinder(implicit it: InternetTalker) extends Sam
 }
 private object MetalArchivesAlbumsFinder {
   def main(args: Array[String]) {
-    implicit val c = StandaloneConfig
+    implicit val c: Configuration = StandaloneConfig
     new MetalArchivesAlbumsFinder().fromUrl(Url("http://www.metal-archives.com/bands/Empyrium/2345"),
       Album("The turn of the tides", 2014, Artist("Empyrium"))).get.log()
   }

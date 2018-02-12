@@ -1,7 +1,7 @@
 package mains.cover
 
 import backend.Url
-import backend.configs.TestConfiguration
+import backend.configs.{Configuration, TestConfiguration}
 import common.AuxSpecs
 import common.io.MemoryRoot
 import common.rich.RichFuture._
@@ -10,7 +10,7 @@ import org.scalatest.FreeSpec
 
 class ImageDownloaderTest extends FreeSpec with AuxSpecs {
   private val tempDir = new MemoryRoot
-  private implicit val c = TestConfiguration(_urlToBytesMapper = "foobar".getBytes.partialConst)
+  private implicit val c: Configuration = TestConfiguration(_urlToBytesMapper = "foobar".getBytes.partialConst)
   "Remote" in {
     val $ = new ImageDownloader(tempDir)
     val fi = $(UrlSource(Url("http://foobar"), 500, 500)).get

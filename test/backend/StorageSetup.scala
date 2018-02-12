@@ -9,7 +9,7 @@ trait StorageSetup extends BeforeAndAfterAll with BeforeAndAfter {self: Suite =>
   protected implicit def config: TestConfiguration
   protected def storage: Storage[_, _]
   private lazy val utils = storage.utils
-  override def beforeAll = {
+  override def beforeAll() = {
     utils.createTable().get
   }
   after {

@@ -1,11 +1,11 @@
 package backend.external.expansions
 
 import backend.Url
-import backend.configs.TestConfiguration
+import backend.configs.Configuration
 import backend.recon.{Album, Artist}
 
 class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
-  override private[expansions] def createExpander(implicit c: TestConfiguration) =
+  override private[expansions] def createExpander(implicit c: Configuration) =
     new WikipediaAlbumFinder
 
   private val DiscographyExtractLink = "https://en.wikipedia.org/w/index.php?title=Lady_in_Gold_(album)&redirect=no"

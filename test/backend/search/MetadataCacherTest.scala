@@ -4,7 +4,7 @@ import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
 import backend.configs.{FakeMusicFinder, TestConfiguration}
 import backend.search.MetadataCacher.IndexUpdate
-import common.io.{FormatSaver, MemoryRoot}
+import common.io.{DirectoryRef, FormatSaver, MemoryRoot}
 import common.rich.RichFuture._
 import common.{AuxSpecs, Jsonable}
 import models.{Album, Artist, FakeModelFactory, FakeModelJsonable, Song}
@@ -16,7 +16,7 @@ import scala.concurrent.{Await, Promise}
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory
-  private implicit val root = new MemoryRoot
+  private implicit val root: MemoryRoot = new MemoryRoot
   private val songs = root.addSubDir("songs")
   private val jsonableSaver = new FormatSaver
   private val fakeJsonable = new FakeModelJsonable

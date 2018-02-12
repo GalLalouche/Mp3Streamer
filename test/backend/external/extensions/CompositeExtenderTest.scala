@@ -15,7 +15,7 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
     MarkedLink[R](link = e.link, host = e.host, isNew = e.isNew)
 
   private def verify[R <: Reconcilable](source: TimestampedLinks[R],
-      actual: TimestampedExtendedLinks[R], expected: Map[Host, Seq[LinkExtension[R]]]) = {
+      actual: TimestampedExtendedLinks[R], expected: Map[Host, Seq[LinkExtension[R]]]): Unit = {
     actual.timestamp shouldReturn source.timestamp
     actual.links.map(toMarked) shouldReturn source.links
 

@@ -8,7 +8,7 @@ import org.scalatest.{FreeSpec, Matchers}
 
 class AlbumReconStorageTest extends FreeSpec with AuxSpecs
     with Matchers with StorageSetup {
-  override protected implicit val config = new TestConfiguration
+  override protected implicit val config: TestConfiguration = new TestConfiguration
   override protected def storage = new AlbumReconStorage
 
   "deleteAllRecons" - {

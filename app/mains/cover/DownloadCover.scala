@@ -4,7 +4,7 @@ import java.net.URLEncoder
 import java.nio.file.Files
 
 import backend.Url
-import backend.configs.StandaloneConfig
+import backend.configs.{Configuration, StandaloneConfig}
 import common.io.{IODirectory, IOFile}
 import common.rich.path.RichFile.richFile
 import common.rich.path.{Directory, RichFileUtils}
@@ -15,7 +15,7 @@ import scala.concurrent.{Await, Future}
 import scala.sys.process.Process
 
 object DownloadCover {
-  private implicit val c = StandaloneConfig
+  private implicit val c: Configuration = StandaloneConfig
   import c._
   private case class CoverException(str: String, e: Exception) extends Exception(e)
 

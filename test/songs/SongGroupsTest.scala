@@ -1,6 +1,6 @@
 package songs
 
-import backend.configs.TestConfiguration
+import backend.configs.{Configuration, TestConfiguration}
 import common.AuxSpecs
 import models.{FakeModelFactory, FakeModelJsonable}
 import org.scalatest.FreeSpec
@@ -26,7 +26,7 @@ class SongGroupsTest extends FreeSpec with AuxSpecs {
     $ get song5 shouldReturn None
   }
   "save and load" in {
-    implicit val c = TestConfiguration()
+    implicit val c: Configuration = TestConfiguration()
     import c._
     val $ = new SongGroups()
     $.save(groups)

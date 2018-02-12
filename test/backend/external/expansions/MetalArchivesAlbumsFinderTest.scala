@@ -1,11 +1,11 @@
 package backend.external.expansions
 
 import backend.Url
-import backend.configs.TestConfiguration
+import backend.configs.Configuration
 import backend.recon.{Album, Artist}
 
 class MetalArchivesAlbumsFinderTest extends SameHostExpanderSpec {
-  override private[expansions] def createExpander(implicit c: TestConfiguration) =
+  override private[expansions] def createExpander(implicit c: Configuration) =
     new MetalArchivesAlbumsFinder()
   override protected val artistUrl = "https://www.metal-archives.com/bands/Cruachan/86"
   override protected val expandingUrl = "http://www.metal-archives.com/band/discography/id/86/tab/all"

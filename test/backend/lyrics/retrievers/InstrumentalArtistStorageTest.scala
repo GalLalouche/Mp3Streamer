@@ -7,7 +7,7 @@ import common.rich.RichFuture._
 import org.scalatest.FreeSpec
 
 class InstrumentalArtistStorageTest extends FreeSpec with AuxSpecs with StorageSetup {
-  override protected implicit val config = TestConfiguration()
+  override protected implicit val config: TestConfiguration = TestConfiguration()
   override protected def storage = new InstrumentalArtistStorage
   private val artistName = "foo"
 

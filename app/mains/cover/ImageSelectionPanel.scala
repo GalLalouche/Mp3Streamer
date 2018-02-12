@@ -1,5 +1,6 @@
 package mains.cover
 
+import backend.configs.Configuration
 import common.io.IODirectory
 import common.rich.RichT._
 
@@ -41,10 +42,10 @@ private object ImageSelectionPanel {
 
   def main(args: Array[String]): Unit = {
     import common.rich.RichFuture._
-    implicit val c = StandaloneConfig
+    implicit val c: Configuration = StandaloneConfig
     val dir = IODirectory("""/usr/local/google/home/lalouche/Pictures""")
     val is = new ImagesSupplier {
-      val iterator =
+      private val iterator =
         dir.deepFiles.iterator.filter(_.extension == "png").map(LocalSource).map(l =>
           ImageDownloader.folderImage(l.file, Random.nextBoolean(), l.width, l.height, l.image))
       override def next(): Future[FolderImage] = Future successful iterator.next()

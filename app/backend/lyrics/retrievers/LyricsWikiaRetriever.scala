@@ -3,7 +3,7 @@ package backend.lyrics.retrievers
 import java.io.File
 import java.net.URLEncoder
 
-import backend.configs.StandaloneConfig
+import backend.configs.{Configuration, StandaloneConfig}
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -31,7 +31,7 @@ private[lyrics] class LyricsWikiaRetriever(implicit it: InternetTalker) extends 
 
 private object LyricsWikiaRetriever {
   def main(args: Array[String]) {
-    implicit val c = StandaloneConfig
+    implicit val c: Configuration = StandaloneConfig
     val $ = new LyricsWikiaRetriever()
     val file: File = new File("""D:\Media\Music\Metal\Black Metal\Watain\2010 Lawless Darkness\06 - Lawless Darkness.mp3""")
     println(file.exists())

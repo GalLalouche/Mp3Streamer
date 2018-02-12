@@ -2,7 +2,7 @@ package backend.external.expansions
 import java.net.HttpURLConnection
 
 import backend.Url
-import backend.configs.{FakeWSResponse, TestConfiguration}
+import backend.configs.{Configuration, FakeWSResponse, TestConfiguration}
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import common.io.WSAliases._
 import common.rich.RichFuture._
@@ -11,7 +11,7 @@ import common.rich.primitives.RichBoolean._
 import org.scalatest.FreeSpec
 
 class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
-  private implicit val config = TestConfiguration()
+  private implicit val config: TestConfiguration = TestConfiguration()
   private def withDocument(s: String) = config.copy(_urlToBytesMapper = getBytes(s).partialConst)
   private val $ = new AllMusicHelper
   "isCanonical" - {
@@ -29,11 +29,11 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
   }
   "validity" - {
     val helperPointsToValid = {
-      implicit val config = withDocument("allmusic_has_rating.html")
+      implicit val config: Configuration = withDocument("allmusic_has_rating.html")
       new AllMusicHelper()
     }
     val helperPointsToEmpty = {
-      implicit val config = withDocument("allmusic_no_rating.html")
+      implicit val config: Configuration = withDocument("allmusic_no_rating.html")
       new AllMusicHelper()
     }
     val url = Url("http://foobar")
@@ -72,7 +72,7 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
     "rlink" - {
       def withRedirectingMock(sourceToDest: (String, String)*) = {
         val asMap = sourceToDest.toMap
-        implicit val config = this.config.copy(_requestToResponseMapper = {
+        implicit val config: Configuration = this.config.copy(_requestToResponseMapper = {
           case r: WSRequest if asMap.contains(r.url) && r.followRedirects.exists(_.isFalse) =>
             FakeWSResponse(
               status = HttpURLConnection.HTTP_MOVED_PERM,

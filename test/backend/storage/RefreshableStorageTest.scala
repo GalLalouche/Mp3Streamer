@@ -1,9 +1,9 @@
 package backend.storage
 
-import java.time.Duration
+import java.time.{Clock, Duration}
 
-import backend.configs.TestConfiguration
-import common.AuxSpecs
+import backend.configs.{Configuration, TestConfiguration}
+import common.{AuxSpecs, FakeClock}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
@@ -11,8 +11,8 @@ import org.scalatest.{FreeSpec, OneInstancePerTest}
 import scala.concurrent.Future
 
 class RefreshableStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
-  private implicit val c = new TestConfiguration
-  implicit val clock = c.clock
+  private implicit val c: TestConfiguration = new TestConfiguration
+  implicit val clock: FakeClock = c.clock
   private var i = 0
   private val freshnessStorage = new FreshnessStorage[String, String](new MemoryBackedStorage)
   private val $ =

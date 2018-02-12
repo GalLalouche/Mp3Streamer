@@ -5,7 +5,7 @@ import java.time.{Clock, LocalDate, Year, YearMonth}
 import backend.RichTime._
 import backend.albums.NewAlbum.AlbumType
 import backend.albums.NewAlbum.AlbumType.AlbumType
-import backend.configs.StandaloneConfig
+import backend.configs.{Configuration, StandaloneConfig}
 import backend.mb.JsonHelper._
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon._
@@ -55,7 +55,7 @@ object MbArtistReconciler {
     CompositeDateFormat[LocalDate]("yyyy-MM-dd").orElse[YearMonth]("yyyy-MM").orElse[Year]("yyyy")
 
   def main(args: Array[String]) {
-    implicit val c = StandaloneConfig
+    implicit val c: Configuration = StandaloneConfig
     val $ = new MbArtistReconciler
     $(Artist("Moonsorrow")).map(_.get).flatMap($.getAlbumsMetadata).get.log()
     System exit 0

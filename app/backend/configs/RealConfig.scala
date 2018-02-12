@@ -15,7 +15,7 @@ trait RealConfig extends Configuration {
     profile.api.Database.forURL("jdbc:sqlite:d:/media/music/MBRecon.sqlite", driver = "org.sqlite.JDBC")
   override implicit lazy val mf: IOMusicFinder = IOMusicFinder
   override implicit lazy val rootDirectory: DirectoryRef = IODirectory.apply("D:/media/streamer/")
-  override implicit val clock = Clock.systemDefaultZone
+  override implicit val clock: Clock = Clock.systemDefaultZone
   private lazy val materializer = ActorMaterializer()(ActorSystem.create("RealConfigWS-System"))
   override protected def createWsClient() = StandaloneAhcWSClient()(materializer)
 }

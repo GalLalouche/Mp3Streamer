@@ -1,6 +1,6 @@
 package backend.lyrics.retrievers
 
-import backend.configs.TestConfiguration
+import backend.configs.{Configuration, TestConfiguration}
 import backend.lyrics.Instrumental
 import common.io.{MemoryDir, MemoryRoot}
 import common.rich.RichFuture._
@@ -9,7 +9,7 @@ import org.scalatest.{FreeSpec, Matchers}
 
 class DefaultClassicalInstrumentalTest extends FreeSpec with Matchers {
   private val fakeModelFactory = new FakeModelFactory
-  private implicit val tc = TestConfiguration()
+  private implicit val c: Configuration = TestConfiguration()
   private val $ = DefaultClassicalInstrumental
   private def songWithPath(path: String): Song = {
     val split = path.split("/")

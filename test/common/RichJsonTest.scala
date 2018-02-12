@@ -17,8 +17,8 @@ class RichJsonTest extends FreeSpec with AuxSpecs with Matchers {
     }
   }
   "has" - {
-    def verifyHas(js: JsObject) = js has "foo" shouldReturn true
-    def verifyHasNot(js: JsObject) = js has "foo" shouldReturn false
+    def verifyHas(js: JsObject): Unit = js has "foo" shouldReturn true
+    def verifyHasNot(js: JsObject): Unit = js has "foo" shouldReturn false
     "valid string" in {
       withObject("bar") |> verifyHas
     }

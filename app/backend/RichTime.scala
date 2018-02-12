@@ -2,7 +2,7 @@ package backend
 import java.time._
 
 object RichTime {
-  implicit val durationOrdering = implicitly[Ordering[Duration]].mkOrderingOps _
+  implicit val durationOrdering: Duration => Ordering[Duration]#Ops = implicitly[Ordering[Duration]].mkOrderingOps _
   private implicit object OrderingLocalDateTime extends Ordering[LocalDateTime] {
     override def compare(x: LocalDateTime, y: LocalDateTime) = x.toMillis compareTo y.toMillis
   }

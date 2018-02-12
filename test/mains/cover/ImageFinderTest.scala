@@ -1,14 +1,14 @@
 package mains.cover
 
 import backend.Url
-import backend.configs.TestConfiguration
+import backend.configs.{Configuration, TestConfiguration}
 import backend.external.DocumentSpecs
 import common.rich.RichFuture._
 import common.rich.RichT._
 import org.scalatest.FreeSpec
 
 class ImageFinderTest extends FreeSpec with DocumentSpecs {
-  private implicit val c =
+  private implicit val c: Configuration =
     TestConfiguration(_urlToBytesMapper = getBytes("image_search.html").partialConst)
   private val $ = new ImageFinder
 

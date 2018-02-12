@@ -1,7 +1,7 @@
 package backend.mb
 
 import backend.Retriever
-import backend.configs.StandaloneConfig
+import backend.configs.{Configuration, StandaloneConfig}
 import backend.mb.JsonHelper._
 import backend.recon._
 import common.RichJson._
@@ -31,7 +31,7 @@ class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit i
 
 object MbAlbumReconciler {
   def main(args: Array[String]) {
-    implicit val c = StandaloneConfig
+    implicit val c: Configuration = StandaloneConfig
     val $ = new MbAlbumReconciler(_ => "6b335658-22c8-485d-93de-0bc29a1d0349" |> ReconID |> Future.successful)
     val f = $(Album("Hell Bent for Leather", 1979, "Judas Priest" |> Artist.apply))
     Await.result(f, 10 seconds).log()

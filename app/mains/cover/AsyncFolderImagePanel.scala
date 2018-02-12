@@ -54,7 +54,7 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
     contents.clear()
     // Pre-populate the grid to avoid images moving around.
     val range = 0 until rows * cols
-    range.map("Placeholder for image #" +).map(new TextArea(_)).foreach(contents +=)
+    range.map("Placeholder for image #".+).map(new TextArea(_)).foreach(contents.+=)
     contents += Button.apply("Fuck it, I'll do it myself!")(AsyncFolderImagePanel.this.publish(OpenBrowser))
     contents += Button("Show me more...")(refresh())
     for (currentIndex <- range;

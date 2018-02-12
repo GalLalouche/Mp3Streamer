@@ -1,7 +1,7 @@
 package backend.external
 
 import backend.Url
-import backend.configs.TestConfiguration
+import backend.configs.{Configuration, TestConfiguration}
 import backend.recon.{Album, Artist, ReconID}
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -12,7 +12,7 @@ class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
     TestConfiguration().copy(_urlToBytesMapper = getBytes(name + ".html").partialConst)
 
   "parse artist links" in {
-    implicit val c = withDocument("artist")
+    implicit val c: Configuration = withDocument("artist")
     val $ = new ArtistLinkExtractor
     val expected = Set(
       BaseLink[Artist](Url("http://deafheaven.com/"), Host("home", Url("deafheaven.com"))),
@@ -35,7 +35,7 @@ class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
   }
 
   "parse album links" in {
-    implicit val c = withDocument("album")
+    implicit val c: Configuration = withDocument("album")
     val $ = new AlbumLinkExtractor
     val expected = Set(
       BaseLink[Album](Url("http://www.discogs.com/master/559132"), Host("discogs", Url("www.discogs.com"))),

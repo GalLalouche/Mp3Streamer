@@ -1,12 +1,12 @@
 package mains
 
-import backend.configs.CleanConfiguration
+import backend.configs.{CleanConfiguration, Configuration}
 import common.io.IODirectory
 import common.rich.collections.RichTraversableOnce._
 import common.rich.path.{Directory, RichFileUtils}
 
 private object PrefixAlbumDirsWithYears {
-  private implicit val c = CleanConfiguration
+  private implicit val c: Configuration = CleanConfiguration
   private def addYear(d: Directory): Unit = {
     val songs = c.mf getSongsInDir IODirectory(d)
     val year = songs.map(_.year).toSet.single

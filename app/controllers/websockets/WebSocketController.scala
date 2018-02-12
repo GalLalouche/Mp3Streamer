@@ -12,8 +12,8 @@ import scala.collection.mutable
 // This has to appear before the trait, otherwise materializer won't be available as an implicit val?!
 object WebSocketController {
   private case class MessageToClient(str: String) extends AnyVal
-  private implicit val system = ActorSystem("WebSockets")
-  private implicit val materializer = ActorMaterializer()(system)
+  private implicit val system: ActorSystem = ActorSystem("WebSockets")
+  private implicit val materializer: ActorMaterializer = ActorMaterializer()(system)
 }
 
 trait WebSocketController extends LegacyController {

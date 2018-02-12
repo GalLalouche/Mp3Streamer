@@ -2,7 +2,7 @@ package backend.lyrics.retrievers
 
 import java.io.File
 
-import backend.configs.StandaloneConfig
+import backend.configs.{Configuration, StandaloneConfig}
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -35,7 +35,7 @@ private[lyrics] class DarkLyricsRetriever(implicit it: InternetTalker) extends S
 
 private[lyrics] object DarkLyricsRetriever {
   def main(args: Array[String]) {
-    implicit val c = StandaloneConfig
+    implicit val c: Configuration = StandaloneConfig
     val $ = new DarkLyricsRetriever
     println($(Song(new File( """D:\Media\Music\Metal\Progressive Metal\Dream Theater\2003 Train of Thought\05 - Vacant.mp3"""))).get)
   }

@@ -12,7 +12,8 @@ import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
 class ModelJsonableTest extends PropSpec with GeneratorDrivenPropertyChecks with AuxSpecs
     with Jsonable.ToJsonableOps {
-  implicit override val generatorDrivenConfig = PropertyCheckConfig(minSuccessful = 10, workers = 5)
+  implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
+    PropertyCheckConfiguration(minSuccessful = 10, workers = 5)
   // Why the fuck is this not in library?!
   private implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])
   private implicit lazy val arbSong: Gen[Song] = for {

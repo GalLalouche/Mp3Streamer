@@ -9,14 +9,15 @@ import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 
 class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs with GeneratorDrivenPropertyChecks
     with Matchers {
-  implicit override val generatorDrivenConfig = PropertyCheckConfig(minSuccessful = 10, workers = 5)
+  implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
+    PropertyCheckConfiguration(minSuccessful = 10, workers = 5)
   private val factory = new FakeModelFactory()
   import factory.arbSong
 
   "returns a random song" in {
-    forAll {ss: List[MemorySong] =>
+    forAll { ss: List[MemorySong] =>
       whenever(ss.nonEmpty) {
-        implicit val c = new TestConfiguration
+        implicit val c: TestConfiguration = new TestConfiguration
         val mf: FakeMusicFinder = c.mf
         val songs = ss.map(mf.copySong)
 
@@ -27,7 +28,7 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
     }
   }
   "next song" in {
-    implicit val c = new TestConfiguration
+    implicit val c: TestConfiguration = new TestConfiguration
     val mf: FakeMusicFinder = c.mf
     val song1 = mf.copySong(factory.song(albumName = "album", artistName = "artist", track = 1))
     val song2 = mf.copySong(factory.song(albumName = "album", artistName = "artist", track = 2))

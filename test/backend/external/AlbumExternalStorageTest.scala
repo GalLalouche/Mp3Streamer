@@ -7,10 +7,10 @@ import backend.configs.TestConfiguration
 import backend.recon.{Album, Artist}
 import common.AuxSpecs
 import common.rich.RichFuture._
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpec}
+import org.scalatest.FreeSpec
 
 class AlbumExternalStorageTest extends FreeSpec with AuxSpecs with StorageSetup {
-  override protected implicit val config = new TestConfiguration
+  override protected implicit val config: TestConfiguration = new TestConfiguration
   override protected val storage = new AlbumExternalStorage()
 
   private val album: Album = Album("the spam album", 2000, Artist("foo and the bar band"))

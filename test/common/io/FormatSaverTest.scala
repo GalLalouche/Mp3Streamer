@@ -10,7 +10,7 @@ import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, JsValue, Json}
 
 class FormatSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
-  private implicit val root = new MemoryRoot
+  private implicit val root: DirectoryRef = new MemoryRoot
   private val $ = new FormatSaver
   case class Person(age: Int, name: String)
   implicit object PersonJsonable extends Jsonable[Person] {

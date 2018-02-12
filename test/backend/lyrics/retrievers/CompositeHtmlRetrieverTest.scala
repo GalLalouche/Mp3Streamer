@@ -1,7 +1,7 @@
 package backend.lyrics.retrievers
 
 import backend.Url
-import backend.configs.TestConfiguration
+import backend.configs.{Configuration, TestConfiguration}
 import backend.lyrics.Instrumental
 import common.AuxSpecs
 import common.rich.RichFuture._
@@ -13,7 +13,7 @@ import org.scalatest.{FreeSpec, OneInstancePerTest}
 import scala.concurrent.Future
 
 class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
-  private implicit val c = TestConfiguration()
+  private implicit val c: Configuration = TestConfiguration()
   private def fakeLyricsRetriever(
       songsToFind: Song, urlToMatch: Url, instrumentalText: String): HtmlRetriever = {
     class FakeLyricsRetriever extends HtmlRetriever {

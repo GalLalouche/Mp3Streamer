@@ -1,7 +1,7 @@
 package backend.external.expansions
 
 import backend.Url
-import backend.configs.CleanConfiguration
+import backend.configs.{CleanConfiguration, Configuration}
 import backend.external._
 import backend.recon.Album
 import common.io.InternetTalker
@@ -57,7 +57,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
 private object WikipediaAlbumExternalLinksExpander {
   def forUrl(path: String): BaseLink[Album] = new BaseLink[Album](Url(path), Host.Wikipedia)
   def main(args: Array[String]): Unit = {
-    implicit val c = CleanConfiguration
+    implicit val c: Configuration = CleanConfiguration
     val $ = new WikipediaAlbumExternalLinksExpander()
     $.apply(forUrl("""https://en.wikipedia.org/wiki/Ghost_(Devin_Townsend_Project_album)""")).get.log()
   }

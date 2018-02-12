@@ -22,7 +22,7 @@ object Streamer extends LegacyController
   def download(s: String) = Action { request =>
     // assumed format: [bytes=<start>-]
     val bytesToSkip =
-      request.headers.get("Range").mapHeadOrElse(_ dropAfterLast '=' takeWhile (_ isDigit) toLong, 0L)
+      request.headers.get("Range").mapHeadOrElse(_ dropAfterLast '=' takeWhile (_.isDigit) toLong, 0L)
     val file = ControllerUtils.parseSong(s).file.file
     val fis = new FileInputStream(file)
     fis.skip(bytesToSkip)

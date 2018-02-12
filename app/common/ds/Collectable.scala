@@ -22,7 +22,7 @@ object Collectable {
     override def +(s: Set[T], t: T): Set[T] = s + t
     override def empty: Set[T] = Set()
   }
-  implicit def semigroupCollectable[T: Semigroup] = new SemiCollectable[T, T] with ToSemigroupOps {
+  implicit def semigroupCollectable[T: Semigroup]: SemiCollectable[T, T] = new SemiCollectable[T, T] with ToSemigroupOps {
     override def +(s: T, t: T): T = s |+| t
     override def pure(t: T): T = t
   }
