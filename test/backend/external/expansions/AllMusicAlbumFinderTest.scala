@@ -13,7 +13,7 @@ class AllMusicAlbumFinderTest extends SameHostExpanderSpec with MockitoSugar {
   private val allMusicHelper = mock[AllMusicHelper]
   override private[expansions] def createExpander(implicit c: TestConfiguration) =
     new AllMusicAlbumFinder(allMusicHelper)
-  override protected val expandingUrl = url + "/discography"
+  override protected val expandingUrl = artistUrl + "/discography"
 
   "apply" - {
     when(allMusicHelper.isValidLink(any())).thenReturn(Future successful true)

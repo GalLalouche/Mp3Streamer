@@ -41,7 +41,12 @@ private case class FakeWSRequest private(
   override def withVirtualHost(vh: String) = ???
   override def withProxyServer(proxyServer: WSProxyServer) = ???
   override def withMethod(method: String) = this.ensuring(method == "GET")
-  override def execute(): Future[FakeWSResponse] = Future successful response(this)
+  override def execute(): Future[FakeWSResponse] = Future successful {
+    try response(this)
+    catch {
+      case _: MatchError => throw new AssertionError(s"Invalid configuration, no response to <$u>")
+    }
+  }
   override def stream() = ???
   override def uri = ???
   override def contentType = ???

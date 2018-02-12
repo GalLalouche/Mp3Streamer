@@ -7,7 +7,7 @@ import backend.recon.{Album, Artist}
 class MetalArchivesAlbumsFinderTest extends SameHostExpanderSpec {
   override private[expansions] def createExpander(implicit c: TestConfiguration) =
     new MetalArchivesAlbumsFinder()
-  override protected val url = "https://www.metal-archives.com/bands/Cruachan/86"
+  override protected val artistUrl = "https://www.metal-archives.com/bands/Cruachan/86"
   override protected val expandingUrl = "http://www.metal-archives.com/band/discography/id/86/tab/all"
 
   "return none when there is no matching album" in {
