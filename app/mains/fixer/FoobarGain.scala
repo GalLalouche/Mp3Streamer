@@ -18,6 +18,6 @@ private object FoobarGain {
   def calculateTrackGain(d: Directory)(implicit mf: IOMusicFinder): Unit = {
     // SBT does not support both string interpolation and quote marks :\
     val fileNames = mf.getSongFilesInDir(IODirectory(d)).map("\"" + _.path + "\"").mkString(" ")
-    s"$foobarPath $replayGainCommand $fileNames".!!
+    s"$foobarPath $replayGainCommand $fileNames".run()
   }
 }
