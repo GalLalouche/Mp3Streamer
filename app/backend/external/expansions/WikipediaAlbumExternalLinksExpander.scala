@@ -51,7 +51,8 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker, l
       // Compiler won't pick up type definitions, so explicitly naming Traverse is necessary
       .flatMap(Traverse[Traversable].traverse(_)(allMusicHelper.canonize))
       .flatMap(_.filterTraverse(link => allMusicHelper isValidLink link.link))
-      // TODO log error here
+      .listenError(
+        lp.logger.error("WikipediaAlbumExternalLinksExpander failed to extract links", _))
       .orElse(Nil)
 }
 
