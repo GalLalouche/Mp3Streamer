@@ -9,6 +9,7 @@ import common.io.{FileRef, IOFile}
 private sealed trait ImageSource {
   def width: Int
   def height: Int
+  def isSquare = width == height
 }
 
 private case class UrlSource(url: Url, override val width: Int, override val height: Int) extends ImageSource

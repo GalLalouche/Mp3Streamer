@@ -14,6 +14,7 @@ import scala.sys.process.Process
 object DownloadCover {
   private implicit val c: Configuration = StandaloneConfig
   import c._
+
   private case class CoverException(str: String, e: Exception) extends Exception(e)
 
   private lazy val tempFolder: Directory = TempDirectory.apply()
@@ -24,9 +25,15 @@ object DownloadCover {
    * @param albumDir Should contain the songs. The songs' metadata will be used to search for the correct picture.
    * @return A future command that moves the downloaded file to the input directory and deletes all temporary files.
    */
-  def apply(albumDir: Directory): Future[Directory => Unit] =
+  def apply(albumDir: Directory): Future[Directory => Unit] = {
+    val searchUrl = {
+      val album = c.mf.getSongsInDir(IODirectory(albumDir)).head.album
+      val query = URLEncoder.encode(s"${album.artistName} ${album.title}", "UTF-8")
+      // tbm=isch => image search; tbs=iar:s => search for square images
+      s"https://www.google.com/search?tbm=isch&q=$query&tbs=iar:s"
+    }
     for {
-      urls <- new ImageFinder find Url(new SearchUrlProvider(albumDir).searchUrl)
+      urls <- new ImageFinder find Url(searchUrl)
       locals <- LocalImageFetcher(IODirectory(albumDir))
       selection <- selectImage(locals ++ urls)
     } yield selection match {
@@ -35,18 +42,10 @@ object DownloadCover {
         // String interpolation is acting funky for some reason (will fail at runtime)
         Process(
           """C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe "%s""""
-              .format(new SearchUrlProvider(albumDir).searchUrl)).!!
+              .format(searchUrl)).!!
         throw new RuntimeException("User opened browser")
       case Cancelled => throw new RuntimeException("User opted out")
     }
-
-  private class SearchUrlProvider(albumDir: Directory) {
-    private val album = c.mf.getSongsInDir(IODirectory(albumDir)).head.album
-    private val query = URLEncoder.encode(s"${album.artistName} ${album.title}", "UTF-8")
-    // tbm=isch => image search
-    private val prefix = s"https://www.google.com/search?tbm=isch&q=$query"
-    // tbs=iar:s => search for square images
-    val searchUrl: String = prefix + "&tbs=iar:s"
   }
 
   private def fileMover(f: FolderImage)(outputDirectory: Directory): Unit = {
@@ -66,7 +65,7 @@ object DownloadCover {
 
   private def selectImage(imageURLs: Seq[ImageSource]): Future[ImageChoice] = ImageSelectionPanel(
     ImagesSupplier.withCache(
-      imageURLs.iterator.filter(i => i.width == i.height && i.width >= 500),
+      imageURLs.iterator.filter(i => i.isSquare && i.width >= 500),
       new ImageDownloader(IODirectory apply tempFolder),
       cacheSize = 12))
 

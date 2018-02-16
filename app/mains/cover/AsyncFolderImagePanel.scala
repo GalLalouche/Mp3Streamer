@@ -10,8 +10,8 @@ import scala.concurrent.ExecutionContext
 import scala.swing._
 
 private[this] object AsyncFolderImagePanel {
-  val height = 500
-  val width = 500
+  val Height = 500
+  val Width = 500
   case class TextLabelProps(verticalAlignment: Int, horizontalAlignment: Int, color: Color) {
     def label(text: String): JLabel = {
       val $ = new JLabel(text)
@@ -19,11 +19,11 @@ private[this] object AsyncFolderImagePanel {
       $.setVerticalAlignment(verticalAlignment)
       $.setHorizontalAlignment(horizontalAlignment)
       $.setForeground(color)
-      $.setPreferredSize(new Dimension(width, height))
+      $.setPreferredSize(new Dimension(Width, Height))
       $
     }
   }
-  val textProps = Seq(
+  val TextProps = Seq(
     // multiple colors and locations to ensure visibility
     TextLabelProps(SwingConstants.TOP, SwingConstants.LEFT, Color.BLACK),
     TextLabelProps(SwingConstants.TOP, SwingConstants.RIGHT, Color.GREEN),
@@ -40,12 +40,12 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
   import AsyncFolderImagePanel._
 
   private def createImagePanel(folderImage: FolderImage): Component = {
-    val imageIcon = folderImage.toIcon(width, height)
+    val imageIcon = folderImage.toIcon(Width, Height)
     val text = s"${folderImage.width}x${folderImage.height} ${fileSize(folderImage.file.size)}" +
         " LOCAL".onlyIf(folderImage.isLocal)
     val imageLabel = new JLabel(imageIcon)
     imageLabel.setLayout(new SpringLayout())
-    textProps.map(_ label text) foreach imageLabel.add
+    TextProps.map(_ label text) foreach imageLabel.add
     Component.wrap(imageLabel).onMouseClick(() => AsyncFolderImagePanel.this.publish(Selected(folderImage)))
   }
 
