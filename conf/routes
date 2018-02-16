@@ -25,7 +25,6 @@ GET        /stream/download/*path        controllers.Streamer.download(path)
 GET        /stream/play/*path            controllers.Streamer.playSong(path)
 
 # Posters
-GET        /posters/display/*path        controllers.Posters.displayImage(path)
 GET        /posters/*path                controllers.Posters.image(path)
 
 # Lyrics
