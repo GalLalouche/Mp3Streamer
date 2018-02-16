@@ -2,6 +2,7 @@ package backend.external.expansions
 
 import backend.Url
 import backend.external.{BaseLink, Host}
+import backend.logging.LoggerProvider
 import backend.recon.ReconScorers.AlbumReconScorer
 import backend.recon.{Album, Artist}
 import com.google.common.annotations.VisibleForTesting
@@ -16,11 +17,11 @@ import scala.collection.JavaConverters._
 import scala.concurrent.Future
 import scalaz.std.FutureInstances
 
-private class AllMusicAlbumFinder(allMusicHelper: AllMusicHelper)(implicit it: InternetTalker)
+private class AllMusicAlbumFinder(allMusicHelper: AllMusicHelper)(implicit it: InternetTalker, lp: LoggerProvider)
     extends SameHostExpander(Host.AllMusic)
         with FutureInstances with ToMoreMonadOps with ToMoreMonadPlusOps with MoreSeqInstances {
   @VisibleForTesting
-  private[expansions] def this()(implicit it: InternetTalker) = this(new AllMusicHelper)
+  private[expansions] def this()(implicit it: InternetTalker, lp: LoggerProvider) = this(new AllMusicHelper)
   override protected def findAlbum(d: Document, album: Album): Option[Url] = {
     def score(other: Album): Double = AlbumReconScorer.apply(album, other)
     d.select(".discography table tbody tr").asScala.toSeq

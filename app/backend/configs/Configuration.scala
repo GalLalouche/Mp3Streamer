@@ -2,14 +2,14 @@ package backend.configs
 
 import java.time.Clock
 
-import backend.logging.Logger
+import backend.logging.{Logger, LoggerProvider}
 import common.io.{DirectoryRef, InternetTalker}
 import models.MusicFinder
 import slick.jdbc.JdbcProfile
 
 import scala.concurrent.ExecutionContext
 
-trait Configuration extends InternetTalker {
+trait Configuration extends InternetTalker with LoggerProvider {
   implicit val ec: ExecutionContext
   override def execute(runnable: Runnable): Unit = ec execute runnable
   override def reportFailure(cause: Throwable): Unit = ec reportFailure cause

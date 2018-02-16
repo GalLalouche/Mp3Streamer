@@ -2,6 +2,7 @@ package backend.external.expansions
 
 import backend.external._
 import backend.external.recons.Reconciler
+import backend.logging.LoggerProvider
 import backend.recon.{Album, Artist}
 import common.io.InternetTalker
 import common.rich.collections.RichTraversableOnce._
@@ -30,7 +31,7 @@ private[external] class CompositeSameHostExpander private(expanders: HostMap[Sam
 }
 
 private[external] object CompositeSameHostExpander {
-  def default(implicit it: InternetTalker) =
+  def default(implicit it: InternetTalker, lp:LoggerProvider) =
     new CompositeSameHostExpander(new WikipediaAlbumFinder(), new AllMusicAlbumFinder())
   // MetalArchives is not-production ready until I get unbanned :|
 }

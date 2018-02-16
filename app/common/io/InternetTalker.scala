@@ -33,6 +33,4 @@ trait InternetTalker extends ExecutionContext {
     $ consumeTry client.close().const
   }
   protected def createWsClient(): WSClient
-  // TODO come up with a better hierarchy :\
-  def logger: Logger
 }

@@ -3,6 +3,7 @@ package backend.external.expansions
 import backend.Url
 import backend.configs.{CleanConfiguration, Configuration}
 import backend.external._
+import backend.logging.LoggerProvider
 import backend.recon.Album
 import common.io.InternetTalker
 import common.rich.RichFuture._
@@ -15,7 +16,7 @@ import scala.collection.JavaConverters._
 import scalaz.Traverse
 import scalaz.std.{FutureInstances, OptionInstances}
 
-private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker)
+private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker, lp: LoggerProvider)
     extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic))
         with MoreTraversableInstances with ToTraverseMonadPlusOps with ToMoreMonadErrorOps
         with ToMoreFoldableOps with FutureInstances with OptionInstances with MoreTraverseInstances {
