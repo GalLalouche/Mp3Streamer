@@ -1,17 +1,14 @@
 package mains.cover
 
 import java.net.URLEncoder
-import java.nio.file.Files
 
 import backend.Url
 import backend.configs.{Configuration, StandaloneConfig}
 import common.io.{IODirectory, IOFile}
 import common.rich.path.RichFile.richFile
-import common.rich.path.{Directory, RichFileUtils}
-import common.rich.primitives.RichBoolean._
+import common.rich.path.{Directory, RichFileUtils, TempDirectory}
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 import scala.sys.process.Process
 
 object DownloadCover {
@@ -19,12 +16,7 @@ object DownloadCover {
   import c._
   private case class CoverException(str: String, e: Exception) extends Exception(e)
 
-  private lazy val tempFolder: Directory = {
-    // TODO add createTempDir() to Directory
-    val dir = Files.createTempDirectory("images").toFile
-    dir.deleteOnExit()
-    Directory(dir)
-  }
+  private lazy val tempFolder: Directory = TempDirectory.apply()
 
   /**
    * Downloads a new image for the album.
@@ -70,8 +62,6 @@ object DownloadCover {
       RichFileUtils.rename(oldFile, "folder.bak.jpg")
 
     f.move(outputDirectory)
-    tempFolder.deleteAll()
-    assert(tempFolder.exists.isFalse)
   }
 
   private def selectImage(imageURLs: Seq[ImageSource]): Future[ImageChoice] = ImageSelectionPanel(
@@ -81,12 +71,10 @@ object DownloadCover {
       cacheSize = 12))
 
   def main(args: Array[String]) {
-    // TODO move to a debugging class
-    val path =
-      if (args.nonEmpty) args.mkString(" ")
-      else """D:\Media\Music\Metal\Progressive Metal\Leprous\2017 Malina"""
-    val folder = Directory(path)
-    println("Downloading cover image for " + path)
-    Await.result(apply(folder), Duration.Inf)(folder)
+    implicit val c: Configuration = StandaloneConfig
+    import common.rich.RichFuture._
+    val folder = Directory(args mkString " ")
+    println("Downloading cover image for " + folder.path)
+    apply(folder).get.apply(folder)
   }
 }

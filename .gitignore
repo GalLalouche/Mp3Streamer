@@ -1,5 +1,6 @@
 logs
 projectFilesBackup*/*
+**/*GitIgnore.*
 project/project
 project/target
 target
