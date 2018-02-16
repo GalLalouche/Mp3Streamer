@@ -4,15 +4,19 @@ import java.io.File
 import java.time.Duration
 
 import common.rich.RichT.richT
+import common.rich.func.ToMoreMonadPlusOps
 import common.rich.path.RichFile._
 import models.IOMusicFinder
 
+import scalaz.std.VectorInstances
+
 // finds songs that are in the music directory but are not saved in the playlist file
-object FindSongsNotInPlaylist {
+object FindSongsNotInPlaylist
+    extends ToMoreMonadPlusOps with VectorInstances {
   private val musicFiles = new IOMusicFinder {
     override val extensions = Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
   }
-  private val utfBytemarkPrefix = 65279
+  private val UtfBytemarkPrefix = 65279
   def main(args: Array[String]): Unit = {
     val file = musicFiles.dir.addFile("playlist.m3u8").file
     if (Duration.ofMillis(System.currentTimeMillis() - file.lastModified()).toHours > 1)
@@ -20,7 +24,7 @@ object FindSongsNotInPlaylist {
     val playlistSongs = file // UTF-8 helps deal with Hebrew songs
         .lines
         // removes UTF-BOM at least until I fix it in ScalaCommon
-        .mapIf(_.head.head.toInt == utfBytemarkPrefix).to(e => e.tail :+ e.head.drop(1))
+        .mapIf(_.head.head.toInt == UtfBytemarkPrefix).to(e => e.tail :+ e.head.drop(1))
         .map(musicFiles.dir.path + "/" + _)
         .map(_.toLowerCase.replaceAll("\\\\", "/"))
         .toSet
@@ -29,10 +33,10 @@ object FindSongsNotInPlaylist {
         .map(_.path.toLowerCase.replaceAll("\\\\", "/"))
         .toSet
     println(s"actual songs |${realSongs.size}|")
-    val playlistMissing = realSongs.diff(playlistSongs).toList.sorted
+    val playlistMissing = realSongs.diff(playlistSongs).toVector.sorted
     playlistMissing // opens the windows with the files
-        .map(new File(_).parent.getAbsolutePath).toSet[String]
-        .map(new File(_))
+        .map(new File(_).parent.dir)
+        .uniqueBy(_.getAbsolutePath)
         .take(10)
         .foreach(IOUtils.focus)
     val serverMissing = playlistSongs.diff(realSongs).toList.sorted
