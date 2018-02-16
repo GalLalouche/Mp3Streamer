@@ -1,6 +1,7 @@
 package backend.external.extensions
 
 import backend.external._
+import backend.logging.LoggerProvider
 import backend.recon.{Album, Artist, Reconcilable}
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.ToMoreFoldableOps
@@ -32,8 +33,8 @@ private[external] class CompositeExtender private(
 }
 
 private[external] object CompositeExtender {
-  lazy val default =
+  def default(implicit lp: LoggerProvider) =
     new CompositeExtender(
-      Seq(MusicBrainzArtistExtender, AllMusicArtistExtender, LastFmArtistExtender),
-      Seq(MusicBrainzAlbumExtender, AllMusicAlbumExtender))
+      Seq(MusicBrainzArtistExtender, new AllMusicArtistExtender, new LastFmArtistExtender),
+      Seq(MusicBrainzAlbumExtender, new AllMusicAlbumExtender))
 }
