@@ -17,13 +17,14 @@ import scalaz.syntax.{ToBindOps, ToTraverseOps}
  *
  * @param reconciler            Matches the entity to an API's ID
  * @param linksRetriever        Fetches the external links attached to the entity's ID
+ * @param standaloneReconcilers Any additional, standalone reconciliations that can be performed
  * @param expanders             Attempts to expand the links found by scraping the initial set
- * @param additionalReconcilers Any additional, standalone reconciliations that can be performed
  */
-private class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
+private class ExternalPipe[R <: Reconcilable](
+    reconciler: Retriever[R, ReconID],
     linksRetriever: Retriever[ReconID, BaseLinks[R]],
-    expanders: Traversable[ExternalLinkExpander[R]],
-    additionalReconcilers: Traversable[Reconciler[R]])
+    standaloneReconcilers: Traversable[Reconciler[R]],
+    expanders: Traversable[ExternalLinkExpander[R]])
     (implicit ec: ExecutionContext) extends Retriever[R, MarkedLinks[R]]
     with ToTraverseOps with ToBindOps
     with FutureInstances with MoreTraverseInstances with MoreTraversableInstances {
@@ -44,7 +45,7 @@ private class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
   private def extractHosts(ls: BaseLinks[R]) = ls.map(_.host).toSet
 
   private def applyNewHostReconcilers(entity: R, existingHosts: Set[Host]): Future[BaseLinks[R]] =
-    additionalReconcilers.filterNot(existingHosts apply _.host).traverse(_ (entity)).map(_.flatten)
+    standaloneReconcilers.filterNot(existingHosts apply _.host).traverse(_ (entity)).map(_.flatten)
 
   private def filterLinksWithNewHosts(existingLinks: BaseLinks[R], newLinks: BaseLinks[R]): BaseLinks[R] = {
     val map = existingLinks.map(_.host).toSet
@@ -58,7 +59,7 @@ private class ExternalPipe[R <: Reconcilable](reconciler: Retriever[R, ReconID],
         expanders.filterNot(_.potentialHostsExtracted.toSet <= existingHosts).mapBy(_.sourceHost)
       for {
         newLinkSet <- result.toTraversable.mproduct(nextExpandersByHost get _.host)
-            .traverseM { case (link, expander) => expander(link) }
+            .traverseM {case (link, expander) => expander(link)}
             .map(_.toSet)
         noNewLinks = newLinkSet <= result
         result <- if (noNewLinks) Future successful result else aux(newLinkSet ++ result)

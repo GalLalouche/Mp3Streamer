@@ -22,9 +22,9 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
   private val expandedLink: BaseLink[Album] = BaseLink(Url("new"), Host("newhost", Url("newhosturl")))
   private val reconciledLink: BaseLink[Album] = BaseLink(Url("new2"), Host("newhost2", Url("newhosturl2")))
   private val markedReconciledLink = MarkedLink[Album](Url("new2"), Host("newhost2", Url("newhosturl2")), isNew = true)
-  private val expectedNewLinks: List[MarkedLink[Album]] =
-    List(MarkedLink(Url("new"), Host("newhost", Url("newhosturl")), isNew = true),
-      markedReconciledLink)
+  private val expectedNewLinks: List[MarkedLink[Album]] = List(
+    MarkedLink(Url("new"), Host("newhost", Url("newhosturl")), isNew = true),
+    markedReconciledLink)
   private def constExpander(links: BaseLink[Album]*) = new ExternalLinkExpander[Album] {
     override def sourceHost: Host = existingHost
     override def potentialHostsExtracted: Traversable[Host] = links.map(_.host)
@@ -39,8 +39,8 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
   "should mark new links" in {
     val $ = new ExternalPipe[Album](ReconID("foobar") |> constFuture,
       List(existingLink) |> constFuture,
-      List(newLinkExpander),
-      List(newLinkReconciler))
+      List(newLinkReconciler),
+      List(newLinkExpander))
     $(null).get shouldReturn (Set(existingMarkedLink) ++ expectedNewLinks)
   }
   "Doesn't invoke hosts if there's no need" - {
@@ -56,31 +56,30 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     "Should not invoke on existing hosts" in {
       val $ = new ExternalPipe[Album](ReconID("foobar") |> constFuture,
         List(existingLink) |> constFuture,
-        List(failedExpander(existingHost), newLinkExpander),
-        List(failedReconciler(existingHost), newLinkReconciler))
+        List(failedReconciler(existingHost), newLinkReconciler),
+        List(failedExpander(existingHost), newLinkExpander))
       $(null).get shouldSetEqual Set(existingMarkedLink) ++ expectedNewLinks
     }
     "Should not invoke expanders if reconcilers already returned the host" in {
       val $ = new ExternalPipe[Album](ReconID("foobar") |> constFuture,
         List(existingLink) |> constFuture,
-        List(failedExpander(reconciledLink.host)),
-        List(newLinkReconciler))
+        List(newLinkReconciler),
+        List(failedExpander(reconciledLink.host)))
       $(null).get shouldSetEqual Set(existingMarkedLink, markedReconciledLink)
     }
   }
   "Should ignored new, extra links" in {
     val $ = new ExternalPipe[Album](ReconID("foobar") |> constFuture,
       List(existingLink) |> constFuture,
-      List(constExpander(expandedLink, rehashedLinks)),
-      List(newLinkReconciler))
+      List(newLinkReconciler),
+      List(constExpander(expandedLink, rehashedLinks)))
     $(null).get shouldSetEqual Set(existingMarkedLink) ++ expectedNewLinks
-
   }
   "Should not fail when there are multiple entries with the same host in existing" in {
     val $ = new ExternalPipe[Album](ReconID("foobar") |> constFuture,
       List[BaseLink[Album]](existingLink, existingLink.copy(link = Url("existing2"))) |> constFuture,
-      List(newLinkExpander),
-      List(newLinkReconciler))
+      List(newLinkReconciler),
+      List(newLinkExpander))
     $(null).get should have size 4
   }
   "Should apply its finders recursively, but once at most" in {
@@ -104,8 +103,8 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     val expander2 = oneTimeExpander(allMusicLink, rateYouMusicLink)
     val $ = new ExternalPipe[Album](ReconID("foobar") |> constFuture,
       List(existingLink) |> constFuture,
-      List(expander1, expander2),
-      List(wikiReconciler, newLinkReconciler))
+      List(wikiReconciler, newLinkReconciler),
+      List(expander1, expander2))
     val expectedNewLinks: List[MarkedLink[Album]] =
       List(wikiLink, allMusicLink, rateYouMusicLink, reconciledLink).map(MarkedLink.markNew)
     $(null).get shouldSetEqual (Set(existingMarkedLink) ++ expectedNewLinks)

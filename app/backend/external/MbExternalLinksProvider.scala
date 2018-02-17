@@ -32,15 +32,15 @@ private class MbExternalLinksProvider(implicit c: Configuration)
       reconciler: Retriever[R, (Option[ReconID], Boolean)],
       storage: ExternalStorage[R],
       provider: Retriever[ReconID, BaseLinks[R]],
-      expander: Traversable[ExternalLinkExpander[R]],
-      additionalReconciler: Traversable[Reconciler[R]]
+      expanders: Traversable[ExternalLinkExpander[R]],
+      standaloneReconcilers: Traversable[Reconciler[R]]
   ): Retriever[R, TimestampedLinks[R]] = new RefreshableStorage[R, MarkedLinks[R]](
     new FreshnessStorage(storage),
     new ExternalPipe[R](
       r => reconciler(r)
           .filterWithMessage(_._1.isDefined, s"Couldn't reconcile <$r>")
           .map(_._1.get),
-      provider, expander, additionalReconciler),
+      provider, standaloneReconcilers, expanders),
     Duration ofDays 28)
       .mapTo(new TimeStamper(_))
 
