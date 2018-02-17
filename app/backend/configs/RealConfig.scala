@@ -5,11 +5,11 @@ import java.time.Clock
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import common.io.{DirectoryRef, IODirectory}
-import models.IOMusicFinder
+import models.{IOMusicFinder, IOMusicFinderProvider}
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 import slick.jdbc.{JdbcProfile, SQLiteProfile}
 
-trait RealConfig extends Configuration {
+trait RealConfig extends Configuration with IOMusicFinderProvider {
   override lazy implicit val profile: JdbcProfile = SQLiteProfile
   override implicit lazy val db: profile.backend.DatabaseDef =
     profile.api.Database.forURL("jdbc:sqlite:d:/media/music/MBRecon.sqlite", driver = "org.sqlite.JDBC")

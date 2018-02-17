@@ -12,7 +12,6 @@ import models.ModelJsonable.AlbumJsonifier
 import scala.concurrent.Future
 
 object Recent extends WebSocketController with Jsonable.ToJsonableOps {
-  import ControllerUtils.config._
   // TODO move to a backend class
   private def recentAlbums(amount: Int): Future[Seq[Album]] = Future {
     ControllerUtils.config.mf.genreDirs // mf is inlined because otherwise it doesn't pick up the implicit :(

@@ -10,7 +10,7 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 import common.rich.primitives.RichBoolean._
-import models.{IOMusicFinder, Song}
+import models.{IOMusicFinderProvider, Song}
 import rx.lang.scala.Observable
 
 import scala.collection.JavaConverters._
@@ -20,12 +20,12 @@ import scalaz.Kleisli
 import scalaz.std.FutureInstances
 
 private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReconStorage: AlbumReconStorage)(
-    implicit c: Configuration, mf: IOMusicFinder)
+    implicit c: Configuration, mfp: IOMusicFinderProvider)
     extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
         with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances {
   private val log = c.logger.verbose _
   private val meta = new MbArtistReconciler
-  private def getExistingAlbums: Seq[Album] = mf.genreDirs
+  private def getExistingAlbums: Seq[Album] = mfp.mf.genreDirs
       .flatMap(_.deepDirs)
       .flatMap(NewAlbumsRetriever.dirToAlbum(_))
   private def removeIgnoredAlbums(artist: Artist, albums: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
@@ -73,17 +73,17 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
 }
 
 object NewAlbumsRetriever {
-  private def dirToAlbum(dir: IODirectory)(implicit mf: IOMusicFinder): Option[Album] = dir.files
-      .find(_.extension |> mf.extensions)
+  private def dirToAlbum(dir: IODirectory)(implicit mfp: IOMusicFinderProvider): Option[Album] = dir.files
+      .find(_.extension |> mfp.mf.extensions)
       .map(_.file)
       .map(Song(_).release)
 
   def main(args: Array[String]): Unit = {
     implicit val c: RealConfig = StandaloneConfig
-    import c._
+
     val artist: Artist = Artist("At the Gates")
-    def cacheForArtist(a: Artist)(implicit mf: IOMusicFinder): ArtistLastYearCache = {
-      val artistDir = mf.genreDirs
+    def cacheForArtist(a: Artist)(implicit mfp: IOMusicFinderProvider): ArtistLastYearCache = {
+      val artistDir = mfp.mf.genreDirs
           .flatMap(_.deepDirs)
           .find(_.name.toLowerCase == a.name.toLowerCase)
           .get
@@ -96,7 +96,7 @@ object NewAlbumsRetriever {
     def findNewAlbums(a: Artist): Future[Seq[NewAlbum]] =
       new NewAlbumsRetriever(
         new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()),
-        new AlbumReconStorage())(c, c.mf)
+        new AlbumReconStorage())(c, c)
           .findNewAlbums(cacheForArtist(a), artist)
           .map(_.map(_._1))
     findNewAlbums(artist).get.log()

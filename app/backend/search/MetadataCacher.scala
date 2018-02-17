@@ -24,7 +24,6 @@ private class MetadataCacher(saver: FormatSaver)(implicit val c: Configuration,
     extends OptionInstances with ListInstances with AnyValInstances
         with ToTraverseOps with FutureInstances with ToBindOps {
   import MetadataCacher._
-  import c._
 
   private sealed trait UpdateType {
     def apply(): Observable[IndexUpdate]

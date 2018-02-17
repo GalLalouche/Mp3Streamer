@@ -61,8 +61,6 @@ object FolderFixer
   }
 
   def main(args: Array[String]) {
-    import c._
-
     def extractArtistFromFile(folder: Directory): String = folder
         .files
         .filter(Set("mp3", "flac") contains _.extension)

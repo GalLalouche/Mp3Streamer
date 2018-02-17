@@ -13,7 +13,6 @@ import scala.sys.process.Process
 
 object DownloadCover {
   private implicit val c: Configuration = StandaloneConfig
-  import c._
 
   private case class CoverException(str: String, e: Exception) extends Exception(e)
 

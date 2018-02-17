@@ -8,7 +8,7 @@ import common.rich.RichFuture._
 import common.rich.RichObservable._
 import common.rich.func.ToMoreFunctorOps
 import mains.fixer.StringFixer
-import models.IOMusicFinder
+import models.{IOMusicFinder, IOMusicFinderProvider}
 import monocle.function.IndexFunctions
 import monocle.std.MapOptics
 import monocle.syntax.ApplySyntax
@@ -59,9 +59,16 @@ private class NewAlbums(implicit c: Configuration)
     load.map(_ &|-? index(a.artist) modify (_.filterNot(_.title == a.title))).map(save)
   }
   def ignoreAlbum(a: Album): Future[Unit] = ignore(a, albumReconStorage) >> removeAlbum(a)
-  private val retriever =
-    new NewAlbumsRetriever(new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()), albumReconStorage)(
-      c, new IOMusicFinder {override val subDirNames: List[String] = List("Rock", "Metal")})
+  private val retriever = {
+    // SAM doesn't work for zero argument method without parens,
+    // and I'll be damned if I'm adding empty parens for this shit
+    val mfp = new IOMusicFinderProvider {
+      override val mf = new IOMusicFinder {
+        override val subDirNames: List[String] = List("Rock", "Metal")
+      }
+    }
+    new NewAlbumsRetriever(new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()), albumReconStorage)(c, mfp)
+  }
 
   private def store(a: NewAlbum, r: ReconID): Unit = albumReconStorage.store(a.toAlbum, Some(r) -> false)
   def fetchAndSave: Future[Traversable[NewAlbum]] =
