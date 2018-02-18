@@ -10,8 +10,8 @@ import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 
 trait StandaloneConfig extends RealConfig {
-  override implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
-  override implicit val logger: FilteringLogger = new ConsoleLogger with FilteringLogger
+  override protected val ec: ExecutionContext = ExecutionContext.Implicits.global
+  override val logger: FilteringLogger = new ConsoleLogger with FilteringLogger
   private lazy val materializer =
     ActorMaterializer()(ActorSystem.create("Standalone-Config-WS-System",
       ConfigFactory.parseMap(Map("akka.daemonic" -> true).asJava)))

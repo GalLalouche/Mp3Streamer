@@ -14,7 +14,7 @@ import scalaz.syntax.ToTraverseOps
 /** Also creates all needed tables */
 object CleanConfiguration extends RealConfig with NonPersistentConfig
     with FutureInstances with ListInstances with ToTraverseOps {
-  override implicit val ec: ExecutionContext = ExecutionContext.global
+  override protected val ec: ExecutionContext = ExecutionContext.global
   private def createTables() {
     implicit val c: Configuration = this
     List(

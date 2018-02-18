@@ -12,13 +12,13 @@ import scala.concurrent.ExecutionContext
 
 trait Configuration extends InternetTalker with LoggerProvider with DbProvider with MusicFinderProvider
     with RootDirectoryProvider with ClockProvider {
-  implicit val ec: ExecutionContext
+  protected def ec: ExecutionContext
   override def execute(runnable: Runnable): Unit = ec execute runnable
   override def reportFailure(cause: Throwable): Unit = ec reportFailure cause
-  override implicit val profile: JdbcProfile
-  override implicit val db: profile.backend.Database
-  override implicit val mf: MusicFinder
-  override implicit val rootDirectory: DirectoryRef
-  override implicit val logger: Logger
-  override implicit val clock: Clock
+  override val profile: JdbcProfile
+  override val db: profile.backend.Database
+  override val mf: MusicFinder
+  override val rootDirectory: DirectoryRef
+  override val logger: Logger
+  override val clock: Clock
 }

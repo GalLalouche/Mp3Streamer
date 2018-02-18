@@ -21,13 +21,13 @@ case class TestConfiguration(
     private val _requestToResponseMapper: PartialFunction[WSRequest, FakeWSResponse] = PartialFunction.empty,
     private val _root: MemoryRoot = new MemoryRoot)
     extends NonPersistentConfig {
-  override implicit lazy val db: profile.backend.DatabaseDef = profile.api.Database.forURL(
+  override protected val ec: ExecutionContext = _ec
+  override lazy val db: profile.backend.DatabaseDef = profile.api.Database.forURL(
     s"jdbc:h2:mem:test${System.identityHashCode(this)};DB_CLOSE_DELAY=-1")
-  override implicit val ec: ExecutionContext = _ec
-  override implicit val mf: FakeMusicFinder = _mf.opt.getOrElse(new FakeMusicFinder(_root))
-  override implicit val logger: Logger = new StringBuilderLogger(new StringBuilder)
-  override implicit lazy val rootDirectory: MemoryRoot = _root
-  override implicit val clock: FakeClock = new FakeClock
+  override val mf: FakeMusicFinder = _mf.opt.getOrElse(new FakeMusicFinder(_root))
+  override val logger: Logger = new StringBuilderLogger(new StringBuilder)
+  override lazy val rootDirectory: MemoryRoot = _root
+  override val clock: FakeClock = new FakeClock
 
   private def getRequest(u: Url): WSRequest = {
     val partialRequest: Url => WSRequest =
