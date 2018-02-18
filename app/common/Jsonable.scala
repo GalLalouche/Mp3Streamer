@@ -25,13 +25,13 @@ trait Jsonable[T] extends Format[T] {
 object Jsonable {
   trait ToJsonableOps {
     implicit class parseString($: String) {
-      def parseJsonable[T: Format]: T = parseJsValue(Json.parse($)).parse[T]
+      def parseJsonable[T: Reads]: T = parseJsValue(Json.parse($)).parse[T]
     }
-    implicit class jsonifySingle[T]($: T)(implicit ev: Format[T]) {
+    implicit class jsonifySingle[T]($: T)(implicit ev: Writes[T]) {
       def jsonify: JsValue = ev writes $
     }
     implicit class parseJsValue($: JsValue) {
-      def parse[T](implicit ev: Format[T]): T = ev.reads($).get
+      def parse[T](implicit ev: Reads[T]): T = ev.reads($).get
     }
   }
 
