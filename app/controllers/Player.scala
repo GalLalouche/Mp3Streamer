@@ -12,7 +12,6 @@ import songs.{SongGroup, SongGroups, SongSelector}
 
 /** Handles fetch requests of JSON information, and listens to directory changes. */
 object Player extends LegacyController with Debug {
-  import c._
   private val songGroups: Map[Song, SongGroup] = {
     SongGroups.fromGroups(new SongGroups().load)
   }

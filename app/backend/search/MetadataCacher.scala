@@ -132,7 +132,6 @@ private object MetadataCacher {
              songJsonable: Format[Song],
              albumJsonable: Format[Album],
              artistJsonable: Format[Artist]): MetadataCacher = {
-    import c._
     new MetadataCacher(new FormatSaver)
   }
 }

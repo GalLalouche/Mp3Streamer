@@ -13,7 +13,6 @@ import play.api.mvc.Action
 
 object SearchController extends LegacyController with Extra
     with Jsonable.ToJsonableOps {
-  import c._
   private var index: CompositeIndex = CompositeIndex.create
 
   override def apply() {

@@ -27,7 +27,6 @@ class SongGroupsTest extends FreeSpec with AuxSpecs {
   }
   "save and load" in {
     implicit val c: Configuration = TestConfiguration()
-    import c._
     val $ = new SongGroups()
     $.save(groups)
     $.load shouldReturn Set(group1, group2)

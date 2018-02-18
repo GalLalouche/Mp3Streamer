@@ -23,7 +23,6 @@ private class NewAlbums(implicit c: Configuration)
   import NewAlbum.NewAlbumJsonable
 
   private val logger = c.logger
-  import c._
 
   private val artistReconStorage = new ArtistReconStorage()
   private val albumReconStorage = new AlbumReconStorage()

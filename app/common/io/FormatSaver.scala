@@ -12,9 +12,9 @@ import play.api.libs.json.{Format, JsObject, JsValue, Json}
 import scalaz.std.OptionInstances
 
 /** Saves in json format to a file. */
-class FormatSaver(implicit rootDir: DirectoryRef) extends Jsonable.ToJsonableOps
+class FormatSaver(implicit rootDirectoryProvider: RootDirectoryProvider) extends Jsonable.ToJsonableOps
     with ToMoreFoldableOps with OptionInstances {
-  private val workingDir = rootDir addSubDir "data" addSubDir "json"
+  private val workingDir = rootDirectoryProvider.rootDirectory addSubDir "data" addSubDir "json"
   protected def jsonFileName[T: Manifest]: String =
     s"${manifest.runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
   private def save[T: Manifest](js: JsValue) {

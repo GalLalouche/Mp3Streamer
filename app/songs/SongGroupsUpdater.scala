@@ -17,7 +17,6 @@ private object SongGroupsUpdater {
   // Appends new groups and saves them
   def main(args: Array[String]): Unit = {
     implicit val c: Configuration = StandaloneConfig
-    import c._
     import models.ModelJsonable._
     val sg = new SongGroups
     def append(g: SongGroup): Unit = (g :: sg.load.toList).toSet |> sg.save

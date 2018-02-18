@@ -10,8 +10,10 @@ import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, JsValue, Json}
 
 class FormatSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
-  private implicit val root: DirectoryRef = new MemoryRoot
-  private val $ = new FormatSaver
+  private val root: DirectoryRef = new MemoryRoot
+  private implicit val rootProvider: RootDirectoryProvider =
+    new RootDirectoryProvider {override def rootDirectory: DirectoryRef = root}
+  private val $ = new FormatSaver()
   case class Person(age: Int, name: String)
   implicit object PersonJsonable extends Jsonable[Person] {
     override def jsonify(p: Person): JsObject = Json obj("age" -> p.age, "name" -> p.name)

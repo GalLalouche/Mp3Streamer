@@ -6,14 +6,14 @@ import common.rich.RichT._
 import controllers.{ControllerUtils, LegacyController}
 import models.Song
 import play.api.libs.json.{JsArray, JsObject, Json}
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.Action
 import playlist.PlaylistQueue._
 import playlist.PlaylistState.PlaylistStateJsonable
 
 import scala.concurrent.duration.DurationInt
 
 object PlaylistController extends LegacyController {
-  private val saver = new FormatSaver()(ControllerUtils.config.rootDirectory) // since implicit importing is auto-removed
+  private val saver = new FormatSaver()
 
   private def arrayOfPathsToSong(a: JsArray): Seq[Song] = a.value.map(_.as[String]).map(ControllerUtils.parseSong)
 
