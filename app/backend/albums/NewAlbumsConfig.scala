@@ -2,7 +2,7 @@ package backend.albums
 
 import java.util.concurrent.Semaphore
 
-import backend.configs.{CurrentThreadExecutionContext, StandaloneConfig}
+import backend.configs.StandaloneConfig
 import backend.logging.LoggingLevel
 import common.io.WSAliases.WSClient
 import common.rich.RichFuture
