@@ -27,7 +27,6 @@ private class MbExternalLinksProvider(implicit c: Configuration)
     override def apply(r: R): Future[TimestampedLinks[R]] =
       foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
-  import c._
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](
       reconciler: Retriever[R, (Option[ReconID], Boolean)],
       storage: ExternalStorage[R],

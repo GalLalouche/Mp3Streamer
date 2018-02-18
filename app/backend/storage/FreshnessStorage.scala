@@ -1,8 +1,9 @@
 package backend.storage
 
-import java.time.{Clock, LocalDateTime}
+import java.time.LocalDateTime
 
 import backend.RichTime._
+import backend.configs.ClockProvider
 import common.rich.RichT._
 import common.storage.Storage
 
@@ -13,9 +14,10 @@ import scala.concurrent.{ExecutionContext, Future}
   * that the value does not need to be updated.
   */
 class FreshnessStorage[Key, Value](storage: Storage[Key, (Value, Option[LocalDateTime])])
-    (implicit ec: ExecutionContext, clock: Clock)
+    (implicit ec: ExecutionContext, clockProvider: ClockProvider)
     extends Storage[Key, Value] {
-  private def now(v: Value): (Value, Option[LocalDateTime]) = v -> Some(clock.instant.toLocalDateTime)
+  private def now(v: Value): (Value, Option[LocalDateTime]) =
+    v -> Some(clockProvider.clock.instant.toLocalDateTime)
   private def toValue(v: Future[Option[(Value, Any)]]): Future[Option[Value]] = v.map(_.map(_._1))
   // 1st option: the time data may not be there; 2nd option: it might be there but null
   def freshness(k: Key): Future[Option[Option[LocalDateTime]]] = storage load k map (_ map (_._2))

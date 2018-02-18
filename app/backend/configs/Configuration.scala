@@ -11,7 +11,7 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.ExecutionContext
 
 trait Configuration extends InternetTalker with LoggerProvider with DbProvider with MusicFinderProvider
-    with RootDirectoryProvider {
+    with RootDirectoryProvider with ClockProvider {
   implicit val ec: ExecutionContext
   override def execute(runnable: Runnable): Unit = ec execute runnable
   override def reportFailure(cause: Throwable): Unit = ec reportFailure cause
@@ -20,5 +20,5 @@ trait Configuration extends InternetTalker with LoggerProvider with DbProvider w
   override implicit val mf: MusicFinder
   override implicit val rootDirectory: DirectoryRef
   override implicit val logger: Logger
-  implicit val clock: Clock
+  override implicit val clock: Clock
 }
