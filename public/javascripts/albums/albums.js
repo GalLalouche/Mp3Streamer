@@ -15,31 +15,29 @@ $(function() {
     })
   }
 
-  function addArtist(obj) {
-    const albums = elem("ol")
-    elem("li", obj.artistName + " ")
+  function addArtist(artistName, albums) {
+    const albumsElem = elem("ol")
+    elem("li", artistName + " ")
         .append(button("Ignore", "ignore-artist"))
         .append(button("Remove", "remove-artist"))
         .append(createHideButton())
-        .append(albums)
-        .data("artistName", obj.artistName)
+        .append(albumsElem)
+        .data("artistName", artistName)
         .appendTo(artists)
 
-    function processAlbum(album) {
-      elem("li", `[${album.type}] ${album.title} (${album.year}) `)
-          .data({"artistName": obj.artistName, "year": album.year, "title": album.title})
-          .appendTo(albums)
+    for (const album of albums) {
+      elem("li", `[${album.albumType}] ${album.title} (${album.year}) `)
+          .data({"artistName": artistName, "year": album.year, "title": album.title})
+          .appendTo(albumsElem)
           .append(button("Ignore", "ignore-album"))
           .append(button("Remove", "remove-album"))
           .append(createHideButton())
           .append(button("Google torrent", "google-torrent"))
     }
-
-    obj.albums.forEach(processAlbum)
   }
 
   $.get("albums/", function(e) {
-    e.forEach(addArtist)
+    Object.keys(e).forEach(artistName => addArtist(artistName, e[artistName]))
   })
 
   // buttons

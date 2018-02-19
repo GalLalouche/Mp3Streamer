@@ -10,6 +10,9 @@ import common.rich.RichT._
 
 import scala.concurrent.{ExecutionContext, Future}
 
+// Ensures MusicBrainz aren't flooded since:
+// 1. At most 3 WS clients are alive (semaphores).
+// 2. A request for a client has a 1 second delay.
 private object NewAlbumsConfig extends StandaloneConfig {
   logger.setCurrentLevel(LoggingLevel.Verbose)
   private val semaphore = new Semaphore(3)

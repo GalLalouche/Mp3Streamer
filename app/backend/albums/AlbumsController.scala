@@ -2,10 +2,11 @@ package backend.albums
 
 import backend.recon._
 import common.Debug
+import common.Jsonable.ToJsonableOps
 import common.RichJson._
 import common.rich.RichT._
-import controllers.{ControllerUtils, LegacyController}
-import play.api.libs.json._
+import common.rich.collections.RichMap._
+import controllers.LegacyController
 import play.api.mvc.{Action, AnyContent, Request}
 
 import scala.concurrent.Future
@@ -14,25 +15,16 @@ import scalaz.syntax.ToFunctorOps
 
 /** A web interface to new albums finder. Displays new albums and can update the current file / ignoring policy. */
 object AlbumsController extends LegacyController with Debug
-    with FutureInstances with ToFunctorOps {
-  import ControllerUtils.config
+    with FutureInstances with ToFunctorOps with ToJsonableOps {
   private val $ = new NewAlbums()
 
-  private def toJson(a: NewAlbum): JsObject =
-    Json.obj("title" -> a.title, "year" -> a.year, "type" -> a.albumType)
-  private def toJson(a: Artist, albums: Seq[NewAlbum]): JsObject =
-    Json.obj("artistName" -> a.name, "albums" -> JsArray(albums map toJson))
-  private def toJson(m: Map[Artist, Seq[NewAlbum]]): JsArray =
-    m.map(e => toJson(e._1, e._2)).toSeq |> JsArray.apply
-
   def albums = Action.async {
-    $.load.map(toJson).map(Ok(_))
+    $.load.map(Ok apply _.mapKeys(_.name).jsonify)
   }
 
-  private def updateNewAlbums[A](extractor: Request[AnyContent] => A, action: A => Future[Unit]) =
-    Action.async {request =>
-      action(extractor(request)).>|(NoContent)
-    }
+  private def updateNewAlbums[A](extract: Request[AnyContent] => A, act: A => Future[Unit]) = Action.async {
+    _ |> extract |> act as NoContent
+  }
 
   private def extractArtist(request: Request[AnyContent]): Artist =
     request.body.asText.get |> Artist.apply
