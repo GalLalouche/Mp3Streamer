@@ -5,7 +5,6 @@ import java.io.File
 import common.RichJson._
 import common.io.{IODirectory, IOFile}
 import common.json.{Jsonable, ToJsonableOps}
-import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsValue, Json}
 
 object ModelJsonable extends ToJsonableOps {
@@ -38,7 +37,7 @@ object ModelJsonable extends ToJsonableOps {
         "title" -> a.title,
         "artistName" -> a.artistName,
         "year" -> a.year,
-        "songs" -> a.songs)
+        "songs" -> a.songs.jsonify)
     override def parse(json: JsValue): Album = {
       new Album(new IODirectory(json str "dir"),
         title = json str "title",

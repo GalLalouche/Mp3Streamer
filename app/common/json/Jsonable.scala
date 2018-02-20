@@ -8,17 +8,9 @@ import scala.annotation.implicitNotFound
 
 /** Saner names for play's JSON trait, and less optionality. */
 @implicitNotFound("Could not prove that ${T} is Jsonable.")
-trait Jsonable[T] extends Format[T] with JsonWriteable[T] with JsonReadable[T] {
-  override def jsonify(t: T): JsValue
-  override def parse(json: JsValue): T
-
-  override def reads(json: JsValue) =
-    try
-      JsSuccess(parse(json))
-    catch {
-      case e: Exception => JsError(e.getMessage)
-    }
-  override def writes(o: T) = jsonify(o)
+trait Jsonable[T] {
+  def jsonify(t: T): JsValue
+  def parse(json: JsValue): T
 }
 
 object Jsonable {
@@ -37,7 +29,7 @@ object Jsonable {
     private val firstKey = "1"
     private val secondKey = "2"
     override def jsonify(t: (A, B)): JsValue =
-      Json.obj(firstKey -> t._1, secondKey -> t._2.jsonify)
+      Json.obj(firstKey -> t._1.jsonify, secondKey -> t._2.jsonify)
     override def parse(json: JsValue): (A, B) =
       json.value(firstKey).parse[A] -> json.value(secondKey).parse[B]
   }

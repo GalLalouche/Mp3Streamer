@@ -19,7 +19,7 @@ object AlbumsController extends LegacyController with Debug
   private val $ = new NewAlbums()
 
   def albums = Action.async {
-    $.load.map(Ok apply _.mapKeys(_.name).jsonify)
+    $.load.map(Ok apply _.mapKeys(_.name).mapValues(_.jsonify).jsonify)
   }
 
   private def updateNewAlbums[A](extract: Request[AnyContent] => A, act: A => Future[Unit]) = Action.async {

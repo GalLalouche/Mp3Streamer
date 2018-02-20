@@ -8,5 +8,6 @@ trait JsonReadable[A] {
 
 object JsonReadable {
   implicit def readsJsonReadable[A](implicit ev: Reads[A]): JsonReadable[A] = ev.reads(_).get
+  implicit def jsonableReadable[A](implicit ev: Jsonable[A]): JsonReadable[A] = ev.parse
 }
 
