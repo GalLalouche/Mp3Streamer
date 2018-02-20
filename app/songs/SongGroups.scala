@@ -1,7 +1,7 @@
 package songs
 
 import common.io.{FileRef, RootDirectoryProvider}
-import common.json.Jsonable
+import common.json.ToJsonableOps
 import common.rich.RichT._
 import common.rich.func.MoreSeqInstances
 import models.Song
@@ -10,7 +10,7 @@ import play.api.libs.json.Format
 import scala.concurrent.ExecutionContext
 import scalaz.syntax.ToFunctorOps
 
-class SongGroups(implicit songJsonable: Format[Song]) extends Jsonable.ToJsonableOps {
+class SongGroups(implicit songJsonable: Format[Song]) extends ToJsonableOps {
   private def getJsonFile(implicit rootDirectoryProvider: RootDirectoryProvider, ec: ExecutionContext): FileRef =
     rootDirectoryProvider.rootDirectory addFile "song_groups.json"
   private def writeToJsonFile(s: String)(

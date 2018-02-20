@@ -3,15 +3,15 @@ package controllers
 import java.time.ZoneOffset
 
 import common.io.DirectoryRef
-import common.json.Jsonable
+import common.json.ToJsonableOps
 import controllers.websockets.WebSocketController
 import models.Album
-import play.api.mvc.Action
 import models.ModelJsonable.AlbumJsonifier
+import play.api.mvc.Action
 
 import scala.concurrent.Future
 
-object Recent extends WebSocketController with Jsonable.ToJsonableOps {
+object Recent extends WebSocketController with ToJsonableOps {
   // TODO move to a backend class
   private def recentAlbums(amount: Int): Future[Seq[Album]] = Future {
     ControllerUtils.config.mf.genreDirs // mf is inlined because otherwise it doesn't pick up the implicit :(

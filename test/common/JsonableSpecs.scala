@@ -1,7 +1,6 @@
 package common
 
-import common.json.Jsonable
-import common.json.Jsonable.ToJsonableOps
+import common.json.{Jsonable, ToJsonableOps}
 import org.scalacheck.Arbitrary
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{PropSpec, Suite}

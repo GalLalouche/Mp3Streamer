@@ -3,7 +3,7 @@ package backend.albums
 import backend.recon._
 import common.Debug
 import common.RichJson._
-import common.json.Jsonable.ToJsonableOps
+import common.json.ToJsonableOps
 import common.rich.RichT._
 import common.rich.collections.RichMap._
 import controllers.LegacyController

@@ -2,7 +2,7 @@ package playlist
 
 import java.util.concurrent.TimeUnit
 
-import common.json.Jsonable
+import common.json.ToJsonableOps
 import models.Song
 import play.api.libs.json.{Format, JsValue}
 
@@ -13,7 +13,7 @@ private case class PlaylistState(songs: Seq[Song], currentIndex: Int, currentDur
   require(currentDuration != null)
 }
 
-private object PlaylistState extends Jsonable.ToJsonableOps {
+private object PlaylistState extends ToJsonableOps {
   import common.RichJson._
   import common.json.Jsonable
   import play.api.libs.json.{JsObject, Json}

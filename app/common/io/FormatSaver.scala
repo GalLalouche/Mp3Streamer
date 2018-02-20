@@ -3,7 +3,7 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
 
-import common.json.Jsonable
+import common.json.ToJsonableOps
 import common.rich.RichT._
 import common.rich.func.ToMoreFoldableOps
 import common.rich.primitives.RichOption._
@@ -12,7 +12,7 @@ import play.api.libs.json.{Format, JsObject, JsValue, Json}
 import scalaz.std.OptionInstances
 
 /** Saves in json format to a file. */
-class FormatSaver(implicit rootDirectoryProvider: RootDirectoryProvider) extends Jsonable.ToJsonableOps
+class FormatSaver(implicit rootDirectoryProvider: RootDirectoryProvider) extends ToJsonableOps
     with ToMoreFoldableOps with OptionInstances {
   private val workingDir = rootDirectoryProvider.rootDirectory addSubDir "data" addSubDir "json"
   protected def jsonFileName[T: Manifest]: String =

@@ -21,23 +21,7 @@ trait Jsonable[T] extends Format[T] {
   override def writes(o: T) = jsonify(o)
 }
 
-// For consistency with simulacrum
 object Jsonable {
-  trait ToJsonableOps {
-    implicit class parseString($: String) {
-      def parseJsonable[T: Reads]: T = parseJsValue(Json.parse($)).parse[T]
-    }
-    implicit class jsonifySingle[T]($: T)(implicit ev: Writes[T]) {
-      def jsonify: JsValue = ev writes $
-    }
-    implicit class parseJsValue($: JsValue) {
-      def parse[T](implicit ev: Reads[T]): T = ev.reads($).get
-    }
-    implicit class parseArray($: JsArray) {
-      def parse[T](implicit ev: Reads[T]): Seq[T] = $.value.map(ev.reads(_).get)
-    }
-  }
-
   implicit def seqJsonable[A: Format]: Jsonable[Seq[A]] = new Jsonable[Seq[A]] with ToJsonableOps {
     override def jsonify(as: Seq[A]): JsValue = JsArray(as.map(_.jsonify))
     override def parse(json: JsValue): Seq[A] = json.as[JsArray].value.map(_.parse[A])

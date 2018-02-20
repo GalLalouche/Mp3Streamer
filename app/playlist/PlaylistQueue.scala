@@ -1,14 +1,14 @@
 package playlist
 
-import common.json.Jsonable
+import common.json.ToJsonableOps
+import common.rich.RichT._
 import models.Song
 import play.api.libs.json.{Format, JsValue}
 
 private case class PlaylistQueue(songs: Seq[Song])
 
-private object PlaylistQueue extends Jsonable.ToJsonableOps {
+private object PlaylistQueue extends ToJsonableOps {
   import common.json.Jsonable
-  import common.rich.RichT._
 
   implicit def PlaylistJsonable(implicit songJsonable: Format[Song]): Jsonable[PlaylistQueue] =
     new Jsonable[PlaylistQueue] {

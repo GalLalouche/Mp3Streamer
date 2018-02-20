@@ -3,7 +3,7 @@ package backend.search
 import java.net.URLDecoder
 
 import common.concurrency.Extra
-import common.json.Jsonable
+import common.json.ToJsonableOps
 import controllers.LegacyController
 import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
 import models.{Album, ModelJsonable}
@@ -12,7 +12,7 @@ import play.api.libs.json.{Json, Writes}
 import play.api.mvc.Action
 
 object SearchController extends LegacyController with Extra
-    with Jsonable.ToJsonableOps {
+    with ToJsonableOps {
   private var index: CompositeIndex = CompositeIndex.create
 
   override def apply() {

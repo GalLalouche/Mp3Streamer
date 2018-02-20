@@ -2,8 +2,7 @@ package playlist
 
 import common.RichJson._
 import common.io.FormatSaver
-import common.json.Jsonable
-import common.json.Jsonable.ToJsonableOps
+import common.json.{Jsonable, ToJsonableOps}
 import common.rich.RichT._
 import controllers.{ControllerUtils, LegacyController}
 import models.Song
@@ -24,7 +23,7 @@ object PlaylistController extends LegacyController
   def getQueue = Action {
     Ok(saver.loadObject[PlaylistQueue].songs.map(ControllerUtils.toJson).jsonify)
   }
-  def setQueue() = Action {request =>
+  def setQueue() = Action { request =>
     val playlist = request.body.asJson.get.as[JsArray] |> arrayOfPathsToSong |> PlaylistQueue.apply
     saver save playlist
     Created.withHeaders("Location" -> "playlist/queue")
@@ -49,7 +48,7 @@ object PlaylistController extends LegacyController
   def getState = Action {
     Ok(saver.loadObject[PlaylistState].jsonify)
   }
-  def setState() = Action {request =>
+  def setState() = Action { request =>
     val json = request.body.asJson.get
     saver save json.parse[PlaylistState]
     Created.withHeaders("Location" -> "playlist/state")

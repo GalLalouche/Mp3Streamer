@@ -4,11 +4,11 @@ import java.io.File
 
 import common.RichJson._
 import common.io.{IODirectory, IOFile}
-import common.json.Jsonable
+import common.json.{Jsonable, ToJsonableOps}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsValue, Json}
 
-object ModelJsonable extends Jsonable.ToJsonableOps {
+object ModelJsonable extends ToJsonableOps {
   implicit object SongJsonifier extends Jsonable[Song] {
     override def jsonify(s: Song) = Json obj(
         "file" -> s.file.path,
