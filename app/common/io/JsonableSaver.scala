@@ -3,16 +3,16 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
 
-import common.json.ToJsonableOps
+import common.json.{Jsonable, ToJsonableOps}
 import common.rich.RichT._
 import common.rich.func.ToMoreFoldableOps
 import common.rich.primitives.RichOption._
-import play.api.libs.json.{Format, JsObject, JsValue, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 
 import scalaz.std.OptionInstances
 
 /** Saves in json format to a file. */
-class FormatSaver(implicit rootDirectoryProvider: RootDirectoryProvider) extends ToJsonableOps
+class JsonableSaver(implicit rootDirectoryProvider: RootDirectoryProvider) extends ToJsonableOps
     with ToMoreFoldableOps with OptionInstances {
   private val workingDir = rootDirectoryProvider.rootDirectory addSubDir "data" addSubDir "json"
   protected def jsonFileName[T: Manifest]: String =
@@ -26,11 +26,11 @@ class FormatSaver(implicit rootDirectoryProvider: RootDirectoryProvider) extends
    * previous save. Saves in the same order that was traversed, so load will return in the same order as well.
    */
   // TODO replace TraversableOnce with a Non-Empty list?
-  def save[T: Format : Manifest](data: TraversableOnce[T]) {
+  def save[T: Jsonable : Manifest](data: TraversableOnce[T]) {
     require(data.nonEmpty, s"Can't save empty data of type <$manifest>")
     save(data.toSeq.jsonify)
   }
-  def save[T: Format : Manifest](obj: T): Unit = save(obj.jsonify)
+  def save[T: Jsonable : Manifest](obj: T): Unit = save(obj.jsonify)
 
   /**
    * Similar to save, but doesn't overwrite the data
@@ -38,20 +38,20 @@ class FormatSaver(implicit rootDirectoryProvider: RootDirectoryProvider) extends
    *                     on the data save, e.g., uniqueness, a simple concatenation of old and new data isn't enough.
    */
   //TODO this could perhaps be handled by a type class that would know its saving constraints?
-  def update[T: Format : Manifest](dataAppender: Seq[T] => TraversableOnce[T]) {
+  def update[T: Jsonable : Manifest](dataAppender: Seq[T] => TraversableOnce[T]) {
     save(dataAppender(loadArray))
   }
 
   private def load[T: Manifest]: Option[JsValue] =
     workingDir getFile jsonFileName map (_.readAll |> Json.parse)
   /** Loads the previously saved entries, or returns an empty list. */
-  def loadArray[T: Format : Manifest]: Seq[T] = load.mapHeadOrElse(_.parse[Seq[T]], Nil)
+  def loadArray[T: Jsonable : Manifest]: Seq[T] = load.mapHeadOrElse(_.parse[Seq[T]], Nil)
   /** Loads the previously saved entry, or throws an exception if no file has been found */
-  def loadObject[T: Format : Manifest]: T = {
+  def loadObject[T: Jsonable : Manifest]: T = {
     val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <$manifest>")
     js.asInstanceOf[JsObject].parse
   }
 
-  // Require T: Format, otherwise T will always be inferred as Nothing
-  def lastUpdateTime[T: Format : Manifest]: Option[LocalDateTime] = workingDir getFile jsonFileName map (_.lastModified)
+  // Require T: Jsonable, otherwise T will always be inferred as Nothing
+  def lastUpdateTime[T: Jsonable : Manifest]: Option[LocalDateTime] = workingDir getFile jsonFileName map (_.lastModified)
 }

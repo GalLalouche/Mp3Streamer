@@ -3,18 +3,20 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.{LocalDateTime, ZoneOffset}
 
-import common.RichJson._
-import common.rich.RichT._
 import common.AuxSpecs
+import common.RichJson._
 import common.json.Jsonable
+import common.rich.RichT._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, JsValue, Json}
 
-class FormatSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
+class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val root: DirectoryRef = new MemoryRoot
   private implicit val rootProvider: RootDirectoryProvider =
-    new RootDirectoryProvider {override def rootDirectory: DirectoryRef = root}
-  private val $ = new FormatSaver()
+    new RootDirectoryProvider {
+      override def rootDirectory: DirectoryRef = root
+    }
+  private val $ = new JsonableSaver()
   case class Person(age: Int, name: String)
   implicit object PersonJsonable extends Jsonable[Person] {
     override def jsonify(p: Person): JsObject = Json obj("age" -> p.age, "name" -> p.name)
@@ -81,7 +83,7 @@ class FormatSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
     }
   }
   "override file name" in {
-    val $ = new FormatSaver {
+    val $ = new JsonableSaver {
       override protected def jsonFileName[T: Manifest] = "foobars.json"
     }
     $ save p1

@@ -6,8 +6,8 @@ import backend.configs.Configuration
 import common.concurrency.SimpleTypedActor
 import common.ds.{Collectable, IndexedSet}
 import common.io._
+import common.json.Jsonable
 import models._
-import play.api.libs.json.Format
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
 
@@ -17,10 +17,10 @@ import scalaz.Semigroup
 import scalaz.std.{AnyValInstances, FutureInstances, ListInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
-private class MetadataCacher(saver: FormatSaver)(implicit val c: Configuration,
-                                           songJsonable: Format[Song],
-                                           albumJsonable: Format[Album],
-                                           artistJsonable: Format[Artist])
+private class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration,
+    songJsonable: Jsonable[Song],
+    albumJsonable: Jsonable[Album],
+    artistJsonable: Jsonable[Artist])
     extends OptionInstances with ListInstances with AnyValInstances
         with ToTraverseOps with FutureInstances with ToBindOps {
   import MetadataCacher._
@@ -31,7 +31,7 @@ private class MetadataCacher(saver: FormatSaver)(implicit val c: Configuration,
   private object UpdateAll extends UpdateType {
     override def apply(): Observable[IndexUpdate] =
       updateIndex(c.mf.albumDirs, new AllInfoHandler {
-        override def apply[T: Manifest : Format](xs: Seq[T]): Unit = saver save xs
+        override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver save xs
         override def apply(artists: IndexedSet[Artist]): Unit = apply(artists.toSeq)
       })
   }
@@ -43,7 +43,7 @@ private class MetadataCacher(saver: FormatSaver)(implicit val c: Configuration,
             .flatMap(_.minimumBy(_.toEpochSecond(ZoneOffset.UTC)))
       lastUpdateTime.fold(indexAll()) { lastUpdateTime =>
         updateIndex(c.mf.albumDirs.filter(_.lastModified isAfter lastUpdateTime), new AllInfoHandler {
-          override def apply[T: Manifest : Format](xs: Seq[T]): Unit = saver.update[T](_ ++ xs)
+          override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver.update[T](_ ++ xs)
           override def apply(artists: IndexedSet[Artist]): Unit = saver.update[Artist](artists ++ _)
         })
       }
@@ -83,7 +83,7 @@ private class MetadataCacher(saver: FormatSaver)(implicit val c: Configuration,
     Observable[IndexUpdate](obs => {
       val totalSize = dirs.length
       Future {
-        gatherInfo(dirs.zipWithIndex.map {case (dir, index) =>
+        gatherInfo(dirs.zipWithIndex.map { case (dir, index) =>
           getDirectoryInfo(dir, onParsingCompleted = () =>
             c.execute(() => obs onNext IndexUpdate(index + 1, totalSize, dir)))
         })
@@ -104,10 +104,10 @@ private class MetadataCacher(saver: FormatSaver)(implicit val c: Configuration,
 }
 
 /**
-  * Caches all music metadata on disk. Since extracting the metadata requires processing hundreds of gigabytes, but
-  * the actual metadata is only in megabytes. Also allows for incremental updates, in the case of new data added during
-  * production.
-  */
+ * Caches all music metadata on disk. Since extracting the metadata requires processing hundreds of gigabytes, but
+ * the actual metadata is only in megabytes. Also allows for incremental updates, in the case of new data added during
+ * production.
+ */
 private object MetadataCacher {
   private implicit object ArtistSemigroup extends Semigroup[Artist] {
     override def append(f1: Artist, f2: => Artist): Artist = f1 merge f2
@@ -124,14 +124,14 @@ private object MetadataCacher {
   case class IndexUpdate(currentIndex: Int, totalNumber: Int, dir: DirectoryRef)
   // Polymorphic functions? Hmmm...
   private trait AllInfoHandler {
-    def apply[T: Manifest : Format](xs: Seq[T]): Unit
+    def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit
     def apply(artists: IndexedSet[Artist]): Unit
   }
 
   def create(implicit c: Configuration,
-             songJsonable: Format[Song],
-             albumJsonable: Format[Album],
-             artistJsonable: Format[Artist]): MetadataCacher = {
-    new MetadataCacher(new FormatSaver)
+      songJsonable: Jsonable[Song],
+      albumJsonable: Jsonable[Album],
+      artistJsonable: Jsonable[Artist]): MetadataCacher = {
+    new MetadataCacher(new JsonableSaver)
   }
 }

@@ -3,7 +3,7 @@ package backend.albums
 import backend.configs.Configuration
 import backend.mb.MbArtistReconciler
 import backend.recon._
-import common.io.FormatSaver
+import common.io.JsonableSaver
 import common.rich.RichFuture._
 import common.rich.RichObservable._
 import common.rich.func.ToMoreFunctorOps
@@ -27,7 +27,7 @@ private class NewAlbums(implicit c: Configuration)
   private val artistReconStorage = new ArtistReconStorage()
   private val albumReconStorage = new AlbumReconStorage()
 
-  private val jsonableSaver = new FormatSaver()
+  private val jsonableSaver = new JsonableSaver()
 
   private def save(m: Map[Artist, Seq[NewAlbum]]): Unit = {
     jsonableSaver save m.flatMap(_._2)

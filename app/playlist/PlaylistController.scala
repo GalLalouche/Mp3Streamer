@@ -1,7 +1,7 @@
 package playlist
 
 import common.RichJson._
-import common.io.FormatSaver
+import common.io.JsonableSaver
 import common.json.{Jsonable, ToJsonableOps}
 import common.rich.RichT._
 import controllers.{ControllerUtils, LegacyController}
@@ -14,7 +14,7 @@ import scala.concurrent.duration.DurationInt
 
 object PlaylistController extends LegacyController
     with ToJsonableOps {
-  private val saver = new FormatSaver()
+  private val saver = new JsonableSaver()
 
   private def arrayOfPathsToSong(a: JsArray): Seq[Song] = a.value.map(_.as[String]).map(ControllerUtils.parseSong)
 
