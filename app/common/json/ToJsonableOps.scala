@@ -6,8 +6,8 @@ trait ToJsonableOps {
   implicit class parseString($: String) {
     def parseJsonable[T: Reads]: T = parseJsValue(Json.parse($)).parse[T]
   }
-  implicit class jsonifySingle[T]($: T)(implicit ev: Writes[T]) {
-    def jsonify: JsValue = ev writes $
+  implicit class jsonifySingle[T]($: T)(implicit ev: JsonWriteable[T]) {
+    def jsonify: JsValue = ev jsonify $
   }
   implicit class parseJsValue($: JsValue) {
     def parse[T](implicit ev: Reads[T]): T = ev.reads($).get
