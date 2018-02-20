@@ -4,11 +4,20 @@ import common.json.Jsonable
 import monocle.Iso
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
+import play.api.libs.json.{JsNumber, JsString, JsValue}
 
 class JsonableTest extends JsonableSpecs {
+  private implicit object IntJsonable extends Jsonable[Int] {
+    override def jsonify(t: Int): JsValue = JsNumber(t)
+    override def parse(json: JsValue): Int = json.asInstanceOf[JsNumber].value.intValue
+  }
+  private implicit object StringJsonable extends Jsonable[String] {
+    override def jsonify(t: String): JsValue = JsString(t)
+    override def parse(json: JsValue): String = json.asInstanceOf[JsString].value
+  }
   propJsonTest[Seq[Int]]()
   property("Recursive sequence") {
-    forAll {(xs: Seq[Int], ys: Seq[Int]) => jsonTest(Seq(xs, ys))}
+    forAll { (xs: Seq[Int], ys: Seq[Int]) => jsonTest(Seq(xs, ys)) }
   }
   property("None") {
     jsonTest(Option.apply[String](null))
@@ -17,7 +26,9 @@ class JsonableTest extends JsonableSpecs {
   propJsonTest[(String, Int)]()
 
   private case class StringWrapper(s: String)
-  private implicit val jsonableWrapper: Jsonable[StringWrapper] = Jsonable.isoJsonable(Iso[StringWrapper, String](_.s)(StringWrapper))
-  private implicit val arbStringWrapper: Arbitrary[StringWrapper] = Arbitrary(arbitrary[String].map(StringWrapper))
+  private implicit val jsonableWrapper: Jsonable[StringWrapper] =
+    Jsonable.isoJsonable(Iso[StringWrapper, String](_.s)(StringWrapper))
+  private implicit val arbStringWrapper: Arbitrary[StringWrapper] =
+    Arbitrary(arbitrary[String].map(StringWrapper))
   propJsonTest[StringWrapper]()
 }
