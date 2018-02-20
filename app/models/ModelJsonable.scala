@@ -44,7 +44,7 @@ object ModelJsonable extends Jsonable.ToJsonableOps {
         title = json str "title",
         artistName = json str "artistName",
         year = json int "year",
-        songs = json.array("songs").parse[Seq[Song]])
+        songs = json.array("songs").parse[Song])
     }
   }
 

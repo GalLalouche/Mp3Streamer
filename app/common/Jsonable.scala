@@ -33,6 +33,9 @@ object Jsonable {
     implicit class parseJsValue($: JsValue) {
       def parse[T](implicit ev: Reads[T]): T = ev.reads($).get
     }
+    implicit class parseArray($: JsArray) {
+      def parse[T](implicit ev: Reads[T]): Seq[T] = $.value.map(ev.reads(_).get)
+    }
   }
 
   implicit def seqJsonable[A: Format]: Jsonable[Seq[A]] = new Jsonable[Seq[A]] with ToJsonableOps {
