@@ -1,9 +1,9 @@
 package playlist
 
-import common.Jsonable
-import common.Jsonable.ToJsonableOps
 import common.RichJson._
 import common.io.FormatSaver
+import common.json.Jsonable
+import common.json.Jsonable.ToJsonableOps
 import common.rich.RichT._
 import controllers.{ControllerUtils, LegacyController}
 import models.Song

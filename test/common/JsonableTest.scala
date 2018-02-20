@@ -1,5 +1,6 @@
 package common
 
+import common.json.Jsonable
 import monocle.Iso
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary

@@ -2,7 +2,7 @@ package models
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import common.Jsonable
+import common.json.Jsonable
 import common.rich.primitives.RichOption._
 import play.api.libs.json.{JsObject, JsValue, Json}
 

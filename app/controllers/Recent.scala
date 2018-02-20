@@ -2,8 +2,8 @@ package controllers
 
 import java.time.ZoneOffset
 
-import common.Jsonable
 import common.io.DirectoryRef
+import common.json.Jsonable
 import controllers.websockets.WebSocketController
 import models.Album
 import play.api.mvc.Action

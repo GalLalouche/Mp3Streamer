@@ -6,7 +6,8 @@ import backend.configs.{FakeMusicFinder, TestConfiguration}
 import backend.search.MetadataCacher.IndexUpdate
 import common.io.{FormatSaver, MemoryRoot}
 import common.rich.RichFuture._
-import common.{AuxSpecs, Jsonable}
+import common.AuxSpecs
+import common.json.Jsonable
 import models.{Album, Artist, FakeModelFactory, FakeModelJsonable, Song}
 import org.scalatest.matchers.{MatchResult, Matcher}
 import org.scalatest.{FreeSpec, OneInstancePerTest}

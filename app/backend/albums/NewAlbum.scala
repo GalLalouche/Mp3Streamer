@@ -2,8 +2,8 @@ package backend.albums
 
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.{Album, Artist}
-import common.Jsonable
 import common.RichJson._
+import common.json.Jsonable
 import monocle.macros.Lenses
 import play.api.libs.json.{JsValue, Json}
 

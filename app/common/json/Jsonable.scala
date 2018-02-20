@@ -1,4 +1,4 @@
-package common
+package common.json
 
 import common.RichJson._
 import monocle.Iso

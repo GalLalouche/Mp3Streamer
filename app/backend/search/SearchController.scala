@@ -2,8 +2,8 @@ package backend.search
 
 import java.net.URLDecoder
 
-import common.Jsonable
 import common.concurrency.Extra
+import common.json.Jsonable
 import controllers.LegacyController
 import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
 import models.{Album, ModelJsonable}

@@ -1,7 +1,7 @@
 package backend.search
 
 import backend.search.MetadataCacher.IndexUpdate
-import common.Jsonable.ToJsonableOps
+import common.json.Jsonable.ToJsonableOps
 import common.rich.RichT._
 import controllers.websockets.WebSocketController
 import controllers.{ControllerUtils, Player, Recent}

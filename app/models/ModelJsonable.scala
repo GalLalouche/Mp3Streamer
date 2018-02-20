@@ -2,9 +2,9 @@ package models
 
 import java.io.File
 
-import common.Jsonable
 import common.RichJson._
 import common.io.{IODirectory, IOFile}
+import common.json.Jsonable
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsValue, Json}
 

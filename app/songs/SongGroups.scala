@@ -1,7 +1,7 @@
 package songs
 
-import common.Jsonable
 import common.io.{FileRef, RootDirectoryProvider}
+import common.json.Jsonable
 import common.rich.RichT._
 import common.rich.func.MoreSeqInstances
 import models.Song

@@ -3,7 +3,7 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
 
-import common.Jsonable
+import common.json.Jsonable
 import common.rich.RichT._
 import common.rich.func.ToMoreFoldableOps
 import common.rich.primitives.RichOption._

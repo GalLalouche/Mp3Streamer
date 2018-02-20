@@ -5,7 +5,8 @@ import java.time.{LocalDateTime, ZoneOffset}
 
 import common.RichJson._
 import common.rich.RichT._
-import common.{AuxSpecs, Jsonable}
+import common.AuxSpecs
+import common.json.Jsonable
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, JsValue, Json}
 
