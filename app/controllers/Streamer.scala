@@ -4,10 +4,12 @@ import java.io.FileInputStream
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
+import common.json.ToJsonableOps
 import common.rich.func.ToMoreFoldableOps
 import common.rich.path.RichFile._
-import common.rich.primitives.RichOption._
 import common.rich.primitives.RichString._
+import controllers.ControllerUtils.songJsonable
+import models.IOSong
 import play.api.http.HttpEntity
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.iteratee.streams.IterateeStreams
@@ -16,14 +18,14 @@ import play.api.mvc.Action
 import scalaz.std.OptionInstances
 
 object Streamer extends LegacyController
-    with ToMoreFoldableOps with OptionInstances {
+    with ToMoreFoldableOps with OptionInstances with ToJsonableOps {
   import ControllerUtils.config
 
   def download(s: String) = Action { request =>
     // assumed format: [bytes=<start>-]
     val bytesToSkip =
       request.headers.get("Range").mapHeadOrElse(_ dropAfterLast '=' takeWhile (_.isDigit) toLong, 0L)
-    val file = ControllerUtils.parseSong(s).file.file
+    val file = s.parseJsonable[IOSong].file.file
     val fis = new FileInputStream(file)
     fis.skip(bytesToSkip)
     val status = if (bytesToSkip == 0) Ok else PartialContent
