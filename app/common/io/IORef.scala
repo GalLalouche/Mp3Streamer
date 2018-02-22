@@ -49,6 +49,7 @@ case class IOFile(file: File) extends IOPath(file) with FileRef {
   override def lastModified: LocalDateTime = file |> FileUtils.lastModified
   override def size = file.length
   override def exists = file.exists
+  override def delete(): Unit = file.delete()
 }
 
 case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
@@ -64,6 +65,7 @@ case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
   override def files = dir.files.map(IOFile)
   override def lastModified: LocalDateTime = dir.dir |> FileUtils.lastModified
   override def hasParent = file.getParentFile != null
+  override def deleteAll(): Unit = dir.deleteAll()
 }
 object IODirectory {
   def apply(str: String): IODirectory = apply(Directory(str))

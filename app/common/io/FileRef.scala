@@ -41,6 +41,7 @@ trait FileRef extends PathRef {
 
   def lastModified: LocalDateTime
   def exists: Boolean
+  def delete(): Unit
 }
 
 trait DirectoryRef extends PathRef { self =>
@@ -55,4 +56,5 @@ trait DirectoryRef extends PathRef { self =>
   def deepFiles: Seq[S#F] = files ++ dirs.flatMap(_.deepFiles).asInstanceOf[Seq[S#F]]
   def lastModified: LocalDateTime
   def hasParent: Boolean
+  def deleteAll(): Unit
 }
