@@ -5,11 +5,14 @@ import backend.recon.{Artist, ArtistReconStorage, ReconID, ReconcilerCacher}
 import common.io.{IODirectory, IOSystem}
 import common.rich.RichFuture._
 import common.rich.RichT._
+import common.rich.func.ToMoreMonadErrorOps
 import models.{IOMusicFinder, MusicFinder, Song}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scalaz.std.FutureInstances
 
-private object ArtistReconFiller {
+private object ArtistReconFiller
+    extends ToMoreMonadErrorOps with FutureInstances {
   private implicit val config: RealConfig = StandaloneConfig
 
   private val reconciler = new ReconcilerCacher[Artist](new ArtistReconStorage(), new MbArtistReconciler())
@@ -26,7 +29,7 @@ private object ArtistReconFiller {
         .toSet
     for (artist <- artists) {
       val recon1: Future[Option[ReconID]] =
-        reconciler.apply(artist).map(_._1).recover({ case _ => Some("Failed to find an online match for " + artist).map(ReconID) })
+        reconciler.apply(artist).map(_._1) orElse Some(ReconID("Failed to find an online match for " + artist))
       println(recon1.get)
     }
   }

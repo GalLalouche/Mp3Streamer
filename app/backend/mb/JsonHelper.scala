@@ -13,7 +13,7 @@ import scalaz.std.FutureInstances
 
 private object JsonHelper extends ToMoreMonadErrorOps with FutureInstances {
   def retry[T](f: () => Future[T], times: Int, retryWait: Duration)(implicit it: InternetTalker): Future[T] =
-    f().recoverWith {case e =>
+    f().handleError(e => {
       if (times <= 1)
         Future failed new Exception("Failed retry; last failure was: " + e.getMessage)
       else {
@@ -22,7 +22,7 @@ private object JsonHelper extends ToMoreMonadErrorOps with FutureInstances {
         Thread sleep retryWait.toMillis
         retry(f, times - 1, retryWait)
       }
-    }
+    })
 
   def getJson(method: String, other: (String, String)*)(implicit it: InternetTalker): Future[JsObject] =
     it.useWs(_.url("http://musicbrainz.org/ws/2/" + method)

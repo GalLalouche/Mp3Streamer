@@ -59,15 +59,13 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
             .listen(albums => {
               log(s"Finished working on $artist; found ${if (albums.isEmpty) "no" else albums.size} new albums.")
             })
-            .recover {
-              case e: Throwable =>
-                e match {
-                  case e: FilteredException => log(s"$artist was filtered, reason: ${e.getMessage}")
-                  case e: Throwable => e.printStackTrace()
-                }
-                Nil
-            }
-      case Failure(_) => Future.successful(Nil)
+            .listenError {
+              case e: FilteredException => log(s"$artist was filtered, reason: ${e.getMessage}")
+              case e: Throwable => e.printStackTrace()
+            }.orElse(Nil)
+      case Failure(_) =>
+        c.logger.warn(s"Could not reconcile <$artist>")
+        Future successful Nil
     }
   }
 }

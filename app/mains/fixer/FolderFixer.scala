@@ -4,6 +4,7 @@ import backend.Url
 import backend.configs.{RealConfig, StandaloneConfig}
 import common.rich.RichFuture._
 import common.rich.RichT._
+import common.rich.func.ToMoreMonadErrorOps
 import common.rich.path.Directory
 import common.rich.path.RichFile._
 import mains.IOUtils
@@ -15,7 +16,7 @@ import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
 object FolderFixer
-    extends ToFunctorOps with FutureInstances {
+    extends ToFunctorOps with ToMoreMonadErrorOps with FutureInstances {
   private implicit val c: RealConfig = StandaloneConfig
 
   private def findArtistFolder(artist: String): Option[Directory] = {
@@ -56,7 +57,7 @@ object FolderFixer
     println("Updating remote server if exists...")
     c.get(Url("http://localhost:9000/debug/fast_refresh"))
         .>|(println("Updated!"))
-        .recover {case e => println("Failed to update server: " + e.getMessage)}
+        .listenError(e => println("Failed to update server: " + e.getMessage))
         .void
   }
 

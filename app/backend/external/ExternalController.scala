@@ -8,18 +8,21 @@ import backend.recon._
 import common.RichJson._
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
+import common.rich.func.ToMoreMonadErrorOps
 import controllers.{ControllerUtils, LegacyController}
 import models.Song
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc.{Action, Result}
+
+import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
-import scala.concurrent.Future
 
 object ExternalController extends LegacyController
-    with ToBindOps with FutureInstances {
+    with ToBindOps with ToMoreMonadErrorOps with FutureInstances {
   import ControllerUtils.config
+
   private type KVPair = (String, play.api.libs.json.Json.JsValueWrapper)
   private val hosts: Seq[Host] =
     Seq(Host.MusicBrainz, Host.Wikipedia, Host.AllMusic, Host.Facebook, Host.LastFm, Host.RateYourMusic)
@@ -38,9 +41,7 @@ object ExternalController extends LegacyController
   private def toJson(e: TimestampedExtendedLinks[_]): JsObject =
     toJson(e.links).mapTo(_ + ("timestamp" -> JsString(e.timestamp |> toDateString)))
   private def toJsonOrError(f: Future[TimestampedExtendedLinks[_]]): Future[JsObject] =
-    f.map(toJson).recover {
-      case e => Json.obj("error" -> e.getMessage)
-    }
+    f.map(toJson).handleErrorFlat(e => Json.obj("error" -> e.getMessage))
 
   def get(path: String) = Action.async {
     getLinks(ControllerUtils parseSong path)
@@ -59,7 +60,7 @@ object ExternalController extends LegacyController
     val song = ControllerUtils parseSong path
     external.delete(song) >> getLinks(song)
   }
-  def updateRecon(path: String) = Action.async { request =>
+  def updateRecon(path: String) = Action.async {request =>
     val json = request.body.asJson.get
     def getReconId(s: String) = json ostr s map ReconID
     val song: Song = ControllerUtils parseSong path
