@@ -2,6 +2,7 @@ package backend.albums
 
 import java.util.concurrent.Semaphore
 
+import backend.Retriever
 import backend.configs.StandaloneConfig
 import backend.logging.LoggingLevel
 import common.io.WSAliases.WSClient
@@ -17,7 +18,7 @@ private object NewAlbumsConfig extends StandaloneConfig {
   logger.setCurrentLevel(LoggingLevel.Verbose)
   private val semaphore = new Semaphore(3)
   private val semaphoreReleasingService: ExecutionContext = CurrentThreadExecutionContext
-  override def useWs[T](f: WSClient => Future[T]): Future[T] = {
+  override def useWs[T](f: Retriever[WSClient, T]): Future[T] = {
     semaphore.acquire()
     RichFuture.richFuture(super.useWs(f))(semaphoreReleasingService) consumeTry semaphore.release().const
   }

@@ -49,7 +49,7 @@ class JsonableSaver(implicit rootDirectoryProvider: RootDirectoryProvider) exten
   /** Loads the previously saved entry, or throws an exception if no file has been found */
   def loadObject[T: Jsonable : Manifest]: T = {
     val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <$manifest>")
-    js.asInstanceOf[JsObject].parse
+    js.asInstanceOf[JsObject].parse[T]
   }
 
   // Require T: Jsonable, otherwise T will always be inferred as Nothing

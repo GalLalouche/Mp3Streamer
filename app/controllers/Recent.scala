@@ -14,13 +14,14 @@ import scala.concurrent.Future
 object Recent extends WebSocketController with ToJsonableOps {
   // TODO move to a backend class
   private def recentAlbums(amount: Int): Future[Seq[Album]] = Future {
-    ControllerUtils.config.mf.genreDirs // mf is inlined because otherwise it doesn't pick up the implicit :(
+    val mf = ControllerUtils.config.mf
+    mf.genreDirs
         .flatMap(_.deepDirs)
-        .filter(e => ControllerUtils.config.mf.getSongFilesInDir(e).nonEmpty)
+        .filter(mf.getSongFilesInDir(_).nonEmpty)
         .sortBy(_.lastModified)(Ordering.by(-_.toEpochSecond(ZoneOffset.UTC)))
         .take(amount)
         .map(Album.apply)
-        .map(Album.songs.set(Seq())) // recent doesn't care about songs
+        .map(Album.songs set Nil) // recent doesn't care about songs
   }
   def recent(amount: Int) = Action.async {
     recentAlbums(amount).map(_.jsonify).map(Ok(_))

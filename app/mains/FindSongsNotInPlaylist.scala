@@ -25,7 +25,7 @@ object FindSongsNotInPlaylist
         .lines
         // removes UTF-BOM at least until I fix it in ScalaCommon
         .mapIf(_.head.head.toInt == UtfBytemarkPrefix).to(e => e.tail :+ e.head.drop(1))
-        .map(musicFiles.dir.path + "/" + _)
+        .map(musicFiles.dir.path.+("/").+)
         .map(_.toLowerCase.replaceAll("\\\\", "/"))
         .toSet
     println(s"playlist songs |${playlistSongs.size}|")

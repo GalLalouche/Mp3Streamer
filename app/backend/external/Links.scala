@@ -9,14 +9,14 @@ import monocle.macros.Lenses
 case class BaseLink[R <: Reconcilable](link: Url, host: Host)
 object BaseLink {
   def iso[R1 <: Reconcilable, R2 <: Reconcilable]: Iso[BaseLink[R1], BaseLink[R2]] =
-    Iso.apply((e: BaseLink[R1]) => e.copy[R2]())((e: BaseLink[R2]) => e.copy[R1]())
+    Iso[BaseLink[R1], BaseLink[R2]](_.copy())(_.copy())
 }
 private[external] case class MarkedLink[R <: Reconcilable](link: Url, host: Host, isNew: Boolean) {
   def toBase: BaseLink[R] = BaseLink(link, host)
 }
 private object MarkedLink {
-  def markNew[R <: Reconcilable](bl: BaseLink[R]): MarkedLink[R] =
-    MarkedLink(link = bl.link, host = bl.host, isNew = true)
-  def markExisting[R <: Reconcilable](bl: BaseLink[R]): MarkedLink[R] =
-    MarkedLink(link = bl.link, host = bl.host, isNew = false)
+  private def mark[R <: Reconcilable](bl: BaseLink[R], isNew: Boolean) =
+    MarkedLink[R](link = bl.link, host = bl.host, isNew = isNew)
+  def markNew[R <: Reconcilable](bl: BaseLink[R]): MarkedLink[R] = mark(bl, isNew = true)
+  def markExisting[R <: Reconcilable](bl: BaseLink[R]): MarkedLink[R] = mark(bl, isNew = false)
 }

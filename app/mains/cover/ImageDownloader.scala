@@ -2,6 +2,7 @@ package mains.cover
 
 import java.awt.Image
 
+import backend.Retriever
 import common.io.RichWSRequest._
 import common.io.{DirectoryRef, FileRef, InternetTalker}
 import mains.SwingUtils
@@ -20,8 +21,9 @@ private object ImageDownloader extends SwingUtils {
 }
 /** Downloads images and saves them to a directory; local image sources will be noop-ed. */
 private class ImageDownloader(outputDirectory: DirectoryRef)(implicit it: InternetTalker)
-    extends (ImageSource => Future[FolderImage]) {
+    extends Retriever[ImageSource, FolderImage] {
   import ImageDownloader._
+
   private def toFile(bytes: Array[Byte]): FileRef =
     outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
 

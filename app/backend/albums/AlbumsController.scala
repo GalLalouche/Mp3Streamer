@@ -1,5 +1,6 @@
 package backend.albums
 
+import backend.Retriever
 import backend.recon._
 import common.Debug
 import common.RichJson._
@@ -9,7 +10,6 @@ import common.rich.collections.RichMap._
 import controllers.LegacyController
 import play.api.mvc.{Action, AnyContent, Request}
 
-import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
@@ -22,7 +22,7 @@ object AlbumsController extends LegacyController with Debug
     $.load.map(Ok apply _.mapKeys(_.name).mapValues(_.jsonify).jsonify)
   }
 
-  private def updateNewAlbums[A](extract: Request[AnyContent] => A, act: A => Future[Unit]) = Action.async {
+  private def updateNewAlbums[A](extract: Request[AnyContent] => A, act: Retriever[A, Unit]) = Action.async {
     _ |> extract |> act as NoContent
   }
 

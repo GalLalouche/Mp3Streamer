@@ -26,7 +26,7 @@ private object JsonHelper extends ToMoreMonadErrorOps with FutureInstances {
 
   def getJson(method: String, other: (String, String)*)(implicit it: InternetTalker): Future[JsObject] =
     it.useWs(_.url("http://musicbrainz.org/ws/2/" + method)
-        .addQueryStringParameters(("fmt", "json")).addQueryStringParameters(other: _*)
+        .addQueryStringParameters("fmt" -> "json").addQueryStringParameters(other: _*)
         // see https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#How_can_I_be_a_good_citizen_and_be_smart_about_using_the_Web_Service.3FI
         .addHttpHeaders("User-Agent" -> "Mp3Streamer (glpkmtg@gmail.com)").get)
         .filterWithMessageF(_.status == Status.OK, "HTTP response wasn't 200: " + _.body)

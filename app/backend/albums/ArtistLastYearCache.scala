@@ -8,14 +8,16 @@ import backend.recon._
 import common.rich.RichT._
 
 private class ArtistLastYearCache private(lastReleaseYear: Map[Artist, Year]) {
+  import ArtistLastYearCache._
+
   def artists: Iterable[Artist] = lastReleaseYear.keys
 
   def filterNewAlbums(artist: Artist, albums: Seq[MbAlbumMetadata]): Seq[(NewAlbum, ReconID)] = albums
       .filter(_.isOut)
-      .filter(e => isLaterThanLastRelease(artist, e.releaseDate |> Year.from))
-      .map(e => NewAlbum.from(artist, e) -> e.reconId)
+      .filter(_.releaseDate |> Year.from |> (isLaterThanLastRelease(artist, _)))
+      .map(_.toTuple(NewAlbum.from(artist, _), _.reconId))
   private def isLaterThanLastRelease(artist: Artist, y: Year) =
-    lastReleaseYear(ArtistLastYearCache.canonize(artist)) < y
+    lastReleaseYear(canonize(artist)) < y
 }
 
 private object ArtistLastYearCache {
@@ -27,7 +29,7 @@ private object ArtistLastYearCache {
     def from(ld: LocalDate) = Year(ld.getYear)
   }
   def from(albums: Seq[Album]): ArtistLastYearCache = albums
-      .groupBy(a => canonize(a.artist))
+      .groupBy(_.artist |> canonize)
       .mapValues(_.toVector.map(_.year).max |> Year.apply)
       .mapTo(new ArtistLastYearCache(_))
 }
