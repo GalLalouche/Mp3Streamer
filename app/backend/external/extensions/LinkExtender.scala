@@ -2,6 +2,12 @@ package backend.external.extensions
 
 import backend.external.{Host, MarkedLink, MarkedLinks}
 import backend.recon.Reconcilable
+import common.TuplePLenses.tuple2Second
+import common.rich.func.MoreSeqInstances
+import monocle.std.Tuple2Optics
+import monocle.syntax.{ApplySyntax, FieldsSyntax}
+
+import scalaz.syntax.ToFunctorOps
 
 /**
 * Extenders (not to be confused with Ex<b>p</b>anders) provide additional links to a given links,
@@ -9,13 +15,15 @@ import backend.recon.Reconcilable
 * HTML; rather, the extensions are hard-coded, e.g., the discography link will always be in
 * $link/discography. Therefore, these extensions neither need to be saved, nor do they involve Futures.
 */
-private trait LinkExtender[R <: Reconcilable] {
+private trait LinkExtender[R <: Reconcilable]
+    extends ToFunctorOps with MoreSeqInstances
+    with Tuple2Optics with ApplySyntax with FieldsSyntax {
   def host: Host
   // When the name of the extended link is identical to the URL suffix.
   // For example, create a discography link with the URL www.foo.com/some_artist/discography.
   protected def appendSameSuffix(e: MarkedLink[R], suffixes: String*): Seq[LinkExtension[R]] =
-    append(e, suffixes.map(e => e -> e): _*)
+    append(e, suffixes.fpair: _*)
   protected def append(e: MarkedLink[R], suffixes: (String, String)*): Seq[LinkExtension[R]] =
-    suffixes.map(x => x._1 -> (e.link +/ "/" +/ x._2)).map((LinkExtension.apply[R] _).tupled)
+    suffixes.map(tuple2Second modify e.link.+/).map((LinkExtension.apply[R] _).tupled)
   def apply(t: R, e: MarkedLinks[R]): Seq[LinkExtension[R]]
 }
