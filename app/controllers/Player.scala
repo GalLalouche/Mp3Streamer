@@ -23,12 +23,10 @@ object Player extends LegacyController with ToJsonableOps with Debug {
   //TODO hide this, shouldn't be a part of the controller
   update()
 
-  private def toJson(e: Either[Song, SongGroup]): JsValue = e.resolve(_.jsonify, _.songs.jsonify)
-
   private def group(s: Song): Either[Song, SongGroup] = songGroups get s toRight s
 
   def randomSong = Action {
-    Ok(songSelector.randomSong |> group |> toJson)
+    Ok(group(songSelector.randomSong).jsonify)
   }
 
   private def songsInAlbum(path: String): Seq[Song] =
@@ -43,7 +41,7 @@ object Player extends LegacyController with ToJsonableOps with Debug {
   }
 
   def song(path: String) = Action {
-    Ok(ControllerUtils.parseSong(path) |> group |> toJson)
+    Ok(group(ControllerUtils parseSong path).jsonify)
   }
 
   def nextSong(path: String) = Action {

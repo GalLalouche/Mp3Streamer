@@ -23,7 +23,7 @@ class SongGroups(implicit songJsonable: Jsonable[Song]) extends ToJsonableOps {
         .mkString("\n") |> writeToJsonFile
   def load(implicit rootDirectoryProvider: RootDirectoryProvider, ec: ExecutionContext): Set[SongGroup] =
     getJsonFile.lines
-        .map(_.parseJsonable[Seq[Song]] |> SongGroup)
+        .map(_.parseJsonable[Seq[Song]] |> SongGroup.apply)
         .toSet
 }
 
