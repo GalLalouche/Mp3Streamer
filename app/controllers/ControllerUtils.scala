@@ -6,7 +6,7 @@ import java.net.{URLDecoder, URLEncoder}
 import backend.configs.RealConfig
 import backend.logging._
 import com.google.common.annotations.VisibleForTesting
-import common.json.CovariantJsonable
+import common.json.Jsonable
 import common.rich.RichT._
 import common.rich.path.RichFile._
 import models.ModelJsonable._
@@ -37,14 +37,18 @@ object ControllerUtils {
     URLEncoder.encode(path, Encoding).mapIf(path.contains("+").const).to(_.replaceAll("\\+", SpaceEncoding))
   }
 
-  implicit object songJsonable extends CovariantJsonable[Song, IOSong] {
+  implicit object songJsonable extends Jsonable[Song] {
     override def jsonify(s: Song): JsValue = SongJsonifier.jsonify(s) +
         ("file" -> JsString(encode(s))) +
         ("poster" -> JsString("/posters/" + Poster.getCoverArt(s.asInstanceOf[IOSong]).path)) +
         (s.file.extension -> JsString("/stream/download/" + encode(s)))
-    override def parse(a: JsValue): IOSong = Song(parseFile(a.as[JsString].value))
+    override def parse(a: JsValue): Song = parseSong(a.as[String])
   }
 
+  // While one could potentially use JsString(path).parseJsonable[Song] or something to that effect,
+  // the path isn't really a JSON value, and also it tightly couples the code to the specific Jsonable
+  // implementation.
+  def parseSong(path: String): IOSong = Song(parseFile(path))
   def parseFile(path: String): File = {
     // Play converts %2B to '+' (see above), which is in turned decoded as ' '. To fix this bullshit, '+' is manually
     // converted back to "%2B" if there are "%20" tokens, which (presumably) means that '+' isn't used for spaces.

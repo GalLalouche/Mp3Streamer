@@ -3,8 +3,9 @@ package common.json
 import play.api.libs.json._
 
 trait ToJsonableOps {
-  implicit class parseString($: String) {
-    def parseJsonable[T: JsonReadable]: T = parseJsValue(Json.parse($)).parse[T]
+  implicit class jsonifyString($: String) {
+    /** Assumes the string is a valid JSON string. A raw unquoted string is *not* a valid JSON. */
+    def parseJsonable[T: JsonReadable]: T = Json.parse($).parse[T]
   }
   implicit class jsonifySingle[T]($: T)(implicit ev: JsonWriteable[T]) {
     def jsonify: JsValue = ev jsonify $

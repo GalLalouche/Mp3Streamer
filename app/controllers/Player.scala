@@ -43,11 +43,11 @@ object Player extends LegacyController with ToJsonableOps with Debug {
   }
 
   def song(path: String) = Action {
-    Ok(path.parseJsonable[Song] |> group |> toJson)
+    Ok(ControllerUtils.parseSong(path) |> group |> toJson)
   }
 
   def nextSong(path: String) = Action {
-    val song = path.parseJsonable[Song]
+    val song = ControllerUtils parseSong path
     val nextSong: Option[Song] = songSelector followingSong song
     Ok(nextSong.get.jsonify)
   }

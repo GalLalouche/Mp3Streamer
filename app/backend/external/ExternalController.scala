@@ -6,21 +6,19 @@ import backend.external.extensions.{ExtendedLink, LinkExtension, SearchExtension
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon._
 import common.RichJson._
-import common.json.ToJsonableOps
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
 import controllers.{ControllerUtils, LegacyController}
 import models.Song
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc.{Action, Result}
-
-import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
-import ControllerUtils.songJsonable
+
+import scala.concurrent.Future
 
 object ExternalController extends LegacyController
-    with ToBindOps with FutureInstances with ToJsonableOps {
+    with ToBindOps with FutureInstances {
   import ControllerUtils.config
   private type KVPair = (String, play.api.libs.json.Json.JsValueWrapper)
   private val hosts: Seq[Host] =
@@ -45,7 +43,7 @@ object ExternalController extends LegacyController
     }
 
   def get(path: String) = Action.async {
-    getLinks(path.parseJsonable[Song])
+    getLinks(ControllerUtils parseSong path)
   }
 
   def getLinks(song: Song): Future[Result] = {
@@ -58,12 +56,13 @@ object ExternalController extends LegacyController
     f.map(Ok(_))
   }
   def refresh(path: String) = Action.async {
-    external.delete(path.parseJsonable[Song]) >> getLinks(path.parseJsonable[Song])
+    val song = ControllerUtils parseSong path
+    external.delete(song) >> getLinks(song)
   }
   def updateRecon(path: String) = Action.async { request =>
     val json = request.body.asJson.get
     def getReconId(s: String) = json ostr s map ReconID
-    val song: Song = path.parseJsonable[Song]
+    val song: Song = ControllerUtils parseSong path
     external.updateRecon(song, artistReconId = getReconId("artist"), albumReconId = getReconId("album"))
         .>>(getLinks(song))
   }
