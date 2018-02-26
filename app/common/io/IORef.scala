@@ -5,8 +5,12 @@ import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.{Clock, LocalDateTime}
 
+import common.json.Jsonable
 import common.rich.RichT._
 import common.rich.path.{Directory, RichFile}
+import play.api.libs.json.{JsString, JsValue}
+
+import scala.language.postfixOps
 
 private[this] object FileUtils {
   private val currentZone = Clock.systemDefaultZone().getZone
@@ -51,6 +55,12 @@ case class IOFile(file: File) extends IOPath(file) with FileRef {
   override def exists = file.exists
   override def delete(): Unit = file.delete()
 }
+object IOFile {
+  implicit object JsonableIOFile extends Jsonable[IOFile] {
+    override def jsonify(t: IOFile): JsValue = JsString(t.path)
+    override def parse(json: JsValue): IOFile = IOFile(new File(json.as[String]))
+  }
+}
 
 case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
   lazy val dir: Directory = Directory(file)
@@ -60,9 +70,9 @@ case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
   override def getDir(name: String) =
     optionalFile(name).filter(_.isDirectory).map(e => new IODirectory(new Directory(e)))
   override def addSubDir(name: String) = new IODirectory(dir addSubDir name)
-  override def getFile(name: String) = optionalFile(name).map(IOFile)
+  override def getFile(name: String) = optionalFile(name) map IOFile.apply
   override def dirs = dir.dirs.map(new IODirectory(_))
-  override def files = dir.files.map(IOFile)
+  override def files = dir.files map IOFile.apply
   override def lastModified: LocalDateTime = dir.dir |> FileUtils.lastModified
   override def hasParent = file.getParentFile != null
   override def deleteAll(): Unit = dir.deleteAll()
@@ -70,4 +80,8 @@ case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
 object IODirectory {
   def apply(str: String): IODirectory = apply(Directory(str))
   def apply(dir: Directory): IODirectory = new IODirectory(dir)
+  implicit object JsonableIODirectory extends Jsonable[IODirectory] {
+    override def jsonify(t: IODirectory): JsValue = JsString(t.path)
+    override def parse(json: JsValue): IODirectory = IODirectory(json.as[String])
+  }
 }
