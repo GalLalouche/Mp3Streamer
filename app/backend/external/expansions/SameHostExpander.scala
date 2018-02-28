@@ -11,12 +11,15 @@ import scala.concurrent.Future
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums */
 private abstract class SameHostExpander(val host: Host)(implicit it: InternetTalker) {
-  protected def findAlbum(d: Document, a: Album): Option[Url]
+  protected def findAlbum(d: Document, a: Album): Future[Option[Url]]
 
-  protected def fromUrl(u: Url, a: Album): Future[Option[BaseLink[Album]]] =
-    it.downloadDocument(u).map(findAlbum(_, a).map(BaseLink[Album](_, host)))
+  protected def fromUrl(u: Url, a: Album): Future[Option[BaseLink[Album]]] = for {
+    d <- it.downloadDocument(u)
+    a <- findAlbum(d, a)
+  } yield a.map(BaseLink[Album](_, host))
 
-  def apply(e: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] = fromUrl(e.ensuring(_.host == host).link, a)
+  final def apply(e: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] =
+    fromUrl(e.link, a)
   def toReconciler(artistLinks: BaseLink[Artist]): Reconciler[Album] = new Reconciler[Album](host) {
     override def apply(a: Album): Future[Option[BaseLink[Album]]] = SameHostExpander.this.apply(artistLinks, a)
   }

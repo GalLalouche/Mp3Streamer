@@ -10,13 +10,14 @@ import common.rich.RichT._
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
+import scala.concurrent.Future
 
 private class MetalArchivesAlbumsFinder(implicit it: InternetTalker) extends SameHostExpander(Host.MetalArchives) {
-  override protected def findAlbum(d: Document, a: Album): Option[Url] =
-    d.select(".display.discog tr td a").asScala
+  override protected def findAlbum(d: Document, a: Album): Future[Option[Url]] =
+    Future.successful(d.select(".display.discog tr td a").asScala
         .find(_.text.toLowerCase == a.title.toLowerCase)
         .map(_.attr("href"))
-        .map(Url)
+        .map(Url))
 
   override def fromUrl(u: Url, a: Album) = {
     val address = u.address
