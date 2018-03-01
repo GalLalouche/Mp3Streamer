@@ -7,7 +7,7 @@ import common.json.{Jsonable, ToJsonableOps}
 import common.rich.RichT._
 import common.rich.func.ToMoreFoldableOps
 import common.rich.primitives.RichOption._
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 
 import scalaz.std.OptionInstances
 
@@ -49,7 +49,7 @@ class JsonableSaver(implicit rootDirectoryProvider: RootDirectoryProvider) exten
   /** Loads the previously saved entry, or throws an exception if no file has been found */
   def loadObject[T: Jsonable : Manifest]: T = {
     val js = load getOrThrow new FileNotFoundException(s"Couldn't find file for type <$manifest>")
-    js.asInstanceOf[JsObject].parse[T]
+    js.parse[T]
   }
 
   // Require T: Jsonable, otherwise T will always be inferred as Nothing

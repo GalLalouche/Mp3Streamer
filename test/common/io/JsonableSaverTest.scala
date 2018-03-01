@@ -5,12 +5,12 @@ import java.time.{LocalDateTime, ZoneOffset}
 
 import common.AuxSpecs
 import common.RichJson._
-import common.json.Jsonable
+import common.json.{Jsonable, ToJsonableOps}
 import common.rich.RichT._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, JsValue, Json}
 
-class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
+class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs with ToJsonableOps {
   private val root: DirectoryRef = new MemoryRoot
   private implicit val rootProvider: RootDirectoryProvider =
     new RootDirectoryProvider {
@@ -57,6 +57,16 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
       val persons: Seq[Person] = Seq(p1, p2, p3)
       $ save persons
       $.loadArray shouldReturn persons
+    }
+    "Classes that save as arrays can be loaded as objects" in {
+      case class Persons(ps: Seq[Person])
+      implicit val JsonablePersons: Jsonable[Persons] = new Jsonable[Persons] {
+        override def jsonify(t: Persons): JsValue = t.ps.jsonify
+        override def parse(json: JsValue): Persons = Persons(json.parse[Seq[Person]])
+      }
+      val persons = Persons(Seq(p1, p2, p3))
+      $ save persons
+      $.loadObject[Persons] shouldReturn persons
     }
   }
   "update" - {
