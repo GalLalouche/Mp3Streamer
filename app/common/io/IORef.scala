@@ -66,6 +66,6 @@ case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
   override def hasParent = file.getParentFile != null
 }
 object IODirectory {
-  def apply(str: String): IODirectory = this (Directory(str))
+  def apply(str: String): IODirectory = apply(Directory(str))
   def apply(dir: Directory): IODirectory = new IODirectory(dir)
 }
