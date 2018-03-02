@@ -1,6 +1,6 @@
 package models
 
-import common.io.{IODirectory, IOFile, IOSystem}
+import common.io.{FileRef, IODirectory, IOFile, IOSystem}
 
 /** Can be extended to override its values in tests */
 class IOMusicFinder extends MusicFinder {
@@ -8,7 +8,7 @@ class IOMusicFinder extends MusicFinder {
   override val dir = IODirectory("d:/media/music")
   override protected val subDirNames = List("Rock", "New Age", "Classical", "Metal", "Jazz")
   override val extensions = Set("mp3", "flac")
-  override def parseSong(f: IOFile) = Song(f.file)
+  override def parseSong(f: FileRef) = Song(f.asInstanceOf[IOFile].file)
 }
 
 /** The actual locations, as opposed to mocked ones. This is used by scripts as well as the real controllers. */

@@ -1,6 +1,6 @@
 package models
 
-import common.io.{DirectoryRef, RefSystem}
+import common.io.{DirectoryRef, FileRef, RefSystem}
 
 import scala.collection.GenSeq
 
@@ -18,7 +18,7 @@ trait MusicFinder { self =>
   def getSongFiles: Seq[S#F] = albumDirs.par.flatMap(getSongFilesInDir).seq
   def getSongFilesInDir(d: DirectoryRef): Seq[S#F] =
     d.asInstanceOf[S#D].files.filter(f => extensions.contains(f.extension))
-  def parseSong(f: S#F): Song {type F = S#F}
+  def parseSong(f: FileRef): Song {type F = S#F}
   def getSongsInDir(d: DirectoryRef): Seq[Song {type F = S#F}] =
     getSongFilesInDir(d) map parseSong
 }
