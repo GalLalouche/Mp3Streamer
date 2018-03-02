@@ -1,11 +1,11 @@
 package backend.search
 
 import backend.search.MetadataCacher.IndexUpdate
-import common.json.ToJsonableOps
+import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
 import controllers.websockets.WebSocketController
 import controllers.{ControllerUtils, Player, Recent}
-import play.api.libs.json.{Json, Writes}
+import play.api.libs.json.Json
 import play.api.mvc.Action
 import rx.lang.scala.Observable
 
@@ -14,7 +14,7 @@ object CacherController extends WebSocketController with ToJsonableOps {
   import ControllerUtils.config
   import models.ModelJsonable._
 
-  private implicit val writesIndexUpdate: Writes[IndexUpdate] = u => {
+  private implicit val writesIndexUpdate: JsonWriteable[IndexUpdate] = u => {
     Json.obj(
       "finished" -> u.currentIndex,
       "total" -> u.totalNumber,

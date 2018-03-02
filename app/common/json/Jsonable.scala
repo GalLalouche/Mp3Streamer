@@ -14,6 +14,10 @@ trait Jsonable[T] {
 }
 
 object Jsonable {
+  implicit def formatJsonable[A](implicit ev: Format[A]): Jsonable[A] = new Jsonable[A] {
+    override def jsonify(t: A): JsValue = ev writes t
+    override def parse(json: JsValue): A = ev.reads(json).get
+  }
   implicit def covariantJsonableJsonable[A](implicit ev: CovariantJsonable[A, _ <: A]): Jsonable[A] =
     new Jsonable[A] with ToJsonableOps {
       override def jsonify(a: A) = ev.jsonify(a)
