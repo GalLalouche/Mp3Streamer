@@ -20,10 +20,10 @@ private object PlaylistState extends ToJsonableOps {
 
   implicit def PlaylistStateJsonable(implicit songJsonable: Jsonable[Song]): Jsonable[PlaylistState] =
     new Jsonable[PlaylistState] {
-      override def jsonify(t: PlaylistState): JsObject = Json.obj(
-        "songs" -> t.songs.jsonify,
-        "duration" -> t.currentDuration.toSeconds,
-        "currentIndex" -> t.currentIndex)
+      override def jsonify(ps: PlaylistState): JsObject = Json.obj(
+        "songs" -> ps.songs.jsonify,
+        "duration" -> ps.currentDuration.toSeconds,
+        "currentIndex" -> ps.currentIndex)
       override def parse(json: JsValue): PlaylistState = PlaylistState(
         songs = json.value("songs").parse[Seq[Song]],
         currentIndex = json int "currentIndex",

@@ -8,11 +8,11 @@ import play.api.libs.json.{JsNumber, JsString, JsValue}
 
 class JsonableTest extends JsonableSpecs {
   private implicit object IntJsonable extends Jsonable[Int] {
-    override def jsonify(t: Int): JsValue = JsNumber(t)
+    override def jsonify(i: Int): JsValue = JsNumber(i)
     override def parse(json: JsValue): Int = json.asInstanceOf[JsNumber].value.intValue
   }
   private implicit object StringJsonable extends Jsonable[String] {
-    override def jsonify(t: String): JsValue = JsString(t)
+    override def jsonify(s: String): JsValue = JsString(s)
     override def parse(json: JsValue): String = json.asInstanceOf[JsString].value
   }
   propJsonTest[Seq[Int]]()

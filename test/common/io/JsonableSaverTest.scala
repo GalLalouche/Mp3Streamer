@@ -61,7 +61,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs w
     "Classes that save as arrays can be loaded as objects" in {
       case class Persons(ps: Seq[Person])
       implicit val JsonablePersons: Jsonable[Persons] = new Jsonable[Persons] {
-        override def jsonify(t: Persons): JsValue = t.ps.jsonify
+        override def jsonify(ps: Persons): JsValue = ps.ps.jsonify
         override def parse(json: JsValue): Persons = Persons(json.parse[Seq[Person]])
       }
       val persons = Persons(Seq(p1, p2, p3))

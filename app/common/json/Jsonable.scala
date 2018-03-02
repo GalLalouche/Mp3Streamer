@@ -7,15 +7,15 @@ import play.api.libs.json._
 import scala.annotation.implicitNotFound
 
 /** Saner names for play's JSON trait, and less optionality. */
-@implicitNotFound("Could not prove that ${T} is Jsonable.")
-trait Jsonable[T] {
-  def jsonify(t: T): JsValue
-  def parse(json: JsValue): T
+@implicitNotFound("Could not prove that ${A} is Jsonable.")
+trait Jsonable[A] {
+  def jsonify(e: A): JsValue
+  def parse(json: JsValue): A
 }
 
 object Jsonable {
   implicit def formatJsonable[A](implicit ev: Format[A]): Jsonable[A] = new Jsonable[A] {
-    override def jsonify(t: A): JsValue = ev writes t
+    override def jsonify(a: A): JsValue = ev writes a
     override def parse(json: JsValue): A = ev.reads(json).get
   }
   implicit def covariantJsonableJsonable[A](implicit ev: CovariantJsonable[A, _ <: A]): Jsonable[A] =
@@ -44,7 +44,7 @@ object Jsonable {
   }
   def isoJsonable[A, B: Jsonable](aToB: Iso[A, B]): Jsonable[A] = new Jsonable[A] with ToJsonableOps {
     override def parse(json: JsValue): A = aToB.reverseGet(json.parse[B])
-    override def jsonify(t: A): JsValue = aToB.get(t).jsonify
+    override def jsonify(a: A): JsValue = aToB.get(a).jsonify
   }
 }
 

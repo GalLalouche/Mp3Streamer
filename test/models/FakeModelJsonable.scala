@@ -21,8 +21,8 @@ class FakeModelJsonable {
         .getOrThrow("Tried to load a JSON that wasn't returned from an instance of this class")
         .asInstanceOf[T]
   // Requiring T <: AnyRef prevents infinite recursions with primitives
-  implicit def FakeJsonable[T <: AnyRef]: Jsonable[T] = new Jsonable[T] {
-    override def jsonify(t: T) = fakeJsonify(t)
-    override def parse(json: JsValue) = getOrThrow[T](json)
+  implicit def FakeJsonable[A <: AnyRef]: Jsonable[A] = new Jsonable[A] {
+    override def jsonify(a: A) = fakeJsonify(a)
+    override def parse(json: JsValue) = getOrThrow[A](json)
   }
 }
