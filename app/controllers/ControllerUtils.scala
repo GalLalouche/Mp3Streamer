@@ -7,7 +7,7 @@ import backend.configs.RealConfig
 import backend.logging._
 import com.google.common.annotations.VisibleForTesting
 import common.RichJson._
-import common.json.Jsonable
+import common.json.{Jsonable, JsonableOverrider}
 import common.rich.RichT._
 import common.rich.path.RichFile._
 import models.ModelJsonable._
@@ -45,16 +45,16 @@ object ControllerUtils {
     URLDecoder.decode(fixedPath, Encoding)
   }
 
-  implicit object songJsonable extends Jsonable[Song] {
-    override def jsonify(s: Song): JsValue = SongJsonifier.jsonify(s) +
+  implicit val songJsonable: Jsonable[Song] = JsonableOverrider[Song](new JsonableOverrider[Song] {
+    override def jsonify(s: Song, original: => JsValue) = original.asInstanceOf[JsObject] +
         ("file" -> JsString(encode(s))) +
         ("poster" -> JsString("/posters/" + Poster.getCoverArt(s.asInstanceOf[IOSong]).path)) +
         (s.file.extension -> JsString("/stream/download/" + encode(s)))
-    override def parse(a: JsValue): Song = {
-      val obj = a.asInstanceOf[JsObject]
+    override def parse(original: JsValue, unused: => Song) = {
+      val obj = original.asInstanceOf[JsObject]
       SongJsonifier.parse(obj + ("file" -> JsString(decode(obj str "file"))))
     }
-  }
+  })
 
   // While one could potentially use JsString(path).parseJsonable[Song] or something to that effect,
   // the path isn't really a JSON value, and also it tightly couples the code to the specific Jsonable
