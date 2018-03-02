@@ -4,11 +4,11 @@ import java.io.File
 
 import common.RichJson._
 import common.io.{IODirectory, IOFile}
-import common.json.{Jsonable, ToJsonableOps}
-import play.api.libs.json.{JsValue, Json}
+import common.json.{OJsonable, ToJsonableOps}
+import play.api.libs.json.{JsObject, Json}
 
 object ModelJsonable extends ToJsonableOps {
-  implicit object SongJsonifier extends Jsonable[Song] {
+  implicit object SongJsonifier extends OJsonable[Song] {
     override def jsonify(s: Song) = Json obj(
         "file" -> s.file.path,
         "title" -> s.title,
@@ -21,7 +21,7 @@ object ModelJsonable extends ToJsonableOps {
         "size" -> s.size,
         "discNumber" -> s.discNumber,
         "trackGain" -> s.trackGain)
-    override def parse(json: JsValue): Song = {
+    override def parse(json: JsObject): Song = {
       val file = new File(json str "file")
       IOSong(file = IOFile(file), title = json str "title",
         artistName = json str "artistName", albumName = json str "albumName",
@@ -31,14 +31,14 @@ object ModelJsonable extends ToJsonableOps {
     }
   }
 
-  implicit object AlbumJsonifier extends Jsonable[Album] {
+  implicit object AlbumJsonifier extends OJsonable[Album] {
     override def jsonify(a: Album) = Json obj(
         "dir" -> a.dir.asInstanceOf[IODirectory].path,
         "title" -> a.title,
         "artistName" -> a.artistName,
         "year" -> a.year,
         "songs" -> a.songs.jsonify)
-    override def parse(json: JsValue): Album = {
+    override def parse(json: JsObject): Album = {
       new Album(new IODirectory(json str "dir"),
         title = json str "title",
         artistName = json str "artistName",
@@ -47,11 +47,11 @@ object ModelJsonable extends ToJsonableOps {
     }
   }
 
-  implicit object ArtistJsonifier extends Jsonable[Artist] {
+  implicit object ArtistJsonifier extends OJsonable[Artist] {
     override def jsonify(a: Artist) = Json obj(
         "name" -> a.name,
         "albums" -> a.albums.jsonify)
-    override def parse(json: JsValue): Artist = {
+    override def parse(json: JsObject): Artist = {
       val albums: Seq[Album] = json.value("albums").parse[Seq[Album]]
       Artist(json str "name", albums.toSet)
     }

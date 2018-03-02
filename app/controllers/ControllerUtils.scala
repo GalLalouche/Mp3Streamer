@@ -7,12 +7,12 @@ import backend.configs.RealConfig
 import backend.logging._
 import com.google.common.annotations.VisibleForTesting
 import common.RichJson._
-import common.json.{Jsonable, JsonableOverrider}
+import common.json.{Jsonable, JsonableOverrider, OJsonableOverrider}
 import common.rich.RichT._
 import common.rich.path.RichFile._
 import models.ModelJsonable._
 import models.{IOSong, Poster, Song}
-import play.api.libs.json.{JsObject, JsString, JsValue}
+import play.api.libs.json.{JsObject, JsString}
 
 import scala.concurrent.ExecutionContext
 
@@ -45,15 +45,13 @@ object ControllerUtils {
     URLDecoder.decode(fixedPath, Encoding)
   }
 
-  implicit val songJsonable: Jsonable[Song] = JsonableOverrider[Song](new JsonableOverrider[Song] {
-    override def jsonify(s: Song, original: => JsValue) = original.asInstanceOf[JsObject] +
+  implicit val songJsonable: Jsonable[Song] = JsonableOverrider[Song](new OJsonableOverrider[Song] {
+    override def jsonify(s: Song, original: => JsObject) = original +
         ("file" -> JsString(encode(s))) +
         ("poster" -> JsString("/posters/" + Poster.getCoverArt(s.asInstanceOf[IOSong]).path)) +
         (s.file.extension -> JsString("/stream/download/" + encode(s)))
-    override def parse(original: JsValue, unused: => Song) = {
-      val obj = original.asInstanceOf[JsObject]
+    override def parse(obj: JsObject, unused: => Song) =
       SongJsonifier.parse(obj + ("file" -> JsString(decode(obj str "file"))))
-    }
   })
 
   // While one could potentially use JsString(path).parseJsonable[Song] or something to that effect,
