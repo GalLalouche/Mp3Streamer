@@ -87,7 +87,10 @@ function _ajaxJson(method, url, data, success) {
     type: method,
     contentType: "application/json; charset=utf-8",
     dataType: "json",
-    success: success
+    success: success,
+    statusCode: {
+      201: success
+    }
   })
 }
 
