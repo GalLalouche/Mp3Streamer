@@ -19,7 +19,7 @@ $(function() {
     $.get("playlist/state", data => {
       gplayer.stop()
       gplaylist.setPlaylist(data.songs, false)
-      gplaylist.select(data.index)
+      gplaylist.select(data.currentIndex)
       gplayer.skip(data.duration)
       // gplayer.playCurrentSong()
     })
