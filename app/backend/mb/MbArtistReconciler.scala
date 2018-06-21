@@ -16,10 +16,11 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.ToMoreMonadErrorOps
 import play.api.libs.json._
+import scalaz.std.FutureInstances
 
+import scala.Ordering.Implicits._
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scalaz.std.FutureInstances
 
 class MbArtistReconciler(implicit it: InternetTalker) extends OnlineReconciler[Artist]
     with FutureInstances with ToMoreMonadErrorOps {
@@ -62,6 +63,6 @@ object MbArtistReconciler {
   }
 
   case class MbAlbumMetadata(title: String, releaseDate: LocalDate, albumType: AlbumType, reconId: ReconID) {
-    def isOut: Boolean = releaseDate.atStartOfDay < Clock.systemDefaultZone().toLocalDateTime
+    def isOut: Boolean = releaseDate.atStartOfDay < Clock.systemDefaultZone().getLocalDateTime
   }
 }

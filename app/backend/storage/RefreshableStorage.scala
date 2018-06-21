@@ -3,14 +3,14 @@ package backend.storage
 import java.time.{Duration, LocalDateTime, ZoneId}
 
 import backend.Retriever
-import backend.RichTime._
 import backend.configs.ClockProvider
 import common.rich.RichT._
 import common.rich.func.ToMoreMonadErrorOps
-
-import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
+
+import scala.Ordering.Implicits._
+import scala.concurrent.{ExecutionContext, Future}
 
 class RefreshableStorage[Key, Value](
     freshnessStorage: FreshnessStorage[Key, Value],
