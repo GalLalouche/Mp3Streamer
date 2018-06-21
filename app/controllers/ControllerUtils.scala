@@ -13,6 +13,7 @@ import common.rich.path.RichFile._
 import models.ModelJsonable._
 import models.{IOSong, Poster, Song}
 import play.api.libs.json.{JsObject, JsString}
+import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext
 
@@ -59,4 +60,6 @@ object ControllerUtils {
   // implementation.
   def parseSong(path: String): IOSong = Song(parseFile(path))
   def parseFile(path: String): File = new File(decode(path))
+
+  def isChrome(request: Request[_]): Boolean = request headers "User-Agent" contains "Chrome"
 }
