@@ -61,5 +61,6 @@ object ControllerUtils {
   def parseSong(path: String): IOSong = Song(parseFile(path))
   def parseFile(path: String): File = new File(decode(path))
 
-  def isChrome(request: Request[_]): Boolean = request headers "User-Agent" contains "Chrome"
+  def encodeMp3(request: Request[_]): Boolean =
+    request.headers("User-Agent").contains("Chrome") || request.headers.get("Referer").exists(_ endsWith "mp3")
 }

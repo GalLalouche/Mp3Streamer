@@ -24,16 +24,16 @@ object Streamer extends LegacyController
   def download(s: String) = Action.async {request =>
     // assumed format: [bytes=<start>-]
     def parseRange(s: String): Long = s dropAfterLast '=' takeWhile (_ isDigit) toLong
-    val isChrome = ControllerUtils.isChrome(request)
+    val needsEncoding = ControllerUtils.encodeMp3(request)
     val bytesToSkip = request.headers get "Range" map parseRange getOrElse 0L
     val file = ControllerUtils.parseSong(s).file.file
-    Future(if (isChrome) decoder.encodeFileIfNeeded(file) else file).map(file => {
+    Future(if (needsEncoding) decoder.encodeFileIfNeeded(file) else file).map(file => {
       val fis = new FileInputStream(file)
       fis.skip(bytesToSkip)
       val status = if (bytesToSkip == 0) Ok else PartialContent
       val source =
         Source.fromPublisher(IterateeStreams.enumeratorToPublisher(Enumerator fromStream fis)).map(ByteString.apply)
-      val codec = if (isChrome || file.extension == "mp3") "audio/mpeg" else "audio/flac"
+      val codec = if (needsEncoding || file.extension == "mp3") "audio/mpeg" else "audio/flac"
       status.sendEntity(HttpEntity.Streamed(source, Some(file.length - bytesToSkip), Some(codec))).withHeaders(
         "Access-Control-Allow-Headers" -> "range, accept-encoding",
         "Access-Control-Allow-Origin" -> "*",

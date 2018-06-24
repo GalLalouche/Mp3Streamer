@@ -43,7 +43,7 @@ object Player extends LegacyController with ToJsonableOps with Debug {
       jsonableEncodable(_.fold(songEncodable.encode, songsEncodable encode _.songs))
   }
   private def encodeIfChrome[A](encodable: A)(request: Request[_])(implicit ev: Encodable[A]): Result = {
-    if (ControllerUtils.isChrome(request))
+    if (ControllerUtils.encodeMp3(request))
       ev.encode(encodable)
     Ok(ev.jsonify(encodable))
   }
