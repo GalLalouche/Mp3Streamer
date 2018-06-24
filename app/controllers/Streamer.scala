@@ -27,7 +27,7 @@ object Streamer extends LegacyController
     val needsEncoding = ControllerUtils.encodeMp3(request)
     val bytesToSkip = request.headers get "Range" map parseRange getOrElse 0L
     val file = ControllerUtils.parseSong(s).file.file
-    Future(if (needsEncoding) decoder.encodeFileIfNeeded(file) else file).map(file => {
+    (if (needsEncoding) decoder ! file else Future(file)).map(file => {
       val fis = new FileInputStream(file)
       fis.skip(bytesToSkip)
       val status = if (bytesToSkip == 0) Ok else PartialContent

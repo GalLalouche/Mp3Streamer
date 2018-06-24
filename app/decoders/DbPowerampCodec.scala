@@ -9,10 +9,14 @@ import common.rich.path.Directory
 import common.rich.path.RichFile._
 import decoders.CodecType.CodecType
 
+import scala.concurrent.Future
 import scala.sys.process.{Process, ProcessLogger}
 
 // TODO make a class, pass logger, put in ControllerUtils
+// TODO make its extra accept a Song
 object DbPowerampCodec extends Mp3Encoder(Directory("D:/media/streamer/musicOutput")) with Debug with SimpleTypedActor[File, File] {
+  // Do this less hackishly
+  override val unique = true
   private val converterFile = new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe")
   private def quote(o: Any): String = s""""$o""""
 
@@ -40,4 +44,5 @@ object DbPowerampCodec extends Mp3Encoder(Directory("D:/media/streamer/musicOutp
       f
     }
   }
+  override def !(m: => File): Future[File] = super.!(m.getAbsoluteFile)
 }
