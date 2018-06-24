@@ -5,8 +5,8 @@ import java.io.File
 import play.api.mvc._
 
 object Application extends LegacyController {
-  def index(mute: Boolean) = Action {
-    Ok(views.html.main(mute))
+  def index = Action {
+    Ok(views.html.main())
   }
   def song = Action {
     val file = new File("C:/dev/web/play-2.1.2/Mp3Streamer/public/resources/songs/13 Wonderwall.mp3")
