@@ -25,13 +25,13 @@ class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
       BaseLink[Artist](Url("http://www.metal-archives.com/bands/Deafheaven/3540315870"), Host("MetalArchives", Url("www.metal-archives.com"))),
       BaseLink[Artist](Url("https://twitter.com/deafheavenband"), Host("twitter", Url("twitter.com"))),
       BaseLink[Artist](Url("https://www.facebook.com/deafheaven"), Host("Facebook", Url("www.facebook.com"))),
-      BaseLink[Artist](Url("https://www.wikidata.org/wiki/Q5245804"), Host("wikidata", Url("www.wikidata.org"))),
+      BaseLink[Artist](Url("https://www.wikidata.org/wiki/Q5245804"), Host.Wikidata),
       BaseLink[Artist](Url("https://en.wikipedia.org/wiki/Deafheaven"), Host.Wikipedia),
       BaseLink[Artist](Url("https://itunes.apple.com/es/album/id1123970968"), Host("itunes", Url("itunes.apple.com"))),
       BaseLink[Artist](Url("https://musicbrainz.org/artist/foobar"), Host.MusicBrainz)
     )
 
-    $(ReconID("foobar")).get.toSet shouldReturn expected
+    $(ReconID("foobar")).get shouldSetEqual expected
   }
 
   "parse album links" in {
@@ -40,11 +40,11 @@ class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
     val expected = Set(
       BaseLink[Album](Url("http://www.discogs.com/master/559132"), Host("discogs", Url("www.discogs.com"))),
       BaseLink[Album](Url("https://rateyourmusic.com/release/album/deafheaven/sunbather/"), Host("RateYourMusic", Url("rateyourmusic.com"))),
-      BaseLink[Album](Url("https://www.wikidata.org/wiki/Q15717528"), Host("wikidata", Url("www.wikidata.org"))),
+      BaseLink[Album](Url("https://www.wikidata.org/wiki/Q15717528"), Host.Wikidata),
       BaseLink[Album](Url("https://en.wikipedia.org/wiki/Sunbather_(album)"), Host.Wikipedia),
       BaseLink[Album](Url("https://musicbrainz.org/release-group/foobar"), Host.MusicBrainz)
     )
 
-    $.apply(ReconID("foobar")).get shouldSetEqual expected
+    $(ReconID("foobar")).get shouldSetEqual expected
   }
 }

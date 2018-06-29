@@ -7,6 +7,7 @@ import monocle.macros.Lenses
 @Lenses
 case class Host(name: String, url: Url) {
   import Host._
+
   def canonize: Host = hostsByName.getOrElse(name.toLowerCase.replaceAll("[*?]$", ""), defaultFor(url))
 }
 
@@ -18,6 +19,7 @@ object Host {
   object MusicBrainz extends Host("MusicBrainz", Url("musicbrainz.org"))
   object RateYourMusic extends Host("RateYourMusic", Url("rateyourmusic.com"))
   object Wikipedia extends Host("Wikipedia", Url("en.wikipedia.org"))
+  object Wikidata extends Host("Wikidata", Url("www.wikidata.org"))
   val hosts = Vector(
     AllMusic,
     Facebook,
@@ -25,7 +27,8 @@ object Host {
     MetalArchives,
     MusicBrainz,
     RateYourMusic,
-    Wikipedia
+    Wikipedia,
+    Wikidata
   )
   private val hostsByUrl = hosts.mapBy(_.url)
   private val hostsByName = hosts.mapBy(_.name.toLowerCase)
