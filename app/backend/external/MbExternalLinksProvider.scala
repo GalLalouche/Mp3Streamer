@@ -49,7 +49,7 @@ private class MbExternalLinksProvider(implicit c: Configuration)
     new ReconcilerCacher[Artist](artistReconStorage, new MbArtistReconciler)
   private val artistPipe =
     wrapExternalPipeWithStorage[Artist](
-      artistReconciler, artistExternalStorage, new ArtistLinkExtractor, Nil, Reconcilers.artist)
+      artistReconciler, artistExternalStorage, new ArtistLinkExtractor, LinkExpanders.artists, Reconcilers.artist)
   private def getArtistLinks(a: Artist): Future[TimestampedLinks[Artist]] = artistPipe(a)
 
   private val albumReconStorage: AlbumReconStorage = new AlbumReconStorage

@@ -8,7 +8,7 @@ import backend.recon.Reconcilable
  * Expansions (not to be confused with ex<b>t</b>ansions) scrap a given link in search for more links,
  * e.g., they might find AllMusic links in a Wikipedia link.
  */
-private[external] trait ExternalLinkExpander[T <: Reconcilable] extends Retriever[BaseLink[T], BaseLinks[T]] {
+private[external] trait ExternalLinkExpander[R <: Reconcilable] extends Retriever[BaseLink[R], BaseLinks[R]] {
   /** The host the links are extracted from. */
   def sourceHost: Host
   /**
