@@ -2,7 +2,7 @@ package backend.external
 
 import java.time.LocalDateTime
 
-import backend.external.Host.Wikidata
+import backend.external.Host.{Wikidata, Wikipedia}
 import backend.external.extensions.{ExtendedLink, LinkExtension, SearchExtension}
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon._
@@ -45,6 +45,8 @@ object ExternalController extends LegacyController
     e.filterAndSortBy(_.host.canonize, hosts)
         // Filter non-new Wikidata, because nobody cares about those.
         .filter(e => e.host.canonize != Wikidata || e.isNew)
+        // Unmark new Wikipedia links, because MusicBrainz only uses Wikidata now
+        .map(e => if (e.host.canonize == Wikipedia) e.unmark else e)
         .map(toJson) |> Json.obj
 
   private def toDateString(l: LocalDateTime): String = f"${l.getDayOfMonth}%02d/${l.getMonthValue}%02d"

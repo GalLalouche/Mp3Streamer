@@ -6,7 +6,9 @@ import backend.recon.Reconcilable
 
 case class LinkExtension[R <: Reconcilable](name: String, link: Url)
 case class ExtendedLink[R <: Reconcilable](link: Url, host: Host, isNew: Boolean,
-                                           extensions: Traversable[LinkExtension[R]])
+                                           extensions: Traversable[LinkExtension[R]]) {
+  def unmark: ExtendedLink[_] = copy(isNew = false)
+}
 private object ExtendedLink {
   // TODO generify
   def extend[R <: Reconcilable](e: MarkedLink[R]) = new {
