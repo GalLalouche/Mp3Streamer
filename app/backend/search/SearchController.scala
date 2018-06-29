@@ -15,7 +15,7 @@ object SearchController extends LegacyController with Extra
     with ToJsonableOps {
   private var index: CompositeIndex = CompositeIndex.create
 
-  override def apply() {
+  override def apply(): Unit = {
     index = CompositeIndex.create
     Logger info "Search engine has been updated"
   }

@@ -47,6 +47,7 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
   }
 
   private def findNewAlbums(cache: ArtistLastYearCache, artist: Artist): Future[Seq[(NewAlbum, ReconID)]] = {
+    // TODO replace filter with Message with a sum type for better error messages
     reconciler(artist)
         .filterWithMessage(!_._2, "Ignored")
         .filterWithMessage(_._1.isDefined, s"Unreconcilable")
@@ -63,8 +64,8 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
               case e: FilteredException => log(s"$artist was filtered, reason: ${e.getMessage}")
               case e: Throwable => e.printStackTrace()
             }.orElse(Nil)
-      case Failure(_) =>
-        c.logger.warn(s"Could not reconcile <$artist>")
+      case Failure(e) =>
+        c.logger.warn(s"Did not fetch albums for artist<${artist.name}>; reason: ${e.getMessage}")
         Future successful Nil
     }
   }

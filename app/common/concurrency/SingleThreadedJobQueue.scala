@@ -13,5 +13,4 @@ class SingleThreadedJobQueue { self =>
       $
     })
   def apply(a: => Unit): Unit = queue submit a
-
 }

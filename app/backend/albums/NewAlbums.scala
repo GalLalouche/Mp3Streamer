@@ -1,5 +1,7 @@
 package backend.albums
 
+import java.util.logging.{Level, Logger}
+
 import backend.configs.Configuration
 import backend.mb.MbArtistReconciler
 import backend.recon._
@@ -12,10 +14,10 @@ import models.{IOMusicFinder, IOMusicFinderProvider}
 import monocle.function.IndexFunctions
 import monocle.std.MapOptics
 import monocle.syntax.ApplySyntax
-
-import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
+
+import scala.concurrent.Future
 
 private class NewAlbums(implicit c: Configuration)
     extends ToBindOps with FutureInstances with MapOptics with ApplySyntax with IndexFunctions
@@ -79,6 +81,7 @@ private class NewAlbums(implicit c: Configuration)
 }
 
 object NewAlbums {
+  Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   def main(args: Array[String]): Unit = {
     implicit val c: Configuration = NewAlbumsConfig
     val $ = new NewAlbums()

@@ -27,3 +27,4 @@ jPlayer
 .idea/
 .idea
 *.sh
+/app/mains/QuickJava.java

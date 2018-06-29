@@ -7,7 +7,7 @@ import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.arbitrary
 
 object ArbitraryModels {
-  implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])
+  private implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])
   implicit lazy val arbSong: Gen[Song] = for {
     filePath <- arbitrary[String]
     title <- arbitrary[String]

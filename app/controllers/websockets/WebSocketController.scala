@@ -38,7 +38,7 @@ trait WebSocketController extends LegacyController {
   protected def onConnection() {}
 
   def accept = WebSocket.accept[String, String] { _ =>
-    config.logger.verbose(s"${this.simpleName} received a new connection")
+    //config.logger.verbose(s"${this.simpleName} received a new connection")
     onConnection()
     ActorFlow.actorRef(out => Props(new SocketActor(out)))
   }
