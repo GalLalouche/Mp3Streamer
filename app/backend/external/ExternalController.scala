@@ -2,6 +2,7 @@ package backend.external
 
 import java.time.LocalDateTime
 
+import backend.external.Host.Wikidata
 import backend.external.extensions.{ExtendedLink, LinkExtension, SearchExtension}
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon._
@@ -13,11 +14,10 @@ import controllers.{ControllerUtils, LegacyController}
 import models.Song
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc.{Action, Result}
-
-import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
+import scala.concurrent.Future
 
 object ExternalController extends LegacyController
     with ToBindOps with ToMoreMonadErrorOps with FutureInstances {
@@ -42,7 +42,10 @@ object ExternalController extends LegacyController
     "main" -> e.link.address,
     "extensions" -> Json.obj(e.extensions.map(toJson).toSeq: _*))
   private def toJson(e: Traversable[ExtendedLink[_]]): JsObject =
-    e.filterAndSortBy(_.host.canonize, hosts).map(toJson) |> Json.obj
+    e.filterAndSortBy(_.host.canonize, hosts)
+        // Filter non-new Wikidata, because nobody cares about those.
+        .filter(e => e.host.canonize != Wikidata || e.isNew)
+        .map(toJson) |> Json.obj
 
   private def toDateString(l: LocalDateTime): String = f"${l.getDayOfMonth}%02d/${l.getMonthValue}%02d"
 
