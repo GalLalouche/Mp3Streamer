@@ -33,6 +33,9 @@ String.prototype.format = String.prototype.f = function() {
     s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i])
   return s
 }
+String.prototype.takeAfterLast = function(subs) {
+  return this.substr(this.lastIndexOf(subs) + 1)
+}
 const button = text => elem("button", text)
 const div = () => elem('div')
 const br = () => elem('br')
@@ -157,3 +160,12 @@ Array.prototype.custom_last = function() {
   return this[this.length - 1]
 }
 
+function assert(condition, message) {
+  if (!condition) {
+    message = message || "Assertion failed";
+    if (typeof Error !== "undefined") {
+      throw new Error(message);
+    }
+    throw message; // Fallback
+  }
+}
