@@ -20,7 +20,8 @@ object ModelJsonable extends ToJsonableOps {
         "duration" -> s.duration,
         "size" -> s.size,
         "discNumber" -> s.discNumber,
-        "trackGain" -> s.trackGain)
+        "trackGain" -> s.trackGain,
+    )
     override def parse(json: JsObject): Song = {
       val file = new File(json str "file")
       IOSong(file = IOFile(file), title = json str "title",
@@ -37,13 +38,16 @@ object ModelJsonable extends ToJsonableOps {
         "title" -> a.title,
         "artistName" -> a.artistName,
         "year" -> a.year,
-        "songs" -> a.songs.jsonify)
+        "songs" -> a.songs.jsonify,
+    )
     override def parse(json: JsObject): Album = {
-      new Album(new IODirectory(json str "dir"),
+      new Album(
+        new IODirectory(json str "dir"),
         title = json str "title",
         artistName = json str "artistName",
         year = json int "year",
-        songs = json.array("songs").parse[Song])
+        songs = json.array("songs").parse[Song],
+      )
     }
   }
 

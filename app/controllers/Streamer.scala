@@ -40,7 +40,7 @@ object Streamer extends LegacyController
         "Accept-Ranges" -> "bytes",
         "Connection" -> "close",
         "Codec" -> codec,
-        "Content-Range" -> s"bytes $bytesToSkip-${file.length}/${file.length}"
+        "Content-Range" -> s"bytes $bytesToSkip-${file.length}/${file.length}",
       )
     })
   }

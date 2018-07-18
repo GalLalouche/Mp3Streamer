@@ -28,7 +28,7 @@ object Host {
     MusicBrainz,
     RateYourMusic,
     Wikipedia,
-    Wikidata
+    Wikidata,
   )
   private val hostsByUrl = hosts.mapBy(_.url)
   private val hostsByName = hosts.mapBy(_.name.toLowerCase)

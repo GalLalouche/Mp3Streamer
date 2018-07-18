@@ -1,4 +1,5 @@
 package backend.external.extensions
+
 import java.time.LocalDateTime
 
 import backend.Url
@@ -40,7 +41,7 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
         Host.MusicBrainz -> Seq(LinkExtension("edit", Url("foo.bar/edit")),
           LinkExtension("Google", Url("http://www.google.com/search?q=foobar MusicBrainz"))),
         Host.AllMusic -> Seq(LinkExtension("discography", Url("foo.bar/discography"))),
-        Host.LastFm -> Seq(LinkExtension("similar", Url("foo.bar/+similar")))
+        Host.LastFm -> Seq(LinkExtension("similar", Url("foo.bar/+similar"))),
       )
 
       verify(links, result, expected)
@@ -54,7 +55,7 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
       val expected: Map[Host, Seq[LinkExtension[Album]]] = Map(
         Host.MusicBrainz -> Seq(LinkExtension("edit", Url("foo.bar/edit")),
           LinkExtension("Google", Url("http://www.google.com/search?q=bar - foo MusicBrainz"))),
-        Host.AllMusic -> Seq(LinkExtension("similar", Url("foo.bar/similar")))
+        Host.AllMusic -> Seq(LinkExtension("similar", Url("foo.bar/similar"))),
       )
 
       verify(links, result, expected)

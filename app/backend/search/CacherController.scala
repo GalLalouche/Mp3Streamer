@@ -14,12 +14,12 @@ object CacherController extends WebSocketController with ToJsonableOps {
   import ControllerUtils.config
   import models.ModelJsonable._
 
-  private implicit val writesIndexUpdate: JsonWriteable[IndexUpdate] = u => {
+  private implicit val writesIndexUpdate: JsonWriteable[IndexUpdate] = u =>
     Json.obj(
       "finished" -> u.currentIndex,
       "total" -> u.totalNumber,
-      "currentDir" -> u.dir.name)
-  }
+      "currentDir" -> u.dir.name,
+    )
 
   private val cacher = MetadataCacher.create
   private def toRefreshStatus(o: Observable[IndexUpdate], updateRecent: Boolean) = {

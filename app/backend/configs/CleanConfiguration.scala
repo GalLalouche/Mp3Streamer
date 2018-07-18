@@ -23,7 +23,7 @@ object CleanConfiguration extends RealConfig with NonPersistentConfig
       new ArtistExternalStorage(),
       new LyricsStorage(),
       new InstrumentalArtistStorage(),
-      new AlbumExternalStorage()
+      new AlbumExternalStorage(),
     ).traverse(_.utils.createTable()).get
   }
   createTables()

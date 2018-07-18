@@ -28,7 +28,7 @@ private[this] object AsyncFolderImagePanel {
     TextLabelProps(SwingConstants.TOP, SwingConstants.LEFT, Color.BLACK),
     TextLabelProps(SwingConstants.TOP, SwingConstants.RIGHT, Color.GREEN),
     TextLabelProps(SwingConstants.BOTTOM, SwingConstants.RIGHT, Color.WHITE),
-    TextLabelProps(SwingConstants.BOTTOM, SwingConstants.LEFT, Color.BLUE)
+    TextLabelProps(SwingConstants.BOTTOM, SwingConstants.LEFT, Color.BLUE),
   )
 
   def fileSize(numOfBytes: Long): String = s"${numOfBytes / 1024}KB"

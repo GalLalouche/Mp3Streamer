@@ -28,7 +28,7 @@ class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
       BaseLink[Artist](Url("https://www.wikidata.org/wiki/Q5245804"), Host.Wikidata),
       BaseLink[Artist](Url("https://en.wikipedia.org/wiki/Deafheaven"), Host.Wikipedia),
       BaseLink[Artist](Url("https://itunes.apple.com/es/album/id1123970968"), Host("itunes", Url("itunes.apple.com"))),
-      BaseLink[Artist](Url("https://musicbrainz.org/artist/foobar"), Host.MusicBrainz)
+      BaseLink[Artist](Url("https://musicbrainz.org/artist/foobar"), Host.MusicBrainz),
     )
 
     $(ReconID("foobar")).get shouldSetEqual expected
@@ -42,7 +42,7 @@ class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
       BaseLink[Album](Url("https://rateyourmusic.com/release/album/deafheaven/sunbather/"), Host("RateYourMusic", Url("rateyourmusic.com"))),
       BaseLink[Album](Url("https://www.wikidata.org/wiki/Q15717528"), Host.Wikidata),
       BaseLink[Album](Url("https://en.wikipedia.org/wiki/Sunbather_(album)"), Host.Wikipedia),
-      BaseLink[Album](Url("https://musicbrainz.org/release-group/foobar"), Host.MusicBrainz)
+      BaseLink[Album](Url("https://musicbrainz.org/release-group/foobar"), Host.MusicBrainz),
     )
 
     $(ReconID("foobar")).get shouldSetEqual expected

@@ -14,7 +14,7 @@ class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
         MarkedLink[Artist](Url("all.music"), Host.AllMusic, false),
         MarkedLink[Artist](Url("face.book"), Host.Facebook, true),
         MarkedLink[Artist](Url("wiki.pedia"), Host.Wikipedia, false),
-        MarkedLink[Artist](Url("last.fm"), Host.LastFm, true)
+        MarkedLink[Artist](Url("last.fm"), Host.LastFm, true),
       )
 
       val result: Seq[LinkExtension[Artist]] = MusicBrainzArtistExtender(artist, links)
@@ -31,7 +31,7 @@ class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
       val links = Seq(
         MarkedLink[Album](Url("music.brainz"), Host.MusicBrainz, false),
         MarkedLink[Album](Url("all.music"), Host.AllMusic, true),
-        MarkedLink[Album](Url("wiki.pedia"), Host.Wikipedia, true)
+        MarkedLink[Album](Url("wiki.pedia"), Host.Wikipedia, true),
       )
 
       val result = MusicBrainzAlbumExtender(album, links)

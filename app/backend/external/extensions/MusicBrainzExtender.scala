@@ -27,7 +27,7 @@ private object MusicBrainzAlbumExtender extends MusicBrainzExtender[Album] {
   override protected val externalTypeIds = Map(
     Host.AllMusic -> 284,
     Host.Wikipedia -> 89,
-    Host.RateYourMusic -> 96 // other databases
+    Host.RateYourMusic -> 96, // other databases
   )
 }
 
@@ -38,6 +38,6 @@ private object MusicBrainzArtistExtender extends MusicBrainzExtender[Artist] {
     Host.Facebook -> 192, // social networking
     Host.LastFm -> 840,
     Host.RateYourMusic -> 188, // other databases
-    Host.Wikipedia -> 179
+    Host.Wikipedia -> 179,
   )
 }
