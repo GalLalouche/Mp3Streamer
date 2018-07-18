@@ -27,7 +27,7 @@ class MbArtistReconciler(implicit it: InternetTalker) extends OnlineReconciler[A
   override def apply(a: Artist): Future[Option[ReconID]] =
     retry(() => getJson("artist/", ("query", a.name)), 5, 2 seconds)
         .map(_.objects("artists").find(_ has "type").get)
-        .filterWithMessage(_ str "score" equals "100", "could not find a 100 match")
+        .filterWithMessage(_.int("score") == 100, "could not find a 100 match")
         .map(_ ostr "id" map ReconID)
 
   private def parseDate(js: JsValue): LocalDate =
