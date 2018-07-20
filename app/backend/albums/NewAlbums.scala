@@ -84,8 +84,7 @@ object NewAlbums {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   def main(args: Array[String]): Unit = {
     implicit val c: Configuration = NewAlbumsConfig
-    val $ = new NewAlbums()
-    $.fetchAndSave.get
+    new NewAlbums().fetchAndSave.get
     println("Done!")
   }
 }

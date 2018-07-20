@@ -19,7 +19,7 @@
 (function($, undefined) {
 
   jPlayerPlaylist = function(cssSelector, playlist, options) {
-    var self = this;
+    const self = this
 
     this.current = 0;
     this.loop = false; // Flag used with the jPlayer repeat event
@@ -167,7 +167,7 @@
       return this;
     },
     _init: function(instant) {
-      var self = this;
+      const self = this
       if (instant) {
         this._refresh(true);
         self.play(self.current);
@@ -194,7 +194,7 @@
       // Make both arrays point to the same object elements. Gives us 2
       // different arrays, each pointing to the same actual object. ie.,
       // Not copies of the object.
-      for (var i = 0; i < this.original.length; i++)
+      for (let i = 0; i < this.original.length; i++)
         this.playlist[i] = this.original[this.original.length - i - 1];
     },
     _refresh: function(instant) {
@@ -203,7 +203,7 @@
        * animation timings true -> no animation function -> use animation
        * timings and excute function at half way point.
        */
-      var self = this;
+      const self = this
 
       if (instant && !$.isFunction(instant)) {
         $(this.cssSelector.playlist + " ul").empty();
@@ -212,11 +212,11 @@
         });
         this._updateControls();
       } else {
-        var displayTime = $(this.cssSelector.playlist + " ul").children().length ? this.options.playlistOptions.displayTime
-            : 0;
+        const displayTime = $(this.cssSelector.playlist + " ul").children().length ? this.options.playlistOptions.displayTime
+            : 0
 
         $(this.cssSelector.playlist + " ul").slideUp(displayTime, function() {
-          var $this = $(this);
+          const $this = $(this)
           $(this).empty();
 
           $.each(self.playlist, function(i, v) {
@@ -368,7 +368,7 @@
       this._init(instant);
     },
     add: function(media, playNow) {
-      var that = this;
+      const that = this
       if ($.isArray(media)) {
         $.each(media, function(i, track) {
           that.add(track);
@@ -403,7 +403,7 @@
       }
     },
     remove: function(index, onEnd) {
-      var self = this;
+      const self = this
 
       if (index === undefined) {
         this._initPlaylist([]);
@@ -428,7 +428,7 @@
 
                   if (self.shuffled) {
                     index = self.playlist.length - index - 1
-                    var item = self.playlist[index];
+                    const item = self.playlist[index]
                     $.each(self.original, function(i, v) {
                       if (self.original[i] === item) {
                         self.original.splice(i, 1);
@@ -469,7 +469,7 @@
     select: function(index) {
       index = (index < 0) ? this.original.length + index : index; // Negative
       // index relates to end of array.
-      var displayIndex = this._getDisplayedIndex(index);
+      const displayIndex = this._getDisplayedIndex(index)
       if (0 <= index && index < this.playlist.length) {
         this.current = index;
         this._highlight(displayIndex);
@@ -494,7 +494,7 @@
       $(this.cssSelector.jPlayer).jPlayer("pause");
     },
     next: function() {
-      var index = (this.current + 1 < this.playlist.length) ? this.current + 1 : 0;
+      const index = (this.current + 1 < this.playlist.length) ? this.current + 1 : 0
       if (this.loop) {
         // See if we need to shuffle before looping to start, and only shuffle if more than 1 item.
         if (index === 0 && this.shuffled && this.options.playlistOptions.shuffleOnLoop
@@ -511,14 +511,14 @@
       }
     },
     previous: function() {
-      var index = (this.current - 1 >= 0) ? this.current - 1 : this.playlist.length - 1;
+      const index = (this.current - 1 >= 0) ? this.current - 1 : this.playlist.length - 1
 
       if (this.loop && this.options.playlistOptions.loopOnPrevious || index < this.playlist.length - 1) {
         this.play(index);
       }
     },
     shuffle: function(shuffled, playNow) {
-      var self = this;
+      const self = this
 
       if (shuffled === undefined) {
         shuffled = !this.shuffled;
@@ -548,7 +548,7 @@
       }
     },
     isLastSongPlaying: function() {
-      return this.current == this.playlist.length - 1;
+      return this.current === this.playlist.length - 1;
     },
     currentPlayingSong: function() {
       return this.playlist[this.current];

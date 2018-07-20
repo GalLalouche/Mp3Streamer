@@ -5,18 +5,23 @@ resourceDirectory in Test := baseDirectory.value / "test-resources"
 val scalaVersionStr = "2.12.3"
 scalaVersion := scalaVersionStr
 version := "1.0-SNAPSHOT"
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
-// Add your own project settings her
-resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
-resolvers += "Maven Repository" at "http://repo1.maven.org/maven2/"
-resolvers += "Apache Snapshot Repository" at "http://repository.apache.org/snapshots/"
-resolvers += Resolver.file("Local ivy repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns)
-resolvers += Resolver.mavenLocal
 routesGenerator := StaticRoutesGenerator
 
 val playWsStandaloneVersion = "1.1.2"
+
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+// Add your own project settings her
+resolvers ++= Seq(
+  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+  "Maven Repository" at "http://repo1.maven.org/maven2/",
+  "Apache Snapshot Repository" at "http://repository.apache.org/snapshots/",
+  Resolver.file("Local ivy repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns),
+  Resolver.mavenLocal,
+)
 val akkaVersion = "2.5.4"
 val monocleVersion = "1.3.2"
+val playIterateesVersion = "2.6.1"
+val scalazVersion = "7.2.15"
 libraryDependencies ++= Seq(
   guice,
   "com.github.julien-truffaut" %% "monocle-core" % monocleVersion,
@@ -26,10 +31,10 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
   "com.typesafe.play" %% "play" % "2.6.6",
+  "com.typesafe.play" %% "play-iteratees" % playIterateesVersion,
+  "com.typesafe.play" %% "play-iteratees-reactive-streams" % playIterateesVersion,
   "com.typesafe.play" %% "play-ahc-ws-standalone" % playWsStandaloneVersion,
   "com.typesafe.play" %% "play-ws-standalone-json" % playWsStandaloneVersion,
-  "com.typesafe.play" %% "play-iteratees" % "2.6.1",
-  "com.typesafe.play" %% "play-iteratees-reactive-streams" % "2.6.1",
   "com.typesafe.slick" %% "slick" % "3.2.1",
   "io.reactivex" %% "rxscala" % "0.26.4",
   "my.net.jthink" % "jaudiotagger" % "2.2.6-SNAPSHOT",
@@ -41,9 +46,9 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-all" % "1.9.5" % "test",
   "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
   "org.scalatest" %% "scalatest" % "3.0.4",
-  "org.scalaz" %% "scalaz-core" % "7.2.15",
-  "org.scalaz" %% "scalaz-concurrent" % "7.2.15",
-  "org.xerial" % "sqlite-jdbc" % "3.7.2"
+  "org.scalaz" %% "scalaz-core" % scalazVersion,
+  "org.scalaz" %% "scalaz-concurrent" % scalazVersion,
+  "org.xerial" % "sqlite-jdbc" % "3.7.2",
 )
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala, LauncherJarPlugin)

@@ -8,7 +8,7 @@ import org.jsoup.nodes.Document
 import org.scalatest.Suite
 
 trait DocumentSpecs extends AuxSpecs { self: Suite =>
-  def getDocument(name: String): Document = Jsoup.parse(getResourceFile(name), "UTF-8")
-  def getBytes(name: String): Array[Byte] = getResourceFile(name).bytes
+  def getDocument(path: String): Document = Jsoup.parse(getResourceFile(path), "UTF-8")
+  def getBytes(path: String): Array[Byte] = getResourceFile(path).bytes
   def getBytes(url: Url): Array[Byte] = getBytes(url.address)
 }

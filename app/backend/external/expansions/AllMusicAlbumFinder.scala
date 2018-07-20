@@ -3,7 +3,7 @@ package backend.external.expansions
 import backend.Url
 import backend.external.{BaseLink, Host}
 import backend.logging.LoggerProvider
-import backend.recon.{Album, Artist}
+import backend.recon.Album
 import backend.recon.ReconScorers.AlbumReconScorer
 import com.google.common.annotations.VisibleForTesting
 import common.io.InternetTalker

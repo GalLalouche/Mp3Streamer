@@ -15,7 +15,7 @@ object CompositeDateFormat {
     new CompositeDateFormat(Vector.empty) orElse parser
   trait LocalDateTimeable[T] {
     def toLocalDateTime(t: T): LocalDateTime
-    val parse: (String, DateTimeFormatter) => T
+    def parse: (String, DateTimeFormatter) => T
   }
   object LocalDateTimeable {
     implicit object LocalDateTimeLocalDateTimeable extends LocalDateTimeable[LocalDateTime] {

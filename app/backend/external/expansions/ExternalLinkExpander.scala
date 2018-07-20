@@ -1,7 +1,7 @@
 package backend.external.expansions
 
 import backend.Retriever
-import backend.external.{BaseLink, Host, BaseLinks}
+import backend.external.{BaseLink, BaseLinks, Host}
 import backend.recon.Reconcilable
 
 /**

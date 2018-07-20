@@ -5,11 +5,10 @@ import backend.lyrics.LyricsStorage
 import backend.lyrics.retrievers.InstrumentalArtistStorage
 import backend.recon.{AlbumReconStorage, ArtistReconStorage}
 import common.rich.RichFuture._
-import common.storage.Storage
-
-import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.{FutureInstances, ListInstances}
 import scalaz.syntax.ToTraverseOps
+
+import scala.concurrent.ExecutionContext
 
 /** Also creates all needed tables */
 object CleanConfiguration extends RealConfig with NonPersistentConfig

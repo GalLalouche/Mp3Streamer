@@ -23,7 +23,7 @@ object Streamer extends LegacyController
   private val decoder = DbPowerampCodec
   def download(s: String) = Action.async {request =>
     // assumed format: [bytes=<start>-]
-    def parseRange(s: String): Long = s dropAfterLast '=' takeWhile (_ isDigit) toLong
+    def parseRange(s: String): Long = s.dropAfterLast('=').takeWhile(_.isDigit).toLong
     val needsEncoding = ControllerUtils.encodeMp3(request)
     val bytesToSkip = request.headers get "Range" map parseRange getOrElse 0L
     val file = ControllerUtils.parseSong(s).file.file

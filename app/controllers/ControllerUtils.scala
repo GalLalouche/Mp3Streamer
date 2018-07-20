@@ -30,6 +30,7 @@ object ControllerUtils {
   private val EncodedPlus = "%2B"
   private val SpaceEncoding = "%20"
 
+  // TODO move to its own file
   @VisibleForTesting
   def encode(s: Song): String = {
     val path = s.file.path

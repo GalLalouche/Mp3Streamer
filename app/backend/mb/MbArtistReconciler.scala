@@ -4,7 +4,6 @@ import java.time.{Clock, LocalDate, Year, YearMonth}
 
 import backend.RichTime._
 import backend.albums.NewAlbum.AlbumType
-import backend.albums.NewAlbum.AlbumType.AlbumType
 import backend.configs.{Configuration, StandaloneConfig}
 import backend.mb.JsonHelper._
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
@@ -62,7 +61,7 @@ object MbArtistReconciler {
     System exit 0
   }
 
-  case class MbAlbumMetadata(title: String, releaseDate: LocalDate, albumType: AlbumType, reconId: ReconID) {
+  case class MbAlbumMetadata(title: String, releaseDate: LocalDate, albumType: AlbumType.AlbumType, reconId: ReconID) {
     def isOut: Boolean = releaseDate.atStartOfDay < Clock.systemDefaultZone().getLocalDateTime
   }
 }

@@ -16,7 +16,7 @@ private object ArtistReconFiller
   private implicit val config: RealConfig = StandaloneConfig
 
   private val reconciler = new ReconcilerCacher[Artist](new ArtistReconStorage(), new MbArtistReconciler())
-  private def fill(mf: MusicFinder {type S = IOSystem})(implicit ec: ExecutionContext) {
+  private def fill(mf: MusicFinder {type S = IOSystem})(implicit ec: ExecutionContext): Unit = {
     val artists: Set[Artist] = mf.getSongFiles
         .map(_.parent)
         .toSet
@@ -28,9 +28,9 @@ private object ArtistReconFiller
         .map(_.artistName |> Artist.apply)
         .toSet
     for (artist <- artists) {
-      val recon1: Future[Option[ReconID]] =
+      val recon: Future[Option[ReconID]] =
         reconciler.apply(artist).map(_._1) orElse Some(ReconID("Failed to find an online match for " + artist))
-      println(recon1.get)
+      println(recon.get)
     }
   }
   def main(args: Array[String]): Unit = {

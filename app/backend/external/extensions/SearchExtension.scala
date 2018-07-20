@@ -4,7 +4,6 @@ import backend.Url
 import backend.external.{ExtendedLinks, Host}
 import backend.recon.Reconcilable
 import common.rich.RichT._
-import common.rich.collections.RichSet._
 
 private[external] object SearchExtension {
   def apply[R <: Reconcilable](h: Host, r: R): ExtendedLink[R] =

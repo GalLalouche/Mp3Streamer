@@ -9,6 +9,7 @@ $(function() {
     supplied: "webmv, ogv, m4a, oga, mp3, flac"
   });
   // Modify next to fetch a random song if in shuffle mode and at the last song
+  // TODO move to playlist_customization
   playlist.oldNext = playlist.next;
   const shouldLoadNextSongFromRandom = () => playlist.isLastSongPlaying()
   playlist.next = function() {

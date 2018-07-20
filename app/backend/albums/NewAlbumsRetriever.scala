@@ -71,7 +71,7 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
   }
 }
 
-object NewAlbumsRetriever {
+private object NewAlbumsRetriever {
   private def dirToAlbum(dir: IODirectory)(implicit mfp: IOMusicFinderProvider): Option[Album] = dir.files
       .find(_.extension |> mfp.mf.extensions)
       .map(_.file)

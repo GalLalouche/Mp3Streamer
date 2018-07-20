@@ -1,6 +1,6 @@
 package decoders
 
-import java.io.{File, IOException}
+import java.io.File
 
 import decoders.CodecType._
 

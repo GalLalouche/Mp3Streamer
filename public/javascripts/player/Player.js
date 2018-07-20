@@ -24,7 +24,7 @@ class Player {
     else
       this.pause()
   }
-  currentPlayingRelative() {
+  percentageOfSongPlayed() {
     throw new Error("Abstract")
   }
   currentPlayingInSeconds() {

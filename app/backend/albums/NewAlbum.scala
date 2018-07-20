@@ -7,7 +7,6 @@ import common.json.Jsonable
 import monocle.macros.Lenses
 import play.api.libs.json.{JsValue, Json}
 
-// Has to be public in order to use @Lenses
 @Lenses
 case class NewAlbum(title: String, year: Int, artist: Artist, albumType: NewAlbum.AlbumType.AlbumType) {
   def toAlbum: Album = Album(title = title, year = year, artist = artist)
