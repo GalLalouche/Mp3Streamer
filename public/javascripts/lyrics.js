@@ -72,7 +72,7 @@ $(function() {
   function scrollLyrics() {
     // Don't start scrolling right at the beginning of the song if there is no baseline set
     const heightBaseline = scrollBaseline || (lyricsContent.height() / -1.75)
-    const timePercentage = (gplayer.currentPlayingRelative() - timeBaseline) / 100.0
+    const timePercentage = (gplayer.percentageOfSongPlayed() - timeBaseline) / 100.0
     autoScroll = true
     lyricsContent.scrollTop(lyricsContent.prop('scrollHeight') * timePercentage + heightBaseline)
   }
@@ -82,7 +82,7 @@ $(function() {
   lyricsContent.scroll(function() { // When the user scrolls manually, reset the baselines
     if (!autoScroll) {
       scrollBaseline = lyricsContent.scrollTop()
-      timeBaseline = scrollBaseline && gplayer.currentPlayingRelative()
+      timeBaseline = scrollBaseline && gplayer.percentageOfSongPlayed()
     }
     autoScroll = false
   })

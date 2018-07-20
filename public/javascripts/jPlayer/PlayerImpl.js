@@ -7,9 +7,9 @@ $(function() {
   gplayer.stop = () => click("stop");
   gplayer.playCurrentSong = () => click("play");
   gplayer.isPaused = () => player().data().jPlayer.status.paused
-  gplayer.currentPlayingRelative = () => {
+  gplayer.percentageOfSongPlayed = () => {
     const jPlayer = player().data().jPlayer;
-    return jPlayer ? jPlayer.status.currentPercentRelative : undefined
+    return jPlayer ? jPlayer.status.currentPercentAbsolute : undefined
   }
   gplayer.currentPlayingInSeconds = () => player().data().jPlayer.status.currentTime
   const volumeBar = () => $(".jp-volume-bar-value")
