@@ -2,7 +2,7 @@
 $(function() {
   $("#update_playlist").click(function() {
     const playlist = gplaylist.songs().slice(gplaylist.currentIndex()).map(x => x.file);
-    postJson("playlist/queue", playlist, () => $.toast("State successfully updated"))
+    postJson("playlist/queue", playlist, () => $.toast("Playlist successfully updated"))
   })
   $("#load_playlist").click(function() {
     $.get("playlist/queue", x => x.forEach(e => gplaylist.add(e, false)))
