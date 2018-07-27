@@ -49,6 +49,7 @@ case class IOFile(file: File) extends IOPath(file) with FileRef {
   override def lastModified: LocalDateTime = file |> FileUtils.lastModified
   override def size = file.length
   override def exists = file.exists
+  override def delete: Boolean = file.delete()
 }
 
 case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {

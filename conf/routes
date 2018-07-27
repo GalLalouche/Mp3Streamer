@@ -70,3 +70,5 @@ GET        /recent/albums/:amount        controllers.Recent.recent(amount: Int)
 GET        /recent/last                  controllers.Recent.last
 GET        /ws/last_album                controllers.Recent.accept
 
+# Downloader
+GET        /download/*path               controllers.DownloaderController.download(path)

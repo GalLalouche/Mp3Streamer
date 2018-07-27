@@ -42,9 +42,11 @@ case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with Memo
   override def lastModified = lastUpdatedTime
   override def size = bytes.length
   override def exists = parent.files.exists(_.name == this.name)
+  override def delete = parent.deleteFile(this.name)
 }
 
 abstract sealed class MemoryDir(val path: String) extends DirectoryRef with MemoryPath {
+
   private val filesByName = new ConcurrentHashMap[String, MemoryFile]().asScala
   private val dirsByName = new ConcurrentHashMap[String, MemoryDir]().asScala
   override def getFile(name: String) = filesByName get name
@@ -62,6 +64,14 @@ abstract sealed class MemoryDir(val path: String) extends DirectoryRef with Memo
   override val lastModified = LocalDateTime.now()
   override def dirs: Seq[MemoryDir] = dirsByName.values.toSeq.sortBy(_.name)
   override def files = filesByName.values.toSeq.sortBy(_.name)
+
+  def deleteFile(name: String): Boolean = {
+    val hasFile = filesByName.contains(name)
+    if (hasFile) {
+      filesByName -= name
+    }
+    hasFile
+  }
 }
 private case class SubDir(parent: MemoryDir, name: String) extends MemoryDir(parent.path + "/" + name) {
   override def hasParent = true

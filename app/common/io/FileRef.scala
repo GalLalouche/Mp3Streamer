@@ -41,6 +41,7 @@ trait FileRef extends PathRef {
 
   def lastModified: LocalDateTime
   def exists: Boolean
+  def delete: Boolean
 }
 
 trait DirectoryRef extends PathRef { self =>
