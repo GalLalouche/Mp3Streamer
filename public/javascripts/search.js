@@ -5,6 +5,7 @@ $(function() {
   const add = "plus"
   const addEntireAlbum = "plus-square"
   const addDisc = "plus-circle"
+  const downloadFile = "download"
 
   function setResults(jsArray, requestTime) {
     results.show()
@@ -32,7 +33,7 @@ $(function() {
       $(this).custom_tooltip(`${song.year}, ${song.albumName}, ${song.track}`)
     })
     const albumItem = function(album) {
-      const item = `${icon(addEntireAlbum)} ${album.artistName}: ${album.title} (${album.year || "N/A"})`
+      const item = `${icon(addEntireAlbum)} ${icon(downloadFile)} ${album.artistName}: ${album.title} (${album.year || "N/A"})`
       if (album.discNumbers) {
         const discNumberElements = album.discNumbers.map(d => `<span>${icon(addDisc)}${d}</span>`).join(" ")
         return item + "<br>&emsp;&emsp;" + discNumberElements
@@ -89,6 +90,10 @@ $(function() {
     const album = $(this).parent().parent().data()
     const discNumber = $(this).parent().text()
     $.get(`data/discs/${discNumber}/${album.dir}`, e => gplaylist.add(e, false))
+  })
+  results.on("click", `.album-result .fa-${downloadFile}`, function() {
+    const album = $(this).parent().data()
+    $.get("download/" + album.dir)
   })
 
   let timeOfLastInput = 0
