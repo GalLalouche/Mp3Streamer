@@ -27,7 +27,7 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   "Mixed caps" in {
     List("FOO", "FoO", "fOo").foreach(e => verifyFix(e, e))
   }
-  "Capitalize" - {
+  "Capitalize" in {
     List("foobar", "Foobar").foreach(verifyFix(_, "Foobar"))
   }
   "Sentence" in {
@@ -45,8 +45,9 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   }
   "Asciify" in {
     verifyFix("Köyliönjärven jäällä", "Koylionjarven Jaalla")
+    verifyFix("Епосі нескорених поетів", "Eposi Neskorenikh Poetiv")
   }
-  "with delimiters" - {
+  "with delimiters" in {
     verifyFix("foo/bar", "Foo/Bar")
   }
   "strips" in {

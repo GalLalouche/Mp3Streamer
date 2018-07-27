@@ -16,14 +16,13 @@ object StringFixer {
 
   private def pascalCaseWord(w: String): String = w.toLowerCase.capitalize
 
-  private def fixWord(word: String, isFirstWord: Boolean): String = word match {
-    case e if isFirstWord.isFalse && lowerCaseSet(e.toLowerCase) => e.toLowerCase
-    case e if word.matches(".*[A-Z].*") => e // mixed caps
-    case e if e.head.isDigit => e.toLowerCase // 1st, 2nd, etc.
-    case s if s matches "[IVXMLivxml]+" => s.toUpperCase // roman numbers, also handles pronoun "I"
-    case s if s matches "(\\w\\.)+" => s.toUpperCase // A.B.C. pattern
-    case _ => word |> pascalCaseWord
-  }
+  private def fixWord(word: String, isFirstWord: Boolean): String =
+    if (isFirstWord.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase
+    else if (word.matches(".*[A-Z].*")) word // mixed caps
+    else if (word.head.isDigit) word.toLowerCase // 1st, 2nd, etc.
+    else if (word matches "[IVXMLivxml]+") word.toUpperCase // roman numbers, also handles pronoun "I"
+    else if (word matches "(\\w\\.)+") word.toUpperCase // A.B.C. pattern
+    else pascalCaseWord(word)
 
   private def splitWithDelimiters(s: String): List[String] =
     s.foldLeft((List[String](), new StringBuilder)) {
@@ -31,14 +30,38 @@ object StringFixer {
         if (delimiters(c)) (c.toString :: sb.toString :: agg, new StringBuilder) // delimiter
         else (agg, sb append c)
     }.mapTo(e => e._2.toString :: e._1) // append last SB to list
-      .filterNot(_.isEmpty)
-      .reverse
+        .filterNot(_.isEmpty)
+        .reverse
 
-  private def asciiNormalize(s: String): String =
-    Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+  // Modified from https://stackoverflow.com/a/29364083/736508
+  private val cyrillicMap = Map(
+    ' ' -> " ", 'A' -> "A", 'B' -> "B", 'C' -> "C", 'D' -> "D", 'E' -> "E", 'F' -> "F", 'G' -> "G",
+    'H' -> "H", 'I' -> "I", 'J' -> "J", 'K' -> "K", 'L' -> "L", 'M' -> "M", 'N' -> "N", 'O' -> "O",
+    'P' -> "P", 'Q' -> "Q", 'R' -> "R", 'S' -> "S", 'T' -> "T", 'U' -> "U", 'V' -> "V", 'W' -> "W",
+    'X' -> "X", 'Y' -> "Y", 'Z' -> "Z", 'a' -> "a", 'b' -> "b", 'c' -> "c", 'd' -> "d", 'e' -> "e",
+    'f' -> "f", 'g' -> "g", 'h' -> "h", 'i' -> "i", 'j' -> "j", 'k' -> "k", 'l' -> "l", 'm' -> "m",
+    'n' -> "n", 'o' -> "o", 'p' -> "p", 'q' -> "q", 'r' -> "r", 's' -> "s", 't' -> "t", 'u' -> "u",
+    'v' -> "v", 'w' -> "w", 'x' -> "x", 'y' -> "y", 'z' -> "z", 'Ё' -> "E", 'А' -> "A", 'Б' -> "B",
+    'В' -> "V", 'Г' -> "G", 'Д' -> "D", 'Е' -> "E", 'Ж' -> "Zh", 'З' -> "Z", 'И' -> "I", 'Й' -> "Y",
+    'К' -> "K", 'Л' -> "L", 'М' -> "M", 'Н' -> "N", 'О' -> "O", 'П' -> "P", 'Р' -> "R", 'С' -> "S",
+    'Т' -> "T", 'У' -> "U", 'Ф' -> "F", 'Х' -> "H", 'Ц' -> "Ts", 'Ч' -> "Ch", 'Ш' -> "Sh",
+    'Щ' -> "Sch", 'Ъ' -> "", 'Ы' -> "I", 'Ь' -> "", 'Э' -> "E", 'Ю' -> "Ju", 'Я' -> "Ja",
+    'а' -> "a", 'б' -> "b", 'в' -> "v", 'г' -> "g", 'д' -> "d", 'е' -> "e", 'ж' -> "zh", 'з' -> "z",
+    'и' -> "i", 'й' -> "y", 'к' -> "k", 'л' -> "l", 'м' -> "m", 'н' -> "n", 'о' -> "o", 'п' -> "p",
+    'р' -> "r", 'с' -> "s", 'т' -> "t", 'у' -> "u", 'ф' -> "f", 'х' -> "kh", 'ц' -> "ts",
+    'ч' -> "ch", 'ш' -> "sh", 'щ' -> "sch", 'ъ' -> "", 'ы' -> "i", 'ь' -> "", 'э' -> "e",
+    'ю' -> "ju", 'я' -> "ja", 'ё' -> "e", 'і' -> "i")
+  private def asciiNormalize(s: String): String = {
+    // TODO remove capitalize from RichString
+    import common.rich.primitives.RichString._
+    if (s.isWhitespaceOrEmpty) s
+    else Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+        .mapIf(_.isWhitespaceOrEmpty).to(asciiNormalize(s.map(cyrillicMap).mkString("")))
+  }
 
   def apply(str: String): String = {
-    val split = splitWithDelimiters(str.trim)
-    fixWord(split.head, isFirstWord = true) :: (split.tail map (fixWord(_, isFirstWord = false))) map asciiNormalize mkString ""
+    val head :: tail = splitWithDelimiters(str.trim)
+    val fixed = fixWord(head, isFirstWord = true) :: tail.map(fixWord(_, isFirstWord = false))
+    fixed map asciiNormalize mkString ""
   }
 }
