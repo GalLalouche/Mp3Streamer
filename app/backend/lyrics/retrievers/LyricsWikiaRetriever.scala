@@ -13,15 +13,21 @@ import org.jsoup.nodes.Document
 
 private[lyrics] class LyricsWikiaRetriever(implicit it: InternetTalker) extends SingleHostHtmlRetriever {
   override val source = "LyricsWikia"
-  override def fromHtml(html: Document, s: Song) = html
-      .select(".lyricbox")
-      .html
-      .split("\n")
-      .takeWhile(_.startsWith("<!--").isFalse)
-      .filterNot(_.matches("<div class=\"lyricsbreak\"></div>"))
-      .mkString("\n")
-      .mapTo(Some.apply)
-      .filterNot(_ contains "TrebleClef")
+  override def fromHtml(html: Document, s: Song) = {
+    // Make this method total
+    val lyrics = html
+        .select(".lyricbox")
+        .html
+        .split("\n")
+        .takeWhile(_.startsWith("<!--").isFalse)
+        .filterNot(_.matches("<div class=\"lyricsbreak\"></div>"))
+        .mkString("\n")
+    if (lyrics.toLowerCase.contains("we are not licensed to display the full lyrics"))
+      throw new RuntimeException("No actual lyrics (no license)")
+    lyrics
+        .mapTo(Some.apply)
+        .filterNot(_ contains "TrebleClef")
+  }
   override protected val hostPrefix: String = "http://lyrics.wikia.com/wiki"
   override def getUrl(s: Song): String =
     s"$hostPrefix/${normalize(s.artistName)}:${normalize(s.title)}"

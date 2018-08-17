@@ -19,5 +19,10 @@ class LyricsWikiaRetrieverTest extends LyricsSpec {
     "instrumental" in {
       $.fromHtml(getDocument("lyrics_wikia_instrumental.html"), fakeModelFactory.song()) should be an instrumental
     }
+    "No license throws" in {
+      an[Exception] shouldBe thrownBy {
+        $.fromHtml(getDocument("lyrics_wikia_no_license.html"), fakeModelFactory.song())
+      }
+    }
   }
 }
