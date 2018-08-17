@@ -71,4 +71,4 @@ GET        /recent/last                  controllers.Recent.last
 GET        /ws/last_album                controllers.Recent.accept
 
 # Downloader
-GET        /download/*path               controllers.DownloaderController.download(path)
+GET        /download/*path                 backend.pkg.DownloaderController.download(path)

@@ -1,21 +1,22 @@
-package controllers
+package backend.pkg
 
 import java.io.FileInputStream
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import backend.Zipper
 import common.io.{IODirectory, IOFile}
 import common.rich.primitives.RichString._
+import controllers.{ControllerUtils, LegacyController}
 import play.api.http.HttpEntity
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.iteratee.streams.IterateeStreams
 import play.api.mvc.Action
 
 object DownloaderController extends LegacyController {
-  private val zipper = new Zipper()
+  private val zipper = new Zipper(ControllerUtils.encodePath)
 
   def download(path: String) = Action.async {request =>
+    // TODO fix code duplication with streamer
     def parseRange(s: String): Long = s.dropAfterLast('=').takeWhile(_.isDigit).toLong
     val bytesToSkip: Long = request.headers get "Range" map parseRange getOrElse 0L
     val file = ControllerUtils.parseFile(path)

@@ -31,8 +31,8 @@ object ControllerUtils {
   private val SpaceEncoding = "%20"
 
   // TODO move to its own file
-  @VisibleForTesting
-  def encode(s: Song): String = {
+  /** A unique, URL-safe path of the song. */
+  def encodePath(s: Song): String = {
     val path = s.file.path
     // For reasons which are beyond me, Play, being the piece of shit that it is, will try to decode %2B as '+' (despite
     // the documentation claiming that it shouldn't), which combined with the encoding of ' ' to '+' messes stuff up.
@@ -40,7 +40,7 @@ object ControllerUtils {
     URLEncoder.encode(path, Encoding).mapIf(path.contains("+").const).to(_.replaceAll("\\+", SpaceEncoding))
   }
   @VisibleForTesting
-  def decode(s: String): String = {
+  private[controllers] def decode(s: String): String = {
     // Play converts %2B to '+' (see above), which is in turned decoded as ' '. To fix this bullshit, '+' is manually
     // converted back to "%2B" if there are "%20" tokens, which (presumably) means that '+' isn't used for spaces.
     val fixedPath = s.mapIf(_ contains SpaceEncoding).to(_.replaceAll("\\+", EncodedPlus))
@@ -49,9 +49,9 @@ object ControllerUtils {
 
   implicit val songJsonable: Jsonable[Song] = JsonableOverrider[Song](new OJsonableOverrider[Song] {
     override def jsonify(s: Song, original: => JsObject) = original +
-        ("file" -> JsString(encode(s))) +
+        ("file" -> JsString(encodePath(s))) +
         ("poster" -> JsString("/posters/" + Poster.getCoverArt(s.asInstanceOf[IOSong]).path)) +
-        (s.file.extension -> JsString("/stream/download/" + encode(s)))
+        (s.file.extension -> JsString("/stream/download/" + encodePath(s)))
     override def parse(obj: JsObject, unused: => Song) =
       SongJsonifier.parse(obj + ("file" -> JsString(decode(obj str "file"))))
   })
