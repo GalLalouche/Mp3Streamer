@@ -18,7 +18,8 @@ private class LyricsCache(implicit c: Configuration)
   private val htmlComposites: CompositeHtmlRetriever = new CompositeHtmlRetriever(
     new LyricsWikiaRetriever(),
     new DarkLyricsRetriever(),
-    new AzLyricsRetriever()
+    new AzLyricsRetriever(),
+    new GeniusLyricsRetriever(),
   )
   private val lastDefaultRetrievers = defaultArtistInstrumental
   val allComposite =
