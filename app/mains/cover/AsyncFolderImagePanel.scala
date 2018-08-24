@@ -49,7 +49,6 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
     Component.wrap(imageLabel).onMouseClick(() => AsyncFolderImagePanel.this.publish(Selected(folderImage)))
   }
 
-  // TODO consider creating a new panel instead
   def refresh() {
     contents.clear()
     // Pre-populate the grid to avoid images moving around.
@@ -61,10 +60,8 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
          image <- imagesSupplier.next().map(createImagePanel)) {
       contents.synchronized {
         contents.update(currentIndex, image)
-        visible = false
-        // forces a redrawing of the panel
-        Thread sleep 10
-        visible = true
+        revalidate()
+        contents.foreach(_.revalidate())
       }
     }
   }
