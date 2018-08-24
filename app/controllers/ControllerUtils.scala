@@ -6,24 +6,31 @@ import java.net.{URLDecoder, URLEncoder}
 import backend.configs.RealConfig
 import backend.logging._
 import com.google.common.annotations.VisibleForTesting
+import com.google.inject.Guice
+import com.google.inject.util.Modules
 import common.RichJson._
 import common.json.{Jsonable, JsonableOverrider, OJsonableOverrider}
 import common.rich.RichT._
 import common.rich.path.RichFile._
 import models.ModelJsonable._
 import models.{IOSong, Poster, Song}
+import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.json.{JsObject, JsString}
 import play.api.mvc.Request
 
 import scala.concurrent.ExecutionContext
 
 object ControllerUtils {
-  implicit lazy val config: RealConfig = new RealConfig {
+  implicit lazy val config: RealConfig = new RealConfig { self =>
     override implicit val ec: ExecutionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
-    override implicit val logger: Logger =
-      new CompositeLogger(new ConsoleLogger with FilteringLogger {
-        setCurrentLevel(LoggingLevel.Verbose)
-      }, new DirectoryLogger()(this))
+    override val module = Modules `override` super.module `with` new ScalaModule {
+      override def configure() = {
+        bind[Logger] toInstance new CompositeLogger(new ConsoleLogger with FilteringLogger {
+          setCurrentLevel(LoggingLevel.Verbose)
+        }, new DirectoryLogger()(self))
+      }
+    }
+    override def injector = Guice createInjector module
   }
 
   private val Encoding = "UTF-8"

@@ -1,7 +1,7 @@
 package backend.external.extensions
 
+import backend.configs.Configuration
 import backend.external._
-import backend.logging.LoggerProvider
 import backend.recon.{Album, Artist, Reconcilable}
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.ToMoreFoldableOps
@@ -33,8 +33,7 @@ private[external] class CompositeExtender private(
 }
 
 private[external] object CompositeExtender {
-  def default(implicit lp: LoggerProvider) =
-    new CompositeExtender(
-      Seq(MusicBrainzArtistExtender, new AllMusicArtistExtender, new LastFmArtistExtender),
-      Seq(MusicBrainzAlbumExtender, new AllMusicAlbumExtender))
+  def default(implicit c: Configuration) = new CompositeExtender(
+    Seq(MusicBrainzArtistExtender, new AllMusicArtistExtender, new LastFmArtistExtender),
+    Seq(MusicBrainzAlbumExtender, new AllMusicAlbumExtender))
 }

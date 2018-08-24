@@ -1,12 +1,15 @@
 package songs
 
 import backend.configs.Configuration
+import backend.logging.Logger
 import common.io.RefSystem
 import common.rich.RichT._
 import models.{MusicFinder, Song}
+import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.Future
 import scala.util.Random
+
 import scalaz.std.FutureInstances
 import scalaz.syntax.{ToBindOps, ToFunctorOps}
 
@@ -33,6 +36,7 @@ object SongSelector
 
   /** A mutable-updateable wrapper of SongSelector */
   private class SongSelectorProxy(implicit c: Configuration) extends SongSelector {
+    private val logger = c.injector.instance[Logger]
     def update(): Future[_] = {
       val $ = Future(new SongSelectorImpl(c.mf.getSongFiles.toVector)(c.mf))
       if (songSelector == null)
@@ -48,10 +52,11 @@ object SongSelector
   }
 
   def create(implicit c: Configuration): SongSelector = {
+    val logger = c.injector.instance[Logger]
     // TODO TimedFuture?
     val start = System.currentTimeMillis()
     val $ = new SongSelectorProxy
-    $.update().>|(c.logger.info(s"SongSelector has finished updating (${System.currentTimeMillis() - start} ms)"))
+    $.update().>|(logger.info(s"SongSelector has finished updating (${System.currentTimeMillis() - start} ms)"))
     $
   }
 }

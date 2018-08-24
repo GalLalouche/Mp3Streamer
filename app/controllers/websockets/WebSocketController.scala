@@ -2,8 +2,10 @@ package controllers.websockets
 
 import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
 import akka.stream.ActorMaterializer
+import backend.logging.Logger
 import common.rich.RichT._
 import controllers.{ControllerUtils, LegacyController}
+import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.WebSocket
 
@@ -19,7 +21,10 @@ object WebSocketController {
 trait WebSocketController extends LegacyController {
   import ControllerUtils.config
   import WebSocketController._
+
+  private val logger = config.injector.instance[Logger]
   private val actors = new mutable.HashSet[ActorRef]
+
   protected def broadcast(msg: String): Unit = actors.foreach(_ ! MessageToClient(msg))
   protected def closeConnections(): Unit = actors.foreach(_ ! PoisonPill)
 
@@ -28,7 +33,7 @@ trait WebSocketController extends LegacyController {
     override def postStop() = actors -= this.self
     def receive = {
       case msg: String =>
-        config.logger.verbose(s"${this.simpleName} received message <$msg>")
+        logger.verbose(s"${this.simpleName} received message <$msg>")
         onMessage(msg)
       case MessageToClient(msg) => out ! msg
     }
@@ -37,7 +42,7 @@ trait WebSocketController extends LegacyController {
   protected def onMessage(msg: String) {}
   protected def onConnection() {}
 
-  def accept = WebSocket.accept[String, String] { _ =>
+  def accept = WebSocket.accept[String, String] {_ =>
     //config.logger.verbose(s"${this.simpleName} received a new connection")
     onConnection()
     ActorFlow.actorRef(out => Props(new SocketActor(out)))

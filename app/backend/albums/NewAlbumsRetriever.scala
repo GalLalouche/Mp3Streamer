@@ -1,21 +1,24 @@
 package backend.albums
 
 import backend.configs.{Configuration, RealConfig, StandaloneConfig}
+import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
-import backend.recon.Reconcilable.SongExtractor
 import backend.recon._
+import backend.recon.Reconcilable.SongExtractor
 import common.io.IODirectory
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 import common.rich.primitives.RichBoolean._
 import models.{IOMusicFinderProvider, Song}
+import net.codingwell.scalaguice.InjectorExtensions._
 import rx.lang.scala.Observable
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
+
 import scalaz.Kleisli
 import scalaz.std.FutureInstances
 
@@ -23,7 +26,8 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
     implicit c: Configuration, mfp: IOMusicFinderProvider)
     extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
         with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances {
-  private val log = c.logger.verbose _
+  private val logger = c.injector.instance[Logger]
+  private val log = logger.verbose _
   private val meta = new MbArtistReconciler
   private def getExistingAlbums: Seq[Album] = mfp.mf.genreDirs
       .flatMap(_.deepDirs)
@@ -65,7 +69,7 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
               case e: Throwable => e.printStackTrace()
             }.orElse(Nil)
       case Failure(e) =>
-        c.logger.warn(s"Did not fetch albums for artist<${artist.name}>; reason: ${e.getMessage}")
+        logger.warn(s"Did not fetch albums for artist<${artist.name}>; reason: ${e.getMessage}")
         Future successful Nil
     }
   }

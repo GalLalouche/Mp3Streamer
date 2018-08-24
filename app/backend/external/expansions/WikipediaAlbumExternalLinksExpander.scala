@@ -3,23 +3,25 @@ package backend.external.expansions
 import backend.Url
 import backend.configs.{CleanConfiguration, Configuration}
 import backend.external._
-import backend.logging.LoggerProvider
+import backend.logging.Logger
 import backend.recon.Album
-import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.collections.RichSeq._
 import common.rich.func._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
+
 import scalaz.Traverse
 import scalaz.std.{FutureInstances, OptionInstances}
 
-private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker, lp: LoggerProvider)
+private class WikipediaAlbumExternalLinksExpander(implicit c: Configuration)
     extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic))
         with MoreTraversableInstances with ToTraverseMonadPlusOps with ToMoreMonadErrorOps
         with ToMoreFoldableOps with FutureInstances with OptionInstances with MoreTraverseInstances {
+  private val logger = c.injector.instance[Logger]
   protected val allMusicHelper = new AllMusicHelper
 
   // semi-canonical = guaranteed to start with http://www.allmusic.com/album
@@ -52,7 +54,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit it: InternetTalker, l
       .flatMap(Traverse[Traversable].traverse(_)(allMusicHelper.canonize))
       .flatMap(_.filterTraverse(link => allMusicHelper isValidLink link.link))
       .listenError(
-        lp.logger.error("WikipediaAlbumExternalLinksExpander failed to extract links", _))
+        logger.error("WikipediaAlbumExternalLinksExpander failed to extract links", _))
       .orElse(Nil)
 }
 

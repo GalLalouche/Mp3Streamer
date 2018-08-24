@@ -4,10 +4,11 @@ import backend.external.{AlbumExternalStorage, ArtistExternalStorage}
 import backend.lyrics.LyricsStorage
 import backend.lyrics.retrievers.InstrumentalArtistStorage
 import backend.recon.{AlbumReconStorage, ArtistReconStorage}
+import com.google.inject.Guice
 import common.rich.RichFuture._
+
 import scalaz.std.{FutureInstances, ListInstances}
 import scalaz.syntax.ToTraverseOps
-
 import scala.concurrent.ExecutionContext
 
 /** Also creates all needed tables */
@@ -26,5 +27,7 @@ object CleanConfiguration extends RealConfig with NonPersistentConfig
     ).traverse(_.utils.createTable()).get
   }
   createTables()
+
+  override val injector = Guice createInjector module
 }
 

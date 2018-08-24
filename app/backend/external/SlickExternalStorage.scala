@@ -2,19 +2,22 @@ package backend.external
 
 import java.time.LocalDateTime
 
-import backend.RichTime._
 import backend.Url
-import backend.logging.LoggerProvider
+import backend.RichTime._
+import backend.configs.Configuration
+import backend.logging.Logger
 import backend.recon.{Album, Artist, Reconcilable}
-import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
+import backend.storage.SlickStorageTemplateFromConf
 import common.storage.{ColumnMappers, StringSerializable}
+import net.codingwell.scalaguice.InjectorExtensions._
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
 
 import scala.concurrent.Future
 
-private[external] abstract class SlickExternalStorage[R <: Reconcilable](implicit dbP: DbProvider, lp: LoggerProvider)
+private[external] abstract class SlickExternalStorage[R <: Reconcilable](implicit c: Configuration)
     extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Option[LocalDateTime])] with ExternalStorage[R] {
+  private val logger = c.injector.instance[Logger]
   private class OldStorageEntry extends Exception
   import profile.api._
 
@@ -45,13 +48,13 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](implici
   override def load(r: R): Future[Option[(MarkedLinks[R], Option[LocalDateTime])]] =
     super.load(r).recoverWith {
       case _: OldStorageEntry =>
-        lp.logger.error(s"Encountered an old storage entry for entity $r; removing entry")
+        logger.error(s"Encountered an old storage entry for entity $r; removing entry")
         // Using internalDelete since regular delete also loads which results in an infinite recursion.
         internalDelete(r).>|(None)
     }
 }
 
-private[backend] class ArtistExternalStorage(implicit _dbP: DbProvider, lp: LoggerProvider) extends
+private[backend] class ArtistExternalStorage(implicit c: Configuration) extends
     SlickExternalStorage[Artist] {
   import profile.api._
 
@@ -70,7 +73,7 @@ private[backend] class ArtistExternalStorage(implicit _dbP: DbProvider, lp: Logg
   override protected def extractValue(e: Entity) = e._2 -> e._3
 }
 
-private[backend] class AlbumExternalStorage(implicit _dbP: DbProvider, lp: LoggerProvider) extends
+private[backend] class AlbumExternalStorage(implicit c: Configuration) extends
     SlickExternalStorage[Album] {
   import profile.api._
 

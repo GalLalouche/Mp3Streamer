@@ -2,7 +2,8 @@ package backend.configs
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import backend.logging._
+import com.google.inject.Guice
+import com.google.inject.util.Modules
 import com.typesafe.config.ConfigFactory
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
@@ -11,11 +12,13 @@ import scala.concurrent.ExecutionContext
 
 trait StandaloneConfig extends RealConfig {
   override protected val ec: ExecutionContext = ExecutionContext.Implicits.global
-  override val logger: FilteringLogger = new ConsoleLogger with FilteringLogger
   private lazy val materializer =
     ActorMaterializer()(ActorSystem.create("Standalone-Config-WS-System",
       ConfigFactory.parseMap(Map("akka.daemonic" -> true).asJava)))
+  override val module = Modules.`override`(super.module).`with`(StandaloneModule)
   override protected def createWsClient() = StandaloneAhcWSClient()(materializer)
 }
 
-object StandaloneConfig extends StandaloneConfig
+object StandaloneConfig extends StandaloneConfig {
+  override val injector = Guice createInjector module
+}

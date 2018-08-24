@@ -1,10 +1,8 @@
 package backend.configs
 
-import java.time.Clock
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.google.inject.{Guice, Injector}
+import com.google.inject.Module
 import common.io.{DirectoryRef, IODirectory}
 import models.{IOMusicFinder, IOMusicFinderProvider}
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
@@ -18,6 +16,6 @@ trait RealConfig extends Configuration with IOMusicFinderProvider {
   override lazy val rootDirectory: DirectoryRef = IODirectory.apply("D:/media/streamer/")
   private lazy val materializer = ActorMaterializer()(ActorSystem.create("RealConfigWS-System"))
 
-  override lazy val injector: Injector = Guice createInjector RealModule
+  override def module: Module = RealModule
   override protected def createWsClient() = StandaloneAhcWSClient()(materializer)
 }

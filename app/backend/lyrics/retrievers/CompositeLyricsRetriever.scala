@@ -1,23 +1,26 @@
 package backend.lyrics.retrievers
 
-import backend.logging.LoggerProvider
+import backend.configs.Configuration
+import backend.logging.Logger
 import backend.lyrics.Lyrics
 import models.Song
+import net.codingwell.scalaguice.InjectorExtensions._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 import scalaz.std.{FutureInstances, ListInstances}
 import scalaz.syntax.ToMonadErrorOps
 
 private[lyrics] class CompositeLyricsRetriever(retrievers: List[LyricsRetriever])
-    (implicit ec: ExecutionContext, loggerProvider: LoggerProvider) extends LyricsRetriever
+    (implicit c: Configuration) extends LyricsRetriever
     with FutureInstances with ListInstances with ToMonadErrorOps {
+  def this(retrievers: LyricsRetriever*)(implicit c: Configuration) = this(retrievers.toList)
+
+  private val logger = c.injector.instance[Logger]
   // TODO better errors when no parser is found
   override def apply(s: Song): Future[Lyrics] =
     retrievers.foldLeft[Future[Lyrics]](retrievers.head.apply(s))((x, y) => x.handleError(e => {
-      loggerProvider.logger.error("Failed to parse lyrics: ", e)
+      logger.error("Failed to parse lyrics: ", e)
       y.apply(s)
     }))
-  def this(retrievers: LyricsRetriever*)(implicit ec: ExecutionContext, lp: LoggerProvider) =
-    this(retrievers.toList)
 }

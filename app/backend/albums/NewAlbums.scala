@@ -1,8 +1,9 @@
 package backend.albums
 
-import java.util.logging.{Level, Logger}
+import java.util.logging.{Level, Logger => JLogger}
 
 import backend.configs.Configuration
+import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.recon._
 import common.io.JsonableSaver
@@ -14,17 +15,19 @@ import models.{IOMusicFinder, IOMusicFinderProvider}
 import monocle.function.IndexFunctions
 import monocle.std.MapOptics
 import monocle.syntax.ApplySyntax
-import scalaz.std.FutureInstances
-import scalaz.syntax.ToBindOps
+import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.Future
+
+import scalaz.std.FutureInstances
+import scalaz.syntax.ToBindOps
 
 private class NewAlbums(implicit c: Configuration)
     extends ToBindOps with FutureInstances with MapOptics with ApplySyntax with IndexFunctions
         with ToMoreFunctorOps {
   import NewAlbum.NewAlbumJsonable
 
-  private val logger = c.logger
+  private val logger = c.injector.instance[Logger]
 
   private val artistReconStorage = new ArtistReconStorage()
   private val albumReconStorage = new AlbumReconStorage()
@@ -81,7 +84,7 @@ private class NewAlbums(implicit c: Configuration)
 }
 
 object NewAlbums {
-  Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
+  JLogger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   def main(args: Array[String]): Unit = {
     implicit val c: Configuration = NewAlbumsConfig
     new NewAlbums().fetchAndSave.get

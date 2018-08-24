@@ -4,23 +4,27 @@ import java.net.HttpURLConnection
 import java.util.regex.Pattern
 
 import backend.Url
+import backend.configs.Configuration
 import backend.external.BaseLink
-import backend.logging.LoggerProvider
+import backend.logging.Logger
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
-import common.io.InternetTalker
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.ToMoreMonadErrorOps
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
+import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
+
 import scalaz.std.{FutureInstances, TupleInstances}
 import scalaz.syntax.ToFoldableOps
 
-private class AllMusicHelper(implicit it: InternetTalker, lp: LoggerProvider) extends ToFoldableOps with TupleInstances
+private class AllMusicHelper(implicit c: Configuration) extends ToFoldableOps with TupleInstances
     with FutureInstances with ToMoreMonadErrorOps {
+  private val it = c
+  private val logger = c.injector.instance[Logger]
   private val canonicalLink = Pattern compile "[a-zA-Z\\-0-9]+-mw\\d+"
   private val allmusicPrefix = "(?:http://www.)?allmusic.com/album/"
   private val canonicalRe = s"$allmusicPrefix($canonicalLink)".r
@@ -44,7 +48,7 @@ private class AllMusicHelper(implicit it: InternetTalker, lp: LoggerProvider) ex
       if (canonicalLink.matcher(url.address dropAfterLast '/').matches)
         Future successful url
       else if (currentTry >= MaxTries) {
-        lp.logger.warn(s"AllMusic canonization gave up after <$MaxTries> tries")
+        logger.warn(s"AllMusic canonization gave up after <$MaxTries> tries")
         Future successful url
       } else
         it.useWs(_.url(url.address).withFollowRedirects(false).get())

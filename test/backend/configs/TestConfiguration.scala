@@ -3,7 +3,6 @@ package backend.configs
 import java.util.UUID
 
 import backend.Url
-import backend.logging.{Logger, StringBuilderLogger}
 import com.google.inject.Guice
 import common.io.MemoryRoot
 import common.io.WSAliases._
@@ -29,7 +28,6 @@ case class TestConfiguration(
       s"jdbc:h2:mem:test${System.identityHashCode(this) + UUID.randomUUID().toString};DB_CLOSE_DELAY=-1")
   }
   override val mf: FakeMusicFinder = _mf.opt.getOrElse(new FakeMusicFinder(_root))
-  override val logger: Logger = new StringBuilderLogger(new StringBuilder)
   override lazy val rootDirectory: MemoryRoot = _root
 
   private def getRequest(u: Url): WSRequest = {
@@ -44,7 +42,8 @@ case class TestConfiguration(
   }
 
   override def createWsClient(): WSClient = new FakeWSClient(getRequest)
-  override val injector = Guice createInjector new TestModule
+  override val module = new TestModule
+  override val injector = Guice createInjector module
 }
 
 

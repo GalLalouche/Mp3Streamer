@@ -1,16 +1,16 @@
 package backend.configs
 
-import backend.logging.{Logger, LoggerProvider}
 import backend.storage.DbProvider
-import com.google.inject.Injector
+import com.google.inject.{Injector, Module}
 import common.io.{DirectoryRef, InternetTalker, RootDirectoryProvider}
 import models.{MusicFinder, MusicFinderProvider}
 import slick.jdbc.JdbcProfile
 
 import scala.concurrent.ExecutionContext
 
-trait Configuration extends InternetTalker with LoggerProvider with DbProvider with MusicFinderProvider
-    with RootDirectoryProvider {
+trait Configuration extends InternetTalker with DbProvider with MusicFinderProvider with RootDirectoryProvider {
+  // The module and injector should really be vals (or lazy-vals) in every concrete implementation.
+  protected def module: Module
   def injector: Injector
   protected def ec: ExecutionContext
   override def execute(runnable: Runnable): Unit = ec execute runnable
@@ -20,5 +20,4 @@ trait Configuration extends InternetTalker with LoggerProvider with DbProvider w
   // TODO figure out why this has to be a val :|
   override val mf: MusicFinder
   override def rootDirectory: DirectoryRef
-  override def logger: Logger
 }
