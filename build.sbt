@@ -19,7 +19,7 @@ resolvers ++= Seq(
   Resolver.mavenLocal,
 )
 val akkaVersion = "2.5.4"
-val monocleVersion = "1.3.2"
+val monocleVersion = "1.5.0"
 val playIterateesVersion = "2.6.1"
 val scalazVersion = "7.2.15"
 libraryDependencies ++= Seq(
