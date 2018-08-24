@@ -35,7 +35,7 @@ object DownloaderController extends LegacyController {
             "Connection" -> "keep-alive",
             //"Content-Length" -> s"${}",
             "Content-Range" -> s"bytes $bytesToSkip-${file.size}/${file.size}",
-            "Content-Disposition" -> s"attachment; filename=${file.name}",
+            "Content-Disposition" -> s"""attachment; filename="${file.name}"""",
           )
         })
   }
