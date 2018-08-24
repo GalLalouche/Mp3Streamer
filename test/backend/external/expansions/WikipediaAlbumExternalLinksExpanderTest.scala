@@ -15,8 +15,8 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpec
     TestConfiguration().copy(_urlToBytesMapper = PartialFunction(getBytes))
 
   private val $: WikipediaAlbumExternalLinksExpander = new WikipediaAlbumExternalLinksExpander()
-  private def getAllMusicLinkAddress(s: String): String =
-    $.parseDocument(getDocument(s))
+  private def getAllMusicLinkAddress(documentPath: String): String =
+    $.parseDocument(getDocument(documentPath))
         .filter(_.host == Host.AllMusic)
         .map(_.link.address)
         .single

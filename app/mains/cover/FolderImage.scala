@@ -14,7 +14,7 @@ trait FolderImage {
   def height: Int
   def toIcon(requestedWidth: Int, requestedHeight: Int): ImageIcon
 
-  def move(to: Directory) {
+  def move(to: Directory): Unit = {
     Files.move(file.asInstanceOf[IOFile].file.toPath,
       new File(to, "folder.jpg").toPath,
       StandardCopyOption.REPLACE_EXISTING)

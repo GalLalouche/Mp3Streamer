@@ -28,3 +28,4 @@ jPlayer
 .idea
 *.sh
 /app/mains/QuickJava.java
+*.log

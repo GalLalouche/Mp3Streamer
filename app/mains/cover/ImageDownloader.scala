@@ -10,14 +10,15 @@ import mains.SwingUtils
 import scala.concurrent.Future
 
 private object ImageDownloader extends SwingUtils {
-  def folderImage(f: FileRef, local: Boolean, w: => Int, h: => Int, image: => Image): FolderImage = new FolderImage {
-    override def toIcon(requestedWidth: Int, requestedHeight: Int) =
-      image.toImageIcon(width = requestedWidth, height = requestedHeight)
-    override val isLocal = local
-    override lazy val file = f
-    override lazy val width = w
-    override lazy val height = h
-  }
+  def folderImage(f: FileRef, local: Boolean, w: => Int, h: => Int, image: => Image): FolderImage =
+    new FolderImage {
+      override def toIcon(requestedWidth: Int, requestedHeight: Int) =
+        image.toImageIcon(width = requestedWidth, height = requestedHeight)
+      override val isLocal = local
+      override lazy val file = f
+      override lazy val width = w
+      override lazy val height = h
+    }
 }
 /** Downloads images and saves them to a directory; local image sources will be noop-ed. */
 private class ImageDownloader(outputDirectory: DirectoryRef)(implicit it: InternetTalker)
