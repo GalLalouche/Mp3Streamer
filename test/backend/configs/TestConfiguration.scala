@@ -1,5 +1,7 @@
 package backend.configs
 
+import java.util.UUID
+
 import backend.Url
 import backend.logging.{Logger, StringBuilderLogger}
 import common.FakeClock
@@ -22,8 +24,10 @@ case class TestConfiguration(
     private val _root: MemoryRoot = new MemoryRoot)
     extends NonPersistentConfig {
   override protected val ec: ExecutionContext = _ec
-  override lazy val db: profile.backend.DatabaseDef = profile.api.Database.forURL(
-    s"jdbc:h2:mem:test${System.identityHashCode(this)};DB_CLOSE_DELAY=-1")
+  override lazy val db: profile.backend.DatabaseDef = {
+    profile.api.Database.forURL(
+      s"jdbc:h2:mem:test${System.identityHashCode(this) + UUID.randomUUID().toString};DB_CLOSE_DELAY=-1")
+  }
   override val mf: FakeMusicFinder = _mf.opt.getOrElse(new FakeMusicFinder(_root))
   override val logger: Logger = new StringBuilderLogger(new StringBuilder)
   override lazy val rootDirectory: MemoryRoot = _root
