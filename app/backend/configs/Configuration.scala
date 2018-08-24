@@ -16,9 +16,10 @@ trait Configuration extends InternetTalker with LoggerProvider with DbProvider w
   override def execute(runnable: Runnable): Unit = ec execute runnable
   override def reportFailure(cause: Throwable): Unit = ec reportFailure cause
   override val profile: JdbcProfile
-  override val db: profile.backend.Database
+  override def db: profile.backend.Database
+  // TODO figure out why this has to be a val :|
   override val mf: MusicFinder
-  override val rootDirectory: DirectoryRef
-  override val logger: Logger
-  override val clock: Clock
+  override def rootDirectory: DirectoryRef
+  override def logger: Logger
+  override def clock: Clock
 }
