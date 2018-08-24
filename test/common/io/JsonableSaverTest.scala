@@ -3,19 +3,27 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.{LocalDateTime, ZoneOffset}
 
+import backend.configs.TestConfiguration
+import com.google.inject.Guice
+import com.google.inject.util.Modules
 import common.AuxSpecs
 import common.RichJson._
 import common.json.{Jsonable, ToJsonableOps}
 import common.rich.RichT._
+import net.codingwell.scalaguice.ScalaModule
 import org.scalatest.{FreeSpec, OneInstancePerTest}
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsObject, Json, JsValue}
 
 class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs with ToJsonableOps {
-  private val root: DirectoryRef = new MemoryRoot
-  private implicit val rootProvider: RootDirectoryProvider =
-    new RootDirectoryProvider {
-      override def rootDirectory: DirectoryRef = root
-    }
+  // TODO Answer why not take the one from TestConfiguration?
+  private val root = new MemoryRoot
+  private implicit val c: TestConfiguration = new TestConfiguration() {
+    override val injector = Guice.createInjector(Modules `override` module `with` new ScalaModule {
+      override def configure() = {
+        bind[MemoryRoot].annotatedWith[RootDirectory] toInstance root
+      }
+    })
+  }
   private val $ = new JsonableSaver()
   case class Person(age: Int, name: String)
   implicit object PersonJsonable extends Jsonable[Person] {

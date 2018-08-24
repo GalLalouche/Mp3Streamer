@@ -3,10 +3,11 @@ package backend.configs
 import java.util.UUID
 
 import backend.Url
-import com.google.inject.Guice
-import common.io.MemoryRoot
+import com.google.inject.{Guice, Module}
+import common.io.{MemoryRoot, RootDirectory}
 import common.io.WSAliases._
 import common.rich.RichT._
+import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext
 
@@ -20,7 +21,8 @@ case class TestConfiguration(
     private val _urlToBytesMapper: PartialFunction[Url, Array[Byte]] = PartialFunction.empty,
     private val _urlToResponseMapper: PartialFunction[Url, FakeWSResponse] = PartialFunction.empty,
     private val _requestToResponseMapper: PartialFunction[WSRequest, FakeWSResponse] = PartialFunction.empty,
-    private val _root: MemoryRoot = new MemoryRoot)
+    private val _root: MemoryRoot = new MemoryRoot,
+)
     extends NonPersistentConfig {
   override protected val ec: ExecutionContext = _ec
   override lazy val db: profile.backend.DatabaseDef = {
@@ -28,7 +30,6 @@ case class TestConfiguration(
       s"jdbc:h2:mem:test${System.identityHashCode(this) + UUID.randomUUID().toString};DB_CLOSE_DELAY=-1")
   }
   override val mf: FakeMusicFinder = _mf.opt.getOrElse(new FakeMusicFinder(_root))
-  override lazy val rootDirectory: MemoryRoot = _root
 
   private def getRequest(u: Url): WSRequest = {
     val partialRequest: Url => WSRequest =
@@ -42,8 +43,16 @@ case class TestConfiguration(
   }
 
   override def createWsClient(): WSClient = new FakeWSClient(getRequest)
-  override val module = new TestModule
-  override val injector = Guice createInjector module
+
+  override final val module: Module = new TestModule
+  override val injector = Guice.createInjector(
+    module,
+    new ScalaModule {
+      override def configure() = {
+        bind[MemoryRoot].annotatedWith[RootDirectory] toInstance _root
+      }
+    }
+  )
 }
 
 

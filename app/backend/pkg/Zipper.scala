@@ -1,18 +1,20 @@
 package backend.pkg
 
-import common.io.{DirectoryRef, FileRef, RootDirectoryProvider}
+import backend.configs.Configuration
+import common.io.{DirectoryRef, FileRef, RootDirectory}
 import common.rich.primitives.RichBoolean._
 import models.{MusicFinderProvider, Song}
-import play.api.libs.json.{JsString, Json}
+import net.codingwell.scalaguice.InjectorExtensions._
+import play.api.libs.json.{Json, JsString}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scala.sys.process._
 
-private class Zipper(songRemotePathEncoder: Song => String)(
-    implicit ec: ExecutionContext, rtd: RootDirectoryProvider, mfp: MusicFinderProvider) {
+private class Zipper(songRemotePathEncoder: Song => String)(implicit c: Configuration) {
   import Zipper._
 
-  private val zipsDir = rtd.rootDirectory.addSubDir("zips")
+  private val rootDirectory = c.injector.instance[DirectoryRef, RootDirectory]
+  private val zipsDir = rootDirectory.addSubDir("zips")
   private val jsonCreator = createRemotePathJson(songRemotePathEncoder) _
   // TODO delete zips once in a while
 
