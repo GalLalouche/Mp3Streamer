@@ -16,6 +16,8 @@ GET        /js/*file                     controllers.MyAssets.javascript(file)
 
 # Player!
 GET        /data/randomSong              controllers.Player.randomSong
+GET        /data/randomSong/mp3          controllers.Player.randomMp3Song
+GET        /data/randomSong/flac         controllers.Player.randomFlacSong
 GET        /data/albums/*path            controllers.Player.album(path)
 GET        /data/discs/:disc/*path       controllers.Player.discNumber(path, disc)
 GET        /data/songs/*path             controllers.Player.song(path)

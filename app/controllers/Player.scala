@@ -11,6 +11,8 @@ import play.api.libs.json.JsValue
 import play.api.mvc._
 import songs.{SongGroup, SongGroups, SongSelector}
 
+import scala.annotation.tailrec
+
 /** Handles fetch requests of JSON information, and listens to directory changes. */
 object Player extends LegacyController with ToJsonableOps with Debug {
   private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(new SongGroups().load)
@@ -50,6 +52,27 @@ object Player extends LegacyController with ToJsonableOps with Debug {
 
   def randomSong = Action {
     encodeIfChrome(group(songSelector.randomSong)) _
+  }
+
+  // For debugging
+  // TODO move this to songSelector
+  // TODO handle code duplication with below
+  def randomMp3Song = Action {
+    @tailrec
+    def aux: Song = {
+      val $ = songSelector.randomSong
+      if ($.file.extension == "mp3") $ else aux
+    }
+    encodeIfChrome(group(aux)) _
+  }
+
+  def randomFlacSong = Action {
+    @tailrec
+    def aux: Song = {
+      val $ = songSelector.randomSong
+      if ($.file.extension == "flac") $ else aux
+    }
+    encodeIfChrome(group(aux)) _
   }
 
   private def songsInAlbum(path: String): Seq[Song] =
