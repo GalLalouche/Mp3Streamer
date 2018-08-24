@@ -4,7 +4,7 @@ import java.util.UUID
 
 import backend.Url
 import backend.logging.{Logger, StringBuilderLogger}
-import common.FakeClock
+import com.google.inject.Guice
 import common.io.MemoryRoot
 import common.io.WSAliases._
 import common.rich.RichT._
@@ -31,7 +31,6 @@ case class TestConfiguration(
   override val mf: FakeMusicFinder = _mf.opt.getOrElse(new FakeMusicFinder(_root))
   override val logger: Logger = new StringBuilderLogger(new StringBuilder)
   override lazy val rootDirectory: MemoryRoot = _root
-  override val clock: FakeClock = new FakeClock
 
   private def getRequest(u: Url): WSRequest = {
     val partialRequest: Url => WSRequest =
@@ -45,6 +44,7 @@ case class TestConfiguration(
   }
 
   override def createWsClient(): WSClient = new FakeWSClient(getRequest)
+  override val injector = Guice createInjector new TestModule
 }
 
 

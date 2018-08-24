@@ -2,24 +2,31 @@ package backend.storage
 
 import java.time.{Clock, Duration}
 
-import backend.configs.{Configuration, TestConfiguration}
+import backend.configs.TestConfiguration
 import common.{AuxSpecs, FakeClock}
 import common.rich.RichFuture._
 import common.rich.RichT._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import scala.concurrent.Future
 
 class RefreshableStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
   private implicit val c: TestConfiguration = new TestConfiguration
-  implicit val clock: FakeClock = c.clock
+  implicit val clock: FakeClock = c.injector.instance[FakeClock]
   private var i = 0
-  private val freshnessStorage = new FreshnessStorage[String, String](new MemoryBackedStorage)
+  private val freshnessStorage = new FreshnessStorage[String, String](
+    new MemoryBackedStorage, c.injector.instance[Clock])
   private val $ =
-    new RefreshableStorage[String, String](freshnessStorage, e => {
-      i += 1
-      Future successful (e.reverse + i)
-    }, Duration ofMillis 50)
+    new RefreshableStorage[String, String](
+      freshnessStorage,
+      e => {
+        i += 1
+        Future successful (e.reverse + i)
+      },
+      Duration ofMillis 50,
+      c.injector.instance[Clock]
+    )
   "apply" - {
     "no previous value should insert new value in" in {
       freshnessStorage.load("foobar").get shouldReturn None
@@ -47,7 +54,9 @@ class RefreshableStorageTest extends FreeSpec with AuxSpecs with OneInstancePerT
       "previous value exists" in {
         val $ = new RefreshableStorage[String, String](freshnessStorage,
           Future.failed(new RuntimeException()).const,
-          Duration ofMillis 50)
+          Duration ofMillis 50,
+          c.injector.instance[Clock],
+        )
         freshnessStorage.store("foo", "bar")
         val dataFreshness = freshnessStorage.freshness("foo").get
         clock advance 100
@@ -59,7 +68,9 @@ class RefreshableStorageTest extends FreeSpec with AuxSpecs with OneInstancePerT
         val exception = new RuntimeException("failure")
         val $ = new RefreshableStorage[String, String](freshnessStorage,
           Future.failed(exception).const,
-          Duration ofMillis 50)
+          Duration ofMillis 50,
+          c.injector.instance[Clock],
+        )
         $.apply("foo").getFailure shouldReturn exception
       }
     }

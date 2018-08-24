@@ -1,9 +1,8 @@
 package backend.configs
 
-import java.time.Clock
-
 import backend.logging.{Logger, LoggerProvider}
 import backend.storage.DbProvider
+import com.google.inject.Injector
 import common.io.{DirectoryRef, InternetTalker, RootDirectoryProvider}
 import models.{MusicFinder, MusicFinderProvider}
 import slick.jdbc.JdbcProfile
@@ -11,7 +10,8 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.ExecutionContext
 
 trait Configuration extends InternetTalker with LoggerProvider with DbProvider with MusicFinderProvider
-    with RootDirectoryProvider with ClockProvider {
+    with RootDirectoryProvider {
+  def injector: Injector
   protected def ec: ExecutionContext
   override def execute(runnable: Runnable): Unit = ec execute runnable
   override def reportFailure(cause: Throwable): Unit = ec reportFailure cause
@@ -21,5 +21,4 @@ trait Configuration extends InternetTalker with LoggerProvider with DbProvider w
   override val mf: MusicFinder
   override def rootDirectory: DirectoryRef
   override def logger: Logger
-  override def clock: Clock
 }

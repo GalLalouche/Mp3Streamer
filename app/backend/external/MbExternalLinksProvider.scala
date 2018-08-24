@@ -1,6 +1,6 @@
 package backend.external
 
-import java.time.Duration
+import java.time.{Clock, Duration}
 
 import backend.Retriever
 import backend.configs.Configuration
@@ -16,8 +16,10 @@ import common.rich.func.{ToMoreFoldableOps, ToMoreMonadErrorOps}
 import models.Song
 
 import scala.concurrent.Future
+
 import scalaz.std.{FutureInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToFunctorOps}
+import net.codingwell.scalaguice.InjectorExtensions._
 
 private class MbExternalLinksProvider(implicit c: Configuration)
     extends ToMoreFoldableOps with ToFunctorOps with ToBindOps with ToMoreMonadErrorOps
@@ -27,6 +29,7 @@ private class MbExternalLinksProvider(implicit c: Configuration)
     override def apply(r: R): Future[TimestampedLinks[R]] =
       foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
+  val clock = c.injector.instance[Clock]
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](
       reconciler: Retriever[R, (Option[ReconID], Boolean)],
       storage: ExternalStorage[R],
@@ -34,14 +37,15 @@ private class MbExternalLinksProvider(implicit c: Configuration)
       expanders: Traversable[ExternalLinkExpander[R]],
       standaloneReconcilers: Traversable[Reconciler[R]]
   ): Retriever[R, TimestampedLinks[R]] = new RefreshableStorage[R, MarkedLinks[R]](
-    new FreshnessStorage(storage),
+    new FreshnessStorage(storage, clock),
     new ExternalPipe[R](
       r => reconciler(r)
           .filterWithMessage(_._1.isDefined, s"Couldn't reconcile <$r>")
           .map(_._1.get),
       provider, standaloneReconcilers, expanders),
-    Duration ofDays 28)
-      .mapTo(new TimeStamper(_))
+    Duration ofDays 28,
+    clock,
+  ).mapTo(new TimeStamper(_))
 
   private val artistReconStorage: ArtistReconStorage = new ArtistReconStorage
   private val artistExternalStorage = new ArtistExternalStorage

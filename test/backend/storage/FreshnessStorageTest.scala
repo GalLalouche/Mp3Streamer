@@ -1,5 +1,8 @@
 package backend.storage
 
+import java.time.Clock
+
+import net.codingwell.scalaguice.InjectorExtensions._
 import backend.RichTime._
 import backend.configs.TestConfiguration
 import common.{AuxSpecs, FakeClock}
@@ -12,8 +15,9 @@ import scalaz.syntax.ToBindOps
 class FreshnessStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest
     with FutureInstances with ToBindOps {
   private implicit val c: TestConfiguration = TestConfiguration()
-  private implicit val clock: FakeClock = c.clock
-  private val $ = new FreshnessStorage[Int, Int](new MemoryBackedStorage)
+  private implicit val clock: FakeClock = c.injector.instance[FakeClock]
+
+  private val $ = new FreshnessStorage[Int, Int](new MemoryBackedStorage, c.injector.instance[Clock])
 
   "store and load" - {
     "Can load stored data" in {
