@@ -9,11 +9,12 @@ import common.io.InternetTalker
 import common.rich.RichT._
 import play.api.libs.json._
 
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
 
 class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit it: InternetTalker)
     extends OnlineReconciler[Album] {
+  private implicit val ec: ExecutionContext = it.ec
   private val scorer = ReconScorers.AlbumReconScorer
   private def toAlbum(js: JsObject, a: Artist) = Album(js str "title", js str "first-release-date" take 4 toInt, a)
   private def parse(js: JsValue, a: Album): Option[ReconID] = js.objects("release-groups")

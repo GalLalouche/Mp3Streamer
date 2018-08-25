@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 import java.util.concurrent.{Semaphore, TimeoutException, TimeUnit}
 
 import backend.configs.TestConfiguration
-import common.io.{DirectoryRef, MemoryFile, MemoryRoot, RootDirectory}
+import common.io.{MemoryFile, MemoryRoot, RootDirectory}
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichBoolean._
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -73,6 +73,7 @@ private[this] class BlockFileRef(val f: MemoryFile) extends MemoryFile(f.parent,
 class FileLoggerTest extends FreeSpec with TimeLimitedTests with Matchers {
   override val timeLimit = Span(1, Second)
   private implicit val c: TestConfiguration = new TestConfiguration
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val rootDirectory = c.injector.instance[MemoryRoot, RootDirectory]
   private val file = rootDirectory.addFile("foobar")
   private val $ = new FileLogger(file)

@@ -5,11 +5,15 @@ import backend.lyrics.Instrumental
 import common.io.{MemoryDir, MemoryRoot}
 import common.rich.RichFuture._
 import models.{FakeModelFactory, Song}
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, Matchers}
+
+import scala.concurrent.ExecutionContext
 
 class DefaultClassicalInstrumentalTest extends FreeSpec with Matchers {
   private val fakeModelFactory = new FakeModelFactory
   private implicit val c: Configuration = TestConfiguration()
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val $ = DefaultClassicalInstrumental
   private def songWithPath(path: String): Song = {
     val split = path.split("/")

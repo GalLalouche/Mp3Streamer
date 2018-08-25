@@ -5,7 +5,10 @@ import backend.configs.{Configuration, TestConfiguration}
 import backend.recon.{Album, Artist, ReconID}
 import common.rich.RichFuture._
 import common.rich.RichT._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
+
+import scala.concurrent.ExecutionContext
 
 class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
   private def withDocument(name: String) =
@@ -13,6 +16,7 @@ class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
 
   "parse artist links" in {
     implicit val c: Configuration = withDocument("artist")
+    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
     val $ = new ArtistLinkExtractor
     val expected = Set(
       BaseLink[Artist](Url("http://deafheaven.com/"), Host("home", Url("deafheaven.com"))),
@@ -36,6 +40,7 @@ class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
 
   "parse album links" in {
     implicit val c: Configuration = withDocument("album")
+    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
     val $ = new AlbumLinkExtractor
     val expected = Set(
       BaseLink[Album](Url("http://www.discogs.com/master/559132"), Host("discogs", Url("www.discogs.com"))),

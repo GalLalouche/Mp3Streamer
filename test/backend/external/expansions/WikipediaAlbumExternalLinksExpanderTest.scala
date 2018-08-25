@@ -8,11 +8,15 @@ import backend.external.{BaseLink, DocumentSpecs, Host}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
+
+import scala.concurrent.ExecutionContext
 
 class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpecs {
   private implicit val config: TestConfiguration =
     TestConfiguration().copy(_urlToBytesMapper = PartialFunction(getBytes))
+  private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
 
   private val $: WikipediaAlbumExternalLinksExpander = new WikipediaAlbumExternalLinksExpander()
   private def getAllMusicLinkAddress(documentPath: String): String =

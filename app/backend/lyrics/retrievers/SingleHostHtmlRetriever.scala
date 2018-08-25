@@ -8,11 +8,13 @@ import common.rich.primitives.RichBoolean._
 import models.Song
 import org.jsoup.nodes.Document
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+
 import scalaz.std.OptionInstances
 
 private[lyrics] abstract class SingleHostHtmlRetriever(implicit it: InternetTalker) extends HtmlRetriever
     with ToMoreFoldableOps with OptionInstances {
+  private implicit val ec: ExecutionContext = it.ec
   // return None if instrumental
   protected def fromHtml(html: Document, s: Song): Option[String]
   protected def getUrl(s: Song): String

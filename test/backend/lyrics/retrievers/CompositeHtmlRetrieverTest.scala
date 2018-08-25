@@ -7,13 +7,15 @@ import common.AuxSpecs
 import common.rich.RichFuture._
 import common.rich.RichT._
 import models.{FakeModelFactory, Song}
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.mockito.{Matchers, Mockito}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
   private implicit val c: Configuration = TestConfiguration()
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private def fakeLyricsRetriever(
       songsToFind: Song, urlToMatch: Url, instrumentalText: String): HtmlRetriever = {
     class FakeLyricsRetriever extends HtmlRetriever {

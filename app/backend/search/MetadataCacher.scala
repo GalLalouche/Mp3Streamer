@@ -13,7 +13,7 @@ import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
 
 import scala.collection.GenSeq
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.Semigroup
 import scalaz.std.{AnyValInstances, FutureInstances, ListInstances, OptionInstances}
@@ -28,6 +28,7 @@ private class MetadataCacher(saver: JsonableSaver)(implicit
     with ToTraverseOps with FutureInstances with ToBindOps {
   import MetadataCacher._
 
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val mf = c.injector.instance[MusicFinder]
 
   private sealed trait UpdateType {
@@ -88,9 +89,10 @@ private class MetadataCacher(saver: JsonableSaver)(implicit
     Observable[IndexUpdate](obs => {
       val totalSize = dirs.length
       Future {
+        import common.concurrency.toRunnable
         gatherInfo(dirs.zipWithIndex.map {case (dir, index) =>
           getDirectoryInfo(dir, onParsingCompleted = () =>
-            c.execute(() => obs onNext IndexUpdate(index + 1, totalSize, dir)))
+            ec.execute(toRunnable(() => obs onNext IndexUpdate(index + 1, totalSize, dir))))
         })
       } map {info =>
         allInfoHandler(info.songs)

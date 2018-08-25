@@ -4,10 +4,14 @@ import backend.StorageSetup
 import backend.configs.TestConfiguration
 import common.AuxSpecs
 import common.rich.RichFuture._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
+
+import scala.concurrent.ExecutionContext
 
 class InstrumentalArtistStorageTest extends FreeSpec with AuxSpecs with StorageSetup {
   override protected implicit val config: TestConfiguration = TestConfiguration()
+  private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   override protected def storage = new InstrumentalArtistStorage
   private val artistName = "foo"
 

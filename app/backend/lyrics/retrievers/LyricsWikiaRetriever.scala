@@ -9,7 +9,10 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import models.Song
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.Document
+
+import scala.concurrent.ExecutionContext
 
 private[lyrics] class LyricsWikiaRetriever(implicit it: InternetTalker) extends SingleHostHtmlRetriever {
   override val source = "LyricsWikia"
@@ -38,6 +41,7 @@ private[lyrics] class LyricsWikiaRetriever(implicit it: InternetTalker) extends 
 private object LyricsWikiaRetriever {
   def main(args: Array[String]) {
     implicit val c: Configuration = StandaloneConfig
+    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
     val $ = new LyricsWikiaRetriever()
     val file: File = new File("""D:\Media\Music\Metal\Black Metal\Watain\2010 Lawless Darkness\06 - Lawless Darkness.mp3""")
     println(file.exists())

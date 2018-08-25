@@ -1,16 +1,17 @@
 package backend.external
 
 import backend.Url
-import backend.recon.{Album, Artist, ReconID, Reconcilable}
+import backend.recon.{Album, Artist, Reconcilable, ReconID}
 import common.io.InternetTalker
 import common.rich.RichT._
 import org.jsoup.nodes.{Document, Element}
 
 import scala.collection.JavaConverters._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String)(implicit it: InternetTalker)
     extends ExternalLinkProvider[T] {
+  private implicit val ec: ExecutionContext = it.ec
   private def getMbUrl(reconId: ReconID): Url = Url(s"https://musicbrainz.org/$metadataType/${reconId.id}")
   private def extractLink(e: Element): BaseLink[T] = {
     val url: Url = Url(e.select("a").attr("href").mapIf(_.startsWith("//")).to("https:" + _))

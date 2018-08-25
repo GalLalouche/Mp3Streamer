@@ -8,18 +8,18 @@ import backend.external.expansions.{CompositeSameHostExpander, ExternalLinkExpan
 import backend.external.extensions._
 import backend.external.recons.{Reconciler, Reconcilers}
 import backend.mb.{MbAlbumReconciler, MbArtistReconciler}
-import backend.recon.Reconcilable._
 import backend.recon._
+import backend.recon.Reconcilable._
 import backend.storage.{FreshnessStorage, RefreshableStorage}
 import common.rich.RichT._
 import common.rich.func.{ToMoreFoldableOps, ToMoreMonadErrorOps}
 import models.Song
+import net.codingwell.scalaguice.InjectorExtensions._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.{FutureInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToFunctorOps}
-import net.codingwell.scalaguice.InjectorExtensions._
 
 private class MbExternalLinksProvider(implicit c: Configuration)
     extends ToMoreFoldableOps with ToFunctorOps with ToBindOps with ToMoreMonadErrorOps
@@ -29,7 +29,8 @@ private class MbExternalLinksProvider(implicit c: Configuration)
     override def apply(r: R): Future[TimestampedLinks[R]] =
       foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
-  val clock = c.injector.instance[Clock]
+  private val clock = c.injector.instance[Clock]
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](
       reconciler: Retriever[R, (Option[ReconID], Boolean)],
       storage: ExternalStorage[R],

@@ -5,11 +5,15 @@ import backend.configs.{Configuration, TestConfiguration}
 import backend.external.DocumentSpecs
 import common.rich.RichFuture._
 import common.rich.RichT._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
+
+import scala.concurrent.ExecutionContext
 
 class ImageFinderTest extends FreeSpec with DocumentSpecs {
   private implicit val c: Configuration =
     TestConfiguration(_urlToBytesMapper = getBytes("image_search.html").partialConst)
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val $ = new ImageFinder
 
   "parse images" in {

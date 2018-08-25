@@ -9,12 +9,14 @@ import backend.recon.{Album, ReconID}
 import common.AuxSpecs
 import common.rich.RichFuture._
 import common.rich.RichT._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ExternalPipeTest extends FreeSpec with AuxSpecs {
   private implicit val c: Configuration = new TestConfiguration
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val existingHost: Host = Host("existinghost", Url("existinghosturl"))
   private val existingLink: BaseLink[Album] = BaseLink(Url("existing"), existingHost)
   private val existingMarkedLink: MarkedLink[Album] = MarkedLink markExisting existingLink

@@ -10,9 +10,10 @@ import models.ModelJsonable.AlbumJsonifier
 import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.mvc.Action
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 object Recent extends WebSocketController with ToJsonableOps {
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   // TODO move to a backend class
   private def recentAlbums(amount: Int): Future[Seq[Album]] = Future {
     val mf = c.injector.instance[MusicFinder]

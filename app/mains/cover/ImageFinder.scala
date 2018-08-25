@@ -7,9 +7,10 @@ import org.jsoup.nodes.{Document, Element}
 import play.api.libs.json.Json
 
 import scala.collection.JavaConverters._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 private class ImageFinder(implicit it: InternetTalker) {
+  private implicit val ec: ExecutionContext = it.ec
   def find(url: Url): Future[Seq[UrlSource]] = it downloadDocument url map parse
 
   private def parse(d: Document): Seq[UrlSource] =

@@ -10,8 +10,8 @@ import org.jsoup.nodes.Document
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Things that talk to the outside world. Spo-o-o-o-ky IO! */
-trait InternetTalker extends ExecutionContext {
-  private implicit val ec: ExecutionContext = this
+trait InternetTalker {
+  implicit def ec: ExecutionContext
 
   private val agentUrl =
     "user-agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36"

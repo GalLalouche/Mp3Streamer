@@ -3,14 +3,18 @@ package backend.search
 import backend.search.MetadataCacher.IndexUpdate
 import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
-import controllers.websockets.WebSocketController
 import controllers.{ControllerUtils, Player, Recent}
+import controllers.websockets.WebSocketController
+import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.Json
 import play.api.mvc.Action
 import rx.lang.scala.Observable
 
+import scala.concurrent.ExecutionContext
+
 /** Used for updating the cache from the client. */
 object CacherController extends WebSocketController with ToJsonableOps {
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   import ControllerUtils.config
   import models.ModelJsonable._
 

@@ -9,11 +9,12 @@ import common.io.{JsonableSaver, MemoryRoot}
 import common.json.Jsonable
 import common.rich.RichFuture._
 import models._
-import org.scalatest.matchers.{MatchResult, Matcher}
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
+import org.scalatest.matchers.{Matcher, MatchResult}
 import rx.lang.scala.Observable
 
-import scala.concurrent.{Await, Promise}
+import scala.concurrent.{Await, ExecutionContext, Promise}
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory
@@ -21,6 +22,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
   private val songs = root.addSubDir("songs")
   private implicit val mf: FakeMusicFinder = new FakeMusicFinder(songs)
   private implicit val c: TestConfiguration = TestConfiguration().copy(_root = root, _mf = mf)
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val jsonableSaver = new JsonableSaver
   private val fakeJsonable = new FakeModelJsonable
   import fakeJsonable._

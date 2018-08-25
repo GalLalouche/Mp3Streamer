@@ -6,8 +6,9 @@ import backend.external.recons.Reconciler
 import backend.recon.{Album, Artist}
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.{MoreTraverseInstances, ToMoreFoldableOps}
+import net.codingwell.scalaguice.InjectorExtensions._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.Traverse
 import scalaz.std.{FutureInstances, OptionInstances}
@@ -17,6 +18,7 @@ import scalaz.syntax.ToTraverseOps
 private[external] class CompositeSameHostExpander private(expanders: HostMap[SameHostExpander])(implicit c: Configuration)
     extends ToTraverseOps with MoreTraverseInstances with ToMoreFoldableOps
         with OptionInstances with FutureInstances {
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   def this(expanders: SameHostExpander*)(implicit c: Configuration) = this(expanders.mapBy(_.host))
 
   def apply(link: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] =

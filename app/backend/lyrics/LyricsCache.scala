@@ -6,13 +6,16 @@ import backend.lyrics.retrievers._
 import backend.storage.OnlineRetrieverCacher
 import common.rich.RichFuture._
 import models.Song
+import net.codingwell.scalaguice.InjectorExtensions._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
 private class LyricsCache(implicit c: Configuration)
     extends FutureInstances with ToFunctorOps {
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val defaultArtistInstrumental = new InstrumentalArtist
   private val firstDefaultRetrievers = DefaultClassicalInstrumental
   private val htmlComposites: CompositeHtmlRetriever = new CompositeHtmlRetriever(
@@ -42,6 +45,7 @@ object LyricsCache {
   import java.io.File
 
   private implicit val c: Configuration = CleanConfiguration
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
 
   def main(args: Array[String]): Unit = {
     val s = Song(new File("""D:\Media\Music\Rock\Punk\Heartsounds\2013 Internal Eyes\01 - A Total Separation of Self.mp3"""))

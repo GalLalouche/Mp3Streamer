@@ -27,7 +27,7 @@ case class TestConfiguration(
     private val _root: MemoryRoot = new MemoryRoot,
 )
     extends NonPersistentConfig {
-  override protected val ec: ExecutionContext = _ec
+  override val ec: ExecutionContext = _ec
 
   private def getRequest(u: Url): WSRequest = {
     val partialRequest: Url => WSRequest =
@@ -45,6 +45,7 @@ case class TestConfiguration(
   override final val module: Module = Modules.combine(new TestModule, new ScalaModule {
     override def configure() = {
       bind[MemoryRoot].annotatedWith[RootDirectory] toInstance _root
+      bind[ExecutionContext] toInstance _ec
       bind[FakeMusicFinder] toInstance _mf.opt.getOrElse(new FakeMusicFinder(_root))
       bind[DbProvider] toInstance new DbProvider {
         override lazy val profile: JdbcProfile = H2Profile

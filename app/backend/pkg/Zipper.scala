@@ -7,12 +7,13 @@ import models.{MusicFinder, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.{Json, JsString}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process._
 
 private class Zipper(songRemotePathEncoder: Song => String)(implicit c: Configuration) {
   import Zipper._
 
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val rootDirectory = c.injector.instance[DirectoryRef, RootDirectory]
   private val zipsDir = rootDirectory.addSubDir("zips")
   private val jsonCreator = createRemotePathJson(songRemotePathEncoder) _

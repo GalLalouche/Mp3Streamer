@@ -4,24 +4,28 @@ import java.time.LocalDateTime
 
 import backend.external.Host.{Wikidata, Wikipedia}
 import backend.external.extensions.{ExtendedLink, LinkExtension, SearchExtension}
-import backend.recon.Reconcilable.SongExtractor
 import backend.recon._
+import backend.recon.Reconcilable.SongExtractor
 import common.RichJson._
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.ToMoreMonadErrorOps
 import controllers.{ControllerUtils, LegacyController}
 import models.Song
-import play.api.libs.json.{JsObject, JsString, Json}
+import net.codingwell.scalaguice.InjectorExtensions._
+import play.api.libs.json.{JsObject, Json, JsString}
 import play.api.mvc.{Action, Result}
+
+import scala.concurrent.{ExecutionContext, Future}
+
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
-
-import scala.concurrent.Future
 
 object ExternalController extends LegacyController
     with ToBindOps with ToMoreMonadErrorOps with FutureInstances {
   import ControllerUtils.config
+
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
 
   private type KVPair = (String, play.api.libs.json.Json.JsValueWrapper)
   private val hosts: Seq[Host] =

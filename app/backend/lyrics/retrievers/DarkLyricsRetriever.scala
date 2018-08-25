@@ -3,12 +3,15 @@ package backend.lyrics.retrievers
 import java.io.File
 
 import backend.configs.{Configuration, StandaloneConfig}
+import net.codingwell.scalaguice.InjectorExtensions._
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import models.Song
 import org.jsoup.nodes.Document
+
+import scala.concurrent.ExecutionContext
 
 private[lyrics] class DarkLyricsRetriever(implicit it: InternetTalker) extends SingleHostHtmlRetriever {
   override protected val source: String = "DarkLyrics"
@@ -36,6 +39,7 @@ private[lyrics] class DarkLyricsRetriever(implicit it: InternetTalker) extends S
 private[lyrics] object DarkLyricsRetriever {
   def main(args: Array[String]) {
     implicit val c: Configuration = StandaloneConfig
+    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
     val $ = new DarkLyricsRetriever
     println($(Song(new File( """D:\Media\Music\Metal\Progressive Metal\Dream Theater\2003 Train of Thought\05 - Vacant.mp3"""))).get)
   }

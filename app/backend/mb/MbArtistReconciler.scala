@@ -14,15 +14,18 @@ import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.ToMoreMonadErrorOps
+import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json._
-import scalaz.std.FutureInstances
 
 import scala.Ordering.Implicits._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
+
+import scalaz.std.FutureInstances
 
 class MbArtistReconciler(implicit it: InternetTalker) extends OnlineReconciler[Artist]
     with FutureInstances with ToMoreMonadErrorOps {
+  private implicit val ec: ExecutionContext = it.ec
   override def apply(a: Artist): Future[Option[ReconID]] =
     retry(() => getJson("artist/", ("query", a.name)), 5, 2 seconds)
         .map(_.objects("artists").find(_ has "type").get)
@@ -56,6 +59,7 @@ object MbArtistReconciler {
 
   def main(args: Array[String]) {
     implicit val c: Configuration = StandaloneConfig
+    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
     val $ = new MbArtistReconciler
     $(Artist("Moonsorrow")).map(_.get).flatMap($.getAlbumsMetadata).get.log()
     System exit 0

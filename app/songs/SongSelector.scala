@@ -7,7 +7,7 @@ import common.rich.RichT._
 import models.{MusicFinder, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
 import scalaz.std.FutureInstances
@@ -36,7 +36,7 @@ object SongSelector
 
   /** A mutable-updateable wrapper of SongSelector */
   private class SongSelectorProxy(implicit c: Configuration) extends SongSelector {
-    private val logger = c.injector.instance[Logger]
+    private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
     private val mf = c.injector.instance[MusicFinder]
     def update(): Future[_] = {
       val $ = Future(new SongSelectorImpl(mf.getSongFiles.toVector)(mf))
@@ -53,6 +53,7 @@ object SongSelector
   }
 
   def create(implicit c: Configuration): SongSelector = {
+    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
     val logger = c.injector.instance[Logger]
     // TODO TimedFuture?
     val start = System.currentTimeMillis()

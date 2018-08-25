@@ -25,6 +25,10 @@ object ControllerUtils {
   implicit lazy val config: RealConfig = new RealConfig {self =>
     override implicit val ec: ExecutionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
     override val module = Modules.combine(super.module, new ScalaModule {
+      override def configure(): Unit = {
+        bind[ExecutionContext] toInstance ec
+      }
+      
       @Provides
       private def provideLogger(@RootDirectory rootDirectory: DirectoryRef): Logger = new CompositeLogger(
         new ConsoleLogger with FilteringLogger {setCurrentLevel(LoggingLevel.Verbose)},

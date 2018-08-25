@@ -9,10 +9,11 @@ import com.google.common.annotations.VisibleForTesting
 import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, ToMoreMonadPlusOps, ToTraverseMonadPlusOps}
 import common.rich.primitives.RichBoolean._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.{FutureInstances, OptionInstances}
 
@@ -22,6 +23,7 @@ private class AllMusicAlbumFinder(allMusicHelper: AllMusicHelper)(implicit c: Co
         with MoreSeqInstances with OptionInstances with FutureInstances {
   @VisibleForTesting
   private[expansions] def this()(implicit c: Configuration) = this(new AllMusicHelper)
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
 
   override protected def findAlbum(d: Document, album: Album): Future[Option[Url]] = {
     def score(other: Album): Double = AlbumReconScorer.apply(album, other)

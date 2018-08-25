@@ -10,12 +10,13 @@ import common.rich.path.RichFile.richFile
 import models.MusicFinder
 import net.codingwell.scalaguice.InjectorExtensions._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process.Process
 
 object DownloadCover {
   private implicit val c: Configuration = StandaloneConfig
-  val mf = c.injector.instance[MusicFinder]
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private val mf = c.injector.instance[MusicFinder]
 
   private case class CoverException(str: String, e: Exception) extends Exception(e)
 

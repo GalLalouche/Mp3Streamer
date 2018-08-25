@@ -18,7 +18,7 @@ import monocle.std.MapOptics
 import monocle.syntax.ApplySyntax
 import net.codingwell.scalaguice.InjectorExtensions._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
@@ -30,6 +30,7 @@ private class NewAlbums(implicit c: RealConfig)
 
   private val logger = c.injector.instance[Logger]
   private val dbP = c.injector.instance[DbProvider]
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
 
   private val artistReconStorage = new ArtistReconStorage()
   private val albumReconStorage = new AlbumReconStorage()
@@ -91,6 +92,7 @@ object NewAlbums {
   JLogger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   def main(args: Array[String]): Unit = {
     implicit val c: RealConfig = NewAlbumsConfig
+    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
     new NewAlbums().fetchAndSave.get
     println("Done!")
   }

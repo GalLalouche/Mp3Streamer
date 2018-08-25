@@ -7,9 +7,12 @@ import models.Song
 import net.codingwell.scalaguice.InjectorExtensions._
 import slick.ast.{BaseTypedType, ScalaBaseType}
 
+import scala.concurrent.ExecutionContext
+
 import scalaz.std.OptionInstances
 
-class LyricsStorage(implicit c: Configuration) extends SlickStorageTemplateFromConf[Song, Lyrics]
+class LyricsStorage(implicit c: Configuration, ec: ExecutionContext)
+    extends SlickStorageTemplateFromConf[Song, Lyrics]
     with ToMoreFoldableOps with OptionInstances {
   import profile.api._
 

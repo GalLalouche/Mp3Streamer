@@ -1,4 +1,5 @@
 package backend.external.expansions
+
 import java.net.HttpURLConnection
 
 import backend.Url
@@ -8,10 +9,14 @@ import common.io.WSAliases._
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
+
+import scala.concurrent.ExecutionContext
 
 class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
   private implicit val config: TestConfiguration = TestConfiguration()
+  private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   private def withDocument(s: String) = config.copy(_urlToBytesMapper = getBytes(s).partialConst)
   private val $ = new AllMusicHelper
   "isCanonical" - {

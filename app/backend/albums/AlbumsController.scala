@@ -1,6 +1,7 @@
 package backend.albums
 
 import backend.Retriever
+import net.codingwell.scalaguice.InjectorExtensions._
 import backend.configs.RealConfig
 import backend.recon._
 import common.Debug
@@ -11,13 +12,16 @@ import common.rich.collections.RichMap._
 import controllers.{ControllerUtils, LegacyController}
 import play.api.mvc.{Action, AnyContent, Request}
 
+import scala.concurrent.ExecutionContext
+
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
 /** A web interface to new albums finder. Displays new albums and can update the current file / ignoring policy. */
 object AlbumsController extends LegacyController with Debug
     with FutureInstances with ToFunctorOps with ToJsonableOps {
-  implicit val config: RealConfig = ControllerUtils.config
+  private implicit val config: RealConfig = ControllerUtils.config
+  private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   private val $ = new NewAlbums()
 
   def albums = Action.async {

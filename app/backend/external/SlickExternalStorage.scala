@@ -13,9 +13,9 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-private[external] abstract class SlickExternalStorage[R <: Reconcilable](implicit c: Configuration)
+private[external] abstract class SlickExternalStorage[R <: Reconcilable](implicit c: Configuration, ec: ExecutionContext)
     extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Option[LocalDateTime])] with ExternalStorage[R] {
   private val logger = c.injector.instance[Logger]
   private class OldStorageEntry extends Exception
@@ -54,7 +54,7 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](implici
     }
 }
 
-private[backend] class ArtistExternalStorage(implicit c: Configuration) extends
+private[backend] class ArtistExternalStorage(implicit c: Configuration, ec: ExecutionContext) extends
     SlickExternalStorage[Artist] {
   import profile.api._
 
@@ -73,7 +73,7 @@ private[backend] class ArtistExternalStorage(implicit c: Configuration) extends
   override protected def extractValue(e: Entity) = e._2 -> e._3
 }
 
-private[backend] class AlbumExternalStorage(implicit c: Configuration) extends
+private[backend] class AlbumExternalStorage(implicit c: Configuration, ec: ExecutionContext) extends
     SlickExternalStorage[Album] {
   import profile.api._
 

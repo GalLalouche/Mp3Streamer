@@ -7,7 +7,7 @@ import common.io.RichWSRequest._
 import common.io.{DirectoryRef, FileRef, InternetTalker}
 import mains.SwingUtils
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 private object ImageDownloader extends SwingUtils {
   def folderImage(f: FileRef, local: Boolean, w: => Int, h: => Int, image: => Image): FolderImage =
@@ -23,6 +23,7 @@ private object ImageDownloader extends SwingUtils {
 /** Downloads images and saves them to a directory; local image sources will be noop-ed. */
 private class ImageDownloader(outputDirectory: DirectoryRef)(implicit it: InternetTalker)
     extends Retriever[ImageSource, FolderImage] {
+  private implicit val ec: ExecutionContext = it.ec
   import ImageDownloader._
 
   private def toFile(bytes: Array[Byte]): FileRef =

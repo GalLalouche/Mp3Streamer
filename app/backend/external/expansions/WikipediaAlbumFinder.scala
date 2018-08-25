@@ -9,13 +9,14 @@ import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToTraverseMona
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 import org.jsoup.nodes.Document
-import scalaz.std.FutureInstances
 
+import scalaz.std.FutureInstances
 import scala.collection.JavaConverters._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 private class WikipediaAlbumFinder(implicit it: InternetTalker) extends SameHostExpander(Host.Wikipedia)
     with ToTraverseMonadPlusOps with FutureInstances with MoreSeqInstances with MoreTraverseInstances {
+  private implicit val ec: ExecutionContext = it.ec
   override protected def findAlbum(d: Document, a: Album): Future[Option[Url]] = {
     def score(linkName: String): Double = StringReconScorer(a.title, linkName)
     d.select("a").asScala.toSeq

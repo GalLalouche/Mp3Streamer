@@ -1,14 +1,18 @@
 package backend.recon
 
 import backend.StorageSetup
+import net.codingwell.scalaguice.InjectorExtensions._
 import backend.configs.TestConfiguration
 import common.AuxSpecs
 import common.rich.RichFuture._
 import org.scalatest.{FreeSpec, Matchers}
 
+import scala.concurrent.ExecutionContext
+
 class AlbumReconStorageTest extends FreeSpec with AuxSpecs
     with Matchers with StorageSetup {
   override protected implicit val config: TestConfiguration = new TestConfiguration
+  private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   override protected def storage = new AlbumReconStorage
 
   "deleteAllRecons" - {

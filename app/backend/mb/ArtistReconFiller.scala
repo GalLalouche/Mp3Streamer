@@ -1,19 +1,22 @@
 package backend.mb
 
 import backend.configs.{RealConfig, StandaloneConfig}
-import backend.recon.{Artist, ArtistReconStorage, ReconID, ReconcilerCacher}
+import backend.recon.{Artist, ArtistReconStorage, ReconcilerCacher, ReconID}
 import common.io.{IODirectory, IOSystem}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.ToMoreMonadErrorOps
 import models.{IOMusicFinder, MusicFinder, Song}
+import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
+
 import scalaz.std.FutureInstances
 
 private object ArtistReconFiller
     extends ToMoreMonadErrorOps with FutureInstances {
-  private implicit val config: RealConfig = StandaloneConfig
+  private implicit val c: RealConfig = StandaloneConfig
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
 
   private val reconciler = new ReconcilerCacher[Artist](new ArtistReconStorage(), new MbArtistReconciler())
   private def fill(mf: MusicFinder {type S = IOSystem})(implicit ec: ExecutionContext): Unit = {

@@ -10,6 +10,8 @@ import models.{IOMusicFinder, MusicFinder}
 import net.codingwell.scalaguice.ScalaModule
 import slick.jdbc.{JdbcProfile, SQLiteProfile}
 
+import scala.concurrent.ExecutionContext
+
 object RealModule extends ScalaModule {
   override def configure(): Unit = {
     bind[Clock] toInstance Clock.systemDefaultZone
@@ -22,6 +24,7 @@ object RealModule extends ScalaModule {
     }
 
     requireBinding(classOf[Logger])
+    requireBinding(classOf[ExecutionContext])
   }
 
   @Provides

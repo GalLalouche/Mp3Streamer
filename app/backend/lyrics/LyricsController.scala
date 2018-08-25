@@ -2,13 +2,18 @@ package backend.lyrics
 
 import backend.Url
 import common.rich.RichT._
+import net.codingwell.scalaguice.InjectorExtensions._
 import common.rich.func.ToMoreMonadErrorOps
 import controllers.{ControllerUtils, LegacyController}
 import play.api.mvc.{Action, Result}
+
+import scala.concurrent.ExecutionContext
+
 import scalaz.std.FutureInstances
 
 object LyricsController extends LegacyController
     with ToMoreMonadErrorOps with FutureInstances {
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val backend = new LyricsCache
   // TODO replace with Writable typeclass?
   private def toString(l: Lyrics): String = l.html + "<br><br>Source: " + l.source

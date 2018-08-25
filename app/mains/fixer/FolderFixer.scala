@@ -10,14 +10,17 @@ import common.rich.path.RichFile._
 import mains.IOUtils
 import mains.cover.DownloadCover
 import models.Song
+import net.codingwell.scalaguice.InjectorExtensions._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
 object FolderFixer
     extends ToFunctorOps with ToMoreMonadErrorOps with FutureInstances {
   private implicit val c: RealConfig = StandaloneConfig
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
 
   private def findArtistFolder(artist: String): Option[Directory] = {
     println("finding matching folder")

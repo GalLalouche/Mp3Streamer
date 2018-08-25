@@ -16,13 +16,14 @@ import common.rich.primitives.RichString._
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.collection.JavaConverters._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.{FutureInstances, TupleInstances}
 import scalaz.syntax.ToFoldableOps
 
 private class AllMusicHelper(implicit c: Configuration) extends ToFoldableOps with TupleInstances
     with FutureInstances with ToMoreMonadErrorOps {
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val it = c
   private val logger = c.injector.instance[Logger]
   private val canonicalLink = Pattern compile "[a-zA-Z\\-0-9]+-mw\\d+"

@@ -7,13 +7,17 @@ import akka.util.ByteString
 import common.io.{IODirectory, IOFile}
 import common.rich.primitives.RichString._
 import controllers.{ControllerUtils, LegacyController}
+import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.http.HttpEntity
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.iteratee.streams.IterateeStreams
 import play.api.mvc.Action
 
+import scala.concurrent.ExecutionContext
+
 object DownloaderController extends LegacyController {
   private val zipper = new Zipper(ControllerUtils.encodePath)
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
 
   def download(path: String) = Action.async {request =>
     // TODO fix code duplication with streamer

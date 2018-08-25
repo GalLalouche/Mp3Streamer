@@ -3,6 +3,7 @@ package mains.cover
 import backend.configs.Configuration
 import common.io.IODirectory
 import common.rich.RichT._
+import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.swing.Frame
@@ -43,6 +44,7 @@ private object ImageSelectionPanel {
   def main(args: Array[String]): Unit = {
     import common.rich.RichFuture._
     implicit val c: Configuration = StandaloneConfig
+    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
     val dir = IODirectory("""/usr/local/google/home/lalouche/Pictures""")
     val is = new ImagesSupplier {
       private val iterator =

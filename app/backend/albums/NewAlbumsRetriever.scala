@@ -16,7 +16,7 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import rx.lang.scala.Observable
 
 import scala.collection.JavaConverters._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 import scalaz.Kleisli
@@ -31,6 +31,7 @@ private class NewAlbumsRetriever(
     extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
         with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances {
   private val logger = c.injector.instance[Logger]
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val log = logger.verbose _
   private val meta = new MbArtistReconciler
   private def getExistingAlbums: Seq[Album] = mf.genreDirs
@@ -90,6 +91,7 @@ private object NewAlbumsRetriever {
 
   def main(args: Array[String]): Unit = {
     implicit val c: RealConfig = StandaloneConfig
+    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
     val mf = c.injector.instance[IOMusicFinder]
 
     val artist: Artist = Artist("At the Gates")

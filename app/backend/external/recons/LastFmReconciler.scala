@@ -10,13 +10,15 @@ import common.io.WSAliases._
 import org.jsoup.Jsoup
 
 import scala.collection.JavaConverters._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
 private class LastFmReconciler(millisBetweenRedirects: Long = 100)
     (implicit it: InternetTalker) extends Reconciler[Artist](Host.LastFm)
     with ToBindOps with FutureInstances {
+  private implicit val ec: ExecutionContext = it.ec
   private class TempRedirect extends Exception
   private def handleReply(h: WSResponse): Option[BaseLink[Artist]] = h.status match {
     case HttpURLConnection.HTTP_NOT_FOUND => None

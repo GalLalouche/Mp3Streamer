@@ -14,7 +14,7 @@ import org.jaudiotagger.audio.exceptions.{CannotWriteException, UnableToRenameFi
 import org.jaudiotagger.tag.images.StandardArtwork
 
 import scala.annotation.tailrec
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
 import scalaz.std.{FutureInstances, ListInstances}
@@ -23,8 +23,9 @@ import scalaz.syntax.{ToBindOps, ToTraverseOps}
 /** Selects n random songs and puts them in a folder on D:\ */
 private object RandomFolderCreator extends
     ToBindOps with FutureInstances with ListInstances with ToTraverseOps {
-  implicit val c: RealConfig = StandaloneConfig
-  val mf = c.injector.instance[IOMusicFinder]
+  private implicit val c: RealConfig = StandaloneConfig
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private val mf = c.injector.instance[IOMusicFinder]
   private val songs = mf.getSongFiles.map(_.file)
 
   private def createPlaylistFile(outputDir: Directory): Future[File] = Future {

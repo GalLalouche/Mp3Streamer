@@ -5,7 +5,10 @@ import backend.configs.{Configuration, TestConfiguration}
 import backend.external.{BaseLink, DocumentSpecs}
 import backend.recon.{Album, Artist}
 import common.rich.RichFuture._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
+
+import scala.concurrent.ExecutionContext
 
 trait SameHostExpanderSpec extends FreeSpec with DocumentSpecs {
   protected val artistUrl = "Url"
@@ -21,6 +24,7 @@ trait SameHostExpanderSpec extends FreeSpec with DocumentSpecs {
         urlToBytesMapper.orElse {
           case Url(address) => getBytes(additionalMappings.toMap.apply(address))
         })
+    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
     val $ = createExpander
     $(BaseLink[Artist](Url(artistUrl), $.host), album).get
   }

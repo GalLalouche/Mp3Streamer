@@ -9,6 +9,8 @@ import models.{IOMusicFinder, MusicFinder}
 import net.codingwell.scalaguice.ScalaModule
 import slick.jdbc.{H2Profile, JdbcProfile}
 
+import scala.concurrent.ExecutionContext
+
 object NonPersistentModule extends ScalaModule {
   override def configure(): Unit = {
     bind[Clock] toInstance Clock.systemDefaultZone
@@ -20,5 +22,6 @@ object NonPersistentModule extends ScalaModule {
       override lazy val db: profile.backend.DatabaseDef =
         profile.api.Database.forURL("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
     }
+    bind[ExecutionContext] toInstance ExecutionContext.Implicits.global
   }
 }
