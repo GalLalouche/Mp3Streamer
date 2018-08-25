@@ -15,6 +15,7 @@ import scala.concurrent.ExecutionContext
 object CleanConfiguration extends RealConfig with NonPersistentConfig
     with FutureInstances with ListInstances with ToTraverseOps {
   override protected val ec: ExecutionContext = ExecutionContext.global
+  override val injector = Guice createInjector module
   private def createTables() {
     implicit val c: Configuration = this
     List(
@@ -28,6 +29,5 @@ object CleanConfiguration extends RealConfig with NonPersistentConfig
   }
   createTables()
 
-  override val injector = Guice createInjector module
 }
 

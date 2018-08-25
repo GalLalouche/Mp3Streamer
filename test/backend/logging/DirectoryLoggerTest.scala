@@ -11,7 +11,7 @@ class DirectoryLoggerTest extends FreeSpec with AuxSpecs with OneInstancePerTest
   private implicit val c: Configuration = new TestConfiguration
   private val rootDirectory = c.injector.instance[DirectoryRef, RootDirectory]
   private val logsDir = rootDirectory addSubDir "logs"
-  private val $ = new DirectoryLogger
+  private val $ = new DirectoryLogger(rootDirectory)
 
   "logging" in {
     $.info("foobar")

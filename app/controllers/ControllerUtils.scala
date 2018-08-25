@@ -4,16 +4,17 @@ import java.io.File
 import java.net.{URLDecoder, URLEncoder}
 
 import backend.configs.RealConfig
-import backend.logging._
+import backend.logging.{CompositeLogger, ConsoleLogger, DirectoryLogger, FilteringLogger, Logger, LoggingLevel}
 import com.google.common.annotations.VisibleForTesting
-import com.google.inject.Guice
+import com.google.inject.{Guice, Provides}
 import com.google.inject.util.Modules
 import common.RichJson._
+import common.io.{DirectoryRef, RootDirectory}
 import common.json.{Jsonable, JsonableOverrider, OJsonableOverrider}
 import common.rich.RichT._
 import common.rich.path.RichFile._
-import models.ModelJsonable._
 import models.{IOSong, Poster, Song}
+import models.ModelJsonable._
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.json.{JsObject, JsString}
 import play.api.mvc.Request
@@ -21,15 +22,15 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext
 
 object ControllerUtils {
-  implicit lazy val config: RealConfig = new RealConfig { self =>
+  implicit lazy val config: RealConfig = new RealConfig {self =>
     override implicit val ec: ExecutionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext
-    override val module = Modules `override` super.module `with` new ScalaModule {
-      override def configure() = {
-        bind[Logger] toInstance new CompositeLogger(new ConsoleLogger with FilteringLogger {
-          setCurrentLevel(LoggingLevel.Verbose)
-        }, new DirectoryLogger()(self))
-      }
-    }
+    override val module = Modules.combine(super.module, new ScalaModule {
+      @Provides
+      private def provideLogger(@RootDirectory rootDirectory: DirectoryRef): Logger = new CompositeLogger(
+        new ConsoleLogger with FilteringLogger {setCurrentLevel(LoggingLevel.Verbose)},
+        new DirectoryLogger(rootDirectory)(self),
+      )
+    })
     override def injector = Guice createInjector module
   }
 
