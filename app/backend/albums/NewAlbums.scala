@@ -6,6 +6,7 @@ import backend.configs.RealConfig
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.recon._
+import backend.storage.DbProvider
 import common.io.JsonableSaver
 import common.rich.RichFuture._
 import common.rich.RichObservable._
@@ -28,6 +29,7 @@ private class NewAlbums(implicit c: RealConfig)
   import NewAlbum.NewAlbumJsonable
 
   private val logger = c.injector.instance[Logger]
+  private val dbP = c.injector.instance[DbProvider]
 
   private val artistReconStorage = new ArtistReconStorage()
   private val albumReconStorage = new AlbumReconStorage()

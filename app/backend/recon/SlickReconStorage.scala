@@ -1,12 +1,13 @@
 package backend.recon
 
-import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
+import backend.configs.Configuration
+import backend.storage.SlickStorageTemplateFromConf
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
 
 import scala.concurrent.Future
 
-abstract class SlickReconStorage[R <: Reconcilable](implicit _dbP: DbProvider)
+abstract class SlickReconStorage[R <: Reconcilable](implicit c: Configuration)
     extends SlickStorageTemplateFromConf[R, (Option[ReconID], Boolean)] with ReconStorage[R] {
   import profile.api._
 
@@ -18,7 +19,7 @@ abstract class SlickReconStorage[R <: Reconcilable](implicit _dbP: DbProvider)
 
   override protected def extractId(r: R) = r.normalize
 }
-class ArtistReconStorage(implicit _dbP: DbProvider) extends SlickReconStorage[Artist] {
+class ArtistReconStorage(implicit c: Configuration) extends SlickReconStorage[Artist] {
   import profile.api._
 
   override protected type Entity = (String, Option[ReconID], Boolean)
@@ -36,7 +37,7 @@ class ArtistReconStorage(implicit _dbP: DbProvider) extends SlickReconStorage[Ar
   override protected def extractValue(e: Entity) = e._2 -> e._3
 }
 
-class AlbumReconStorage(implicit _dbP: DbProvider) extends SlickReconStorage[Album] {
+class AlbumReconStorage(implicit c: Configuration) extends SlickReconStorage[Album] {
   import profile.api._
 
   override protected type Entity = (String, String, Option[ReconID], Boolean)

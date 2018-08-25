@@ -3,12 +3,14 @@ package backend.configs
 import java.util.UUID
 
 import backend.Url
+import backend.storage.DbProvider
 import com.google.inject.{Guice, Module}
 import com.google.inject.util.Modules
 import common.io.{MemoryRoot, RootDirectory}
 import common.io.WSAliases._
 import common.rich.RichT._
 import net.codingwell.scalaguice.ScalaModule
+import slick.jdbc.{H2Profile, JdbcProfile}
 
 import scala.concurrent.ExecutionContext
 
@@ -26,10 +28,6 @@ case class TestConfiguration(
 )
     extends NonPersistentConfig {
   override protected val ec: ExecutionContext = _ec
-  override lazy val db: profile.backend.DatabaseDef = {
-    profile.api.Database.forURL(
-      s"jdbc:h2:mem:test${System.identityHashCode(this) + UUID.randomUUID().toString};DB_CLOSE_DELAY=-1")
-  }
 
   private def getRequest(u: Url): WSRequest = {
     val partialRequest: Url => WSRequest =
@@ -48,6 +46,13 @@ case class TestConfiguration(
     override def configure() = {
       bind[MemoryRoot].annotatedWith[RootDirectory] toInstance _root
       bind[FakeMusicFinder] toInstance _mf.opt.getOrElse(new FakeMusicFinder(_root))
+      bind[DbProvider] toInstance new DbProvider {
+        override lazy val profile: JdbcProfile = H2Profile
+        override lazy val db: profile.backend.DatabaseDef = {
+          profile.api.Database.forURL(
+            s"jdbc:h2:mem:test${System.identityHashCode(this) + UUID.randomUUID().toString};DB_CLOSE_DELAY=-1")
+        }
+      }
     }
   })
   override val injector = Guice.createInjector(module)

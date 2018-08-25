@@ -1,11 +1,12 @@
 package backend.lyrics.retrievers
 
-import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
+import backend.configs.Configuration
+import backend.storage.SlickStorageTemplateFromConf
 import slick.ast.{BaseTypedType, ScalaBaseType}
 
 import scala.concurrent.Future
 
-class InstrumentalArtistStorage(implicit _dbP: DbProvider) extends SlickStorageTemplateFromConf[String, Unit] {
+class InstrumentalArtistStorage(implicit c: Configuration) extends SlickStorageTemplateFromConf[String, Unit] {
   import profile.api._
 
   override protected type Id = String
