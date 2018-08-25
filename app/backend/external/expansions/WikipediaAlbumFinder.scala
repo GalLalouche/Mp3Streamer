@@ -1,6 +1,6 @@
 package backend.external.expansions
-
 import backend.Url
+import backend.configs.Configuration
 import backend.external.Host
 import backend.recon.{Album, StringReconScorer}
 import common.io.InternetTalker
@@ -8,15 +8,18 @@ import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToTraverseMonadPlusOps}
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.Document
 
-import scalaz.std.FutureInstances
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-private class WikipediaAlbumFinder(implicit it: InternetTalker) extends SameHostExpander(Host.Wikipedia)
+import scalaz.std.FutureInstances
+
+private class WikipediaAlbumFinder(implicit c: Configuration) extends SameHostExpander(Host.Wikipedia)
     with ToTraverseMonadPlusOps with FutureInstances with MoreSeqInstances with MoreTraverseInstances {
-  private implicit val ec: ExecutionContext = it.ec
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   override protected def findAlbum(d: Document, a: Album): Future[Option[Url]] = {
     def score(linkName: String): Double = StringReconScorer(a.title, linkName)
     d.select("a").asScala.toSeq

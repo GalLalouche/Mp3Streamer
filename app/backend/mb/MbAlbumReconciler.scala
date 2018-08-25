@@ -7,14 +7,16 @@ import backend.recon._
 import common.RichJson._
 import common.io.InternetTalker
 import common.rich.RichT._
+import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json._
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
 
-class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit it: InternetTalker)
+class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit c: Configuration)
     extends OnlineReconciler[Album] {
-  private implicit val ec: ExecutionContext = it.ec
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   private val scorer = ReconScorers.AlbumReconScorer
   private def toAlbum(js: JsObject, a: Artist) = Album(js str "title", js str "first-release-date" take 4 toInt, a)
   private def parse(js: JsValue, a: Album): Option[ReconID] = js.objects("release-groups")

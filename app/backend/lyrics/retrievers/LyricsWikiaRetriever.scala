@@ -4,7 +4,6 @@ import java.io.File
 import java.net.URLEncoder
 
 import backend.configs.{Configuration, StandaloneConfig}
-import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
@@ -14,7 +13,7 @@ import org.jsoup.nodes.Document
 
 import scala.concurrent.ExecutionContext
 
-private[lyrics] class LyricsWikiaRetriever(implicit it: InternetTalker) extends SingleHostHtmlRetriever {
+private[lyrics] class LyricsWikiaRetriever(implicit c: Configuration) extends SingleHostHtmlRetriever {
   override val source = "LyricsWikia"
   override def fromHtml(html: Document, s: Song) = {
     // Make this method total

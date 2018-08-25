@@ -1,17 +1,20 @@
 package backend.external
 
 import backend.Url
+import backend.configs.Configuration
 import backend.recon.{Album, Artist, Reconcilable, ReconID}
 import common.io.InternetTalker
 import common.rich.RichT._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.{Document, Element}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String)(implicit it: InternetTalker)
+private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String)(implicit c: Configuration)
     extends ExternalLinkProvider[T] {
-  private implicit val ec: ExecutionContext = it.ec
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   private def getMbUrl(reconId: ReconID): Url = Url(s"https://musicbrainz.org/$metadataType/${reconId.id}")
   private def extractLink(e: Element): BaseLink[T] = {
     val url: Url = Url(e.select("a").attr("href").mapIf(_.startsWith("//")).to("https:" + _))
@@ -33,6 +36,6 @@ private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String
   }
 }
 
-private class ArtistLinkExtractor(implicit it: InternetTalker) extends MbHtmlLinkExtractor[Artist]("artist")
-private class AlbumLinkExtractor(implicit it: InternetTalker) extends MbHtmlLinkExtractor[Album]("release-group")
+private class ArtistLinkExtractor(implicit c: Configuration) extends MbHtmlLinkExtractor[Artist]("artist")
+private class AlbumLinkExtractor(implicit c: Configuration) extends MbHtmlLinkExtractor[Album]("release-group")
 

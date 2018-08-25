@@ -2,6 +2,7 @@ package mains.fixer
 
 import backend.Url
 import backend.configs.{RealConfig, StandaloneConfig}
+import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.ToMoreMonadErrorOps
@@ -21,6 +22,7 @@ object FolderFixer
     extends ToFunctorOps with ToMoreMonadErrorOps with FutureInstances {
   private implicit val c: RealConfig = StandaloneConfig
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
 
   private def findArtistFolder(artist: String): Option[Directory] = {
     println("finding matching folder")
@@ -58,7 +60,7 @@ object FolderFixer
 
   private def updateServer(): Future[Unit] = {
     println("Updating remote server if exists...")
-    c.get(Url("http://localhost:9000/debug/fast_refresh"))
+    it.get(Url("http://localhost:9000/debug/fast_refresh"))
         .>|(println("Updated!"))
         .listenError(e => println("Failed to update server: " + e.getMessage))
         .void

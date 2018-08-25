@@ -13,8 +13,9 @@ import org.jsoup.nodes.Document
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-private class MetalArchivesAlbumsFinder(implicit it: InternetTalker) extends SameHostExpander(Host.MetalArchives) {
-  private implicit val ec: ExecutionContext = it.ec
+private class MetalArchivesAlbumsFinder(implicit c: Configuration) extends SameHostExpander(Host.MetalArchives) {
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   override protected def findAlbum(d: Document, a: Album): Future[Option[Url]] =
     Future.successful(d.select(".display.discog tr td a").asScala
         .find(_.text.toLowerCase == a.title.toLowerCase)

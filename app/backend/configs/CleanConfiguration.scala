@@ -18,7 +18,7 @@ import scalaz.syntax.ToTraverseOps
 object CleanConfiguration extends RealConfig with NonPersistentConfig
     with FutureInstances with ListInstances with ToTraverseOps {
   override val injector = Guice createInjector module
-  override implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
   private val dbP = injector.instance[DbProvider]
   private def createTables() {
     implicit val c: Configuration = this

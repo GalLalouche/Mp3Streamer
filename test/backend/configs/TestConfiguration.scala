@@ -4,9 +4,9 @@ import java.util.UUID
 
 import backend.Url
 import backend.storage.DbProvider
-import com.google.inject.{Guice, Module}
+import com.google.inject.{Guice, Module, Provides}
 import com.google.inject.util.Modules
-import common.io.{MemoryRoot, RootDirectory}
+import common.io.{InternetTalker, MemoryRoot, RootDirectory}
 import common.io.WSAliases._
 import common.rich.RichT._
 import net.codingwell.scalaguice.ScalaModule
@@ -27,7 +27,6 @@ case class TestConfiguration(
     private val _root: MemoryRoot = new MemoryRoot,
 )
     extends NonPersistentConfig {
-  override val ec: ExecutionContext = _ec
 
   private def getRequest(u: Url): WSRequest = {
     val partialRequest: Url => WSRequest =
@@ -40,10 +39,8 @@ case class TestConfiguration(
     partialRequest(u)
   }
 
-  override def createWsClient(): WSClient = new FakeWSClient(getRequest)
-
   override final val module: Module = Modules.combine(new TestModule, new ScalaModule {
-    override def configure() = {
+    override def configure(): Unit = {
       bind[MemoryRoot].annotatedWith[RootDirectory] toInstance _root
       bind[ExecutionContext] toInstance _ec
       bind[FakeMusicFinder] toInstance _mf.opt.getOrElse(new FakeMusicFinder(_root))
@@ -54,6 +51,12 @@ case class TestConfiguration(
             s"jdbc:h2:mem:test${System.identityHashCode(this) + UUID.randomUUID().toString};DB_CLOSE_DELAY=-1")
         }
       }
+    }
+
+    @Provides
+    private def provideInternetTalker(_ec: ExecutionContext): InternetTalker = new InternetTalker {
+      override protected implicit def ec: ExecutionContext = _ec
+      override protected def createWsClient(): WSClient = new FakeWSClient(getRequest)
     }
   })
   override val injector = Guice.createInjector(module)

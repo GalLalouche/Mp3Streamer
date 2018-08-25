@@ -3,9 +3,11 @@ package mains.cover
 import java.awt.Image
 
 import backend.Retriever
-import common.io.RichWSRequest._
+import backend.configs.Configuration
 import common.io.{DirectoryRef, FileRef, InternetTalker}
+import common.io.RichWSRequest._
 import mains.SwingUtils
+import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -21,9 +23,10 @@ private object ImageDownloader extends SwingUtils {
     }
 }
 /** Downloads images and saves them to a directory; local image sources will be noop-ed. */
-private class ImageDownloader(outputDirectory: DirectoryRef)(implicit it: InternetTalker)
+private class ImageDownloader(outputDirectory: DirectoryRef)(implicit c: Configuration)
     extends Retriever[ImageSource, FolderImage] {
-  private implicit val ec: ExecutionContext = it.ec
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   import ImageDownloader._
 
   private def toFile(bytes: Array[Byte]): FileRef =

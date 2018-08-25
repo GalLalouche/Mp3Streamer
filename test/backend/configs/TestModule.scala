@@ -5,9 +5,12 @@ import java.time.Clock
 import backend.logging.{Logger, StringBuilderLogger}
 import com.google.inject.Provides
 import common.FakeClock
-import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
+import common.io.{DirectoryRef, InternetTalker, MemoryRoot, RootDirectory}
+import common.io.WSAliases.WSClient
 import models.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
+
+import scala.concurrent.ExecutionContext
 
 class TestModule extends ScalaModule {
   override def configure() = {

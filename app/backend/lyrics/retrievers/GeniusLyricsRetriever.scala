@@ -2,16 +2,17 @@ package backend.lyrics.retrievers
 
 import java.util.regex.Pattern
 
-import common.io.InternetTalker
+import backend.configs.Configuration
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
 import models.Song
 import org.jsoup.nodes.Document
-import scalaz.std.ListFunctions
 
 import scala.collection.JavaConverters._
 
-private[lyrics] class GeniusLyricsRetriever(implicit it: InternetTalker) extends SingleHostHtmlRetriever
+import scalaz.std.ListFunctions
+
+private[lyrics] class GeniusLyricsRetriever(implicit c: Configuration) extends SingleHostHtmlRetriever
     with ListFunctions {
   private def normalize(s: String): String =
     s.filter(e => e.isDigit || e.isLetter || e.isSpaceChar).toLowerCase.replaceAll(" ", "-")

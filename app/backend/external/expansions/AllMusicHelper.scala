@@ -9,6 +9,7 @@ import backend.external.BaseLink
 import backend.logging.Logger
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
+import common.io.InternetTalker
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.ToMoreMonadErrorOps
 import common.rich.primitives.RichBoolean._
@@ -24,7 +25,7 @@ import scalaz.syntax.ToFoldableOps
 private class AllMusicHelper(implicit c: Configuration) extends ToFoldableOps with TupleInstances
     with FutureInstances with ToMoreMonadErrorOps {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val it = c
+  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   private val logger = c.injector.instance[Logger]
   private val canonicalLink = Pattern compile "[a-zA-Z\\-0-9]+-mw\\d+"
   private val allmusicPrefix = "(?:http://www.)?allmusic.com/album/"

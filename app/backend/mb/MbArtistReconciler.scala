@@ -23,9 +23,10 @@ import scala.concurrent.duration._
 
 import scalaz.std.FutureInstances
 
-class MbArtistReconciler(implicit it: InternetTalker) extends OnlineReconciler[Artist]
+class MbArtistReconciler(implicit c: Configuration) extends OnlineReconciler[Artist]
     with FutureInstances with ToMoreMonadErrorOps {
-  private implicit val ec: ExecutionContext = it.ec
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   override def apply(a: Artist): Future[Option[ReconID]] =
     retry(() => getJson("artist/", ("query", a.name)), 5, 2 seconds)
         .map(_.objects("artists").find(_ has "type").get)
