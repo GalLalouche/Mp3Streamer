@@ -1,10 +1,9 @@
 package backend.mb
 
-import backend.configs.Configuration
 import common.io.InternetTalker
 import common.rich.func.ToMoreMonadErrorOps
 import common.rich.primitives.RichBoolean._
-import net.codingwell.scalaguice.InjectorExtensions._
+import javax.inject.Inject
 import play.api.http.Status
 import play.api.libs.json._
 import play.api.libs.ws.JsonBodyReadables._
@@ -14,10 +13,13 @@ import scala.concurrent.duration._
 
 import scalaz.std.FutureInstances
 
-private object JsonHelper extends ToMoreMonadErrorOps with FutureInstances {
-  def retry[T](f: () => Future[T], times: Int, retryWait: Duration)(implicit c: Configuration): Future[T] = {
-    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    implicit val it: InternetTalker = c.injector.instance[InternetTalker]
+private class JsonHelper @Inject()(
+    ec: ExecutionContext,
+    it: InternetTalker,
+) extends ToMoreMonadErrorOps with FutureInstances {
+  private implicit val iec: ExecutionContext = ec
+
+  def retry[T](f: () => Future[T], times: Int, retryWait: Duration): Future[T] = {
     f().handleError(e => {
       if (times <= 1)
         Future failed new Exception("Failed retry; last failure was: " + e.getMessage)
@@ -30,9 +32,7 @@ private object JsonHelper extends ToMoreMonadErrorOps with FutureInstances {
     })
   }
 
-  def getJson(method: String, other: (String, String)*)(implicit c: Configuration): Future[JsObject] = {
-    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    implicit val it: InternetTalker = c.injector.instance[InternetTalker]
+  def getJson(method: String, other: (String, String)*): Future[JsObject] = {
     it.useWs(_.url("http://musicbrainz.org/ws/2/" + method)
         .addQueryStringParameters("fmt" -> "json").addQueryStringParameters(other: _*)
         // see https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#How_can_I_be_a_good_citizen_and_be_smart_about_using_the_Web_Service.3FI

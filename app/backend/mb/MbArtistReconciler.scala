@@ -5,12 +5,10 @@ import java.time.{Clock, LocalDate, Year, YearMonth}
 import backend.RichTime._
 import backend.albums.NewAlbum.AlbumType
 import backend.configs.{Configuration, StandaloneConfig}
-import backend.mb.JsonHelper._
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon._
 import common.CompositeDateFormat
 import common.RichJson._
-import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.ToMoreMonadErrorOps
@@ -26,9 +24,9 @@ import scalaz.std.FutureInstances
 class MbArtistReconciler(implicit c: Configuration) extends OnlineReconciler[Artist]
     with FutureInstances with ToMoreMonadErrorOps {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
+  private val jsonHelper = c.injector.instance[JsonHelper]
   override def apply(a: Artist): Future[Option[ReconID]] =
-    retry(() => getJson("artist/", ("query", a.name)), 5, 2 seconds)
+    jsonHelper.retry(() => jsonHelper.getJson("artist/", ("query", a.name)), 5, 2 seconds)
         .map(_.objects("artists").find(_ has "type").get)
         .filterWithMessage(_.int("score") == 100, "could not find a 100 match")
         .map(_ ostr "id" map ReconID)
@@ -45,7 +43,7 @@ class MbArtistReconciler(implicit c: Configuration) extends OnlineReconciler[Art
   }
 
   def getAlbumsMetadata(artistKey: ReconID): Future[Seq[MbAlbumMetadata]] =
-    retry(() => getJson("release-group", ("artist", artistKey.id), ("limit", "100")), 10, 2 seconds)
+    jsonHelper.retry(() => jsonHelper.getJson("release-group", ("artist", artistKey.id), ("limit", "100")), 10, 2 seconds)
         .map(_.objects("release-groups")
             .filter(_ has "first-release-date")
             .filter(_ ostr "primary-type" exists Set("Album", "EP", "Live"))
