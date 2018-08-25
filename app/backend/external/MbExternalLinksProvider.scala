@@ -48,8 +48,8 @@ private class MbExternalLinksProvider(implicit c: Configuration)
     clock,
   ).mapTo(new TimeStamper(_))
 
-  private val artistReconStorage: ArtistReconStorage = new ArtistReconStorage
-  private val artistExternalStorage = new ArtistExternalStorage
+  private val artistReconStorage: ArtistReconStorage = c.injector.instance[ArtistReconStorage]
+  private val artistExternalStorage = c.injector.instance[ArtistExternalStorage]
   private val artistReconciler =
     new ReconcilerCacher[Artist](artistReconStorage, new MbArtistReconciler)
   private val artistPipe =
@@ -57,8 +57,8 @@ private class MbExternalLinksProvider(implicit c: Configuration)
       artistReconciler, artistExternalStorage, new ArtistLinkExtractor, LinkExpanders.artists, Reconcilers.artist)
   private def getArtistLinks(a: Artist): Future[TimestampedLinks[Artist]] = artistPipe(a)
 
-  private val albumReconStorage: AlbumReconStorage = new AlbumReconStorage
-  private val albumExternalStorage = new AlbumExternalStorage
+  private val albumReconStorage: AlbumReconStorage = c.injector.instance[AlbumReconStorage]
+  private val albumExternalStorage = c.injector.instance[AlbumExternalStorage]
   private def getAlbumLinks(artistLinks: MarkedLinks[Artist], album: Album): Future[TimestampedLinks[Album]] =
     wrapExternalPipeWithStorage(
       new ReconcilerCacher[Album](albumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get))),

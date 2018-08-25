@@ -26,8 +26,7 @@ private class NewAlbumsRetriever(
     reconciler: ReconcilerCacher[Artist],
     albumReconStorage: AlbumReconStorage,
     mf: IOMusicFinder,
-)(
-    implicit c: RealConfig)
+)(implicit c: RealConfig)
     extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
         with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances {
   private val logger = c.injector.instance[Logger]
@@ -91,8 +90,9 @@ private object NewAlbumsRetriever {
 
   def main(args: Array[String]): Unit = {
     implicit val c: RealConfig = StandaloneConfig
-    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val mf = c.injector.instance[IOMusicFinder]
+    val injector = c.injector
+    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+    val mf = injector.instance[IOMusicFinder]
 
     val artist: Artist = Artist("At the Gates")
     def cacheForArtist(a: Artist)(implicit c: RealConfig): ArtistLastYearCache = {
@@ -109,8 +109,8 @@ private object NewAlbumsRetriever {
     }
     def findNewAlbums(a: Artist): Future[Seq[NewAlbum]] =
       new NewAlbumsRetriever(
-        new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()),
-        new AlbumReconStorage(),
+        new ReconcilerCacher(injector.instance[ArtistReconStorage], new MbArtistReconciler()),
+        injector.instance[AlbumReconStorage],
         mf,
       ).findNewAlbums(cacheForArtist(a), artist)
           .map(_.map(_._1))

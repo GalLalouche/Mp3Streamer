@@ -29,11 +29,10 @@ private class NewAlbums(implicit c: RealConfig)
   import NewAlbum.NewAlbumJsonable
 
   private val logger = c.injector.instance[Logger]
-  private val dbP = c.injector.instance[DbProvider]
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
 
-  private val artistReconStorage = new ArtistReconStorage()
-  private val albumReconStorage = new AlbumReconStorage()
+  private val artistReconStorage = c.injector.instance[ArtistReconStorage]
+  private val albumReconStorage = c.injector.instance[AlbumReconStorage]
 
   private val jsonableSaver = new JsonableSaver()
 
@@ -73,7 +72,7 @@ private class NewAlbums(implicit c: RealConfig)
       override val subDirNames: List[String] = List("Rock", "Metal")
     }
     new NewAlbumsRetriever(
-      new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()),
+      new ReconcilerCacher(artistReconStorage, new MbArtistReconciler()),
       albumReconStorage,
       mf
     )

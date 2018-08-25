@@ -1,22 +1,22 @@
 package backend.lyrics
 
-import backend.configs.Configuration
 import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
 import common.rich.func.ToMoreFoldableOps
+import javax.inject.Inject
 import models.Song
-import net.codingwell.scalaguice.InjectorExtensions._
 import slick.ast.{BaseTypedType, ScalaBaseType}
 
 import scala.concurrent.ExecutionContext
 
 import scalaz.std.OptionInstances
 
-class LyricsStorage(implicit c: Configuration, ec: ExecutionContext)
-    extends SlickStorageTemplateFromConf[Song, Lyrics]
+class LyricsStorage @Inject()(
+    ec: ExecutionContext,
+    val dbP: DbProvider,
+) extends SlickStorageTemplateFromConf[Song, Lyrics](ec, dbP)
     with ToMoreFoldableOps with OptionInstances {
   import profile.api._
 
-  val dbP: DbProvider = c.injector.instance[DbProvider]
   override protected type Profile = dbP.profile.type
   override protected type Id = String
   override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
@@ -38,7 +38,11 @@ class LyricsStorage(implicit c: Configuration, ec: ExecutionContext)
     (extractId(k), source, content)
   }
   override protected def toId(et: LyricsTable) = et.song
-  override protected def extractId(s: Song) = s"${s.artistName} - ${s.title}"
+  override protected def extractId(s: Song) = s"${
+    s.artistName
+  } - ${
+    s.title
+  }"
   override protected def extractValue(e: Entity) =
     e._3.mapHeadOrElse(HtmlLyrics(e._2, _), Instrumental(e._2))
 }

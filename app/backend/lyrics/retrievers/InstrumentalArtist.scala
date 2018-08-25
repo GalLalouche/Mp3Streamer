@@ -14,7 +14,7 @@ import scalaz.syntax.ToBindOps
 private[lyrics] class InstrumentalArtist(implicit c: Configuration) extends DefaultInstrumental
     with FutureInstances with ToBindOps {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val storage = new InstrumentalArtistStorage
+  private val storage = c.injector.instance[InstrumentalArtistStorage]
 
   override protected def isInstrumental(s: Song) =
     storage.load(s.artistName).map(_.isDefined).get

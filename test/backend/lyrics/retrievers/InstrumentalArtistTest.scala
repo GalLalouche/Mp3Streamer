@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext
 class InstrumentalArtistTest extends FreeSpec with AuxSpecs with StorageSetup {
   override protected implicit val config: TestConfiguration = TestConfiguration()
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
-  override protected lazy val storage = new InstrumentalArtistStorage
+  override protected lazy val storage = config.injector.instance[InstrumentalArtistStorage]
   private val factory = new FakeModelFactory
   private val $ = new InstrumentalArtist
 

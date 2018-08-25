@@ -1,13 +1,16 @@
 package backend.lyrics.retrievers
 
-import backend.configs.Configuration
-import backend.storage.SlickStorageTemplateFromConf
+import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
+import javax.inject.{Inject, Singleton}
 import slick.ast.{BaseTypedType, ScalaBaseType}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class InstrumentalArtistStorage(implicit c: Configuration, ec: ExecutionContext)
-    extends SlickStorageTemplateFromConf[String, Unit] {
+@Singleton
+class InstrumentalArtistStorage @Inject()(
+    ec: ExecutionContext,
+    dbP: DbProvider,
+) extends SlickStorageTemplateFromConf[String, Unit](ec, dbP) {
   import profile.api._
 
   override protected type Id = String

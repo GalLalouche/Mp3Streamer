@@ -1,14 +1,16 @@
 package backend.recon
 
-import backend.configs.Configuration
-import backend.storage.SlickStorageTemplateFromConf
+import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
+import javax.inject.{Inject, Singleton}
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class SlickReconStorage[R <: Reconcilable](implicit c: Configuration, ec: ExecutionContext)
-    extends SlickStorageTemplateFromConf[R, (Option[ReconID], Boolean)] with ReconStorage[R] {
+// TODO replace with composition
+sealed abstract class SlickReconStorage[R <: Reconcilable](ec: ExecutionContext, dbP: DbProvider)
+    extends SlickStorageTemplateFromConf[R, (Option[ReconID], Boolean)](ec, dbP) with ReconStorage[R] {
+  private implicit val iec: ExecutionContext = ec
   import profile.api._
 
   protected implicit val localDateTimeColumn: JdbcType[ReconID] =
@@ -19,7 +21,12 @@ abstract class SlickReconStorage[R <: Reconcilable](implicit c: Configuration, e
 
   override protected def extractId(r: R) = r.normalize
 }
-class ArtistReconStorage(implicit c: Configuration, ec: ExecutionContext) extends SlickReconStorage[Artist] {
+
+@Singleton
+class ArtistReconStorage @Inject()(
+    ec: ExecutionContext,
+    dbP: DbProvider
+) extends SlickReconStorage[Artist](ec, dbP) {
   import profile.api._
 
   override protected type Entity = (String, Option[ReconID], Boolean)
@@ -37,7 +44,12 @@ class ArtistReconStorage(implicit c: Configuration, ec: ExecutionContext) extend
   override protected def extractValue(e: Entity) = e._2 -> e._3
 }
 
-class AlbumReconStorage(implicit c: Configuration, ec: ExecutionContext) extends SlickReconStorage[Album] {
+@Singleton
+class AlbumReconStorage @Inject()(
+    ec: ExecutionContext,
+    dbP: DbProvider
+) extends SlickReconStorage[Album](ec, dbP) {
+  private implicit val iec: ExecutionContext = ec
   import profile.api._
 
   override protected type Entity = (String, String, Option[ReconID], Boolean)

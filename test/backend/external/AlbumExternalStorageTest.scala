@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext
 class AlbumExternalStorageTest extends FreeSpec with AuxSpecs with StorageSetup {
   override protected implicit val config: TestConfiguration = new TestConfiguration
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
-  override protected val storage = new AlbumExternalStorage()
+  override protected val storage = config.injector.instance[AlbumExternalStorage]
 
   private val album: Album = Album("the spam album", 2000, Artist("foo and the bar band"))
   private val link1 = MarkedLink[Album](Url("www.foobar.com/foo/bar.html"), Host("foobar", Url("www.foobar.com")), true)

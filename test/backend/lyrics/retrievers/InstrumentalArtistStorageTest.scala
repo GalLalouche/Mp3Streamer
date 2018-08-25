@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext
 class InstrumentalArtistStorageTest extends FreeSpec with AuxSpecs with StorageSetup {
   override protected implicit val config: TestConfiguration = TestConfiguration()
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
-  override protected def storage = new InstrumentalArtistStorage
+  override protected def storage = config.injector.instance[InstrumentalArtistStorage]
   private val artistName = "foo"
 
   "store and load" in {

@@ -4,21 +4,24 @@ import java.time.LocalDateTime
 
 import backend.Url
 import backend.RichTime._
-import backend.configs.Configuration
 import backend.logging.Logger
 import backend.recon.{Album, Artist, Reconcilable}
-import backend.storage.SlickStorageTemplateFromConf
+import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
 import common.storage.{ColumnMappers, StringSerializable}
-import net.codingwell.scalaguice.InjectorExtensions._
+import javax.inject.Inject
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private[external] abstract class SlickExternalStorage[R <: Reconcilable](implicit c: Configuration, ec: ExecutionContext)
-    extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Option[LocalDateTime])] with ExternalStorage[R] {
-  private val logger = c.injector.instance[Logger]
+// TODO replace with composition
+private[external] abstract class SlickExternalStorage[R <: Reconcilable](
+    ec: ExecutionContext,
+    dbP: DbProvider,
+    logger: Logger,
+) extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Option[LocalDateTime])](ec, dbP) with ExternalStorage[R] {
   private class OldStorageEntry extends Exception
+  private implicit val iec: ExecutionContext = ec
   import profile.api._
 
   protected implicit val localDateTimeColumn: JdbcType[LocalDateTime] =
@@ -54,8 +57,11 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](implici
     }
 }
 
-private[backend] class ArtistExternalStorage(implicit c: Configuration, ec: ExecutionContext) extends
-    SlickExternalStorage[Artist] {
+private[backend] class ArtistExternalStorage @Inject()(
+    ec: ExecutionContext,
+    dbP: DbProvider,
+    logger: Logger,
+) extends SlickExternalStorage[Artist](ec, dbP, logger) {
   import profile.api._
 
   override protected type Entity = (String, MarkedLinks[Artist], Option[LocalDateTime])
@@ -73,8 +79,12 @@ private[backend] class ArtistExternalStorage(implicit c: Configuration, ec: Exec
   override protected def extractValue(e: Entity) = e._2 -> e._3
 }
 
-private[backend] class AlbumExternalStorage(implicit c: Configuration, ec: ExecutionContext) extends
-    SlickExternalStorage[Album] {
+private[backend] class AlbumExternalStorage @Inject()(
+    ec: ExecutionContext,
+    dbP: DbProvider,
+    logger: Logger,
+) extends SlickExternalStorage[Album](ec, dbP, logger) {
+  private implicit val iec: ExecutionContext = ec
   import profile.api._
 
   override protected type Entity = (String, String, MarkedLinks[Album], Option[LocalDateTime])

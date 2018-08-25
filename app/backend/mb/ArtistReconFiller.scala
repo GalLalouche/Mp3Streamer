@@ -18,7 +18,10 @@ private object ArtistReconFiller
   private implicit val c: RealConfig = StandaloneConfig
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
 
-  private val reconciler = new ReconcilerCacher[Artist](new ArtistReconStorage(), new MbArtistReconciler())
+  private val reconciler = new ReconcilerCacher[Artist](
+    c.injector.instance[ArtistReconStorage],
+    new MbArtistReconciler(),
+  )
   private def fill(mf: MusicFinder {type S = IOSystem})(implicit ec: ExecutionContext): Unit = {
     val artists: Set[Artist] = mf.getSongFiles
         .map(_.parent)
