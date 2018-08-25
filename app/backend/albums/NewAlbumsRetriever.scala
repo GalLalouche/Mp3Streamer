@@ -32,7 +32,7 @@ private class NewAlbumsRetriever(
   private val logger = c.injector.instance[Logger]
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val log = logger.verbose _
-  private val meta = new MbArtistReconciler
+  private val meta = c.injector.instance[MbArtistReconciler]
   private def getExistingAlbums: Seq[Album] = mf.genreDirs
       .flatMap(_.deepDirs)
       .flatMap(NewAlbumsRetriever.dirToAlbum(_))
@@ -109,7 +109,7 @@ private object NewAlbumsRetriever {
     }
     def findNewAlbums(a: Artist): Future[Seq[NewAlbum]] =
       new NewAlbumsRetriever(
-        new ReconcilerCacher(injector.instance[ArtistReconStorage], new MbArtistReconciler()),
+        new ReconcilerCacher(injector.instance[ArtistReconStorage], injector.instance[MbArtistReconciler]),
         injector.instance[AlbumReconStorage],
         mf,
       ).findNewAlbums(cacheForArtist(a), artist)

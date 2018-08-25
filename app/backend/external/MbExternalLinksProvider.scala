@@ -29,8 +29,12 @@ private class MbExternalLinksProvider(implicit c: Configuration)
     override def apply(r: R): Future[TimestampedLinks[R]] =
       foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
   }
-  private val clock = c.injector.instance[Clock]
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private val injector = c.injector
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+  private val artistReconStorage: ArtistReconStorage = injector.instance[ArtistReconStorage]
+  private val artistExternalStorage = injector.instance[ArtistExternalStorage]
+  private val clock = injector.instance[Clock]
+
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](
       reconciler: Retriever[R, (Option[ReconID], Boolean)],
       storage: ExternalStorage[R],
@@ -48,17 +52,15 @@ private class MbExternalLinksProvider(implicit c: Configuration)
     clock,
   ).mapTo(new TimeStamper(_))
 
-  private val artistReconStorage: ArtistReconStorage = c.injector.instance[ArtistReconStorage]
-  private val artistExternalStorage = c.injector.instance[ArtistExternalStorage]
   private val artistReconciler =
-    new ReconcilerCacher[Artist](artistReconStorage, new MbArtistReconciler)
+    new ReconcilerCacher[Artist](artistReconStorage, injector.instance[MbArtistReconciler])
   private val artistPipe =
     wrapExternalPipeWithStorage[Artist](
       artistReconciler, artistExternalStorage, new ArtistLinkExtractor, LinkExpanders.artists, Reconcilers.artist)
   private def getArtistLinks(a: Artist): Future[TimestampedLinks[Artist]] = artistPipe(a)
 
-  private val albumReconStorage: AlbumReconStorage = c.injector.instance[AlbumReconStorage]
-  private val albumExternalStorage = c.injector.instance[AlbumExternalStorage]
+  private val albumReconStorage: AlbumReconStorage = injector.instance[AlbumReconStorage]
+  private val albumExternalStorage = injector.instance[AlbumExternalStorage]
   private def getAlbumLinks(artistLinks: MarkedLinks[Artist], album: Album): Future[TimestampedLinks[Album]] =
     wrapExternalPipeWithStorage(
       new ReconcilerCacher[Album](albumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get))),

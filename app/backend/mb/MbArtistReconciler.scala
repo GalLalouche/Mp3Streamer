@@ -12,6 +12,7 @@ import common.RichJson._
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.ToMoreMonadErrorOps
+import javax.inject.Inject
 import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json._
 
@@ -21,10 +22,12 @@ import scala.concurrent.duration._
 
 import scalaz.std.FutureInstances
 
-class MbArtistReconciler(implicit c: Configuration) extends OnlineReconciler[Artist]
+class MbArtistReconciler @Inject()(
+    ec: ExecutionContext,
+    jsonHelper: JsonHelper,
+) extends OnlineReconciler[Artist]
     with FutureInstances with ToMoreMonadErrorOps {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val jsonHelper = c.injector.instance[JsonHelper]
+  private implicit val iec: ExecutionContext = ec
   override def apply(a: Artist): Future[Option[ReconID]] =
     jsonHelper.retry(() => jsonHelper.getJson("artist/", ("query", a.name)), 5, 2 seconds)
         .map(_.objects("artists").find(_ has "type").get)
@@ -59,7 +62,7 @@ object MbArtistReconciler {
   def main(args: Array[String]) {
     implicit val c: Configuration = StandaloneConfig
     implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val $ = new MbArtistReconciler
+    val $ = c.injector.instance[MbArtistReconciler]
     $(Artist("Moonsorrow")).map(_.get).flatMap($.getAlbumsMetadata).get.log()
     System exit 0
   }

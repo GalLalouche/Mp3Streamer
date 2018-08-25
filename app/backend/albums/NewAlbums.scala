@@ -6,7 +6,6 @@ import backend.configs.RealConfig
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.recon._
-import backend.storage.DbProvider
 import common.io.JsonableSaver
 import common.rich.RichFuture._
 import common.rich.RichObservable._
@@ -28,12 +27,12 @@ private class NewAlbums(implicit c: RealConfig)
         with ToMoreFunctorOps {
   import NewAlbum.NewAlbumJsonable
 
-  private val logger = c.injector.instance[Logger]
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-
-  private val artistReconStorage = c.injector.instance[ArtistReconStorage]
-  private val albumReconStorage = c.injector.instance[AlbumReconStorage]
-
+  private val injector = c.injector
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+  private val logger = injector.instance[Logger]
+  private val artistReconStorage = injector.instance[ArtistReconStorage]
+  private val albumReconStorage = injector.instance[AlbumReconStorage]
+  private val mbArtistReconciler = injector.instance[MbArtistReconciler]
   private val jsonableSaver = new JsonableSaver()
 
   private def save(m: Map[Artist, Seq[NewAlbum]]): Unit = {
@@ -72,7 +71,7 @@ private class NewAlbums(implicit c: RealConfig)
       override val subDirNames: List[String] = List("Rock", "Metal")
     }
     new NewAlbumsRetriever(
-      new ReconcilerCacher(artistReconStorage, new MbArtistReconciler()),
+      new ReconcilerCacher(artistReconStorage, mbArtistReconciler),
       albumReconStorage,
       mf
     )
