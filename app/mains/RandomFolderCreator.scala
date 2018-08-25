@@ -6,7 +6,8 @@ import backend.configs.{RealConfig, StandaloneConfig}
 import common.rich.RichFuture._
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
-import models.{Poster, Song}
+import models.{IOMusicFinder, Poster, Song}
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.apache.commons.io.FileUtils
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.audio.exceptions.{CannotWriteException, UnableToRenameFileException}
@@ -15,6 +16,7 @@ import org.jaudiotagger.tag.images.StandardArtwork
 import scala.annotation.tailrec
 import scala.concurrent.Future
 import scala.util.Random
+
 import scalaz.std.{FutureInstances, ListInstances}
 import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
@@ -22,7 +24,8 @@ import scalaz.syntax.{ToBindOps, ToTraverseOps}
 private object RandomFolderCreator extends
     ToBindOps with FutureInstances with ListInstances with ToTraverseOps {
   implicit val c: RealConfig = StandaloneConfig
-  private val songs = c.mf.getSongFiles.map(_.file)
+  val mf = c.injector.instance[IOMusicFinder]
+  private val songs = mf.getSongFiles.map(_.file)
 
   private def createPlaylistFile(outputDir: Directory): Future[File] = Future {
     val files = outputDir.files
@@ -42,7 +45,7 @@ private object RandomFolderCreator extends
 
   @tailrec
   private def addSongs(maxSize: Int, forEachEntry: (File, Int) => Unit, existing: Set[File] = Set(),
-                       futures: List[Future[Unit]] = Nil): Future[_] = {
+      futures: List[Future[Unit]] = Nil): Future[_] = {
     val index = existing.size
     if (index == maxSize)
       return futures.sequenceU map (_.reduce((_, _) => Unit))

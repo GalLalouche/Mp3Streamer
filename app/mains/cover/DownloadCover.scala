@@ -5,14 +5,17 @@ import java.net.URLEncoder
 import backend.Url
 import backend.configs.{Configuration, StandaloneConfig}
 import common.io.{IODirectory, IOFile}
-import common.rich.path.RichFile.richFile
 import common.rich.path.{Directory, RichFileUtils, TempDirectory}
+import common.rich.path.RichFile.richFile
+import models.MusicFinder
+import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.Future
 import scala.sys.process.Process
 
 object DownloadCover {
   private implicit val c: Configuration = StandaloneConfig
+  val mf = c.injector.instance[MusicFinder]
 
   private case class CoverException(str: String, e: Exception) extends Exception(e)
 
@@ -26,7 +29,7 @@ object DownloadCover {
    */
   def apply(albumDir: Directory): Future[Directory => Unit] = {
     val searchUrl = {
-      val album = c.mf.getSongsInDir(IODirectory(albumDir)).head.album
+      val album = mf.getSongsInDir(IODirectory(albumDir)).head.album
       val query = URLEncoder.encode(s"${album.artistName} ${album.title}", "UTF-8")
       // tbm=isch => image search; tbs=iar:s => search for square images
       s"https://www.google.com/search?tbm=isch&q=$query&tbs=iar:s"

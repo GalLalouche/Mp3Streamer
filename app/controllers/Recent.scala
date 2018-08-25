@@ -5,8 +5,9 @@ import java.time.ZoneOffset
 import common.io.DirectoryRef
 import common.json.ToJsonableOps
 import controllers.websockets.WebSocketController
-import models.Album
+import models.{Album, MusicFinder}
 import models.ModelJsonable.AlbumJsonifier
+import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.mvc.Action
 
 import scala.concurrent.Future
@@ -14,7 +15,7 @@ import scala.concurrent.Future
 object Recent extends WebSocketController with ToJsonableOps {
   // TODO move to a backend class
   private def recentAlbums(amount: Int): Future[Seq[Album]] = Future {
-    val mf = ControllerUtils.config.mf
+    val mf = c.injector.instance[MusicFinder]
     mf.genreDirs
         .flatMap(_.deepDirs)
         .filter(mf.getSongFilesInDir(_).nonEmpty)

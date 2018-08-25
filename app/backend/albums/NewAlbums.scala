@@ -2,7 +2,7 @@ package backend.albums
 
 import java.util.logging.{Level, Logger => JLogger}
 
-import backend.configs.Configuration
+import backend.configs.RealConfig
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.recon._
@@ -11,7 +11,7 @@ import common.rich.RichFuture._
 import common.rich.RichObservable._
 import common.rich.func.ToMoreFunctorOps
 import mains.fixer.StringFixer
-import models.{IOMusicFinder, IOMusicFinderProvider}
+import models.IOMusicFinder
 import monocle.function.IndexFunctions
 import monocle.std.MapOptics
 import monocle.syntax.ApplySyntax
@@ -22,7 +22,7 @@ import scala.concurrent.Future
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
-private class NewAlbums(implicit c: Configuration)
+private class NewAlbums(implicit c: RealConfig)
     extends ToBindOps with FutureInstances with MapOptics with ApplySyntax with IndexFunctions
         with ToMoreFunctorOps {
   import NewAlbum.NewAlbumJsonable
@@ -64,14 +64,16 @@ private class NewAlbums(implicit c: Configuration)
   }
   def ignoreAlbum(a: Album): Future[Unit] = ignore(a, albumReconStorage) >> removeAlbum(a)
   private val retriever = {
-    // SAM doesn't work for zero argument method without parens,
-    // and I'll be damned if I'm adding empty parens for this shit
-    val mfp = new IOMusicFinderProvider {
-      override val mf = new IOMusicFinder {
-        override val subDirNames: List[String] = List("Rock", "Metal")
-      }
+    // SAM doesn't work for zero argument method without parens, and I'll be damned if I'm adding empty parens
+    // for this shit.
+    val mf = new IOMusicFinder {
+      override val subDirNames: List[String] = List("Rock", "Metal")
     }
-    new NewAlbumsRetriever(new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()), albumReconStorage)(c, mfp)
+    new NewAlbumsRetriever(
+      new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()),
+      albumReconStorage,
+      mf
+    )
   }
 
   private def store(a: NewAlbum, r: ReconID): Unit = albumReconStorage.store(a.toAlbum, Some(r) -> false)
@@ -86,7 +88,7 @@ private class NewAlbums(implicit c: Configuration)
 object NewAlbums {
   JLogger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   def main(args: Array[String]): Unit = {
-    implicit val c: Configuration = NewAlbumsConfig
+    implicit val c: RealConfig = NewAlbumsConfig
     new NewAlbums().fetchAndSave.get
     println("Done!")
   }

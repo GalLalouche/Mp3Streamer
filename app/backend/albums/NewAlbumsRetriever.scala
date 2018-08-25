@@ -1,6 +1,6 @@
 package backend.albums
 
-import backend.configs.{Configuration, RealConfig, StandaloneConfig}
+import backend.configs.{RealConfig, StandaloneConfig}
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
@@ -11,7 +11,7 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 import common.rich.primitives.RichBoolean._
-import models.{IOMusicFinderProvider, Song}
+import models.{IOMusicFinder, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import rx.lang.scala.Observable
 
@@ -22,14 +22,18 @@ import scala.util.{Failure, Success}
 import scalaz.Kleisli
 import scalaz.std.FutureInstances
 
-private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReconStorage: AlbumReconStorage)(
-    implicit c: Configuration, mfp: IOMusicFinderProvider)
+private class NewAlbumsRetriever(
+    reconciler: ReconcilerCacher[Artist],
+    albumReconStorage: AlbumReconStorage,
+    mf: IOMusicFinder,
+)(
+    implicit c: RealConfig)
     extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
         with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances {
   private val logger = c.injector.instance[Logger]
   private val log = logger.verbose _
   private val meta = new MbArtistReconciler
-  private def getExistingAlbums: Seq[Album] = mfp.mf.genreDirs
+  private def getExistingAlbums: Seq[Album] = mf.genreDirs
       .flatMap(_.deepDirs)
       .flatMap(NewAlbumsRetriever.dirToAlbum(_))
   private def removeIgnoredAlbums(artist: Artist, albums: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
@@ -76,17 +80,22 @@ private class NewAlbumsRetriever(reconciler: ReconcilerCacher[Artist], albumReco
 }
 
 private object NewAlbumsRetriever {
-  private def dirToAlbum(dir: IODirectory)(implicit mfp: IOMusicFinderProvider): Option[Album] = dir.files
-      .find(_.extension |> mfp.mf.extensions)
-      .map(_.file)
-      .map(Song(_).release)
+  private def dirToAlbum(dir: IODirectory)(implicit c: RealConfig): Option[Album] = {
+    val mf = c.injector.instance[IOMusicFinder]
+    dir.files
+        .find(_.extension |> mf.extensions)
+        .map(_.file)
+        .map(Song(_).release)
+  }
 
   def main(args: Array[String]): Unit = {
     implicit val c: RealConfig = StandaloneConfig
+    val mf = c.injector.instance[IOMusicFinder]
 
     val artist: Artist = Artist("At the Gates")
-    def cacheForArtist(a: Artist)(implicit mfp: IOMusicFinderProvider): ArtistLastYearCache = {
-      val artistDir = mfp.mf.genreDirs
+    def cacheForArtist(a: Artist)(implicit c: RealConfig): ArtistLastYearCache = {
+      val mf = c.injector.instance[IOMusicFinder]
+      val artistDir = mf.genreDirs
           .flatMap(_.deepDirs)
           .find(_.name.toLowerCase == a.name.toLowerCase)
           .get
@@ -99,8 +108,9 @@ private object NewAlbumsRetriever {
     def findNewAlbums(a: Artist): Future[Seq[NewAlbum]] =
       new NewAlbumsRetriever(
         new ReconcilerCacher(new ArtistReconStorage(), new MbArtistReconciler()),
-        new AlbumReconStorage())(c, c)
-          .findNewAlbums(cacheForArtist(a), artist)
+        new AlbumReconStorage(),
+        mf,
+      ).findNewAlbums(cacheForArtist(a), artist)
           .map(_.map(_._1))
     findNewAlbums(artist).get.log()
     Thread.getAllStackTraces.keySet.asScala.filterNot(_.isDaemon).foreach(println)

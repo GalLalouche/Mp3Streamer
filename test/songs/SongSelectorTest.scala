@@ -3,9 +3,10 @@ package songs
 import backend.configs.{FakeMusicFinder, TestConfiguration}
 import common.AuxSpecs
 import models.{FakeModelFactory, MemorySong}
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalacheck.Arbitrary._
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
 class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs with GeneratorDrivenPropertyChecks
     with Matchers {
@@ -15,10 +16,10 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
   import factory.arbSong
 
   "returns a random song" in {
-    forAll { ss: List[MemorySong] =>
+    forAll {ss: List[MemorySong] =>
       whenever(ss.nonEmpty) {
         implicit val c: TestConfiguration = new TestConfiguration
-        val mf: FakeMusicFinder = c.mf
+        val mf = c.injector.instance[FakeMusicFinder]
         val songs = ss.map(mf.copySong)
 
         val $ = SongSelector.create
@@ -29,7 +30,7 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
   }
   "next song" in {
     implicit val c: TestConfiguration = new TestConfiguration
-    val mf: FakeMusicFinder = c.mf
+    val mf = c.injector.instance[FakeMusicFinder]
     val song1 = mf.copySong(factory.song(albumName = "album", artistName = "artist", track = 1))
     val song2 = mf.copySong(factory.song(albumName = "album", artistName = "artist", track = 2))
 

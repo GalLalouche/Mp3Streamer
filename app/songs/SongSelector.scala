@@ -37,8 +37,9 @@ object SongSelector
   /** A mutable-updateable wrapper of SongSelector */
   private class SongSelectorProxy(implicit c: Configuration) extends SongSelector {
     private val logger = c.injector.instance[Logger]
+    private val mf = c.injector.instance[MusicFinder]
     def update(): Future[_] = {
-      val $ = Future(new SongSelectorImpl(c.mf.getSongFiles.toVector)(c.mf))
+      val $ = Future(new SongSelectorImpl(mf.getSongFiles.toVector)(mf))
       if (songSelector == null)
         songSelector = $
       else // don't override until complete

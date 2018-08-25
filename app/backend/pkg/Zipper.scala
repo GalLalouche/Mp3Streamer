@@ -3,7 +3,7 @@ package backend.pkg
 import backend.configs.Configuration
 import common.io.{DirectoryRef, FileRef, RootDirectory}
 import common.rich.primitives.RichBoolean._
-import models.{MusicFinderProvider, Song}
+import models.{MusicFinder, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.{Json, JsString}
 
@@ -41,8 +41,9 @@ private object Zipper {
   private[this] val JsonFileName = "remote_paths.json"
 
   private def createRemotePathJson(songRemotePathEncoder: Song => String)(dir: DirectoryRef)(
-      implicit mfp: MusicFinderProvider): Unit = {
-    val json = mfp.mf.getSongsInDir(dir).map(e => e.file.name -> JsString(songRemotePathEncoder(e)))
+      implicit c: Configuration): Unit = {
+    val mf = c.injector.instance[MusicFinder]
+    val json = mf.getSongsInDir(dir).map(e => e.file.name -> JsString(songRemotePathEncoder(e)))
         .foldLeft(Json.obj())((json, next) => json + next)
     dir.addFile(JsonFileName).write(json.toString)
   }

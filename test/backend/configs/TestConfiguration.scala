@@ -4,6 +4,7 @@ import java.util.UUID
 
 import backend.Url
 import com.google.inject.{Guice, Module}
+import com.google.inject.util.Modules
 import common.io.{MemoryRoot, RootDirectory}
 import common.io.WSAliases._
 import common.rich.RichT._
@@ -29,7 +30,6 @@ case class TestConfiguration(
     profile.api.Database.forURL(
       s"jdbc:h2:mem:test${System.identityHashCode(this) + UUID.randomUUID().toString};DB_CLOSE_DELAY=-1")
   }
-  override val mf: FakeMusicFinder = _mf.opt.getOrElse(new FakeMusicFinder(_root))
 
   private def getRequest(u: Url): WSRequest = {
     val partialRequest: Url => WSRequest =
@@ -44,15 +44,13 @@ case class TestConfiguration(
 
   override def createWsClient(): WSClient = new FakeWSClient(getRequest)
 
-  override final val module: Module = new TestModule
-  override val injector = Guice.createInjector(
-    module,
-    new ScalaModule {
-      override def configure() = {
-        bind[MemoryRoot].annotatedWith[RootDirectory] toInstance _root
-      }
+  override final val module: Module = Modules.combine(new TestModule, new ScalaModule {
+    override def configure() = {
+      bind[MemoryRoot].annotatedWith[RootDirectory] toInstance _root
+      bind[FakeMusicFinder] toInstance _mf.opt.getOrElse(new FakeMusicFinder(_root))
     }
-  )
+  })
+  override val injector = Guice.createInjector(module)
 }
 
 

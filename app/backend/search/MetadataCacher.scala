@@ -8,29 +8,34 @@ import common.ds.{Collectable, IndexedSet}
 import common.io._
 import common.json.Jsonable
 import models._
+import net.codingwell.scalaguice.InjectorExtensions._
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
 
 import scala.collection.GenSeq
 import scala.concurrent.Future
+
 import scalaz.Semigroup
 import scalaz.std.{AnyValInstances, FutureInstances, ListInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
-private class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration,
+private class MetadataCacher(saver: JsonableSaver)(implicit
+    c: Configuration,
     songJsonable: Jsonable[Song],
     albumJsonable: Jsonable[Album],
-    artistJsonable: Jsonable[Artist])
-    extends OptionInstances with ListInstances with AnyValInstances
-        with ToTraverseOps with FutureInstances with ToBindOps {
+    artistJsonable: Jsonable[Artist],
+) extends OptionInstances with ListInstances with AnyValInstances
+    with ToTraverseOps with FutureInstances with ToBindOps {
   import MetadataCacher._
+
+  private val mf = c.injector.instance[MusicFinder]
 
   private sealed trait UpdateType {
     def apply(): Observable[IndexUpdate]
   }
   private object UpdateAll extends UpdateType {
     override def apply(): Observable[IndexUpdate] =
-      updateIndex(c.mf.albumDirs, new AllInfoHandler {
+      updateIndex(mf.albumDirs, new AllInfoHandler {
         override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver save xs
         override def apply(artists: IndexedSet[Artist]): Unit = apply(artists.toSeq)
       })
@@ -41,8 +46,8 @@ private class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration
         List(saver.lastUpdateTime[Song], saver.lastUpdateTime[Album], saver.lastUpdateTime[Artist])
             .sequenceU
             .flatMap(_.minimumBy(_.toEpochSecond(ZoneOffset.UTC)))
-      lastUpdateTime.fold(indexAll()) { lastUpdateTime =>
-        updateIndex(c.mf.albumDirs.filter(_.lastModified isAfter lastUpdateTime), new AllInfoHandler {
+      lastUpdateTime.fold(indexAll()) {lastUpdateTime =>
+        updateIndex(mf.albumDirs.filter(_.lastModified isAfter lastUpdateTime), new AllInfoHandler {
           override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver.update[T](_ ++ xs)
           override def apply(artists: IndexedSet[Artist]): Unit = saver.update[Artist](artists ++ _)
         })
@@ -62,7 +67,7 @@ private class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration
 
   // TODO handle empty directories
   private def getDirectoryInfo(d: DirectoryRef, onParsingCompleted: () => Unit): DirectoryInfo = {
-    val songs = c.mf getSongsInDir d
+    val songs = mf getSongsInDir d
     val album = songs.head.album
     onParsingCompleted()
     DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))
@@ -83,11 +88,11 @@ private class MetadataCacher(saver: JsonableSaver)(implicit val c: Configuration
     Observable[IndexUpdate](obs => {
       val totalSize = dirs.length
       Future {
-        gatherInfo(dirs.zipWithIndex.map { case (dir, index) =>
+        gatherInfo(dirs.zipWithIndex.map {case (dir, index) =>
           getDirectoryInfo(dir, onParsingCompleted = () =>
             c.execute(() => obs onNext IndexUpdate(index + 1, totalSize, dir)))
         })
-      } map { info =>
+      } map {info =>
         allInfoHandler(info.songs)
         allInfoHandler(info.albums)
         allInfoHandler(info.artists)

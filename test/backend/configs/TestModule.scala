@@ -6,6 +6,7 @@ import backend.logging.{Logger, StringBuilderLogger}
 import com.google.inject.Provides
 import common.FakeClock
 import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
+import models.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
 
 class TestModule extends ScalaModule {
@@ -13,12 +14,20 @@ class TestModule extends ScalaModule {
     val clock = new FakeClock
     bind[FakeClock] toInstance clock
     bind[Logger] toInstance new StringBuilderLogger(new StringBuilder)
+
+    // TODO make a pullrequest to fix this in scalaguice?
+    requireBinding(classOf[MemoryRoot])
+    requireBinding(classOf[FakeMusicFinder])
   }
 
+  // Ensures that the non-fake bindings will be the same as the fake ones.
   @Provides
-  def provideClock(clock: FakeClock): Clock = clock
+  private def provideClock(clock: FakeClock): Clock = clock
 
-  @Provides // Ensures that if MemoryRoot binding is changed, rootDirectory will remain the same.
+  @Provides
   @RootDirectory
-  def provideMemoryRoot(@RootDirectory directoryRef: MemoryRoot): DirectoryRef = directoryRef
+  private def provideMemoryRoot(@RootDirectory directoryRef: MemoryRoot): DirectoryRef = directoryRef
+
+  @Provides
+  private def provideMusicFinder(mf: FakeMusicFinder): MusicFinder = mf
 }

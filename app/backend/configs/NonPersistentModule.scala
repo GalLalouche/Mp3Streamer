@@ -4,6 +4,7 @@ import java.time.Clock
 
 import backend.logging.{ConsoleLogger, FilteringLogger, Logger}
 import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
+import models.{IOMusicFinder, MusicFinder}
 import net.codingwell.scalaguice.ScalaModule
 
 object NonPersistentModule extends ScalaModule {
@@ -11,5 +12,6 @@ object NonPersistentModule extends ScalaModule {
     bind[Clock] toInstance Clock.systemDefaultZone
     bind[Logger] toInstance new ConsoleLogger with FilteringLogger
     bind[DirectoryRef].annotatedWith[RootDirectory] toInstance new MemoryRoot
+    bind[MusicFinder] toInstance new IOMusicFinder
   }
 }
