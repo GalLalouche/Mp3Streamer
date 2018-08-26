@@ -6,7 +6,7 @@ import backend.Retriever
 import backend.configs.Configuration
 import backend.external.expansions.{CompositeSameHostExpander, ExternalLinkExpander, LinkExpanders}
 import backend.external.extensions._
-import backend.external.recons.{Reconciler, Reconcilers}
+import backend.external.recons.{AlbumReconcilers, ArtistReconcilers, Reconciler, Reconcilers}
 import backend.mb.{MbAlbumReconciler, MbArtistReconciler}
 import backend.recon._
 import backend.recon.Reconcilable._
@@ -34,13 +34,15 @@ private class MbExternalLinksProvider(implicit c: Configuration)
   private val artistReconStorage: ArtistReconStorage = injector.instance[ArtistReconStorage]
   private val artistExternalStorage = injector.instance[ArtistExternalStorage]
   private val clock = injector.instance[Clock]
+  private val artistReconcilers = injector.instance[ArtistReconcilers]
+  private val albumReconcilers = injector.instance[AlbumReconcilers]
 
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](
       reconciler: Retriever[R, (Option[ReconID], Boolean)],
       storage: ExternalStorage[R],
       provider: Retriever[ReconID, BaseLinks[R]],
       expanders: Traversable[ExternalLinkExpander[R]],
-      standaloneReconcilers: Traversable[Reconciler[R]]
+      standaloneReconcilers: Reconcilers[R],
   ): Retriever[R, TimestampedLinks[R]] = new RefreshableStorage[R, MarkedLinks[R]](
     new FreshnessStorage(storage, clock),
     new ExternalPipe[R](
@@ -56,7 +58,7 @@ private class MbExternalLinksProvider(implicit c: Configuration)
     new ReconcilerCacher[Artist](artistReconStorage, injector.instance[MbArtistReconciler])
   private val artistPipe =
     wrapExternalPipeWithStorage[Artist](
-      artistReconciler, artistExternalStorage, new ArtistLinkExtractor, LinkExpanders.artists, Reconcilers.artist)
+      artistReconciler, artistExternalStorage, new ArtistLinkExtractor, LinkExpanders.artists, artistReconcilers)
   private def getArtistLinks(a: Artist): Future[TimestampedLinks[Artist]] = artistPipe(a)
 
   private val albumReconStorage: AlbumReconStorage = injector.instance[AlbumReconStorage]
@@ -67,7 +69,7 @@ private class MbExternalLinksProvider(implicit c: Configuration)
       albumExternalStorage,
       new AlbumLinkExtractor,
       LinkExpanders.albums,
-      CompositeSameHostExpander.default.toReconcilers(artistLinks.map(_.toBase)) ++ Reconcilers.album) apply album
+      CompositeSameHostExpander.default.toReconcilers(artistLinks.map(_.toBase)) ++ albumReconcilers) apply album
 
   private val extender = CompositeExtender.default
 

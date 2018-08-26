@@ -22,12 +22,11 @@ class LastFmReconcilerTest extends FreeSpec with AuxSpecs with DocumentSpecs {
     new LastFmReconciler(
       ec, config.injector.instance[InternetTalker], millisBetweenRedirects = 1)
   }
-  val $ =
-    "404" in {
-      val c: Configuration = config.copy(_urlToResponseMapper =
-          FakeWSResponse(status = HttpURLConnection.HTTP_NOT_FOUND).partialConst)
-      create(c)(Artist("Foobar")).get shouldBe 'empty
-    }
+  "404" in {
+    val c: Configuration = config.copy(_urlToResponseMapper =
+        FakeWSResponse(status = HttpURLConnection.HTTP_NOT_FOUND).partialConst)
+    create(c)(Artist("Foobar")).get shouldBe 'empty
+  }
   "200" in {
     val c: Configuration = config.copy(_urlToBytesMapper = getBytes("last_fm.html").partialConst)
     create(c)(Artist("dreamtheater")).get.get shouldReturn

@@ -2,13 +2,14 @@ package backend.external
 
 import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
-import backend.external.recons.Reconciler
-import backend.recon.{ReconID, Reconcilable}
+import backend.external.recons.{Reconciler, Reconcilers}
+import backend.recon.{Reconcilable, ReconID}
 import common.rich.collections.RichSet._
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances}
 
 import scala.concurrent.{ExecutionContext, Future}
+
 import scalaz.std.FutureInstances
 import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
@@ -23,9 +24,9 @@ import scalaz.syntax.{ToBindOps, ToTraverseOps}
 private class ExternalPipe[R <: Reconcilable](
     reconciler: Retriever[R, ReconID],
     linksRetriever: Retriever[ReconID, BaseLinks[R]],
-    standaloneReconcilers: Traversable[Reconciler[R]],
-    expanders: Traversable[ExternalLinkExpander[R]])
-    (implicit ec: ExecutionContext) extends Retriever[R, MarkedLinks[R]]
+    standaloneReconcilers: Reconcilers[R],
+    expanders: Traversable[ExternalLinkExpander[R]],
+)(implicit ec: ExecutionContext) extends Retriever[R, MarkedLinks[R]]
     with ToTraverseOps with ToBindOps
     with FutureInstances with MoreTraverseInstances with MoreTraversableInstances {
   override def apply(r: R): Future[MarkedLinks[R]] = reconciler(r) >>= linksRetriever >>= expand(r)
@@ -45,7 +46,7 @@ private class ExternalPipe[R <: Reconcilable](
   private def extractHosts(ls: BaseLinks[R]) = ls.map(_.host).toSet
 
   private def applyNewHostReconcilers(entity: R, existingHosts: Set[Host]): Future[BaseLinks[R]] =
-    standaloneReconcilers.filterNot(existingHosts apply _.host).traverse(_ (entity)).map(_.flatten)
+    standaloneReconcilers.get.filterNot(existingHosts apply _.host).traverse(_ (entity)).map(_.flatten)
 
   private def filterLinksWithNewHosts(existingLinks: BaseLinks[R], newLinks: BaseLinks[R]): BaseLinks[R] = {
     val map = existingLinks.map(_.host).toSet

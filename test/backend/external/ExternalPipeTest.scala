@@ -4,7 +4,7 @@ import backend.Url
 import backend.configs.{Configuration, TestConfiguration}
 import backend.external.Host.{AllMusic, RateYourMusic, Wikipedia}
 import backend.external.expansions.ExternalLinkExpander
-import backend.external.recons.Reconciler
+import backend.external.recons.{Reconciler, Reconcilers}
 import backend.recon.{Album, ReconID}
 import common.AuxSpecs
 import common.rich.RichFuture._
@@ -39,10 +39,12 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
   private val newLinkReconciler = constReconciler(reconciledLink.host, reconciledLink)
   private def constFuture[T](t: T) = Future.successful(t).const
   "should mark new links" in {
-    val $ = new ExternalPipe[Album](ReconID("foobar") |> constFuture,
+    val $ = new ExternalPipe[Album](
+      ReconID("foobar") |> constFuture,
       List(existingLink) |> constFuture,
-      List(newLinkReconciler),
-      List(newLinkExpander))
+      Reconcilers(List(newLinkReconciler)),
+      List(newLinkExpander),
+    )
     $(null).get shouldReturn (Set(existingMarkedLink) ++ expectedNewLinks)
   }
   "Doesn't invoke hosts if there's no need" - {
@@ -56,32 +58,40 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
       override def apply(a: Album) = failed
     }
     "Should not invoke on existing hosts" in {
-      val $ = new ExternalPipe[Album](ReconID("foobar") |> constFuture,
+      val $ = new ExternalPipe[Album](
+        ReconID("foobar") |> constFuture,
         List(existingLink) |> constFuture,
-        List(failedReconciler(existingHost), newLinkReconciler),
-        List(failedExpander(existingHost), newLinkExpander))
+        Reconcilers(List(failedReconciler(existingHost), newLinkReconciler)),
+        List(failedExpander(existingHost), newLinkExpander),
+      )
       $(null).get shouldSetEqual Set(existingMarkedLink) ++ expectedNewLinks
     }
     "Should not invoke expanders if reconcilers already returned the host" in {
-      val $ = new ExternalPipe[Album](ReconID("foobar") |> constFuture,
+      val $ = new ExternalPipe[Album](
+        ReconID("foobar") |> constFuture,
         List(existingLink) |> constFuture,
-        List(newLinkReconciler),
-        List(failedExpander(reconciledLink.host)))
+        Reconcilers(List(newLinkReconciler)),
+        List(failedExpander(reconciledLink.host)),
+      )
       $(null).get shouldSetEqual Set(existingMarkedLink, markedReconciledLink)
     }
   }
   "Should ignored new, extra links" in {
-    val $ = new ExternalPipe[Album](ReconID("foobar") |> constFuture,
+    val $ = new ExternalPipe[Album](
+      ReconID("foobar") |> constFuture,
       List(existingLink) |> constFuture,
-      List(newLinkReconciler),
-      List(constExpander(expandedLink, rehashedLinks)))
+      Reconcilers(List(newLinkReconciler)),
+      List(constExpander(expandedLink, rehashedLinks)),
+    )
     $(null).get shouldSetEqual Set(existingMarkedLink) ++ expectedNewLinks
   }
   "Should not fail when there are multiple entries with the same host in existing" in {
-    val $ = new ExternalPipe[Album](ReconID("foobar") |> constFuture,
+    val $ = new ExternalPipe[Album](
+      ReconID("foobar") |> constFuture,
       List[BaseLink[Album]](existingLink, existingLink.copy(link = Url("existing2"))) |> constFuture,
-      List(newLinkReconciler),
-      List(newLinkExpander))
+      Reconcilers(List(newLinkReconciler)),
+      List(newLinkExpander),
+    )
     $(null).get should have size 4
   }
   "Should apply its finders recursively, but once at most" in {
@@ -103,10 +113,12 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
 
     val expander1 = oneTimeExpander(wikiLink, allMusicLink)
     val expander2 = oneTimeExpander(allMusicLink, rateYouMusicLink)
-    val $ = new ExternalPipe[Album](ReconID("foobar") |> constFuture,
+    val $ = new ExternalPipe[Album](
+      ReconID("foobar") |> constFuture,
       List(existingLink) |> constFuture,
-      List(wikiReconciler, newLinkReconciler),
-      List(expander1, expander2))
+      Reconcilers(List(wikiReconciler, newLinkReconciler)),
+      List(expander1, expander2),
+    )
     val expectedNewLinks: List[MarkedLink[Album]] =
       List(wikiLink, allMusicLink, rateYouMusicLink, reconciledLink).map(MarkedLink.markNew)
     $(null).get shouldSetEqual (Set(existingMarkedLink) ++ expectedNewLinks)

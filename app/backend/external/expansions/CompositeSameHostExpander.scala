@@ -2,7 +2,7 @@ package backend.external.expansions
 
 import backend.configs.Configuration
 import backend.external._
-import backend.external.recons.Reconciler
+import backend.external.recons.Reconcilers
 import backend.recon.{Album, Artist}
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.{MoreTraverseInstances, ToMoreFoldableOps}
@@ -26,9 +26,9 @@ private[external] class CompositeSameHostExpander private(expanders: HostMap[Sam
 
   def apply(links: BaseLinks[Artist], a: Album): Future[BaseLinks[Album]] =
     Traverse[Traversable].traverse(links)(apply(_, a)).map(_.flatten)
-  def toReconcilers(ls: BaseLinks[Artist]): Traversable[Reconciler[Album]] = {
+  def toReconcilers(ls: BaseLinks[Artist]): Reconcilers[Album] = {
     val availableHosts = ls.toMultiMap(_.host).mapValues(_.head)
-    expanders.flatMap(e => availableHosts.get(e._1).map(e._2.toReconciler))
+    Reconcilers(expanders.flatMap(e => availableHosts.get(e._1).map(e._2.toReconciler)))
   }
 }
 
