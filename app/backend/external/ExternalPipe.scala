@@ -2,7 +2,7 @@ package backend.external
 
 import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
-import backend.external.recons.{Reconciler, Reconcilers}
+import backend.external.recons.{LinkRetriever, LinkRetrievers}
 import backend.recon.{Reconcilable, ReconID}
 import common.rich.collections.RichSet._
 import common.rich.collections.RichTraversableOnce._
@@ -24,7 +24,7 @@ import scalaz.syntax.{ToBindOps, ToTraverseOps}
 private class ExternalPipe[R <: Reconcilable](
     reconciler: Retriever[R, ReconID],
     linksRetriever: Retriever[ReconID, BaseLinks[R]],
-    standaloneReconcilers: Reconcilers[R],
+    standaloneReconcilers: LinkRetrievers[R],
     expanders: Traversable[ExternalLinkExpander[R]],
 )(implicit ec: ExecutionContext) extends Retriever[R, MarkedLinks[R]]
     with ToTraverseOps with ToBindOps

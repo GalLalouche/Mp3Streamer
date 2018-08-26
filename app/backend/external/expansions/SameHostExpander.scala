@@ -3,7 +3,7 @@ package backend.external.expansions
 import backend.Url
 import backend.configs.Configuration
 import backend.external.{BaseLink, Host}
-import backend.external.recons.Reconciler
+import backend.external.recons.LinkRetriever
 import backend.recon.{Album, Artist}
 import common.io.InternetTalker
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -23,7 +23,7 @@ private abstract class SameHostExpander(val host: Host)(implicit c: Configuratio
 
   final def apply(e: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] =
     fromUrl(e.link, a)
-  def toReconciler(artistLinks: BaseLink[Artist]): Reconciler[Album] = new Reconciler[Album](host) {
+  def toReconciler(artistLinks: BaseLink[Artist]): LinkRetriever[Album] = new LinkRetriever[Album](host) {
     override def apply(a: Album): Future[Option[BaseLink[Album]]] = SameHostExpander.this.apply(artistLinks, a)
   }
 }

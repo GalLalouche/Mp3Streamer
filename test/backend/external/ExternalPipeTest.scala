@@ -4,7 +4,7 @@ import backend.Url
 import backend.configs.{Configuration, TestConfiguration}
 import backend.external.Host.{AllMusic, RateYourMusic, Wikipedia}
 import backend.external.expansions.ExternalLinkExpander
-import backend.external.recons.{Reconciler, Reconcilers}
+import backend.external.recons.{LinkRetriever, LinkRetrievers}
 import backend.recon.{Album, ReconID}
 import common.AuxSpecs
 import common.rich.RichFuture._
@@ -32,7 +32,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     override def potentialHostsExtracted: Traversable[Host] = links.map(_.host)
     override def apply(v1: BaseLink[Album]): Future[BaseLinks[Album]] = Future successful links
   }
-  private def constReconciler(host: Host, link: BaseLink[Album]) = new Reconciler[Album](host) {
+  private def constReconciler(host: Host, link: BaseLink[Album]) = new LinkRetriever[Album](host) {
     override def apply(v1: Album) = Future successful Some(link)
   }
   private val newLinkExpander = constExpander(expandedLink)
@@ -42,7 +42,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     val $ = new ExternalPipe[Album](
       ReconID("foobar") |> constFuture,
       List(existingLink) |> constFuture,
-      Reconcilers(List(newLinkReconciler)),
+      LinkRetrievers(List(newLinkReconciler)),
       List(newLinkExpander),
     )
     $(null).get shouldReturn (Set(existingMarkedLink) ++ expectedNewLinks)
@@ -54,14 +54,14 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
       override val potentialHostsExtracted: Traversable[Host] = List(h)
       override def apply(v1: BaseLink[Album]): Future[BaseLinks[Album]] = failed
     }
-    def failedReconciler(host: Host) = new Reconciler[Album](host) {
+    def failedReconciler(host: Host) = new LinkRetriever[Album](host) {
       override def apply(a: Album) = failed
     }
     "Should not invoke on existing hosts" in {
       val $ = new ExternalPipe[Album](
         ReconID("foobar") |> constFuture,
         List(existingLink) |> constFuture,
-        Reconcilers(List(failedReconciler(existingHost), newLinkReconciler)),
+        LinkRetrievers(List(failedReconciler(existingHost), newLinkReconciler)),
         List(failedExpander(existingHost), newLinkExpander),
       )
       $(null).get shouldSetEqual Set(existingMarkedLink) ++ expectedNewLinks
@@ -70,7 +70,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
       val $ = new ExternalPipe[Album](
         ReconID("foobar") |> constFuture,
         List(existingLink) |> constFuture,
-        Reconcilers(List(newLinkReconciler)),
+        LinkRetrievers(List(newLinkReconciler)),
         List(failedExpander(reconciledLink.host)),
       )
       $(null).get shouldSetEqual Set(existingMarkedLink, markedReconciledLink)
@@ -80,7 +80,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     val $ = new ExternalPipe[Album](
       ReconID("foobar") |> constFuture,
       List(existingLink) |> constFuture,
-      Reconcilers(List(newLinkReconciler)),
+      LinkRetrievers(List(newLinkReconciler)),
       List(constExpander(expandedLink, rehashedLinks)),
     )
     $(null).get shouldSetEqual Set(existingMarkedLink) ++ expectedNewLinks
@@ -89,7 +89,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     val $ = new ExternalPipe[Album](
       ReconID("foobar") |> constFuture,
       List[BaseLink[Album]](existingLink, existingLink.copy(link = Url("existing2"))) |> constFuture,
-      Reconcilers(List(newLinkReconciler)),
+      LinkRetrievers(List(newLinkReconciler)),
       List(newLinkExpander),
     )
     $(null).get should have size 4
@@ -116,7 +116,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     val $ = new ExternalPipe[Album](
       ReconID("foobar") |> constFuture,
       List(existingLink) |> constFuture,
-      Reconcilers(List(wikiReconciler, newLinkReconciler)),
+      LinkRetrievers(List(wikiReconciler, newLinkReconciler)),
       List(expander1, expander2),
     )
     val expectedNewLinks: List[MarkedLink[Album]] =

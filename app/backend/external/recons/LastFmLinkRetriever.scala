@@ -18,11 +18,11 @@ import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
 @VisibleForTesting
-private class LastFmReconciler private[recons](
+private class LastFmLinkRetriever private[recons](
     ec: ExecutionContext,
     it: InternetTalker,
     millisBetweenRedirects: Long,
-) extends Reconciler[Artist](Host.LastFm)
+) extends LinkRetriever[Artist](Host.LastFm)
     with ToBindOps with FutureInstances {
   @Inject() def this(
       ec: ExecutionContext,
