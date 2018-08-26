@@ -34,6 +34,6 @@ private[external] class CompositeSameHostExpander private(expanders: HostMap[Sam
 
 private[external] object CompositeSameHostExpander {
   def default(implicit c: Configuration) =
-    new CompositeSameHostExpander(new WikipediaAlbumFinder(), new AllMusicAlbumFinder())
+    new CompositeSameHostExpander(new WikipediaAlbumFinder(), c.injector.instance[AllMusicAlbumFinder])
   // MetalArchives is not-production ready until I get unbanned :|
 }

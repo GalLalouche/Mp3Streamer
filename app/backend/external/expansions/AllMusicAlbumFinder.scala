@@ -1,16 +1,14 @@
 package backend.external.expansions
 
 import backend.Url
-import backend.configs.Configuration
 import backend.external.{BaseLink, Host}
 import backend.recon.Album
 import backend.recon.ReconScorers.AlbumReconScorer
-import com.google.common.annotations.VisibleForTesting
 import common.io.InternetTalker
 import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, ToMoreMonadPlusOps, ToTraverseMonadPlusOps}
 import common.rich.primitives.RichBoolean._
-import net.codingwell.scalaguice.InjectorExtensions._
+import javax.inject.Inject
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
@@ -18,14 +16,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.{FutureInstances, OptionInstances}
 
-private class AllMusicAlbumFinder @VisibleForTesting()(allMusicHelper: AllMusicHelper)(implicit c: Configuration)
-    extends SameHostExpander(Host.AllMusic,
-      c.injector.instance[ExecutionContext],
-      c.injector.instance[InternetTalker],
-    ) with ToMoreMonadPlusOps with ToTraverseMonadPlusOps
-        with MoreSeqInstances with OptionInstances with FutureInstances {
-  private[expansions] def this()(implicit c: Configuration) = this(c.injector.instance[AllMusicHelper])
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+private class AllMusicAlbumFinder @Inject()(
+    allMusicHelper: AllMusicHelper,
+    ec: ExecutionContext,
+    it: InternetTalker,
+) extends SameHostExpander(Host.AllMusic, ec, it) with ToMoreMonadPlusOps with ToTraverseMonadPlusOps
+    with MoreSeqInstances with OptionInstances with FutureInstances {
+  private implicit val iec: ExecutionContext = ec
 
   override protected def findAlbum(d: Document, album: Album): Future[Option[Url]] = {
     def score(other: Album): Double = AlbumReconScorer.apply(album, other)
