@@ -25,7 +25,7 @@ import scalaz.std.FutureInstances
 class MbArtistReconciler @Inject()(
     ec: ExecutionContext,
     jsonHelper: JsonHelper,
-) extends OnlineReconciler[Artist]
+) extends Reconciler[Artist]
     with FutureInstances with ToMoreMonadErrorOps {
   private implicit val iec: ExecutionContext = ec
   override def apply(a: Artist): Future[Option[ReconID]] =

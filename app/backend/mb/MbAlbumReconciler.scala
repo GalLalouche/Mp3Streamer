@@ -12,7 +12,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
 
 class MbAlbumReconciler(artistReconciler: Retriever[Artist, ReconID])(implicit c: Configuration)
-    extends OnlineReconciler[Album] {
+    extends Reconciler[Album] {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val jsonHelper = c.injector.instance[JsonHelper]
   private val scorer = ReconScorers.AlbumReconScorer
