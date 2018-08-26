@@ -4,7 +4,6 @@ import java.net.HttpURLConnection
 import java.util.regex.Pattern
 
 import backend.Url
-import backend.configs.Configuration
 import backend.external.BaseLink
 import backend.logging.Logger
 import backend.recon.Reconcilable
@@ -14,7 +13,7 @@ import common.rich.collections.RichTraversableOnce._
 import common.rich.func.ToMoreMonadErrorOps
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
-import net.codingwell.scalaguice.InjectorExtensions._
+import javax.inject.Inject
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
@@ -22,11 +21,13 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.{FutureInstances, TupleInstances}
 import scalaz.syntax.ToFoldableOps
 
-private class AllMusicHelper(implicit c: Configuration) extends ToFoldableOps with TupleInstances
+private class AllMusicHelper @Inject()(
+    ec: ExecutionContext,
+    it: InternetTalker,
+    logger: Logger,
+) extends ToFoldableOps with TupleInstances
     with FutureInstances with ToMoreMonadErrorOps {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
-  private val logger = c.injector.instance[Logger]
+  private implicit val iec: ExecutionContext = ec
   private val canonicalLink = Pattern compile "[a-zA-Z\\-0-9]+-mw\\d+"
   private val allmusicPrefix = "(?:http://www.)?allmusic.com/album/"
   private val canonicalRe = s"$allmusicPrefix($canonicalLink)".r

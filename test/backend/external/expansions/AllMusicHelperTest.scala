@@ -18,7 +18,8 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
   private implicit val config: TestConfiguration = TestConfiguration()
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   private def withDocument(s: String) = config.copy(_urlToBytesMapper = getBytes(s).partialConst)
-  private val $ = new AllMusicHelper
+  private def create(c: Configuration) = c.injector.instance[AllMusicHelper]
+  private val $ = create(config)
   "isCanonical" - {
     "yes" in {
       $ isCanonical "http://www.allmusic.com/album/machine-head-mw0000189625" shouldReturn true
@@ -33,14 +34,8 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
     }
   }
   "validity" - {
-    val helperPointsToValid = {
-      implicit val config: Configuration = withDocument("allmusic_has_rating.html")
-      new AllMusicHelper()
-    }
-    val helperPointsToEmpty = {
-      implicit val config: Configuration = withDocument("allmusic_no_rating.html")
-      new AllMusicHelper()
-    }
+    val helperPointsToValid = create(withDocument("allmusic_has_rating.html"))
+    val helperPointsToEmpty = create(withDocument("allmusic_no_rating.html"))
     val url = Url("http://foobar")
     "hasRating" - {
       "yes" in {
@@ -77,13 +72,12 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
     "rlink" - {
       def withRedirectingMock(sourceToDest: (String, String)*) = {
         val asMap = sourceToDest.toMap
-        implicit val config: Configuration = this.config.copy(_requestToResponseMapper = {
+        create(this.config.copy(_requestToResponseMapper = {
           case r: WSRequest if asMap.contains(r.url) && r.followRedirects.exists(_.isFalse) =>
             FakeWSResponse(
               status = HttpURLConnection.HTTP_MOVED_PERM,
               allHeaders = Map("location" -> Seq(asMap(r.url))))
-        })
-        new AllMusicHelper
+        }))
       }
       "regular" in {
         withRedirectingMock("http://www.allmusic.com/album/r827504" ->

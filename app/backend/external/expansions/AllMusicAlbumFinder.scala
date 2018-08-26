@@ -18,14 +18,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.{FutureInstances, OptionInstances}
 
-private class AllMusicAlbumFinder(allMusicHelper: AllMusicHelper)(implicit c: Configuration)
+private class AllMusicAlbumFinder @VisibleForTesting()(allMusicHelper: AllMusicHelper)(implicit c: Configuration)
     extends SameHostExpander(Host.AllMusic,
       c.injector.instance[ExecutionContext],
       c.injector.instance[InternetTalker],
     ) with ToMoreMonadPlusOps with ToTraverseMonadPlusOps
         with MoreSeqInstances with OptionInstances with FutureInstances {
-  @VisibleForTesting
-  private[expansions] def this()(implicit c: Configuration) = this(new AllMusicHelper)
+  private[expansions] def this()(implicit c: Configuration) = this(c.injector.instance[AllMusicHelper])
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
 
   override protected def findAlbum(d: Document, album: Album): Future[Option[Url]] = {

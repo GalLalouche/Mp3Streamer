@@ -24,7 +24,7 @@ private class WikipediaAlbumExternalLinksExpander(implicit c: Configuration)
         with ToMoreFoldableOps with FutureInstances with OptionInstances with MoreTraverseInstances {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val logger = c.injector.instance[Logger]
-  protected val allMusicHelper = new AllMusicHelper
+  protected val allMusicHelper = c.injector.instance[AllMusicHelper]
 
   // semi-canonical = guaranteed to start with http://www.allmusic.com/album
   private def extractSemiCanonicalAllMusicLink(s: String): Option[String] = Option(s)
