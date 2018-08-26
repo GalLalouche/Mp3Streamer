@@ -1,14 +1,14 @@
 package backend.external.expansions
+
 import backend.Url
-import backend.configs.Configuration
 import backend.external.Host
 import backend.recon.{Album, StringReconScorer}
 import common.io.InternetTalker
+import common.rich.primitives.RichBoolean._
 import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToTraverseMonadPlusOps}
-import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
-import net.codingwell.scalaguice.InjectorExtensions._
+import javax.inject.Inject
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
@@ -16,13 +16,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.FutureInstances
 
-private class WikipediaAlbumFinder(implicit c: Configuration) extends SameHostExpander(
-  Host.Wikipedia,
-  c.injector.instance[ExecutionContext],
-  c.injector.instance[InternetTalker],
-) with ToTraverseMonadPlusOps with FutureInstances with MoreSeqInstances with MoreTraverseInstances {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
+private class WikipediaAlbumFinder @Inject()(ec: ExecutionContext, it: InternetTalker)
+    extends SameHostExpander(Host.Wikipedia, ec, it)
+        with ToTraverseMonadPlusOps with FutureInstances with MoreSeqInstances with MoreTraverseInstances {
+  private implicit val iec: ExecutionContext = ec
   override protected def findAlbum(d: Document, a: Album): Future[Option[Url]] = {
     def score(linkName: String): Double = StringReconScorer(a.title, linkName)
     d.select("a").asScala.toSeq

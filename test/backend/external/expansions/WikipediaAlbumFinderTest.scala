@@ -3,10 +3,11 @@ package backend.external.expansions
 import backend.Url
 import backend.configs.Configuration
 import backend.recon.{Album, Artist}
+import net.codingwell.scalaguice.InjectorExtensions._
 
 class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
   override private[expansions] def createExpander(implicit c: Configuration) =
-    new WikipediaAlbumFinder
+    c.injector.instance[WikipediaAlbumFinder]
 
   private val DiscographyExtractLink = "https://en.wikipedia.org/w/index.php?title=Lady_in_Gold_(album)&redirect=no"
   private val Redirected = "wiki_redirected.html"
