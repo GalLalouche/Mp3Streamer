@@ -1,21 +1,23 @@
 package backend.external.expansions
 
 import backend.Url
-import backend.configs.Configuration
 import backend.external.{BaseLink, Host}
 import backend.external.recons.LinkRetriever
 import backend.recon.{Album, Artist}
 import common.io.InternetTalker
-import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.Document
 
 import scala.concurrent.{ExecutionContext, Future}
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums */
-private abstract class SameHostExpander(val host: Host)(implicit c: Configuration) {
+// TODO replace with composition
+private abstract class SameHostExpander(
+    val host: Host,
+    ec: ExecutionContext,
+    it: InternetTalker,
+) {
+  private implicit val iec: ExecutionContext = ec
   protected def findAlbum(d: Document, a: Album): Future[Option[Url]]
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   protected def fromUrl(u: Url, a: Album): Future[Option[BaseLink[Album]]] = for {
     d <- it.downloadDocument(u)
     a <- findAlbum(d, a)

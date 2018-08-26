@@ -16,8 +16,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.FutureInstances
 
-private class WikipediaAlbumFinder(implicit c: Configuration) extends SameHostExpander(Host.Wikipedia)
-    with ToTraverseMonadPlusOps with FutureInstances with MoreSeqInstances with MoreTraverseInstances {
+private class WikipediaAlbumFinder(implicit c: Configuration) extends SameHostExpander(
+  Host.Wikipedia,
+  c.injector.instance[ExecutionContext],
+  c.injector.instance[InternetTalker],
+) with ToTraverseMonadPlusOps with FutureInstances with MoreSeqInstances with MoreTraverseInstances {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   override protected def findAlbum(d: Document, a: Album): Future[Option[Url]] = {

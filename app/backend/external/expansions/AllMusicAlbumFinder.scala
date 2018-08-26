@@ -6,6 +6,7 @@ import backend.external.{BaseLink, Host}
 import backend.recon.Album
 import backend.recon.ReconScorers.AlbumReconScorer
 import com.google.common.annotations.VisibleForTesting
+import common.io.InternetTalker
 import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, ToMoreMonadPlusOps, ToTraverseMonadPlusOps}
 import common.rich.primitives.RichBoolean._
@@ -18,8 +19,10 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.{FutureInstances, OptionInstances}
 
 private class AllMusicAlbumFinder(allMusicHelper: AllMusicHelper)(implicit c: Configuration)
-    extends SameHostExpander(Host.AllMusic)
-        with ToMoreMonadPlusOps with ToTraverseMonadPlusOps
+    extends SameHostExpander(Host.AllMusic,
+      c.injector.instance[ExecutionContext],
+      c.injector.instance[InternetTalker],
+    ) with ToMoreMonadPlusOps with ToTraverseMonadPlusOps
         with MoreSeqInstances with OptionInstances with FutureInstances {
   @VisibleForTesting
   private[expansions] def this()(implicit c: Configuration) = this(new AllMusicHelper)

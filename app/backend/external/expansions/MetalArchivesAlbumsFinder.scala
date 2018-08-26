@@ -13,7 +13,11 @@ import org.jsoup.nodes.Document
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-private class MetalArchivesAlbumsFinder(implicit c: Configuration) extends SameHostExpander(Host.MetalArchives) {
+private class MetalArchivesAlbumsFinder(implicit c: Configuration) extends SameHostExpander(
+  Host.MetalArchives,
+  c.injector.instance[ExecutionContext],
+  c.injector.instance[InternetTalker],
+) {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   override protected def findAlbum(d: Document, a: Album): Future[Option[Url]] =
