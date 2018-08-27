@@ -38,6 +38,7 @@ private class MbExternalLinksProvider(implicit c: Configuration)
   private val albumLinkRetrievers = injector.instance[AlbumLinkRetrievers]
   private val artistLinkExpanders = injector.instance[ArtistLinkExpanders]
   private val albumLinkExpanders = injector.instance[AlbumLinkExpanders]
+  private val compositeSameHostExpander = injector.instance[CompositeSameHostExpander]
 
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](
       reconciler: Retriever[R, (Option[ReconID], Boolean)],
@@ -76,7 +77,7 @@ private class MbExternalLinksProvider(implicit c: Configuration)
       albumExternalStorage,
       new AlbumLinkExtractor,
       albumLinkExpanders.get,
-      CompositeSameHostExpander.default.toReconcilers(artistLinks.map(_.toBase)) ++ albumLinkRetrievers,
+      compositeSameHostExpander.toReconcilers(artistLinks.map(_.toBase)) ++ albumLinkRetrievers,
     ) apply album
 
   private val extender = CompositeExtender.default
