@@ -13,11 +13,8 @@ import scala.concurrent.duration._
 
 import scalaz.std.FutureInstances
 
-private class JsonHelper @Inject()(
-    ec: ExecutionContext,
-    it: InternetTalker,
-) extends ToMoreMonadErrorOps with FutureInstances {
-  private implicit val iec: ExecutionContext = ec
+private class JsonHelper @Inject()(it: InternetTalker) extends ToMoreMonadErrorOps with FutureInstances {
+  private implicit val iec: ExecutionContext = it
 
   def retry[T](f: () => Future[T], times: Int, retryWait: Duration): Future[T] = {
     f().handleError(e => {

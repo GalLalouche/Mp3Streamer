@@ -16,13 +16,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.{FutureInstances, OptionInstances}
 
-private class AllMusicAlbumFinder @Inject()(
-    allMusicHelper: AllMusicHelper,
-    ec: ExecutionContext,
-    it: InternetTalker,
-) extends SameHostExpander(Host.AllMusic, ec, it) with ToMoreMonadPlusOps with ToTraverseMonadPlusOps
-    with MoreSeqInstances with OptionInstances with FutureInstances {
-  private implicit val iec: ExecutionContext = ec
+private class AllMusicAlbumFinder @Inject()(allMusicHelper: AllMusicHelper, it: InternetTalker)
+    extends SameHostExpander(Host.AllMusic, it) with ToMoreMonadPlusOps with ToTraverseMonadPlusOps
+        with MoreSeqInstances with OptionInstances with FutureInstances {
+  private implicit val iec: ExecutionContext = it
 
   override protected def findAlbum(d: Document, album: Album): Future[Option[Url]] = {
     def score(other: Album): Double = AlbumReconScorer.apply(album, other)

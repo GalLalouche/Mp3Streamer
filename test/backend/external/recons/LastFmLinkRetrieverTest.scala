@@ -19,8 +19,7 @@ class LastFmLinkRetrieverTest extends FreeSpec with AuxSpecs with DocumentSpecs 
   private val config = new TestConfiguration
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   private def create(config: Configuration): LastFmLinkRetriever = {
-    new LastFmLinkRetriever(
-      ec, config.injector.instance[InternetTalker], millisBetweenRedirects = 1)
+    new LastFmLinkRetriever(config.injector.instance[InternetTalker], millisBetweenRedirects = 1)
   }
   "404" in {
     val c: Configuration = config.copy(_urlToResponseMapper =

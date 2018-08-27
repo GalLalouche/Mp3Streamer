@@ -55,10 +55,12 @@ case class TestConfiguration(
 
     @Provides
     private def provideInternetTalker(_ec: ExecutionContext): InternetTalker = new InternetTalker {
-      override protected implicit def ec: ExecutionContext = _ec
+      override def execute(runnable: Runnable) = _ec.execute(runnable)
+      override def reportFailure(cause: Throwable) = _ec.reportFailure(cause)
       override protected def createWsClient(): WSClient = new FakeWSClient(getRequest)
     }
   })
+
   override val injector = Guice.createInjector(module)
 }
 

@@ -18,18 +18,12 @@ import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
 @VisibleForTesting
-private class LastFmLinkRetriever private[recons](
-    ec: ExecutionContext,
-    it: InternetTalker,
-    millisBetweenRedirects: Long,
-) extends LinkRetriever[Artist](Host.LastFm)
-    with ToBindOps with FutureInstances {
-  @Inject() def this(
-      ec: ExecutionContext,
-      it: InternetTalker,
-  ) = this(ec, it, 100)
+private class LastFmLinkRetriever private[recons](it: InternetTalker, millisBetweenRedirects: Long)
+    extends LinkRetriever[Artist](Host.LastFm)
+        with ToBindOps with FutureInstances {
+  @Inject() def this(it: InternetTalker) = this(it, 100)
 
-  private implicit val iec: ExecutionContext = ec
+  private implicit val iec: ExecutionContext = it
   private class TempRedirect extends Exception
   private def handleReply(h: WSResponse): Option[BaseLink[Artist]] = h.status match {
     case HttpURLConnection.HTTP_NOT_FOUND => None

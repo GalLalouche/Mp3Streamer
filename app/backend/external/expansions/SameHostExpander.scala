@@ -11,12 +11,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums */
 // TODO replace with composition
-private abstract class SameHostExpander(
-    val host: Host,
-    ec: ExecutionContext,
-    it: InternetTalker,
-) {
-  private implicit val iec: ExecutionContext = ec
+private abstract class SameHostExpander(val host: Host, it: InternetTalker) {
+  private implicit val iec: ExecutionContext = it
   protected def findAlbum(d: Document, a: Album): Future[Option[Url]]
   protected def fromUrl(u: Url, a: Album): Future[Option[BaseLink[Album]]] = for {
     d <- it.downloadDocument(u)

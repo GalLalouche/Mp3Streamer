@@ -24,7 +24,8 @@ private object NewAlbumsModule extends ScalaModule {
   private lazy val materializer = ActorMaterializer()(ActorSystem.create("NewAlbumsModule-System"))
   override def configure(): Unit = {
     bind[InternetTalker] toInstance new InternetTalker {
-      override implicit protected def ec: ExecutionContext = semaphoreReleasingService
+      override def execute(runnable: Runnable) = semaphoreReleasingService.execute(runnable)
+      override def reportFailure(cause: Throwable) = semaphoreReleasingService.reportFailure(cause)
       override protected def createWsClient() = {
         Thread sleep 1000
         StandaloneAhcWSClient()(materializer)

@@ -16,10 +16,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.FutureInstances
 
-private class WikipediaAlbumFinder @Inject()(ec: ExecutionContext, it: InternetTalker)
-    extends SameHostExpander(Host.Wikipedia, ec, it)
+private class WikipediaAlbumFinder @Inject()(it: InternetTalker) extends SameHostExpander(Host.Wikipedia, it)
         with ToTraverseMonadPlusOps with FutureInstances with MoreSeqInstances with MoreTraverseInstances {
-  private implicit val iec: ExecutionContext = ec
+  private implicit val iec: ExecutionContext = it
   override protected def findAlbum(d: Document, a: Album): Future[Option[Url]] = {
     def score(linkName: String): Double = StringReconScorer(a.title, linkName)
     d.select("a").asScala.toSeq

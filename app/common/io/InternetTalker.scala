@@ -10,9 +10,9 @@ import org.jsoup.nodes.Document
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Things that talk to the outside world. Spo-o-o-o-ky IO! */
-trait InternetTalker {
-  // TODO replace template with injections
-  protected implicit def ec: ExecutionContext
+trait InternetTalker extends ExecutionContext {
+  // TODO replace inheritance with composition
+  private implicit def ec: ExecutionContext = this
   protected def createWsClient(): WSClient
 
   def useWs[T](f: Retriever[WSClient, T]): Future[T] = {

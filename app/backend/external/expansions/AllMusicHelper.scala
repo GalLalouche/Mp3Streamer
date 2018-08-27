@@ -22,12 +22,11 @@ import scalaz.std.{FutureInstances, TupleInstances}
 import scalaz.syntax.ToFoldableOps
 
 private class AllMusicHelper @Inject()(
-    ec: ExecutionContext,
     it: InternetTalker,
     logger: Logger,
 ) extends ToFoldableOps with TupleInstances
     with FutureInstances with ToMoreMonadErrorOps {
-  private implicit val iec: ExecutionContext = ec
+  private implicit val iec: ExecutionContext = it
   private val canonicalLink = Pattern compile "[a-zA-Z\\-0-9]+-mw\\d+"
   private val allmusicPrefix = "(?:http://www.)?allmusic.com/album/"
   private val canonicalRe = s"$allmusicPrefix($canonicalLink)".r

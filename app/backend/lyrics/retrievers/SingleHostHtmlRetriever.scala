@@ -10,13 +10,12 @@ import models.Song
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.Document
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 import scalaz.std.OptionInstances
 
 private[lyrics] abstract class SingleHostHtmlRetriever(implicit c: Configuration) extends HtmlRetriever
     with ToMoreFoldableOps with OptionInstances {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   // return None if instrumental
   protected def fromHtml(html: Document, s: Song): Option[String]

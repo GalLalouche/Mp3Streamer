@@ -9,16 +9,13 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class AllMusicAlbumFinderTest extends SameHostExpanderSpec with MockitoSugar {
   private val allMusicHelper = mock[AllMusicHelper]
   override private[expansions] def createExpander(implicit c: Configuration) =
-    new AllMusicAlbumFinder(
-      allMusicHelper,
-      c.injector.instance[ExecutionContext],
-      c.injector.instance[InternetTalker],
-    )
+    new AllMusicAlbumFinder(allMusicHelper, c.injector.instance[InternetTalker])
+
   override protected val expandingUrl = artistUrl + "/discography"
 
   "apply" - {

@@ -9,11 +9,10 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.{Document, Element}
 
 import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 private sealed class MbHtmlLinkExtractor[T <: Reconcilable](metadataType: String)(implicit c: Configuration)
     extends ExternalLinkProvider[T] {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   private def getMbUrl(reconId: ReconID): Url = Url(s"https://musicbrainz.org/$metadataType/${reconId.id}")
   private def extractLink(e: Element): BaseLink[T] = {

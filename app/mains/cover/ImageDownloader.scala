@@ -9,7 +9,7 @@ import common.io.RichWSRequest._
 import mains.SwingUtils
 import net.codingwell.scalaguice.InjectorExtensions._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 private object ImageDownloader extends SwingUtils {
   def folderImage(f: FileRef, local: Boolean, w: => Int, h: => Int, image: => Image): FolderImage =
@@ -22,10 +22,10 @@ private object ImageDownloader extends SwingUtils {
       override lazy val height = h
     }
 }
+
 /** Downloads images and saves them to a directory; local image sources will be noop-ed. */
 private class ImageDownloader(outputDirectory: DirectoryRef)(implicit c: Configuration)
     extends Retriever[ImageSource, FolderImage] {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
   import ImageDownloader._
 
