@@ -5,6 +5,7 @@ import backend.configs.{CleanConfiguration, Configuration}
 import backend.external._
 import backend.logging.Logger
 import backend.recon.Album
+import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.collections.RichSeq._
@@ -19,8 +20,9 @@ import scalaz.Traverse
 import scalaz.std.{FutureInstances, OptionInstances}
 
 private class WikipediaAlbumExternalLinksExpander(implicit c: Configuration)
-    extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic))
-        with MoreTraversableInstances with ToTraverseMonadPlusOps with ToMoreMonadErrorOps
+    extends ExternalLinkExpanderTemplate[Album](
+      Host.Wikipedia, List(Host.AllMusic), c.injector.instance[InternetTalker]
+    ) with MoreTraversableInstances with ToTraverseMonadPlusOps with ToMoreMonadErrorOps
         with ToMoreFoldableOps with FutureInstances with OptionInstances with MoreTraverseInstances {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val logger = c.injector.instance[Logger]
