@@ -18,25 +18,24 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpec
     TestConfiguration().copy(_urlToBytesMapper = PartialFunction(getBytes))
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
 
-  private val $: WikipediaAlbumExternalLinksExpander = new WikipediaAlbumExternalLinksExpander()
-  private def getAllMusicLinkAddress(documentPath: String): String =
-    $.parseDocument(getDocument(documentPath))
+  private val $: WikipediaAlbumExternalLinksExpander =
+    config.injector.instance[WikipediaAlbumExternalLinksExpander]
+
+  "succeed even if there is no link" in {
+    $.parseDocument(getDocument("no_link.html")) shouldReturn Nil
+  }
+  "extract allmusic link" in {
+    $.parseDocument(getDocument("allmusic_link.html"))
         .filter(_.host == Host.AllMusic)
         .map(_.link.address)
-        .single
-
-  "extract allmusic link" in {
-    getAllMusicLinkAddress("allmusic_link.html") shouldReturn
+        .single shouldReturn
         "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
   }
   "Return nothing on error" in {
     implicit val config: Configuration = this.config.copy(_urlToResponseMapper =
         FakeWSResponse(status = HttpURLConnection.HTTP_INTERNAL_ERROR).partialConst)
-    new WikipediaAlbumExternalLinksExpander()
+    config.injector.instance[WikipediaAlbumExternalLinksExpander]
         .apply(BaseLink(Url("allmusic_rlink.html"), Host.Wikipedia))
         .get shouldReturn Nil
-  }
-  "succeed even if there is no link" in {
-    new WikipediaAlbumExternalLinksExpander().parseDocument(getDocument("no_link.html")) shouldReturn Nil
   }
 }

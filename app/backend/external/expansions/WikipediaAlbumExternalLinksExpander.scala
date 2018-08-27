@@ -1,16 +1,14 @@
 package backend.external.expansions
 
 import backend.Url
-import backend.configs.{CleanConfiguration, Configuration}
-import backend.external._
+import backend.external.{BaseLink, BaseLinks, Host}
 import backend.logging.Logger
 import backend.recon.Album
 import common.io.InternetTalker
-import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.collections.RichSeq._
-import common.rich.func._
-import net.codingwell.scalaguice.InjectorExtensions._
+import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
+import javax.inject.Inject
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
@@ -19,14 +17,14 @@ import scala.concurrent.ExecutionContext
 import scalaz.Traverse
 import scalaz.std.{FutureInstances, OptionInstances}
 
-private class WikipediaAlbumExternalLinksExpander(implicit c: Configuration)
-    extends ExternalLinkExpanderTemplate[Album](
-      Host.Wikipedia, List(Host.AllMusic), c.injector.instance[InternetTalker]
-    ) with MoreTraversableInstances with ToTraverseMonadPlusOps with ToMoreMonadErrorOps
-        with ToMoreFoldableOps with FutureInstances with OptionInstances with MoreTraverseInstances {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val logger = c.injector.instance[Logger]
-  protected val allMusicHelper = c.injector.instance[AllMusicHelper]
+private class WikipediaAlbumExternalLinksExpander @Inject()(
+    it: InternetTalker,
+    logger: Logger,
+    allMusicHelper: AllMusicHelper,
+) extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic), it)
+    with MoreTraversableInstances with ToTraverseMonadPlusOps with ToMoreMonadErrorOps
+    with ToMoreFoldableOps with FutureInstances with OptionInstances with MoreTraverseInstances {
+  private implicit val iec: ExecutionContext = it
 
   // semi-canonical = guaranteed to start with http://www.allmusic.com/album
   private def extractSemiCanonicalAllMusicLink(s: String): Option[String] = Option(s)
@@ -63,11 +61,15 @@ private class WikipediaAlbumExternalLinksExpander(implicit c: Configuration)
 }
 
 private object WikipediaAlbumExternalLinksExpander {
+  import backend.configs.{CleanConfiguration, Configuration}
+  import common.rich.RichFuture._
+  import net.codingwell.scalaguice.InjectorExtensions._
+
   def forUrl(path: String): BaseLink[Album] = new BaseLink[Album](Url(path), Host.Wikipedia)
   def main(args: Array[String]): Unit = {
     implicit val c: Configuration = CleanConfiguration
     implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val $ = new WikipediaAlbumExternalLinksExpander()
+    val $ = c.injector.instance[WikipediaAlbumExternalLinksExpander]
     $.apply(forUrl("""https://en.wikipedia.org/wiki/Ghost_(Devin_Townsend_Project_album)""")).get.log()
   }
 }
