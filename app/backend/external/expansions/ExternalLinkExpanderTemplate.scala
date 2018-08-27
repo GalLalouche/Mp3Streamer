@@ -2,6 +2,7 @@ package backend.external.expansions
 
 import backend.external.{BaseLink, BaseLinks, Host}
 import backend.recon.Reconcilable
+import com.google.common.annotations.VisibleForTesting
 import common.io.InternetTalker
 import org.jsoup.nodes.Document
 
@@ -15,6 +16,6 @@ private abstract class ExternalLinkExpanderTemplate[R <: Reconcilable](
     it: InternetTalker,
 ) extends ExternalLinkExpander[R] {
   private implicit val iec: ExecutionContext = it
-  protected def parseDocument(d: Document): BaseLinks[R]
+  @VisibleForTesting private[expansions] def parseDocument(d: Document): BaseLinks[R]
   override def apply(l: BaseLink[R]): Future[BaseLinks[R]] = it downloadDocument l.link map parseDocument
 }
