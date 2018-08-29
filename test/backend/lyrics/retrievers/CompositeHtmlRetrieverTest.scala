@@ -2,6 +2,7 @@ package backend.lyrics.retrievers
 
 import backend.Url
 import backend.configs.{Configuration, TestConfiguration}
+import backend.logging.Logger
 import backend.lyrics.Instrumental
 import common.AuxSpecs
 import common.rich.RichFuture._
@@ -37,7 +38,7 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
   private val r1 = fakeLyricsRetriever(song1, Url("foo"), "foo")
   private val r2 = fakeLyricsRetriever(song2, Url("bar"), "bar")
   private val r3 = fakeLyricsRetriever(song3, Url("bazz"), "quxx")
-  private val $ = new CompositeHtmlRetriever(r1, r2, r3)
+  private val $ = new CompositeHtmlRetriever(ec, c.injector.instance[Logger], Vector(r1, r2, r3))
 
   "doesUrlMatch" - {
     "when one of the URLs match" in {

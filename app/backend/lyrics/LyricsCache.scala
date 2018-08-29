@@ -2,6 +2,7 @@ package backend.lyrics
 
 import backend.Url
 import backend.configs.{CleanConfiguration, Configuration}
+import backend.logging.Logger
 import backend.lyrics.retrievers._
 import backend.storage.OnlineRetrieverCacher
 import common.rich.RichFuture._
@@ -16,17 +17,12 @@ import scalaz.syntax.ToFunctorOps
 private class LyricsCache(implicit c: Configuration)
     extends FutureInstances with ToFunctorOps {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private val logger: Logger = c.injector.instance[Logger]
   private val defaultArtistInstrumental = c.injector.instance[InstrumentalArtist]
   private val firstDefaultRetrievers = DefaultClassicalInstrumental
-  private val htmlComposites: CompositeHtmlRetriever = new CompositeHtmlRetriever(
-    c.injector.instance[LyricsWikiaRetriever],
-    c.injector.instance[DarkLyricsRetriever],
-    c.injector.instance[AzLyricsRetriever],
-    c.injector.instance[GeniusLyricsRetriever],
-  )
+  private val htmlComposites: CompositeHtmlRetriever = c.injector.instance[CompositeHtmlRetriever]
   private val lastDefaultRetrievers = defaultArtistInstrumental
-  val allComposite =
-    new CompositeLyricsRetriever(htmlComposites, lastDefaultRetrievers, firstDefaultRetrievers)
+  private val allComposite = new CompositeLyricsRetriever(ec, logger, Vector(htmlComposites, lastDefaultRetrievers, firstDefaultRetrievers))
   private val cache = new OnlineRetrieverCacher[Song, Lyrics](c.injector.instance[LyricsStorage], allComposite)
   def find(s: Song): Future[Lyrics] = cache(s)
   def parse(url: Url, s: Song): Future[Lyrics] =
