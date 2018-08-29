@@ -1,22 +1,21 @@
 package backend.lyrics.retrievers
 
 import backend.Url
-import backend.configs.Configuration
 import backend.lyrics.{HtmlLyrics, Instrumental, Lyrics}
 import common.io.InternetTalker
 import common.rich.func.ToMoreFoldableOps
 import common.rich.primitives.RichBoolean._
 import models.Song
-import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.Document
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.OptionInstances
 
-private[lyrics] abstract class SingleHostHtmlRetriever(implicit c: Configuration) extends HtmlRetriever
+// TODO replace with composition
+private[lyrics] abstract class SingleHostHtmlRetriever(it: InternetTalker) extends HtmlRetriever
     with ToMoreFoldableOps with OptionInstances {
-  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
+  private implicit val iec: ExecutionContext = it
   // return None if instrumental
   protected def fromHtml(html: Document, s: Song): Option[String]
   protected def getUrl(s: Song): String

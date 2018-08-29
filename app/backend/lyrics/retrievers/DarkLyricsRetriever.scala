@@ -3,6 +3,7 @@ package backend.lyrics.retrievers
 import java.io.File
 
 import backend.configs.{Configuration, StandaloneConfig}
+import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
@@ -12,7 +13,8 @@ import org.jsoup.nodes.Document
 
 import scala.concurrent.ExecutionContext
 
-private[lyrics] class DarkLyricsRetriever(implicit c: Configuration) extends SingleHostHtmlRetriever {
+private[lyrics] class DarkLyricsRetriever(implicit c: Configuration)
+    extends SingleHostHtmlRetriever(c.injector.instance[InternetTalker]) {
   override protected val source: String = "DarkLyrics"
   private def isInstrumental(html: String) = html.replaceAll("((<br>)|\\n)", "") == "<i>[Instrumental]</i>"
   private def removeWrappingWhiteSpace(s: String) = s.replaceAll("^\\s+", "").replaceAll("\\s$", "")
