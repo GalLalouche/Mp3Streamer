@@ -17,7 +17,7 @@ private object MbDebugger {
   def main(args: Array[String]): Unit = {
     implicit val c: Configuration = StandaloneConfig
     implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val $ = new MbExternalLinksProvider()
+    val $ = c.injector.instance[MbExternalLinksProvider]
     val s = fromDir("""D:\\Media\\Music\\Rock\\Classical Prog\\The Moody Blues\\1969 On the Threshold of a Dream""")
 
     println($(s).artistLinks.get)
