@@ -7,7 +7,7 @@ import backend.configs.Configuration
 import backend.external.expansions.{AlbumLinkExpanders, ArtistLinkExpanders, CompositeSameHostExpander, ExternalLinkExpander}
 import backend.external.extensions._
 import backend.external.recons.{AlbumLinkRetrievers, ArtistLinkRetrievers, LinkRetrievers}
-import backend.mb.{MbAlbumReconciler, MbArtistReconciler}
+import backend.mb.{MbAlbumReconcilerFactory, MbArtistReconciler}
 import backend.recon._
 import backend.recon.Reconcilable._
 import backend.storage.{FreshnessStorage, RefreshableStorage}
@@ -73,9 +73,10 @@ private class MbExternalLinksProvider(implicit c: Configuration)
 
   private val albumReconStorage: AlbumReconStorage = injector.instance[AlbumReconStorage]
   private val albumExternalStorage = injector.instance[AlbumExternalStorage]
+  private val mbAlbumReconciler = injector.instance[MbAlbumReconcilerFactory].apply(artistReconciler(_).map(_._1.get))
   private def getAlbumLinks(artistLinks: MarkedLinks[Artist], album: Album): Future[TimestampedLinks[Album]] =
     wrapExternalPipeWithStorage(
-      new ReconcilerCacher[Album](albumReconStorage, new MbAlbumReconciler(artistReconciler(_).map(_._1.get))),
+      new ReconcilerCacher[Album](albumReconStorage, mbAlbumReconciler),
       albumExternalStorage,
       albumLinkExtractor,
       albumLinkExpanders.get,
