@@ -17,7 +17,7 @@ class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
   "parse artist links" in {
     implicit val c: Configuration = withDocument("artist")
     implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val $ = new ArtistLinkExtractor
+    val $ = c.injector.instance[ArtistLinkExtractor]
     val expected = Set(
       BaseLink[Artist](Url("http://deafheaven.com/"), Host("home", Url("deafheaven.com"))),
       BaseLink[Artist](Url("http://www.allmusic.com/artist/mn0002658855"), Host.AllMusic),
@@ -41,7 +41,7 @@ class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
   "parse album links" in {
     implicit val c: Configuration = withDocument("album")
     implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val $ = new AlbumLinkExtractor
+    val $ = c.injector.instance[AlbumLinkExtractor]
     val expected = Set(
       BaseLink[Album](Url("http://www.discogs.com/master/559132"), Host("discogs", Url("www.discogs.com"))),
       BaseLink[Album](Url("https://rateyourmusic.com/release/album/deafheaven/sunbather/"), Host("RateYourMusic", Url("rateyourmusic.com"))),
