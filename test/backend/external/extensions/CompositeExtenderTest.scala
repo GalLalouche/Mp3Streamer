@@ -8,11 +8,12 @@ import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
 import common.AuxSpecs
 import common.rich.RichT._
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
 
 class CompositeExtenderTest extends FreeSpec with AuxSpecs {
   private implicit val c: Configuration = TestConfiguration()
-  private val $ = CompositeExtender.default
+  private val $ = c.injector.instance[CompositeExtender]
 
   private def toMarked[R <: Reconcilable](e: ExtendedLink[R]) =
     MarkedLink[R](link = e.link, host = e.host, isNew = e.isNew)

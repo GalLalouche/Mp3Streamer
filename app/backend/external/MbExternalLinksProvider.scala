@@ -80,7 +80,7 @@ private class MbExternalLinksProvider(implicit c: Configuration)
       compositeSameHostExpander.toReconcilers(artistLinks.map(_.toBase)) ++ albumLinkRetrievers,
     ) apply album
 
-  private val extender = CompositeExtender.default
+  private val extender = c.injector.instance[CompositeExtender]
 
   // for testing on remote
   private def apply(a: Album): ExtendedExternalLinks = {

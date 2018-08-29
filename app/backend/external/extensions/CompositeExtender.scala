@@ -1,22 +1,22 @@
 package backend.external.extensions
 
-import backend.configs.Configuration
 import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.ToMoreFoldableOps
-import net.codingwell.scalaguice.InjectorExtensions._
+import javax.inject.Inject
 
 import scalaz.std.OptionInstances
 
-private[external] class CompositeExtender private(
-    artistExtenders: Seq[LinkExtender[Artist]],
-    albumExtenders: Seq[LinkExtender[Album]])
+private[external] class CompositeExtender @Inject()(
+    allMusicArtistExtender: AllMusicArtistExtender,
+    lastFmArtistExtender: LastFmArtistExtender,
+    allMusicAlbumExtender: AllMusicAlbumExtender)
     extends ToMoreFoldableOps with OptionInstances {
   private val artistExtendersMap: HostMap[LinkExtender[Artist]] =
-    artistExtenders.mapBy(_.host)
+    Seq(allMusicArtistExtender, lastFmArtistExtender, MusicBrainzArtistExtender).mapBy(_.host)
   private val albumExtenderMap: HostMap[LinkExtender[Album]] =
-    albumExtenders.mapBy(_.host)
+    Seq(allMusicAlbumExtender, MusicBrainzAlbumExtender).mapBy(_.host)
 
   private val artistClass = classOf[Artist]
   private val albumClass = classOf[Album]
@@ -31,11 +31,4 @@ private[external] class CompositeExtender private(
   }
   def apply[R <: Reconcilable : Manifest](entity: R, e: TimestampedLinks[R]): TimestampedExtendedLinks[R] =
     TimestampedExtendedLinks(e.links.map(extendLink(entity, _, e.links)), e.timestamp)
-}
-
-private[external] object CompositeExtender {
-  def default(implicit c: Configuration) = new CompositeExtender(
-    Seq(MusicBrainzArtistExtender,
-      c.injector.instance[AllMusicArtistExtender], c.injector.instance[LastFmArtistExtender]),
-    Seq(MusicBrainzAlbumExtender, c.injector.instance[AllMusicAlbumExtender]))
 }
