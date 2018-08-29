@@ -2,9 +2,9 @@ package backend.lyrics
 
 import backend.Url
 import common.rich.RichT._
-import net.codingwell.scalaguice.InjectorExtensions._
 import common.rich.func.ToMoreMonadErrorOps
 import controllers.{ControllerUtils, LegacyController}
+import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.mvc.{Action, Result}
 
 import scala.concurrent.ExecutionContext
@@ -14,7 +14,7 @@ import scalaz.std.FutureInstances
 object LyricsController extends LegacyController
     with ToMoreMonadErrorOps with FutureInstances {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val backend = new LyricsCache
+  private val backend = c.injector.instance[LyricsCache]
   // TODO replace with Writable typeclass?
   private def toString(l: Lyrics): String = l.html + "<br><br>Source: " + l.source
   def get(path: String) = Action.async {
@@ -23,7 +23,7 @@ object LyricsController extends LegacyController
         .orElse("Failed to get lyrics :(")
         .map(Ok(_))
   }
-  def push(path: String) = Action.async { request =>
+  def push(path: String) = Action.async {request =>
     val song = ControllerUtils parseSong path
     val url = request.body.asText.map(Url).get
     backend.parse(url, song)
