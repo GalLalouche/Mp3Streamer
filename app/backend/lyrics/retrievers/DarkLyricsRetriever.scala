@@ -2,19 +2,17 @@ package backend.lyrics.retrievers
 
 import java.io.File
 
-import backend.configs.{Configuration, StandaloneConfig}
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
+import javax.inject.Inject
 import models.Song
-import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.Document
 
 import scala.concurrent.ExecutionContext
 
-private[lyrics] class DarkLyricsRetriever(implicit c: Configuration)
-    extends SingleHostHtmlRetriever(c.injector.instance[InternetTalker]) {
+private[lyrics] class DarkLyricsRetriever @Inject()(it: InternetTalker) extends SingleHostHtmlRetriever(it) {
   override protected val source: String = "DarkLyrics"
   private def isInstrumental(html: String) = html.replaceAll("((<br>)|\\n)", "") == "<i>[Instrumental]</i>"
   private def removeWrappingWhiteSpace(s: String) = s.replaceAll("^\\s+", "").replaceAll("\\s$", "")
@@ -38,10 +36,14 @@ private[lyrics] class DarkLyricsRetriever(implicit c: Configuration)
 }
 
 private[lyrics] object DarkLyricsRetriever {
-  def main(args: Array[String]) {
+  // TODO reduce code duplication between all retriever debuggers
+  import backend.configs.{Configuration, StandaloneConfig}
+  import net.codingwell.scalaguice.InjectorExtensions._
+
+  def main(args: Array[String]): Unit = {
     implicit val c: Configuration = StandaloneConfig
     implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val $ = new DarkLyricsRetriever
+    val $ = c.injector.instance[DarkLyricsRetriever]
     println($(Song(new File( """D:\Media\Music\Metal\Progressive Metal\Dream Theater\2003 Train of Thought\05 - Vacant.mp3"""))).get)
   }
 }

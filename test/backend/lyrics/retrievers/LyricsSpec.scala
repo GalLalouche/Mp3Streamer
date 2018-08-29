@@ -6,7 +6,7 @@ import org.scalatest.FreeSpec
 import org.scalatest.matchers.{BePropertyMatchResult, BePropertyMatcher}
 
 trait LyricsSpec extends FreeSpec with DocumentSpecs {
-  protected implicit val c: Configuration = TestConfiguration()
+  protected implicit val config: Configuration = TestConfiguration()
   protected val instrumental: BePropertyMatcher[Option[String]] =
     objectWithProperty => BePropertyMatchResult(objectWithProperty.isEmpty, "instrumental")
   protected def verifyLyrics(html: Option[String], firstLine: String, lastLine: String): Unit = {

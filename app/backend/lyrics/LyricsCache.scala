@@ -19,10 +19,10 @@ private class LyricsCache(implicit c: Configuration)
   private val defaultArtistInstrumental = new InstrumentalArtist
   private val firstDefaultRetrievers = DefaultClassicalInstrumental
   private val htmlComposites: CompositeHtmlRetriever = new CompositeHtmlRetriever(
-    new LyricsWikiaRetriever(),
-    new DarkLyricsRetriever(),
-    new AzLyricsRetriever(),
-    new GeniusLyricsRetriever(),
+    c.injector.instance[LyricsWikiaRetriever],
+    c.injector.instance[DarkLyricsRetriever],
+    c.injector.instance[AzLyricsRetriever],
+    c.injector.instance[GeniusLyricsRetriever],
   )
   private val lastDefaultRetrievers = defaultArtistInstrumental
   val allComposite =

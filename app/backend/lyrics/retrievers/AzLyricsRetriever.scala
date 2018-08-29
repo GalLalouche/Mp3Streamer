@@ -1,16 +1,14 @@
 package backend.lyrics.retrievers
 
-import backend.configs.Configuration
 import common.io.InternetTalker
 import common.rich.collections.RichTraversableOnce._
+import javax.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
-import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.collection.JavaConverters._
 
-private[lyrics] class AzLyricsRetriever(implicit c: Configuration)
-    extends SingleHostHtmlRetriever(c.injector.instance[InternetTalker]) {
+private[lyrics] class AzLyricsRetriever @Inject()(it: InternetTalker) extends SingleHostHtmlRetriever(it) {
   private def normalize(s: String): String = s.filter(e => e.isDigit || e.isLetter).toLowerCase
   // AZ lyrics don't support instrumental :\
   override def fromHtml(html: Document, s: Song): Option[String] = Some(
