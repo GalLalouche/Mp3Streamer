@@ -5,6 +5,7 @@ import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.ToMoreFoldableOps
+import net.codingwell.scalaguice.InjectorExtensions._
 
 import scalaz.std.OptionInstances
 
@@ -34,6 +35,7 @@ private[external] class CompositeExtender private(
 
 private[external] object CompositeExtender {
   def default(implicit c: Configuration) = new CompositeExtender(
-    Seq(MusicBrainzArtistExtender, new AllMusicArtistExtender, new LastFmArtistExtender),
-    Seq(MusicBrainzAlbumExtender, new AllMusicAlbumExtender))
+    Seq(MusicBrainzArtistExtender,
+      c.injector.instance[AllMusicArtistExtender], c.injector.instance[LastFmArtistExtender]),
+    Seq(MusicBrainzAlbumExtender, c.injector.instance[AllMusicAlbumExtender]))
 }
