@@ -22,16 +22,17 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext
 
 object ControllerUtils {
-  implicit lazy val config: RealConfig = new RealConfig {self =>
+  implicit lazy val config: RealConfig = new RealConfig {
     override val module = Modules.combine(super.module, new ScalaModule {
       override def configure(): Unit = {
         bind[ExecutionContext] toInstance play.api.libs.concurrent.Execution.Implicits.defaultContext
       }
 
       @Provides
-      private def provideLogger(@RootDirectory rootDirectory: DirectoryRef): Logger = new CompositeLogger(
+      private def provideLogger(
+          @RootDirectory rootDirectory: DirectoryRef, ec: ExecutionContext): Logger = new CompositeLogger(
         new ConsoleLogger with FilteringLogger {setCurrentLevel(LoggingLevel.Verbose)},
-        new DirectoryLogger(rootDirectory)(self),
+        new DirectoryLogger(rootDirectory)(ec),
       )
     })
     override def injector = Guice createInjector module

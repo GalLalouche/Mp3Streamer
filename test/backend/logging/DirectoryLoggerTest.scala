@@ -7,9 +7,12 @@ import common.rich.collections.RichTraversableOnce._
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
+import scala.concurrent.ExecutionContext
+
 class DirectoryLoggerTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
   private implicit val c: Configuration = new TestConfiguration
   private val rootDirectory = c.injector.instance[DirectoryRef, RootDirectory]
+  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val logsDir = rootDirectory addSubDir "logs"
   private val $ = new DirectoryLogger(rootDirectory)
 
