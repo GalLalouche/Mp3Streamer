@@ -16,7 +16,7 @@ import scalaz.syntax.ToFunctorOps
 private class LyricsCache(implicit c: Configuration)
     extends FutureInstances with ToFunctorOps {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val defaultArtistInstrumental = new InstrumentalArtist
+  private val defaultArtistInstrumental = c.injector.instance[InstrumentalArtist]
   private val firstDefaultRetrievers = DefaultClassicalInstrumental
   private val htmlComposites: CompositeHtmlRetriever = new CompositeHtmlRetriever(
     c.injector.instance[LyricsWikiaRetriever],

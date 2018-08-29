@@ -1,20 +1,21 @@
 package backend.lyrics.retrievers
 
-import backend.configs.Configuration
 import backend.lyrics.Instrumental
 import common.rich.RichFuture._
+import javax.inject.Inject
 import models.Song
-import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
-private[lyrics] class InstrumentalArtist(implicit c: Configuration) extends DefaultInstrumental
+private[lyrics] class InstrumentalArtist @Inject()(
+    ec: ExecutionContext,
+    storage: InstrumentalArtistStorage,
+) extends DefaultInstrumental
     with FutureInstances with ToBindOps {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val storage = c.injector.instance[InstrumentalArtistStorage]
+  private implicit val iec: ExecutionContext = ec
 
   override protected def isInstrumental(s: Song) =
     storage.load(s.artistName).map(_.isDefined).get

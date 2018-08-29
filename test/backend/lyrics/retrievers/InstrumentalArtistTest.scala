@@ -16,7 +16,7 @@ class InstrumentalArtistTest extends FreeSpec with AuxSpecs with StorageSetup {
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   override protected lazy val storage = config.injector.instance[InstrumentalArtistStorage]
   private val factory = new FakeModelFactory
-  private val $ = new InstrumentalArtist
+  private val $ = config.injector.instance[InstrumentalArtist]
 
   "exists" in {
     val song = factory.song(artistName = "foo")
