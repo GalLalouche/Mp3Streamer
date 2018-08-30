@@ -23,8 +23,10 @@ class CompositeIndex private(songs: Index[Song], albums: Index[Album], artists: 
 }
 
 object CompositeIndex {
+  import net.codingwell.scalaguice.InjectorExtensions._
+
   def create(implicit c: Configuration): CompositeIndex = {
-    val saver = new JsonableSaver
+    val saver = c.injector.instance[JsonableSaver]
     val indexBuilder = WeightedIndexBuilder
     def buildIndexFromCache[T: Jsonable : WeightedIndexable : Manifest] =
       indexBuilder.buildIndexFor(saver.loadArray[T])

@@ -1,6 +1,5 @@
 package songs
 
-import backend.configs.{Configuration, StandaloneConfig}
 import common.rich.RichT._
 import common.rich.path.Directory
 import models.Song
@@ -16,6 +15,7 @@ private object SongGroupsUpdater {
   }
   // Appends new groups and saves them
   def main(args: Array[String]): Unit = {
+    import backend.configs.{Configuration, StandaloneConfig}
     implicit val c: Configuration = StandaloneConfig
     import models.ModelJsonable._
     val sg = new SongGroups

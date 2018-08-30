@@ -33,7 +33,7 @@ private class NewAlbums(implicit c: RealConfig)
   private val artistReconStorage = injector.instance[ArtistReconStorage]
   private val albumReconStorage = injector.instance[AlbumReconStorage]
   private val mbArtistReconciler = injector.instance[MbArtistReconciler]
-  private val jsonableSaver = new JsonableSaver()
+  private val jsonableSaver = injector.instance[JsonableSaver]
 
   private def save(m: Map[Artist, Seq[NewAlbum]]): Unit = {
     jsonableSaver save m.flatMap(_._2)

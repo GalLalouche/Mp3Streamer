@@ -11,6 +11,7 @@ import common.RichJson._
 import common.json.{Jsonable, ToJsonableOps}
 import common.rich.RichT._
 import net.codingwell.scalaguice.ScalaModule
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, Json, JsValue}
 
@@ -24,7 +25,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs w
       }
     })
   }
-  private val $ = new JsonableSaver()
+  private val $ = c.injector.instance[JsonableSaver]
   case class Person(age: Int, name: String)
   implicit object PersonJsonable extends Jsonable[Person] {
     override def jsonify(p: Person): JsObject = Json obj("age" -> p.age, "name" -> p.name)
@@ -101,7 +102,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs w
     }
   }
   "override file name" in {
-    val $ = new JsonableSaver {
+    val $ = new JsonableSaver(c.injector.instance[DirectoryRef, RootDirectory]) {
       override protected def jsonFileName[T: Manifest] = "foobars.json"
     }
     $ save p1

@@ -138,7 +138,6 @@ private object MetadataCacher {
   def create(implicit c: Configuration,
       songJsonable: Jsonable[Song],
       albumJsonable: Jsonable[Album],
-      artistJsonable: Jsonable[Artist]): MetadataCacher = {
-    new MetadataCacher(new JsonableSaver)
-  }
+      artistJsonable: Jsonable[Artist]): MetadataCacher =
+    new MetadataCacher(c.injector.instance[JsonableSaver])
 }

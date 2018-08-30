@@ -3,20 +3,18 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
 
-import backend.configs.Configuration
 import common.json.{Jsonable, ToJsonableOps}
 import common.rich.func.ToMoreFoldableOps
 import common.rich.primitives.RichOption._
 import common.rich.RichT._
-import net.codingwell.scalaguice.InjectorExtensions._
+import javax.inject.Inject
 import play.api.libs.json.{Json, JsValue}
 
 import scalaz.std.OptionInstances
 
 /** Saves in json format to a file. */
-class JsonableSaver(implicit c: Configuration) extends ToJsonableOps
+class JsonableSaver @Inject()(@RootDirectory rootDirectory: DirectoryRef) extends ToJsonableOps
     with ToMoreFoldableOps with OptionInstances {
-  private val rootDirectory = c.injector.instance[DirectoryRef, RootDirectory]
   private val workingDir = rootDirectory addSubDir "data" addSubDir "json"
   protected def jsonFileName[T: Manifest]: String =
     s"${manifest.runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"

@@ -23,7 +23,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
   private implicit val mf: FakeMusicFinder = new FakeMusicFinder(songs)
   private implicit val c: TestConfiguration = TestConfiguration().copy(_root = root, _mf = mf)
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val jsonableSaver = new JsonableSaver
+  private val jsonableSaver = c.injector.instance[JsonableSaver]
   private val fakeJsonable = new FakeModelJsonable
   import fakeJsonable._
 
