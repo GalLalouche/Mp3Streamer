@@ -2,22 +2,25 @@ package backend.search
 
 import java.net.URLDecoder
 
+import backend.logging.Logger
 import common.concurrency.Extra
 import common.json.{JsonableOverrider, OJsonable, ToJsonableOps}
 import controllers.LegacyController
-import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
 import models.{Album, ModelJsonable}
-import play.api.Logger
+import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
+import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.Json
 import play.api.mvc.Action
 
 object SearchController extends LegacyController with Extra
     with ToJsonableOps {
-  private var index: CompositeIndex = CompositeIndex.create
+  private def createCompositeIndex(): CompositeIndex = c.injector.instance[CompositeIndexFactory].create()
+  private val logger = c.injector.instance[Logger]
+  private var index: CompositeIndex = createCompositeIndex()
 
   override def apply(): Unit = {
-    index = CompositeIndex.create
-    Logger info "Search engine has been updated"
+    index = createCompositeIndex()
+    logger info "Search engine has been updated"
   }
   private implicit val albumJsonableWithDiscNumber: OJsonable[Album] =
     JsonableOverrider.oJsonify[Album]((a, original) => {
