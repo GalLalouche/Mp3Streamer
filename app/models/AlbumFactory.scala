@@ -1,5 +1,6 @@
 package models
 
+import common.io.DirectoryRef
 import javax.inject.Inject
 
 class AlbumFactory @Inject()(mf: MusicFinder) {
@@ -10,6 +11,16 @@ class AlbumFactory @Inject()(mf: MusicFinder) {
     year = s.year,
     songs = mf getSongsInDir s.file.parent,
   )
+
+  def fromDir(dir: DirectoryRef): Album = {
+    val songs = mf.getSongsInDir(dir).ensuring(_.nonEmpty, s"Cannot create an album of an empty dir <$dir>")
+    val firstSong = songs.head
+    new Album(dir = dir,
+      title = firstSong.albumName,
+      artistName = firstSong.artistName,
+      year = firstSong.year,
+      songs = songs)
+  }
 
   implicit class AlbumFactorySongOps(private val $: Song) {
     def album: Album = fromSong($)

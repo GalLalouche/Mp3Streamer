@@ -7,6 +7,7 @@ import common.rich.RichT._
 import controllers.ControllerUtils.songJsonable
 import decoders.DbPowerampCodec
 import models._
+import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.JsValue
 import play.api.mvc._
 import songs.{SongGroup, SongGroups, SongSelector}
@@ -15,6 +16,7 @@ import scala.annotation.tailrec
 
 /** Handles fetch requests of JSON information, and listens to directory changes. */
 object Player extends LegacyController with ToJsonableOps with Debug {
+  private val albumFactory = c.injector.instance[AlbumFactory]
   private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(new SongGroups().load)
   private val encoder = DbPowerampCodec
   private var songSelector: SongSelector = _
@@ -76,7 +78,7 @@ object Player extends LegacyController with ToJsonableOps with Debug {
   }
 
   private def songsInAlbum(path: String): Seq[Song] =
-    ControllerUtils.parseFile(path) |> IODirectory.apply |> Album.apply |> Album.songs.get
+    ControllerUtils.parseFile(path) |> IODirectory.apply |> albumFactory.fromDir |> Album.songs.get
   def album(path: String) = Action {
     encodeIfChrome(songsInAlbum(path)) _
   }
