@@ -4,7 +4,8 @@ import java.io.FileInputStream
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import common.io.{IODirectory, IOFile}
+import backend.Retriever
+import common.io.{DirectoryRef, FileRef, IODirectory, IOFile}
 import common.rich.primitives.RichString._
 import controllers.{ControllerUtils, LegacyController}
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -16,8 +17,9 @@ import play.api.mvc.Action
 import scala.concurrent.ExecutionContext
 
 object DownloaderController extends LegacyController {
-  private val zipper = new Zipper(ControllerUtils.encodePath)
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private val zipper: Retriever[DirectoryRef, FileRef] =
+    c.injector.instance[ZipperFactory].apply(ControllerUtils.encodePath)
 
   def download(path: String) = Action.async {request =>
     // TODO fix code duplication with streamer
@@ -25,7 +27,7 @@ object DownloaderController extends LegacyController {
     val bytesToSkip: Long = request.headers get "Range" map parseRange getOrElse 0L
     val file = ControllerUtils.parseFile(path)
     require(file.isDirectory)
-    zipper.zip(IODirectory(file.getAbsolutePath))
+    zipper(IODirectory(file.getAbsolutePath))
         .map(file => {
           val fis = new FileInputStream(file.asInstanceOf[IOFile].file)
           fis.skip(bytesToSkip)
