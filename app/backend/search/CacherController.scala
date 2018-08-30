@@ -3,8 +3,9 @@ package backend.search
 import backend.search.MetadataCacher.IndexUpdate
 import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
-import controllers.{ControllerUtils, Player, Recent}
+import controllers.{Player, Recent}
 import controllers.websockets.WebSocketController
+import models.ModelJsonable._
 import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.Json
 import play.api.mvc.Action
@@ -15,17 +16,14 @@ import scala.concurrent.ExecutionContext
 /** Used for updating the cache from the client. */
 object CacherController extends WebSocketController with ToJsonableOps {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  import ControllerUtils.config
-  import models.ModelJsonable._
 
-  private implicit val writesIndexUpdate: JsonWriteable[IndexUpdate] = u =>
-    Json.obj(
-      "finished" -> u.currentIndex,
-      "total" -> u.totalNumber,
-      "currentDir" -> u.dir.name,
-    )
+  private implicit val writesIndexUpdate: JsonWriteable[IndexUpdate] = u => Json.obj(
+    "finished" -> u.currentIndex,
+    "total" -> u.totalNumber,
+    "currentDir" -> u.dir.name,
+  )
 
-  private val cacher = MetadataCacher.create
+  private val cacher = c.injector.instance[MetadataCacherFactory].create
   private def toRefreshStatus(o: Observable[IndexUpdate], updateRecent: Boolean) = {
     if (updateRecent)
       o.map(_.dir) foreach Recent.newDir

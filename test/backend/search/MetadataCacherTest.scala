@@ -35,7 +35,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
   // base model. This is needed since MetadataCacher saves the data under Song, but because
   // FakeModelFactory returns a MemorySong, the verifier will try to load a MemorySong, resulting in
   // no data, since JsonableSaver loads data using a compile-time manifest. Yeah... :|
-  private def verifyData[T: Jsonable : Manifest](xs: Seq[T]) {
+  private def verifyData[T: Jsonable : Manifest](xs: Seq[T]): Unit = {
     jsonableSaver.loadArray[T].toSet shouldReturn xs.toSet
   }
   def verifyData(data: Song*): Unit = verifyData(data)
@@ -43,7 +43,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
   def verifyData(data: Album*)(implicit d: DummyImplicit): Unit = verifyData(data)
   def verifyData(data: Artist*)(implicit d1: DummyImplicit, d2: DummyImplicit): Unit = verifyData(data)
 
-  private val $ = new MetadataCacher(jsonableSaver)
+  private val $ = new MetadataCacher(jsonableSaver, ec, mf, albumFactory)
 
   private def awaitCompletion($: Observable[Any]) = {
     val p = Promise[Unit]

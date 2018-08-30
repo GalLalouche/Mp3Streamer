@@ -2,13 +2,11 @@ package backend.search
 
 import java.time.{LocalDateTime, ZoneOffset}
 
-import backend.configs.Configuration
 import common.concurrency.SimpleTypedActor
 import common.ds.{Collectable, IndexedSet}
 import common.io._
 import common.json.Jsonable
 import models._
-import net.codingwell.scalaguice.InjectorExtensions._
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
 
@@ -19,19 +17,21 @@ import scalaz.Semigroup
 import scalaz.std.{AnyValInstances, FutureInstances, ListInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
-private class MetadataCacher(saver: JsonableSaver)(implicit
-    c: Configuration,
+private class MetadataCacher(
+    saver: JsonableSaver,
+    ec: ExecutionContext,
+    mf: MusicFinder,
+    albumFactory: AlbumFactory,
+)(implicit
     songJsonable: Jsonable[Song],
     albumJsonable: Jsonable[Album],
     artistJsonable: Jsonable[Artist],
 ) extends OptionInstances with ListInstances with AnyValInstances
     with ToTraverseOps with FutureInstances with ToBindOps {
-  import MetadataCacher._
+  private implicit val iec: ExecutionContext = ec
 
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val mf = c.injector.instance[MusicFinder]
-  private val albumFactory = c.injector.instance[AlbumFactory]
   import albumFactory._
+  import MetadataCacher._
 
   private sealed trait UpdateType {
     def apply(): Observable[IndexUpdate]
@@ -136,10 +136,4 @@ private object MetadataCacher {
     def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit
     def apply(artists: IndexedSet[Artist]): Unit
   }
-
-  def create(implicit c: Configuration,
-      songJsonable: Jsonable[Song],
-      albumJsonable: Jsonable[Album],
-      artistJsonable: Jsonable[Artist]): MetadataCacher =
-    new MetadataCacher(c.injector.instance[JsonableSaver])
 }
