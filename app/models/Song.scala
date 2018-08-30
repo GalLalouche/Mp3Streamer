@@ -3,12 +3,10 @@ package models
 import java.io.File
 import java.util.logging.{Level, Logger}
 
-import backend.configs.Configuration
 import common.io.{FileRef, IOFile, MemoryFile}
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
-import net.codingwell.scalaguice.InjectorExtensions._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
@@ -27,10 +25,6 @@ trait Song {
   def size: Long
   def discNumber: Option[String]
   def trackGain: Option[Double]
-  def album(implicit c: Configuration) = {
-    val mf = c.injector.instance[MusicFinder]
-    Album(dir = file.parent, title = albumName, artistName = artistName, year = year, songs = mf getSongsInDir file.parent)
-  }
 }
 
 // TODO remove code duplication? hmm...

@@ -7,7 +7,7 @@ import backend.configs.{Configuration, StandaloneConfig}
 import common.io.{IODirectory, IOFile}
 import common.rich.path.{Directory, RichFileUtils, TempDirectory}
 import common.rich.path.RichFile.richFile
-import models.MusicFinder
+import models.{AlbumFactory, MusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -17,6 +17,8 @@ object DownloadCover {
   private implicit val c: Configuration = StandaloneConfig
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val mf = c.injector.instance[MusicFinder]
+  private val albumFactory = c.injector.instance[AlbumFactory]
+  import albumFactory._
 
   private case class CoverException(str: String, e: Exception) extends Exception(e)
 

@@ -30,6 +30,8 @@ private class MetadataCacher(saver: JsonableSaver)(implicit
 
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val mf = c.injector.instance[MusicFinder]
+  private val albumFactory = c.injector.instance[AlbumFactory]
+  import albumFactory._
 
   private sealed trait UpdateType {
     def apply(): Observable[IndexUpdate]
