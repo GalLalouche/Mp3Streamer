@@ -4,11 +4,12 @@ import java.time.Clock
 
 import backend.logging.{Logger, StringBuilderLogger}
 import com.google.inject.Provides
-import common.{FakeClock, MyScalaModule}
+import common.{FakeClock, ModuleUtils}
 import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
 import models.MusicFinder
+import net.codingwell.scalaguice.ScalaModule
 
-class TestModule extends MyScalaModule {
+class TestModule extends ScalaModule with ModuleUtils {
   override def configure() = {
     val clock = new FakeClock
     bind[FakeClock] toInstance clock
