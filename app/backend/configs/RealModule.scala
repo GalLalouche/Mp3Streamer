@@ -15,6 +15,8 @@ import scala.concurrent.ExecutionContext
 
 object RealModule extends ScalaModule with ModuleUtils {
   override def configure(): Unit = {
+    install(AllModules)
+
     bind[Clock] toInstance Clock.systemDefaultZone
     bind[DirectoryRef].annotatedWith[RootDirectory] toInstance IODirectory.apply("D:/media/streamer/")
     bind[IOMusicFinder] toInstance IOMusicFinder
@@ -28,6 +30,7 @@ object RealModule extends ScalaModule with ModuleUtils {
     requireBinding[ExecutionContext]
 
     install(RealInternetTalkerModule.nonDaemonic)
+    install(AllModules)
   }
 
   @Provides

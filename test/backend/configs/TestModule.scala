@@ -11,13 +11,14 @@ import net.codingwell.scalaguice.ScalaModule
 
 class TestModule extends ScalaModule with ModuleUtils {
   override def configure() = {
-    val clock = new FakeClock
-    bind[FakeClock] toInstance clock
+    bind[FakeClock] toInstance new FakeClock
     bind[Logger] toInstance new StringBuilderLogger(new StringBuilder)
 
     // TODO make a pullrequest to fix this in scalaguice?
     requireBinding[MemoryRoot]
     requireBinding[FakeMusicFinder]
+
+    install(AllModules)
   }
 
   // Ensures that the non-fake bindings will be the same as the fake ones.

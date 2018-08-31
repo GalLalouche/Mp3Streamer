@@ -13,6 +13,8 @@ import scala.concurrent.ExecutionContext
 
 object NonPersistentModule extends ScalaModule {
   override def configure(): Unit = {
+    install(AllModules)
+
     bind[Clock] toInstance Clock.systemDefaultZone
     bind[Logger] toInstance new ConsoleLogger with FilteringLogger
     bind[DirectoryRef].annotatedWith[RootDirectory] toInstance new MemoryRoot
@@ -25,5 +27,6 @@ object NonPersistentModule extends ScalaModule {
     bind[ExecutionContext] toInstance ExecutionContext.Implicits.global
 
     install(RealInternetTalkerModule.daemonic)
+    install(AllModules)
   }
 }

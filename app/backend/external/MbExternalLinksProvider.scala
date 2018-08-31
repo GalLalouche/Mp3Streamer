@@ -6,7 +6,7 @@ import backend.Retriever
 import backend.external.expansions.{AlbumLinkExpanders, ArtistLinkExpanders, CompositeSameHostExpander, ExternalLinkExpander}
 import backend.external.extensions._
 import backend.external.recons.{AlbumLinkRetrievers, ArtistLinkRetrievers, LinkRetrievers}
-import backend.mb.{MbAlbumReconcilerFactory, MbArtistReconciler}
+import backend.mb.{AlbumReconcilerFactory, MbArtistReconciler}
 import backend.recon._
 import backend.recon.Reconcilable._
 import backend.storage.{FreshnessStorage, RefreshableStorage}
@@ -36,7 +36,7 @@ private class MbExternalLinksProvider @Inject()(
     albumReconStorage: AlbumReconStorage,
     albumExternalStorage: AlbumExternalStorage,
     extender: CompositeExtender,
-    mbAlbumReconcilerFactory: MbAlbumReconcilerFactory,
+    mbAlbumReconcilerFactory: AlbumReconcilerFactory,
 ) extends ToMoreFoldableOps with ToFunctorOps with ToBindOps with ToMoreMonadErrorOps
     with FutureInstances with OptionInstances {
   private implicit val iec: ExecutionContext = ec
