@@ -10,7 +10,6 @@ trait Encoder {
    * @param srcFile The original file
    * @param dstFile The destination file that will be created
    * @param dstType The type of the new file
-   * @throws IOException
    */
   protected def encode(srcFile: File, dstFile: File, dstType: CodecType)
 }
