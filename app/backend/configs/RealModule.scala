@@ -7,16 +7,16 @@ import akka.stream.ActorMaterializer
 import backend.logging.Logger
 import backend.storage.DbProvider
 import com.google.inject.Provides
+import common.MyScalaModule
 import common.io.{DirectoryRef, InternetTalker, IODirectory, RootDirectory}
 import common.io.WSAliases.WSClient
 import models.{IOMusicFinder, MusicFinder}
-import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 import slick.jdbc.{JdbcProfile, SQLiteProfile}
 
 import scala.concurrent.ExecutionContext
 
-object RealModule extends ScalaModule {
+object RealModule extends MyScalaModule {
   override def configure(): Unit = {
     bind[Clock] toInstance Clock.systemDefaultZone
     bind[DirectoryRef].annotatedWith[RootDirectory] toInstance IODirectory.apply("D:/media/streamer/")
@@ -28,8 +28,8 @@ object RealModule extends ScalaModule {
     }
     bind[ActorMaterializer] toInstance ActorMaterializer()(ActorSystem.create("RealConfigWS-System"))
 
-    requireBinding(classOf[Logger])
-    requireBinding(classOf[ExecutionContext])
+    requireBinding[Logger]
+    requireBinding[ExecutionContext]
   }
 
   @Provides

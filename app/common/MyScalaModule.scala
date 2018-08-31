@@ -10,4 +10,6 @@ abstract class MyScalaModule extends ScalaModule {
   protected def install[Factory: Manifest]: Unit = {
     install(new FactoryModuleBuilder().build(manifest.runtimeClass))
   }
+
+  protected def requireBinding[A: Manifest]: Unit = requireBinding(manifest.runtimeClass)
 }
