@@ -18,6 +18,7 @@ object DownloadCover {
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val mf = c.injector.instance[MusicFinder]
   private val albumFactory = c.injector.instance[AlbumFactory]
+  private val imageFinder = c.injector.instance[ImageFinder]
   import albumFactory._
 
   private case class CoverException(str: String, e: Exception) extends Exception(e)
@@ -38,7 +39,7 @@ object DownloadCover {
       s"https://www.google.com/search?tbm=isch&q=$query&tbs=iar:s"
     }
     for {
-      urls <- new ImageFinder find Url(searchUrl)
+      urls <- imageFinder find Url(searchUrl)
       locals <- LocalImageFetcher(IODirectory(albumDir))
       selection <- selectImage(locals ++ urls)
     } yield selection match {

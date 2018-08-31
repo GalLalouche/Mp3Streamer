@@ -14,7 +14,7 @@ class ImageFinderTest extends FreeSpec with DocumentSpecs {
   private implicit val c: Configuration =
     TestConfiguration(_urlToBytesMapper = getBytes("image_search.html").partialConst)
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val $ = new ImageFinder
+  private val $ = c.injector.instance[ImageFinder]
 
   "parse images" in {
     $.find(Url("whatever")).get should contain allOf(

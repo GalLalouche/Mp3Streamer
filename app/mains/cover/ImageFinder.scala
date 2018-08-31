@@ -1,18 +1,17 @@
 package mains.cover
 
 import backend.Url
-import backend.configs.Configuration
 import common.RichJson._
 import common.io.InternetTalker
-import net.codingwell.scalaguice.InjectorExtensions._
+import javax.inject.Inject
 import org.jsoup.nodes.{Document, Element}
 import play.api.libs.json.Json
 
 import scala.collection.JavaConverters._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-private class ImageFinder(implicit c: Configuration) {
-  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
+private class ImageFinder @Inject()(it: InternetTalker) {
+  private implicit val iec: ExecutionContext = it
   def find(url: Url): Future[Seq[UrlSource]] = it downloadDocument url map parse
 
   private def parse(d: Document): Seq[UrlSource] =
