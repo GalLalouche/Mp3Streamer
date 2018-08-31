@@ -13,7 +13,6 @@ import common.rich.func.ToMoreFunctorOps
 import mains.fixer.StringFixer
 import models.IOMusicFinder
 import monocle.function.IndexFunctions
-import monocle.std.MapOptics
 import monocle.syntax.ApplySyntax
 import net.codingwell.scalaguice.InjectorExtensions._
 
@@ -23,17 +22,23 @@ import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
 private class NewAlbums(implicit c: RealConfig)
-    extends ToBindOps with FutureInstances with MapOptics with ApplySyntax with IndexFunctions
-        with ToMoreFunctorOps {
+    extends ToBindOps with ToMoreFunctorOps with FutureInstances
+        with ApplySyntax with IndexFunctions {
   import NewAlbum.NewAlbumJsonable
 
   private val injector = c.injector
   private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+  private val newAlbumsRetrieverFactory = injector.instance[NewAlbumsRetrieverFactory]
   private val logger = injector.instance[Logger]
   private val artistReconStorage = injector.instance[ArtistReconStorage]
   private val albumReconStorage = injector.instance[AlbumReconStorage]
   private val mbArtistReconciler = injector.instance[MbArtistReconciler]
   private val jsonableSaver = injector.instance[JsonableSaver]
+  private val retriever = newAlbumsRetrieverFactory(
+    new ReconcilerCacher(artistReconStorage, mbArtistReconciler),
+    new IOMusicFinder { // TODO override in mbdule
+      override val subDirNames: List[String] = List("Rock", "Metal")
+    })
 
   private def save(m: Map[Artist, Seq[NewAlbum]]): Unit = {
     jsonableSaver save m.flatMap(_._2)
@@ -64,18 +69,6 @@ private class NewAlbums(implicit c: RealConfig)
     load.map(_ &|-? index(a.artist) modify (_.filterNot(_.title == a.title))).map(save)
   }
   def ignoreAlbum(a: Album): Future[Unit] = ignore(a, albumReconStorage) >> removeAlbum(a)
-  private val retriever = {
-    // SAM doesn't work for zero argument method without parens, and I'll be damned if I'm adding empty parens
-    // for this shit.
-    val mf = new IOMusicFinder {
-      override val subDirNames: List[String] = List("Rock", "Metal")
-    }
-    new NewAlbumsRetriever(
-      new ReconcilerCacher(artistReconStorage, mbArtistReconciler),
-      albumReconStorage,
-      mf
-    )
-  }
 
   private def store(a: NewAlbum, r: ReconID): Unit = albumReconStorage.store(a.toAlbum, Some(r) -> false)
   def fetchAndSave: Future[Traversable[NewAlbum]] =

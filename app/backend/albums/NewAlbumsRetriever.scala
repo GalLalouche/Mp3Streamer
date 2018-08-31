@@ -1,6 +1,5 @@
 package backend.albums
 
-import backend.configs.{RealConfig, StandaloneConfig}
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
@@ -12,10 +11,8 @@ import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 import common.rich.primitives.RichBoolean._
 import models.{IOMusicFinder, Song}
-import net.codingwell.scalaguice.InjectorExtensions._
 import rx.lang.scala.Observable
 
-import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
@@ -23,19 +20,19 @@ import scalaz.Kleisli
 import scalaz.std.FutureInstances
 
 private class NewAlbumsRetriever(
-    reconciler: ReconcilerCacher[Artist],
     albumReconStorage: AlbumReconStorage,
     mf: IOMusicFinder,
-)(implicit c: RealConfig)
-    extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
-        with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances {
-  private val logger = c.injector.instance[Logger]
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+    logger: Logger,
+    ec: ExecutionContext,
+    meta: MbArtistReconciler,
+    reconciler: ReconcilerCacher[Artist],
+) extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
+    with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances {
+  private implicit val iec: ExecutionContext = ec
   private val log = logger.verbose _
-  private val meta = c.injector.instance[MbArtistReconciler]
   private def getExistingAlbums: Seq[Album] = mf.genreDirs
       .flatMap(_.deepDirs)
-      .flatMap(NewAlbumsRetriever.dirToAlbum(_))
+      .flatMap(NewAlbumsRetriever.dirToAlbum(_, mf))
   private def removeIgnoredAlbums(artist: Artist, albums: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
     def toAlbum(album: MbAlbumMetadata): Album =
       Album(title = album.title, year = album.releaseDate.getYear, artist = artist)
@@ -57,7 +54,7 @@ private class NewAlbumsRetriever(
   private def findNewAlbums(cache: ArtistLastYearCache, artist: Artist): Future[Seq[(NewAlbum, ReconID)]] = {
     // TODO replace filter with Message with a sum type for better error messages
     reconciler(artist)
-        .filterWithMessage(!_._2, "Ignored")
+        .filterWithMessage(_._2.isFalse, "Ignored")
         .filterWithMessage(_._1.isDefined, s"Unreconcilable")
         .map(_._1.get)
         .toTry.get match { // Ensures a single thread waits for the semaphore in NewAlbumsConfig
@@ -80,13 +77,15 @@ private class NewAlbumsRetriever(
 }
 
 private object NewAlbumsRetriever {
-  private def dirToAlbum(dir: IODirectory)(implicit c: RealConfig): Option[Album] = {
-    val mf = c.injector.instance[IOMusicFinder]
-    dir.files
-        .find(_.extension |> mf.extensions)
-        .map(_.file)
-        .map(Song(_).release)
-  }
+  import backend.configs.{RealConfig, StandaloneConfig}
+  import net.codingwell.scalaguice.InjectorExtensions._
+
+  import scala.collection.JavaConverters._
+
+  private def dirToAlbum(dir: IODirectory, mf: IOMusicFinder): Option[Album] = dir.files
+      .find(_.extension |> mf.extensions)
+      .map(_.file)
+      .map(Song(_).release)
 
   def main(args: Array[String]): Unit = {
     implicit val c: RealConfig = StandaloneConfig
@@ -95,26 +94,22 @@ private object NewAlbumsRetriever {
     val mf = injector.instance[IOMusicFinder]
 
     val artist: Artist = Artist("At the Gates")
-    def cacheForArtist(a: Artist)(implicit c: RealConfig): ArtistLastYearCache = {
+    def cacheForArtist(a: Artist, mf: IOMusicFinder): ArtistLastYearCache = {
       val mf = c.injector.instance[IOMusicFinder]
       val artistDir = mf.genreDirs
           .flatMap(_.deepDirs)
           .find(_.name.toLowerCase == a.name.toLowerCase)
           .get
       val lastAlbum = artistDir.dirs.mapIf(_.isEmpty).to(Seq(artistDir))
-          .flatMap(dirToAlbum(_))
+          .flatMap(dirToAlbum(_, mf))
           .maxBy(_.year)
 
       Seq.apply(lastAlbum) |> ArtistLastYearCache.from
     }
-    def findNewAlbums(a: Artist): Future[Seq[NewAlbum]] =
-      new NewAlbumsRetriever(
-        new ReconcilerCacher(injector.instance[ArtistReconStorage], injector.instance[MbArtistReconciler]),
-        injector.instance[AlbumReconStorage],
-        mf,
-      ).findNewAlbums(cacheForArtist(a), artist)
-          .map(_.map(_._1))
-    findNewAlbums(artist).get.log()
+    val reconciler = new ReconcilerCacher(
+      injector.instance[ArtistReconStorage], injector.instance[MbArtistReconciler])
+    val $ = c.injector.instance[NewAlbumsRetrieverFactory].apply(reconciler, mf)
+    $.findNewAlbums(cacheForArtist(artist, mf), artist).map(_.map(_._1)).get.log()
     Thread.getAllStackTraces.keySet.asScala.filterNot(_.isDaemon).foreach(println)
   }
 }
