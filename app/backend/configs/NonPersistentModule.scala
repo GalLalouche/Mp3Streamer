@@ -23,5 +23,7 @@ object NonPersistentModule extends ScalaModule {
         profile.api.Database.forURL("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
     }
     bind[ExecutionContext] toInstance ExecutionContext.Implicits.global
+
+    install(RealInternetTalkerModule.daemonic)
   }
 }
