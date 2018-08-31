@@ -1,7 +1,6 @@
 package backend.albums
 
 import backend.Retriever
-import net.codingwell.scalaguice.InjectorExtensions._
 import backend.configs.RealConfig
 import backend.recon._
 import common.Debug
@@ -10,6 +9,7 @@ import common.json.ToJsonableOps
 import common.rich.RichT._
 import common.rich.collections.RichMap._
 import controllers.{ControllerUtils, LegacyController}
+import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.mvc.{Action, AnyContent, Request}
 
 import scala.concurrent.ExecutionContext
@@ -22,7 +22,7 @@ object AlbumsController extends LegacyController with Debug
     with FutureInstances with ToFunctorOps with ToJsonableOps {
   private implicit val config: RealConfig = ControllerUtils.config
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
-  private val $ = new NewAlbums()
+  private val $ = config.injector.instance[NewAlbums]
 
   def albums = Action.async {
     $.load.map(Ok apply _.mapKeys(_.name).mapValues(_.jsonify).jsonify)

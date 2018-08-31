@@ -2,7 +2,6 @@ package backend.albums
 
 import java.util.logging.{Level, Logger => JLogger}
 
-import backend.configs.RealConfig
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.recon._
@@ -10,30 +9,31 @@ import common.io.JsonableSaver
 import common.rich.RichFuture._
 import common.rich.RichObservable._
 import common.rich.func.ToMoreFunctorOps
+import javax.inject.Inject
 import mains.fixer.StringFixer
 import models.IOMusicFinder
 import monocle.function.IndexFunctions
 import monocle.syntax.ApplySyntax
-import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
-private class NewAlbums(implicit c: RealConfig)
-    extends ToBindOps with ToMoreFunctorOps with FutureInstances
-        with ApplySyntax with IndexFunctions {
+private class NewAlbums @Inject()(
+    ec: ExecutionContext,
+    newAlbumsRetrieverFactory: NewAlbumsRetrieverFactory,
+    logger: Logger,
+    artistReconStorage: ArtistReconStorage,
+    albumReconStorage: AlbumReconStorage,
+    mbArtistReconciler: MbArtistReconciler,
+    jsonableSaver: JsonableSaver,
+) extends ToBindOps with ToMoreFunctorOps with FutureInstances
+    with ApplySyntax with IndexFunctions {
   import NewAlbum.NewAlbumJsonable
 
-  private val injector = c.injector
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-  private val newAlbumsRetrieverFactory = injector.instance[NewAlbumsRetrieverFactory]
-  private val logger = injector.instance[Logger]
-  private val artistReconStorage = injector.instance[ArtistReconStorage]
-  private val albumReconStorage = injector.instance[AlbumReconStorage]
-  private val mbArtistReconciler = injector.instance[MbArtistReconciler]
-  private val jsonableSaver = injector.instance[JsonableSaver]
+  private implicit val iec: ExecutionContext = ec
+
   private val retriever = newAlbumsRetrieverFactory(
     new ReconcilerCacher(artistReconStorage, mbArtistReconciler),
     new IOMusicFinder { // TODO override in mbdule
@@ -80,11 +80,14 @@ private class NewAlbums(implicit c: RealConfig)
 }
 
 object NewAlbums {
+  import backend.configs.RealConfig
+  import net.codingwell.scalaguice.InjectorExtensions._
+
   JLogger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   def main(args: Array[String]): Unit = {
     implicit val c: RealConfig = NewAlbumsConfig
     implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    new NewAlbums().fetchAndSave.get
+    c.injector.instance[NewAlbums].fetchAndSave.get
     println("Done!")
   }
 }
