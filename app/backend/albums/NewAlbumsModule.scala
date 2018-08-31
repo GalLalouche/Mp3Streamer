@@ -5,6 +5,8 @@ import java.util.concurrent.Semaphore
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import backend.Retriever
+import backend.configs.AllModules
+import common.ModuleUtils
 import common.io.InternetTalker
 import common.io.WSAliases.WSClient
 import common.rich.RichFuture
@@ -17,7 +19,7 @@ import scala.concurrent.ExecutionContext
 // Ensures MusicBrainz aren't flooded since:
 // 1. At most 3 WS clients are alive (semaphores).
 // 2. A request for a client has a 1 second delay.
-private object NewAlbumsModule extends ScalaModule {
+private object NewAlbumsModule extends ScalaModule with ModuleUtils {
   private val semaphore = new Semaphore(3)
   private val semaphoreReleasingService: ExecutionContext = CurrentThreadExecutionContext
   // TODO handle code duplication with RealModule
@@ -35,5 +37,8 @@ private object NewAlbumsModule extends ScalaModule {
         RichFuture.richFuture(super.useWs(f))(semaphoreReleasingService) consumeTry semaphore.release().const
       }
     }
+
+    install[NewAlbumsRetrieverFactory]
+    install(AllModules)
   }
 }

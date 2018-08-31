@@ -5,11 +5,13 @@ import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon._
 import backend.recon.Reconcilable.SongExtractor
+import com.google.inject.assistedinject.Assisted
 import common.io.IODirectory
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 import common.rich.primitives.RichBoolean._
+import javax.inject.Inject
 import models.{IOMusicFinder, Song}
 import rx.lang.scala.Observable
 
@@ -19,13 +21,13 @@ import scala.util.{Failure, Success}
 import scalaz.Kleisli
 import scalaz.std.FutureInstances
 
-private class NewAlbumsRetriever(
+private class NewAlbumsRetriever @Inject()(
     albumReconStorage: AlbumReconStorage,
-    mf: IOMusicFinder,
     logger: Logger,
     ec: ExecutionContext,
     meta: MbArtistReconciler,
-    reconciler: ReconcilerCacher[Artist],
+    @Assisted mf: IOMusicFinder,
+    @Assisted reconciler: ReconcilerCacher[Artist],
 ) extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
     with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances {
   private implicit val iec: ExecutionContext = ec
@@ -88,7 +90,7 @@ private object NewAlbumsRetriever {
       .map(Song(_).release)
 
   def main(args: Array[String]): Unit = {
-    implicit val c: RealConfig = StandaloneConfig
+    implicit val c: RealConfig = NewAlbumsConfig
     val injector = c.injector
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val mf = injector.instance[IOMusicFinder]
