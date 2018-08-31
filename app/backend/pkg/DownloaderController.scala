@@ -5,6 +5,7 @@ import java.io.FileInputStream
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import backend.Retriever
+import com.google.inject.Guice
 import common.io.{DirectoryRef, FileRef, IODirectory, IOFile}
 import common.rich.primitives.RichString._
 import controllers.{ControllerUtils, LegacyController}
@@ -17,9 +18,10 @@ import play.api.mvc.Action
 import scala.concurrent.ExecutionContext
 
 object DownloaderController extends LegacyController {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private val injector = Guice.createInjector(c.module, PkgModule)
+  private implicit val ec: ExecutionContext =  injector.instance[ExecutionContext]
   private val zipper: Retriever[DirectoryRef, FileRef] =
-    c.injector.instance[ZipperFactory].apply(ControllerUtils.encodePath)
+    injector.instance[ZipperFactory].apply(ControllerUtils.encodePath)
 
   def download(path: String) = Action.async {request =>
     // TODO fix code duplication with streamer

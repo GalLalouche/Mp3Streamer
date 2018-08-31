@@ -22,9 +22,12 @@ val akkaVersion = "2.5.4"
 val monocleVersion = "1.5.0"
 val playIterateesVersion = "2.6.1"
 val scalazVersion = "7.2.15"
+val guiceVersion = "4.2.0"
+
 libraryDependencies ++= Seq(
   guice,
-  "com.google.inject" % "guice" % "4.2.0",
+  "com.google.inject" % "guice" % guiceVersion,
+  "com.google.inject.extensions" % "guice-assistedinject" % guiceVersion,
   "net.codingwell" %% "scala-guice" % "4.2.1",
   "com.github.julien-truffaut" %% "monocle-core" % monocleVersion,
   "com.github.julien-truffaut" %% "monocle-macro" % monocleVersion,
