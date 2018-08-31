@@ -4,25 +4,27 @@ import common.Debug
 import common.io.IODirectory
 import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
+import common.MoreInjectionExtensions._
 import controllers.ControllerUtils.songJsonable
 import decoders.DbPowerampCodec
 import models._
 import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.JsValue
 import play.api.mvc._
-import songs.{SongGroup, SongGroups, SongSelector, SongSelectorFactory}
+import songs.{SongGroup, SongGroups, SongSelector}
 
 import scala.annotation.tailrec
 
 /** Handles fetch requests of JSON information, and listens to directory changes. */
 object Player extends LegacyController with ToJsonableOps with Debug {
   private val albumFactory = c.injector.instance[AlbumFactory]
+  private val songSelectorProvider = c.injector.provider[SongSelector]
   private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(
     c.injector.instance[SongGroups].load)
   private val encoder = DbPowerampCodec
   private var songSelector: SongSelector = _
   def update(): Unit = {
-    songSelector = c.injector.instance[SongSelectorFactory].create()
+    songSelector = songSelectorProvider.get()
   }
   //TODO hide this, shouldn't be a part of the controller
   update()

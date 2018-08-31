@@ -2,6 +2,7 @@ package songs
 
 import common.io.RefSystem
 import common.rich.RichT._
+import javax.inject.Inject
 import models.{MusicFinder, Song}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +33,7 @@ object SongSelector
   import common.rich.RichFuture._
 
   /** A mutable-updateable wrapper of SongSelector */
-  private[songs] class SongSelectorProxy(ec: ExecutionContext, mf: MusicFinder) extends SongSelector {
+  private[songs] class SongSelectorProxy @Inject()(ec: ExecutionContext, mf: MusicFinder) extends SongSelector {
     private implicit val iec: ExecutionContext = ec
     def update(): Future[_] = {
       val $ = Future(new SongSelectorImpl(mf.getSongFiles.toVector)(mf))
