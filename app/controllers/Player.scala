@@ -10,7 +10,7 @@ import models._
 import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.JsValue
 import play.api.mvc._
-import songs.{SongGroup, SongGroups, SongSelector}
+import songs.{SongGroup, SongGroups, SongSelector, SongSelectorFactory}
 
 import scala.annotation.tailrec
 
@@ -22,7 +22,7 @@ object Player extends LegacyController with ToJsonableOps with Debug {
   private val encoder = DbPowerampCodec
   private var songSelector: SongSelector = _
   def update(): Unit = {
-    songSelector = SongSelector.create
+    songSelector = c.injector.instance[SongSelectorFactory].create()
   }
   //TODO hide this, shouldn't be a part of the controller
   update()

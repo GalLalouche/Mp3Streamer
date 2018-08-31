@@ -13,6 +13,7 @@ private object SongGroupsUpdater {
     val songs = dir.files.filter(_.getName |> isPrefix)
     SongGroup(songs.sortBy(_.getName).map(Song.apply))
   }
+
   // Appends new groups and saves them
   def main(args: Array[String]): Unit = {
     import backend.configs.{Configuration, StandaloneConfig}
