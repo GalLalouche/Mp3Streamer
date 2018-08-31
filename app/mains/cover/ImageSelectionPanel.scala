@@ -1,9 +1,7 @@
 package mains.cover
 
-import backend.configs.Configuration
 import common.io.IODirectory
 import common.rich.RichT._
-import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.swing.Frame
@@ -34,7 +32,8 @@ private class ImageSelectionPanel private(imagesSupplier: ImagesSupplier)(implic
 }
 
 private object ImageSelectionPanel {
-  import backend.configs.StandaloneConfig
+  import backend.configs.{Configuration, StandaloneConfig}
+  import net.codingwell.scalaguice.InjectorExtensions._
 
   import scala.util.Random
 
