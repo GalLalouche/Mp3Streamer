@@ -19,6 +19,7 @@ object DownloadCover {
   private val mf = c.injector.instance[MusicFinder]
   private val albumFactory = c.injector.instance[AlbumFactory]
   private val imageFinder = c.injector.instance[ImageFinder]
+  private val imageDownloader = c.injector.instance[ImageDownloader]
   import albumFactory._
 
   private case class CoverException(str: String, e: Exception) extends Exception(e)
@@ -72,7 +73,7 @@ object DownloadCover {
   private def selectImage(imageURLs: Seq[ImageSource]): Future[ImageChoice] = ImageSelectionPanel(
     ImagesSupplier.withCache(
       imageURLs.iterator.filter(i => i.isSquare && i.width >= 500),
-      new ImageDownloader(IODirectory apply tempFolder),
+      imageDownloader.withOutput(IODirectory apply tempFolder),
       cacheSize = 12))
 
   def main(args: Array[String]) {
