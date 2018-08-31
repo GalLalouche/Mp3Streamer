@@ -1,10 +1,9 @@
 package backend.pkg
 
-import com.google.inject.assistedinject.FactoryModuleBuilder
-import net.codingwell.scalaguice.ScalaModule
+import common.MyScalaModule
 
-private object PkgModule extends ScalaModule {
+private object PkgModule extends MyScalaModule {
   override def configure(): Unit = {
-    install(new FactoryModuleBuilder().build(classOf[ZipperFactory]))
+    install[ZipperFactory]
   }
 }
