@@ -17,7 +17,8 @@ import scala.annotation.tailrec
 /** Handles fetch requests of JSON information, and listens to directory changes. */
 object Player extends LegacyController with ToJsonableOps with Debug {
   private val albumFactory = c.injector.instance[AlbumFactory]
-  private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(new SongGroups().load)
+  private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(
+    c.injector.instance[SongGroups].load)
   private val encoder = DbPowerampCodec
   private var songSelector: SongSelector = _
   def update(): Unit = {

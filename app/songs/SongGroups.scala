@@ -1,27 +1,22 @@
 package songs
 
-import backend.configs.Configuration
-import common.io.{DirectoryRef, FileRef, RootDirectory}
+import common.io.{DirectoryRef, RootDirectory}
 import common.json.{Jsonable, ToJsonableOps}
 import common.rich.RichT._
 import common.rich.func.MoreSeqInstances
+import javax.inject.Inject
 import models.Song
-import net.codingwell.scalaguice.InjectorExtensions._
 
 import scalaz.syntax.ToFunctorOps
 
-class SongGroups(implicit songJsonable: Jsonable[Song]) extends ToJsonableOps {
-  private def getJsonFile(implicit c: Configuration): FileRef = {
-    val rootDirectory = c.injector.instance[DirectoryRef, RootDirectory]
-    rootDirectory addFile "song_groups.json"
-  }
-  private def writeToJsonFile(s: String)(implicit c: Configuration) =
-    getJsonFile write s
-  def save(groups: Traversable[SongGroup])(implicit c: Configuration): Unit = groups
+class SongGroups @Inject()(@RootDirectory rootDirectory: DirectoryRef) extends ToJsonableOps {
+  private lazy val jsonFile = rootDirectory addFile "song_groups.json"
+
+  def save(groups: Traversable[SongGroup])(implicit songJsonable: Jsonable[Song]): Unit = groups
       .map(_.songs.jsonify)
       .map(_.toString)
-      .mkString("\n") |> writeToJsonFile
-  def load(implicit c: Configuration): Set[SongGroup] = getJsonFile.lines
+      .mkString("\n") |> jsonFile.write
+  def load(implicit songJsonable: Jsonable[Song]): Set[SongGroup] = jsonFile.lines
       .map(_.parseJsonable[Seq[Song]] |> SongGroup.apply)
       .toSet
 }
