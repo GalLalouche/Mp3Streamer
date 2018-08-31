@@ -79,7 +79,7 @@ object FolderFixer
     println("fixing directory")
     val fixedDirectory = FixLabels fix folder.cloneDir()
     moveDirectory(artist, location, folderImage, fixedDirectory)
-        .map(FoobarGain.calculateTrackGain)
+        .map(c.injector.instance[FoobarGain].calculateTrackGain)
         .>|(updateServer())
         .>|(println("--Done!--"))
         .get
