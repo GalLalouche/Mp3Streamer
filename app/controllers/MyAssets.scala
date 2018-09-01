@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext
 
 // Since 2.6 ruined their own assets controller :\
 object MyAssets extends LegacyController {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
   def asset(path: String) = Action {
     Ok.sendFile(new File("""public\""" + path))
   }

@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext
 
 /** Used for updating the cache from the client. */
 object CacherController extends WebSocketController with ToJsonableOps {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
 
   private implicit val writesIndexUpdate: JsonWriteable[IndexUpdate] = u => Json.obj(
     "finished" -> u.currentIndex,
@@ -23,7 +23,7 @@ object CacherController extends WebSocketController with ToJsonableOps {
     "currentDir" -> u.dir.name,
   )
 
-  private val cacher = c.injector.instance[MetadataCacherFactory].create
+  private val cacher = injector.instance[MetadataCacherFactory].create
   private def toRefreshStatus(o: Observable[IndexUpdate], updateRecent: Boolean) = {
     if (updateRecent)
       o.map(_.dir) foreach Recent.newDir

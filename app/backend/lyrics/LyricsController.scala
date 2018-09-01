@@ -13,8 +13,8 @@ import scalaz.std.FutureInstances
 
 object LyricsController extends LegacyController
     with ToMoreMonadErrorOps with FutureInstances {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val backend = c.injector.instance[LyricsCache]
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+  private val backend = injector.instance[LyricsCache]
   // TODO replace with Writable typeclass?
   private def toString(l: Lyrics): String = l.html + "<br><br>Source: " + l.source
   def get(path: String) = Action.async {

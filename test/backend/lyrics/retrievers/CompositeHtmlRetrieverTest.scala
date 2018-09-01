@@ -1,7 +1,7 @@
 package backend.lyrics.retrievers
 
 import backend.Url
-import backend.configs.{Configuration, TestConfiguration}
+import backend.configs.TestConfiguration
 import backend.logging.Logger
 import backend.lyrics.Instrumental
 import common.AuxSpecs
@@ -15,8 +15,8 @@ import org.scalatest.{FreeSpec, OneInstancePerTest}
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
-  private implicit val c: Configuration = TestConfiguration()
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private val injector = TestConfiguration().injector
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
   private def fakeLyricsRetriever(
       songsToFind: Song, urlToMatch: Url, instrumentalText: String): HtmlRetriever = {
     class FakeLyricsRetriever extends HtmlRetriever {
@@ -38,7 +38,7 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
   private val r1 = fakeLyricsRetriever(song1, Url("foo"), "foo")
   private val r2 = fakeLyricsRetriever(song2, Url("bar"), "bar")
   private val r3 = fakeLyricsRetriever(song3, Url("bazz"), "quxx")
-  private val $ = new CompositeHtmlRetriever(ec, c.injector.instance[Logger], Vector(r1, r2, r3))
+  private val $ = new CompositeHtmlRetriever(ec, injector.instance[Logger], Vector(r1, r2, r3))
 
   "doesUrlMatch" - {
     "when one of the URLs match" in {

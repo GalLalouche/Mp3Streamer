@@ -1,11 +1,11 @@
 package controllers
 
-import backend.configs.Configuration
+import com.google.inject.Injector
 import play.api.http.{DefaultFileMimeTypesProvider, FileMimeTypes, FileMimeTypesConfiguration}
 import play.api.mvc.Controller
 
 class LegacyController extends Controller {
-  protected implicit val c: Configuration = ControllerUtils.config
+  protected val injector: Injector = ControllerUtils.injector
   protected implicit val mimeTypes: FileMimeTypes =
     new DefaultFileMimeTypesProvider(FileMimeTypesConfiguration(Map(
       "jpg" -> "image/jpeg",

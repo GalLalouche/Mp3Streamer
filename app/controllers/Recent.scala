@@ -13,11 +13,11 @@ import play.api.mvc.Action
 import scala.concurrent.{ExecutionContext, Future}
 
 object Recent extends WebSocketController with ToJsonableOps {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val albumFactory = c.injector.instance[AlbumFactory]
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+  private val albumFactory = injector.instance[AlbumFactory]
   // TODO move to a backend class
   private def recentAlbums(amount: Int): Future[Seq[Album]] = Future {
-    val mf = c.injector.instance[MusicFinder]
+    val mf = injector.instance[MusicFinder]
     mf.genreDirs
         .flatMap(_.deepDirs)
         .filter(mf.getSongFilesInDir(_).nonEmpty)

@@ -3,7 +3,7 @@ package backend.external.extensions
 import java.time.LocalDateTime
 
 import backend.Url
-import backend.configs.{Configuration, TestConfiguration}
+import backend.configs.TestConfiguration
 import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
 import common.AuxSpecs
@@ -12,8 +12,7 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
 
 class CompositeExtenderTest extends FreeSpec with AuxSpecs {
-  private implicit val c: Configuration = TestConfiguration()
-  private val $ = c.injector.instance[CompositeExtender]
+  private val $ = TestConfiguration().injector.instance[CompositeExtender]
 
   private def toMarked[R <: Reconcilable](e: ExtendedLink[R]) =
     MarkedLink[R](link = e.link, host = e.host, isNew = e.isNew)

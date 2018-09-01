@@ -20,7 +20,7 @@ import scalaz.std.OptionInstances
 
 object Streamer extends LegacyController
     with ToMoreFoldableOps with OptionInstances {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
 
   private val decoder = DbPowerampCodec
   def download(s: String) = Action.async {request =>

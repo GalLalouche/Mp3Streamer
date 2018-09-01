@@ -1,12 +1,10 @@
 package backend.lyrics.retrievers
 
-import backend.configs.{Configuration, TestConfiguration}
 import backend.external.DocumentSpecs
 import org.scalatest.FreeSpec
-import org.scalatest.matchers.{BePropertyMatchResult, BePropertyMatcher}
+import org.scalatest.matchers.{BePropertyMatcher, BePropertyMatchResult}
 
 trait LyricsSpec extends FreeSpec with DocumentSpecs {
-  protected implicit val config: Configuration = TestConfiguration()
   protected val instrumental: BePropertyMatcher[Option[String]] =
     objectWithProperty => BePropertyMatchResult(objectWithProperty.isEmpty, "instrumental")
   protected def verifyLyrics(html: Option[String], firstLine: String, lastLine: String): Unit = {

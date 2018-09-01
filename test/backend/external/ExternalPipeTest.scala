@@ -1,7 +1,7 @@
 package backend.external
 
 import backend.Url
-import backend.configs.{Configuration, TestConfiguration}
+import backend.configs.TestConfiguration
 import backend.external.Host.{AllMusic, RateYourMusic, Wikipedia}
 import backend.external.expansions.ExternalLinkExpander
 import backend.external.recons.{LinkRetriever, LinkRetrievers}
@@ -15,8 +15,8 @@ import org.scalatest.FreeSpec
 import scala.concurrent.{ExecutionContext, Future}
 
 class ExternalPipeTest extends FreeSpec with AuxSpecs {
-  private implicit val c: Configuration = new TestConfiguration
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private val injector = TestConfiguration().injector
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
   private val existingHost: Host = Host("existinghost", Url("existinghosturl"))
   private val existingLink: BaseLink[Album] = BaseLink(Url("existing"), existingHost)
   private val existingMarkedLink: MarkedLink[Album] = MarkedLink markExisting existingLink

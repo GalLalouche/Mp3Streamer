@@ -19,8 +19,8 @@ import scalaz.syntax.ToFunctorOps
 /** A web interface to new albums finder. Displays new albums and can update the current file / ignoring policy. */
 object AlbumsController extends LegacyController with Debug
     with FutureInstances with ToFunctorOps with ToJsonableOps {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val $ = c.injector.instance[NewAlbums]
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+  private val $ = injector.instance[NewAlbums]
 
   def albums = Action.async {
     $.load.map(Ok apply _.mapKeys(_.name).mapValues(_.jsonify).jsonify)

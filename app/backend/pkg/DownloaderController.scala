@@ -18,8 +18,8 @@ import play.api.mvc.Action
 import scala.concurrent.ExecutionContext
 
 object DownloaderController extends LegacyController {
-  private val injector = Guice.createInjector(c.module, PkgModule)
-  private implicit val ec: ExecutionContext =  injector.instance[ExecutionContext]
+  override val injector = Guice.createInjector(ControllerUtils.module, PkgModule)
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
   private val zipper: Retriever[DirectoryRef, FileRef] =
     injector.instance[ZipperFactory].apply(ControllerUtils.encodePath)
 

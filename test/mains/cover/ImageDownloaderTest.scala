@@ -1,7 +1,7 @@
 package mains.cover
 
 import backend.Url
-import backend.configs.{Configuration, TestConfiguration}
+import backend.configs.TestConfiguration
 import common.AuxSpecs
 import common.io.MemoryRoot
 import common.rich.RichFuture._
@@ -13,9 +13,9 @@ import scala.concurrent.ExecutionContext
 
 class ImageDownloaderTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
   private val tempDir = new MemoryRoot
-  private implicit val c: Configuration = TestConfiguration(_urlToBytesMapper = "foobar".getBytes.partialConst)
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val $ = c.injector.instance[ImageDownloader].withOutput(tempDir)
+  private val injector = TestConfiguration(_urlToBytesMapper = "foobar".getBytes.partialConst).injector
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+  private val $ = injector.instance[ImageDownloader].withOutput(tempDir)
 
   "Remote" in {
     val fi = $(UrlSource(Url("http://foobar"), 500, 500)).get

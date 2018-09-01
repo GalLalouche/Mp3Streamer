@@ -3,7 +3,7 @@ package backend.external.recons
 import java.net.HttpURLConnection
 
 import backend.Url
-import backend.configs.{Configuration, FakeWSResponse, TestConfiguration}
+import backend.configs.{FakeWSResponse, TestConfiguration}
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.recon.Artist
 import common.AuxSpecs
@@ -18,22 +18,22 @@ import scala.concurrent.ExecutionContext
 class LastFmLinkRetrieverTest extends FreeSpec with AuxSpecs with DocumentSpecs {
   private val config = new TestConfiguration
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
-  private def create(config: Configuration): LastFmLinkRetriever = {
+  private def create(config: TestConfiguration): LastFmLinkRetriever = {
     new LastFmLinkRetriever(config.injector.instance[InternetTalker], millisBetweenRedirects = 1)
   }
   "404" in {
-    val c: Configuration = config.copy(_urlToResponseMapper =
+    val c = config.copy(_urlToResponseMapper =
         FakeWSResponse(status = HttpURLConnection.HTTP_NOT_FOUND).partialConst)
     create(c)(Artist("Foobar")).get shouldBe 'empty
   }
   "200" in {
-    val c: Configuration = config.copy(_urlToBytesMapper = getBytes("last_fm.html").partialConst)
+    val c = config.copy(_urlToBytesMapper = getBytes("last_fm.html").partialConst)
     create(c)(Artist("dreamtheater")).get.get shouldReturn
         BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm)
   }
   "302" in {
     var first = false
-    val c: Configuration = config.copy(_urlToResponseMapper = {
+    val c = config.copy(_urlToResponseMapper = {
       case _ if first =>
         first = false
         FakeWSResponse(status = HttpURLConnection.HTTP_MOVED_TEMP)

@@ -8,7 +8,7 @@ import play.api.mvc._
 import scala.concurrent.ExecutionContext
 
 object Application extends LegacyController {
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
   def index = Action {
     Ok(views.html.main())
   }

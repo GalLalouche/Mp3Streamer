@@ -13,7 +13,7 @@ import scala.concurrent.duration.DurationInt
 
 object PlaylistController extends LegacyController
     with ToJsonableOps {
-  private val saver = c.injector.instance[JsonableSaver]
+  private val saver = injector.instance[JsonableSaver]
 
   def getQueue = Action {
     Ok(saver.loadObject[PlaylistQueue].songs.jsonify)

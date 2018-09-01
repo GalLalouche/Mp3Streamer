@@ -25,7 +25,7 @@ case class TestConfiguration(
     private val _urlToResponseMapper: PartialFunction[Url, FakeWSResponse] = PartialFunction.empty,
     private val _requestToResponseMapper: PartialFunction[WSRequest, FakeWSResponse] = PartialFunction.empty,
     private val _root: MemoryRoot = new MemoryRoot,
-) extends Configuration {
+) {
 
   private def getRequest(u: Url): WSRequest = {
     val partialRequest: Url => WSRequest =
@@ -38,7 +38,7 @@ case class TestConfiguration(
     partialRequest(u)
   }
 
-  override final val module: Module = Modules.combine(new TestModule, new ScalaModule {
+  val module: Module = Modules.combine(new TestModule, new ScalaModule {
     override def configure(): Unit = {
       bind[MemoryRoot].annotatedWith[RootDirectory] toInstance _root
       bind[ExecutionContext] toInstance _ec
@@ -60,7 +60,7 @@ case class TestConfiguration(
     }
   })
 
-  override val injector = Guice.createInjector(module)
+  val injector = Guice.createInjector(module)
 }
 
 

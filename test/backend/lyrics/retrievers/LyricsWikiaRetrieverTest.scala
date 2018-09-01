@@ -1,11 +1,12 @@
 package backend.lyrics.retrievers
 
+import backend.configs.TestConfiguration
 import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions._
 
 class LyricsWikiaRetrieverTest extends LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
-  private val $ = config.injector.instance[LyricsWikiaRetriever]
+  private val $ = TestConfiguration().injector.instance[LyricsWikiaRetriever]
 
   "getUrl" in {
     $.getUrl(fakeModelFactory.song(artistName = "Foo Bar", title = "Bazz Qux")) shouldReturn

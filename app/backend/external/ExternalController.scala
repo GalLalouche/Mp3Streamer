@@ -24,12 +24,12 @@ import scalaz.syntax.ToBindOps
 object ExternalController extends LegacyController
     with ToBindOps with ToMoreMonadErrorOps with FutureInstances {
 
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
 
   private type KVPair = (String, play.api.libs.json.Json.JsValueWrapper)
   private val hosts: Seq[Host] =
     Seq(Host.MusicBrainz, Host.Wikipedia, Host.Wikidata, Host.AllMusic, Host.Facebook, Host.LastFm, Host.RateYourMusic)
-  private val external = c.injector.instance[MbExternalLinksProvider]
+  private val external = injector.instance[MbExternalLinksProvider]
 
   private def canonizeHost(e: ExtendedLink[_]): String = {
     val isMissing = e.host.name.endsWith("?")

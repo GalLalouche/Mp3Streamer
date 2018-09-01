@@ -15,8 +15,8 @@ import play.api.mvc.Action
 
 object SearchController extends LegacyController with Extra
     with ToJsonableOps {
-  private val compositeIndexProvider = c.injector.provider[CompositeIndex]
-  private val logger = c.injector.instance[Logger]
+  private val compositeIndexProvider = injector.provider[CompositeIndex]
+  private val logger = injector.instance[Logger]
   private var index: CompositeIndex = compositeIndexProvider.get()
 
   override def apply(): Unit = {

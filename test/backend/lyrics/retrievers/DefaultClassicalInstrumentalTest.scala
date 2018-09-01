@@ -1,6 +1,6 @@
 package backend.lyrics.retrievers
 
-import backend.configs.{Configuration, TestConfiguration}
+import backend.configs.TestConfiguration
 import backend.lyrics.Instrumental
 import common.io.{MemoryDir, MemoryRoot}
 import common.rich.RichFuture._
@@ -12,8 +12,7 @@ import scala.concurrent.ExecutionContext
 
 class DefaultClassicalInstrumentalTest extends FreeSpec with Matchers {
   private val fakeModelFactory = new FakeModelFactory
-  private implicit val c: Configuration = TestConfiguration()
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private implicit val ec: ExecutionContext = TestConfiguration().injector.instance[ExecutionContext]
   private val $ = DefaultClassicalInstrumental
   private def songWithPath(path: String): Song = {
     val split = path.split("/")

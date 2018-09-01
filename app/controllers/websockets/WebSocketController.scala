@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
 import akka.stream.ActorMaterializer
 import backend.logging.Logger
 import common.rich.RichT._
-import controllers.{ControllerUtils, LegacyController}
+import controllers.LegacyController
 import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.WebSocket
@@ -19,10 +19,9 @@ object WebSocketController {
 }
 
 trait WebSocketController extends LegacyController {
-  import ControllerUtils.config
   import WebSocketController._
 
-  private val logger = config.injector.instance[Logger]
+  private val logger = injector.instance[Logger]
   private val actors = new mutable.HashSet[ActorRef]
 
   protected def broadcast(msg: String): Unit = actors.foreach(_ ! MessageToClient(msg))
