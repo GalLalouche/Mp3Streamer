@@ -18,10 +18,10 @@ import scala.concurrent.{Await, ExecutionContext, Promise}
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory
-  private implicit val root: MemoryRoot = new MemoryRoot
+  private val root: MemoryRoot = new MemoryRoot
   private val songs = root.addSubDir("songs")
-  private implicit val mf: FakeMusicFinder = new FakeMusicFinder(songs)
-  private implicit val c: TestConfiguration = TestConfiguration().copy(_root = root, _mf = mf)
+  private val mf: FakeMusicFinder = new FakeMusicFinder(songs)
+  private val c = TestConfiguration().copy(_root = root, _mf = mf)
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val jsonableSaver = c.injector.instance[JsonableSaver]
   private val albumFactory = c.injector.instance[AlbumFactory]

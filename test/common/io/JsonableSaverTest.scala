@@ -18,7 +18,7 @@ import play.api.libs.json.{JsObject, Json, JsValue}
 class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs with ToJsonableOps {
   // TODO Answer why not take the one from TestConfiguration?
   private val root = new MemoryRoot
-  private implicit val c: TestConfiguration = new TestConfiguration() {
+  private val c = new TestConfiguration() {
     override val injector = Guice.createInjector(Modules `override` module `with` new ScalaModule {
       override def configure() = {
         bind[MemoryRoot].annotatedWith[RootDirectory] toInstance root

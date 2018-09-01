@@ -8,8 +8,7 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
 
 class WikidataEnglishExtenderTest extends FreeSpec with DocumentSpecs {
-  private implicit val config: TestConfiguration =
-    TestConfiguration().copy(_urlToBytesMapper = PartialFunction(getBytes))
+  private val config = TestConfiguration().copy(_urlToBytesMapper = PartialFunction(getBytes))
   private val $ = config.injector.instance[WikidataEnglishExtenderFactory].create[Artist]
   "extract english links if they exist" in {
     $.parseDocument(getDocument("wikidata.htm")) shouldReturn

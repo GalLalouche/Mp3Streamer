@@ -12,7 +12,7 @@ import org.scalatest.FreeSpec
 import scala.concurrent.ExecutionContext
 
 class InstrumentalArtistTest extends FreeSpec with AuxSpecs with StorageSetup {
-  override protected implicit val config: TestConfiguration = TestConfiguration()
+  override protected val config = TestConfiguration()
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   override protected lazy val storage = config.injector.instance[InstrumentalArtistStorage]
   private val factory = new FakeModelFactory

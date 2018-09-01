@@ -15,7 +15,7 @@ import org.scalatest.FreeSpec
 import scala.concurrent.ExecutionContext
 
 class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
-  private implicit val config: TestConfiguration = TestConfiguration()
+  private val config = TestConfiguration()
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   private def withDocument(s: String) = config.copy(_urlToBytesMapper = getBytes(s).partialConst)
   private def create(c: TestConfiguration) = c.injector.instance[AllMusicHelper]

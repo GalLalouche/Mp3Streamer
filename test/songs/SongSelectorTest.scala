@@ -18,7 +18,7 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
   "returns a random song" in {
     forAll {ss: List[MemorySong] =>
       whenever(ss.nonEmpty) {
-        implicit val c: TestConfiguration = new TestConfiguration
+        val c = new TestConfiguration
         val mf = c.injector.instance[FakeMusicFinder]
         val songs = ss.map(mf.copySong)
 
@@ -29,7 +29,7 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
     }
   }
   "next song" in {
-    implicit val c: TestConfiguration = new TestConfiguration
+    val c = new TestConfiguration
     val mf = c.injector.instance[FakeMusicFinder]
     val song1 = mf.copySong(factory.song(albumName = "album", artistName = "artist", track = 1))
     val song2 = mf.copySong(factory.song(albumName = "album", artistName = "artist", track = 2))

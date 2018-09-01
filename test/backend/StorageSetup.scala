@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext
 
 @Slow
 trait StorageSetup extends BeforeAndAfter with OneInstancePerTest {self: Suite =>
-  protected implicit def config: TestConfiguration
+  protected def config: TestConfiguration
   private implicit def ec: ExecutionContext = config.injector.instance[ExecutionContext]
   protected def storage: Storage[_, _]
   private lazy val utils = storage.utils

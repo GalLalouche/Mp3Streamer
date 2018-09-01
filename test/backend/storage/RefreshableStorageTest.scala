@@ -12,9 +12,9 @@ import org.scalatest.{FreeSpec, OneInstancePerTest}
 import scala.concurrent.{ExecutionContext, Future}
 
 class RefreshableStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
-  private implicit val c: TestConfiguration = new TestConfiguration
+  private val c = new TestConfiguration
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  implicit val clock: FakeClock = c.injector.instance[FakeClock]
+  private val clock = c.injector.instance[FakeClock]
   private var i = 0
   private val freshnessStorage = new FreshnessStorage[String, String](
     new MemoryBackedStorage, c.injector.instance[Clock])

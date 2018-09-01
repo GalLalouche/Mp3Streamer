@@ -16,9 +16,9 @@ import scalaz.syntax.ToBindOps
 
 class FreshnessStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest
     with FutureInstances with ToBindOps {
-  private implicit val c: TestConfiguration = TestConfiguration()
+  private val c = TestConfiguration()
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private implicit val clock: FakeClock = c.injector.instance[FakeClock]
+  private val clock: FakeClock = c.injector.instance[FakeClock]
 
   private val $ = new FreshnessStorage[Int, Int](new MemoryBackedStorage, c.injector.instance[Clock])
 
