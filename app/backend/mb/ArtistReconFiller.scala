@@ -1,6 +1,6 @@
 package backend.mb
 
-import backend.configs.{RealConfig, StandaloneConfig}
+import backend.configs.StandaloneConfig
 import backend.recon.{Artist, ArtistReconStorage, ReconcilerCacher, ReconID}
 import common.io.{IODirectory, IOSystem}
 import common.rich.RichFuture._
@@ -15,7 +15,7 @@ import scalaz.std.FutureInstances
 
 private object ArtistReconFiller
     extends ToMoreMonadErrorOps with FutureInstances {
-  private val c: RealConfig = StandaloneConfig
+  private val c = StandaloneConfig
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
 
   private val reconciler = new ReconcilerCacher[Artist](

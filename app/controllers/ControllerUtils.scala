@@ -3,7 +3,7 @@ package controllers
 import java.io.File
 import java.net.{URLDecoder, URLEncoder}
 
-import backend.configs.RealConfig
+import backend.configs.{Configuration, RealModule}
 import backend.logging.{CompositeLogger, ConsoleLogger, DirectoryLogger, FilteringLogger, Logger, LoggingLevel}
 import com.google.common.annotations.VisibleForTesting
 import com.google.inject.{Guice, Provides}
@@ -22,8 +22,8 @@ import play.api.mvc.Request
 import scala.concurrent.ExecutionContext
 
 object ControllerUtils {
-  implicit lazy val config: RealConfig = new RealConfig {
-    override val module = Modules.combine(super.module, new ScalaModule {
+  val config: Configuration = new Configuration {
+    override val module = Modules.combine(RealModule, new ScalaModule {
       override def configure(): Unit = {
         bind[ExecutionContext] toInstance play.api.libs.concurrent.Execution.Implicits.defaultContext
       }

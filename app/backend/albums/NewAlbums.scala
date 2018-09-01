@@ -80,12 +80,11 @@ private class NewAlbums @Inject()(
 }
 
 object NewAlbums {
-  import backend.configs.RealConfig
   import net.codingwell.scalaguice.InjectorExtensions._
 
   JLogger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   def main(args: Array[String]): Unit = {
-    implicit val c: RealConfig = NewAlbumsConfig
+    val c = NewAlbumsConfig
     implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
     c.injector.instance[NewAlbums].fetchAndSave.get
     println("Done!")

@@ -14,7 +14,7 @@ import scalaz.std.{FutureInstances, ListInstances}
 import scalaz.syntax.ToTraverseOps
 
 /** Also creates all needed tables */
-object CleanConfiguration extends RealConfig with NonPersistentConfig
+object CleanConfiguration extends NonPersistentConfig
     with FutureInstances with ListInstances with ToTraverseOps {
   override val injector = Guice createInjector module
   // TODO replace with @Inject?

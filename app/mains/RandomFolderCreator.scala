@@ -2,7 +2,7 @@ package mains
 
 import java.io.File
 
-import backend.configs.{RealConfig, StandaloneConfig}
+import backend.configs.StandaloneConfig
 import common.rich.RichFuture._
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
@@ -23,7 +23,7 @@ import scalaz.syntax.{ToBindOps, ToTraverseOps}
 /** Selects n random songs and puts them in a folder on D:\ */
 private object RandomFolderCreator extends
     ToBindOps with FutureInstances with ListInstances with ToTraverseOps {
-  private implicit val c: RealConfig = StandaloneConfig
+  private val c = StandaloneConfig
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val mf = c.injector.instance[IOMusicFinder]
   private val songs = mf.getSongFiles.map(_.file)

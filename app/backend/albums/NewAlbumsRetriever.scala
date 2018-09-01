@@ -79,7 +79,6 @@ private class NewAlbumsRetriever @Inject()(
 }
 
 private object NewAlbumsRetriever {
-  import backend.configs.{RealConfig, StandaloneConfig}
   import net.codingwell.scalaguice.InjectorExtensions._
 
   import scala.collection.JavaConverters._
@@ -90,7 +89,7 @@ private object NewAlbumsRetriever {
       .map(Song(_).release)
 
   def main(args: Array[String]): Unit = {
-    implicit val c: RealConfig = NewAlbumsConfig
+    val c = NewAlbumsConfig
     val injector = c.injector
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val mf = injector.instance[IOMusicFinder]

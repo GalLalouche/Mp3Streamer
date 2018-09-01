@@ -1,7 +1,7 @@
 package mains.fixer
 
 import backend.Url
-import backend.configs.{RealConfig, StandaloneConfig}
+import backend.configs.StandaloneConfig
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -20,7 +20,7 @@ import scalaz.syntax.ToFunctorOps
 
 object FolderFixer
     extends ToFunctorOps with ToMoreMonadErrorOps with FutureInstances {
-  private implicit val c: RealConfig = StandaloneConfig
+  private val c = StandaloneConfig
   private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
 
   private def findArtistFolder(artist: String): Option[Directory] = {
