@@ -4,9 +4,8 @@ import java.util.logging.{Level, Logger => JLogger}
 
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
-import backend.recon._
+import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage, Reconcilable, ReconcilerCacher, ReconID, ReconStorage}
 import common.io.JsonableSaver
-import common.rich.RichFuture._
 import common.rich.RichObservable._
 import common.rich.func.ToMoreFunctorOps
 import javax.inject.Inject
@@ -80,13 +79,15 @@ private class NewAlbums @Inject()(
 }
 
 object NewAlbums {
+  import com.google.inject.Guice
+  import common.rich.RichFuture._
   import net.codingwell.scalaguice.InjectorExtensions._
 
   JLogger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   def main(args: Array[String]): Unit = {
-    val c = NewAlbumsConfig
-    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    c.injector.instance[NewAlbums].fetchAndSave.get
+    val injector = Guice createInjector NewAlbumsModule
+    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+    injector.instance[NewAlbums].fetchAndSave.get
     println("Done!")
   }
 }

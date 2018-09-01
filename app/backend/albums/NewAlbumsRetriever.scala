@@ -3,7 +3,7 @@ package backend.albums
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
-import backend.recon._
+import backend.recon.{Album, AlbumReconStorage, Artist, ReconcilerCacher, ReconID}
 import backend.recon.Reconcilable.SongExtractor
 import com.google.inject.assistedinject.Assisted
 import common.io.IODirectory
@@ -79,6 +79,8 @@ private class NewAlbumsRetriever @Inject()(
 }
 
 private object NewAlbumsRetriever {
+  import backend.recon.ArtistReconStorage
+  import com.google.inject.Guice
   import net.codingwell.scalaguice.InjectorExtensions._
 
   import scala.collection.JavaConverters._
@@ -89,14 +91,13 @@ private object NewAlbumsRetriever {
       .map(Song(_).release)
 
   def main(args: Array[String]): Unit = {
-    val c = NewAlbumsConfig
-    val injector = c.injector
+    val injector = Guice createInjector NewAlbumsModule
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val mf = injector.instance[IOMusicFinder]
 
     val artist: Artist = Artist("At the Gates")
     def cacheForArtist(a: Artist, mf: IOMusicFinder): ArtistLastYearCache = {
-      val mf = c.injector.instance[IOMusicFinder]
+      val mf = injector.instance[IOMusicFinder]
       val artistDir = mf.genreDirs
           .flatMap(_.deepDirs)
           .find(_.name.toLowerCase == a.name.toLowerCase)
@@ -109,7 +110,7 @@ private object NewAlbumsRetriever {
     }
     val reconciler = new ReconcilerCacher(
       injector.instance[ArtistReconStorage], injector.instance[MbArtistReconciler])
-    val $ = c.injector.instance[NewAlbumsRetrieverFactory].apply(reconciler, mf)
+    val $ = injector.instance[NewAlbumsRetrieverFactory].apply(reconciler, mf)
     $.findNewAlbums(cacheForArtist(artist, mf), artist).map(_.map(_._1)).get.log()
     Thread.getAllStackTraces.keySet.asScala.filterNot(_.isDaemon).foreach(println)
   }

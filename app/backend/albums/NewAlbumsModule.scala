@@ -5,7 +5,8 @@ import java.util.concurrent.Semaphore
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import backend.Retriever
-import backend.configs.AllModules
+import backend.configs.{AllModules, RealModule}
+import backend.logging.{ConsoleLogger, FilteringLogger, Logger}
 import common.ModuleUtils
 import common.io.InternetTalker
 import common.io.WSAliases.WSClient
@@ -21,24 +22,26 @@ import scala.concurrent.ExecutionContext
 // 2. A request for a client has a 1 second delay.
 private object NewAlbumsModule extends ScalaModule with ModuleUtils {
   private val semaphore = new Semaphore(3)
-  private val semaphoreReleasingService: ExecutionContext = CurrentThreadExecutionContext
-  // TODO handle code duplication with RealModule
-  private lazy val materializer = ActorMaterializer()(ActorSystem.create("NewAlbumsModule-System"))
+  private val semaphoreReleasingContext: ExecutionContext = CurrentThreadExecutionContext
   override def configure(): Unit = {
+    // TODO Extract to LoggerModule since this config is used by StandaloneModule as well
+    bind[Logger] toInstance new ConsoleLogger with FilteringLogger
+    bind[ExecutionContext] toInstance semaphoreReleasingContext
     bind[InternetTalker] toInstance new InternetTalker {
-      override def execute(runnable: Runnable) = semaphoreReleasingService.execute(runnable)
-      override def reportFailure(cause: Throwable) = semaphoreReleasingService.reportFailure(cause)
+      override def execute(runnable: Runnable) = semaphoreReleasingContext.execute(runnable)
+      override def reportFailure(cause: Throwable) = semaphoreReleasingContext.reportFailure(cause)
       override protected def createWsClient() = {
         Thread sleep 1000
-        StandaloneAhcWSClient()(materializer)
+        StandaloneAhcWSClient()(ActorMaterializer()(ActorSystem.create("NewAlbumsModule-System")))
       }
       override def useWs[T](f: Retriever[WSClient, T]) = {
         semaphore.acquire()
-        RichFuture.richFuture(super.useWs(f))(semaphoreReleasingService) consumeTry semaphore.release().const
+        RichFuture.richFuture(super.useWs(f))(semaphoreReleasingContext) consumeTry semaphore.release().const
       }
     }
 
     install[NewAlbumsRetrieverFactory]
+    install(RealModule)
     install(AllModules)
   }
 }
