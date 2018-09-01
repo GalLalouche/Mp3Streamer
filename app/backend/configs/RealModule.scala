@@ -6,7 +6,7 @@ import backend.logging.Logger
 import backend.storage.DbProvider
 import com.google.inject.Provides
 import common.ModuleUtils
-import common.io.{DirectoryRef, IODirectory, RootDirectory}
+import common.io.{DirectoryRef, InternetTalker, IODirectory, RootDirectory}
 import models.{IOMusicFinder, MusicFinder}
 import net.codingwell.scalaguice.ScalaModule
 import slick.jdbc.{JdbcProfile, SQLiteProfile}
@@ -28,8 +28,8 @@ object RealModule extends ScalaModule with ModuleUtils {
 
     requireBinding[Logger]
     requireBinding[ExecutionContext]
+    requireBinding[InternetTalker]
 
-    install(RealInternetTalkerModule.nonDaemonic)
     install(AllModules)
   }
 

@@ -1,15 +1,15 @@
 package backend.mb
 
 import backend.Retriever
-import backend.recon._
+import backend.recon.{Album, Artist, Reconciler, ReconID, ReconScorers}
 import com.google.inject.assistedinject.Assisted
 import common.rich.RichT._
 import common.RichJson._
 import javax.inject.Inject
-import play.api.libs.json._
+import play.api.libs.json.{JsObject, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration._
+import scala.concurrent.duration.DurationInt
 
 private class MbAlbumReconciler @Inject()(
     ec: ExecutionContext,
@@ -34,14 +34,15 @@ private class MbAlbumReconciler @Inject()(
 }
 
 object MbAlbumReconciler {
-  import backend.configs.{Configuration, StandaloneConfig}
+  import backend.configs.StandaloneModule
+  import com.google.inject.Guice
   import common.rich.RichFuture._
   import net.codingwell.scalaguice.InjectorExtensions._
 
   def main(args: Array[String]): Unit = {
-    implicit val c: Configuration = StandaloneConfig
-    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val $ = c.injector.instance[AlbumReconcilerFactory].apply(_ => "6b335658-22c8-485d-93de-0bc29a1d0349" |> ReconID |> Future.successful)
+    val injector = Guice createInjector StandaloneModule
+    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+    val $ = injector.instance[AlbumReconcilerFactory].apply(_ => "6b335658-22c8-485d-93de-0bc29a1d0349" |> ReconID |> Future.successful)
     val f = $(Album("Hell Bent for Leather", 1979, "Judas Priest" |> Artist.apply))
     f.get.log()
   }

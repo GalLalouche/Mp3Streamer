@@ -1,7 +1,8 @@
 package backend.mb
 
-import backend.configs.StandaloneConfig
+import backend.configs.StandaloneModule
 import backend.recon.{Artist, ArtistReconStorage, ReconcilerCacher, ReconID}
+import com.google.inject.Guice
 import common.io.{IODirectory, IOSystem}
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -15,12 +16,12 @@ import scalaz.std.FutureInstances
 
 private object ArtistReconFiller
     extends ToMoreMonadErrorOps with FutureInstances {
-  private val c = StandaloneConfig
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  val injector = Guice createInjector StandaloneModule
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
 
   private val reconciler = new ReconcilerCacher[Artist](
-    c.injector.instance[ArtistReconStorage],
-    c.injector.instance[MbArtistReconciler],
+    injector.instance[ArtistReconStorage],
+    injector.instance[MbArtistReconciler],
   )
   private def fill(mf: MusicFinder {type S = IOSystem})(implicit ec: ExecutionContext): Unit = {
     val artists: Set[Artist] = mf.getSongFiles

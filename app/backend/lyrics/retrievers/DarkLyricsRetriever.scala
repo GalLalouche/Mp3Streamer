@@ -37,13 +37,15 @@ private[lyrics] class DarkLyricsRetriever @Inject()(it: InternetTalker) extends 
 
 private[lyrics] object DarkLyricsRetriever {
   // TODO reduce code duplication between all retriever debuggers
-  import backend.configs.{Configuration, StandaloneConfig}
+  import com.google.inject.Guice
+  import backend.configs.StandaloneModule
   import net.codingwell.scalaguice.InjectorExtensions._
 
   def main(args: Array[String]): Unit = {
-    implicit val c: Configuration = StandaloneConfig
-    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val $ = c.injector.instance[DarkLyricsRetriever]
-    println($(Song(new File( """D:\Media\Music\Metal\Progressive Metal\Dream Theater\2003 Train of Thought\05 - Vacant.mp3"""))).get)
+    val injector = Guice createInjector StandaloneModule
+    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+    val $ = injector.instance[DarkLyricsRetriever]
+    val file = """D:\Media\Music\Metal\Progressive Metal\Dream Theater\2003 Train of Thought\05 - Vacant.mp3"""
+    println($(Song(new File(file))).get)
   }
 }

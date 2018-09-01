@@ -38,13 +38,14 @@ private[lyrics] class LyricsWikiaRetriever @Inject()(it: InternetTalker) extends
 }
 
 private object LyricsWikiaRetriever {
+  import backend.configs.StandaloneModule
+  import com.google.inject.Guice
   import net.codingwell.scalaguice.InjectorExtensions._
-  import backend.configs.{Configuration, StandaloneConfig}
 
   def main(args: Array[String]): Unit = {
-    implicit val c: Configuration = StandaloneConfig
-    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val $ = c.injector.instance[LyricsWikiaRetriever]
+    val injector = Guice createInjector StandaloneModule
+    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+    val $ = injector.instance[LyricsWikiaRetriever]
     val file: File = new File("""D:\Media\Music\Metal\Black Metal\Watain\2010 Lawless Darkness\06 - Lawless Darkness.mp3""")
     println(file.exists())
     println($(Song(file)).get)

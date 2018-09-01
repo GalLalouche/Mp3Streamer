@@ -3,7 +3,8 @@ package mains.cover
 import java.net.URLEncoder
 
 import backend.Url
-import backend.configs.{Configuration, StandaloneConfig}
+import backend.configs.StandaloneModule
+import com.google.inject.Guice
 import common.io.{IODirectory, IOFile}
 import common.rich.path.{Directory, RichFileUtils, TempDirectory}
 import common.rich.path.RichFile.richFile
@@ -14,12 +15,12 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process.Process
 
 object DownloadCover {
-  private implicit val c: Configuration = StandaloneConfig
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-  private val mf = c.injector.instance[MusicFinder]
-  private val albumFactory = c.injector.instance[AlbumFactory]
-  private val imageFinder = c.injector.instance[ImageFinder]
-  private val imageDownloader = c.injector.instance[ImageDownloader]
+  private val injector = Guice createInjector StandaloneModule
+  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+  private val mf = injector.instance[MusicFinder]
+  private val albumFactory = injector.instance[AlbumFactory]
+  private val imageFinder = injector.instance[ImageFinder]
+  private val imageDownloader = injector.instance[ImageDownloader]
   import albumFactory._
 
   private case class CoverException(str: String, e: Exception) extends Exception(e)
@@ -77,7 +78,6 @@ object DownloadCover {
       cacheSize = 12))
 
   def main(args: Array[String]) {
-    implicit val c: Configuration = StandaloneConfig
     import common.rich.RichFuture._
     val folder = Directory(args mkString " ")
     println("Downloading cover image for " + folder.path)

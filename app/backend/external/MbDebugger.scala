@@ -1,6 +1,7 @@
 package backend.external
 
-import backend.configs.{Configuration, StandaloneConfig}
+import backend.configs.StandaloneModule
+import com.google.inject.Guice
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.path.Directory
@@ -15,9 +16,9 @@ private object MbDebugger {
     Directory(path).files.filter(f => Set("mp3", "flac").contains(f.extension)).head |> Song.apply
 
   def main(args: Array[String]): Unit = {
-    implicit val c: Configuration = StandaloneConfig
-    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val $ = c.injector.instance[MbExternalLinksProvider]
+    val injector = Guice createInjector StandaloneModule
+    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+    val $ = injector.instance[MbExternalLinksProvider]
     val s = fromDir("""D:\\Media\\Music\\Rock\\Classical Prog\\The Moody Blues\\1969 On the Threshold of a Dream""")
 
     println($(s).artistLinks.get)

@@ -32,7 +32,8 @@ private class ImageSelectionPanel private(imagesSupplier: ImagesSupplier)(implic
 }
 
 private object ImageSelectionPanel {
-  import backend.configs.{Configuration, StandaloneConfig}
+  import backend.configs.StandaloneModule
+  import com.google.inject.Guice
   import net.codingwell.scalaguice.InjectorExtensions._
 
   import scala.util.Random
@@ -42,8 +43,8 @@ private object ImageSelectionPanel {
 
   def main(args: Array[String]): Unit = {
     import common.rich.RichFuture._
-    implicit val c: Configuration = StandaloneConfig
-    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+    val injector = Guice createInjector StandaloneModule
+    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val dir = IODirectory("""/usr/local/google/home/lalouche/Pictures""")
     val is = new ImagesSupplier {
       private val iterator =
@@ -52,7 +53,6 @@ private object ImageSelectionPanel {
       override def next(): Future[FolderImage] = Future successful iterator.next()
     }
 
-    val x = apply(is).get
-    println(x)
+    println(apply(is).get)
   }
 }

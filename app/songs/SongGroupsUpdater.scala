@@ -16,12 +16,13 @@ private object SongGroupsUpdater {
 
   // Appends new groups and saves them
   def main(args: Array[String]): Unit = {
-    import backend.configs.{Configuration, StandaloneConfig}
+    import backend.configs.StandaloneModule
+    import com.google.inject.Guice
     import models.ModelJsonable._
     import net.codingwell.scalaguice.InjectorExtensions._
 
-    val c: Configuration = StandaloneConfig
-    val sg = c.injector.instance[SongGroups]
+    val injector = Guice createInjector StandaloneModule
+    val sg = injector.instance[SongGroups]
     def append(g: SongGroup): Unit = (g :: sg.load.toList).toSet |> sg.save
     val group: SongGroup = trackNumbers("""D:\Media\Music\Rock\Punk\Pistolita\2010 The Paper Boy""", 1, 2)
     append(group)

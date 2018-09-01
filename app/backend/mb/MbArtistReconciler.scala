@@ -4,21 +4,18 @@ import java.time.{Clock, LocalDate, Year, YearMonth}
 
 import backend.RichTime._
 import backend.albums.NewAlbum.AlbumType
-import backend.configs.{Configuration, StandaloneConfig}
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
-import backend.recon._
+import backend.recon.{Artist, Reconciler, ReconID}
 import common.CompositeDateFormat
 import common.RichJson._
-import common.rich.RichFuture._
-import common.rich.RichT._
+import common.rich.RichFuture
 import common.rich.func.ToMoreMonadErrorOps
 import javax.inject.Inject
-import net.codingwell.scalaguice.InjectorExtensions._
-import play.api.libs.json._
+import play.api.libs.json.{JsObject, JsValue}
 
 import scala.Ordering.Implicits._
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration._
+import scala.concurrent.duration.DurationInt
 
 import scalaz.std.FutureInstances
 
@@ -56,13 +53,19 @@ class MbArtistReconciler @Inject()(
 }
 
 object MbArtistReconciler {
+  import backend.configs.StandaloneModule
+  import com.google.inject.Guice
+  import RichFuture._
+  import common.rich.RichT._
+  import net.codingwell.scalaguice.InjectorExtensions._
+
   private val compositeDateFormat =
     CompositeDateFormat[LocalDate]("yyyy-MM-dd").orElse[YearMonth]("yyyy-MM").orElse[Year]("yyyy")
 
   def main(args: Array[String]) {
-    implicit val c: Configuration = StandaloneConfig
-    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val $ = c.injector.instance[MbArtistReconciler]
+    val injector = Guice createInjector StandaloneModule
+    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+    val $ = injector.instance[MbArtistReconciler]
     $(Artist("Moonsorrow")).map(_.get).flatMap($.getAlbumsMetadata).get.log()
     System exit 0
   }

@@ -1,7 +1,8 @@
 package mains.fixer
 
 import backend.Url
-import backend.configs.StandaloneConfig
+import backend.configs.StandaloneModule
+import com.google.inject.Guice
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -20,8 +21,8 @@ import scalaz.syntax.ToFunctorOps
 
 object FolderFixer
     extends ToFunctorOps with ToMoreMonadErrorOps with FutureInstances {
-  private val c = StandaloneConfig
-  private implicit val it: InternetTalker = c.injector.instance[InternetTalker]
+  private val injector = Guice createInjector StandaloneModule
+  private implicit val it: InternetTalker = injector.instance[InternetTalker]
 
   private def findArtistFolder(artist: String): Option[Directory] = {
     println("finding matching folder")
@@ -79,7 +80,7 @@ object FolderFixer
     println("fixing directory")
     val fixedDirectory = FixLabels fix folder.cloneDir()
     moveDirectory(artist, location, folderImage, fixedDirectory)
-        .map(c.injector.instance[FoobarGain].calculateTrackGain)
+        .map(injector.instance[FoobarGain].calculateTrackGain)
         .>|(updateServer())
         .>|(println("--Done!--"))
         .get

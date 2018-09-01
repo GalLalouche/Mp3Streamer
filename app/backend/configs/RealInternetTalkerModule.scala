@@ -31,7 +31,7 @@ private class RealInternetTalkerModule private(am: ActorMaterializer) extends Sc
   }
 }
 
-private object RealInternetTalkerModule {
+object RealInternetTalkerModule {
   def daemonic: Module = new RealInternetTalkerModule(
     ActorMaterializer()(ActorSystem.create(
       "Standalone-Config-WS-System",
