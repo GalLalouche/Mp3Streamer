@@ -1,6 +1,7 @@
 package mains
 
-import backend.configs.{CleanConfiguration, Configuration}
+import backend.configs.CleanModule
+import com.google.inject.Guice
 import common.io.IODirectory
 import common.rich.collections.RichTraversableOnce._
 import common.rich.path.{Directory, RichFileUtils}
@@ -8,8 +9,8 @@ import models.MusicFinder
 import net.codingwell.scalaguice.InjectorExtensions._
 
 private object PrefixAlbumDirsWithYears {
-  private implicit val c: Configuration = CleanConfiguration
-  val mf = c.injector.instance[MusicFinder]
+  private val injector = Guice createInjector CleanModule
+  private val mf = injector.instance[MusicFinder]
   private def addYear(d: Directory): Unit = {
     try {
       val songs = mf getSongsInDir IODirectory(d)

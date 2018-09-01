@@ -1,6 +1,6 @@
 package common
 
-import com.google.inject.Binder
+import com.google.inject.{Binder, Provider}
 import com.google.inject.assistedinject.FactoryModuleBuilder
 import net.codingwell.scalaguice.{typeLiteral, InternalModule}
 
@@ -22,4 +22,6 @@ trait ModuleUtils {self: InternalModule[_ <: Binder] =>
   }
 
   protected def requireBinding[A: Manifest]: Unit = binder.getProvider(manifest.runtimeClass)
+
+  protected def provider[A: Manifest]: Provider[A] = binder.getProvider(unerasedClass[A])
 }

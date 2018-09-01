@@ -4,7 +4,7 @@ import backend.Url
 import backend.logging.Logger
 import backend.lyrics.retrievers._
 import backend.storage.OnlineRetrieverCacher
-import common.rich.RichFuture._
+import com.google.inject.Guice
 import javax.inject.Inject
 import models.Song
 
@@ -42,15 +42,15 @@ private class LyricsCache @Inject()(
 object LyricsCache {
   import java.io.File
 
-  import backend.configs.{CleanConfiguration, Configuration}
+  import backend.configs.CleanModule
+  import common.rich.RichFuture._
   import net.codingwell.scalaguice.InjectorExtensions._
 
-  private implicit val c: Configuration = CleanConfiguration
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-
   def main(args: Array[String]): Unit = {
+    val injector = Guice createInjector CleanModule
+    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val s = Song(new File("""D:\Media\Music\Rock\Punk\Heartsounds\2013 Internal Eyes\01 - A Total Separation of Self.mp3"""))
-    val $ = c.injector.instance[LyricsCache]
+    val $ = injector.instance[LyricsCache]
     println($.find(s).get)
   }
 }

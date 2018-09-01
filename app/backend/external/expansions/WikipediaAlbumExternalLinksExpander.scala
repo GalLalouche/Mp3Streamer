@@ -4,6 +4,7 @@ import backend.Url
 import backend.external.{BaseLink, BaseLinks, Host}
 import backend.logging.Logger
 import backend.recon.Album
+import com.google.inject.Guice
 import common.io.InternetTalker
 import common.rich.RichT._
 import common.rich.collections.RichSeq._
@@ -61,15 +62,15 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
 }
 
 private object WikipediaAlbumExternalLinksExpander {
-  import backend.configs.{CleanConfiguration, Configuration}
+  import backend.configs.CleanModule
   import common.rich.RichFuture._
   import net.codingwell.scalaguice.InjectorExtensions._
 
   def forUrl(path: String): BaseLink[Album] = new BaseLink[Album](Url(path), Host.Wikipedia)
   def main(args: Array[String]): Unit = {
-    implicit val c: Configuration = CleanConfiguration
-    implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
-    val $ = c.injector.instance[WikipediaAlbumExternalLinksExpander]
+    val injector = Guice createInjector CleanModule
+    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+    val $ = injector.instance[WikipediaAlbumExternalLinksExpander]
     $.apply(forUrl("""https://en.wikipedia.org/wiki/Ghost_(Devin_Townsend_Project_album)""")).get.log()
   }
 }
