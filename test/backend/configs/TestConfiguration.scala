@@ -25,8 +25,7 @@ case class TestConfiguration(
     private val _urlToResponseMapper: PartialFunction[Url, FakeWSResponse] = PartialFunction.empty,
     private val _requestToResponseMapper: PartialFunction[WSRequest, FakeWSResponse] = PartialFunction.empty,
     private val _root: MemoryRoot = new MemoryRoot,
-)
-    extends NonPersistentConfig {
+) extends Configuration {
 
   private def getRequest(u: Url): WSRequest = {
     val partialRequest: Url => WSRequest =
