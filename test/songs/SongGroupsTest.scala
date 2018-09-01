@@ -1,6 +1,6 @@
 package songs
 
-import backend.configs.TestConfiguration
+import backend.configs.TestModuleConfiguration
 import common.AuxSpecs
 import models.{FakeModelFactory, FakeModelJsonable}
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -28,7 +28,7 @@ class SongGroupsTest extends FreeSpec with AuxSpecs {
     $ get song5 shouldReturn None
   }
   "save and load" in {
-    val $ = TestConfiguration().injector.instance[SongGroups]
+    val $ = TestModuleConfiguration().injector.instance[SongGroups]
     $.save(groups)
     $.load shouldReturn Set(group1, group2)
   }

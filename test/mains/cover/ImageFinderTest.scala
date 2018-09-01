@@ -1,7 +1,7 @@
 package mains.cover
 
 import backend.Url
-import backend.configs.TestConfiguration
+import backend.configs.TestModuleConfiguration
 import backend.external.DocumentSpecs
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext
 
 class ImageFinderTest extends FreeSpec with DocumentSpecs {
   private val injector =
-    TestConfiguration(_urlToBytesMapper = getBytes("image_search.html").partialConst).injector
+    TestModuleConfiguration(_urlToBytesMapper = getBytes("image_search.html").partialConst).injector
   private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
   private val $ = injector.instance[ImageFinder]
 

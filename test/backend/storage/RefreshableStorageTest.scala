@@ -2,7 +2,7 @@ package backend.storage
 
 import java.time.{Clock, Duration}
 
-import backend.configs.TestConfiguration
+import backend.configs.TestModuleConfiguration
 import common.{AuxSpecs, FakeClock}
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -12,7 +12,7 @@ import org.scalatest.{FreeSpec, OneInstancePerTest}
 import scala.concurrent.{ExecutionContext, Future}
 
 class RefreshableStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
-  private val c = new TestConfiguration
+  private val c = new TestModuleConfiguration
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val clock = c.injector.instance[FakeClock]
   private var i = 0

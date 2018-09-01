@@ -3,7 +3,7 @@ package backend.external.recons
 import java.net.HttpURLConnection
 
 import backend.Url
-import backend.configs.{FakeWSResponse, TestConfiguration}
+import backend.configs.{FakeWSResponse, TestModuleConfiguration}
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.recon.Artist
 import common.AuxSpecs
@@ -16,9 +16,9 @@ import org.scalatest.FreeSpec
 import scala.concurrent.ExecutionContext
 
 class LastFmLinkRetrieverTest extends FreeSpec with AuxSpecs with DocumentSpecs {
-  private val config = new TestConfiguration
+  private val config = new TestModuleConfiguration
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
-  private def create(config: TestConfiguration): LastFmLinkRetriever = {
+  private def create(config: TestModuleConfiguration): LastFmLinkRetriever = {
     new LastFmLinkRetriever(config.injector.instance[InternetTalker], millisBetweenRedirects = 1)
   }
   "404" in {

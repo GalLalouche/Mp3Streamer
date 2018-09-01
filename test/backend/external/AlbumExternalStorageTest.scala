@@ -3,7 +3,7 @@ package backend.external
 import java.time.LocalDateTime
 
 import backend._
-import backend.configs.TestConfiguration
+import backend.configs.TestModuleConfiguration
 import backend.recon.{Album, Artist}
 import common.AuxSpecs
 import common.rich.RichFuture._
@@ -13,7 +13,7 @@ import org.scalatest.FreeSpec
 import scala.concurrent.ExecutionContext
 
 class AlbumExternalStorageTest extends FreeSpec with AuxSpecs with StorageSetup {
-  override protected val config: TestConfiguration = new TestConfiguration
+  override protected val config: TestModuleConfiguration = new TestModuleConfiguration
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   override protected val storage = config.injector.instance[AlbumExternalStorage]
 

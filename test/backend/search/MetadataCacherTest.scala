@@ -2,7 +2,7 @@ package backend.search
 
 import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
-import backend.configs.{FakeMusicFinder, TestConfiguration}
+import backend.configs.{FakeMusicFinder, TestModuleConfiguration}
 import backend.search.MetadataCacher.IndexUpdate
 import common.AuxSpecs
 import common.io.{JsonableSaver, MemoryRoot}
@@ -21,7 +21,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
   private val root: MemoryRoot = new MemoryRoot
   private val songs = root.addSubDir("songs")
   private val mf: FakeMusicFinder = new FakeMusicFinder(songs)
-  private val c = TestConfiguration().copy(_root = root, _mf = mf)
+  private val c = TestModuleConfiguration().copy(_root = root, _mf = mf)
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val jsonableSaver = c.injector.instance[JsonableSaver]
   private val albumFactory = c.injector.instance[AlbumFactory]

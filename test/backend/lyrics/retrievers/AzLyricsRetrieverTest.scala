@@ -1,12 +1,12 @@
 package backend.lyrics.retrievers
 
-import backend.configs.TestConfiguration
+import backend.configs.TestModuleConfiguration
 import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions._
 
 class AzLyricsRetrieverTest extends LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
-  private val $ = TestConfiguration().injector.instance[AzLyricsRetriever]
+  private val $ = TestModuleConfiguration().injector.instance[AzLyricsRetriever]
   "getUrl" in {
     $.getUrl(fakeModelFactory.song(artistName = "Guns n' Roses", title = "Paradise City")) shouldReturn
         "https://www.azlyrics.com/lyrics/gunsnroses/paradisecity.html"

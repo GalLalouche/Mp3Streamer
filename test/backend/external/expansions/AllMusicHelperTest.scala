@@ -3,7 +3,7 @@ package backend.external.expansions
 import java.net.HttpURLConnection
 
 import backend.Url
-import backend.configs.{FakeWSResponse, TestConfiguration}
+import backend.configs.{FakeWSResponse, TestModuleConfiguration}
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import common.io.WSAliases._
 import common.rich.RichFuture._
@@ -15,10 +15,10 @@ import org.scalatest.FreeSpec
 import scala.concurrent.ExecutionContext
 
 class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
-  private val config = TestConfiguration()
+  private val config = TestModuleConfiguration()
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   private def withDocument(s: String) = config.copy(_urlToBytesMapper = getBytes(s).partialConst)
-  private def create(c: TestConfiguration) = c.injector.instance[AllMusicHelper]
+  private def create(c: TestModuleConfiguration) = c.injector.instance[AllMusicHelper]
   private val $ = create(config)
   "isCanonical" - {
     "yes" in {

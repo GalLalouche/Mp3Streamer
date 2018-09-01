@@ -3,7 +3,7 @@ package backend.storage
 import java.time.Clock
 
 import backend.RichTime._
-import backend.configs.TestConfiguration
+import backend.configs.TestModuleConfiguration
 import common.{AuxSpecs, FakeClock}
 import common.rich.RichFuture._
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -16,7 +16,7 @@ import scalaz.syntax.ToBindOps
 
 class FreshnessStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest
     with FutureInstances with ToBindOps {
-  private val c = TestConfiguration()
+  private val c = TestModuleConfiguration()
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val clock: FakeClock = c.injector.instance[FakeClock]
 

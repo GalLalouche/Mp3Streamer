@@ -3,7 +3,7 @@ package backend.logging
 import java.time.LocalDateTime
 import java.util.concurrent.{Semaphore, TimeoutException, TimeUnit}
 
-import backend.configs.TestConfiguration
+import backend.configs.TestModuleConfiguration
 import common.io.{MemoryFile, MemoryRoot, RootDirectory}
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichBoolean._
@@ -72,7 +72,7 @@ private[this] class BlockFileRef(val f: MemoryFile) extends MemoryFile(f.parent,
 }
 class FileLoggerTest extends FreeSpec with TimeLimitedTests with Matchers {
   override val timeLimit = Span(1, Second)
-  private val c = new TestConfiguration
+  private val c = new TestModuleConfiguration
   private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val rootDirectory = c.injector.instance[MemoryRoot, RootDirectory]
   private val file = rootDirectory.addFile("foobar")

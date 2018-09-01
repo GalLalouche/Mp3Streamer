@@ -1,7 +1,7 @@
 package backend.external.expansions
 
 import backend.Url
-import backend.configs.TestConfiguration
+import backend.configs.TestModuleConfiguration
 import backend.external.{BaseLink, DocumentSpecs}
 import backend.recon.{Album, Artist}
 import com.google.inject.{Binder, Guice, Module}
@@ -26,7 +26,7 @@ trait SameHostExpanderSpec extends FreeSpec with DocumentSpecs with Module {
 
     val injector = Guice.createInjector(
       this,
-      TestConfiguration(_urlToBytesMapper = urlToBytesMapper.orElse {
+      TestModuleConfiguration(_urlToBytesMapper = urlToBytesMapper.orElse {
         case Url(address) => getBytes(additionalMappings.toMap.apply(address))
       }).module)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]

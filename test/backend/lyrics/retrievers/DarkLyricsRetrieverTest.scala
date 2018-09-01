@@ -1,12 +1,12 @@
 package backend.lyrics.retrievers
 
-import backend.configs.TestConfiguration
+import backend.configs.TestModuleConfiguration
 import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions._
 
 class DarkLyricsRetrieverTest extends LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
-  private val $ = TestConfiguration().injector.instance[DarkLyricsRetriever]
+  private val $ = TestModuleConfiguration().injector.instance[DarkLyricsRetriever]
   "getUrl" in {
     $.getUrl(fakeModelFactory.song(artistName = "foo bar", albumName = "bazz qux", track = 5)) shouldReturn
         "http://www.darklyrics.com/lyrics/foobar/bazzqux.html#5"

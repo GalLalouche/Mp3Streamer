@@ -1,7 +1,7 @@
 package mains.cover
 
 import backend.Url
-import backend.configs.TestConfiguration
+import backend.configs.TestModuleConfiguration
 import common.{AuxSpecs, MockerWithId}
 import common.rich.RichFuture._
 import common.rich.primitives.RichBoolean._
@@ -12,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val mockerWithId = new MockerWithId
-  private implicit val ec: ExecutionContext = TestConfiguration().injector.instance[ExecutionContext]
+  private implicit val ec: ExecutionContext = TestModuleConfiguration().injector.instance[ExecutionContext]
   private def downloadImage(is: ImageSource): Future[FolderImage] =
     Future successful mockerWithId(is match {
       case UrlSource(url, _, _) => url.address

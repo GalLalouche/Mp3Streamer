@@ -15,7 +15,7 @@ import slick.jdbc.{H2Profile, JdbcProfile}
 import scala.concurrent.ExecutionContext
 
 // It's a case class so its copy constructor could be used by clients in order to configure it.
-case class TestConfiguration(
+case class TestModuleConfiguration(
     private val _ec: ExecutionContext = new ExecutionContext {
       override def reportFailure(cause: Throwable): Unit = ???
       override def execute(runnable: Runnable): Unit = runnable.run()

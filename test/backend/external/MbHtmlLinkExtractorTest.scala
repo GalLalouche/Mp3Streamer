@@ -1,7 +1,7 @@
 package backend.external
 
 import backend.Url
-import backend.configs.TestConfiguration
+import backend.configs.TestModuleConfiguration
 import backend.recon.{Album, Artist, ReconID}
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext
 
 class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
   private def withDocument(name: String) =
-    TestConfiguration(_urlToBytesMapper = getBytes(name + ".html").partialConst).injector
+    TestModuleConfiguration(_urlToBytesMapper = getBytes(name + ".html").partialConst).injector
 
   "parse artist links" in {
     val injector = withDocument("artist")

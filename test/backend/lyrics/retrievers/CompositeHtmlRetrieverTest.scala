@@ -1,7 +1,7 @@
 package backend.lyrics.retrievers
 
 import backend.Url
-import backend.configs.TestConfiguration
+import backend.configs.TestModuleConfiguration
 import backend.logging.Logger
 import backend.lyrics.Instrumental
 import common.AuxSpecs
@@ -15,7 +15,7 @@ import org.scalatest.{FreeSpec, OneInstancePerTest}
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
-  private val injector = TestConfiguration().injector
+  private val injector = TestModuleConfiguration().injector
   private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
   private def fakeLyricsRetriever(
       songsToFind: Song, urlToMatch: Url, instrumentalText: String): HtmlRetriever = {
