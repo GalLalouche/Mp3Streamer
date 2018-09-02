@@ -1,4 +1,4 @@
-package backend.configs
+package backend.module
 
 import com.google.inject.{Guice, Injector, Module}
 import org.scalatest.{FreeSpec, Matchers}

@@ -62,7 +62,7 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
 }
 
 private object WikipediaAlbumExternalLinksExpander {
-  import backend.configs.CleanModule
+  import backend.module.CleanModule
   import common.rich.RichFuture._
   import net.codingwell.scalaguice.InjectorExtensions._
 

@@ -1,6 +1,6 @@
 package models
 
-import backend.configs.FakeMusicFinder
+import backend.module.FakeMusicFinder
 import common.AuxSpecs
 import common.io.MemoryRoot
 import common.rich.collections.RichTraversableOnce._

@@ -1,4 +1,4 @@
-package backend.configs
+package backend.module
 
 import akka.actor.ActorSystem
 import scala.collection.JavaConverters._

@@ -1,7 +1,7 @@
 package backend.external.expansions
 
 import backend.Url
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import backend.external.{BaseLink, DocumentSpecs}
 import backend.recon.{Album, Artist}
 import com.google.inject.{Binder, Guice, Module}

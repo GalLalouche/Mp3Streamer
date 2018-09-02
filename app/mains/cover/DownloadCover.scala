@@ -3,7 +3,7 @@ package mains.cover
 import java.net.URLEncoder
 
 import backend.Url
-import backend.configs.StandaloneModule
+import backend.module.StandaloneModule
 import com.google.inject.Guice
 import common.io.{IODirectory, IOFile}
 import common.rich.path.{Directory, RichFileUtils, TempDirectory}

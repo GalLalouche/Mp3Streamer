@@ -1,4 +1,4 @@
-package backend.configs
+package backend.module
 
 import java.time.Clock
 

@@ -1,4 +1,4 @@
-package backend.configs
+package backend.module
 
 import backend.mb.MbModule
 import backend.search.SearchModule

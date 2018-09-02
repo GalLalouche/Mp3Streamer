@@ -3,7 +3,7 @@ package backend.external.recons
 import java.net.HttpURLConnection
 
 import backend.Url
-import backend.configs.{FakeWSResponse, TestModuleConfiguration}
+import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.recon.Artist
 import common.AuxSpecs

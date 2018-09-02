@@ -34,7 +34,7 @@ private class MbAlbumReconciler @Inject()(
 }
 
 object MbAlbumReconciler {
-  import backend.configs.StandaloneModule
+  import backend.module.StandaloneModule
   import com.google.inject.Guice
   import common.rich.RichFuture._
   import net.codingwell.scalaguice.InjectorExtensions._

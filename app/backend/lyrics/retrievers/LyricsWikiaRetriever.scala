@@ -38,7 +38,7 @@ private[lyrics] class LyricsWikiaRetriever @Inject()(it: InternetTalker) extends
 }
 
 private object LyricsWikiaRetriever {
-  import backend.configs.StandaloneModule
+  import backend.module.StandaloneModule
   import com.google.inject.Guice
   import net.codingwell.scalaguice.InjectorExtensions._
 

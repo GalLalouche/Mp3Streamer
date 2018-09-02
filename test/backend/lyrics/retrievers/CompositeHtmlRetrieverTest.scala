@@ -1,7 +1,7 @@
 package backend.lyrics.retrievers
 
 import backend.Url
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import backend.logging.Logger
 import backend.lyrics.Instrumental
 import common.AuxSpecs

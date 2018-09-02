@@ -1,7 +1,7 @@
 package backend.external
 
 import backend.Url
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, ReconID}
 import common.rich.RichFuture._
 import common.rich.RichT._

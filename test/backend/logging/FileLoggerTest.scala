@@ -3,7 +3,7 @@ package backend.logging
 import java.time.LocalDateTime
 import java.util.concurrent.{Semaphore, TimeoutException, TimeUnit}
 
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import common.io.{MemoryFile, MemoryRoot, RootDirectory}
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichBoolean._

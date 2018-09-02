@@ -32,7 +32,7 @@ private class ImageSelectionPanel private(imagesSupplier: ImagesSupplier)(implic
 }
 
 private object ImageSelectionPanel {
-  import backend.configs.StandaloneModule
+  import backend.module.StandaloneModule
   import com.google.inject.Guice
   import net.codingwell.scalaguice.InjectorExtensions._
 

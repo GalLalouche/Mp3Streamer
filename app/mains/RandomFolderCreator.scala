@@ -2,7 +2,7 @@ package mains
 
 import java.io.File
 
-import backend.configs.StandaloneModule
+import backend.module.StandaloneModule
 import com.google.inject.Guice
 import common.rich.RichFuture._
 import common.rich.path.Directory

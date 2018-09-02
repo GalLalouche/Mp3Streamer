@@ -1,7 +1,7 @@
 package mains.cover
 
 import backend.Url
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import backend.external.DocumentSpecs
 import common.rich.RichFuture._
 import common.rich.RichT._

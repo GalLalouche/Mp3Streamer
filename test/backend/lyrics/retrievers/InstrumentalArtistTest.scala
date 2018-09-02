@@ -1,7 +1,7 @@
 package backend.lyrics.retrievers
 
 import backend.StorageSetup
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import backend.lyrics.Instrumental
 import common.AuxSpecs
 import common.rich.RichFuture._

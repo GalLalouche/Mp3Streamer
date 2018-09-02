@@ -1,6 +1,6 @@
 package songs
 
-import backend.configs.{FakeMusicFinder, TestModuleConfiguration}
+import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import common.AuxSpecs
 import models.{FakeModelFactory, MemorySong}
 import net.codingwell.scalaguice.InjectorExtensions._

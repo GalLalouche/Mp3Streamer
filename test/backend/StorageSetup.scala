@@ -1,6 +1,6 @@
 package backend
 
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import common.rich.RichFuture._
 import common.storage.Storage
 import net.codingwell.scalaguice.InjectorExtensions._

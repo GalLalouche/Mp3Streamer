@@ -38,7 +38,7 @@ private[lyrics] class DarkLyricsRetriever @Inject()(it: InternetTalker) extends 
 private[lyrics] object DarkLyricsRetriever {
   // TODO reduce code duplication between all retriever debuggers
   import com.google.inject.Guice
-  import backend.configs.StandaloneModule
+  import backend.module.StandaloneModule
   import net.codingwell.scalaguice.InjectorExtensions._
 
   def main(args: Array[String]): Unit = {

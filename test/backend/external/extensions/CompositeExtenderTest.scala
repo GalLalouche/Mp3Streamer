@@ -3,7 +3,7 @@ package backend.external.extensions
 import java.time.LocalDateTime
 
 import backend.Url
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
 import common.AuxSpecs

@@ -1,4 +1,4 @@
-package backend.configs
+package backend.module
 
 import net.codingwell.scalaguice.ScalaModule
 

@@ -1,6 +1,6 @@
 package songs
 
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import common.AuxSpecs
 import models.{FakeModelFactory, FakeModelJsonable}
 import net.codingwell.scalaguice.InjectorExtensions._

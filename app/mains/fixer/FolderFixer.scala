@@ -1,7 +1,7 @@
 package mains.fixer
 
 import backend.Url
-import backend.configs.StandaloneModule
+import backend.module.StandaloneModule
 import com.google.inject.Guice
 import common.io.InternetTalker
 import common.rich.RichFuture._

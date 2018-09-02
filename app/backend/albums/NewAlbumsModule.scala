@@ -5,7 +5,7 @@ import java.util.concurrent.Semaphore
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import backend.Retriever
-import backend.configs.{AllModules, RealModule}
+import backend.module.{AllModules, RealModule}
 import backend.logging.{ConsoleLogger, FilteringLogger, Logger}
 import common.ModuleUtils
 import common.io.InternetTalker

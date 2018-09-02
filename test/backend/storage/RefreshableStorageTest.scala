@@ -2,7 +2,7 @@ package backend.storage
 
 import java.time.{Clock, Duration}
 
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import common.{AuxSpecs, FakeClock}
 import common.rich.RichFuture._
 import common.rich.RichT._

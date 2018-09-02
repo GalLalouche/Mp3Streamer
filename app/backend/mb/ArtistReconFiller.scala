@@ -1,6 +1,6 @@
 package backend.mb
 
-import backend.configs.StandaloneModule
+import backend.module.StandaloneModule
 import backend.recon.{Artist, ArtistReconStorage, ReconcilerCacher, ReconID}
 import com.google.inject.Guice
 import common.io.{IODirectory, IOSystem}

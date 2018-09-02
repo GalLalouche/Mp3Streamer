@@ -1,4 +1,4 @@
-package backend.configs
+package backend.module
 
 import common.io.{FileRef, MemoryDir, MemorySystem}
 import models.{MemorySong, MusicFinder}

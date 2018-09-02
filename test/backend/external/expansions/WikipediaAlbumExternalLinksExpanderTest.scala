@@ -3,7 +3,7 @@ package backend.external.expansions
 import java.net.HttpURLConnection
 
 import backend.Url
-import backend.configs.{FakeWSResponse, TestModuleConfiguration}
+import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import common.rich.RichFuture._
 import common.rich.RichT._

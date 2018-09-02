@@ -1,4 +1,4 @@
-package backend.configs
+package backend.module
 
 import backend.pkg.DownloaderController
 import controllers.ControllerUtils

@@ -16,7 +16,7 @@ private object SongGroupsUpdater {
 
   // Appends new groups and saves them
   def main(args: Array[String]): Unit = {
-    import backend.configs.StandaloneModule
+    import backend.module.StandaloneModule
     import com.google.inject.Guice
     import models.ModelJsonable._
     import net.codingwell.scalaguice.InjectorExtensions._

@@ -1,6 +1,6 @@
 package backend.albums
 
-import backend.configs.ConfigurationModuleTestSpec
+import backend.module.ConfigurationModuleTestSpec
 
 class NewAlbumsModuleTest extends ConfigurationModuleTestSpec {
   allRequiredBindingsSatisfied("NewAlbumsConfig", NewAlbumsModule)

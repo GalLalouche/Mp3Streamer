@@ -3,7 +3,7 @@ package controllers
 import java.io.File
 import java.net.{URLDecoder, URLEncoder}
 
-import backend.configs.{RealInternetTalkerModule, RealModule}
+import backend.module.{RealInternetTalkerModule, RealModule}
 import backend.logging.{CompositeLogger, ConsoleLogger, DirectoryLogger, FilteringLogger, Logger, LoggingLevel}
 import com.google.common.annotations.VisibleForTesting
 import com.google.inject.{Guice, Injector, Module, Provides}

@@ -1,6 +1,6 @@
 package backend.external
 
-import backend.configs.StandaloneModule
+import backend.module.StandaloneModule
 import com.google.inject.Guice
 import common.rich.RichFuture._
 import common.rich.RichT._

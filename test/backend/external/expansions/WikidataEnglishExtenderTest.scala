@@ -1,7 +1,7 @@
 package backend.external.expansions
 
 import backend.Url
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.recon.Artist
 import net.codingwell.scalaguice.InjectorExtensions._

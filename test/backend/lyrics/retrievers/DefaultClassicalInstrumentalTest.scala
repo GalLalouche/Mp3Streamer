@@ -1,6 +1,6 @@
 package backend.lyrics.retrievers
 
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import backend.lyrics.Instrumental
 import common.io.{MemoryDir, MemoryRoot}
 import common.rich.RichFuture._

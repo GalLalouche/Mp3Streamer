@@ -1,7 +1,7 @@
 package mains.cover
 
 import backend.Url
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import common.{AuxSpecs, MockerWithId}
 import common.rich.RichFuture._
 import common.rich.primitives.RichBoolean._

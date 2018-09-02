@@ -53,7 +53,7 @@ class MbArtistReconciler @Inject()(
 }
 
 object MbArtistReconciler {
-  import backend.configs.StandaloneModule
+  import backend.module.StandaloneModule
   import com.google.inject.Guice
   import RichFuture._
   import common.rich.RichT._

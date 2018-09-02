@@ -1,4 +1,4 @@
-package backend.configs
+package backend.module
 
 import backend.logging.{ConsoleLogger, FilteringLogger, Logger}
 import net.codingwell.scalaguice.ScalaModule

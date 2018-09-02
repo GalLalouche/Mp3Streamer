@@ -3,7 +3,7 @@ package backend.storage
 import java.time.Clock
 
 import backend.RichTime._
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import common.{AuxSpecs, FakeClock}
 import common.rich.RichFuture._
 import net.codingwell.scalaguice.InjectorExtensions._

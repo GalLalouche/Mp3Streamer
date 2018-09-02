@@ -1,6 +1,6 @@
 package backend.lyrics.retrievers
 
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions._
 

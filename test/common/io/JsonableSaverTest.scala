@@ -3,7 +3,7 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.{LocalDateTime, ZoneOffset}
 
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import com.google.inject.Guice
 import com.google.inject.util.Modules
 import common.AuxSpecs

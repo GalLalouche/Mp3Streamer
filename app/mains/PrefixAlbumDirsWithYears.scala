@@ -1,6 +1,6 @@
 package mains
 
-import backend.configs.CleanModule
+import backend.module.CleanModule
 import com.google.inject.Guice
 import common.io.IODirectory
 import common.rich.collections.RichTraversableOnce._

@@ -1,6 +1,6 @@
 package backend.logging
 
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import common.AuxSpecs
 import common.io.{DirectoryRef, FileRef, RootDirectory}
 import common.rich.collections.RichTraversableOnce._

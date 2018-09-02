@@ -42,7 +42,7 @@ private class LyricsCache @Inject()(
 object LyricsCache {
   import java.io.File
 
-  import backend.configs.CleanModule
+  import backend.module.CleanModule
   import common.rich.RichFuture._
   import net.codingwell.scalaguice.InjectorExtensions._
 

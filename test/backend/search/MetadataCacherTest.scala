@@ -2,7 +2,7 @@ package backend.search
 
 import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
-import backend.configs.{FakeMusicFinder, TestModuleConfiguration}
+import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import backend.search.MetadataCacher.IndexUpdate
 import common.AuxSpecs
 import common.io.{JsonableSaver, MemoryRoot}

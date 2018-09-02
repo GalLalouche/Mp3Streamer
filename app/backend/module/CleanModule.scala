@@ -1,4 +1,4 @@
-package backend.configs
+package backend.module
 
 import com.google.inject.{Provider, TypeLiteral}
 import com.google.inject.matcher.Matchers

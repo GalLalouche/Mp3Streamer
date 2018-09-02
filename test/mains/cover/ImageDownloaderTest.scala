@@ -1,7 +1,7 @@
 package mains.cover
 
 import backend.Url
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import common.AuxSpecs
 import common.io.MemoryRoot
 import common.rich.RichFuture._

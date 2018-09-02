@@ -1,7 +1,7 @@
 package backend.lyrics.retrievers
 
 import backend.StorageSetup
-import backend.configs.TestModuleConfiguration
+import backend.module.TestModuleConfiguration
 import common.AuxSpecs
 import common.rich.RichFuture._
 import net.codingwell.scalaguice.InjectorExtensions._
