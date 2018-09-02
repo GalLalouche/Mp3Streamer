@@ -16,6 +16,7 @@ import scala.concurrent.ExecutionContext
 /** Used for updating the cache from the client. */
 object CacherController extends WebSocketController with ToJsonableOps {
   private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+  private val searchState = injector.instance[SearchState]
 
   private implicit val writesIndexUpdate: JsonWriteable[IndexUpdate] = u => Json.obj(
     "finished" -> u.currentIndex,
@@ -32,7 +33,7 @@ object CacherController extends WebSocketController with ToJsonableOps {
         .doOnCompleted {
           Player.update()
           broadcast("Reloading searcher")
-          SearchController.!() foreach broadcast("Finished").const
+          searchState.!() foreach broadcast("Finished").const
         }.subscribe()
     Ok(views.html.refresh())
   }
