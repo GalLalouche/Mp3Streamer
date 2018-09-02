@@ -29,6 +29,7 @@ object SongsModule extends ScalaModule with ModuleUtils
     val start = System.currentTimeMillis()
     val $ = new SongSelectorProxy(ec, mf)
     // TODO TimedFuture?
+    logger.info("Song selector update starting")
     $.update().>|(logger.info(s"SongSelector has finished updating (${
       System.currentTimeMillis() - start
     } ms)"))

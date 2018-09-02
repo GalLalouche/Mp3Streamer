@@ -4,30 +4,23 @@ import common.Debug
 import common.io.IODirectory
 import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
-import common.MoreInjectionExtensions._
 import controllers.ControllerUtils.songJsonable
 import decoders.DbPowerampCodec
 import models._
 import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.JsValue
 import play.api.mvc._
-import songs.{SongGroup, SongGroups, SongSelector}
+import songs.{SongGroup, SongGroups, SongSelectorState}
 
 import scala.annotation.tailrec
 
 /** Handles fetch requests of JSON information, and listens to directory changes. */
 object Player extends LegacyController with ToJsonableOps with Debug {
   private val albumFactory = injector.instance[AlbumFactory]
-  private val songSelectorProvider = injector.provider[SongSelector]
   private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(
     injector.instance[SongGroups].load)
   private val encoder = DbPowerampCodec
-  private var songSelector: SongSelector = _
-  def update(): Unit = {
-    songSelector = songSelectorProvider.get()
-  }
-  //TODO hide this, shouldn't be a part of the controller
-  update()
+  private val songSelectorState: SongSelectorState = injector.instance[SongSelectorState]
 
   private def group(s: Song): Either[Song, SongGroup] = songGroups get s toRight s
 
@@ -56,7 +49,7 @@ object Player extends LegacyController with ToJsonableOps with Debug {
   }
 
   def randomSong = Action {
-    encodeIfChrome(group(songSelector.randomSong)) _
+    encodeIfChrome(group(songSelectorState.randomSong)) _
   }
 
   // For debugging
@@ -65,7 +58,7 @@ object Player extends LegacyController with ToJsonableOps with Debug {
   def randomMp3Song = Action {
     @tailrec
     def aux: Song = {
-      val $ = songSelector.randomSong
+      val $ = songSelectorState.randomSong
       if ($.file.extension == "mp3") $ else aux
     }
     encodeIfChrome(group(aux)) _
@@ -74,7 +67,7 @@ object Player extends LegacyController with ToJsonableOps with Debug {
   def randomFlacSong = Action {
     @tailrec
     def aux: Song = {
-      val $ = songSelector.randomSong
+      val $ = songSelectorState.randomSong
       if ($.file.extension == "flac") $ else aux
     }
     encodeIfChrome(group(aux)) _
@@ -96,6 +89,6 @@ object Player extends LegacyController with ToJsonableOps with Debug {
   }
 
   def nextSong(path: String) = Action {
-    encodeIfChrome(songSelector.followingSong(ControllerUtils.parseSong(path)).get) _
+    encodeIfChrome(songSelectorState.followingSong(ControllerUtils.parseSong(path)).get) _
   }
 }
