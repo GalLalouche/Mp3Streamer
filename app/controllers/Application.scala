@@ -7,8 +7,7 @@ import play.api.mvc._
 
 import scala.concurrent.ExecutionContext
 
-class Application @Inject()(ec: ExecutionContext) extends InjectedController {
-  private implicit val iec: ExecutionContext = ec
+class Application @Inject()(implicit ec: ExecutionContext) extends InjectedController {
 
   def index = Action {
     Ok(views.html.main())

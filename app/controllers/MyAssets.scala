@@ -8,8 +8,7 @@ import play.api.mvc.InjectedController
 import scala.concurrent.ExecutionContext
 
 // Since 2.6 ruined their own assets controller :\
-class MyAssets @Inject()(ec: ExecutionContext) extends InjectedController {
-  private implicit val iec: ExecutionContext = ec
+class MyAssets @Inject()(implicit ec: ExecutionContext) extends InjectedController {
   def asset(path: String) = Action {
     Ok.sendFile(new File("""public\""" + path))
   }

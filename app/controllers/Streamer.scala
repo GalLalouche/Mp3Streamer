@@ -18,9 +18,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.OptionInstances
 
-class Streamer @Inject()(ec: ExecutionContext) extends InjectedController
+class Streamer @Inject()(implicit ec: ExecutionContext) extends InjectedController
     with ToMoreFoldableOps with OptionInstances {
-  private implicit val iec: ExecutionContext = ec
 
   private val decoder = DbPowerampCodec
   def download(s: String) = Action.async {request =>
