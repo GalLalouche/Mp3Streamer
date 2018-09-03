@@ -85,7 +85,7 @@ object NewAlbums {
 
   JLogger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   def main(args: Array[String]): Unit = {
-    val injector = Guice createInjector NewAlbumsModule
+    val injector = Guice createInjector LocalNewAlbumsModule
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     injector.instance[NewAlbums].fetchAndSave.get
     println("Done!")

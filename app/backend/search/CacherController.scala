@@ -1,24 +1,30 @@
 package backend.search
 
+import backend.logging.Logger
 import backend.search.MetadataCacher.IndexUpdate
 import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
 import controllers.Recent
 import controllers.websockets.WebSocketController
+import javax.inject.Inject
 import models.ModelJsonable._
-import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.Json
-import play.api.mvc.Action
 import rx.lang.scala.Observable
 import songs.SongSelectorState
 
 import scala.concurrent.ExecutionContext
 
 /** Used for updating the cache from the client. */
-object CacherController extends WebSocketController with ToJsonableOps {
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-  private val searchState = injector.instance[SearchState]
-  private val songSelectorState = injector.instance[SongSelectorState]
+class CacherController @Inject()(
+    logger: Logger,
+    ec: ExecutionContext,
+    searchState: SearchState,
+    songSelectorState: SongSelectorState,
+    cacherFactory: MetadataCacherFactory,
+    recent: Recent,
+) extends WebSocketController(logger) with ToJsonableOps {
+  private implicit val iec: ExecutionContext = ec
+  private val cacher = cacherFactory.create
 
   private implicit val writesIndexUpdate: JsonWriteable[IndexUpdate] = u => Json.obj(
     "finished" -> u.currentIndex,
@@ -26,10 +32,9 @@ object CacherController extends WebSocketController with ToJsonableOps {
     "currentDir" -> u.dir.name,
   )
 
-  private val cacher = injector.instance[MetadataCacherFactory].create
   private def toRefreshStatus(o: Observable[IndexUpdate], updateRecent: Boolean) = {
     if (updateRecent)
-      o.map(_.dir) foreach Recent.newDir
+      o.map(_.dir) foreach recent.newDir
     o.map(_.jsonify.toString)
         .doOnNext(broadcast)
         .doOnCompleted {

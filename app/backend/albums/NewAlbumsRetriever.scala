@@ -91,7 +91,7 @@ private object NewAlbumsRetriever {
       .map(Song(_).release)
 
   def main(args: Array[String]): Unit = {
-    val injector = Guice createInjector NewAlbumsModule
+    val injector = Guice createInjector LocalNewAlbumsModule
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val mf = injector.instance[IOMusicFinder]
 

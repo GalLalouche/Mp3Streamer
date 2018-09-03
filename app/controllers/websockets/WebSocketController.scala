@@ -1,35 +1,43 @@
 package controllers.websockets
 
+import java.util.Collections
+import java.util.concurrent.ConcurrentHashMap
+
 import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
 import akka.stream.ActorMaterializer
 import backend.logging.Logger
 import common.rich.RichT._
-import controllers.LegacyController
-import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.streams.ActorFlow
-import play.api.mvc.WebSocket
+import play.api.mvc.{InjectedController, WebSocket}
 
-import scala.collection.mutable
+import scala.collection.JavaConverters._
 
 // This has to appear before the trait, otherwise materializer won't be available as an implicit val?!
 object WebSocketController {
   private case class MessageToClient(str: String) extends AnyVal
   private implicit val system: ActorSystem = ActorSystem("WebSockets")
   private implicit val materializer: ActorMaterializer = ActorMaterializer()(system)
+
+  // A poor man's singleton class
+  private val actors = new ConcurrentHashMap[Class[_], java.util.Set[ActorRef]]
 }
 
-trait WebSocketController extends LegacyController {
+// TODO replace with composition
+class WebSocketController(logger: Logger) extends InjectedController {
   import WebSocketController._
 
-  private val logger = injector.instance[Logger]
-  private val actors = new mutable.HashSet[ActorRef]
+  private lazy val myActors = {
+    actors.putIfAbsent( // TODO extract this newSet BS to a helper class.
+      getClass, Collections.newSetFromMap[ActorRef](new ConcurrentHashMap[ActorRef, java.lang.Boolean]()))
+    actors.get(getClass).asScala
+  }
 
-  protected def broadcast(msg: String): Unit = actors.foreach(_ ! MessageToClient(msg))
-  protected def closeConnections(): Unit = actors.foreach(_ ! PoisonPill)
+  protected def broadcast(msg: String): Unit = myActors.foreach(_ ! MessageToClient(msg))
+  protected def closeConnections(): Unit = myActors.foreach(_ ! PoisonPill)
 
   private class SocketActor(out: ActorRef) extends Actor {
-    override def preStart() = actors += this.self
-    override def postStop() = actors -= this.self
+    override def preStart() = myActors += this.self
+    override def postStop() = myActors -= this.self
     def receive = {
       case msg: String =>
         logger.verbose(s"${this.simpleName} received message <$msg>")

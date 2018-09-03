@@ -5,7 +5,7 @@ resourceDirectory in Test := baseDirectory.value / "test-resources"
 val scalaVersionStr = "2.12.3"
 scalaVersion := scalaVersionStr
 version := "1.0-SNAPSHOT"
-routesGenerator := StaticRoutesGenerator
+routesGenerator := InjectedRoutesGenerator
 
 val playWsStandaloneVersion = "1.1.2"
 

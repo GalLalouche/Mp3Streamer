@@ -8,19 +8,19 @@ import common.rich.func.ToMoreFoldableOps
 import common.rich.path.RichFile._
 import common.rich.primitives.RichString._
 import decoders.DbPowerampCodec
-import net.codingwell.scalaguice.InjectorExtensions._
+import javax.inject.Inject
 import play.api.http.HttpEntity
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.iteratee.streams.IterateeStreams
-import play.api.mvc.Action
+import play.api.mvc.InjectedController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.OptionInstances
 
-object Streamer extends LegacyController
+class Streamer @Inject()(ec: ExecutionContext) extends InjectedController
     with ToMoreFoldableOps with OptionInstances {
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+  private implicit val iec: ExecutionContext = ec
 
   private val decoder = DbPowerampCodec
   def download(s: String) = Action.async {request =>

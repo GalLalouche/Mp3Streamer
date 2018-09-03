@@ -7,9 +7,8 @@ import common.RichJson._
 import common.json.ToJsonableOps
 import common.rich.RichT._
 import common.rich.collections.RichMap._
-import controllers.LegacyController
-import net.codingwell.scalaguice.InjectorExtensions._
-import play.api.mvc.{Action, AnyContent, Request}
+import javax.inject.Inject
+import play.api.mvc.{AnyContent, InjectedController, Request}
 
 import scala.concurrent.ExecutionContext
 
@@ -17,10 +16,9 @@ import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
 /** A web interface to new albums finder. Displays new albums and can update the current file / ignoring policy. */
-object AlbumsController extends LegacyController with Debug
+class AlbumsController @Inject()(ec: ExecutionContext, $: NewAlbums) extends InjectedController with Debug
     with FutureInstances with ToFunctorOps with ToJsonableOps {
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-  private val $ = injector.instance[NewAlbums]
+  private implicit val iec: ExecutionContext = ec
 
   def albums = Action.async {
     $.load.map(Ok apply _.mapKeys(_.name).mapValues(_.jsonify).jsonify)

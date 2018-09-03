@@ -2,14 +2,14 @@ package controllers
 
 import java.io.File
 
-import net.codingwell.scalaguice.InjectorExtensions._
-import play.api.mvc.Action
+import javax.inject.Inject
+import play.api.mvc.InjectedController
 
 import scala.concurrent.ExecutionContext
 
 // Since 2.6 ruined their own assets controller :\
-object MyAssets extends LegacyController {
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+class MyAssets @Inject()(ec: ExecutionContext) extends InjectedController {
+  private implicit val iec: ExecutionContext = ec
   def asset(path: String) = Action {
     Ok.sendFile(new File("""public\""" + path))
   }

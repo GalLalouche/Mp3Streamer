@@ -10,26 +10,25 @@ import common.RichJson._
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.ToMoreMonadErrorOps
-import controllers.{ControllerUtils, LegacyController}
+import controllers.ControllerUtils
+import javax.inject.Inject
 import models.Song
-import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.{JsObject, Json, JsString}
-import play.api.mvc.{Action, Result}
+import play.api.mvc.{InjectedController, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
-object ExternalController extends LegacyController
-    with ToBindOps with ToMoreMonadErrorOps with FutureInstances {
-
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+class ExternalController @Inject()(ec: ExecutionContext, external: MbExternalLinksProvider)
+    extends InjectedController
+        with ToBindOps with ToMoreMonadErrorOps with FutureInstances {
+  private implicit val iec: ExecutionContext = ec
 
   private type KVPair = (String, play.api.libs.json.Json.JsValueWrapper)
   private val hosts: Seq[Host] =
     Seq(Host.MusicBrainz, Host.Wikipedia, Host.Wikidata, Host.AllMusic, Host.Facebook, Host.LastFm, Host.RateYourMusic)
-  private val external = injector.instance[MbExternalLinksProvider]
 
   private def canonizeHost(e: ExtendedLink[_]): String = {
     val isMissing = e.host.name.endsWith("?")

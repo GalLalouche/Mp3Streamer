@@ -6,8 +6,8 @@ import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
 import controllers.ControllerUtils.songJsonable
 import decoders.DbPowerampCodec
+import javax.inject.Inject
 import models._
-import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.JsValue
 import play.api.mvc._
 import songs.{SongGroup, SongGroups, SongSelectorState}
@@ -15,12 +15,13 @@ import songs.{SongGroup, SongGroups, SongSelectorState}
 import scala.annotation.tailrec
 
 /** Handles fetch requests of JSON information, and listens to directory changes. */
-object Player extends LegacyController with ToJsonableOps with Debug {
-  private val albumFactory = injector.instance[AlbumFactory]
-  private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(
-    injector.instance[SongGroups].load)
+class Player @Inject()(
+    albumFactory: AlbumFactory,
+    groups: SongGroups,
+    songSelectorState: SongSelectorState,
+) extends InjectedController with ToJsonableOps with Debug {
+  private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(groups.load)
   private val encoder = DbPowerampCodec
-  private val songSelectorState: SongSelectorState = injector.instance[SongSelectorState]
 
   private def group(s: Song): Either[Song, SongGroup] = songGroups get s toRight s
 

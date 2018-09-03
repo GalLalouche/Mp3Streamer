@@ -3,16 +3,13 @@ package backend.search
 import java.net.URLDecoder
 
 import common.json.{JsonableOverrider, OJsonable, ToJsonableOps}
-import controllers.LegacyController
+import javax.inject.Inject
 import models.{Album, ModelJsonable}
 import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
-import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.Json
-import play.api.mvc.Action
+import play.api.mvc.InjectedController
 
-object SearchController extends LegacyController with ToJsonableOps {
-  private val state: SearchState = injector.instance[SearchState]
-
+class SearchController @Inject()(state: SearchState) extends InjectedController with ToJsonableOps {
   private implicit val albumJsonableWithDiscNumber: OJsonable[Album] =
     JsonableOverrider.oJsonify[Album]((a, original) => {
       if (a.songs.forall(_.discNumber.isDefined)) // All songs need to have a disc number (ignores bonus disc only)

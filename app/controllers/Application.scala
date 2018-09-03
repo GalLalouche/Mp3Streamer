@@ -2,13 +2,14 @@ package controllers
 
 import java.io.File
 
-import net.codingwell.scalaguice.InjectorExtensions._
+import javax.inject.Inject
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext
 
-object Application extends LegacyController {
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+class Application @Inject()(ec: ExecutionContext) extends InjectedController {
+  private implicit val iec: ExecutionContext = ec
+
   def index = Action {
     Ok(views.html.main())
   }

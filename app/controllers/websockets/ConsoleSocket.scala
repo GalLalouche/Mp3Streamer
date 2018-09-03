@@ -1,9 +1,9 @@
 package controllers.websockets
 
-import backend.logging.StringOutputLogger
-
+import backend.logging.{Logger, StringOutputLogger}
+import javax.inject.Inject
 
 /** Sends console messages to the listeners */
-object ConsoleSocket extends WebSocketController with StringOutputLogger {
+class ConsoleSocket @Inject()(logger: Logger) extends WebSocketController(logger) with StringOutputLogger {
   override protected def output(what: String): Unit = broadcast(what)
 }

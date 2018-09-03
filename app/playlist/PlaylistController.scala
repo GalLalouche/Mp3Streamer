@@ -4,16 +4,15 @@ import common.RichJson._
 import common.io.JsonableSaver
 import common.json.{JsonReadable, ToJsonableOps}
 import common.rich.RichT._
-import controllers.{ControllerUtils, LegacyController}
+import controllers.ControllerUtils
 import controllers.ControllerUtils.songJsonable
-import net.codingwell.scalaguice.InjectorExtensions._
-import play.api.mvc.Action
+import javax.inject.Inject
+import play.api.mvc.{Action, InjectedController}
 
 import scala.concurrent.duration.DurationInt
 
-object PlaylistController extends LegacyController
+class PlaylistController @Inject()(saver: JsonableSaver) extends InjectedController
     with ToJsonableOps {
-  private val saver = injector.instance[JsonableSaver]
 
   def getQueue = Action {
     Ok(saver.loadObject[PlaylistQueue].songs.jsonify)
