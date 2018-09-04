@@ -2,8 +2,7 @@ package backend.external.expansions
 
 import backend.Url
 import backend.recon.{Album, Artist}
-import com.google.inject.Provides
-import common.io.InternetTalker
+import net.codingwell.scalaguice.ScalaModule
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -12,9 +11,12 @@ import scala.concurrent.Future
 
 class AllMusicAlbumFinderTest extends SameHostExpanderSpec with MockitoSugar {
   private val allMusicHelper = mock[AllMusicHelper]
-  @Provides private def createExpander(it: InternetTalker): SameHostExpander =
-    new AllMusicAlbumFinder(allMusicHelper, it)
-
+  override def module = new ScalaModule {
+    override def configure() = {
+      bind[SameHostExpander].to[AllMusicAlbumFinder]
+      bind[AllMusicHelper] toInstance allMusicHelper
+    }
+  }
   override protected val expandingUrl = artistUrl + "/discography"
 
   "apply" - {

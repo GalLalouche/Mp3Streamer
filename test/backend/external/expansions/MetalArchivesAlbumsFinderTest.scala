@@ -2,12 +2,14 @@ package backend.external.expansions
 
 import backend.Url
 import backend.recon.{Album, Artist}
-import com.google.inject.Provides
-import common.io.InternetTalker
+import net.codingwell.scalaguice.ScalaModule
 
 class MetalArchivesAlbumsFinderTest extends SameHostExpanderSpec {
-  @Provides private def createExpander(it: InternetTalker): SameHostExpander =
-    new MetalArchivesAlbumsFinder(it)
+  override protected def module = new ScalaModule {
+    override def configure() = {
+      bind[SameHostExpander].to[MetalArchivesAlbumsFinder]
+    }
+  }
   override protected val artistUrl = "https://www.metal-archives.com/bands/Cruachan/86"
   override protected val expandingUrl = "http://www.metal-archives.com/band/discography/id/86/tab/all"
 

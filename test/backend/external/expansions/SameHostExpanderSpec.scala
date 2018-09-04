@@ -1,23 +1,21 @@
 package backend.external.expansions
 
 import backend.Url
-import backend.module.TestModuleConfiguration
 import backend.external.{BaseLink, DocumentSpecs}
+import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist}
-import com.google.inject.{Binder, Guice, Module}
+import com.google.inject.{Guice, Module}
 import common.rich.RichFuture._
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
 
 import scala.concurrent.ExecutionContext
 
-trait SameHostExpanderSpec extends FreeSpec with DocumentSpecs with Module {
-  override def configure(binder: Binder) = {
-    // A poor man's require binding
-    binder.getProvider(classOf[SameHostExpander])
-  }
-  protected val artistUrl = "Url"
-  protected val expandingUrl = artistUrl
+abstract class SameHostExpanderSpec extends FreeSpec with DocumentSpecs {
+  protected def module: Module
+
+  protected def artistUrl = "Url"
+  protected def expandingUrl = artistUrl
   protected def findAlbum(documentName: String, album: Album,
       additionalMappings: (String, String)*): Option[BaseLink[Album]] = {
     val urlToBytesMapper: PartialFunction[Url, Array[Byte]] = {
@@ -25,12 +23,12 @@ trait SameHostExpanderSpec extends FreeSpec with DocumentSpecs with Module {
     }
 
     val injector = Guice.createInjector(
-      this,
+      module,
       TestModuleConfiguration(_urlToBytesMapper = urlToBytesMapper.orElse {
         case Url(address) => getBytes(additionalMappings.toMap.apply(address))
       }).module)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val $ = injector.instance[SameHostExpander]
-    $(BaseLink[Artist](Url(artistUrl), $.host), album).get
+    $.apply(BaseLink[Artist](Url(artistUrl), $.host), album).get
   }
 }

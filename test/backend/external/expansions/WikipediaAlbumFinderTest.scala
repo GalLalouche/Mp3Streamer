@@ -2,14 +2,18 @@ package backend.external.expansions
 
 import backend.Url
 import backend.recon.{Album, Artist}
-import com.google.inject.Provides
-import common.io.InternetTalker
+import net.codingwell.scalaguice.ScalaModule
 
 class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
-  @Provides private def createExpander(it: InternetTalker): SameHostExpander = new WikipediaAlbumFinder(it)
+  override protected def module = new ScalaModule {
+    override def configure() = {
+      bind[SameHostExpander].to[WikipediaAlbumFinder]
+    }
+  }
   private val DiscographyExtractLink = "https://en.wikipedia.org/w/index.php?title=Lady_in_Gold_(album)&redirect=no"
   private val Redirected = "wiki_redirected.html"
   private val NotRedirected = "wikipedia-discography.html"
+
   "extract the album when possible" in {
     findAlbum("wikipedia-discography.html", Album("Lady in Gold", 2016, Artist("Blues Pills")),
       DiscographyExtractLink -> NotRedirected)
