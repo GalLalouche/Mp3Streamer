@@ -19,8 +19,7 @@ private abstract class SameHostExpander(val host: Host, it: InternetTalker) {
     a <- findAlbum(d, a)
   } yield a.map(BaseLink[Album](_, host))
 
-  final def apply(e: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] =
-    fromUrl(e.link, a)
+  final def apply(e: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] = fromUrl(e.link, a)
   def toReconciler(artistLinks: BaseLink[Artist]): LinkRetriever[Album] = new LinkRetriever[Album](host) {
     override def apply(a: Album): Future[Option[BaseLink[Album]]] = SameHostExpander.this.apply(artistLinks, a)
   }

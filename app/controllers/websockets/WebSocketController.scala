@@ -27,6 +27,7 @@ class WebSocketController(logger: Logger) extends InjectedController {
   import WebSocketController._
 
   private lazy val myActors = {
+    // TODO Semigroup mutable map
     actors.putIfAbsent( // TODO extract this newSet BS to a helper class.
       getClass, Collections.newSetFromMap[ActorRef](new ConcurrentHashMap[ActorRef, java.lang.Boolean]()))
     actors.get(getClass).asScala

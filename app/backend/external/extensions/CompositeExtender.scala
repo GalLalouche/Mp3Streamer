@@ -26,7 +26,7 @@ private[external] class CompositeExtender @Inject()(
       case `artistClass` => artistExtendersMap
       case `albumClass` => albumExtenderMap
     }).asInstanceOf[HostMap[LinkExtender[R]]]
-    val extendedLinks = map.get(link.host).mapHeadOrElse(_.apply(entity, allLinks), Nil)
+    val extendedLinks = map.get(link.host).mapHeadOrElse(_.extend(entity, allLinks), Nil)
     ExtendedLink.extend(link).withLinks(extendedLinks)
   }
   def apply[R <: Reconcilable : Manifest](entity: R, e: TimestampedLinks[R]): TimestampedExtendedLinks[R] =

@@ -17,7 +17,7 @@ class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
         MarkedLink[Artist](Url("last.fm"), Host.LastFm, true),
       )
 
-      val result: Seq[LinkExtension[Artist]] = MusicBrainzArtistExtender(artist, links)
+      val result: Seq[LinkExtension[Artist]] = MusicBrainzArtistExtender.extend(artist, links)
 
       val preseededEdit = "edit-artist.url.0.text=face.book&edit-artist.url.0.link_type_id=192" +
           "&edit-artist.url.1.text=last.fm&edit-artist.url.1.link_type_id=840"
@@ -34,7 +34,7 @@ class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
         MarkedLink[Album](Url("wiki.pedia"), Host.Wikipedia, true),
       )
 
-      val result = MusicBrainzAlbumExtender(album, links)
+      val result = MusicBrainzAlbumExtender.extend(album, links)
 
       val preseededEdit = "edit-album.url.0.text=all.music&edit-album.url.0.link_type_id=284" +
           "&edit-album.url.1.text=wiki.pedia&edit-album.url.1.link_type_id=89"

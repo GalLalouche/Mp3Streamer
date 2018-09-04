@@ -1,6 +1,6 @@
 package backend.external.expansions
 
-import backend.external.{BaseLink, BaseLinks}
+import backend.external.{BaseLink, BaseLinks, Host}
 import backend.external.recons.LinkRetrievers
 import backend.recon.{Album, Artist}
 import common.rich.collections.RichTraversableOnce._
@@ -22,7 +22,7 @@ private[external] class CompositeSameHostExpander @Inject()(
     with OptionInstances with FutureInstances {
   private implicit val iec: ExecutionContext = ec
 
-  private val expanders = Iterator(wiki, am).mapBy(_.host)
+  private val expanders: Map[Host, SameHostExpander] = Iterator(wiki, am).mapBy(_.host)
 
   def apply(link: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] =
     expanders.get(link.host).mapHeadOrElse(_.apply(link, a), Future successful None)

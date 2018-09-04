@@ -17,7 +17,7 @@ import scalaz.syntax.ToFunctorOps
 */
 private trait LinkExtender[R <: Reconcilable]
     extends ToFunctorOps with MoreSeqInstances
-    with Tuple2Optics with ApplySyntax with FieldsSyntax {
+        with Tuple2Optics with ApplySyntax with FieldsSyntax {
   def host: Host
   // When the name of the extended link is identical to the URL suffix.
   // For example, create a discography link with the URL www.foo.com/some_artist/discography.
@@ -25,5 +25,6 @@ private trait LinkExtender[R <: Reconcilable]
     append(e, suffixes.fpair: _*)
   protected def append(e: MarkedLink[R], suffixes: (String, String)*): Seq[LinkExtension[R]] =
     suffixes.map(tuple2Second modify e.link.+/).map((LinkExtension.apply[R] _).tupled)
-  def apply(t: R, e: MarkedLinks[R]): Seq[LinkExtension[R]]
+  // For point free style.
+  def extend: (R, MarkedLinks[R]) => Seq[LinkExtension[R]]
 }
