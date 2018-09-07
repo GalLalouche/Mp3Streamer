@@ -33,7 +33,7 @@ class Mp3Encoder @Inject()(@RootDirectory rootDirectory: DirectoryRef, encoder: 
     val outputFileName = file.path.replaceAll("[\\s\\/\\\\\\-\\:]", "").toLowerCase + ".mp3"
     outputDir.files.find(_.name == outputFileName).filter(_.size > 0).getOrElse({
       val outputFile = outputDir.addFile(outputFileName)
-      encoder.encode(file, outputFile, CodecType.Mp3)
+      encoder.encode(file, outputFile, Mp3)
       outputFile
     })
   }

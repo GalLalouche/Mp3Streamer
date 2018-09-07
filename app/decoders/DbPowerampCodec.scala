@@ -6,7 +6,6 @@ import backend.logging.ConsoleLogger
 import common.Debug
 import common.io.FileRef
 import common.rich.path.RichFile._
-import decoders.CodecType.CodecType
 
 import scala.sys.process.{Process, ProcessLogger}
 

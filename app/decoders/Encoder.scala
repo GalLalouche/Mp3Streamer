@@ -1,7 +1,6 @@
 package decoders
 
 import common.io.FileRef
-import decoders.CodecType._
 
 private trait Encoder {
   /**
