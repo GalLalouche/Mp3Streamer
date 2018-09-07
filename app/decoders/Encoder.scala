@@ -1,7 +1,6 @@
 package decoders
 
-import java.io.File
-
+import common.io.FileRef
 import decoders.CodecType._
 
 trait Encoder {
@@ -11,5 +10,5 @@ trait Encoder {
    * @param dstFile The destination file that will be created
    * @param dstType The type of the new file
    */
-  protected def encode(srcFile: File, dstFile: File, dstType: CodecType)
+  protected def encode(srcFile: FileRef, dstFile: FileRef, dstType: CodecType): Unit
 }

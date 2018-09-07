@@ -36,8 +36,7 @@ class Player @Inject()(
         override def encode(e: A): Unit = f(e)
         override def jsonify(a: A): JsValue = a.jsonify
       }
-    implicit val songEncodable: Encodable[Song] =
-      jsonableEncodable(encoder ! _.asInstanceOf[IOSong].file.file)
+    implicit val songEncodable: Encodable[Song] = jsonableEncodable(encoder ! _.file)
     implicit val songsEncodable: Encodable[Seq[Song]] =
       jsonableEncodable(_ foreach songEncodable.encode)
     implicit val eitherEncodable: Encodable[Either[Song, SongGroup]] =
