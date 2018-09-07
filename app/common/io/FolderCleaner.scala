@@ -8,6 +8,6 @@ import common.concurrency.Extra
 class FolderCleaner(dir: DirectoryRef) extends Extra {
   override def apply(): Unit = {
     val minimumCreationTime = LocalDateTime.now.minusWeeks(1)
-    dir.files.filter(_.lastModified < minimumCreationTime).foreach(_.delete)
+    dir.files.filter(_.lastAccessTime < minimumCreationTime).foreach(_.delete)
   }
 }

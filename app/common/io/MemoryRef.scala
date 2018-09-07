@@ -49,6 +49,7 @@ case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with Memo
   override def delete = parent.deleteFile(this.name)
 
   override val creationTime = LocalDateTime.now()
+  override def lastAccessTime = LocalDateTime.now()
 }
 
 abstract sealed class MemoryDir(val path: String) extends DirectoryRef with MemoryPath {

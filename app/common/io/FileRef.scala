@@ -44,6 +44,7 @@ trait FileRef extends PathRef {
 
   def lastModified: LocalDateTime
   def creationTime: LocalDateTime
+  def lastAccessTime: LocalDateTime
 
   def exists: Boolean
   def delete: Boolean

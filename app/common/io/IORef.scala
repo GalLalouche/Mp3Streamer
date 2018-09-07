@@ -55,6 +55,9 @@ case class IOFile(file: File) extends IOPath(file) with FileRef {
   override def creationTime = LocalDateTime.ofInstant(
     Files.readAttributes(file.toPath, classOf[BasicFileAttributes]).creationTime().toInstant,
     ZoneId.systemDefault())
+  override def lastAccessTime = LocalDateTime.ofInstant(
+    Files.readAttributes(file.toPath, classOf[BasicFileAttributes]).lastAccessTime().toInstant,
+    ZoneId.systemDefault())
 }
 
 case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
