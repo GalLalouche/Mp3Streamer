@@ -1,9 +1,9 @@
 package common.io
 
-import java.io.File
+import java.io.{File, FileInputStream, InputStream}
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
-import java.time.{Clock, LocalDateTime}
+import java.time.{Clock, LocalDateTime, ZoneId}
 
 import common.rich.RichT._
 import common.rich.path.{Directory, RichFile}
@@ -46,10 +46,15 @@ case class IOFile(file: File) extends IOPath(file) with FileRef {
     this
   }
   override def readAll: String = rich.readAll
+  override def inputStream: InputStream = new FileInputStream(file)
   override def lastModified: LocalDateTime = file |> FileUtils.lastModified
   override def size = file.length
   override def exists = file.exists
   override def delete: Boolean = file.delete()
+
+  override def creationTime = LocalDateTime.ofInstant(
+    Files.readAttributes(file.toPath, classOf[BasicFileAttributes]).creationTime().toInstant,
+    ZoneId.systemDefault())
 }
 
 case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {

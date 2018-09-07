@@ -1,7 +1,10 @@
 package common.io
 
+import java.io.InputStream
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
+
+import common.rich.primitives.RichString._
 
 import scala.collection.JavaConverters._
 
@@ -23,7 +26,7 @@ case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with Memo
     lastUpdatedTime = LocalDateTime.now
   }
   override def bytes = content.getBytes
-  override def write(bs: Array[Byte]) = {
+  override def write(bs: Array[Byte]): MemoryFile = {
     write(new String(bs))
   }
   override def write(s: String) = {
@@ -38,11 +41,14 @@ case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with Memo
   }
 
   override def readAll: String = content
+  override def inputStream: InputStream = content.toInputStream
   override def path: String = parent.path + "/" + name
   override def lastModified = lastUpdatedTime
   override def size = bytes.length
   override def exists = parent.files.exists(_.name == this.name)
   override def delete = parent.deleteFile(this.name)
+
+  override val creationTime = LocalDateTime.now()
 }
 
 abstract sealed class MemoryDir(val path: String) extends DirectoryRef with MemoryPath {

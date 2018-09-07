@@ -1,10 +1,11 @@
 package common.io
 
+import java.io.InputStream
 import java.time.LocalDateTime
 
 import common.rich.RichT._
 
-trait RefSystem { self =>
+trait RefSystem {self =>
   type S <: RefSystem
   type P <: PathRef {type S = self.S}
   type F <: FileRef {type S = self.S}
@@ -34,17 +35,21 @@ trait FileRef extends PathRef {
     val content = readAll
     if (content.isEmpty) Nil else content split "\n"
   }
+  def inputStream: InputStream
+
   final def extension: String = {
     val i = name.lastIndexOf('.')
     if (i == -1) "" else name.substring(i + 1).toLowerCase
   }
 
   def lastModified: LocalDateTime
+  def creationTime: LocalDateTime
+
   def exists: Boolean
   def delete: Boolean
 }
 
-trait DirectoryRef extends PathRef { self =>
+trait DirectoryRef extends PathRef {self =>
   type S <: RefSystem
   def addFile(name: String): S#F
   def getFile(name: String): Option[S#F]
