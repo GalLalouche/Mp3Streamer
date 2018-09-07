@@ -16,18 +16,19 @@ private class DbPowerampCodec @Inject()(implicit logger: Logger) extends Encoder
   private val converterFile = new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe")
   private def quote(o: Any): String = s""""$o""""
 
-  private implicit val logger: ConsoleLogger = new ConsoleLogger
-  override def encode(srcFile: FileRef, dstFile: FileRef, dstType: CodecType): Unit = {
-    // create the arguments for the application invocation
-    val args = List(converterFile.path,
-      "-infile=" + quote(srcFile.path),
-      "-outfile=" + quote(dstFile.path),
-      "-convert_to=" + quote(dstType),
-      "-V 2",
-      "-b 320")
-    timed(s"Encoding $srcFile to $dstType") {
-      Process(args) !< devNull
-    }
+  override def encode(srcFile: FileRef, dstFile: FileRef, dstType: CodecType): Unit = dstType match {
+    case Mp3 =>
+      // create the arguments for the application invocation
+      val args = List(converterFile.path,
+        "-infile=" + quote(srcFile.path),
+        "-outfile=" + quote(dstFile.path),
+        "-convert_to=" + quote(dstType),
+        "-V 2",
+        "-b 320")
+      timed(s"Encoding $srcFile to $dstType") {
+        Process(args) !< devNull
+      }
+    case Flac => ???
   }
   private val devNull = new ProcessLogger {
     // sends all output to FREAKING NOWHERE
