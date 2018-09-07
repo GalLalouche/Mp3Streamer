@@ -2,16 +2,16 @@ package decoders
 
 import java.io.File
 
-import backend.logging.ConsoleLogger
+import backend.logging.Logger
 import common.Debug
 import common.io.FileRef
 import common.rich.path.RichFile._
+import javax.inject.Inject
 
 import scala.sys.process.{Process, ProcessLogger}
 
-// TODO make a class, pass logger, put in ControllerUtils
 // TODO make its extra accept a Song
-private object DbPowerampCodec extends Encoder with Debug {
+private class DbPowerampCodec @Inject()(implicit logger: Logger) extends Encoder with Debug {
   // Do this less hackishly
   private val converterFile = new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe")
   private def quote(o: Any): String = s""""$o""""
