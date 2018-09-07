@@ -35,8 +35,6 @@ class WikipediaAlbumExternalLinksExpanderTest extends FreeSpec with DocumentSpec
     val $ = this.config.copy(_urlToResponseMapper =
         FakeWSResponse(status = HttpURLConnection.HTTP_INTERNAL_ERROR).partialConst)
         .injector.instance[WikipediaAlbumExternalLinksExpander]
-    $
-        .apply(BaseLink(Url("allmusic_rlink.html"), Host.Wikipedia))
-        .get shouldReturn Nil
+    $.expand(BaseLink(Url("allmusic_rlink.html"), Host.Wikipedia)).get shouldReturn Nil
   }
 }

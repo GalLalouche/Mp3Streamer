@@ -60,7 +60,7 @@ private class ExternalPipe[R <: Reconcilable](
         expanders.filterNot(_.potentialHostsExtracted.toSet <= existingHosts).mapBy(_.sourceHost)
       for {
         newLinkSet <- result.toTraversable.mproduct(nextExpandersByHost get _.host)
-            .traverseM {case (link, expander) => expander(link)}
+            .traverseM {case (link, expander) => expander.expand(link)}
             .map(_.toSet)
         noNewLinks = newLinkSet <= result
         result <- if (noNewLinks) Future successful result else aux(newLinkSet ++ result)

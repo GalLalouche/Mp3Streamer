@@ -1,10 +1,10 @@
 package backend.external
 
 import backend.Url
-import backend.module.TestModuleConfiguration
 import backend.external.Host.{AllMusic, RateYourMusic, Wikipedia}
 import backend.external.expansions.ExternalLinkExpander
 import backend.external.recons.{LinkRetriever, LinkRetrievers}
+import backend.module.TestModuleConfiguration
 import backend.recon.{Album, ReconID}
 import common.AuxSpecs
 import common.rich.RichFuture._
@@ -30,7 +30,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
   private def constExpander(links: BaseLink[Album]*) = new ExternalLinkExpander[Album] {
     override def sourceHost: Host = existingHost
     override def potentialHostsExtracted: Traversable[Host] = links.map(_.host)
-    override def apply(v1: BaseLink[Album]): Future[BaseLinks[Album]] = Future successful links
+    override def expand = Future.successful(links).const
   }
   private def constReconciler(host: Host, link: BaseLink[Album]) = new LinkRetriever[Album](host) {
     override def apply(v1: Album) = Future successful Some(link)
@@ -52,7 +52,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     def failedExpander(h: Host) = new ExternalLinkExpander[Album] {
       override val sourceHost: Host = existingHost
       override val potentialHostsExtracted: Traversable[Host] = List(h)
-      override def apply(v1: BaseLink[Album]): Future[BaseLinks[Album]] = failed
+      override def expand = failed.const
     }
     def failedReconciler(host: Host) = new LinkRetriever[Album](host) {
       override def apply(a: Album) = failed
@@ -103,7 +103,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
       private var firstRun = true
       override def potentialHostsExtracted: Traversable[Host] = List(dest.host)
       override def sourceHost: Host = source.host
-      override def apply(v1: BaseLink[Album]): Future[BaseLinks[Album]] =
+      override def expand = v1 =>
         if (firstRun) {
           firstRun = false
           Future successful (if (v1 == source) List(dest) else Nil)

@@ -4,6 +4,7 @@ import backend.Url
 import backend.external.{BaseLink, BaseLinks, Host}
 import backend.logging.Logger
 import backend.recon.Album
+import com.google.common.annotations.VisibleForTesting
 import com.google.inject.Guice
 import common.io.InternetTalker
 import common.rich.RichT._
@@ -22,10 +23,13 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
     it: InternetTalker,
     logger: Logger,
     allMusicHelper: AllMusicHelper,
-) extends ExternalLinkExpanderTemplate[Album](Host.Wikipedia, List(Host.AllMusic), it)
+    expanderHelper: ExternalLinkExpanderHelper,
+) extends ExternalLinkExpander[Album]
     with MoreTraversableInstances with ToTraverseMonadPlusOps with ToMoreMonadErrorOps
     with ToMoreFoldableOps with FutureInstances with OptionInstances with MoreTraverseInstances {
   private implicit val iec: ExecutionContext = it
+  override val sourceHost = Host.Wikipedia
+  override val potentialHostsExtracted = Vector(Host.AllMusic)
 
   // semi-canonical = guaranteed to start with http://www.allmusic.com/album
   private def extractSemiCanonicalAllMusicLink(s: String): Option[String] = Option(s)
@@ -49,10 +53,11 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
         if (urls hasAtMostSizeOf 1) urls.headOption
         else throw new IllegalStateException("extracted too many AllMusic links"))
 
-  override def parseDocument(d: Document): BaseLinks[Album] =
+  @VisibleForTesting
+  def parseDocument(d: Document): BaseLinks[Album] =
     extractAllMusicLink(d).map(BaseLink[Album](_, Host.AllMusic))
 
-  override def apply(e: BaseLink[Album]) = super.apply(e)
+  override def expand = expanderHelper(parseDocument)(_)
       // Compiler won't pick up type definitions, so explicitly naming Traverse is necessary
       .flatMap(Traverse[Traversable].traverse(_)(allMusicHelper.canonize))
       .flatMap(_.filterTraverse(link => allMusicHelper isValidLink link.link))
@@ -71,6 +76,6 @@ private object WikipediaAlbumExternalLinksExpander {
     val injector = Guice createInjector CleanModule
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val $ = injector.instance[WikipediaAlbumExternalLinksExpander]
-    $.apply(forUrl("""https://en.wikipedia.org/wiki/Ghost_(Devin_Townsend_Project_album)""")).get.log()
+    $.expand(forUrl("""https://en.wikipedia.org/wiki/Ghost_(Devin_Townsend_Project_album)""")).get.log()
   }
 }
