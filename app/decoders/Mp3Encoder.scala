@@ -3,11 +3,11 @@ package decoders
 import java.time.LocalDateTime
 
 import backend.RichTime.OrderingLocalDateTime._
-import common.concurrency.Extra
+import common.concurrency.{Extra, SimpleTypedActor}
 import common.io.{DirectoryRef, FileRef}
 
 /** Encodes audio files files to mp3. Also handles caching */
-abstract class Mp3Encoder(outputDir: DirectoryRef) extends Encoder {
+abstract class Mp3Encoder(outputDir: DirectoryRef) extends Encoder with SimpleTypedActor[FileRef, FileRef] {
   private val cleanOldFiles = new Extra {
     override def apply(): Unit = {
       val minimumCreationTime: LocalDateTime = LocalDateTime.now.minusWeeks(1)
@@ -34,5 +34,8 @@ abstract class Mp3Encoder(outputDir: DirectoryRef) extends Encoder {
       outputFile
     })
   }
+
+  override val unique = true
+  override def apply(m: FileRef): FileRef = encodeFileIfNeeded(m)
 }
 

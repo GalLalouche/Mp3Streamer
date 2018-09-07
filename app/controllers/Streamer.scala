@@ -5,7 +5,7 @@ import akka.util.ByteString
 import common.io.IOFile
 import common.rich.func.ToMoreFoldableOps
 import common.rich.primitives.RichString._
-import decoders.DbPowerampCodec
+import decoders.Mp3Encoder
 import javax.inject.Inject
 import play.api.http.HttpEntity
 import play.api.libs.iteratee.Enumerator
@@ -16,17 +16,16 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.OptionInstances
 
-class Streamer @Inject()(implicit ec: ExecutionContext) extends InjectedController
+class Streamer @Inject()(ec: ExecutionContext, encoder: Mp3Encoder) extends InjectedController
     with ToMoreFoldableOps with OptionInstances {
-
-  private val decoder = DbPowerampCodec
+  private implicit val iec: ExecutionContext = ec
   def download(s: String) = Action.async {request =>
     // assumed format: [bytes=<start>-]
     def parseRange(s: String): Long = s.dropAfterLast('=').takeWhile(_.isDigit).toLong
     val needsEncoding = ControllerUtils.encodeMp3(request)
     val bytesToSkip = request.headers get "Range" map parseRange getOrElse 0L
     val file: IOFile = ControllerUtils.parseSong(s).file
-    (if (needsEncoding) decoder ! file else Future(file)).map(file => {
+    (if (needsEncoding) encoder ! file else Future(file)).map(file => {
       val fis = file.inputStream
       fis.skip(bytesToSkip)
       val status = if (bytesToSkip == 0) Ok else PartialContent

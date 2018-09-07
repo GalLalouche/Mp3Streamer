@@ -4,7 +4,6 @@ import java.io.File
 
 import backend.logging.ConsoleLogger
 import common.Debug
-import common.concurrency.SimpleTypedActor
 import common.io.{FileRef, IODirectory}
 import common.rich.path.RichFile._
 import decoders.CodecType.CodecType
@@ -13,9 +12,8 @@ import scala.sys.process.{Process, ProcessLogger}
 
 // TODO make a class, pass logger, put in ControllerUtils
 // TODO make its extra accept a Song
-object DbPowerampCodec extends Mp3Encoder(IODirectory("D:/media/streamer/musicOutput")) with Debug with SimpleTypedActor[FileRef, FileRef] {
+private object DbPowerampCodec extends Mp3Encoder(IODirectory("D:/media/streamer/musicOutput")) with Debug {
   // Do this less hackishly
-  override val unique = true
   private val converterFile = new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe")
   private def quote(o: Any): String = s""""$o""""
 
@@ -32,7 +30,6 @@ object DbPowerampCodec extends Mp3Encoder(IODirectory("D:/media/streamer/musicOu
       Process(args) !< devNull
     }
   }
-  override def apply(m: FileRef): FileRef = encodeFileIfNeeded(m)
   private val devNull = new ProcessLogger {
     // sends all output to FREAKING NOWHERE
     // can't use !! because it throws an exception from the decoder for some reason
