@@ -4,7 +4,7 @@ import java.io.File
 
 import backend.logging.ConsoleLogger
 import common.Debug
-import common.io.{FileRef, IODirectory}
+import common.io.FileRef
 import common.rich.path.RichFile._
 import decoders.CodecType.CodecType
 
@@ -12,7 +12,7 @@ import scala.sys.process.{Process, ProcessLogger}
 
 // TODO make a class, pass logger, put in ControllerUtils
 // TODO make its extra accept a Song
-private object DbPowerampCodec extends Mp3Encoder(IODirectory("D:/media/streamer/musicOutput")) with Debug {
+private object DbPowerampCodec extends Encoder with Debug {
   // Do this less hackishly
   private val converterFile = new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe")
   private def quote(o: Any): String = s""""$o""""
