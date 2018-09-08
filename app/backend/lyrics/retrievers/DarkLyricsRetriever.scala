@@ -18,16 +18,17 @@ private[lyrics] class DarkLyricsRetriever @Inject()(it: InternetTalker) extends 
   private def removeWrappingWhiteSpace(s: String) = s.replaceAll("^\\s+", "").replaceAll("\\s$", "")
   private def removeEndingBreaklines(ss: Seq[String]) = ss.reverse.dropWhile(_.matches("<br>")).reverse
   // HTML is structured for shit, so might as well parse it by hand
-  override def fromHtml(html: Document, s: Song) = html.toString
-      .split("\n").toList
-      .dropWhile(_.matches( s""".*a name="${s.track}".*""").isFalse)
-      .drop(1)
-      .takeWhile(e => e.matches(".*<h3>.*").isFalse && e.matches(".*<div.*").isFalse) // this fucking site...
-      .map(removeWrappingWhiteSpace)
-      .mapTo(removeEndingBreaklines)
-      .mkString("\n")
-      .mapTo(Some.apply)
-      .filterNot(isInstrumental)
+  override private[retrievers] def fromHtml(html: Document, s: Song) = {
+    val $ = html.toString
+        .split("\n").toList
+        .dropWhile(_.matches( s""".*a name="${s.track}".*""").isFalse)
+        .drop(1)
+        .takeWhile(e => e.matches(".*<h3>.*").isFalse && e.matches(".*<div.*").isFalse) // this fucking site...
+        .map(removeWrappingWhiteSpace)
+        .mapTo(removeEndingBreaklines)
+        .mkString("\n")
+    if (isInstrumental($)) LyricParseResult.Instrumental else LyricParseResult.Lyrics($)
+  }
 
   private def normalize(s: String): String = s.toLowerCase.filter(_.isLetter)
   override protected val hostPrefix: String = "http://www.darklyrics.com/lyrics"
@@ -37,8 +38,8 @@ private[lyrics] class DarkLyricsRetriever @Inject()(it: InternetTalker) extends 
 
 private[lyrics] object DarkLyricsRetriever {
   // TODO reduce code duplication between all retriever debuggers
-  import com.google.inject.Guice
   import backend.module.StandaloneModule
+  import com.google.inject.Guice
   import net.codingwell.scalaguice.InjectorExtensions._
 
   def main(args: Array[String]): Unit = {

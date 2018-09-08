@@ -19,7 +19,7 @@ private[lyrics] class GeniusLyricsRetriever @Inject()(it: InternetTalker) extend
     s.filter(e => e.isDigit || e.isLetter || e.isSpaceChar).toLowerCase.replaceAll(" ", "-")
   private val sectionHeaderRegexp = Pattern.compile("""^\[.*?\]$""")
   // TODO handle instrumental
-  override def fromHtml(html: Document, s: Song): Option[String] = Some(
+  override private[retrievers] def fromHtml(html: Document, s: Song) = LyricParseResult.Lyrics(
     html.select("body .lyrics p:only-child").asScala
         .single
         .children

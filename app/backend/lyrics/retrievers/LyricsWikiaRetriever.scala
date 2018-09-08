@@ -2,6 +2,7 @@ package backend.lyrics.retrievers
 
 import java.io.File
 import java.net.URLEncoder
+import java.util.NoSuchElementException
 
 import common.io.InternetTalker
 import common.rich.RichFuture._
@@ -15,7 +16,7 @@ import scala.concurrent.ExecutionContext
 
 private[lyrics] class LyricsWikiaRetriever @Inject()(it: InternetTalker) extends SingleHostHtmlRetriever(it) {
   override val source = "LyricsWikia"
-  override def fromHtml(html: Document, s: Song) = {
+  override private[retrievers] def fromHtml(html: Document, s: Song) = {
     // Make this method total
     val lyrics = html
         .select(".lyricbox")
@@ -25,10 +26,9 @@ private[lyrics] class LyricsWikiaRetriever @Inject()(it: InternetTalker) extends
         .filterNot(_.matches("<div class=\"lyricsbreak\"></div>"))
         .mkString("\n")
     if (lyrics.toLowerCase.contains("we are not licensed to display the full lyrics"))
-      throw new RuntimeException("No actual lyrics (no license)")
-    lyrics
-        .mapTo(Some.apply)
-        .filterNot(_ contains "TrebleClef")
+      LyricParseResult.Error(new NoSuchElementException("No actual lyrics (no license)"))
+    else if (lyrics contains "TrebleClef") LyricParseResult.Instrumental
+    else LyricParseResult.Lyrics(lyrics)
   }
   override protected val hostPrefix: String = "http://lyrics.wikia.com/wiki"
   override def getUrl(s: Song): String =

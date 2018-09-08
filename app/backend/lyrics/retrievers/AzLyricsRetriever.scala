@@ -11,7 +11,7 @@ import scala.collection.JavaConverters._
 private[lyrics] class AzLyricsRetriever @Inject()(it: InternetTalker) extends SingleHostHtmlRetriever(it) {
   private def normalize(s: String): String = s.filter(e => e.isDigit || e.isLetter).toLowerCase
   // AZ lyrics don't support instrumental :\
-  override def fromHtml(html: Document, s: Song): Option[String] = Some(
+  override private[retrievers] def fromHtml(html: Document, s: Song) = LyricParseResult.Lyrics(
     html.select(".main-page .text-center div").asScala
         .filter(_.classNames.isEmpty)
         .single
