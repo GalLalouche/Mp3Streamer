@@ -10,7 +10,7 @@ import scala.concurrent.duration._
 
 class SimpleTypedActorTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   "basic test" in {
-    val $ = new SimpleTypedActor[String, Int] {
+    val $ = new AbstractSimpleTypedActor[String, Int] {
       override protected def apply(m: String) = m.length
     } ! "Foobar"
     Await.result($, 1 second) shouldReturn 6
@@ -23,7 +23,7 @@ class SimpleTypedActorTest extends FreeSpec with OneInstancePerTest with AuxSpec
       sb append i.toString
       semaphore.release()
     }
-    val $ = new SimpleTypedActor[String, Int] {
+    val $ = new AbstractSimpleTypedActor[String, Int] {
       override protected def apply(m: String) = {
         map(m).acquire()
         val $ = m.toInt
@@ -48,7 +48,7 @@ class SimpleTypedActorTest extends FreeSpec with OneInstancePerTest with AuxSpec
   "unique" in {
     val sb = new StringBuilder
     val semaphore = new Semaphore(0)
-    val $ = new SimpleTypedActor[String, Unit] {
+    val $ = new AbstractSimpleTypedActor[String, Unit] {
       override def unique: Boolean = true
       override protected def apply(m: String) = {
         semaphore.acquire()

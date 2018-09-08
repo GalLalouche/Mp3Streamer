@@ -1,6 +1,6 @@
 package decoders
 
-import common.concurrency.SimpleTypedActor
+import common.concurrency.AbstractSimpleTypedActor
 import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
 import javax.inject.Inject
 
@@ -14,7 +14,7 @@ class Mp3Encoder @Inject()(
     @RootDirectory rootDirectory: DirectoryRef,
     encoder: Encoder,
     ec: ExecutionContext,
-) extends SimpleTypedActor[FileRef, FileRef]
+) extends AbstractSimpleTypedActor[FileRef, FileRef]
     with ToApplicativeOps with FutureInstances {
   private implicit val iec: ExecutionContext = ec
   private val outputDir = rootDirectory addSubDir "musicOutput"

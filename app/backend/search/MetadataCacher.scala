@@ -2,7 +2,7 @@ package backend.search
 
 import java.time.{LocalDateTime, ZoneOffset}
 
-import common.concurrency.SimpleTypedActor
+import common.concurrency.AbstractSimpleTypedActor
 import common.ds.{Collectable, IndexedSet}
 import common.io._
 import common.json.Jsonable
@@ -75,7 +75,7 @@ private class MetadataCacher(
     onParsingCompleted()
     DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))
   }
-  private val updatingActor = new SimpleTypedActor[UpdateType, Observable[IndexUpdate]] {
+  private val updatingActor = new AbstractSimpleTypedActor[UpdateType, Observable[IndexUpdate]] {
     override def apply(u: UpdateType): Observable[IndexUpdate] = u.apply()
   }
 
