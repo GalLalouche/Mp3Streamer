@@ -2,23 +2,24 @@ package controllers
 
 import java.time.ZoneOffset
 
-import backend.logging.Logger
 import common.io.DirectoryRef
 import common.json.ToJsonableOps
-import controllers.websockets.WebSocketController
+import controllers.websockets.WebSocketRegistryFactory
 import javax.inject.Inject
 import models.{Album, AlbumFactory, MusicFinder}
 import models.ModelJsonable.AlbumJsonifier
+import play.api.mvc.{InjectedController, WebSocket}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class Recent @Inject()(
-    logger: Logger,
     ec: ExecutionContext,
     albumFactory: AlbumFactory,
     mf: MusicFinder,
-) extends WebSocketController(logger) with ToJsonableOps {
+    webSocketFactory: WebSocketRegistryFactory
+) extends InjectedController with ToJsonableOps {
   private implicit val iec: ExecutionContext = ec
+  private val webSocket = webSocketFactory("Recent")
   // TODO move to a backend class
   private def recentAlbums(amount: Int): Future[Seq[Album]] = Future {
     mf.genreDirs
@@ -36,5 +37,6 @@ class Recent @Inject()(
     recentAlbums(1).map(_.jsonify).map(Ok(_))
   }
 
-  def newDir(dir: DirectoryRef) = broadcast(albumFactory.fromDir(dir).jsonify.toString)
+  def newDir(dir: DirectoryRef) = webSocket.broadcast(albumFactory.fromDir(dir).jsonify.toString)
+  def accept(): WebSocket = webSocket.accept()
 }

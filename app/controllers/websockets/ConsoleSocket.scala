@@ -1,9 +1,13 @@
 package controllers.websockets
 
-import backend.logging.{Logger, StringOutputLogger}
+import backend.logging.StringOutputLogger
 import javax.inject.Inject
+import play.api.mvc.{InjectedController, WebSocket}
 
 /** Sends console messages to the listeners */
-class ConsoleSocket @Inject()(logger: Logger) extends WebSocketController(logger) with StringOutputLogger {
-  override protected def output(what: String): Unit = broadcast(what)
+class ConsoleSocket @Inject()(webSocketFactory: WebSocketRegistryFactory) extends InjectedController
+    with StringOutputLogger {
+  private val webSocket = webSocketFactory("Console")
+  override protected def output(what: String): Unit = webSocket.broadcast(what)
+  def accept(): WebSocket = webSocket.accept()
 }
