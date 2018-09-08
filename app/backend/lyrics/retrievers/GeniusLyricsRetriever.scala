@@ -14,10 +14,26 @@ import scala.collection.JavaConverters._
 import scalaz.std.ListFunctions
 
 private[lyrics] class GeniusLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
-    extends HtmlRetriever
-        with ListFunctions {
-  private def normalize(s: String): String =
-    s.filter(e => e.isDigit || e.isLetter || e.isSpaceChar).toLowerCase.replaceAll(" ", "-")
+    extends HtmlRetriever {
+  import GeniusLyricsRetriever._
+
+  override val parse = singleHostHelper(parser)
+
+  private val urlHelper = new SingleHostUrlHelper(url, parse)
+  override val get = urlHelper.get
+  override val doesUrlMatchHost = urlHelper.doesUrlMatchHost
+}
+
+private object GeniusLyricsRetriever extends ListFunctions {
+  @VisibleForTesting
+  private[retrievers] val url = new SingleHostUrl {
+    private def normalize(s: String): String =
+      s.filter(e => e.isDigit || e.isLetter || e.isSpaceChar).toLowerCase.replaceAll(" ", "-")
+
+    override val hostPrefix: String = "https://genius.com"
+    override def urlFor(s: Song) = s"$hostPrefix/${normalize(s"${s.artistName} ${s.title}")}-lyrics"
+  }
+
   @VisibleForTesting
   private[retrievers] val parser = new SingleHostParser {
     private val sectionHeaderRegexp = Pattern.compile("""^\[.*?\]$""")
@@ -42,14 +58,4 @@ private[lyrics] class GeniusLyricsRetriever @Inject()(singleHostHelper: SingleHo
           .replaceAll("(<br>\n?){2,}", "<br>\n<br>\n")
     )
   }
-  override val parse = singleHostHelper(parser)
-
-  @VisibleForTesting
-  private[retrievers] val url = new SingleHostUrl {
-    override val hostPrefix: String = "https://genius.com"
-    override def urlFor(s: Song) = s"$hostPrefix/${normalize(s"${s.artistName} ${s.title}")}-lyrics"
-  }
-  private val urlHelper = new SingleHostUrlHelper(url, parse)
-  override val get = urlHelper.get
-  override val doesUrlMatchHost = urlHelper.doesUrlMatchHost
 }

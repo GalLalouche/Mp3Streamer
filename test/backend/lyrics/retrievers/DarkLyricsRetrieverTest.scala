@@ -1,19 +1,17 @@
 package backend.lyrics.retrievers
 
-import backend.module.TestModuleConfiguration
 import models.FakeModelFactory
-import net.codingwell.scalaguice.InjectorExtensions._
 
 class DarkLyricsRetrieverTest extends LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
-  private val $ = TestModuleConfiguration().injector.instance[DarkLyricsRetriever]
   "getUrl" in {
-    $.url.urlFor(fakeModelFactory.song(artistName = "foo bar", albumName = "bazz qux", track = 5)) shouldReturn
+    DarkLyricsRetriever.url.urlFor(
+      fakeModelFactory.song(artistName = "foo bar", albumName = "bazz qux", track = 5)) shouldReturn
         "http://www.darklyrics.com/lyrics/foobar/bazzqux.html#5"
   }
   "fromHtml" - {
     def getHtml(trackNumber: Int, html: String = "dark_lyrics.html") =
-      $.parser(getDocument(html), fakeModelFactory.song(track = trackNumber))
+      DarkLyricsRetriever.parser(getDocument(html), fakeModelFactory.song(track = trackNumber))
     "first song" in {
       verifyLyrics(getHtml(1),
         "<i>[Samples from the film \"The Dead\", an adaptation of James Joyce's short story from his book]</i>",

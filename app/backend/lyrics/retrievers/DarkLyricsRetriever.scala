@@ -13,14 +13,37 @@ import scala.concurrent.ExecutionContext
 
 private[lyrics] class DarkLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
     extends HtmlRetriever {
-  private def isInstrumental(html: String) = html.replaceAll("((<br>)|\\n)", "") == "<i>[Instrumental]</i>"
-  private def removeWrappingWhiteSpace(s: String) = s.replaceAll("^\\s+", "").replaceAll("\\s$", "")
-  private def removeEndingBreaklines(ss: Seq[String]) = ss.reverse.dropWhile(_.matches("<br>")).reverse
+  import DarkLyricsRetriever._
 
-  private def normalize(s: String): String = s.toLowerCase.filter(_.isLetter)
+  override val parse = singleHostHelper(parser)
+
+  private val urlHelper = new SingleHostUrlHelper(url, parse)
+  override val get = urlHelper.get
+  override val doesUrlMatchHost = urlHelper.doesUrlMatchHost
+}
+
+private object DarkLyricsRetriever {
+  // TODO reduce code duplication between all retriever debuggers
+  import backend.module.StandaloneModule
+  import com.google.inject.Guice
+  import common.rich.RichFuture._
+  import net.codingwell.scalaguice.InjectorExtensions._
+
+  @VisibleForTesting
+  private[retrievers] val url = new SingleHostUrl {
+    private def normalize(s: String): String = s.toLowerCase.filter(_.isLetter)
+
+    override val hostPrefix: String = "http://www.darklyrics.com/lyrics"
+    override def urlFor(s: Song): String =
+      s"$hostPrefix/${normalize(s.artistName)}/${normalize(s.albumName)}.html#${s.track}"
+  }
 
   @VisibleForTesting
   private[retrievers] val parser = new SingleHostParser {
+    private def isInstrumental(html: String) = html.replaceAll("((<br>)|\\n)", "") == "<i>[Instrumental]</i>"
+    private def removeWrappingWhiteSpace(s: String) = s.replaceAll("^\\s+", "").replaceAll("\\s$", "")
+    private def removeEndingBreaklines(ss: Seq[String]) = ss.reverse.dropWhile(_.matches("<br>")).reverse
+
     override val source: String = "DarkLyrics"
     // HTML is structured for shit, so might as well parse it by hand
     override def apply(html: Document, s: Song) = {
@@ -35,25 +58,6 @@ private[lyrics] class DarkLyricsRetriever @Inject()(singleHostHelper: SingleHost
       if (isInstrumental($)) LyricParseResult.Instrumental else LyricParseResult.Lyrics($)
     }
   }
-  override val parse = singleHostHelper(parser)
-
-  @VisibleForTesting
-  private[retrievers] val url = new SingleHostUrl {
-    override val hostPrefix: String = "http://www.darklyrics.com/lyrics"
-    override def urlFor(s: Song): String =
-      s"$hostPrefix/${normalize(s.artistName)}/${normalize(s.albumName)}.html#${s.track}"
-  }
-  private val urlHelper = new SingleHostUrlHelper(url, parse)
-  override val get = urlHelper.get
-  override val doesUrlMatchHost = urlHelper.doesUrlMatchHost
-}
-
-private[lyrics] object DarkLyricsRetriever {
-  // TODO reduce code duplication between all retriever debuggers
-  import backend.module.StandaloneModule
-  import common.rich.RichFuture._
-  import com.google.inject.Guice
-  import net.codingwell.scalaguice.InjectorExtensions._
 
   def main(args: Array[String]): Unit = {
     val injector = Guice createInjector StandaloneModule

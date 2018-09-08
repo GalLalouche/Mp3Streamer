@@ -16,8 +16,23 @@ import scala.concurrent.ExecutionContext
 private[lyrics] class LyricsWikiaRetriever @Inject()(
     singleHostHelper: SingleHostParsingHelper,
 ) extends HtmlRetriever {
+  import LyricsWikiaRetriever._
 
-  private def normalize(s: String): String = s.replaceAll(" ", "_").mapTo(URLEncoder.encode(_, "UTF-8"))
+  override val parse = singleHostHelper(parser)
+
+  private val urlHelper = new SingleHostUrlHelper(url, parse)
+  override val get = urlHelper.get
+  override val doesUrlMatchHost = urlHelper.doesUrlMatchHost
+}
+
+private object LyricsWikiaRetriever {
+  @VisibleForTesting
+  private[retrievers] val url = new SingleHostUrl {
+    private def normalize(s: String): String = s.replaceAll(" ", "_").mapTo(URLEncoder.encode(_, "UTF-8"))
+
+    override val hostPrefix: String = "http://lyrics.wikia.com/wiki"
+    override def urlFor(s: Song): String = s"$hostPrefix/${normalize(s.artistName)}:${normalize(s.title)}"
+  }
 
   @VisibleForTesting
   private[retrievers] val parser = new SingleHostParser {
@@ -36,19 +51,7 @@ private[lyrics] class LyricsWikiaRetriever @Inject()(
       else LyricParseResult.Lyrics(lyrics)
     }
   }
-  override val parse = singleHostHelper(parser)
 
-  @VisibleForTesting
-  private[retrievers] val url = new SingleHostUrl {
-    override val hostPrefix: String = "http://lyrics.wikia.com/wiki"
-    override def urlFor(s: Song): String = s"$hostPrefix/${normalize(s.artistName)}:${normalize(s.title)}"
-  }
-  private val urlHelper = new SingleHostUrlHelper(url, parse)
-  override val get = urlHelper.get
-  override val doesUrlMatchHost = urlHelper.doesUrlMatchHost
-}
-
-private object LyricsWikiaRetriever {
   import backend.module.StandaloneModule
   import com.google.inject.Guice
   import common.rich.RichFuture._

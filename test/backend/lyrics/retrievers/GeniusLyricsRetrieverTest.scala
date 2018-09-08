@@ -1,19 +1,17 @@
 package backend.lyrics.retrievers
 
-import backend.module.TestModuleConfiguration
 import models.FakeModelFactory
-import net.codingwell.scalaguice.InjectorExtensions._
 
 class GeniusLyricsRetrieverTest extends LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
-  private val $ = TestModuleConfiguration().injector.instance[GeniusLyricsRetriever]
   "getUrl" in {
-    $.url.urlFor(fakeModelFactory.song(artistName = "Guns n' Roses", title = "Paradise City")) shouldReturn
+    GeniusLyricsRetriever.url.urlFor(
+      fakeModelFactory.song(artistName = "Guns n' Roses", title = "Paradise City")) shouldReturn
         "https://genius.com/guns-n-roses-paradise-city-lyrics"
   }
   "fromHtml" - {
     "has lyrics" in {
-      verifyLyrics($.parser(getDocument("genius_lyrics.html"), fakeModelFactory.song()),
+      verifyLyrics(GeniusLyricsRetriever.parser(getDocument("genius_lyrics.html"), fakeModelFactory.song()),
         "Take me down to the Paradise City",
         "Baby")
     }
