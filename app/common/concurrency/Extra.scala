@@ -6,3 +6,9 @@ import scala.concurrent.Future
 trait Extra extends SimpleActor[Unit] {
   final def !(): Future[Unit] = {this.!(())}
 }
+
+object Extra {
+  def apply(f: => Any): Extra = new Extra with AbstractSimpleTypedActor[Unit, Unit] {
+    override protected def apply(m: Unit) = f
+  }
+}
