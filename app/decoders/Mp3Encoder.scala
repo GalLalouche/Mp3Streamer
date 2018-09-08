@@ -1,6 +1,6 @@
 package decoders
 
-import common.concurrency.AbstractSimpleTypedActor
+import common.concurrency.SimpleTypedActor
 import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
 import javax.inject.Inject
 
@@ -14,11 +14,13 @@ class Mp3Encoder @Inject()(
     @RootDirectory rootDirectory: DirectoryRef,
     encoder: Encoder,
     ec: ExecutionContext,
-) extends AbstractSimpleTypedActor[FileRef, FileRef]
+) extends SimpleTypedActor[FileRef, FileRef]
     with ToApplicativeOps with FutureInstances {
   private implicit val iec: ExecutionContext = ec
   private val outputDir = rootDirectory addSubDir "musicOutput"
   private val cleaner = new FolderCleaner(outputDir)
+  // unique=true Ensures that repeating decoding requests will be ignored.
+  private val actor = SimpleTypedActor(encodeFileIfNeeded, unique = true)
 
   private def encodeFileIfNeeded(f: FileRef): FileRef = if (f.extension.toLowerCase != "mp3") encode(f) else f
 
@@ -32,16 +34,12 @@ class Mp3Encoder @Inject()(
     })
   }
 
-  // Ensures that repeating decoding requests will be ignored.
-  override protected val unique = true
-
   /**
    * Encode the file to an mp3 format.
    * The file will only be created if its matching output doesn't already exist.
    * @return The (possibly new) mp3 file created; The file will be created in the outputDir, and will
    *         be the absolute path of the file (with no space) with an "mp3" extension.
    */
-  override def apply(m: FileRef): FileRef = encodeFileIfNeeded(m)
-  override def !(m: => FileRef): Future[FileRef] = super.!(m) <* cleaner.!()
+  override def !(m: => FileRef): Future[FileRef] = actor.!(m) <* cleaner.!()
 }
 

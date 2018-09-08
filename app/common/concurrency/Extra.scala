@@ -8,7 +8,5 @@ trait Extra extends SimpleActor[Unit] {
 }
 
 object Extra {
-  def apply(f: => Any): Extra = new Extra with AbstractSimpleTypedActor[Unit, Unit] {
-    override protected def apply(m: Unit) = f
-  }
+  def apply(f: => Any): Extra = new SimpleTypedActorImpl[Unit, Unit](_ => f, false) with Extra
 }

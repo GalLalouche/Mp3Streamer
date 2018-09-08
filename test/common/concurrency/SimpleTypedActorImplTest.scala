@@ -7,12 +7,11 @@ import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import scala.concurrent._
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
-class SimpleTypedActorTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
+class SimpleTypedActorImplTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   "basic test" in {
-    val $ = new AbstractSimpleTypedActor[String, Int] {
-      override protected def apply(m: String) = m.length
-    } ! "Foobar"
+    val $ = SimpleTypedActor[String, Int](_.length) ! "Foobar"
     Await.result($, 1 second) shouldReturn 6
   }
   "process requests in FIFO" in {
@@ -23,14 +22,12 @@ class SimpleTypedActorTest extends FreeSpec with OneInstancePerTest with AuxSpec
       sb append i.toString
       semaphore.release()
     }
-    val $ = new AbstractSimpleTypedActor[String, Int] {
-      override protected def apply(m: String) = {
-        map(m).acquire()
-        val $ = m.toInt
-        appendToSb($)
-        $
-      }
-    }
+    val $ = SimpleTypedActor[String, Int](m => {
+      map(m).acquire()
+      val $ = m.toInt
+      appendToSb($)
+      $
+    })
 
     // 1 is requested before 2
     $ ! "1"
@@ -48,13 +45,10 @@ class SimpleTypedActorTest extends FreeSpec with OneInstancePerTest with AuxSpec
   "unique" in {
     val sb = new StringBuilder
     val semaphore = new Semaphore(0)
-    val $ = new AbstractSimpleTypedActor[String, Unit] {
-      override def unique: Boolean = true
-      override protected def apply(m: String) = {
-        semaphore.acquire()
-        sb.append(m)
-      }
-    }
+    val $ = SimpleTypedActor[String, Unit](m => {
+      semaphore.acquire()
+      sb.append(m)
+    }, unique = true)
     val f = $ ! "foo"
     val g = $ ! "foo"
     f should be theSameInstanceAs g
