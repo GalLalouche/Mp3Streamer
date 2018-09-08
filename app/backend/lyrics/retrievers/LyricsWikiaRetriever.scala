@@ -5,8 +5,6 @@ import java.net.URLEncoder
 import java.util.NoSuchElementException
 
 import com.google.common.annotations.VisibleForTesting
-import common.io.InternetTalker
-import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import javax.inject.Inject
@@ -16,17 +14,13 @@ import org.jsoup.nodes.Document
 import scala.concurrent.ExecutionContext
 
 private[lyrics] class LyricsWikiaRetriever @Inject()(
-    it: InternetTalker,
     singleHostHelper: SingleHostParsingHelper,
-) extends SingleHostHtmlRetriever(it) {
-  override protected val hostPrefix: String = "http://lyrics.wikia.com/wiki"
-  override def getUrl(s: Song): String =
-    s"$hostPrefix/${normalize(s.artistName)}:${normalize(s.title)}"
+) extends HtmlRetriever {
 
   private def normalize(s: String): String = s.replaceAll(" ", "_").mapTo(URLEncoder.encode(_, "UTF-8"))
 
   @VisibleForTesting
-  private[retrievers] val parser = new SingleHostUrlHelper {
+  private[retrievers] val parser = new SingleHostParser {
     override val source = "LyricsWikia"
     override def apply(d: Document, s: Song): LyricParseResult = {
       val lyrics = d
@@ -43,11 +37,21 @@ private[lyrics] class LyricsWikiaRetriever @Inject()(
     }
   }
   override val parse = singleHostHelper(parser)
+
+  @VisibleForTesting
+  private[retrievers] val url = new SingleHostUrl {
+    override val hostPrefix: String = "http://lyrics.wikia.com/wiki"
+    override def urlFor(s: Song): String = s"$hostPrefix/${normalize(s.artistName)}:${normalize(s.title)}"
+  }
+  private val urlHelper = new SingleHostUrlHelper(url, parse)
+  override val get = urlHelper.get
+  override val doesUrlMatchHost = urlHelper.doesUrlMatchHost
 }
 
 private object LyricsWikiaRetriever {
   import backend.module.StandaloneModule
   import com.google.inject.Guice
+  import common.rich.RichFuture._
   import net.codingwell.scalaguice.InjectorExtensions._
 
   def main(args: Array[String]): Unit = {
@@ -56,7 +60,7 @@ private object LyricsWikiaRetriever {
     val $ = injector.instance[LyricsWikiaRetriever]
     val file: File = new File("""D:\Media\Music\Metal\Black Metal\Watain\2010 Lawless Darkness\06 - Lawless Darkness.mp3""")
     println(file.exists())
-    println($(Song(file)).get)
+    println($.apply(Song(file)).get)
     println("Done")
   }
 }

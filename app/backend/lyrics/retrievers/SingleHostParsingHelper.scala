@@ -17,7 +17,7 @@ private class SingleHostParsingHelper @Inject()(it: InternetTalker)
     extends ToMoreFoldableOps with OptionInstances {
   private implicit val iec: ExecutionContext = it
 
-  def apply(p: SingleHostUrlHelper)(url: Url, s: Song): Future[Lyrics] = it.downloadDocument(url)
+  def apply(p: SingleHostParser)(url: Url, s: Song): Future[Lyrics] = it.downloadDocument(url)
       .map(p(_, s))
       .map {
         case LyricParseResult.Instrumental => Instrumental(p.source)

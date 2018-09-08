@@ -8,7 +8,7 @@ class AzLyricsRetrieverTest extends LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
   private val $ = TestModuleConfiguration().injector.instance[AzLyricsRetriever]
   "getUrl" in {
-    $.getUrl(fakeModelFactory.song(artistName = "Guns n' Roses", title = "Paradise City")) shouldReturn
+    $.url.urlFor(fakeModelFactory.song(artistName = "Guns n' Roses", title = "Paradise City")) shouldReturn
         "https://www.azlyrics.com/lyrics/gunsnroses/paradisecity.html"
   }
   "fromHtml" - {

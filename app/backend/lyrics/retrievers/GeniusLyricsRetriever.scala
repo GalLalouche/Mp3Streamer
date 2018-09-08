@@ -3,7 +3,6 @@ package backend.lyrics.retrievers
 import java.util.regex.Pattern
 
 import com.google.common.annotations.VisibleForTesting
-import common.io.InternetTalker
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
 import javax.inject.Inject
@@ -14,15 +13,13 @@ import scala.collection.JavaConverters._
 
 import scalaz.std.ListFunctions
 
-private[lyrics] class GeniusLyricsRetriever @Inject()(
-    it: InternetTalker,
-    singleHostHelper: SingleHostParsingHelper,
-) extends SingleHostHtmlRetriever(it)
-    with ListFunctions {
+private[lyrics] class GeniusLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
+    extends HtmlRetriever
+        with ListFunctions {
   private def normalize(s: String): String =
     s.filter(e => e.isDigit || e.isLetter || e.isSpaceChar).toLowerCase.replaceAll(" ", "-")
   @VisibleForTesting
-  private[retrievers] val parser = new SingleHostUrlHelper {
+  private[retrievers] val parser = new SingleHostParser {
     private val sectionHeaderRegexp = Pattern.compile("""^\[.*?\]$""")
     override val source = "GeniusLyrics"
     // TODO handle instrumental
@@ -46,6 +43,13 @@ private[lyrics] class GeniusLyricsRetriever @Inject()(
     )
   }
   override val parse = singleHostHelper(parser)
-  override protected val hostPrefix: String = "https://genius.com"
-  override def getUrl(s: Song) = s"$hostPrefix/${normalize(s"${s.artistName} ${s.title}")}-lyrics"
+
+  @VisibleForTesting
+  private[retrievers] val url = new SingleHostUrl {
+    override val hostPrefix: String = "https://genius.com"
+    override def urlFor(s: Song) = s"$hostPrefix/${normalize(s"${s.artistName} ${s.title}")}-lyrics"
+  }
+  private val urlHelper = new SingleHostUrlHelper(url, parse)
+  override val get = urlHelper.get
+  override val doesUrlMatchHost = urlHelper.doesUrlMatchHost
 }

@@ -19,8 +19,9 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
   private class FakeLyricsRetriever(
       songsToFind: Song, urlToMatch: Url, instrumentalText: String) extends HtmlRetriever {
     var numberOfTimesInvoked = 0 // Mockito spy is throwing NPE for some reason
+    override def get = ???
     override def apply(s: Song) = parse(urlToMatch, s)
-    override def doesUrlMatchHost(url: Url) = {
+    override def doesUrlMatchHost = url => {
       numberOfTimesInvoked += 1
       urlToMatch == url
     }

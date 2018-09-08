@@ -31,7 +31,7 @@ private[lyrics] class CompositeHtmlRetriever(
 
   private val htmlRetrievers = retrievers.asInstanceOf[Seq[HtmlRetriever]]
 
-  override def doesUrlMatchHost(url: Url): Boolean = htmlRetrievers.exists(_ doesUrlMatchHost url)
+  override def doesUrlMatchHost = url => htmlRetrievers.exists(_ doesUrlMatchHost url)
   override val parse = (url: Url, s: Song) => htmlRetrievers
       .find(_ doesUrlMatchHost url)
       .mapHeadOrElse(_.parse(url, s),

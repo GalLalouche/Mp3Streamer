@@ -3,7 +3,6 @@ package backend.lyrics.retrievers
 import backend.logging.Logger
 import backend.lyrics.Lyrics
 import javax.inject.Inject
-import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -19,8 +18,8 @@ private[lyrics] class CompositeLyricsRetriever @Inject()(
   private implicit val iec: ExecutionContext = ec
 
   // TODO better errors when no parser is found
-  override def apply(s: Song): Future[Lyrics] =
-    retrievers.foldLeft[Future[Lyrics]](retrievers.head.apply(s))((x, y) => x.handleError(e => {
+  override val get = s =>
+    retrievers.foldLeft[Future[Lyrics]](retrievers.head(s))((x, y) => x.handleError(e => {
       logger.error("Failed to parse lyrics: ", e)
       y.apply(s)
     }))

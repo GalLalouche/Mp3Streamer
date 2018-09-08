@@ -9,7 +9,7 @@ class LyricsWikiaRetrieverTest extends LyricsSpec {
   private val $ = TestModuleConfiguration().injector.instance[LyricsWikiaRetriever]
 
   "getUrl" in {
-    $.getUrl(fakeModelFactory.song(artistName = "Foo Bar", title = "Bazz Qux")) shouldReturn
+    $.url.urlFor(fakeModelFactory.song(artistName = "Foo Bar", title = "Bazz Qux")) shouldReturn
         "http://lyrics.wikia.com/wiki/Foo_Bar:Bazz_Qux"
   }
   "lyrics" - {

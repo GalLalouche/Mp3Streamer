@@ -8,7 +8,7 @@ class DarkLyricsRetrieverTest extends LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
   private val $ = TestModuleConfiguration().injector.instance[DarkLyricsRetriever]
   "getUrl" in {
-    $.getUrl(fakeModelFactory.song(artistName = "foo bar", albumName = "bazz qux", track = 5)) shouldReturn
+    $.url.urlFor(fakeModelFactory.song(artistName = "foo bar", albumName = "bazz qux", track = 5)) shouldReturn
         "http://www.darklyrics.com/lyrics/foobar/bazzqux.html#5"
   }
   "fromHtml" - {

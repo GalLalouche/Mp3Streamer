@@ -7,7 +7,7 @@ import models.Song
 import scala.concurrent.Future
 
 private[lyrics] trait HtmlRetriever extends LyricsRetriever {
-  def doesUrlMatchHost(url: Url): Boolean
   // For point free style
+  def doesUrlMatchHost: Url => Boolean
   def parse: (Url, Song) => Future[Lyrics]
 }
