@@ -13,7 +13,7 @@ class AzLyricsRetrieverTest extends LyricsSpec {
   }
   "fromHtml" - {
     "has lyrics" in {
-      verifyLyrics($.fromHtml(getDocument("az_lyrics.html"), fakeModelFactory.song()),
+      verifyLyrics($.parser(getDocument("az_lyrics.html"), fakeModelFactory.song()),
         "Ascending in sectarian rapture",
         "To pierce the eye ov JHWH")
     }

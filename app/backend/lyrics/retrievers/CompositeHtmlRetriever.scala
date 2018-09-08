@@ -2,7 +2,6 @@ package backend.lyrics.retrievers
 
 import backend.Url
 import backend.logging.Logger
-import backend.lyrics.Lyrics
 import common.rich.func.ToMoreFoldableOps
 import javax.inject.Inject
 import models.Song
@@ -33,7 +32,7 @@ private[lyrics] class CompositeHtmlRetriever(
   private val htmlRetrievers = retrievers.asInstanceOf[Seq[HtmlRetriever]]
 
   override def doesUrlMatchHost(url: Url): Boolean = htmlRetrievers.exists(_ doesUrlMatchHost url)
-  override def parse(url: Url, s: Song): Future[Lyrics] = htmlRetrievers
+  override val parse = (url: Url, s: Song) => htmlRetrievers
       .find(_ doesUrlMatchHost url)
       .mapHeadOrElse(_.parse(url, s),
         Future failed new NoSuchElementException(s"No retriever could parse host <${url.host}>"))

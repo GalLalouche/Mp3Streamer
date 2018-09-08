@@ -13,7 +13,7 @@ class GeniusLyricsRetrieverTest extends LyricsSpec {
   }
   "fromHtml" - {
     "has lyrics" in {
-      verifyLyrics($.fromHtml(getDocument("genius_lyrics.html"), fakeModelFactory.song()),
+      verifyLyrics($.parser(getDocument("genius_lyrics.html"), fakeModelFactory.song()),
         "Take me down to the Paradise City",
         "Baby")
     }

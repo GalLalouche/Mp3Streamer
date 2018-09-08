@@ -13,7 +13,7 @@ class DarkLyricsRetrieverTest extends LyricsSpec {
   }
   "fromHtml" - {
     def getHtml(trackNumber: Int, html: String = "dark_lyrics.html") =
-      $.fromHtml(getDocument(html), fakeModelFactory.song(track = trackNumber))
+      $.parser(getDocument(html), fakeModelFactory.song(track = trackNumber))
     "first song" in {
       verifyLyrics(getHtml(1),
         "<i>[Samples from the film \"The Dead\", an adaptation of James Joyce's short story from his book]</i>",

@@ -14,15 +14,15 @@ class LyricsWikiaRetrieverTest extends LyricsSpec {
   }
   "lyrics" - {
     "has lyrics" in {
-      verifyLyrics($.fromHtml(getDocument("lyrics_wikia_lyrics.html"), fakeModelFactory.song()),
+      verifyLyrics($.parser(getDocument("lyrics_wikia_lyrics.html"), fakeModelFactory.song()),
         "Daddy's flown across the ocean",
         "All in all it was all just bricks in the wall")
     }
     "instrumental" in {
-      $.fromHtml(getDocument("lyrics_wikia_instrumental.html"), fakeModelFactory.song()) should be an instrumental
+      $.parser(getDocument("lyrics_wikia_instrumental.html"), fakeModelFactory.song()) should be an instrumental
     }
     "No license returns error" in {
-      verifyError($.fromHtml(getDocument("lyrics_wikia_no_license.html"), fakeModelFactory.song()))
+      verifyError($.parser(getDocument("lyrics_wikia_no_license.html"), fakeModelFactory.song()))
     }
   }
 }

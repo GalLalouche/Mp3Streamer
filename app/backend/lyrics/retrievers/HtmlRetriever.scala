@@ -8,5 +8,6 @@ import scala.concurrent.Future
 
 private[lyrics] trait HtmlRetriever extends LyricsRetriever {
   def doesUrlMatchHost(url: Url): Boolean
-  def parse(url: Url, s: Song): Future[Lyrics]
+  // For point free style
+  def parse: (Url, Song) => Future[Lyrics]
 }
