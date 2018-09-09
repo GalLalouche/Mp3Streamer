@@ -40,7 +40,7 @@ private class WebSocketRegistryImpl(logger: Logger, name: String) extends WebSoc
 
   override def broadcast(msg: String) = actors.foreach(_ ! MessageToClient(msg))
   override def closeConnections() = actors.foreach(_ ! PoisonPill)
-  override def accept = WebSocket.accept[String, String] {_ =>
+  override def accept() = WebSocket.accept[String, String] {_ =>
     //config.logger.verbose(s"${this.simpleName} received a new connection")
     connectionsSubject.onNext(())
     ActorFlow.actorRef(out => Props(new SocketActor(out)))
