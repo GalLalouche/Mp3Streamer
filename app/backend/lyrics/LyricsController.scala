@@ -3,7 +3,7 @@ package backend.lyrics
 import backend.Url
 import common.rich.RichT._
 import common.rich.func.ToMoreMonadErrorOps
-import controllers.ControllerUtils
+import controllers.UrlPathUtils
 import javax.inject.Inject
 import play.api.mvc.{InjectedController, Result}
 
@@ -17,13 +17,13 @@ class LyricsController @Inject()(ec: ExecutionContext, backend: LyricsCache) ext
   // TODO replace with Writable typeclass?
   private def toString(l: Lyrics): String = l.html + "<br><br>Source: " + l.source
   def get(path: String) = Action.async {
-    backend.find(ControllerUtils parseSong path)
+    backend.find(UrlPathUtils parseSong path)
         .map(toString)
         .orElse("Failed to get lyrics :(")
         .map(Ok(_))
   }
   def push(path: String) = Action.async {request =>
-    val song = ControllerUtils parseSong path
+    val song = UrlPathUtils parseSong path
     val url = request.body.asText.map(Url).get
     backend.parse(url, song)
         .map(toString)
@@ -32,9 +32,9 @@ class LyricsController @Inject()(ec: ExecutionContext, backend: LyricsCache) ext
   }
   private def fromInstrumental(i: Instrumental): Result = Ok(i |> toString)
   def setInstrumentalSong(path: String) = Action.async {
-    backend setInstrumentalSong ControllerUtils.parseSong(path) map fromInstrumental
+    backend setInstrumentalSong UrlPathUtils.parseSong(path) map fromInstrumental
   }
   def setInstrumentalArtist(path: String) = Action.async {
-    backend setInstrumentalArtist ControllerUtils.parseSong(path) map fromInstrumental
+    backend setInstrumentalArtist UrlPathUtils.parseSong(path) map fromInstrumental
   }
 }

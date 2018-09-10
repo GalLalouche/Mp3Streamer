@@ -10,7 +10,7 @@ import common.RichJson._
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.ToMoreMonadErrorOps
-import controllers.ControllerUtils
+import controllers.UrlPathUtils
 import javax.inject.Inject
 import models.Song
 import play.api.libs.json.{JsObject, Json, JsString}
@@ -59,7 +59,7 @@ class ExternalController @Inject()(ec: ExecutionContext, external: MbExternalLin
     f.map(toJson).handleErrorFlat(e => Json.obj("error" -> e.getMessage))
 
   def get(path: String) = Action.async {
-    getLinks(ControllerUtils parseSong path)
+    getLinks(UrlPathUtils parseSong path)
   }
 
   def getLinks(song: Song): Future[Result] = {
@@ -72,13 +72,13 @@ class ExternalController @Inject()(ec: ExecutionContext, external: MbExternalLin
     f.map(Ok(_))
   }
   def refresh(path: String) = Action.async {
-    val song = ControllerUtils parseSong path
+    val song = UrlPathUtils parseSong path
     external.delete(song) >> getLinks(song)
   }
   def updateRecon(path: String) = Action.async {request =>
     val json = request.body.asJson.get
     def getReconId(s: String) = json ostr s map ReconID
-    val song: Song = ControllerUtils parseSong path
+    val song: Song = UrlPathUtils parseSong path
     external.updateRecon(song, artistReconId = getReconId("artist"), albumReconId = getReconId("album"))
         .>>(getLinks(song))
   }

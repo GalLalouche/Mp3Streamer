@@ -74,7 +74,7 @@ class Player @Inject()(
   }
 
   private def songsInAlbum(path: String): Seq[Song] =
-    ControllerUtils.parseFile(path) |> IODirectory.apply |> albumFactory.fromDir |> Album.songs.get
+    UrlPathUtils.parseFile(path) |> IODirectory.apply |> albumFactory.fromDir |> Album.songs.get
   def album(path: String) = Action {
     encodeIfChrome(songsInAlbum(path)) _
   }
@@ -85,10 +85,10 @@ class Player @Inject()(
   }
 
   def song(path: String) = Action {
-    encodeIfChrome(group(ControllerUtils parseSong path)) _
+    encodeIfChrome(group(UrlPathUtils parseSong path)) _
   }
 
   def nextSong(path: String) = Action {
-    encodeIfChrome(songSelectorState.followingSong(ControllerUtils.parseSong(path)).get) _
+    encodeIfChrome(songSelectorState.followingSong(UrlPathUtils.parseSong(path)).get) _
   }
 }
