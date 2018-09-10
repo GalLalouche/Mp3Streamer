@@ -19,7 +19,7 @@ class Streamer @Inject()(
   private implicit val iec: ExecutionContext = ec
   def download(s: String) = Action.async {request =>
     val file: IOFile = UrlPathUtils.parseSong(s).file
-    val needsEncoding = ControllerUtils.encodeMp3(request)
+    val needsEncoding = ControllerUtils.shouldEncodeMp3(request)
     val codec = if (needsEncoding || file.extension == "mp3") "audio/mpeg" else "audio/flac"
     (if (needsEncoding) encoder ! file else Future.successful(file))
         .map(downloader(_, codec, request).withHeaders("Codec" -> codec))

@@ -18,6 +18,6 @@ object ControllerUtils {
       SongJsonifier.parse(obj + ("file" -> JsString(UrlPathUtils.decode(obj str "file"))))
   })
 
-  def encodeMp3(request: Request[_]): Boolean =
+  def shouldEncodeMp3(request: Request[_]): Boolean =
     request.headers("User-Agent").contains("Chrome") || request.headers.get("Referer").exists(_ endsWith "mp3")
 }
