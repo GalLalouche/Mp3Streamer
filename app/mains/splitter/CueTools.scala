@@ -2,8 +2,8 @@ package mains.splitter
 
 import java.io.File
 
-import common.rich.path.RichFile._
 import common.rich.path.{Directory, RichFileUtils}
+import common.rich.path.RichFile._
 
 import scala.sys.process.Process
 

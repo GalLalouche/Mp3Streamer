@@ -5,8 +5,8 @@ import models.ArbitraryModels
 import org.scalacheck.Gen
 
 class PlaylistQueueTest extends JsonableSpecs {
-  import models.ArbitraryModels._
   import models.ModelJsonable.SongJsonifier
+
   private implicit val arbPlaylistQueue: Gen[PlaylistQueue] = for {
     numberOfSongs <- Gen.choose(1, 100)
     songs <- Gen.listOfN(numberOfSongs, ArbitraryModels.arbSong)
