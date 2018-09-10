@@ -13,7 +13,7 @@ class SearchController @Inject()(state: SearchState) extends InjectedController 
   private implicit val albumJsonableWithDiscNumber: OJsonable[Album] =
     JsonableOverrider.oJsonify[Album]((a, original) => {
       if (a.songs.forall(_.discNumber.isDefined)) // All songs need to have a disc number (ignores bonus disc only)
-        original + ("discNumbers" -> a.songs.map(_.discNumber.get).distinct.jsonify)
+        original + ("discNumbers" -> a.songs.map(_.discNumber.get).distinct.sorted.jsonify)
       else
         original
     })(ModelJsonable.AlbumJsonifier)
