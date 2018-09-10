@@ -47,7 +47,8 @@ class ExternalController @Inject()(ec: ExecutionContext, external: MbExternalLin
     e.filterAndSortBy(_.host.canonize, hosts)
         // Filter non-new Wikidata, because nobody cares about those.
         .filter(e => e.host.canonize != Wikidata || e.isNew)
-        // Unmark new Wikipedia links, because MusicBrainz only uses Wikidata now
+        // Unmark new Wikipedia links, because MusicBrainz only uses Wikidata now.
+        // Using mapIf messes up the link's type inferrence due to existential types.
         .map(e => if (e.host.canonize == Wikipedia) e.unmark else e)
         .map(toJson) |> Json.obj
 

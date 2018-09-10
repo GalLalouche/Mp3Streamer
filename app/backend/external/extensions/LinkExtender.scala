@@ -2,8 +2,7 @@ package backend.external.extensions
 
 import backend.external.{Host, MarkedLink, MarkedLinks}
 import backend.recon.Reconcilable
-import common.TuplePLenses.tuple2Second
-import common.rich.func.MoreSeqInstances
+import common.rich.func.{MoreSeqInstances, TuplePLenses}
 import monocle.std.Tuple2Optics
 import monocle.syntax.{ApplySyntax, FieldsSyntax}
 
@@ -24,7 +23,7 @@ private trait LinkExtender[R <: Reconcilable]
   protected def appendSameSuffix(e: MarkedLink[R], suffixes: String*): Seq[LinkExtension[R]] =
     append(e, suffixes.fpair: _*)
   protected def append(e: MarkedLink[R], suffixes: (String, String)*): Seq[LinkExtension[R]] =
-    suffixes.map(tuple2Second modify e.link.+/).map((LinkExtension.apply[R] _).tupled)
+    suffixes.map(TuplePLenses.tuple2Second.modify(e.link.+/)).map((LinkExtension.apply[R] _).tupled)
   // For point free style.
   def extend: (R, MarkedLinks[R]) => Seq[LinkExtension[R]]
 }

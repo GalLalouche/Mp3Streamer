@@ -3,8 +3,8 @@ package backend.storage
 import java.time.{Clock, LocalDateTime}
 
 import backend.RichTime._
-import common.TuplePLenses.tuple2Second
 import common.rich.RichT._
+import common.rich.func.TuplePLenses
 import common.storage.Storage
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -23,7 +23,8 @@ class FreshnessStorage[Key, Value](storage: Storage[Key, (Value, Option[LocalDat
   def freshness(k: Key): Future[Option[Option[LocalDateTime]]] = storage load k map (_ map (_._2))
   def storeWithoutTimestamp(k: Key, v: Value): Future[Unit] = storage.store(k, v -> None)
   override def store(k: Key, v: Value) = storage.store(k, v |> now)
-  override def storeMultiple(kvs: Seq[(Key, Value)]) = storage storeMultiple kvs.map(tuple2Second modify now)
+  override def storeMultiple(kvs: Seq[(Key, Value)]) =
+    storage storeMultiple kvs.map(TuplePLenses.tuple2Second modify now)
   override def load(k: Key) = storage.load(k) |> toValue
   override def forceStore(k: Key, v: Value) = storage.forceStore(k, v |> now) |> toValue
   // Also updates the timestamp to now

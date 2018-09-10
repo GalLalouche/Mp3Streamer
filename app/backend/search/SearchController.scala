@@ -8,14 +8,13 @@ import models.{Album, ModelJsonable}
 import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
 import play.api.libs.json.Json
 import play.api.mvc.InjectedController
+import common.rich.RichT._
 
 class SearchController @Inject()(state: SearchState) extends InjectedController with ToJsonableOps {
   private implicit val albumJsonableWithDiscNumber: OJsonable[Album] =
     JsonableOverrider.oJsonify[Album]((a, original) => {
-      if (a.songs.forall(_.discNumber.isDefined)) // All songs need to have a disc number (ignores bonus disc only)
-        original + ("discNumbers" -> a.songs.map(_.discNumber.get).distinct.sorted.jsonify)
-      else
-        original
+      original.mapIf(a.songs.forall(_.discNumber.isDefined)) // All songs need to have a disc number (ignores bonus disc only)
+          .to(_ + ("discNumbers" -> a.songs.map(_.discNumber.get).distinct.sorted.jsonify))
     })(ModelJsonable.AlbumJsonifier)
 
   def search(path: String) = Action {

@@ -2,6 +2,7 @@ package decoders
 
 import common.concurrency.SimpleTypedActor
 import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
+import common.rich.RichT._
 import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -22,7 +23,7 @@ class Mp3Encoder @Inject()(
   // unique=true Ensures that repeating decoding requests will be ignored.
   private val actor = SimpleTypedActor(encodeFileIfNeeded, unique = true)
 
-  private def encodeFileIfNeeded(f: FileRef): FileRef = if (f.extension.toLowerCase != "mp3") encode(f) else f
+  private def encodeFileIfNeeded(f: FileRef) = f.mapIf(_.extension.toLowerCase != "mp3").to(encode(_))
 
   private def encode(file: FileRef): FileRef = {
     require(file.exists)

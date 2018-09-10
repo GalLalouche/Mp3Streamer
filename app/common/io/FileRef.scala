@@ -33,6 +33,7 @@ trait FileRef extends PathRef {
   def readAll: String
   final def lines: Seq[String] = {
     val content = readAll
+    // split on an empty string returns an array with a single element, "".
     if (content.isEmpty) Nil else content split "\n"
   }
   def inputStream: InputStream
