@@ -4,7 +4,8 @@ import java.util.logging.{Level, Logger => JLogger}
 
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
-import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage, Reconcilable, ReconcilerCacher, ReconID, ReconStorage}
+import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage, Reconcilable, ReconcilerCacher, ReconID, ReconStorage, StoredReconResult}
+import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import common.io.JsonableSaver
 import common.rich.RichObservable._
 import common.rich.func.ToMoreFunctorOps
@@ -35,7 +36,7 @@ private class NewAlbums @Inject()(
 
   private val retriever = newAlbumsRetrieverFactory(
     new ReconcilerCacher(artistReconStorage, mbArtistReconciler),
-    new IOMusicFinder { // TODO override in mbdule
+    new IOMusicFinder { // TODO override in module
       override val subDirNames: List[String] = List("Rock", "Metal")
     })
 
@@ -47,9 +48,11 @@ private class NewAlbums @Inject()(
     logger.debug(s"Ignoring $r")
     reconStorage.load(r).map {existing =>
       assert(existing.isDefined)
-      val existingData = existing.get
-      assert(existingData._1.isDefined)
-      reconStorage.forceStore(r, existingData._1 -> true)
+      existing.get match {
+        case NoRecon => throw new AssertionError()
+        case recon@HasReconResult(_, _) =>
+          reconStorage.forceStore(r, recon.ignored)
+      }
     }
   }
 
@@ -69,7 +72,8 @@ private class NewAlbums @Inject()(
   }
   def ignoreAlbum(a: Album): Future[Unit] = ignore(a, albumReconStorage) >> removeAlbum(a)
 
-  private def store(a: NewAlbum, r: ReconID): Unit = albumReconStorage.store(a.toAlbum, Some(r) -> false)
+  private def store(a: NewAlbum, r: ReconID): Unit =
+    albumReconStorage.store(a.toAlbum, StoredReconResult.unignored(r))
   def fetchAndSave: Future[Traversable[NewAlbum]] =
     retriever.findNewAlbums
         .doOnEach((store _).tupled)

@@ -1,5 +1,6 @@
 package backend.recon
 
+import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
 import javax.inject.{Inject, Singleton}
 import slick.ast.{BaseTypedType, ScalaBaseType}
@@ -9,16 +10,16 @@ import scala.concurrent.{ExecutionContext, Future}
 
 // TODO replace with composition
 sealed abstract class SlickReconStorage[R <: Reconcilable](ec: ExecutionContext, dbP: DbProvider)
-    extends SlickStorageTemplateFromConf[R, (Option[ReconID], Boolean)](ec, dbP) with ReconStorage[R] {
+    extends SlickStorageTemplateFromConf[R, StoredReconResult](ec, dbP) with ReconStorage[R] {
   private implicit val iec: ExecutionContext = ec
   import profile.api._
 
-  protected implicit val localDateTimeColumn: JdbcType[ReconID] =
+  protected implicit val reconIdColumn: JdbcType[ReconID] =
     MappedColumnType.base[ReconID, String](_.id, ReconID)
   override protected type Id = String
   override protected implicit def btt: BaseTypedType[String] = ScalaBaseType.stringType
   override def isIgnored(k: R): Future[IgnoredReconResult] = load(k)
-      .map(_.map(_._2))
+      .map(_.map(_.isIgnored))
       .map(IgnoredReconResult.from)
 
   override protected def extractId(r: R) = r.normalize
@@ -40,10 +41,13 @@ class ArtistReconStorage @Inject()(
   }
   override protected type EntityTable = Rows
   override protected val tableQuery = TableQuery[EntityTable]
-  override protected def toEntity(a: Artist, v: (Option[ReconID], Boolean)) =
-    (a.normalize, v._1, v._2)
+  override protected def toEntity(a: Artist, v: StoredReconResult) = v match {
+    case NoRecon => (a.normalize, None, true)
+    case StoredReconResult.HasReconResult(reconId, isIgnored) => (a.normalize, Some(reconId), isIgnored)
+  }
   override protected def toId(et: EntityTable) = et.name
-  override protected def extractValue(e: Entity) = e._2 -> e._3
+  override protected def extractValue(e: Entity) =
+    e._2.mapHeadOrElse(HasReconResult(_, e._3), NoRecon)
 }
 
 @Singleton
@@ -65,10 +69,16 @@ class AlbumReconStorage @Inject()(
   }
   override protected type EntityTable = Rows
   override protected val tableQuery = TableQuery[EntityTable]
-  override protected def toEntity(a: Album, v: (Option[ReconID], Boolean)) =
-    (a.normalize, a.artist.normalize, v._1, v._2)
+  override protected def toEntity(a: Album, v: StoredReconResult) = {
+    val albumKey = a.normalize
+    val artistKey = a.artist.normalize
+    v match {
+      case NoRecon => (albumKey, artistKey, None, true)
+      case HasReconResult(reconId, isIgnored) => (albumKey, artistKey, Some(reconId), isIgnored)
+    }
+  }
   override protected def toId(et: EntityTable) = et.album
-  override protected def extractValue(e: Entity) = e._3 -> e._4
+  override protected def extractValue(e: Entity) = e._3.mapHeadOrElse(HasReconResult(_, e._4), NoRecon)
 
   /** Delete all recons for albums for that artist */
   def deleteAllRecons(a: Artist): Future[Traversable[(String, Option[ReconID], Boolean)]] = {

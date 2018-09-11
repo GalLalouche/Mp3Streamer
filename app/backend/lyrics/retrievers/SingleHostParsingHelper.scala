@@ -19,12 +19,11 @@ private class SingleHostParsingHelper @Inject()(it: InternetTalker, logger: Logg
   private implicit val iec: ExecutionContext = it
 
   def apply(p: SingleHostParser)(url: Url, s: Song): Future[Lyrics] = it.downloadDocument(url)
-      .map(p(_, s))
-      .map {
+      .map(p(_, s) match {
         case LyricParseResult.Instrumental => Instrumental(p.source)
         case LyricParseResult.Lyrics(l) => HtmlLyrics(p.source, l)
         case LyricParseResult.Error(e) => throw e
-      }
+      })
       .filterWithMessage({
         case HtmlLyrics(_, h) =>
           h.matches("[\\s<br>/]*").isFalse

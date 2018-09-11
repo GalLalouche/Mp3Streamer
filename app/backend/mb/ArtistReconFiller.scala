@@ -2,6 +2,7 @@ package backend.mb
 
 import backend.module.StandaloneModule
 import backend.recon.{Artist, ArtistReconStorage, ReconcilerCacher, ReconID}
+import backend.recon.StoredReconResult.NoRecon
 import com.google.inject.Guice
 import common.io.{IODirectory, IOSystem}
 import common.rich.RichFuture._
@@ -35,8 +36,11 @@ private object ArtistReconFiller
         .map(_.artistName |> Artist.apply)
         .toSet
     for (artist <- artists) {
-      val recon: Future[Option[ReconID]] =
-        reconciler.apply(artist).map(_._1) orElse Some(ReconID("Failed to find an online match for " + artist))
+      val recon: Future[String] =
+        reconciler.apply(artist).map({
+          case NoRecon => s"No ReconID for <$artist>"
+          case backend.recon.StoredReconResult.HasReconResult(reconId, _) => reconId.id
+        })
       println(recon.get)
     }
   }

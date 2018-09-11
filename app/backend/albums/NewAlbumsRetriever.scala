@@ -5,12 +5,12 @@ import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.{Album, AlbumReconStorage, Artist, IgnoredReconResult, ReconcilerCacher, ReconID}
 import backend.recon.Reconcilable.SongExtractor
+import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import com.google.inject.assistedinject.Assisted
 import common.io.IODirectory
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
-import common.rich.primitives.RichBoolean._
 import javax.inject.Inject
 import models.{IOMusicFinder, Song}
 import rx.lang.scala.Observable
@@ -18,6 +18,7 @@ import rx.lang.scala.Observable
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
+import scalaz.{-\/, \/-}
 import scalaz.std.FutureInstances
 
 private class NewAlbumsRetriever @Inject()(
@@ -51,12 +52,10 @@ private class NewAlbumsRetriever @Inject()(
   }
 
   private def findNewAlbums(cache: ArtistLastYearCache, artist: Artist): Future[Seq[(NewAlbum, ReconID)]] = {
-    // TODO replace filter with Message with a sum type for better error messages
-    reconciler(artist)
-        .filterWithMessage(_._2.isFalse, "Ignored")
-        .filterWithMessage(_._1.isDefined, s"Unreconcilable")
-        .map(_._1.get)
-        .toTry.get match { // Ensures a single thread waits for the semaphore in NewAlbumsConfig
+    reconciler(artist).mapEitherMessage {
+      case NoRecon => -\/("No recon")
+      case HasReconResult(reconId, isIgnored) => if (isIgnored) -\/("Ignored") else \/-(reconId)
+    }.toTry.get match { // Ensures a single thread waits for the semaphore in NewAlbumsConfig
       case Success(reconId) =>
         reconId.mapTo(meta.getAlbumsMetadata)
             .flatMap(removeIgnoredAlbums(artist, _))

@@ -9,6 +9,7 @@ import backend.external.recons.{AlbumLinkRetrievers, ArtistLinkRetrievers, LinkR
 import backend.mb.{AlbumReconcilerFactory, MbArtistReconciler}
 import backend.recon._
 import backend.recon.Reconcilable._
+import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.storage.{FreshnessStorage, RefreshableStorage}
 import common.rich.RichT._
 import common.rich.func.{ToMoreFoldableOps, ToMoreMonadErrorOps}
@@ -17,6 +18,7 @@ import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import scalaz.{-\/, \/-}
 import scalaz.std.{FutureInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToFunctorOps}
 
@@ -42,10 +44,13 @@ private class MbExternalLinksProvider @Inject()(
   private implicit val iec: ExecutionContext = ec
 
   private val artistReconciler = new ReconcilerCacher(artistReconStorage, mbArtistReconciler)
-  private val mbAlbumReconciler = mbAlbumReconcilerFactory.apply(artistReconciler(_).map(_._1))
+  private val mbAlbumReconciler = mbAlbumReconcilerFactory.apply(artistReconciler(_).map {
+    case NoRecon => None
+    case HasReconResult(reconId, _) => Some(reconId)
+  })
 
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](
-      reconciler: Retriever[R, (Option[ReconID], Boolean)],
+      reconciler: Retriever[R, StoredReconResult],
       storage: ExternalStorage[R],
       provider: Retriever[ReconID, BaseLinks[R]],
       expanders: Traversable[ExternalLinkExpander[R]],
@@ -53,10 +58,14 @@ private class MbExternalLinksProvider @Inject()(
   ): Retriever[R, TimestampedLinks[R]] = new RefreshableStorage[R, MarkedLinks[R]](
     new FreshnessStorage(storage, clock),
     new ExternalPipe[R](
-      r => reconciler(r)
-          .filterWithMessage(_._1.isDefined, s"Couldn't reconcile <$r>")
-          .map(_._1.get),
-      provider, standaloneReconcilers, expanders),
+      r => reconciler(r).mapEitherMessage({
+        case NoRecon => -\/(s"Couldn't reconcile <$r>")
+        case HasReconResult(reconId, _) => \/-(reconId)
+      }),
+      provider,
+      standaloneReconcilers,
+      expanders,
+    ),
     Duration ofDays 28,
     clock,
   ).mapTo(new MbExternalLinksProvider.TimeStamper(_))
@@ -91,7 +100,10 @@ private class MbExternalLinksProvider @Inject()(
   private def optionalFuture[T](o: Option[T])(f: T => Future[_]): Future[_] =
     o.mapHeadOrElse(f, Future successful Unit)
   private def update[R <: Reconcilable](key: R, recon: Option[ReconID], storage: ReconStorage[R]): Future[_] =
-    optionalFuture(recon)(reconId => storage.mapStore(key, e => Some(reconId) -> e._2, Some(reconId) -> false))
+    optionalFuture(recon)(reconId => storage.mapStore(key, {
+      case NoRecon => StoredReconResult.unignored(reconId)
+      case HasReconResult(_, isIgnored) => HasReconResult(reconId, isIgnored)
+    }, default = StoredReconResult.unignored(reconId)))
 
   def delete(song: Song): Future[_] =
     artistExternalStorage.delete(song.artist) >> albumExternalStorage.delete(song.release)
