@@ -42,7 +42,7 @@ private class MbExternalLinksProvider @Inject()(
   private implicit val iec: ExecutionContext = ec
 
   private val artistReconciler = new ReconcilerCacher(artistReconStorage, mbArtistReconciler)
-  private val mbAlbumReconciler = mbAlbumReconcilerFactory.apply(artistReconciler(_).map(_._1.get))
+  private val mbAlbumReconciler = mbAlbumReconcilerFactory.apply(artistReconciler(_).map(_._1))
 
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](
       reconciler: Retriever[R, (Option[ReconID], Boolean)],
