@@ -13,7 +13,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.{FutureInstances, OptionInstances}
 
-// TODO replace with composition
 private class SingleHostParsingHelper @Inject()(it: InternetTalker, logger: Logger)
     extends ToMoreFoldableOps with OptionInstances
         with ToMoreMonadErrorOps with FutureInstances {
