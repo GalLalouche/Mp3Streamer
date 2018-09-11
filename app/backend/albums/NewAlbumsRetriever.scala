@@ -3,7 +3,7 @@ package backend.albums
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
-import backend.recon.{Album, AlbumReconStorage, Artist, ReconcilerCacher, ReconID}
+import backend.recon.{Album, AlbumReconStorage, Artist, IgnoredReconResult, ReconcilerCacher, ReconID}
 import backend.recon.Reconcilable.SongExtractor
 import com.google.inject.assistedinject.Assisted
 import common.io.IODirectory
@@ -18,7 +18,6 @@ import rx.lang.scala.Observable
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
-import scalaz.Kleisli
 import scalaz.std.FutureInstances
 
 private class NewAlbumsRetriever @Inject()(
@@ -38,11 +37,9 @@ private class NewAlbumsRetriever @Inject()(
   private def removeIgnoredAlbums(artist: Artist, albums: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
     def toAlbum(album: MbAlbumMetadata): Album =
       Album(title = album.title, year = album.releaseDate.getYear, artist = artist)
-    val isNotIgnored = {
-      def isIgnored(album: MbAlbumMetadata): Future[Boolean] =
-        toAlbum(album) |> albumReconStorage.isIgnored |> (_.map(_ getOrElse false))
-      Kleisli(isIgnored).map(_.isFalse)
-    }
+    val isNotIgnored: MbAlbumMetadata => Future[Boolean] = metadata =>
+      albumReconStorage.isIgnored(toAlbum(metadata))
+          .map(_ != IgnoredReconResult.Ignored)
     albums filterTraverse isNotIgnored
   }
 
