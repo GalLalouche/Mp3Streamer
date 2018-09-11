@@ -2,7 +2,7 @@ package backend.module
 
 import java.time.Clock
 
-import backend.logging.{ConsoleLogger, FilteringLogger, Logger}
+import backend.logging.{ConsoleLogger, FilteringLogger, Logger, LoggingModules}
 import backend.storage.DbProvider
 import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
 import models.{IOMusicFinder, MusicFinder}
@@ -13,10 +13,7 @@ import scala.concurrent.ExecutionContext
 
 object NonPersistentModule extends ScalaModule {
   override def configure(): Unit = {
-    install(AllModules)
-
     bind[Clock] toInstance Clock.systemDefaultZone
-    bind[Logger] toInstance new ConsoleLogger with FilteringLogger
     bind[DirectoryRef].annotatedWith[RootDirectory] toInstance new MemoryRoot
     bind[MusicFinder] toInstance new IOMusicFinder
     bind[DbProvider] toInstance new DbProvider {
@@ -28,5 +25,6 @@ object NonPersistentModule extends ScalaModule {
 
     install(RealInternetTalkerModule.daemonic)
     install(AllModules)
+    install(LoggingModules.ConsoleWithFiltering)
   }
 }

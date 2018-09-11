@@ -6,7 +6,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import backend.Retriever
 import backend.module.{AllModules, RealModule}
-import backend.logging.{ConsoleLogger, FilteringLogger, Logger}
+import backend.logging.{ConsoleLogger, FilteringLogger, Logger, LoggingModules}
 import common.ModuleUtils
 import common.io.InternetTalker
 import common.io.WSAliases.WSClient
@@ -25,7 +25,7 @@ private object LocalNewAlbumsModule extends ScalaModule with ModuleUtils {
   private val semaphoreReleasingContext: ExecutionContext = CurrentThreadExecutionContext
   override def configure(): Unit = {
     // TODO Extract to LoggerModule since this config is used by StandaloneModule as well
-    bind[Logger] toInstance new ConsoleLogger with FilteringLogger
+    install(LoggingModules.ConsoleWithFiltering)
     bind[ExecutionContext] toInstance semaphoreReleasingContext
     bind[InternetTalker] toInstance new InternetTalker {
       override def execute(runnable: Runnable) = semaphoreReleasingContext.execute(runnable)
