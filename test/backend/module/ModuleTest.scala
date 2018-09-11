@@ -12,7 +12,7 @@ class ModuleTest extends ConfigurationModuleTestSpec {
   allRequiredBindingsSatisfied("ControllerUtils", Modules.combine(new controllers.Module, new ScalaModule {
     override def configure() = {
       // Execution context is provided by Play at runtime.
-      bind[ExecutionContext] toInstance new SingleThreadedJobQueue().asExecutionContext
+      bind[ExecutionContext] toInstance new SingleThreadedJobQueue("DummyExecutionContext").asExecutionContext
     }
   }))
 }

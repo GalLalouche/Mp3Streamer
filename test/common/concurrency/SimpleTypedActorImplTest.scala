@@ -11,7 +11,7 @@ import scala.language.postfixOps
 
 class SimpleTypedActorImplTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   "basic test" in {
-    val $ = SimpleTypedActor[String, Int](_.length) ! "Foobar"
+    val $ = SimpleTypedActor[String, Int]("MyName", _.length) ! "Foobar"
     Await.result($, 1 second) shouldReturn 6
   }
   "process requests in FIFO" in {
@@ -22,7 +22,7 @@ class SimpleTypedActorImplTest extends FreeSpec with OneInstancePerTest with Aux
       sb append i.toString
       semaphore.release()
     }
-    val $ = SimpleTypedActor[String, Int](m => {
+    val $ = SimpleTypedActor[String, Int]("MyName", m => {
       map(m).acquire()
       val $ = m.toInt
       appendToSb($)
@@ -45,7 +45,7 @@ class SimpleTypedActorImplTest extends FreeSpec with OneInstancePerTest with Aux
   "unique" in {
     val sb = new StringBuilder
     val semaphore = new Semaphore(0)
-    val $ = SimpleTypedActor[String, Unit](m => {
+    val $ = SimpleTypedActor[String, Unit]("MyName", m => {
       semaphore.acquire()
       sb.append(m)
     }, unique = true)

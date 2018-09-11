@@ -6,7 +6,7 @@ import common.rich.RichT._
 
 import scala.concurrent.ExecutionContext
 
-class SingleThreadedJobQueue {
+class SingleThreadedJobQueue(queueName: String) {
   lazy val asExecutionContext: ExecutionContext = new ExecutionContext {
     override def execute(runnable: Runnable): Unit = queue submit runnable
     override def reportFailure(cause: Throwable): Unit = ???
@@ -14,7 +14,7 @@ class SingleThreadedJobQueue {
 
   private val queue = Executors.newFixedThreadPool(
     1, (r: Runnable) => {
-      val $ = new Thread(r, s"${this.simpleName}'s actor thread")
+      val $ = new Thread(r, s"$queueName's single threaded job queue")
       $ setDaemon true
       $
     })

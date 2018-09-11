@@ -21,7 +21,7 @@ class Mp3Encoder @Inject()(
   private val outputDir = rootDirectory addSubDir "musicOutput"
   private val cleaner = new FolderCleaner(outputDir)
   // unique=true Ensures that repeating decoding requests will be ignored.
-  private val actor = SimpleTypedActor(encodeFileIfNeeded, unique = true)
+  private val actor = SimpleTypedActor("Mp3Encoder", encodeFileIfNeeded, unique = true)
 
   private def encodeFileIfNeeded(f: FileRef) = f.mapIf(_.extension.toLowerCase != "mp3").to(encode(_))
 

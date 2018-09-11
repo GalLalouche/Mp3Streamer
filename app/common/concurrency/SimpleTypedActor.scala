@@ -12,6 +12,6 @@ trait SimpleTypedActor[Msg, Result] extends ToMoreFunctorOps with FutureInstance
 }
 
 object SimpleTypedActor {
-  def apply[Msg, Result](f: Msg => Result, unique: Boolean = false): SimpleTypedActor[Msg, Result] =
-    new SimpleTypedActorImpl(f, unique)
+  def apply[Msg, Result](name: String, f: Msg => Result, unique: Boolean = false): SimpleTypedActor[Msg, Result] =
+    new SimpleTypedActorImpl(name, f, unique)
 }

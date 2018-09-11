@@ -75,7 +75,8 @@ private class MetadataCacher(
     onParsingCompleted()
     DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))
   }
-  private val updatingActor = SimpleTypedActor.apply[UpdateType, Observable[IndexUpdate]](_.apply())
+  private val updatingActor =
+    SimpleTypedActor.apply[UpdateType, Observable[IndexUpdate]]("MetadataCacher", _.apply())
 
   private def update(u: UpdateType): Observable[IndexUpdate] = Observable.from(updatingActor ! u).flatten
 

@@ -11,9 +11,9 @@ import scala.concurrent.Future
 class SongSelectorState @Inject()(songSelectorProvider: Provider[SongSelector]) extends SongSelector
     with Extra {
   private var state = songSelectorProvider.get()
-  private val extra = Extra {
+  private val extra = Extra("SongSelectorState", {
     state = songSelectorProvider.get()
-  }
+  })
   override def !(m: => Unit): Future[Unit] = extra.!()
   override def randomSong: Song = state.randomSong
   override def followingSong(song: Song): Option[Song] = state.followingSong(song)
