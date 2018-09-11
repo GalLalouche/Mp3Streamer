@@ -3,23 +3,22 @@ package backend.albums
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
+import backend.module.StandaloneModule
 import backend.recon.{Album, AlbumReconStorage, Artist, IgnoredReconResult, ReconcilerCacher, ReconID}
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import com.google.inject.assistedinject.Assisted
 import common.io.IODirectory
-import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
+import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 import javax.inject.Inject
 import models.{IOMusicFinder, Song}
 import rx.lang.scala.Observable
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
 import scalaz.{-\/, \/-}
-import scalaz.std.FutureInstances
+import scalaz.std.{FutureInstances, OptionInstances}
 
 private class NewAlbumsRetriever @Inject()(
     albumReconStorage: AlbumReconStorage,
@@ -29,7 +28,8 @@ private class NewAlbumsRetriever @Inject()(
     @Assisted mf: IOMusicFinder,
     @Assisted reconciler: ReconcilerCacher[Artist],
 ) extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
-    with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances {
+    with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances
+    with ToMoreFoldableOps with OptionInstances {
   private implicit val iec: ExecutionContext = ec
   private val log = logger.verbose _
   private def getExistingAlbums: Seq[Album] = mf.genreDirs
@@ -46,31 +46,38 @@ private class NewAlbumsRetriever @Inject()(
 
   def findNewAlbums: Observable[(NewAlbum, ReconID)] = {
     val cache = ArtistLastYearCache from getExistingAlbums
-    Observable.from(cache.artists)
-        .flatMap(Observable from findNewAlbums(cache, _))
-        .flatMap(Observable from _)
+    for {
+      artist <- Observable from cache.artists
+      reconIdOpt <- Observable from getReconId(artist)
+      reconId <- reconIdOpt.mapHeadOrElse(Observable.just(_), Observable.empty)
+      result <- findNewAlbums(cache, artist, reconId)
+    } yield result
   }
 
-  private def findNewAlbums(cache: ArtistLastYearCache, artist: Artist): Future[Seq[(NewAlbum, ReconID)]] = {
+  private def getReconId(artist: Artist): Future[Option[ReconID]] =
     reconciler(artist).mapEitherMessage {
       case NoRecon => -\/("No recon")
       case HasReconResult(reconId, isIgnored) => if (isIgnored) -\/("Ignored") else \/-(reconId)
-    }.toTry.get match { // Ensures a single thread waits for the semaphore in NewAlbumsConfig
-      case Success(reconId) =>
-        reconId.mapTo(meta.getAlbumsMetadata)
-            .flatMap(removeIgnoredAlbums(artist, _))
-            .map(cache.filterNewAlbums(artist, _))
-            .listen(albums => {
-              log(s"Finished working on $artist; found ${if (albums.isEmpty) "no" else albums.size} new albums.")
-            })
-            .listenError {
-              case e: FilteredException => log(s"$artist was filtered, reason: ${e.getMessage}")
-              case e: Throwable => e.printStackTrace()
-            }.orElse(Nil)
-      case Failure(e) =>
-        logger.warn(s"Did not fetch albums for artist<${artist.name}>; reason: ${e.getMessage}")
-        Future successful Nil
-    }
+    }.foldEither(_.fold(e => {
+      logger.info(s"Did not fetch albums for artist<${artist.name}>; reason: ${e.getMessage}")
+      None
+    }, Some.apply))
+
+  // TODO move ReconID to NewAlbum or another class to avoid tuples.
+  private def findNewAlbums(cache: ArtistLastYearCache, artist: Artist, reconId: ReconID): Observable[(NewAlbum, ReconID)] = {
+    logger.debug(s"Fetching new albums for <$artist>")
+    val f: Future[Seq[(NewAlbum, ReconID)]] = reconId.mapTo(meta.getAlbumsMetadata)
+        .flatMap(removeIgnoredAlbums(artist, _))
+        .map(cache.filterNewAlbums(artist, _))
+        .listen(albums => {
+          log(s"Finished working on $artist; found ${if (albums.isEmpty) "no" else albums.size} new albums.")
+        })
+        .listenError {
+          case e: FilteredException => log(s"$artist was filtered, reason: ${e.getMessage}")
+          case e: Throwable => e.printStackTrace()
+        }.orElse(Nil)
+    // TODO move to common/rich/somewhere
+    Observable.from(f).flatMap(Observable.from(_))
   }
 }
 
@@ -87,7 +94,7 @@ private object NewAlbumsRetriever {
       .map(Song(_).release)
 
   def main(args: Array[String]): Unit = {
-    val injector = Guice createInjector LocalNewAlbumsModule
+    val injector = Guice createInjector StandaloneModule
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val mf = injector.instance[IOMusicFinder]
 
@@ -107,7 +114,12 @@ private object NewAlbumsRetriever {
     val reconciler = new ReconcilerCacher(
       injector.instance[ArtistReconStorage], injector.instance[MbArtistReconciler])
     val $ = injector.instance[NewAlbumsRetrieverFactory].apply(reconciler, mf)
-    $.findNewAlbums(cacheForArtist(artist, mf), artist).map(_.map(_._1)).get.log()
+    for {
+      reconId <- Observable from $.getReconId(artist)
+      album <- $.findNewAlbums(cacheForArtist(artist, mf), artist, reconId.get).take(1)
+    } yield {
+      album._1.log()
+    }
     Thread.getAllStackTraces.keySet.asScala.filterNot(_.isDaemon).foreach(println)
   }
 }

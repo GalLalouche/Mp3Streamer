@@ -2,7 +2,7 @@ package backend.albums
 
 import java.util.logging.{Level, Logger => JLogger}
 
-import backend.logging.Logger
+import backend.logging.{FilteringLogger, Logger, LoggingLevel}
 import backend.mb.MbArtistReconciler
 import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage, Reconcilable, ReconcilerCacher, ReconID, ReconStorage, StoredReconResult}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
@@ -76,7 +76,7 @@ private class NewAlbums @Inject()(
     albumReconStorage.store(a.toAlbum, StoredReconResult.unignored(r))
   def fetchAndSave: Future[Traversable[NewAlbum]] =
     retriever.findNewAlbums
-        .doOnEach((store _).tupled)
+        .doOnNext((store _).tupled)
         .map(_._1)
         .toFuture[Traversable]
         .listen(jsonableSaver save _)
@@ -87,9 +87,11 @@ object NewAlbums {
   import common.rich.RichFuture._
   import net.codingwell.scalaguice.InjectorExtensions._
 
-  JLogger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   def main(args: Array[String]): Unit = {
+    JLogger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
     val injector = Guice createInjector LocalNewAlbumsModule
+    val logger = injector.instance[FilteringLogger]
+    logger.setCurrentLevel(LoggingLevel.Verbose)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     injector.instance[NewAlbums].fetchAndSave.get
     println("Done!")
