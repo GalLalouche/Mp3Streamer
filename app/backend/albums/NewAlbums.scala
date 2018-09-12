@@ -72,12 +72,12 @@ private class NewAlbums @Inject()(
   }
   def ignoreAlbum(a: Album): Future[Unit] = ignore(a, albumReconStorage) >> removeAlbum(a)
 
-  private def store(a: NewAlbum, r: ReconID): Unit =
-    albumReconStorage.store(a.toAlbum, StoredReconResult.unignored(r))
+  private def store(newAlbumRecon: NewAlbumRecon): Unit = albumReconStorage.store(
+    newAlbumRecon.newAlbum.toAlbum, StoredReconResult.unignored(newAlbumRecon.reconId))
   def fetchAndSave: Future[Traversable[NewAlbum]] =
     retriever.findNewAlbums
-        .doOnNext((store _).tupled)
-        .map(_._1)
+        .doOnNext(store)
+        .map(_.newAlbum)
         .toFuture[Traversable]
         .listen(jsonableSaver save _)
 }

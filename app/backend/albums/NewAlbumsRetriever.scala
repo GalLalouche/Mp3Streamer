@@ -44,7 +44,7 @@ private class NewAlbumsRetriever @Inject()(
     albums filterTraverse isNotIgnored
   }
 
-  def findNewAlbums: Observable[(NewAlbum, ReconID)] = {
+  def findNewAlbums: Observable[NewAlbumRecon] = {
     val cache = ArtistLastYearCache from getExistingAlbums
     for {
       artist <- Observable from cache.artists
@@ -63,10 +63,10 @@ private class NewAlbumsRetriever @Inject()(
       None
     }, Some.apply))
 
-  // TODO move ReconID to NewAlbum or another class to avoid tuples.
-  private def findNewAlbums(cache: ArtistLastYearCache, artist: Artist, reconId: ReconID): Observable[(NewAlbum, ReconID)] = {
+  private def findNewAlbums(
+      cache: ArtistLastYearCache, artist: Artist, reconId: ReconID): Observable[NewAlbumRecon] = {
     logger.debug(s"Fetching new albums for <$artist>")
-    val f: Future[Seq[(NewAlbum, ReconID)]] = reconId.mapTo(meta.getAlbumsMetadata)
+    val f: Future[Seq[NewAlbumRecon]] = reconId.mapTo(meta.getAlbumsMetadata)
         .flatMap(removeIgnoredAlbums(artist, _))
         .map(cache.filterNewAlbums(artist, _))
         .listen(albums => {
@@ -118,7 +118,7 @@ private object NewAlbumsRetriever {
       reconId <- Observable from $.getReconId(artist)
       album <- $.findNewAlbums(cacheForArtist(artist, mf), artist, reconId.get).take(1)
     } yield {
-      album._1.log()
+      album.newAlbum.log()
     }
     Thread.getAllStackTraces.keySet.asScala.filterNot(_.isDaemon).foreach(println)
   }

@@ -12,10 +12,10 @@ private class ArtistLastYearCache private(lastReleaseYear: Map[Artist, Year]) {
 
   def artists: Iterable[Artist] = lastReleaseYear.keys
 
-  def filterNewAlbums(artist: Artist, albums: Seq[MbAlbumMetadata]): Seq[(NewAlbum, ReconID)] = albums
+  def filterNewAlbums(artist: Artist, albums: Seq[MbAlbumMetadata]): Seq[NewAlbumRecon] = albums
       .filter(_.isOut)
       .filter(_.releaseDate |> Year.from |> (isLaterThanLastRelease(artist, _)))
-      .map(_.toTuple(NewAlbum.from(artist, _), _.reconId))
+      .map(e => NewAlbumRecon(NewAlbum.from(artist, e), e.reconId))
   private def isLaterThanLastRelease(artist: Artist, y: Year) =
     lastReleaseYear(canonize(artist)) < y
 }
