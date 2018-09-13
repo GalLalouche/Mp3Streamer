@@ -7,7 +7,6 @@ import backend.module.StandaloneModule
 import backend.recon.{Album, AlbumReconStorage, Artist, IgnoredReconResult, ReconcilerCacher, ReconID}
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
-import com.google.inject.assistedinject.Assisted
 import common.io.IODirectory
 import common.rich.RichObservable._
 import common.rich.RichT._
@@ -27,7 +26,7 @@ private class NewAlbumsRetriever @Inject()(
     ec: ExecutionContext,
     meta: MbArtistReconciler,
     mf: IOMusicFinder,
-    @Assisted reconciler: ReconcilerCacher[Artist],
+    reconciler: ReconcilerCacher[Artist],
 ) extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
     with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances
     with ToMoreFoldableOps with OptionInstances {
@@ -84,7 +83,6 @@ private class NewAlbumsRetriever @Inject()(
 }
 
 private object NewAlbumsRetriever {
-  import backend.recon.ArtistReconStorage
   import com.google.inject.Guice
   import net.codingwell.scalaguice.InjectorExtensions._
 
@@ -113,9 +111,7 @@ private object NewAlbumsRetriever {
 
       Seq.apply(lastAlbum) |> ArtistLastYearCache.from
     }
-    val reconciler = new ReconcilerCacher(
-      injector.instance[ArtistReconStorage], injector.instance[MbArtistReconciler])
-    val $ = injector.instance[NewAlbumsRetrieverFactory].apply(reconciler)
+    val $ = injector.instance[NewAlbumsRetriever]
     for {
       reconId <- Observable from $.getReconId(artist)
       album <- $.findNewAlbums(cacheForArtist(artist), artist, reconId.get).take(1)

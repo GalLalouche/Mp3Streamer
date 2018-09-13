@@ -51,7 +51,6 @@ private object LocalNewAlbumsModule extends ScalaModule with ModuleUtils {
     bind[IOMusicFinder] toInstance new IOMusicFinder {
       override val subDirNames: List[String] = List("Rock", "Metal")
     }
-    install[NewAlbumsRetrieverFactory]
 
     install(LoggingModules.ConsoleWithFiltering)
   }

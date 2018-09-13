@@ -5,12 +5,12 @@ import java.util.logging.{Level, Logger => JLogger}
 import backend.logging.{FilteringLogger, Logger, LoggingLevel}
 import backend.mb.MbArtistReconciler
 import backend.module.RealModule
-import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage, Reconcilable, ReconcilerCacher, ReconStorage, StoredReconResult}
+import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage, Reconcilable, ReconStorage, StoredReconResult}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import com.google.inject.util.Modules
 import common.io.JsonableSaver
-import common.rich.RichObservable._
 import common.rich.func.ToMoreFunctorOps
+import common.rich.RichObservable._
 import javax.inject.Inject
 import mains.fixer.StringFixer
 import monocle.function.IndexFunctions
@@ -23,7 +23,7 @@ import scalaz.syntax.ToBindOps
 
 private class NewAlbums @Inject()(
     ec: ExecutionContext,
-    newAlbumsRetrieverFactory: NewAlbumsRetrieverFactory,
+    retriever: NewAlbumsRetriever,
     logger: Logger,
     artistReconStorage: ArtistReconStorage,
     albumReconStorage: AlbumReconStorage,
@@ -34,11 +34,6 @@ private class NewAlbums @Inject()(
   import NewAlbum.NewAlbumJsonable
 
   private implicit val iec: ExecutionContext = ec
-
-  // TODO remove factory
-  private val retriever = newAlbumsRetrieverFactory(
-    new ReconcilerCacher(artistReconStorage, mbArtistReconciler),
-  )
 
   private def save(m: Map[Artist, Seq[NewAlbum]]): Unit = {
     jsonableSaver save m.flatMap(_._2)

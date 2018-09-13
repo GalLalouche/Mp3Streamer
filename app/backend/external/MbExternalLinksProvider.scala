@@ -6,7 +6,7 @@ import backend.Retriever
 import backend.external.expansions.{AlbumLinkExpanders, ArtistLinkExpanders, CompositeSameHostExpander, ExternalLinkExpander}
 import backend.external.extensions._
 import backend.external.recons.{AlbumLinkRetrievers, ArtistLinkRetrievers, LinkRetrievers}
-import backend.mb.{AlbumReconcilerFactory, MbArtistReconciler}
+import backend.mb.AlbumReconcilerFactory
 import backend.recon._
 import backend.recon.Reconcilable._
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
@@ -34,16 +34,15 @@ private class MbExternalLinksProvider @Inject()(
     compositeSameHostExpander: CompositeSameHostExpander,
     artistLinkExtractor: ArtistLinkExtractor,
     albumLinkExtractor: AlbumLinkExtractor,
-    mbArtistReconciler: MbArtistReconciler,
     albumReconStorage: AlbumReconStorage,
     albumExternalStorage: AlbumExternalStorage,
     extender: CompositeExtender,
     mbAlbumReconcilerFactory: AlbumReconcilerFactory,
+    artistReconciler: ReconcilerCacher[Artist],
 ) extends ToMoreFoldableOps with ToFunctorOps with ToBindOps with ToMoreMonadErrorOps
     with FutureInstances with OptionInstances {
   private implicit val iec: ExecutionContext = ec
 
-  private val artistReconciler = new ReconcilerCacher(artistReconStorage, mbArtistReconciler)
   private val mbAlbumReconciler = mbAlbumReconcilerFactory.apply(artistReconciler(_).map {
     case NoRecon => None
     case HasReconResult(reconId, _) => Some(reconId)
