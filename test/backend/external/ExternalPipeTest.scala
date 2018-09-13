@@ -32,7 +32,8 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     override def potentialHostsExtracted: Traversable[Host] = links.map(_.host)
     override def expand = Future.successful(links).const
   }
-  private def constReconciler(host: Host, link: BaseLink[Album]) = new LinkRetriever[Album](host) {
+  private def constReconciler(_host: Host, link: BaseLink[Album]) = new LinkRetriever[Album] {
+    override val host = _host
     override def apply(v1: Album) = Future successful Some(link)
   }
   private val newLinkExpander = constExpander(expandedLink)
@@ -54,7 +55,8 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
       override val potentialHostsExtracted: Traversable[Host] = List(h)
       override def expand = failed.const
     }
-    def failedReconciler(host: Host) = new LinkRetriever[Album](host) {
+    def failedReconciler(_host: Host) = new LinkRetriever[Album] {
+      override val host = _host
       override def apply(a: Album) = failed
     }
     "Should not invoke on existing hosts" in {

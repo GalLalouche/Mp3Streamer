@@ -17,11 +17,13 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToBindOps
 
-@VisibleForTesting
-private class LastFmLinkRetriever private[recons](it: InternetTalker, millisBetweenRedirects: Long)
-    extends LinkRetriever[Artist](Host.LastFm)
-        with ToBindOps with FutureInstances {
-  @Inject() def this(it: InternetTalker) = this(it, 100)
+private class LastFmLinkRetriever @VisibleForTesting private[recons](
+    it: InternetTalker, millisBetweenRedirects: Long
+) extends LinkRetriever[Artist]
+    with ToBindOps with FutureInstances {
+  @Inject() def this(it: InternetTalker) = this(it, millisBetweenRedirects = 100)
+
+  override val host = Host.LastFm
 
   private implicit val iec: ExecutionContext = it
   private class TempRedirect extends Exception
