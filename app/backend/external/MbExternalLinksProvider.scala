@@ -6,7 +6,6 @@ import backend.Retriever
 import backend.external.expansions.{AlbumLinkExpanders, ArtistLinkExpanders, CompositeSameHostExpander, ExternalLinkExpander}
 import backend.external.extensions._
 import backend.external.recons.{AlbumLinkRetrievers, ArtistLinkRetrievers, LinkRetrievers}
-import backend.mb.AlbumReconcilerFactory
 import backend.recon._
 import backend.recon.Reconcilable._
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
@@ -37,16 +36,11 @@ private class MbExternalLinksProvider @Inject()(
     albumReconStorage: AlbumReconStorage,
     albumExternalStorage: AlbumExternalStorage,
     extender: CompositeExtender,
-    mbAlbumReconcilerFactory: AlbumReconcilerFactory,
+    mbAlbumReconciler: Reconciler[Album],
     artistReconciler: ReconcilerCacher[Artist],
 ) extends ToMoreFoldableOps with ToFunctorOps with ToBindOps with ToMoreMonadErrorOps
     with FutureInstances with OptionInstances {
   private implicit val iec: ExecutionContext = ec
-
-  private val mbAlbumReconciler = mbAlbumReconcilerFactory.apply(artistReconciler(_).map {
-    case NoRecon => None
-    case HasReconResult(reconId, _) => Some(reconId)
-  })
 
   private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](
       reconciler: Retriever[R, StoredReconResult],
