@@ -1,6 +1,5 @@
 package backend.lyrics.retrievers
 
-import java.io.File
 import java.net.URLEncoder
 import java.util.NoSuchElementException
 
@@ -10,8 +9,6 @@ import common.rich.primitives.RichBoolean._
 import javax.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
-
-import scala.concurrent.ExecutionContext
 
 private[lyrics] class LyricsWikiaRetriever @Inject()(
     singleHostHelper: SingleHostParsingHelper,
@@ -50,20 +47,5 @@ private object LyricsWikiaRetriever {
       else if (lyrics contains "TrebleClef") LyricParseResult.Instrumental
       else LyricParseResult.Lyrics(lyrics)
     }
-  }
-
-  import backend.module.StandaloneModule
-  import com.google.inject.Guice
-  import common.rich.RichFuture._
-  import net.codingwell.scalaguice.InjectorExtensions._
-
-  def main(args: Array[String]): Unit = {
-    val injector = Guice createInjector StandaloneModule
-    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    val $ = injector.instance[LyricsWikiaRetriever]
-    val file: File = new File("""D:\Media\Music\Metal\Black Metal\Watain\2010 Lawless Darkness\06 - Lawless Darkness.mp3""")
-    println(file.exists())
-    println($.apply(Song(file)).get)
-    println("Done")
   }
 }

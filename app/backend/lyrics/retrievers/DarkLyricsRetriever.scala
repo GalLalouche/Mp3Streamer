@@ -1,15 +1,11 @@
 package backend.lyrics.retrievers
 
-import java.io.File
-
 import com.google.common.annotations.VisibleForTesting
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import javax.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
-
-import scala.concurrent.ExecutionContext
 
 private[lyrics] class DarkLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
     extends HtmlRetriever {
@@ -23,12 +19,6 @@ private[lyrics] class DarkLyricsRetriever @Inject()(singleHostHelper: SingleHost
 }
 
 private object DarkLyricsRetriever {
-  // TODO reduce code duplication between all retriever debuggers
-  import backend.module.StandaloneModule
-  import com.google.inject.Guice
-  import common.rich.RichFuture._
-  import net.codingwell.scalaguice.InjectorExtensions._
-
   @VisibleForTesting
   private[retrievers] val url = new SingleHostUrl {
     private def normalize(s: String): String = s.toLowerCase.filter(_.isLetter)
@@ -57,13 +47,5 @@ private object DarkLyricsRetriever {
           .mkString("\n")
       if (isInstrumental($)) LyricParseResult.Instrumental else LyricParseResult.Lyrics($)
     }
-  }
-
-  def main(args: Array[String]): Unit = {
-    val injector = Guice createInjector StandaloneModule
-    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    val $ = injector.instance[DarkLyricsRetriever]
-    val file = """D:\Media\Music\Metal\Progressive Metal\Dream Theater\2003 Train of Thought\05 - Vacant.mp3"""
-    println($.apply(Song(new File(file))).get)
   }
 }
