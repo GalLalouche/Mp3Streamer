@@ -3,6 +3,7 @@ package backend.external
 import backend.Url
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, ReconID}
+import com.google.inject.Key
 import common.rich.RichFuture._
 import common.rich.RichT._
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -17,7 +18,8 @@ class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
   "parse artist links" in {
     val injector = withDocument("artist")
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    val $ = injector.instance[ArtistLinkExtractor]
+    // Instance with type aliases is bugged it seems
+    val $ = injector.getInstance(new Key[ExternalLinkProvider[Artist]]() {})
     val expected = Set(
       BaseLink[Artist](Url("http://deafheaven.com/"), Host("home", Url("deafheaven.com"))),
       BaseLink[Artist](Url("http://www.allmusic.com/artist/mn0002658855"), Host.AllMusic),
@@ -41,7 +43,7 @@ class MbHtmlLinkExtractorTest extends FreeSpec with DocumentSpecs {
   "parse album links" in {
     val injector = withDocument("album")
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    val $ = injector.instance[AlbumLinkExtractor]
+    val $ = injector.getInstance(new Key[ExternalLinkProvider[Album]]() {})
     val expected = Set(
       BaseLink[Album](Url("http://www.discogs.com/master/559132"), Host("discogs", Url("www.discogs.com"))),
       BaseLink[Album](Url("https://rateyourmusic.com/release/album/deafheaven/sunbather/"), Host("RateYourMusic", Url("rateyourmusic.com"))),
