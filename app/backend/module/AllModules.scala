@@ -1,7 +1,6 @@
 package backend.module
 
 import backend.mb.MbModule
-import backend.pkg.PkgModule
 import backend.recon.ReconModule
 import backend.search.SearchModule
 import net.codingwell.scalaguice.ScalaModule
@@ -12,7 +11,6 @@ object AllModules extends ScalaModule {
     install(MbModule)
     install(SongsModule)
     install(SearchModule)
-    install(PkgModule)
     install(ReconModule)
   }
 }

@@ -1,11 +1,11 @@
 package backend.pkg
 
 import backend.Retriever
-import com.google.inject.assistedinject.Assisted
 import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
 import common.rich.func.ToMoreFoldableOps
+import controllers.UrlPathUtils
 import javax.inject.Inject
-import models.{MusicFinder, Song}
+import models.MusicFinder
 import play.api.libs.json.{Json, JsString}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -18,7 +18,6 @@ private class Zipper @Inject()(
     ec: ExecutionContext,
     mf: MusicFinder,
     @RootDirectory rootDirectory: DirectoryRef,
-    @Assisted songRemotePathEncoder: Song => String,
 ) extends Retriever[DirectoryRef, FileRef]
     with ToMoreFoldableOps with OptionInstances
     with ToApplicativeOps with FutureInstances {
@@ -26,7 +25,7 @@ private class Zipper @Inject()(
 
   private implicit val iec: ExecutionContext = ec
   private val zipsDir = rootDirectory.addSubDir("zips")
-  private val createJsonIn = createRemotePathJson(songRemotePathEncoder, mf) _
+  private val createJsonIn = createRemotePathJson(mf) _
   private val cleaner = new FolderCleaner(zipsDir)
 
   override def apply(dir: DirectoryRef): Future[FileRef] = Future {
@@ -45,10 +44,10 @@ private object Zipper {
   private val ZipAppPath = """c:\Program Files\7-Zip\7z.exe"""
   private[this] val JsonFileName = "remote_paths.json"
 
-  private def createRemotePathJson(songRemotePathEncoder: Song => String, mf: MusicFinder)(
+  private def createRemotePathJson(mf: MusicFinder)(
       dir: DirectoryRef): Unit = {
     val json = mf.getSongsInDir(dir)
-        .map(e => e.file.name -> JsString(songRemotePathEncoder(e)))
+        .map(e => e.file.name -> JsString(UrlPathUtils.encodePath(e)))
         .foldLeft(Json.obj())(_ + _)
     dir.addFile(JsonFileName).write(json.toString)
   }
