@@ -9,6 +9,7 @@ import backend.recon.Reconcilable.SongExtractor
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import com.google.inject.assistedinject.Assisted
 import common.io.IODirectory
+import common.rich.RichObservable._
 import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 import javax.inject.Inject
@@ -36,9 +37,9 @@ private class NewAlbumsRetriever @Inject()(
       .flatMap(_.deepDirs)
       .flatMap(NewAlbumsRetriever.dirToAlbum(_, mf))
   private def removeIgnoredAlbums(artist: Artist, albums: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
-    def toAlbum(album: MbAlbumMetadata): Album =
-      Album(title = album.title, year = album.releaseDate.getYear, artist = artist)
-    val isNotIgnored: MbAlbumMetadata => Future[Boolean] = metadata =>
+    def toAlbum(album: MbAlbumMetadata) = Album(
+      title = album.title, year = album.releaseDate.getYear, artist = artist)
+    def isNotIgnored(metadata: MbAlbumMetadata): Future[Boolean] =
       albumReconStorage.isIgnored(toAlbum(metadata))
           .map(_ != IgnoredReconResult.Ignored)
     albums filterTraverse isNotIgnored
@@ -66,7 +67,7 @@ private class NewAlbumsRetriever @Inject()(
   private def findNewAlbums(
       cache: ArtistLastYearCache, artist: Artist, reconId: ReconID): Observable[NewAlbumRecon] = {
     logger.debug(s"Fetching new albums for <$artist>")
-    val f: Future[Seq[NewAlbumRecon]] = reconId.mapTo(meta.getAlbumsMetadata)
+    val recons: Future[Seq[NewAlbumRecon]] = meta.getAlbumsMetadata(reconId)
         .flatMap(removeIgnoredAlbums(artist, _))
         .map(cache.filterNewAlbums(artist, _))
         .listen(albums => {
@@ -76,8 +77,7 @@ private class NewAlbumsRetriever @Inject()(
           case e: FilteredException => log(s"$artist was filtered, reason: ${e.getMessage}")
           case e: Throwable => e.printStackTrace()
         }.orElse(Nil)
-    // TODO move to common/rich/somewhere
-    Observable.from(f).flatMap(Observable.from(_))
+    Observable.from(recons).flattenElements
   }
 }
 
