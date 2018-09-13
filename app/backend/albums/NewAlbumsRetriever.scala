@@ -26,7 +26,7 @@ private class NewAlbumsRetriever @Inject()(
     logger: Logger,
     ec: ExecutionContext,
     meta: MbArtistReconciler,
-    @Assisted mf: IOMusicFinder,
+    mf: IOMusicFinder,
     @Assisted reconciler: ReconcilerCacher[Artist],
 ) extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
     with ToTraverseMonadPlusOps with ToMoreMonadErrorOps with MoreSeqInstances
@@ -46,7 +46,9 @@ private class NewAlbumsRetriever @Inject()(
   }
 
   def findNewAlbums: Observable[NewAlbumRecon] = {
+    log("Creating cache")
     val cache = ArtistLastYearCache from getExistingAlbums
+    log("Getting albums")
     for {
       artist <- Observable from cache.artists
       reconIdOpt <- Observable from getReconId(artist)
@@ -93,14 +95,14 @@ private object NewAlbumsRetriever {
       .map(_.file)
       .map(Song(_).release)
 
+  // TODO move to debugger class
   def main(args: Array[String]): Unit = {
     val injector = Guice createInjector StandaloneModule
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val mf = injector.instance[IOMusicFinder]
 
     val artist: Artist = Artist("At the Gates")
-    def cacheForArtist(a: Artist, mf: IOMusicFinder): ArtistLastYearCache = {
-      val mf = injector.instance[IOMusicFinder]
+    def cacheForArtist(a: Artist): ArtistLastYearCache = {
       val artistDir = mf.genreDirs
           .flatMap(_.deepDirs)
           .find(_.name.toLowerCase == a.name.toLowerCase)
@@ -113,10 +115,10 @@ private object NewAlbumsRetriever {
     }
     val reconciler = new ReconcilerCacher(
       injector.instance[ArtistReconStorage], injector.instance[MbArtistReconciler])
-    val $ = injector.instance[NewAlbumsRetrieverFactory].apply(reconciler, mf)
+    val $ = injector.instance[NewAlbumsRetrieverFactory].apply(reconciler)
     for {
       reconId <- Observable from $.getReconId(artist)
-      album <- $.findNewAlbums(cacheForArtist(artist, mf), artist, reconId.get).take(1)
+      album <- $.findNewAlbums(cacheForArtist(artist), artist, reconId.get).take(1)
     } yield {
       album.newAlbum.log()
     }

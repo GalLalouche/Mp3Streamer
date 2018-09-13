@@ -4,14 +4,15 @@ import java.util.logging.{Level, Logger => JLogger}
 
 import backend.logging.{FilteringLogger, Logger, LoggingLevel}
 import backend.mb.MbArtistReconciler
-import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage, Reconcilable, ReconcilerCacher, ReconID, ReconStorage, StoredReconResult}
+import backend.module.RealModule
+import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage, Reconcilable, ReconcilerCacher, ReconStorage, StoredReconResult}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
+import com.google.inject.util.Modules
 import common.io.JsonableSaver
 import common.rich.RichObservable._
 import common.rich.func.ToMoreFunctorOps
 import javax.inject.Inject
 import mains.fixer.StringFixer
-import models.IOMusicFinder
 import monocle.function.IndexFunctions
 import monocle.syntax.ApplySyntax
 
@@ -34,11 +35,10 @@ private class NewAlbums @Inject()(
 
   private implicit val iec: ExecutionContext = ec
 
+  // TODO remove factory
   private val retriever = newAlbumsRetrieverFactory(
     new ReconcilerCacher(artistReconStorage, mbArtistReconciler),
-    new IOMusicFinder { // TODO override in module
-      override val subDirNames: List[String] = List("Rock", "Metal")
-    })
+  )
 
   private def save(m: Map[Artist, Seq[NewAlbum]]): Unit = {
     jsonableSaver save m.flatMap(_._2)
@@ -89,7 +89,7 @@ object NewAlbums {
 
   def main(args: Array[String]): Unit = {
     JLogger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
-    val injector = Guice createInjector LocalNewAlbumsModule
+    val injector = Guice.createInjector(Modules `override` RealModule `with` LocalNewAlbumsModule)
     val logger = injector.instance[FilteringLogger]
     logger.setCurrentLevel(LoggingLevel.Verbose)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]

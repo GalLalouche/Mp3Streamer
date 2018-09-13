@@ -13,6 +13,7 @@ import common.concurrency.SingleThreadedJobQueue
 import common.io.InternetTalker
 import common.io.WSAliases.WSClient
 import common.rich.RichFuture
+import models.IOMusicFinder
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
@@ -47,10 +48,11 @@ private object LocalNewAlbumsModule extends ScalaModule with ModuleUtils {
   override def configure(): Unit = {
     bind[ExecutionContext] toInstance ExecutionContext.Implicits.global
     bind[InternetTalker] toInstance it
+    bind[IOMusicFinder] toInstance new IOMusicFinder {
+      override val subDirNames: List[String] = List("Rock", "Metal")
+    }
     install[NewAlbumsRetrieverFactory]
 
     install(LoggingModules.ConsoleWithFiltering)
-    install(RealModule)
-    install(AllModules)
   }
 }
