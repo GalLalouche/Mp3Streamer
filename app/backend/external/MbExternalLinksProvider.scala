@@ -3,7 +3,7 @@ package backend.external
 import java.time.{Clock, Duration}
 
 import backend.Retriever
-import backend.external.expansions.{AlbumLinkExpanders, ArtistLinkExpanders, CompositeSameHostExpander, ExternalLinkExpander}
+import backend.external.expansions.{CompositeSameHostExpander, ExternalLinkExpander}
 import backend.external.extensions._
 import backend.external.recons.LinkRetrievers
 import backend.recon._
@@ -28,8 +28,8 @@ private class MbExternalLinksProvider @Inject()(
     artistExternalStorage: ArtistExternalStorage,
     artistLinkRetrievers: LinkRetrievers[Artist],
     albumLinkRetrievers: LinkRetrievers[Album],
-    artistLinkExpanders: ArtistLinkExpanders,
-    albumLinkExpanders: AlbumLinkExpanders,
+    artistLinkExpanders: Traversable[ExternalLinkExpander[Artist]],
+    albumLinkExpanders: Traversable[ExternalLinkExpander[Album]],
     compositeSameHostExpander: CompositeSameHostExpander,
     artistLinkExtractor: ArtistLinkExtractor,
     albumLinkExtractor: AlbumLinkExtractor,
@@ -68,7 +68,7 @@ private class MbExternalLinksProvider @Inject()(
       artistReconciler,
       artistExternalStorage,
       artistLinkExtractor,
-      artistLinkExpanders.get,
+      artistLinkExpanders,
       artistLinkRetrievers,
     )
   private def getArtistLinks(a: Artist): Future[TimestampedLinks[Artist]] = artistPipe(a)
@@ -78,7 +78,7 @@ private class MbExternalLinksProvider @Inject()(
       new ReconcilerCacher[Album](albumReconStorage, mbAlbumReconciler),
       albumExternalStorage,
       albumLinkExtractor,
-      albumLinkExpanders.get,
+      albumLinkExpanders,
       compositeSameHostExpander.toReconcilers(artistLinks.map(_.toBase)) ++ albumLinkRetrievers,
     ) apply album
 
