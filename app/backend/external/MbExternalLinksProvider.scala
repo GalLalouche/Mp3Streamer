@@ -5,7 +5,7 @@ import java.time.{Clock, Duration}
 import backend.Retriever
 import backend.external.expansions.{AlbumLinkExpanders, ArtistLinkExpanders, CompositeSameHostExpander, ExternalLinkExpander}
 import backend.external.extensions._
-import backend.external.recons.{AlbumLinkRetrievers, ArtistLinkRetrievers, LinkRetrievers}
+import backend.external.recons.LinkRetrievers
 import backend.recon._
 import backend.recon.Reconcilable._
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
@@ -26,8 +26,8 @@ private class MbExternalLinksProvider @Inject()(
     clock: Clock,
     artistReconStorage: ArtistReconStorage,
     artistExternalStorage: ArtistExternalStorage,
-    artistLinkRetrievers: ArtistLinkRetrievers,
-    albumLinkRetrievers: AlbumLinkRetrievers,
+    artistLinkRetrievers: LinkRetrievers[Artist],
+    albumLinkRetrievers: LinkRetrievers[Album],
     artistLinkExpanders: ArtistLinkExpanders,
     albumLinkExpanders: AlbumLinkExpanders,
     compositeSameHostExpander: CompositeSameHostExpander,
