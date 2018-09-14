@@ -17,8 +17,7 @@ private[lyrics] class InstrumentalArtist @Inject()(
     with FutureInstances with ToBindOps {
   private implicit val iec: ExecutionContext = ec
 
-  override protected def isInstrumental(s: Song) =
-    storage.load(s.artistName).map(_.isDefined).get
-  override protected val defaultType = "Artist"
+  override protected def isInstrumental(s: Song) = storage.load(s.artistName).map(_.isDefined).get
+  override protected val defaultType = "artist"
   def add(s: Song): Future[Instrumental] = storage.store(s.artistName) >> get(s)
 }

@@ -21,7 +21,7 @@ class InstrumentalArtistTest extends FreeSpec with AuxSpecs with StorageSetup {
   "exists" in {
     val song = factory.song(artistName = "foo")
     storage.store("foo").get
-    $(song).get shouldReturn Instrumental("Default for Artist")
+    $(song).get shouldReturn Instrumental("Default for artist")
   }
   "doesn't exist" in {
     val song = factory.song(artistName = "foo")
