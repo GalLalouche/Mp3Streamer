@@ -2,10 +2,12 @@ package mains.fixer
 
 import java.text.Normalizer
 
+import com.google.common.annotations.VisibleForTesting
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 
 object StringFixer {
+  @VisibleForTesting
   private[fixer] val lowerCaseWords = List("a", "ain't", "all", "am", "an", "and", "are", "aren't", "as", "at", "be", "but", "by", "can", "can't",
     "cannot", "did", "didn't", "do", "doesn't", "don't", "for", "from", "get", "got", "gotten", "had", "has", "have", "her", "his", "in", "into", "is",
     "isn't", "it", "it's", "its", "may", "me", "mine", "my", "not", "of", "on", "or", "our", "ours", "ov", "shall", "should", "so", "than",
@@ -50,13 +52,16 @@ object StringFixer {
     'и' -> "i", 'й' -> "y", 'к' -> "k", 'л' -> "l", 'м' -> "m", 'н' -> "n", 'о' -> "o", 'п' -> "p",
     'р' -> "r", 'с' -> "s", 'т' -> "t", 'у' -> "u", 'ф' -> "f", 'х' -> "kh", 'ц' -> "ts",
     'ч' -> "ch", 'ш' -> "sh", 'щ' -> "sch", 'ъ' -> "", 'ы' -> "i", 'ь' -> "", 'э' -> "e",
-    'ю' -> "ju", 'я' -> "ja", 'ё' -> "e", 'і' -> "i")
+    'ю' -> "ju", 'я' -> "ja", 'ё' -> "e", 'і' -> "i", '’' -> "'")
   private def asciiNormalize(s: String): String = {
     // TODO remove capitalize from RichString
     import common.rich.primitives.RichString._
     if (s.isWhitespaceOrEmpty) s
-    else Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-        .mapIf(_.isWhitespaceOrEmpty).to(asciiNormalize(s.map(cyrillicMap).mkString("")))
+    else {
+      val withoutSpecialQuotes = s.replaceAll("[‘’“”]", "'")
+      Normalizer.normalize(withoutSpecialQuotes, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+          .mapIf(_.isWhitespaceOrEmpty).to(asciiNormalize(withoutSpecialQuotes.map(cyrillicMap).mkString("")))
+    }
   }
 
   def apply(str: String): String = {
