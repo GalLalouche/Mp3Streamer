@@ -16,10 +16,10 @@ class DownloaderController @Inject()(
   private implicit val iec: ExecutionContext = ec
 
   def download(path: String) = Action.async {request =>
-    val file = UrlPathUtils.parseFile(path)
-    require(file.isDirectory)
-    zipper(IODirectory(file.getAbsolutePath))
-        .map(helper(_, "application/zip", request)
-            .withHeaders("Content-Disposition" -> s"""attachment; filename="${file.name}""""))
+    val requestedFile = UrlPathUtils.parseFile(path)
+    require(requestedFile.isDirectory)
+    zipper(IODirectory(requestedFile.getAbsolutePath))
+        .map(zipFile => helper(zipFile, "application/zip", request)
+            .withHeaders("Content-Disposition" -> s"""attachment; filename="${zipFile.name}""""))
   }
 }
