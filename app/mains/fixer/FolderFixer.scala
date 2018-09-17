@@ -1,6 +1,6 @@
 package mains.fixer
 
-import backend.Url
+import backend.{FutureOption, Url}
 import backend.module.StandaloneModule
 import com.google.inject.Guice
 import common.io.InternetTalker
@@ -37,7 +37,7 @@ object FolderFixer
         .find(_.name.toLowerCase == canonicalArtistFolderName)
   }
 
-  private def moveDirectory(artist: String, destination: Future[Option[Directory]],
+  private def moveDirectory(artist: String, destination: FutureOption[Directory],
       folderImage: Future[Directory => Unit], fixedDirectory: FixedDirectory): Future[Directory] = {
     val destinationParent: Future[Directory] = destination.map(_ getOrElse NewArtistFolderCreator(artist).get)
     for {

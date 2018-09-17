@@ -2,7 +2,7 @@ package backend.external.recons
 
 import java.net.HttpURLConnection
 
-import backend.Url
+import backend.{FutureOption, Url}
 import backend.external.{BaseLink, Host}
 import backend.recon.Artist
 import com.google.common.annotations.VisibleForTesting
@@ -39,7 +39,7 @@ private class LastFmLinkRetriever @VisibleForTesting private[recons](
           .map(e => BaseLink[Artist](Url(e), Host.LastFm))
   }
 
-  override def apply(a: Artist): Future[Option[BaseLink[Artist]]] = {
+  override def apply(a: Artist): FutureOption[BaseLink[Artist]] = {
     val url = Url(s"https://www.last.fm/music/" + a.name.toLowerCase.replaceAll(" ", "+"))
     it.get(url) map handleReply recoverWith {
       case _: TempRedirect => Future(Thread sleep millisBetweenRedirects).>>(apply(a))

@@ -1,6 +1,6 @@
 package backend.external.expansions
 
-import backend.Url
+import backend.{FutureOption, Url}
 import backend.external.Host
 import backend.recon.Album
 import javax.inject.Inject
@@ -22,7 +22,7 @@ private class MetalArchivesAlbumsFinder @Inject()(sameHostExpanderHelper: SameHo
       val artistId = address.split('/').last.toInt
       Url(s"http://www.metal-archives.com/band/discography/id/$artistId/tab/all")
     }
-    override def findAlbum(d: Document, a: Album): Future[Option[Url]] =
+    override def findAlbum(d: Document, a: Album): FutureOption[Url] =
       Future.successful(d.select(".display.discog tr td a").asScala
           .find(_.text.toLowerCase == a.title.toLowerCase)
           .map(_.attr("href"))

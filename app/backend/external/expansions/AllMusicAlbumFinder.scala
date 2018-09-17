@@ -1,6 +1,6 @@
 package backend.external.expansions
 
-import backend.Url
+import backend.{FutureOption, Url}
 import backend.external.Host
 import backend.recon.Album
 import backend.recon.ReconScorers.AlbumReconScorer
@@ -11,7 +11,7 @@ import javax.inject.Inject
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 import scalaz.std.{FutureInstances, OptionInstances}
 
@@ -29,7 +29,7 @@ private class AllMusicAlbumFinder @Inject()(
     override def host: Host = AllMusicAlbumFinder.this.host
 
     override def modifyUrl(u: Url, a: Album) = u +/ "discography"
-    override def findAlbum(d: Document, album: Album): Future[Option[Url]] = {
+    override def findAlbum(d: Document, album: Album): FutureOption[Url] = {
       def score(other: Album): Double = AlbumReconScorer.apply(album, other)
       d.select(".discography table tbody tr").asScala.toSeq
           .tryMap(albumRow => albumRow ->

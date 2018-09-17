@@ -1,10 +1,11 @@
 package backend.storage
 
-import backend.Retriever
+import backend.{FutureOption, Retriever}
 import common.rich.func.{ToMoreFunctorOps, ToMoreMonadErrorOps, ToMoreMonadOps}
 import common.storage.Storage
 
 import scala.concurrent.{ExecutionContext, Future}
+
 import scalaz.std.FutureInstances
 
 /**
@@ -24,12 +25,13 @@ class OnlineRetrieverCacher[Key, Value](
                 localStorage.store(k, _)
                     .mapError(new Exception("Cacher failed to write recon. This usually indicates a race condition.", _))))
   // delegate all methods to localStorage
+  // Use explicit type for implicit inference
   override def forceStore(k: Key, v: Value): Future[Option[Value]] = localStorage.forceStore(k, v)
   override def store(k: Key, v: Value): Future[Unit] = localStorage.store(k, v)
   override def storeMultiple(kvs: Seq[(Key, Value)]) = localStorage.storeMultiple(kvs)
-  override def mapStore(k: Key, f: (Value) => Value, default: => Value): Future[Option[Value]] =
+  override def mapStore(k: Key, f: Value => Value, default: => Value): FutureOption[Value] =
     localStorage.mapStore(k, f, default)
-  override def load(k: Key): Future[Option[Value]] = localStorage.load(k)
-  override def delete(k: Key): Future[Option[Value]] = localStorage.delete(k)
+  override def load(k: Key): FutureOption[Value] = localStorage.load(k)
+  override def delete(k: Key): FutureOption[Value] = localStorage.delete(k)
   override def utils = localStorage.utils
 }

@@ -24,6 +24,7 @@ private[external] class CompositeSameHostExpander @Inject()(
 
   private val expanders: Map[Host, SameHostExpander] = Iterator(wiki, am).mapBy(_.host)
 
+  // Not future option due to implicit inference
   def apply(link: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] =
     expanders.get(link.host).mapHeadOrElse(_.apply(link, a), Future successful None)
 

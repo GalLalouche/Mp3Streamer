@@ -1,6 +1,6 @@
 package backend.external.expansions
 
-import backend.Url
+import backend.{FutureOption, Url}
 import backend.external.Host
 import backend.recon.{Album, StringReconScorer}
 import common.io.InternetTalker
@@ -34,7 +34,7 @@ private class WikipediaAlbumFinder @Inject()(
       it.downloadDocument(Url(urlWithoutRedirection))
           .map(_.select("span#redirectsub").asScala.headOption.exists(_.text == "Redirect page").isFalse)
     }
-    def findAlbum(d: Document, a: Album): Future[Option[Url]] = {
+    def findAlbum(d: Document, a: Album): FutureOption[Url] = {
       def score(linkName: String): Double = StringReconScorer(a.title, linkName)
       d.select("a").asScala.toSeq
           .filter(e => score(e.text) > 0.95)

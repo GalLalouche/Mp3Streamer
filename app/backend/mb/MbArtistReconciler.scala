@@ -6,6 +6,7 @@ import backend.RichTime._
 import backend.albums.NewAlbum.AlbumType
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.{Artist, Reconciler, ReconID}
+import backend.FutureOption
 import common.CompositeDateFormat
 import common.RichJson._
 import common.rich.RichFuture
@@ -25,7 +26,7 @@ class MbArtistReconciler @Inject()(
 ) extends Reconciler[Artist]
     with FutureInstances with ToMoreMonadErrorOps {
   private implicit val iec: ExecutionContext = ec
-  override def apply(a: Artist): Future[Option[ReconID]] =
+  override def apply(a: Artist): FutureOption[ReconID] =
     jsonHelper.retry(() => jsonHelper.getJson("artist/", ("query", a.name)), 5, 2 seconds)
         .map(_.objects("artists").maxBy(_ int "score"))
         .filterWithMessage(_.int("score") == 100, "could not find a 100 match")

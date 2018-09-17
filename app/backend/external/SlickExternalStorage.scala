@@ -2,7 +2,7 @@ package backend.external
 
 import java.time.LocalDateTime
 
-import backend.Url
+import backend.{FutureOption, Url}
 import backend.RichTime._
 import backend.logging.Logger
 import backend.recon.{Album, Artist, Reconcilable}
@@ -48,7 +48,7 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](
   override protected type Id = String
   override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
   override protected def extractId(r: R) = r.normalize
-  override def load(r: R): Future[Option[(MarkedLinks[R], Option[LocalDateTime])]] =
+  override def load(r: R): FutureOption[(MarkedLinks[R], Option[LocalDateTime])] =
     super.load(r).recoverWith {
       case _: OldStorageEntry =>
         logger.error(s"Encountered an old storage entry for entity $r; removing entry")

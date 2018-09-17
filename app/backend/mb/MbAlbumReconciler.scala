@@ -1,6 +1,6 @@
 package backend.mb
 
-import backend.OptionRetriever
+import backend.{FutureOption, OptionRetriever}
 import backend.recon.{Album, Artist, Reconciler, ReconID, ReconScorers}
 import common.rich.RichT._
 import common.RichJson._
@@ -30,7 +30,7 @@ private class MbAlbumReconciler @Inject()(
       .map(_ str "id" mapTo ReconID)
 
   // TODO Monad transformers?
-  override def apply(a: Album): Future[Option[ReconID]] = {
+  override def apply(a: Album): FutureOption[ReconID] = {
     artistReconciler(a.artist)
         .flatMap(_.mapHeadOrElse(
           artistId => jsonHelper.retry(() =>
