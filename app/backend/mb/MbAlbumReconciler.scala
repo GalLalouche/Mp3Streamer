@@ -5,20 +5,22 @@ import backend.recon.{Album, Artist, Reconciler, ReconID, ReconScorers}
 import common.rich.RichT._
 import common.RichJson._
 import common.rich.func.ToMoreFoldableOps
+import common.RichOptionT._
 import javax.inject.Inject
 import play.api.libs.json.{JsObject, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.DurationInt
 
-import scalaz.std.OptionInstances
+import scalaz.std.{FutureInstances, OptionInstances}
+import scalaz.OptionT
 
 private class MbAlbumReconciler @Inject()(
     ec: ExecutionContext,
     jsonHelper: JsonHelper,
     artistReconciler: OptionRetriever[Artist, ReconID],
 ) extends Reconciler[Album]
-    with ToMoreFoldableOps with OptionInstances {
+    with ToMoreFoldableOps with OptionInstances with FutureInstances {
   private implicit val iec: ExecutionContext = ec
   private val scorer = ReconScorers.AlbumReconScorer
   private def toAlbum(js: JsObject, a: Artist) = Album(
@@ -29,19 +31,15 @@ private class MbAlbumReconciler @Inject()(
       .find(0.9 <= _.mapTo(toAlbum(_, a.artist)).mapTo(scorer(_, a)))
       .map(_ str "id" mapTo ReconID)
 
-  // TODO Monad transformers?
-  override def apply(a: Album): FutureOption[ReconID] = {
-    artistReconciler(a.artist)
-        .flatMap(_.mapHeadOrElse(
-          artistId => jsonHelper.retry(() =>
-            jsonHelper.getJson(
-              "release-group/", "limit" -> "100", "artist" -> artistId.id),
-            times = 5,
-            retryWait = 20 seconds,
-          ).map(parse(_, a)),
-          Future.successful(None))
-        )
-  }
+  override def apply(a: Album): FutureOption[ReconID] =
+    OptionT(artistReconciler(a.artist))
+        .flatMapF(artistId => jsonHelper.retry(() =>
+          jsonHelper.getJson(
+            "release-group/", "limit" -> "100", "artist" -> artistId.id),
+          times = 5,
+          retryWait = 20 seconds,
+        )).subFlatMap(parse(_, a))
+        .run
 }
 
 object MbAlbumReconciler {
