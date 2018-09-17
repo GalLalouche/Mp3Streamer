@@ -1,5 +1,5 @@
 package backend.recon
 
-import backend.Retriever
+import backend.OptionRetriever
 
-trait Reconciler[Key <: Reconcilable] extends Retriever[Key, Option[ReconID]]
+trait Reconciler[Key <: Reconcilable] extends OptionRetriever[Key, ReconID]

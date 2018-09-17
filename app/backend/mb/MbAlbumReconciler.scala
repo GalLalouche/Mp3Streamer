@@ -1,6 +1,6 @@
 package backend.mb
 
-import backend.Retriever
+import backend.OptionRetriever
 import backend.recon.{Album, Artist, Reconciler, ReconID, ReconScorers}
 import common.rich.RichT._
 import common.RichJson._
@@ -16,7 +16,7 @@ import scalaz.std.OptionInstances
 private class MbAlbumReconciler @Inject()(
     ec: ExecutionContext,
     jsonHelper: JsonHelper,
-    artistReconciler: Retriever[Artist, Option[ReconID]],
+    artistReconciler: OptionRetriever[Artist, ReconID],
 ) extends Reconciler[Album]
     with ToMoreFoldableOps with OptionInstances {
   private implicit val iec: ExecutionContext = ec
@@ -53,7 +53,7 @@ object MbAlbumReconciler {
   def main(args: Array[String]): Unit = {
     val injector = Guice createInjector StandaloneModule
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    val artistReconciler: Retriever[Artist, Option[ReconID]] =
+    val artistReconciler: OptionRetriever[Artist, ReconID] =
       ("6b335658-22c8-485d-93de-0bc29a1d0349" |> ReconID |> Some.apply |> Future.successful).const
     val $ = new MbAlbumReconciler(ec, injector.instance[JsonHelper], artistReconciler)
     val f = $(Album("Hell Bent for Leather", 1979, "Judas Priest" |> Artist.apply))
