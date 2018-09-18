@@ -6,7 +6,7 @@ import backend.{FutureOption, Url}
 import backend.RichTime._
 import backend.logging.Logger
 import backend.recon.{Album, Artist, Reconcilable}
-import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
+import backend.storage.{AlwaysFresh, DatedFreshness, DbProvider, Freshness, SlickStorageTemplateFromConf}
 import common.storage.{ColumnMappers, StringSerializable}
 import javax.inject.Inject
 import slick.ast.{BaseTypedType, ScalaBaseType}
@@ -19,7 +19,7 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](
     ec: ExecutionContext,
     dbP: DbProvider,
     logger: Logger,
-) extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Option[LocalDateTime])](ec, dbP) with ExternalStorage[R] {
+) extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Freshness)](ec, dbP) with ExternalStorage[R] {
   private class OldStorageEntry extends Exception
   private implicit val iec: ExecutionContext = ec
   import profile.api._
@@ -45,10 +45,11 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](
   // Can't use the type alias because it messes up the type inference.
   protected implicit val markedLinksColumns: JdbcType[Traversable[MarkedLink[R]]] =
     new ColumnMappers().traversable
+  protected def toFreshness(o: Option[LocalDateTime]): Freshness = o.mapHeadOrElse(DatedFreshness, AlwaysFresh)
   override protected type Id = String
   override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
   override protected def extractId(r: R) = r.normalize
-  override def load(r: R): FutureOption[(MarkedLinks[R], Option[LocalDateTime])] =
+  override def load(r: R): FutureOption[(MarkedLinks[R], Freshness)] =
     super.load(r).recoverWith {
       case _: OldStorageEntry =>
         logger.error(s"Encountered an old storage entry for entity $r; removing entry")
@@ -73,10 +74,10 @@ private[backend] class ArtistExternalStorage @Inject()(
   }
   override protected type EntityTable = Rows
   override protected val tableQuery = TableQuery[EntityTable]
-  override protected def toEntity(k: Artist, v: (MarkedLinks[Artist], Option[LocalDateTime])) =
-    (k.normalize, v._1, v._2)
+  override protected def toEntity(k: Artist, v: (MarkedLinks[Artist], Freshness)) =
+    (k.normalize, v._1, v._2.localDateTime)
   override protected def toId(et: EntityTable) = et.name
-  override protected def extractValue(e: Entity) = e._2 -> e._3
+  override protected def extractValue(e: Entity) = e._2 -> toFreshness(e._3)
 }
 
 private[backend] class AlbumExternalStorage @Inject()(
@@ -98,17 +99,17 @@ private[backend] class AlbumExternalStorage @Inject()(
   }
   override protected type EntityTable = Rows
   override protected val tableQuery = TableQuery[EntityTable]
-  override protected def toEntity(k: Album, v: (MarkedLinks[Album], Option[LocalDateTime])) =
-    (k.normalize, k.artist.normalize, v._1, v._2)
+  override protected def toEntity(k: Album, v: (MarkedLinks[Album], Freshness)) =
+    (k.normalize, k.artist.normalize, v._1, v._2.localDateTime)
   override protected def toId(et: EntityTable) = et.album
-  override protected def extractValue(e: Entity) = e._3 -> e._4
+  override protected def extractValue(e: Entity) = e._3 -> toFreshness(e._4)
 
-  def deleteAllLinks(a: Artist): Future[Traversable[(String, MarkedLinks[Album], Option[LocalDateTime])]] = {
+  def deleteAllLinks(a: Artist): Future[Traversable[(String, MarkedLinks[Album], Freshness)]] = {
     val artistRows = tableQuery.filter(_.artist === a.normalize)
     val existingRows = db.run(artistRows
         .map(e => (e.album, e.encodedLinks, e.timestamp))
         .result
-        .map(_.map(e => (e._1, e._2, e._3))))
+        .map(_.map(e => (e._1, e._2, toFreshness(e._3)))))
     existingRows `<*ByName` db.run(artistRows.delete)
   }
 }

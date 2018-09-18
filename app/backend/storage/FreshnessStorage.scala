@@ -1,6 +1,6 @@
 package backend.storage
 
-import java.time.{Clock, LocalDateTime}
+import java.time.Clock
 
 import backend.FutureOption
 import backend.RichTime._
@@ -17,16 +17,13 @@ import scalaz.std.FutureInstances
   * Keep a timestamp for every value. If the timestamp does not exist (but the value does), it means
   * that the value does not need to be updated.
   */
-class FreshnessStorage[Key, Value](storage: Storage[Key, (Value, Option[LocalDateTime])], clock: Clock)
+class FreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshness)], clock: Clock)
     (implicit ec: ExecutionContext)
     extends Storage[Key, Value] with FutureInstances {
-  private def now(v: Value): (Value, Option[LocalDateTime]) =
-    v -> Some(clock.instant.toLocalDateTime)
+  private def now(v: Value): (Value, Freshness) = v -> DatedFreshness(clock.instant.toLocalDateTime)
   private def toValue(v: FutureOption[(Value, Any)]): FutureOption[Value] = OptionT(v).map(_._1).run
-  // 1st option: the time data may not be there; 2nd option: it might be there but null
-  // TODO replace with ADT
-  def freshness(k: Key): FutureOption[Option[LocalDateTime]] = OptionT(storage.load(k)).map(_._2).run
-  def storeWithoutTimestamp(k: Key, v: Value): Future[Unit] = storage.store(k, v -> None)
+  def freshness(k: Key): FutureOption[Freshness] = OptionT(storage.load(k)).map(_._2).run
+  def storeWithoutTimestamp(k: Key, v: Value): Future[Unit] = storage.store(k, v -> AlwaysFresh)
   override def store(k: Key, v: Value) = storage.store(k, v |> now)
   override def storeMultiple(kvs: Seq[(Key, Value)]) =
     storage storeMultiple kvs.map(TuplePLenses.tuple2Second modify now)

@@ -78,7 +78,7 @@ class RefreshableStorageTest extends FreeSpec with AuxSpecs with OneInstancePerT
   }
   "withAge" in {
     freshnessStorage.store("foobar", "bazqux")
-    val timestamp = freshnessStorage.freshness("foobar").get.get.get // Yeah :|
-    $.withAge("foobar").get shouldReturn ("bazqux" -> Some(timestamp))
+    val timestamp = freshnessStorage.freshness("foobar").get.get.localDateTime.get // Yeah :|
+    $.withAge("foobar").get shouldReturn ("bazqux" -> DatedFreshness(timestamp))
   }
 }

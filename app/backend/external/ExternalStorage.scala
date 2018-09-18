@@ -1,8 +1,7 @@
 package backend.external
 
-import java.time.LocalDateTime
-
 import backend.recon.Reconcilable
+import backend.storage.Freshness
 import common.storage.Storage
 
-private[external] trait ExternalStorage[R <: Reconcilable] extends Storage[R, (MarkedLinks[R], Option[LocalDateTime])]
+private[external] trait ExternalStorage[R <: Reconcilable] extends Storage[R, (MarkedLinks[R], Freshness)]
