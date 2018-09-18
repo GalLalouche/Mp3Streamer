@@ -12,8 +12,6 @@ import play.api.libs.json.JsValue
 import play.api.mvc._
 import songs.{SongGroup, SongGroups, SongSelectorState}
 
-import scala.annotation.tailrec
-
 /** Handles fetch requests of JSON information, and listens to directory changes. */
 class Player @Inject()(
     albumFactory: AlbumFactory,
@@ -53,24 +51,11 @@ class Player @Inject()(
   }
 
   // For debugging
-  // TODO move this to songSelector
-  // TODO handle code duplication with below
   def randomMp3Song = Action {
-    @tailrec
-    def aux: Song = {
-      val $ = songSelectorState.randomSong
-      if ($.file.extension == "mp3") $ else aux
-    }
-    encodeIfChrome(group(aux)) _
+    encodeIfChrome(group(songSelectorState.randomMp3Song)) _
   }
-
   def randomFlacSong = Action {
-    @tailrec
-    def aux: Song = {
-      val $ = songSelectorState.randomSong
-      if ($.file.extension == "flac") $ else aux
-    }
-    encodeIfChrome(group(aux)) _
+    encodeIfChrome(group(songSelectorState.randomFlacSong)) _
   }
 
   private def songsInAlbum(path: String): Seq[Song] =
