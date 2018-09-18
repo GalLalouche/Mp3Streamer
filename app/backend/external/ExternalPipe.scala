@@ -14,7 +14,7 @@ import scalaz.std.FutureInstances
 import scalaz.syntax.{ToBindOps, ToTraverseOps}
 
 /**
- * Encompasses all online steps for fetching the external link for a given entity.
+ * Encompasses all online steps for fetching the external links for a given entity.
  *
  * @param reconciler            Matches the entity to an API's ID
  * @param linksRetriever        Fetches the external links attached to the entity's ID

@@ -2,24 +2,24 @@ function openConnection(path, onMessage, autoReconnectOnClose, autoConnectionInt
   autoConnectionInterval |= 10000
   const connection = new WebSocket("ws://" + window.location.host + "/ws/" + path);
   connection.onopen = function() {
-    console.log(path + " connection opened");
+    // console.log(path + " connection opened");
   };
   connection.onmessage = e => onMessage(e, connection);
   connection.onclose = function(event) {
     switch (event.code) {
       case 1000:
-        console.log(path + " explicitly closed connection")
+        // console.log(path + " explicitly closed connection")
         break
       default:
-        console.log(path + " connection closed for some reason")
-        console.log(event)
+        // console.log(path + " connection closed for some reason")
+        // console.log(event)
         if (autoReconnectOnClose)
           connection.reconnect()
     }
   }
   connection.reconnect = function() {
     setTimeout(function() {
-      console.log("Retrying connection...")
+      // console.log("Retrying connection...")
       const new_connection = new WebSocket(connection.url)
       new_connection.onopen = connection.onopen
       new_connection.onmessage = connection.onmessage

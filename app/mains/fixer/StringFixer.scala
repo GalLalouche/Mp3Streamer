@@ -54,7 +54,6 @@ object StringFixer {
     'ч' -> "ch", 'ш' -> "sh", 'щ' -> "sch", 'ъ' -> "", 'ы' -> "i", 'ь' -> "", 'э' -> "e",
     'ю' -> "ju", 'я' -> "ja", 'ё' -> "e", 'і' -> "i", '’' -> "'")
   private def asciiNormalize(s: String): String = {
-    // TODO remove capitalize from RichString
     import common.rich.primitives.RichString._
     if (s.isWhitespaceOrEmpty) s
     else {

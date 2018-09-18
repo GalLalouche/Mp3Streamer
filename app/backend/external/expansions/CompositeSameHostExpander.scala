@@ -13,7 +13,7 @@ import scalaz.Traverse
 import scalaz.std.{FutureInstances, OptionInstances}
 import scalaz.syntax.ToTraverseOps
 
-/** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums */
+/** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums. */
 private[external] class CompositeSameHostExpander @Inject()(
     wiki: WikipediaAlbumFinder,
     am: AllMusicAlbumFinder,

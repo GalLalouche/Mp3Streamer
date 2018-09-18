@@ -21,6 +21,7 @@ import scalaz.{-\/, \/-}
 import scalaz.std.{FutureInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToFunctorOps}
 
+// TODO split to artist and album
 private class MbExternalLinksProvider @Inject()(
     ec: ExecutionContext,
     clock: Clock,
@@ -114,11 +115,13 @@ private class MbExternalLinksProvider @Inject()(
       }).>>(update(song.release, albumReconId, albumReconStorage))
   }
 }
+
 object MbExternalLinksProvider {
   private class TimeStamper[R <: Reconcilable](
-      foo: RefreshableStorage[R, MarkedLinks[R]])(implicit ec: ExecutionContext)
+      storage: RefreshableStorage[R, MarkedLinks[R]])(
+      implicit ec: ExecutionContext)
       extends Retriever[R, TimestampedLinks[R]] {
     override def apply(r: R): Future[TimestampedLinks[R]] =
-      foo.withAge(r).map(e => TimestampedLinks(e._1, e._2.get))
+      storage.withAge(r).map(e => TimestampedLinks(e._1, e._2.localDateTime.get))
   }
 }

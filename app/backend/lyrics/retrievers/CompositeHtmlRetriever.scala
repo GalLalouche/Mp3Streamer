@@ -20,12 +20,12 @@ private[lyrics] class CompositeHtmlRetriever(
       lyricsWikiaRetriever: LyricsWikiaRetriever,
       darkLyricsRetriever: DarkLyricsRetriever,
       azLyricsRetriever: AzLyricsRetriever,
-      geniusLyricsRetriever: GeniusLyricsRetriever,
+      //geniusLyricsRetriever: GeniusLyricsRetriever,
   ) = this(ec, logger, Vector(
     lyricsWikiaRetriever,
     darkLyricsRetriever,
     azLyricsRetriever,
-    geniusLyricsRetriever,
+    //geniusLyricsRetriever,
   ))
   private implicit val iec: ExecutionContext = ec
 

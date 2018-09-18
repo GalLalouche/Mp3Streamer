@@ -44,8 +44,7 @@ private object Zipper {
   private val ZipAppPath = """c:\Program Files\7-Zip\7z.exe"""
   private[this] val JsonFileName = "remote_paths.json"
 
-  private def createRemotePathJson(mf: MusicFinder)(
-      dir: DirectoryRef): Unit = {
+  private def createRemotePathJson(mf: MusicFinder)(dir: DirectoryRef): Unit = {
     val json = mf.getSongsInDir(dir)
         .map(e => e.file.name -> JsString(UrlPathUtils.encodePath(e)))
         .foldLeft(Json.obj())(_ + _)

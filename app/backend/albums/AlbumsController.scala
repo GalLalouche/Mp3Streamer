@@ -8,9 +8,11 @@ import common.json.ToJsonableOps
 import common.rich.RichT._
 import common.rich.collections.RichMap._
 import javax.inject.Inject
+import mains.fixer.StringFixer
 import play.api.mvc.{AnyContent, InjectedController, Request}
 
 import scala.concurrent.ExecutionContext
+import scala.util.Try
 
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
@@ -21,10 +23,13 @@ class AlbumsController @Inject()(ec: ExecutionContext, $: NewAlbums) extends Inj
   private implicit val iec: ExecutionContext = ec
 
   def albums = Action.async {
-    $.load.map(Ok apply _.mapKeys(_.name).mapValues(_.jsonify).jsonify)
+    $.load
+        .map(_.mapKeys(_.name).mapValues(_.map(NewAlbum.title.modify(s => Try(StringFixer(s)).getOrElse(s))).jsonify).jsonify)
+        .map(Ok.apply(_))
   }
 
-  private def updateNewAlbums[A](extract: Request[AnyContent] => A, act: Retriever[A, Unit]) = Action.async {
+  private def updateNewAlbums[A](
+      extract: Request[AnyContent] => A, act: Retriever[A, Unit]) = Action.async {
     _ |> extract |> act as NoContent
   }
 

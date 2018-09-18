@@ -15,5 +15,5 @@ private class SameHostExpanderHelper @Inject()(it: InternetTalker) {
       e: BaseLink[Artist], a: Album): FutureOption[BaseLink[Album]] =
     it.downloadDocument(documentToAlbumParser.modifyUrl(e.link, a))
         .flatMap(documentToAlbumParser.findAlbum(_, a))
-        .map(a => a.map(BaseLink[Album](_, documentToAlbumParser.host)))
+        .map(_.map(BaseLink[Album](_, documentToAlbumParser.host)))
 }

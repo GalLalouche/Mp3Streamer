@@ -20,7 +20,7 @@ import play.api.libs.ws.ahc.StandaloneAhcWSClient
 import scala.concurrent.ExecutionContext
 
 // Ensures MusicBrainz aren't flooded since:
-// 1. At most 3 WS clients are alive (semaphores).
+// 1. A limited number of WS can be used at any given time (semaphores).
 // 2. A request for a client has a 1 second delay.
 private object LocalNewAlbumsModule extends ScalaModule with ModuleUtils {
   private val it: InternetTalker = new InternetTalker {
@@ -29,7 +29,7 @@ private object LocalNewAlbumsModule extends ScalaModule with ModuleUtils {
     override def execute(runnable: Runnable) = semaphoreReleasingContext.execute(runnable)
     override def reportFailure(cause: Throwable) = semaphoreReleasingContext.reportFailure(cause)
 
-    private val semaphore = new Semaphore(3)
+    private val semaphore = new Semaphore(1)
     private val semaphoreReleasingContext: ExecutionContext =
       new SingleThreadedJobQueue("LocalNewAlbumsModule").asExecutionContext
 

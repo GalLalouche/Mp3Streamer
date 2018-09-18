@@ -5,7 +5,6 @@ import models.Song
 
 import scala.concurrent.Future
 
-// TODO replace with composition
 private[lyrics] trait DefaultInstrumental extends LyricsRetriever {
   protected def isInstrumental(s: Song): Boolean
   protected def defaultType: String
