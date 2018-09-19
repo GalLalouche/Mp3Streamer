@@ -2,88 +2,81 @@ package mains
 
 import java.io.File
 
-import backend.module.StandaloneModule
-import com.google.inject.Guice
-import common.rich.RichFuture._
+import backend.logging.Logger
 import common.rich.path.Directory
-import common.rich.path.RichFile.richFile
+import common.rich.path.RichFile.{richFile, _}
+import javax.inject.Inject
+import me.tongfei.progressbar.ProgressBar
 import models.{IOMusicFinder, Poster, Song}
-import net.codingwell.scalaguice.InjectorExtensions._
 import org.apache.commons.io.FileUtils
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.audio.exceptions.{CannotWriteException, UnableToRenameFileException}
 import org.jaudiotagger.tag.images.StandardArtwork
 
 import scala.annotation.tailrec
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 import scala.util.Random
 
-import scalaz.std.{FutureInstances, ListInstances}
-import scalaz.syntax.{ToBindOps, ToTraverseOps}
+private class RandomFolderCreator @Inject()(ec: ExecutionContext, mf: IOMusicFinder) {
+  private implicit val iec: ExecutionContext = ec
+  private val songFiles = mf.getSongFiles.map(_.file)
 
-/** Selects n random songs and puts them in a folder on D:\ */
-private object RandomFolderCreator extends
-    ToBindOps with FutureInstances with ListInstances with ToTraverseOps {
-  private val injector = Guice createInjector StandaloneModule
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-  private val mf = injector.instance[IOMusicFinder]
-  private val songs = mf.getSongFiles.map(_.file)
-
-  private def createPlaylistFile(outputDir: Directory): Future[File] = Future {
+  private def createPlaylistFile(outputDir: Directory): File = {
     val files = outputDir.files
     val playlistFile = outputDir.addFile("random.m3u")
     files.map(_.name).foreach(playlistFile.appendLine)
     playlistFile
   }
 
+  private[this] val random = new Random
   @tailrec
-  private def findNewSong(existing: Set[File]): File = {
-    val file = songs(random nextInt songs.length)
-    if (existing contains file)
-      findNewSong(existing)
-    else
-      file
-  }
+  private def createSongSet(numberOfSongsToCreate: Int, existing: Set[File] = Set()): Set[File] =
+    if (existing.size == numberOfSongsToCreate) existing
+    else createSongSet(numberOfSongsToCreate, existing + songFiles(random nextInt songFiles.length))
 
-  @tailrec
-  private def addSongs(maxSize: Int, forEachEntry: (File, Int) => Unit, existing: Set[File] = Set(),
-      futures: List[Future[Unit]] = Nil): Future[_] = {
-    val index = existing.size
-    if (index == maxSize)
-      return futures.sequenceU map (_.reduce((_, _) => Unit))
-    val newFile = findNewSong(existing)
-    val f = Future apply forEachEntry(newFile, index)
-    print(s"\r${100 * index / maxSize}% done")
-    addSongs(maxSize, forEachEntry, existing + newFile, f :: futures)
-  }
-
-  private def copyFileToOutputDir(outputDir: Directory)(f: File, index: Int): Unit = {
+  private def copyFileToOutputDir(outputDir: Directory, pb: ProgressBar)(f: File, index: Int): Unit = {
     try {
       val newFile = new File(outputDir.dir, f.name)
       FileUtils.copyFile(f, newFile)
       val audioFile = AudioFileIO.read(newFile)
-      val coverArt: File = Poster.getCoverArt(Song(f))
-      audioFile.getTag.setField(StandardArtwork.createArtworkFromFile(coverArt))
-      try {
+      audioFile.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(Song(f))))
+      try
         audioFile.commit()
-      } catch {
+      catch {
+        // Because, I wanna say Windows?, is such a piece of crap, if the folder is open while process runs,
+        // committing the ID3 tag can sometimes fail.
         case e: CannotWriteException => e.printStackTrace()
         case e: UnableToRenameFileException => e.printStackTrace()
       }
-      newFile.renameTo(new File(outputDir.dir, "%02d.%s".format(index, f.extension)))
+      newFile.renameTo(new File(outputDir.dir, f"$index%02d.${f.extension}"))
+      pb.step()
     } catch {
       case e: Exception => println("\rFailed @ " + f); e.printStackTrace(); throw e
     }
   }
+}
+/** Selects n random songs and puts them in a folder on D:\ */
+private object RandomFolderCreator extends {
+  import backend.module.StandaloneModule
+  import com.google.inject.Guice
+  import net.codingwell.scalaguice.InjectorExtensions._
+  import resource._
 
-  private val random = new Random
   def main(args: Array[String]): Unit = {
-    val outputDir: Directory = {
-      val d = Directory("D:/").addSubDir("RandomSongsOutput")
-      d.clear()
-      d
+    val injector = Guice createInjector StandaloneModule
+    val outputDir: Directory = Directory("D:/").addSubDir("RandomSongsOutput").clear()
+    val logger = injector.instance[Logger]
+    logger.info("Scanning for files")
+    val $ = injector.instance[RandomFolderCreator]
+    logger.info("Choosing songs")
+    val numberOfSongsToCreate = 300
+    val songs = $.createSongSet(numberOfSongsToCreate)
+    for (pb <- managed(new ProgressBar("Copying songs", numberOfSongsToCreate))) {
+      val copier = $.copyFileToOutputDir(outputDir, pb) _
+      songs.zipWithIndex.foreach(copier.tupled)
     }
-    addSongs(maxSize = 300, copyFileToOutputDir(outputDir)).>>(createPlaylistFile(outputDir)).get
-    println("\rDone!")
+    logger.info("Creating playlist file")
+    $.createPlaylistFile(outputDir)
+    logger.info("Done!")
   }
 }
