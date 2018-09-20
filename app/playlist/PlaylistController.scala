@@ -29,8 +29,8 @@ class PlaylistController @Inject()(saver: JsonableSaver) extends InjectedControl
   private implicit val parseState: JsonReadable[PlaylistState] = json => {
     val songs = json.value("songs").parse[Seq[String]] map UrlPathUtils.parseSong
     val duration: Double = json double "duration"
-    val index: Int = json int "index"
-    PlaylistState(songs, index, duration.toInt.seconds)
+    val currentIndex: Int = json int "currentIndex"
+    PlaylistState(songs, currentIndex, duration.toInt.seconds)
   }
   def getState = Action {
     Ok(saver.loadObject[PlaylistState].jsonify)

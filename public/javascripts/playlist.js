@@ -8,11 +8,10 @@ $(function() {
     $.get("playlist/queue", x => x.forEach(e => gplaylist.add(e, false)))
   })
 
-  // TODO fix naming cohesion: index vs. currentIndex
   function getState() {
     return {
       songs: gplaylist.songs(),
-      index: gplaylist.currentIndex(),
+      currentIndex: gplaylist.currentIndex(),
       duration: gplayer.currentPlayingInSeconds()
     }
   }
@@ -25,7 +24,7 @@ $(function() {
   function setState(state) {
     gplayer.stop()
     gplaylist.setPlaylist(state.songs, false)
-    gplaylist.select(state.index || state.currentIndex)
+    gplaylist.select(state.currentIndex)
     gplayer.skip(state.duration)
     // gplayer.playCurrentSong()
   }
