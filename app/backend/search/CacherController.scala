@@ -3,7 +3,7 @@ package backend.search
 import backend.search.MetadataCacher.IndexUpdate
 import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
-import controllers.Recent
+import controllers.RecentController
 import controllers.websockets.WebSocketRegistryFactory
 import javax.inject.Inject
 import models.ModelJsonable._
@@ -20,7 +20,7 @@ class CacherController @Inject()(
     searchState: SearchState,
     songSelectorState: SongSelectorState,
     cacherFactory: MetadataCacherFactory,
-    recent: Recent,
+    recent: RecentController,
     webSocketFactory: WebSocketRegistryFactory,
 ) extends InjectedController with ToJsonableOps {
   private implicit val iec: ExecutionContext = ec

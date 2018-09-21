@@ -12,7 +12,7 @@ import play.api.mvc.{InjectedController, WebSocket}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class Recent @Inject()(
+class RecentController @Inject()(
     ec: ExecutionContext,
     albumFactory: AlbumFactory,
     mf: MusicFinder,

@@ -67,10 +67,10 @@ PUT        /new_albums/album/remove      backend.albums.AlbumsController.removeA
 PUT        /new_albums/album/ignore      backend.albums.AlbumsController.ignoreAlbum
 
 # Recent
-GET        /recent/albums/               controllers.Recent.recent(amount: Int = 10)
-GET        /recent/albums/:amount        controllers.Recent.recent(amount: Int)
-GET        /recent/last                  controllers.Recent.last
-GET        /ws/last_album                controllers.Recent.accept
+GET        /recent/albums/               controllers.RecentController.recent(amount: Int = 10)
+GET        /recent/albums/:amount        controllers.RecentController.recent(amount: Int)
+GET        /recent/last                  controllers.RecentController.last
+GET        /ws/last_album                controllers.RecentController.accept
 
 # Downloader
 GET        /download/*path                 backend.pkg.DownloaderController.download(path)
