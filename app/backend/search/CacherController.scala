@@ -1,7 +1,8 @@
 package backend.search
 
-import backend.recent.RecentController
+import backend.recent.NewDir
 import backend.search.MetadataCacher.IndexUpdate
+import common.io.DirectoryRef
 import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
 import controllers.websockets.WebSocketRegistryFactory
@@ -9,7 +10,7 @@ import javax.inject.Inject
 import models.ModelJsonable._
 import play.api.libs.json.Json
 import play.api.mvc.{InjectedController, WebSocket}
-import rx.lang.scala.Observable
+import rx.lang.scala.{Observable, Observer}
 import songs.SongSelectorState
 
 import scala.concurrent.ExecutionContext
@@ -20,8 +21,8 @@ class CacherController @Inject()(
     searchState: SearchState,
     songSelectorState: SongSelectorState,
     cacherFactory: MetadataCacherFactory,
-    recent: RecentController,
     webSocketFactory: WebSocketRegistryFactory,
+    @NewDir newDirObserver: Observer[DirectoryRef]
 ) extends InjectedController with ToJsonableOps {
   private implicit val iec: ExecutionContext = ec
   private val cacher = cacherFactory.create
@@ -35,7 +36,7 @@ class CacherController @Inject()(
 
   private def toRefreshStatus(o: Observable[IndexUpdate], updateRecent: Boolean) = {
     if (updateRecent)
-      o.map(_.dir) foreach recent.newDir
+      o.map(_.dir) foreach newDirObserver.onNext
     o.map(_.jsonify.toString)
         .doOnNext(webSocket.broadcast)
         .doOnCompleted {

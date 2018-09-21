@@ -1,20 +1,20 @@
 package backend.recent
 
-import common.io.DirectoryRef
 import common.json.ToJsonableOps
 import controllers.websockets.WebSocketRegistryFactory
 import javax.inject.Inject
-import models.AlbumFactory
+import models.Album
 import models.ModelJsonable.AlbumJsonifier
 import play.api.mvc.{InjectedController, WebSocket}
+import rx.lang.scala.Observable
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class RecentController @Inject()(
     ec: ExecutionContext,
     webSocketFactory: WebSocketRegistryFactory,
-    albumFactory: AlbumFactory,
-    recentAlbums: RecentAlbums
+    recentAlbums: RecentAlbums,
+    @NewDir newAlbumObservable: Observable[Album]
 ) extends InjectedController with ToJsonableOps {
   private implicit val iec: ExecutionContext = ec
   private val webSocket = webSocketFactory("Recent")
@@ -24,6 +24,6 @@ class RecentController @Inject()(
   }
   def last = recent(1)
 
-  def newDir(dir: DirectoryRef) = webSocket.broadcast(albumFactory.fromDir(dir).jsonify.toString)
+  newAlbumObservable.doOnNext(webSocket broadcast _.jsonify.toString).subscribe()
   def accept(): WebSocket = webSocket.accept()
 }
