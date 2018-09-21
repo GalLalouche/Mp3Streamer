@@ -1,9 +1,9 @@
 package backend.search
 
+import backend.recent.RecentController
 import backend.search.MetadataCacher.IndexUpdate
 import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
-import controllers.RecentController
 import controllers.websockets.WebSocketRegistryFactory
 import javax.inject.Inject
 import models.ModelJsonable._
