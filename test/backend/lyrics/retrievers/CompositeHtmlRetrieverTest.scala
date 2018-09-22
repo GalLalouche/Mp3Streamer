@@ -6,7 +6,6 @@ import backend.lyrics.Instrumental
 import backend.module.TestModuleConfiguration
 import common.AuxSpecs
 import common.rich.RichFuture._
-import common.rich.RichT._
 import models.{FakeModelFactory, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
@@ -28,12 +27,12 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
     override def parse = {
       numberOfTimesInvoked += 1
       (url: Url, s: Song) =>
-        if (url == null || s == null)
-          Future.successful(null)
-        else
-          Future.successful(Instrumental(instrumentalText))
-              .filter((s == songsToFind).const)
-              .filter((url == urlToMatch).const)
+        Future successful {
+          if (s == songsToFind && url == urlToMatch)
+            RetrievedLyricsResult.RetrievedLyrics(Instrumental(instrumentalText))
+          else
+            RetrievedLyricsResult.NoLyrics
+        }
     }
   }
   private val factory = new FakeModelFactory
@@ -56,21 +55,21 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
     }
   }
   "find" - {
-    "when one of the URLs match" in {
-      $(song2).get shouldReturn Instrumental("bar")
+    "when one of the URLs match, shouldn't check all the subsequent URLs" in {
+      $(song2).get shouldReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar"))
       r3.numberOfTimesInvoked shouldReturn 0
     }
     "when none of the URLs match" in {
-      $(unfoundSong).getFailure shouldBe a[NoSuchElementException]
+      $(unfoundSong).get shouldReturn RetrievedLyricsResult.NoLyrics
     }
   }
   "parse" - {
     "when one of the URLs match it doesn't try to the others" in {
-      $.parse(Url("bar"), song2).get shouldReturn Instrumental("bar")
+      $.parse(Url("bar"), song2).get shouldReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar"))
       r3.numberOfTimesInvoked shouldReturn 0
     }
     "when none of the URLs match" in {
-      $(unfoundSong).getFailure shouldBe a[NoSuchElementException]
+      $(unfoundSong).get shouldReturn RetrievedLyricsResult.NoLyrics
     }
   }
 }

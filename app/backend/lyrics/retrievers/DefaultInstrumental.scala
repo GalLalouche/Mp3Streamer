@@ -8,9 +8,11 @@ import scala.concurrent.Future
 private[lyrics] trait DefaultInstrumental extends LyricsRetriever {
   protected def isInstrumental(s: Song): Boolean
   protected def defaultType: String
-  override def get: Song => Future[Instrumental] = s =>
+  protected def instrumental: Instrumental = Instrumental(s"Default for $defaultType")
+  override def get: Song => Future[RetrievedLyricsResult] = s => Future successful {
     if (isInstrumental(s))
-      Future.successful(Instrumental(s"Default for $defaultType"))
+      RetrievedLyricsResult.RetrievedLyrics(instrumental)
     else
-      Future.failed(new NoStoredLyricException(s"Not an instrumental $defaultType song"))
+      RetrievedLyricsResult.NoLyrics
+  }
 }

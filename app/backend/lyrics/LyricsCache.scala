@@ -2,16 +2,17 @@ package backend.lyrics
 
 import backend.Url
 import backend.logging.Logger
-import backend.lyrics.retrievers._
+import backend.lyrics.retrievers.{RetrievedLyricsResult, _}
 import backend.storage.OnlineRetrieverCacher
 import com.google.inject.Guice
+import common.rich.func.{ToMoreFunctorOps, ToMoreMonadErrorOps}
 import javax.inject.Inject
 import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import scalaz.{-\/, \/-}
 import scalaz.std.FutureInstances
-import scalaz.syntax.ToFunctorOps
 
 private class LyricsCache @Inject()(
     ec: ExecutionContext,
@@ -19,19 +20,26 @@ private class LyricsCache @Inject()(
     defaultArtistInstrumental: InstrumentalArtist,
     htmlComposites: CompositeHtmlRetriever,
     lyricsStorage: LyricsStorage,
-) extends FutureInstances with ToFunctorOps {
+) extends ToMoreFunctorOps with ToMoreMonadErrorOps with FutureInstances {
   private implicit val iec: ExecutionContext = ec
   private val firstDefaultRetrievers = DefaultClassicalInstrumental
   private val lastDefaultRetrievers = defaultArtistInstrumental
   private val allComposite = new CompositeLyricsRetriever(
     ec, logger, Vector(htmlComposites, lastDefaultRetrievers, firstDefaultRetrievers))
-  private val cache = new OnlineRetrieverCacher[Song, Lyrics](lyricsStorage, allComposite)
+  private val cache = new OnlineRetrieverCacher[Song, Lyrics](
+    lyricsStorage,
+    allComposite(_) mapEitherMessage {
+      case RetrievedLyricsResult.RetrievedLyrics(l) => \/-(l)
+      case _ => -\/("No lyrics retrieved :(")
+    }
+  )
   def find(s: Song): Future[Lyrics] = cache(s)
-  def parse(url: Url, s: Song): Future[Lyrics] = htmlComposites.parse(url, s)
-      .map(lyrics => {
-        cache.forceStore(s, lyrics)
-        lyrics
-      })
+  def parse(url: Url, s: Song): Future[RetrievedLyricsResult] = htmlComposites.parse(url, s)
+      .listen {
+        case RetrievedLyricsResult.RetrievedLyrics(l) => cache.forceStore(s, l)
+        case _ => ()
+      }
+
   def setInstrumentalSong(s: Song): Future[Instrumental] = {
     val instrumental = Instrumental("Manual override")
     cache.forceStore(s, instrumental) >| instrumental

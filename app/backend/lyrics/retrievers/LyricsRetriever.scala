@@ -1,13 +1,12 @@
 package backend.lyrics.retrievers
 
-import backend.lyrics.Lyrics
 import backend.Retriever
 import models.Song
 
 import scala.concurrent.Future
 
-private[lyrics] trait LyricsRetriever extends Retriever[Song, Lyrics]{
+private[lyrics] trait LyricsRetriever extends Retriever[Song, RetrievedLyricsResult] {
   // For point free style
-  def get: Song => Future[Lyrics]
+  def get: Song => Future[RetrievedLyricsResult]
   override def apply(v1: Song) = get(v1)
 }

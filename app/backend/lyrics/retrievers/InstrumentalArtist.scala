@@ -19,5 +19,5 @@ private[lyrics] class InstrumentalArtist @Inject()(
 
   override protected def isInstrumental(s: Song) = storage.load(s.artistName).map(_.isDefined).get
   override protected val defaultType = "artist"
-  def add(s: Song): Future[Instrumental] = storage.store(s.artistName) >> get(s)
+  def add(s: Song): Future[Instrumental] = storage.store(s.artistName) >| instrumental
 }

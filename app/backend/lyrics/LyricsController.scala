@@ -1,6 +1,7 @@
 package backend.lyrics
 
 import backend.Url
+import backend.lyrics.retrievers.RetrievedLyricsResult
 import common.rich.RichT._
 import common.rich.func.ToMoreMonadErrorOps
 import controllers.UrlPathUtils
@@ -9,6 +10,7 @@ import play.api.mvc.{InjectedController, Result}
 
 import scala.concurrent.ExecutionContext
 
+import scalaz.{-\/, \/-}
 import scalaz.std.FutureInstances
 
 class LyricsController @Inject()(ec: ExecutionContext, backend: LyricsCache) extends InjectedController
@@ -25,10 +27,10 @@ class LyricsController @Inject()(ec: ExecutionContext, backend: LyricsCache) ext
   def push(path: String) = Action.async {request =>
     val song = UrlPathUtils parseSong path
     val url = request.body.asText.map(Url).get
-    backend.parse(url, song)
-        .map(toString)
-        .orElse("Failed to parse lyrics")
-        .map(Ok(_))
+    backend.parse(url, song).mapEitherMessage({
+      case RetrievedLyricsResult.RetrievedLyrics(l) => \/-(toString(l))
+      case _ => -\/("Failed to parse lyrics")
+    }).map(Ok(_))
   }
   private def fromInstrumental(i: Instrumental): Result = Ok(i |> toString)
   def setInstrumentalSong(path: String) = Action.async {

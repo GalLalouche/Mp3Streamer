@@ -1,8 +1,8 @@
 package backend.lyrics.retrievers
 
 import backend.StorageSetup
-import backend.module.TestModuleConfiguration
 import backend.lyrics.Instrumental
+import backend.module.TestModuleConfiguration
 import common.AuxSpecs
 import common.rich.RichFuture._
 import models.FakeModelFactory
@@ -21,11 +21,11 @@ class InstrumentalArtistTest extends FreeSpec with AuxSpecs with StorageSetup {
   "exists" in {
     val song = factory.song(artistName = "foo")
     storage.store("foo").get
-    $(song).get shouldReturn Instrumental("Default for artist")
+    $(song).get shouldReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("Default for artist"))
   }
   "doesn't exist" in {
     val song = factory.song(artistName = "foo")
     storage.store("bar").get
-    $(song).getFailure
+    $(song).get shouldReturn RetrievedLyricsResult.NoLyrics
   }
 }
