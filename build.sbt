@@ -10,6 +10,9 @@ routesGenerator := InjectedRoutesGenerator
 val playWsStandaloneVersion = "1.1.2"
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+sources in (Compile, doc) := Seq.empty
+publishArtifact in (Compile, packageDoc) := false
+
 // Add your own project settings her
 resolvers ++= Seq(
   "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
