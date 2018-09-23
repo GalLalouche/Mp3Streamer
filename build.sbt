@@ -10,6 +10,7 @@ routesGenerator := InjectedRoutesGenerator
 val playWsStandaloneVersion = "1.1.2"
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.2.4")
 sources in (Compile, doc) := Seq.empty
 publishArtifact in (Compile, packageDoc) := false
 
