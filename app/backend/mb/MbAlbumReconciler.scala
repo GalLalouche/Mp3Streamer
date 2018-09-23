@@ -4,8 +4,8 @@ import backend.{FutureOption, OptionRetriever}
 import backend.recon.{Album, Artist, Reconciler, ReconID, ReconScorers}
 import common.rich.RichT._
 import common.RichJson._
+import common.rich.func.RichOptionT._
 import common.rich.func.ToMoreFoldableOps
-import common.RichOptionT._
 import javax.inject.Inject
 import play.api.libs.json.{JsObject, JsValue}
 
