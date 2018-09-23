@@ -51,19 +51,19 @@ private class NewAlbums @Inject()(
     }
   }
 
-  def load: Future[Map[Artist, Seq[NewAlbum]]] = Future(jsonableSaver.loadArray)
+  def loadAlbumsByArtist: Future[Map[Artist, Seq[NewAlbum]]] = Future(jsonableSaver.loadArray)
       .map(_.map(NewAlbum.artist ^|-> Artist.name modify StringFixer.apply)
           .groupBy(_.artist)
           .mapValues(_.sortBy(_.year)))
 
   def removeArtist(a: Artist): Future[Unit] = {
     logger.debug(s"Removing $a")
-    load.map(_ - a).map(save)
+    loadAlbumsByArtist.map(_ - a).map(save)
   }
   def ignoreArtist(a: Artist): Future[Unit] = ignore(a, artistReconStorage) >> removeArtist(a)
   def removeAlbum(a: Album): Future[Unit] = {
     logger.debug(s"Removing $a")
-    load.map(_ &|-? index(a.artist) modify (_.filterNot(_.title == a.title))).map(save)
+    loadAlbumsByArtist.map(_ &|-? index(a.artist) modify (_.filterNot(_.title == a.title))).map(save)
   }
   def ignoreAlbum(a: Album): Future[Unit] = ignore(a, albumReconStorage) >> removeAlbum(a)
 

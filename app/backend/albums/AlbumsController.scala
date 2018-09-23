@@ -6,13 +6,12 @@ import common.Debug
 import common.RichJson._
 import common.json.ToJsonableOps
 import common.rich.RichT._
-import common.rich.collections.RichMap._
 import javax.inject.Inject
 import mains.fixer.StringFixer
+import play.api.libs.json.JsValue
 import play.api.mvc.{AnyContent, InjectedController, Request}
 
 import scala.concurrent.ExecutionContext
-import scala.util.Try
 
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
@@ -23,9 +22,13 @@ class AlbumsController @Inject()(ec: ExecutionContext, $: NewAlbums) extends Inj
   private implicit val iec: ExecutionContext = ec
 
   def albums = Action.async {
-    $.load
-        .map(_.mapKeys(_.name).mapValues(_.map(NewAlbum.title.modify(s => Try(StringFixer(s)).getOrElse(s))).jsonify).jsonify)
-        .map(Ok.apply(_))
+    $.loadAlbumsByArtist
+        .map(
+          _.map {
+            case (artist, newAlbums) =>
+              artist.name -> newAlbums.map(NewAlbum.title.modify(_ tryOrKeep StringFixer.apply)).jsonify
+          }.jsonify)
+        .map(Ok(_))
   }
 
   private def updateNewAlbums[A](
