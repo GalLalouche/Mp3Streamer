@@ -6,8 +6,8 @@ import backend.Url
 import backend.logging.Logger
 import backend.lyrics.{HtmlLyrics, Instrumental}
 import backend.lyrics.retrievers.SingleHostParsingHelper._
-import common.RichPattern._
 import common.io.InternetTalker
+import common.rich.primitives.RichString._
 import common.rich.func.{ToMoreFoldableOps, ToMoreMonadErrorOps}
 import javax.inject.Inject
 import models.Song
@@ -29,7 +29,7 @@ private class SingleHostParsingHelper @Inject()(it: InternetTalker, logger: Logg
         case LyricParseResult.Error(e) => RetrievedLyricsResult.Error(e)
       })
       .filterWithMessage({
-        case RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(_, h)) => emptyHtmlRegex doesNotMatch h
+        case RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(_, h)) => h doesNotMatch emptyHtmlRegex
         case _ => true
       }, s"Lyrics in $url were empty")
 }
