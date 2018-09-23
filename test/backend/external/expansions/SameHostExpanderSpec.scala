@@ -16,8 +16,11 @@ abstract class SameHostExpanderSpec extends FreeSpec with DocumentSpecs {
 
   protected def artistUrl = "Url"
   protected def expandingUrl = artistUrl
-  protected def findAlbum(documentName: String, album: Album,
-      additionalMappings: (String, String)*): Option[BaseLink[Album]] = {
+  protected def findAlbum(
+      documentName: String,
+      album: Album,
+      additionalMappings: (String, String)*,
+  ): Option[BaseLink[Album]] = {
     val urlToBytesMapper: PartialFunction[Url, Array[Byte]] = {
       case Url(address) if address == expandingUrl => getBytes(documentName)
     }

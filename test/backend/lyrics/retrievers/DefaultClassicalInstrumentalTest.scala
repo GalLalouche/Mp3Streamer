@@ -14,10 +14,8 @@ class DefaultClassicalInstrumentalTest extends LyricsSpec {
   private val $ = DefaultClassicalInstrumental
   private def songWithPath(path: String): Song = {
     val split = path.split("/")
-    val filePath = split.last
-    val file = split.dropRight(1)
-        ./:(new MemoryRoot: MemoryDir)((dir, name) => dir addSubDir name)
-        .addFile(filePath)
+    val fileName = split.last
+    val file = split.dropRight(1)./:(new MemoryRoot: MemoryDir)(_ addSubDir _).addFile(fileName)
     fakeModelFactory.song().copy(file = file)
   }
 

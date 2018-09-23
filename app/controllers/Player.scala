@@ -12,7 +12,7 @@ import play.api.libs.json.JsValue
 import play.api.mvc._
 import songs.{SongGroup, SongGroups, SongSelectorState}
 
-/** Handles fetch requests of JSON information, and listens to directory changes. */
+/** Handles fetch requests of JSON information. */
 class Player @Inject()(
     albumFactory: AlbumFactory,
     groups: SongGroups,

@@ -41,7 +41,7 @@ private class Zipper @Inject()(
 }
 
 private object Zipper {
-  private val ZipAppPath = """c:\Program Files\7-Zip\7z.exe"""
+  private val ZipAppPath = """C:\Program Files\7-Zip\7z.exe"""
   private[this] val JsonFileName = "remote_paths.json"
 
   private def createRemotePathJson(mf: MusicFinder)(dir: DirectoryRef): Unit = {

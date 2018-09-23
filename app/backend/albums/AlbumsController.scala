@@ -2,13 +2,11 @@ package backend.albums
 
 import backend.Retriever
 import backend.recon._
-import common.Debug
 import common.RichJson._
 import common.json.ToJsonableOps
 import common.rich.RichT._
 import javax.inject.Inject
 import mains.fixer.StringFixer
-import play.api.libs.json.JsValue
 import play.api.mvc.{AnyContent, InjectedController, Request}
 
 import scala.concurrent.ExecutionContext
@@ -17,7 +15,7 @@ import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
 /** A web interface to new albums finder. Displays new albums and can update the current file / ignoring policy. */
-class AlbumsController @Inject()(ec: ExecutionContext, $: NewAlbums) extends InjectedController with Debug
+class AlbumsController @Inject()(ec: ExecutionContext, $: NewAlbums) extends InjectedController
     with FutureInstances with ToFunctorOps with ToJsonableOps {
   private implicit val iec: ExecutionContext = ec
 

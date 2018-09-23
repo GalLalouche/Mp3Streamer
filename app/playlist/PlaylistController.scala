@@ -17,12 +17,13 @@ class PlaylistController @Inject()(saver: JsonableSaver) extends InjectedControl
   def getQueue = Action {
     Ok(saver.loadObject[PlaylistQueue].songs.jsonify)
   }
+  private def location(path: String) = Created.withHeaders("Location" -> ("playlist/" + path))
   private implicit val parseQueue: JsonReadable[PlaylistQueue] =
     _.parse[Seq[String]] map UrlPathUtils.parseSong mapTo PlaylistQueue.apply
   def setQueue() = Action {request =>
     val queue = request.body.asJson.get.parse[PlaylistQueue]
     saver save queue
-    Created.withHeaders("Location" -> "playlist/queue")
+    location("queue")
   }
 
   // TODO (again) remove code duplication with JsonReadable[PlaylistState]
@@ -38,6 +39,6 @@ class PlaylistController @Inject()(saver: JsonableSaver) extends InjectedControl
   def setState() = Action {request =>
     val state = request.body.asJson.get.parse[PlaylistState]
     saver save state
-    Created.withHeaders("Location" -> "playlist/state")
+    location("state")
   }
 }
