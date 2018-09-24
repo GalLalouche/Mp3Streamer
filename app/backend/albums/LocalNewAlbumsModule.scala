@@ -6,7 +6,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import backend.Retriever
 import backend.logging.LoggingModules
-import backend.module.{AllModules, RealModule}
+import backend.module.{AllModules, RealInternetTalkerModule, RealModule}
 import common.rich.RichT._
 import common.ModuleUtils
 import common.concurrency.SingleThreadedJobQueue
@@ -24,7 +24,8 @@ import scala.concurrent.ExecutionContext
 // 2. A request for a client has a 1 second delay.
 private object LocalNewAlbumsModule extends ScalaModule with ModuleUtils {
   private val it: InternetTalker = new InternetTalker {
-    private val am = ActorMaterializer()(ActorSystem.create("NewAlbumsModule-System"))
+    private val am = ActorMaterializer()(
+      ActorSystem.create("NewAlbumsModule-System", RealInternetTalkerModule.warningOnlyConfig))
 
     override def execute(runnable: Runnable) = semaphoreReleasingContext.execute(runnable)
     override def reportFailure(cause: Throwable) = semaphoreReleasingContext.reportFailure(cause)
