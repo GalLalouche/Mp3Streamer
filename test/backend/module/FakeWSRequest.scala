@@ -7,7 +7,7 @@ import common.rich.collections.RichMap._
 import common.rich.collections.RichSeq._
 import common.rich.func.MoreSeqInstances
 import monocle.macros.GenLens
-import play.api.libs.ws._
+import play.api.libs.ws.{BodyWritable, EmptyBody, WSAuthScheme, WSBody, WSCookie, WSProxyServer, WSRequestFilter, WSSignatureCalculator}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration

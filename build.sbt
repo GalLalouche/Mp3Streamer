@@ -43,6 +43,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-ahc-ws-standalone" % playWsStandaloneVersion,
   "com.typesafe.play" %% "play-iteratees" % playIterateesVersion,
   "com.typesafe.play" %% "play-iteratees-reactive-streams" % playIterateesVersion,
+  "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test",
   "com.typesafe.play" %% "play-ws-standalone-json" % playWsStandaloneVersion,
   "com.typesafe.slick" %% "slick" % "3.2.1",
   "io.reactivex" %% "rxscala" % "0.26.4",
