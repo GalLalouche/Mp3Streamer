@@ -63,6 +63,7 @@ $(function() {
   }
 
   function scan() {
+    LastAlbum.reopenLastAlbumWebsocketIfNeeded()
     $.get("debug/fast_refresh", function() {
       openConnection("refresh", function(msg, connection) {
         try {

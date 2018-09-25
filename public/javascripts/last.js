@@ -24,6 +24,17 @@ $(function() {
       listElement.custom_tooltip(`${album.artistName}: ${album.year} ${album.title}`)
   }
 
-  // TODO instead of sleep-wait reconnecting, do this on search/scan
-  openConnection("last_album", onMessage, true)
+  let last_album_websocket = undefined
+
+  function openLastAlbumConnection() {
+    last_album_websocket = openConnection("last_album", onMessage)
+  }
+  openLastAlbumConnection()
+
+  LastAlbum.reopenLastAlbumWebsocketIfNeeded = function() {
+    if (last_album_websocket.readyState === last_album_websocket.CLOSED)
+      openLastAlbumConnection()
+  }
 })
+
+LastAlbum = {}
