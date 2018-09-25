@@ -3,6 +3,8 @@ package mains.splitter;
 import mains.JavaMainUtils;
 
 public class FlacSplitterJava {
+    private FlacSplitterJava() {}
+
     public static void main(String[] args) {
         try {
             JavaMainUtils.turnOffLogging();
