@@ -980,6 +980,8 @@
       }, false)
       mediaElement.addEventListener("ended", function() {
         if (entity.gate) {
+          if (self.status.seekPercent < 99)
+            throw `Song ended at ${self.status.seekPercent}% seek percent, which is ~${self.status.duration * self.status.seekPercent / 100} seconds.`
           // Order of the next few commands are important. Change the time and then pause.
           // Solves a bug in Firefox, where issuing pause 1st causes the media to play from the start. ie., The pause is ignored.
           if (!$.jPlayer.browser.webkit) // Chrome crashes if you do this in conjunction with a setMedia command in an ended event handler. ie., The playlist demo.
@@ -1245,11 +1247,27 @@
       }
     },
     _updateInterface: function() {
+      if (this.media && this.media.error)
+        return // avoid updating on error
+      const requestedNewPercentage = this.status.currentPercentRelative
+      if (requestedNewPercentage >= 99)
+        return
+      // Error heuristic: if percentage increased too fast to 100 it's because the media ended with an error.
+      // Note that it can increase to non-100 values due to seeking; if someone seeked to 100 for some reason,
+      // screw him.
+      const playBar = this.css.jq.playBar
+      let currentPercentage = 100 * playBar.width() / playBar.parent().width()
+      if (requestedNewPercentage === 100 && currentPercentage < 99) {
+        console.log(`Avoiding update of playBar from ${currentPercentage} to ${requestedNewPercentage}`)
+        return
+      }
+
       if (this.css.jq.seekBar.length) {
         this.css.jq.seekBar.width(this.status.seekPercent + "%")
       }
-      if (this.css.jq.playBar.length) {
-        this.css.jq.playBar.width(this.status.currentPercentRelative + "%")
+
+      if (playBar.length) {
+        playBar.width(requestedNewPercentage + "%")
       }
       if (this.css.jq.currentTime.length) {
         this.css.jq.currentTime.text($.jPlayer.convertTime(this.status.currentTime))
@@ -1405,7 +1423,18 @@
       }
     },
     play: function(time) {
-      time = (typeof time === "number") ? time : NaN; // Remove jQuery event from click handler
+      const self = this
+      function getTime() { // Returns current time in seconds or NaN
+        if (typeof time === "number")
+          return time
+        const playBar = self.css.jq.playBar
+        // TODO extract?
+        const ratio = playBar.width() / playBar.parent().parent().width()
+        if (ratio >= 0.01 && ratio <= 0.99)
+          return ratio * self.htmlElement.media.duration
+        return NaN
+      }
+      time = getTime()
       if (this.status.srcSet) {
         if (this.html.active) {
           this._html_play(time)
@@ -1585,12 +1614,13 @@
       this._removeUiClass()
       this.ancestorJq = ancestor ? $(ancestor) : []; // Would use $() instead of [], but it is only 1.4+
       if (ancestor && this.ancestorJq.length !== 1) { // So empty strings do not generate the warning.
-        this._warning({
-          type: $.jPlayer.warning.CSS_SELECTOR_COUNT,
-          context: ancestor,
-          message: $.jPlayer.warningMsg.CSS_SELECTOR_COUNT + this.ancestorJq.length + " found for cssSelectorAncestor.",
-          hint: $.jPlayer.warningHint.CSS_SELECTOR_COUNT
-        });
+        // I don't care about this :|
+        // this._warning({
+        //   type: $.jPlayer.warning.CSS_SELECTOR_COUNT,
+        //   context: ancestor,
+        //   message: $.jPlayer.warningMsg.CSS_SELECTOR_COUNT + this.ancestorJq.length + " found for cssSelectorAncestor.",
+        //   hint: $.jPlayer.warningHint.CSS_SELECTOR_COUNT
+        // })
       }
       this._addUiClass()
       $.each(this.options.cssSelector, function(fn, cssSel) {
@@ -1623,12 +1653,12 @@
           }
 
           if (cssSel && this.css.jq[fn].length !== 1) { // So empty strings do not generate the warning. ie., they just remove the old one.
-            this._warning({
-              type: $.jPlayer.warning.CSS_SELECTOR_COUNT,
-              context: this.css.cs[fn],
-              message: $.jPlayer.warningMsg.CSS_SELECTOR_COUNT + this.css.jq[fn].length + " found for " + fn + " method.",
-              hint: $.jPlayer.warningHint.CSS_SELECTOR_COUNT
-            });
+            // this._warning({
+            //   type: $.jPlayer.warning.CSS_SELECTOR_COUNT,
+            //   context: this.css.cs[fn],
+            //   message: $.jPlayer.warningMsg.CSS_SELECTOR_COUNT + this.css.jq[fn].length + " found for " + fn + " method.",
+            //   hint: $.jPlayer.warningHint.CSS_SELECTOR_COUNT
+            // })
           }
         } else {
           this._warning({
