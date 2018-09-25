@@ -34,7 +34,9 @@ $(function() {
 
   const backupKey = "backup"
   function saveBackup() {
-    localStorage.setItem(backupKey, JSON.stringify(getState()))
+    const state = getState()
+    state.volume = Volume.getVolumeBaseline()
+    localStorage.setItem(backupKey, JSON.stringify(state))
   }
   function loadBackup() {
     return JSON.parse(localStorage.getItem(backupKey))
@@ -43,7 +45,11 @@ $(function() {
     saveBackup()
     $.toast("Backup successfully created")
   })
-  $("#load_backup").click(() => setState(loadBackup()))
+  $("#load_backup").click(() => {
+    const state = loadBackup()
+    setState(state)
+    Volume.setManualVolume(state.volume)
+  })
 
   const ONE_MINUTE = 60 * 1000
   setInterval(saveBackup, ONE_MINUTE)

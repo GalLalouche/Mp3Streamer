@@ -19,5 +19,9 @@ $(function() {
     currentGain = song.trackGain || defaultGain
     updateVolume()
   }
+  // Volume.setManualVolume(Volume.getVolumeBaseline) should be a no-op.
+  Volume.getVolumeBaseline = function() {
+    return volumeBaseline * calculateVolumeCoefficientFromGain()
+  }
 })
 Volume = {}
