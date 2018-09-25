@@ -40,7 +40,7 @@ class CacherController @Inject()(
     o.map(_.jsonify.toString)
         .doOnNext(webSocket.broadcast)
         .doOnCompleted {
-          songSelectorState.!()
+          songSelectorState.update()
           webSocket.broadcast("Reloading searcher")
           searchState.!() foreach webSocket.broadcast("Finished").const
         }.subscribe()
