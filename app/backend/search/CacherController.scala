@@ -42,7 +42,7 @@ class CacherController @Inject()(
         .doOnCompleted {
           songSelectorState.update()
           webSocket.broadcast("Reloading searcher")
-          searchState.!() foreach webSocket.broadcast("Finished").const
+          searchState.update() foreach webSocket.broadcast("Finished").const
         }.subscribe()
     Ok(views.html.refresh())
   }
