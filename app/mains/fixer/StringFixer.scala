@@ -1,29 +1,36 @@
 package mains.fixer
 
 import java.text.Normalizer
+import java.util.regex.Pattern
 
 import com.google.common.annotations.VisibleForTesting
 import common.rich.RichT._
+import common.rich.primitives.RichString._
 import common.rich.primitives.RichBoolean._
 
 object StringFixer {
   @VisibleForTesting
-  private[fixer] val lowerCaseWords = List("a", "ain't", "all", "am", "an", "and", "are", "aren't", "as", "at", "be", "but", "by", "can", "can't",
-    "cannot", "did", "didn't", "do", "doesn't", "don't", "for", "from", "get", "got", "gotten", "had", "has", "have", "her", "his", "in", "into", "is",
-    "isn't", "it", "it's", "its", "may", "me", "mine", "my", "not", "of", "on", "or", "our", "ours", "ov", "shall", "should", "so", "than",
-    "that", "the", "their", "theirs", "them", "then", "there", "these", "this", "those", "through", "to", "too", "up", "upon", "was", "wasn't",
-    "were", "weren't", "will", "with", "without", "won't", "would", "wouldn't", "your")
+  private[fixer] val lowerCaseWords = List("a", "ain't", "all", "am", "an", "and", "are", "aren't", "as",
+    "at", "be", "but", "by", "can", "can't", "cannot", "did", "didn't", "do", "doesn't", "don't", "for",
+    "from", "get", "got", "gotten", "had", "has", "have", "her", "his", "in", "into", "is", "isn't", "it",
+    "it's", "its", "may", "me", "mine", "my", "not", "of", "on", "or", "our", "ours", "ov", "shall", "should",
+    "so", "than", "that", "the", "their", "theirs", "them", "then", "there", "these", "this", "those",
+    "through", "to", "too", "up", "upon", "was", "wasn't", "were", "weren't", "will", "with", "without",
+    "won't", "would", "wouldn't", "your")
   private val lowerCaseSet = lowerCaseWords.toSet
   private val delimiters = " ()-:/\\".toSet
 
   private def pascalCaseWord(w: String): String = w.toLowerCase.capitalize
 
+  private val RomanPattern = Pattern compile "[IVXMLivxml]+"
+  private val MixedCapsPattern = Pattern compile ".*[A-Z].*"
+  private val DottedAcronymPattern = Pattern compile "(\\w\\.)+"
   private def fixWord(word: String, isFirstWord: Boolean): String =
     if (isFirstWord.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase
-    else if (word.matches(".*[A-Z].*")) word // mixed caps
+    else if (word matches MixedCapsPattern) word // mixed caps
     else if (word.head.isDigit) word.toLowerCase // 1st, 2nd, etc.
-    else if (word matches "[IVXMLivxml]+") word.toUpperCase // roman numbers, also handles pronoun "I"
-    else if (word matches "(\\w\\.)+") word.toUpperCase // A.B.C. pattern
+    else if (word matches RomanPattern) word.toUpperCase // roman numbers, also handles pronoun "I"
+    else if (word matches DottedAcronymPattern) word.toUpperCase // A.B.C. pattern
     else pascalCaseWord(word)
 
   private def splitWithDelimiters(s: String): List[String] =
