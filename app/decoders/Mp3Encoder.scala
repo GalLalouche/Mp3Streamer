@@ -20,19 +20,18 @@ class Mp3Encoder @Inject()(
   private implicit val iec: ExecutionContext = ec
   private val outputDir = rootDirectory addSubDir "musicOutput"
   private val cleaner = new FolderCleaner(outputDir)
-  // unique=true Ensures that repeating decoding requests will be ignored.
-  private val actor = SimpleTypedActor("Mp3Encoder", encodeFileIfNeeded, unique = true)
+  private val actor = SimpleTypedActor.unique("Mp3Encoder", encodeFileIfNeeded)
 
   private def encodeFileIfNeeded(f: FileRef) = f.mapIf(_.extension.toLowerCase != "mp3").to(encode(_))
 
   private def encode(file: FileRef): FileRef = {
     require(file.exists)
     val outputFileName = file.path.replaceAll("""[\s\/\\\-:]""", "").toLowerCase + ".mp3"
-    outputDir.files.find(_.name == outputFileName).filter(_.size > 0).getOrElse({
+    outputDir.files.find(_.name == outputFileName).filter(_.size > 0) getOrElse {
       val $ = outputDir.addFile(outputFileName)
       encoder.encode(file, $, Mp3)
       $
-    })
+    }
   }
 
   /**

@@ -41,25 +41,4 @@ class SimpleTypedActorImplTest extends FreeSpec with OneInstancePerTest with Aux
     // but order is 1 and then 2
     sb.toString shouldReturn "12"
   }
-
-  "unique" in {
-    val sb = new StringBuilder
-    val semaphore = new Semaphore(0)
-    val $ = SimpleTypedActor[String, Unit]("MyName", m => {
-      semaphore.acquire()
-      sb.append(m)
-    }, unique = true)
-    val f = $ ! "foo"
-    val g = $ ! "foo"
-    f should be theSameInstanceAs g
-    semaphore.release(1)
-    Await.result(f, 1 second)
-    sb.toString shouldReturn "foo"
-
-    // Verifies clear
-    val h = $ ! "foo"
-    semaphore.release(1)
-    Await.result(h, 1 second)
-    sb.toString shouldReturn "foofoo"
-  }
 }

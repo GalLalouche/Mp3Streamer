@@ -20,3 +20,8 @@ class SingleThreadedJobQueue(queueName: String) {
     })
   def apply(a: => Unit): Unit = queue submit a
 }
+
+object SingleThreadedJobQueue {
+  def executionContext(serviceName: String): ExecutionContext =
+    new SingleThreadedJobQueue(serviceName).asExecutionContext
+}
