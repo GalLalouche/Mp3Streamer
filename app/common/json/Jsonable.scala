@@ -18,11 +18,6 @@ object Jsonable {
     override def jsonify(a: A): JsValue = ev writes a
     override def parse(json: JsValue): A = ev.reads(json).get
   }
-  implicit def covariantJsonableJsonable[A](implicit ev: CovariantJsonable[A, _ <: A]): Jsonable[A] =
-    new Jsonable[A] with ToJsonableOps {
-      override def jsonify(a: A) = ev.jsonify(a)
-      override def parse(json: JsValue): A = ev.parse(json)
-    }
   implicit def seqJsonable[A: Jsonable]: Jsonable[Seq[A]] = new Jsonable[Seq[A]] with ToJsonableOps {
     override def jsonify(as: Seq[A]): JsValue = JsArray(as.map(_.jsonify))
     override def parse(json: JsValue): Seq[A] = json.as[JsArray].value.map(_.parse[A])
