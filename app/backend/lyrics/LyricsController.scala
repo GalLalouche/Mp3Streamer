@@ -21,6 +21,7 @@ class LyricsController @Inject()(ec: ExecutionContext, backend: LyricsCache) ext
   def get(path: String) = Action.async {
     backend.find(UrlPathUtils parseSong path)
         .map(toString)
+        .listenError(_.printStackTrace())
         .orElse("Failed to get lyrics :(")
         .map(Ok(_))
   }
@@ -29,7 +30,7 @@ class LyricsController @Inject()(ec: ExecutionContext, backend: LyricsCache) ext
     val url = request.body.asText.map(Url).get
     backend.parse(url, song).mapEitherMessage({
       case RetrievedLyricsResult.RetrievedLyrics(l) => \/-(toString(l))
-      case _ => -\/("Failed to parse lyrics")
+      case _ => -\/("Failed to parse lyrics :(")
     }).map(Ok(_))
   }
   private def fromInstrumental(i: Instrumental): Result = Ok(i |> toString)

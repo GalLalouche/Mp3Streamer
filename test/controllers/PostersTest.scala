@@ -1,17 +1,17 @@
 package controllers
 
 import common.rich.path.RichFile._
-import common.RichClass._
-import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
+import org.scalatest.tags.Slow
 import play.api.test._
 
+@Slow
 class PostersTest extends FreeSpec with ControllerSpec {
-  private val $ = injector.instance[Posters]
+  private val $ = app.injector.instanceOf[Posters]
 
   "image" in {
-    val file = getClass.getFile("poster.jpg")
+    val file = getResourceFile("poster.jpg")
     val result = $.image(file.getCanonicalPath).apply(FakeRequest())
-    getBytes(result) shouldReturn file.bytes
+    result.getBytes shouldReturn file.bytes
   }
 }

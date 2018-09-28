@@ -8,14 +8,11 @@ import common.{FakeClock, ModuleUtils}
 import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
 import models.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
-import play.api.mvc.ControllerComponents
-import play.api.test.Helpers
 
 class TestModule extends ScalaModule with ModuleUtils {
   override def configure() = {
     bind[FakeClock] toInstance new FakeClock
     bind[Logger] toInstance new StringBuilderLogger(new StringBuilder)
-    bind[ControllerComponents] toInstance Helpers.stubControllerComponents()
 
     // TODO make a pullrequest to fix this in scalaguice?
     requireBinding[MemoryRoot]
