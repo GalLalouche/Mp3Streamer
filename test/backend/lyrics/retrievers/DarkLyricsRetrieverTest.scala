@@ -26,6 +26,9 @@ class DarkLyricsRetrieverTest extends LyricsSpec {
     "instrumental" in {
       getHtml(4) should be an instrumental
     }
+    "instrumental lowercase" in {
+      getHtml(1, "dark_lyrics3.html") should be an instrumental
+    }
     "instrumental in part of song" in {
       verifyLyrics(getHtml(9, "dark_lyrics2.html"), "<i>[I. The Message]</i>", "How will it be?")
     }

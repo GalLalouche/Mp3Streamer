@@ -30,7 +30,8 @@ private object DarkLyricsRetriever {
 
   @VisibleForTesting
   private[retrievers] val parser = new SingleHostParser {
-    private def isInstrumental(html: String) = html.replaceAll("((<br>)|\\n)", "") == "<i>[Instrumental]</i>"
+    private def isInstrumental(html: String) =
+      html.replaceAll("((<br>)|\\n)", "").toLowerCase() == "<i>[instrumental]</i>"
     private def removeWrappingWhiteSpace(s: String) = s.replaceAll("^\\s+", "").replaceAll("\\s$", "")
     private def removeEndingBreaklines(ss: Seq[String]) = ss.reverse.dropWhile(_.matches("<br>")).reverse
 
