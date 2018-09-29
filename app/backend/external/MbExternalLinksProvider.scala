@@ -10,6 +10,7 @@ import backend.recon._
 import backend.recon.Reconcilable._
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.storage.{FreshnessStorage, RefreshableStorage}
+import common.rich.primitives.RichOption._
 import common.rich.RichT._
 import common.rich.func.{ToMoreFoldableOps, ToMoreMonadErrorOps}
 import javax.inject.Inject
@@ -91,13 +92,8 @@ private class MbExternalLinksProvider @Inject()(
   }
   def apply(s: Song): ExtendedExternalLinks = apply(s.release)
 
-  private def optionalFuture[T](o: Option[T])(f: T => Future[_]): Future[_] =
-    o.mapHeadOrElse(f, Future successful Unit)
   private def update[R <: Reconcilable](key: R, recon: Option[ReconID], storage: ReconStorage[R]): Future[_] =
-    optionalFuture(recon)(reconId => storage.mapStore(key, {
-      case NoRecon => StoredReconResult.unignored(reconId)
-      case HasReconResult(_, isIgnored) => HasReconResult(reconId, isIgnored)
-    }, default = StoredReconResult.unignored(reconId)))
+    recon.transformer[Future].flatMapF(storage.update(key, _)).run
 
   def delete(song: Song): Future[_] =
     artistExternalStorage.delete(song.artist) >> albumExternalStorage.delete(song.release)
