@@ -16,4 +16,14 @@ object ReconModule extends ScalaModule {
     implicit val iec: ExecutionContext = ec
     new ReconcilerCacher[Artist](artistReconStorage, mbArtistReconciler)
   }
+
+  @Provides
+  private def provideAlbumReconcilerCacher(
+      artistReconStorage: AlbumReconStorage,
+      mbAlbumReconciler: Reconciler[Album],
+      ec: ExecutionContext
+  ): ReconcilerCacher[Album] = {
+    implicit val iec: ExecutionContext = ec
+    new ReconcilerCacher[Album](artistReconStorage, mbAlbumReconciler)
+  }
 }

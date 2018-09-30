@@ -5,16 +5,14 @@ import backend.external.extensions._
 import backend.external.recons.LinkRetrievers
 import backend.recon._
 import backend.recon.Reconcilable._
-import common.rich.func.{ToMoreFoldableOps, ToMoreMonadErrorOps}
 import javax.inject.Inject
 import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.{FutureInstances, OptionInstances}
-import scalaz.syntax.{ToBindOps, ToFunctorOps}
+import scalaz.std.FutureInstances
+import scalaz.syntax.ToBindOps
 
-// TODO split to artist and album
 private class MbExternalLinksProvider @Inject()(
     ec: ExecutionContext,
     artistReconStorage: ArtistReconStorage,
@@ -25,26 +23,22 @@ private class MbExternalLinksProvider @Inject()(
     albumReconStorage: AlbumReconStorage,
     albumExternalStorage: AlbumExternalStorage,
     extender: CompositeExtender,
-    mbAlbumReconciler: Reconciler[Album],
-    artistReconciler: ReconcilerCacher[Artist],
     artistPipeWrapper: ExternalPipeWrapper[Artist],
     albumPipeWrapper: ExternalPipeWrapper[Album],
-) extends ToMoreFoldableOps with ToFunctorOps with ToBindOps with ToMoreMonadErrorOps
-    with FutureInstances with OptionInstances {
+) extends ToBindOps with FutureInstances {
   private implicit val iec: ExecutionContext = ec
-  private val artistPipe = artistPipeWrapper(artistReconciler, artistLinkRetrievers)
+  private val artistPipe = artistPipeWrapper(artistLinkRetrievers)
 
   private def getAlbumLinks(artistLinks: MarkedLinks[Artist], album: Album): Future[TimestampedLinks[Album]] =
     albumPipeWrapper(
-      new ReconcilerCacher[Album](albumReconStorage, mbAlbumReconciler),
       compositeSameHostExpander.toReconcilers(artistLinks.map(_.toBase)) ++ albumLinkRetrievers,
     ) apply album
 
   // for testing on remote
-  private def apply(a: Album): ExtendedExternalLinks = {
+  private[external] def apply(a: Album): ExtendedExternalLinks = {
     val artistLinks: Future[TimestampedLinks[Artist]] = artistPipe(a.artist)
     val albumLinks: Future[TimestampedLinks[Album]] = artistLinks.map(_.links).flatMap(getAlbumLinks(_, a))
-    ExtendedExternalLinks(artistLinks.map(extender.apply(a.artist, _)), albumLinks.map(extender.apply(a, _)))
+    ExtendedExternalLinks(artistLinks.map(extender(a.artist, _)), albumLinks.map(extender(a, _)))
   }
   def apply(s: Song): ExtendedExternalLinks = apply(s.release)
 

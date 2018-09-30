@@ -2,7 +2,7 @@ package backend.external
 
 import java.time.{Clock, Duration}
 
-import backend.recon.{Reconcilable, ReconID, StoredReconResult}
+import backend.recon.{Reconcilable, ReconcilerCacher, ReconID, StoredReconResult}
 import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
 import backend.external.recons.LinkRetrievers
@@ -20,6 +20,7 @@ import scalaz.std.FutureInstances
 private class ExternalPipeWrapper[R <: Reconcilable] @Inject()(
     clock: Clock,
     ec: ExecutionContext,
+    reconciler: ReconcilerCacher[R],
     storage: ExternalStorage[R],
     provider: Retriever[ReconID, BaseLinks[R]],
     expanders: Traversable[ExternalLinkExpander[R]],
@@ -27,7 +28,6 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject()(
   private implicit val iec: ExecutionContext = ec
 
   def apply(
-      reconciler: Retriever[R, StoredReconResult],
       standaloneReconcilers: LinkRetrievers[R],
   ): Retriever[R, TimestampedLinks[R]] = new RefreshableStorage[R, MarkedLinks[R]](
     freshnessStorage = new FreshnessStorage(storage, clock),
