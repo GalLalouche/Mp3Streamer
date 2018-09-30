@@ -80,7 +80,7 @@ class ExternalController @Inject()(ec: ExecutionContext, external: MbExternalLin
     val json = request.body.asJson.get
     def getReconId(s: String) = json ostr s map ReconID
     val song: Song = UrlPathUtils parseSong path
-    external.updateRecon(song, artistReconId = getReconId("artist"), albumReconId = getReconId("album"))
-        .>>(getLinks(song))
+    val updatedRecon = UpdatedRecon.fromOptionals(getReconId("artist"), getReconId("album"))
+    external.updateRecon(song)(updatedRecon) >> getLinks(song)
   }
 }

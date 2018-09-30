@@ -6,7 +6,6 @@ import backend.external.recons.LinkRetrievers
 import backend.recon._
 import backend.recon.Reconcilable._
 import common.rich.func.{ToMoreFoldableOps, ToMoreMonadErrorOps}
-import common.rich.primitives.RichOption._
 import javax.inject.Inject
 import models.Song
 
@@ -49,22 +48,20 @@ private class MbExternalLinksProvider @Inject()(
   }
   def apply(s: Song): ExtendedExternalLinks = apply(s.release)
 
-  private def update[R <: Reconcilable](key: R, recon: Option[ReconID], storage: ReconStorage[R]): Future[_] =
-    recon.transformer[Future].flatMapF(storage.update(key, _)).run
-
   def delete(song: Song): Future[_] =
     artistExternalStorage.delete(song.artist) >> albumExternalStorage.delete(song.release)
-  def updateRecon(song: Song, artistReconId: Option[ReconID], albumReconId: Option[ReconID]): Future[_] = {
-    require(artistReconId.isDefined || albumReconId.isDefined, "No actual recon IDs given")
-    update(song.artist, artistReconId, artistReconStorage).>>(
-      if (artistReconId.isDefined) {
-        artistExternalStorage.delete(song.artist) >>
-            albumReconStorage.deleteAllRecons(song.artist) >>
-            albumExternalStorage.deleteAllLinks(song.artist)
-      } else {
-        assert(albumReconId.isDefined)
-        albumReconStorage.delete(song.release) >>
-            albumExternalStorage.delete(song.release)
-      }).>>(update(song.release, albumReconId, albumReconStorage))
+  def updateRecon(song: Song): UpdatedRecon => Future[_] = {
+    case UpdatedRecon.Artist(reconId) =>
+      // If artist recon was updated, all existing release updates should be deleted
+      val artist = song.artist
+      artistExternalStorage.delete(artist) >>
+          albumReconStorage.deleteAllRecons(artist) >>
+          albumExternalStorage.deleteAllLinks(artist) >>
+          artistReconStorage.update(artist, reconId)
+    case UpdatedRecon.Album(reconId) =>
+      val release = song.release
+      albumReconStorage.delete(release) >>
+          albumExternalStorage.delete(release) >>
+          albumReconStorage.update(release, reconId)
   }
 }
