@@ -12,19 +12,17 @@ object ExternalModule extends ScalaModule {
     install(ReconsModule)
   }
 
-  @Provides
-  private def provideArtistLinkExtractor(helper: MbHtmlLinkExtractorHelper): ExternalLinkProvider[Artist] =
+  @Provides private def artistLinkExtractor(helper: MbHtmlLinkExtractorHelper): ExternalLinkProvider[Artist] =
     new ExternalLinkProvider[Artist] {
       val aux = helper[Artist]("artist") _
       override def apply(v1: ReconID) = aux(v1)
     }
-  @Provides
-  private def provideAlbumLinkExtractor(helper: MbHtmlLinkExtractorHelper): ExternalLinkProvider[Album] =
+  @Provides private def albumLinkExtractor(helper: MbHtmlLinkExtractorHelper): ExternalLinkProvider[Album] =
     new ExternalLinkProvider[Album] {
       val aux = helper[Album]("release-group") _
       override def apply(v1: ReconID) = aux(v1)
     }
 
-  @Provides def provideArtistReconStorage($: ArtistExternalStorage): ExternalStorage[Artist] = $
-  @Provides def provideAlbumReconStorage($: AlbumExternalStorage): ExternalStorage[Album] = $
+  @Provides def artistReconStorage($: ArtistExternalStorage): ExternalStorage[Artist] = $
+  @Provides def albumReconStorage($: AlbumExternalStorage): ExternalStorage[Album] = $
 }

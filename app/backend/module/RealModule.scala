@@ -33,6 +33,5 @@ object RealModule extends ScalaModule with ModuleUtils {
     install(AllModules)
   }
 
-  @Provides
-  private def provideMusicFinder(mf: IOMusicFinder): MusicFinder = mf
+  @Provides private def musicFinder(mf: IOMusicFinder): MusicFinder = mf
 }

@@ -15,8 +15,7 @@ object MbModule extends ScalaPrivateModule with ModuleUtils {
     expose[Reconciler[Album]]
   }
 
-  @Provides
-  private def provideAlbumReconciler(
+  @Provides private def albumReconciler(
       artistReconciler: ReconcilerCacher[Artist],
       ec: ExecutionContext
   ): OptionRetriever[Artist, ReconID] = {

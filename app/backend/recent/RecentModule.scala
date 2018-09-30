@@ -19,5 +19,5 @@ object RecentModule extends ScalaPrivateModule {
 
   @Provides
   @Singleton
-  private def provideSubject(albumFactory: AlbumFactory): DirToAlbum = PipeSubject(albumFactory.fromDir)
+  private def subject(albumFactory: AlbumFactory): DirToAlbum = PipeSubject(albumFactory.fromDir)
 }

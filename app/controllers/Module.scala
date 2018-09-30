@@ -15,8 +15,7 @@ class Module extends ScalaModule {
     install(RealInternetTalkerModule.nonDaemonic)
   }
 
-  @Provides
-  private def provideLogger(
+  @Provides private def logger(
       @RootDirectory rootDirectory: DirectoryRef, ec: ExecutionContext): Logger = new CompositeLogger(
     new ConsoleLogger with FilteringLogger {setCurrentLevel(LoggingLevel.Verbose)},
     new DirectoryLogger(rootDirectory)(ec),

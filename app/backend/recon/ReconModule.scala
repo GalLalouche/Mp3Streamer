@@ -7,8 +7,7 @@ import net.codingwell.scalaguice.ScalaModule
 import scala.concurrent.ExecutionContext
 
 object ReconModule extends ScalaModule {
-  @Provides
-  private def provideArtistReconcilerCacher(
+  @Provides private def artistReconcilerCacher(
       artistReconStorage: ArtistReconStorage,
       mbArtistReconciler: MbArtistReconciler,
       ec: ExecutionContext
@@ -17,8 +16,7 @@ object ReconModule extends ScalaModule {
     new ReconcilerCacher[Artist](artistReconStorage, mbArtistReconciler)
   }
 
-  @Provides
-  private def provideAlbumReconcilerCacher(
+  @Provides private def albumReconcilerCacher(
       artistReconStorage: AlbumReconStorage,
       mbAlbumReconciler: Reconciler[Album],
       ec: ExecutionContext

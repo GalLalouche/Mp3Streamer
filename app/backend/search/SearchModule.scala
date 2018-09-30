@@ -15,7 +15,7 @@ object SearchModule extends ScalaModule with ModuleUtils {
     requireBinding[Logger]
   }
 
-  @Provides private def provideCompositeIndex(saver: JsonableSaver): CompositeIndex = {
+  @Provides private def compositeIndex(saver: JsonableSaver): CompositeIndex = {
     import models.ModelJsonable._
     val indexBuilder = WeightedIndexBuilder
     def buildIndexFromCache[T: Jsonable : WeightedIndexable : Manifest] =

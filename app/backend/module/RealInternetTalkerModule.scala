@@ -21,8 +21,7 @@ private class RealInternetTalkerModule private(am: ActorMaterializer) extends Sc
     expose[InternetTalker]
   }
 
-  @Provides
-  private def provideInternetTalker(
+  @Provides private def internetTalker(
       _ec: ExecutionContext, materializer: ActorMaterializer): InternetTalker = new InternetTalker {
     override def execute(runnable: Runnable) = _ec.execute(runnable)
     override def reportFailure(cause: Throwable) = _ec.reportFailure(cause)
