@@ -1,93 +1,50 @@
 package backend.external
 
-import java.time.{Clock, Duration}
-
-import backend.Retriever
-import backend.external.expansions.{CompositeSameHostExpander, ExternalLinkExpander}
+import backend.external.expansions.CompositeSameHostExpander
 import backend.external.extensions._
 import backend.external.recons.LinkRetrievers
 import backend.recon._
 import backend.recon.Reconcilable._
-import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
-import backend.storage.{FreshnessStorage, RefreshableStorage}
-import common.rich.primitives.RichOption._
-import common.rich.RichT._
 import common.rich.func.{ToMoreFoldableOps, ToMoreMonadErrorOps}
+import common.rich.primitives.RichOption._
 import javax.inject.Inject
 import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.{-\/, \/-}
 import scalaz.std.{FutureInstances, OptionInstances}
 import scalaz.syntax.{ToBindOps, ToFunctorOps}
 
 // TODO split to artist and album
 private class MbExternalLinksProvider @Inject()(
     ec: ExecutionContext,
-    clock: Clock,
     artistReconStorage: ArtistReconStorage,
     artistExternalStorage: ArtistExternalStorage,
     artistLinkRetrievers: LinkRetrievers[Artist],
     albumLinkRetrievers: LinkRetrievers[Album],
-    artistLinkExpanders: Traversable[ExternalLinkExpander[Artist]],
-    albumLinkExpanders: Traversable[ExternalLinkExpander[Album]],
     compositeSameHostExpander: CompositeSameHostExpander,
-    artistLinkExtractor: ExternalLinkProvider[Artist],
-    albumLinkExtractor: ExternalLinkProvider[Album],
     albumReconStorage: AlbumReconStorage,
     albumExternalStorage: AlbumExternalStorage,
     extender: CompositeExtender,
     mbAlbumReconciler: Reconciler[Album],
     artistReconciler: ReconcilerCacher[Artist],
+    artistPipeWrapper: ExternalPipeWrapper[Artist],
+    albumPipeWrapper: ExternalPipeWrapper[Album],
 ) extends ToMoreFoldableOps with ToFunctorOps with ToBindOps with ToMoreMonadErrorOps
     with FutureInstances with OptionInstances {
   private implicit val iec: ExecutionContext = ec
-
-  private def wrapExternalPipeWithStorage[R <: Reconcilable : Manifest](
-      reconciler: Retriever[R, StoredReconResult],
-      storage: ExternalStorage[R],
-      provider: Retriever[ReconID, BaseLinks[R]],
-      expanders: Traversable[ExternalLinkExpander[R]],
-      standaloneReconcilers: LinkRetrievers[R],
-  ): Retriever[R, TimestampedLinks[R]] = new RefreshableStorage[R, MarkedLinks[R]](
-    new FreshnessStorage(storage, clock),
-    new ExternalPipe[R](
-      r => reconciler(r).mapEitherMessage({
-        case NoRecon => -\/(s"Couldn't reconcile <$r>")
-        case HasReconResult(reconId, _) => \/-(reconId)
-      }),
-      provider,
-      standaloneReconcilers,
-      expanders,
-    ),
-    Duration ofDays 28,
-    clock,
-  ).mapTo(new MbExternalLinksProvider.TimeStamper(_))
-
-  private val artistPipe =
-    wrapExternalPipeWithStorage[Artist](
-      artistReconciler,
-      artistExternalStorage,
-      artistLinkExtractor,
-      artistLinkExpanders,
-      artistLinkRetrievers,
-    )
-  private def getArtistLinks(a: Artist): Future[TimestampedLinks[Artist]] = artistPipe(a)
+  private val artistPipe = artistPipeWrapper(artistReconciler, artistLinkRetrievers)
 
   private def getAlbumLinks(artistLinks: MarkedLinks[Artist], album: Album): Future[TimestampedLinks[Album]] =
-    wrapExternalPipeWithStorage(
+    albumPipeWrapper(
       new ReconcilerCacher[Album](albumReconStorage, mbAlbumReconciler),
-      albumExternalStorage,
-      albumLinkExtractor,
-      albumLinkExpanders,
       compositeSameHostExpander.toReconcilers(artistLinks.map(_.toBase)) ++ albumLinkRetrievers,
     ) apply album
 
   // for testing on remote
   private def apply(a: Album): ExtendedExternalLinks = {
-    val artistLinks = getArtistLinks(a.artist)
-    val albumLinks = artistLinks.flatMap(l => getAlbumLinks(l.links, a))
+    val artistLinks: Future[TimestampedLinks[Artist]] = artistPipe(a.artist)
+    val albumLinks: Future[TimestampedLinks[Album]] = artistLinks.map(_.links).flatMap(getAlbumLinks(_, a))
     ExtendedExternalLinks(artistLinks.map(extender.apply(a.artist, _)), albumLinks.map(extender.apply(a, _)))
   }
   def apply(s: Song): ExtendedExternalLinks = apply(s.release)
@@ -109,15 +66,5 @@ private class MbExternalLinksProvider @Inject()(
         albumReconStorage.delete(song.release) >>
             albumExternalStorage.delete(song.release)
       }).>>(update(song.release, albumReconId, albumReconStorage))
-  }
-}
-
-object MbExternalLinksProvider {
-  private class TimeStamper[R <: Reconcilable](
-      storage: RefreshableStorage[R, MarkedLinks[R]])(
-      implicit ec: ExecutionContext)
-      extends Retriever[R, TimestampedLinks[R]] {
-    override def apply(r: R): Future[TimestampedLinks[R]] =
-      storage.withAge(r).map(e => TimestampedLinks(e._1, e._2.localDateTime.get))
   }
 }

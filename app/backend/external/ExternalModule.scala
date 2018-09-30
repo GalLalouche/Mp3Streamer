@@ -24,4 +24,7 @@ object ExternalModule extends ScalaModule {
       val aux = helper[Album]("release-group") _
       override def apply(v1: ReconID) = aux(v1)
     }
+
+  @Provides def provideArtistReconStorage($: ArtistExternalStorage): ExternalStorage[Artist] = $
+  @Provides def provideAlbumReconStorage($: AlbumExternalStorage): ExternalStorage[Album] = $
 }
