@@ -8,14 +8,15 @@ import models.ModelJsonable._
 import play.api.libs.json.{JsObject, JsString}
 import play.api.mvc.Request
 
+// TODO inject this
 object ControllerUtils {
   implicit val songJsonable: Jsonable[Song] = JsonableOverrider[Song](new OJsonableOverrider[Song] {
     override def jsonify(s: Song, original: => JsObject) = original +
-        ("file" -> JsString(UrlPathUtils.encodePath(s))) +
+        ("file" -> JsString(PlayUrlPathUtils.encodePath(s))) +
         ("poster" -> JsString("/posters/" + Poster.getCoverArt(s.asInstanceOf[IOSong]).path)) +
-        (s.file.extension -> JsString("/stream/download/" + UrlPathUtils.encodePath(s)))
+        (s.file.extension -> JsString("/stream/download/" + PlayUrlPathUtils.encodePath(s)))
     override def parse(obj: JsObject, unused: => Song) =
-      SongJsonifier.parse(obj + ("file" -> JsString(UrlPathUtils.decode(obj str "file"))))
+      SongJsonifier.parse(obj + ("file" -> JsString(PlayUrlPathUtils.decode(obj str "file"))))
   })
 
   def shouldEncodeMp3(request: Request[_]): Boolean =

@@ -18,6 +18,7 @@ class Player @Inject()(
     groups: SongGroups,
     songSelectorState: SongSelectorState,
     encoder: Mp3Encoder,
+    urlPathUtils: UrlPathUtils,
 ) extends InjectedController with ToJsonableOps with Debug {
   private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(groups.load)
 
@@ -59,7 +60,7 @@ class Player @Inject()(
   }
 
   private def songsInAlbum(path: String): Seq[Song] =
-    UrlPathUtils.parseFile(path) |> IODirectory.apply |> albumFactory.fromDir |> Album.songs.get
+    urlPathUtils.parseFile(path) |> IODirectory.apply |> albumFactory.fromDir |> Album.songs.get
   def album(path: String) = Action {
     encodeIfChrome(songsInAlbum(path)) _
   }
@@ -70,10 +71,10 @@ class Player @Inject()(
   }
 
   def song(path: String) = Action {
-    encodeIfChrome(group(UrlPathUtils parseSong path)) _
+    encodeIfChrome(group(urlPathUtils parseSong path)) _
   }
 
   def nextSong(path: String) = Action {
-    encodeIfChrome(songSelectorState.followingSong(UrlPathUtils.parseSong(path)).get) _
+    encodeIfChrome(songSelectorState.followingSong(urlPathUtils.parseSong(path)).get) _
   }
 }

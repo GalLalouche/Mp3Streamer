@@ -20,12 +20,13 @@ class ExternalController @Inject()(
     ec: ExecutionContext,
     external: MbExternalLinksProvider,
     jsonifier: ExternalJsonifier,
+    urlPathUtils: UrlPathUtils,
 ) extends InjectedController
     with ToBindOps with FutureInstances {
   private implicit val iec: ExecutionContext = ec
 
   def get(path: String) = Action.async {
-    getLinks(UrlPathUtils parseSong path)
+    getLinks(urlPathUtils parseSong path)
   }
 
   private def getLinks(song: Song): Future[Result] = {
@@ -39,13 +40,13 @@ class ExternalController @Inject()(
     f.map(Ok(_))
   }
   def refresh(path: String) = Action.async {
-    val song = UrlPathUtils parseSong path
+    val song = urlPathUtils parseSong path
     external.delete(song) >> getLinks(song)
   }
   def updateRecon(path: String) = Action.async {request =>
     val json = request.body.asJson.get
     def getReconId(s: String) = json ostr s map ReconID
-    val song: Song = UrlPathUtils parseSong path
+    val song: Song = urlPathUtils parseSong path
     val updatedRecon = UpdatedRecon.fromOptionals(getReconId("artist"), getReconId("album"))
     external.updateRecon(song)(updatedRecon) >> getLinks(song)
   }

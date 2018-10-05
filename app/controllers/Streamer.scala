@@ -1,6 +1,5 @@
 package controllers
 
-import common.io.IOFile
 import common.rich.func.ToMoreFoldableOps
 import decoders.Mp3Encoder
 import javax.inject.Inject
@@ -14,11 +13,12 @@ class Streamer @Inject()(
     ec: ExecutionContext,
     encoder: Mp3Encoder,
     downloader: DownloaderHelper,
+    urlPathUtils: UrlPathUtils,
 ) extends InjectedController
     with ToMoreFoldableOps with OptionInstances {
   private implicit val iec: ExecutionContext = ec
   def download(s: String) = Action.async {request =>
-    val file: IOFile = UrlPathUtils.parseSong(s).file
+    val file = urlPathUtils.parseSong(s).file
     val needsEncoding = ControllerUtils.shouldEncodeMp3(request)
     val codec = if (needsEncoding || file.extension == "mp3") "audio/mpeg" else "audio/flac"
     (if (needsEncoding) encoder ! file else Future.successful(file))

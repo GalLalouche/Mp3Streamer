@@ -17,6 +17,7 @@ import scalaz.syntax.ToApplicativeOps
 private class Zipper @Inject()(
     ec: ExecutionContext,
     mf: MusicFinder,
+    urlPathUtils: UrlPathUtils,
     @RootDirectory rootDirectory: DirectoryRef,
 ) extends Retriever[DirectoryRef, FileRef]
     with ToMoreFoldableOps with OptionInstances
@@ -25,7 +26,7 @@ private class Zipper @Inject()(
 
   private implicit val iec: ExecutionContext = ec
   private val zipsDir = rootDirectory.addSubDir("zips")
-  private val createJsonIn = createRemotePathJson(mf) _
+  private val createJsonIn = createRemotePathJson(mf, urlPathUtils) _
   private val cleaner = new FolderCleaner(zipsDir)
 
   override def apply(dir: DirectoryRef): Future[FileRef] = Future {
@@ -44,9 +45,9 @@ private object Zipper {
   private val ZipAppPath = """C:\Program Files\7-Zip\7z.exe"""
   private[this] val JsonFileName = "remote_paths.json"
 
-  private def createRemotePathJson(mf: MusicFinder)(dir: DirectoryRef): Unit = {
+  private def createRemotePathJson(mf: MusicFinder, urlPathUtils: UrlPathUtils)(dir: DirectoryRef): Unit = {
     val json = mf.getSongsInDir(dir)
-        .map(e => e.file.name -> JsString(UrlPathUtils.encodePath(e)))
+        .map(e => e.file.name -> JsString(urlPathUtils.encodePath(e)))
         .foldLeft(Json.obj())(_ + _)
     dir.addFile(JsonFileName).write(json.toString)
   }

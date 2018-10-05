@@ -4,8 +4,8 @@ import common.AuxSpecs
 import models.FakeModelFactory
 import org.scalatest.FreeSpec
 
-class UrlPathUtilsTest extends FreeSpec with AuxSpecs {
-  private val $ = UrlPathUtils
+class PlayUrlPathUtilsTest extends FreeSpec with AuxSpecs {
+  private val $ = PlayUrlPathUtils
   private val factory = new FakeModelFactory()
   "toJson" - {
     val song = factory.song(filePath = "foo + bar")

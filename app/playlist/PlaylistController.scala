@@ -11,7 +11,7 @@ import play.api.mvc.InjectedController
 
 import scala.concurrent.duration.DurationInt
 
-class PlaylistController @Inject()(saver: JsonableSaver) extends InjectedController
+class PlaylistController @Inject()(saver: JsonableSaver, urlPathUtils: UrlPathUtils) extends InjectedController
     with ToJsonableOps {
 
   def getQueue = Action {
@@ -19,7 +19,7 @@ class PlaylistController @Inject()(saver: JsonableSaver) extends InjectedControl
   }
   private def location(path: String) = Created.withHeaders("Location" -> ("playlist/" + path))
   private implicit val parseQueue: JsonReadable[PlaylistQueue] =
-    _.parse[Seq[String]] map UrlPathUtils.parseSong mapTo PlaylistQueue.apply
+    _.parse[Seq[String]] map urlPathUtils.parseSong mapTo PlaylistQueue.apply
   def setQueue() = Action {request =>
     val queue = request.body.asJson.get.parse[PlaylistQueue]
     saver save queue
@@ -28,7 +28,7 @@ class PlaylistController @Inject()(saver: JsonableSaver) extends InjectedControl
 
   // TODO (again) remove code duplication with JsonReadable[PlaylistState]
   private implicit val parseState: JsonReadable[PlaylistState] = json => {
-    val songs = json.value("songs").parse[Seq[String]] map UrlPathUtils.parseSong
+    val songs = json.value("songs").parse[Seq[String]] map urlPathUtils.parseSong
     val duration: Double = json double "duration"
     val currentIndex: Int = json int "currentIndex"
     PlaylistState(songs, currentIndex, duration.toInt.seconds)

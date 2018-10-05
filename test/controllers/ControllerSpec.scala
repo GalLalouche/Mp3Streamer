@@ -57,7 +57,7 @@ trait ControllerSpec extends AuxSpecs with GuiceOneServerPerSuite {self: TestSui
     def getString: String = new String(getBytes, "UTF-8")
   }
   lazy val song: Song = Song(getResourceFile("/models/song.mp3"))
-  lazy val encodedSong: String = UrlPathUtils encodePath song
+  lazy val encodedSong: String = PlayUrlPathUtils encodePath song
   def get(path: String): Future[WSResponse] =
     app.injector.instanceOf[WSClient].url(s"http://localhost:$port/$path").get()
   def post(path: String): Future[WSResponse] = post(path, "")

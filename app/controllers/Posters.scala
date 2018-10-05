@@ -6,8 +6,9 @@ import play.api.mvc.InjectedController
 import scala.concurrent.ExecutionContext
 
 // TODO Move to its own package?
-class Posters @Inject()(implicit ec: ExecutionContext) extends InjectedController {
+class Posters @Inject()(ec: ExecutionContext, urlPathUtils: UrlPathUtils) extends InjectedController {
+  private implicit val iec: ExecutionContext = ec
   def image(path: String) = Action {
-    Ok sendFile UrlPathUtils.parseFile(path)
+    Ok sendFile urlPathUtils.parseFile(path)
   }
 }
