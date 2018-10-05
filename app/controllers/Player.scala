@@ -4,7 +4,6 @@ import common.Debug
 import common.io.IODirectory
 import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
-import controllers.PlayControllerUtils.songJsonable
 import decoders.Mp3Encoder
 import javax.inject.Inject
 import models._
@@ -19,7 +18,10 @@ class Player @Inject()(
     songSelectorState: SongSelectorState,
     encoder: Mp3Encoder,
     urlPathUtils: UrlPathUtils,
+    songJsonifier: ControllerSongJsonifier,
 ) extends InjectedController with ToJsonableOps with Debug {
+  import songJsonifier.songJsonable
+
   private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(groups.load)
 
   private def group(s: Song): Either[Song, SongGroup] = songGroups get s toRight s

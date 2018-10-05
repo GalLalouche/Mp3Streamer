@@ -4,15 +4,19 @@ import common.RichJson._
 import common.io.JsonableSaver
 import common.json.{JsonReadable, ToJsonableOps}
 import common.rich.RichT._
-import controllers.PlayControllerUtils.songJsonable
-import controllers.UrlPathUtils
+import controllers.{ControllerSongJsonifier, UrlPathUtils}
 import javax.inject.Inject
 import play.api.mvc.InjectedController
 
 import scala.concurrent.duration.DurationInt
 
-class PlaylistController @Inject()(saver: JsonableSaver, urlPathUtils: UrlPathUtils) extends InjectedController
+class PlaylistController @Inject()(
+    saver: JsonableSaver,
+    urlPathUtils: UrlPathUtils,
+    songJsonifier: ControllerSongJsonifier,
+) extends InjectedController
     with ToJsonableOps {
+  import songJsonifier.songJsonable
 
   def getQueue = Action {
     Ok(saver.loadObject[PlaylistQueue].songs.jsonify)
