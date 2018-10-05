@@ -4,7 +4,7 @@ import common.Debug
 import common.io.IODirectory
 import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
-import controllers.ControllerUtils.songJsonable
+import controllers.PlayControllerUtils.songJsonable
 import decoders.Mp3Encoder
 import javax.inject.Inject
 import models._
@@ -42,7 +42,7 @@ class Player @Inject()(
       jsonableEncodable(_.fold(songEncodable.encode, songsEncodable encode _.songs))
   }
   private def encodeIfChrome[A](encodable: A)(request: Request[_])(implicit ev: Encodable[A]): Result = {
-    if (ControllerUtils.shouldEncodeMp3(request))
+    if (PlayControllerUtils.shouldEncodeMp3(request))
       ev.encode(encodable)
     Ok(ev.jsonify(encodable))
   }

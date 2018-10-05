@@ -4,7 +4,7 @@ import common.RichJson._
 import common.io.JsonableSaver
 import common.json.{JsonReadable, ToJsonableOps}
 import common.rich.RichT._
-import controllers.ControllerUtils.songJsonable
+import controllers.PlayControllerUtils.songJsonable
 import controllers.UrlPathUtils
 import javax.inject.Inject
 import play.api.mvc.InjectedController

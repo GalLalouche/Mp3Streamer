@@ -8,8 +8,7 @@ import models.ModelJsonable._
 import play.api.libs.json.{JsObject, JsString}
 import play.api.mvc.Request
 
-// TODO inject this
-object ControllerUtils {
+object PlayControllerUtils {
   implicit val songJsonable: Jsonable[Song] = JsonableOverrider[Song](new OJsonableOverrider[Song] {
     override def jsonify(s: Song, original: => JsObject) = original +
         ("file" -> JsString(PlayUrlPathUtils.encodePath(s))) +
