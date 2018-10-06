@@ -1,7 +1,11 @@
 package controllers
 
+import akka.stream.scaladsl.Source
+import akka.util.ByteString
 import javax.inject.Inject
-import play.api.http.Writeable
+import play.api.http.{HttpEntity, Writeable}
+import play.api.libs.iteratee.streams.IterateeStreams
+import play.api.libs.iteratee.Enumerator
 import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent, InjectedController, Request, Result}
 
@@ -18,6 +22,14 @@ class FormatterUtils @Inject()(
   object Resultable {
     implicit def writableEv[A: Writeable]: Resultable[A] = Ok(_)
     implicit val anyEv: Resultable[Any] = (_: Any) => NoContent
+    implicit val streamResultEv: Resultable[StreamResult] = sr => {
+      val source = Source
+          .fromPublisher(IterateeStreams enumeratorToPublisher Enumerator.fromStream(sr.inputStream))
+          .map(ByteString.apply)
+      Status(sr.status)
+          .sendEntity(HttpEntity.Streamed(source, Some(sr.contentLength), Some(sr.mimeType)))
+          .withHeaders(sr.headers.toSeq: _*)
+    }
   }
 
   def ok[C: Writeable](f: Future[C]): Action[AnyContent] = Action.async(f.map(Ok(_)))
