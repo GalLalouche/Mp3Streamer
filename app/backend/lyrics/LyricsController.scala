@@ -1,21 +1,18 @@
 package backend.lyrics
 
 import backend.Url
+import controllers.FormatterUtils
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, InjectedController}
+import play.api.mvc.InjectedController
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-class LyricsController @Inject()(ec: ExecutionContext, $: LyricsFormatter)
+class LyricsController @Inject()(ec: ExecutionContext, $: LyricsFormatter, formatterUtils: FormatterUtils)
     extends InjectedController {
   private implicit val iec: ExecutionContext = ec
 
-  def push(path: String) = Action.async {request =>
-    $.push(path, url = request.body.asText.map(Url).get).map(Ok(_))
-  }
-
-  private def ok(f: Future[String]): Action[AnyContent] = Action.async {f.map(Ok(_))}
-  def get(path: String) = ok($ get path)
-  def setInstrumentalSong(path: String) = ok($.setInstrumentalSong(path))
-  def setInstrumentalArtist(path: String) = ok($.setInstrumentalArtist(path))
+  def push(path: String) = formatterUtils.parse(_.body.asText.map(Url).get)($.push(path, _))
+  def get(path: String) = formatterUtils.ok($ get path)
+  def setInstrumentalSong(path: String) = formatterUtils.ok($.setInstrumentalSong(path))
+  def setInstrumentalArtist(path: String) = formatterUtils.ok($.setInstrumentalArtist(path))
 }
