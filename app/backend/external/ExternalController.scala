@@ -1,15 +1,8 @@
 package backend.external
 
-import backend.external.extensions.SearchExtension
-import backend.recon._
-import backend.recon.Reconcilable.SongExtractor
-import common.RichJson._
-import common.rich.RichT._
-import controllers.UrlPathUtils
 import javax.inject.Inject
-import models.Song
-import play.api.libs.json.Json
-import play.api.mvc.{InjectedController, Result}
+import play.api.libs.json.{JsObject, JsValue}
+import play.api.mvc.{Action, AnyContent, InjectedController}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -18,36 +11,17 @@ import scalaz.syntax.ToBindOps
 
 class ExternalController @Inject()(
     ec: ExecutionContext,
-    external: MbExternalLinksProvider,
-    jsonifier: ExternalJsonifier,
-    urlPathUtils: UrlPathUtils,
+    $: ExternalFormatter,
 ) extends InjectedController
     with ToBindOps with FutureInstances {
   private implicit val iec: ExecutionContext = ec
 
-  def get(path: String) = Action.async {
-    getLinks(urlPathUtils parseSong path)
-  }
+  private def ok(f: Future[JsValue]): Action[AnyContent] = Action.async {f.map(Ok(_))}
 
-  private def getLinks(song: Song): Future[Result] = {
-    val links = external(song)
-    val extendMissing = TimestampedExtendedLinks.links.modify(
-      SearchExtension.extendMissing(ExternalJsonifier.Hosts, song.artist))
-    val f = for {
-      artistJson <- links.artistLinks.map(extendMissing) |> jsonifier.toJsonOrError
-      albumJson <- links.albumLinks |> jsonifier.toJsonOrError
-    } yield Json.obj("Artist links" -> artistJson, "Album links" -> albumJson)
-    f.map(Ok(_))
-  }
-  def refresh(path: String) = Action.async {
-    val song = urlPathUtils parseSong path
-    external.delete(song) >> getLinks(song)
-  }
+  def get(path: String) = ok($.get(path))
+  def refresh(path: String) = ok($.refresh(path))
   def updateRecon(path: String) = Action.async {request =>
-    val json = request.body.asJson.get
-    def getReconId(s: String) = json ostr s map ReconID
-    val song: Song = urlPathUtils parseSong path
-    val updatedRecon = UpdatedRecon.fromOptionals(getReconId("artist"), getReconId("album"))
-    external.updateRecon(song)(updatedRecon) >> getLinks(song)
+    val json = request.body.asJson.get.asInstanceOf[JsObject]
+    $.updateRecon(path, json).map(Ok(_))
   }
 }
