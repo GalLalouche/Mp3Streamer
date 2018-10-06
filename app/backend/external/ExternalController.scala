@@ -20,6 +20,5 @@ class ExternalController @Inject()(
 
   def get(path: String) = formatterUtils.ok($.get(path))
   def refresh(path: String) = formatterUtils.ok($.refresh(path))
-  def updateRecon(path: String) =
-    formatterUtils.parse(_.body.asJson.get.asInstanceOf[JsObject])($.updateRecon(path, _))
+  def updateRecon(path: String) = formatterUtils.parseJson($.updateRecon(path, _))
 }
