@@ -33,6 +33,10 @@ class AllMusicAlbumFinderTest extends SameHostExpanderSpec with MockitoSugar {
       findAlbum("allmusic_discography3.html", Album("A Wintersunset", 1996, Artist("Empyrium")))
           .get.link shouldReturn Url("http://www.allmusic.com/album/a-wintersunset-mw0001654263")
     }
+    "additional hrefs in <td>s chooses the one with .title prefix" in {
+      findAlbum("allmusic_discography4.html", Album("Clouds", 1992, Artist("Tiamat")))
+          .get.link shouldReturn Url("https://www.allmusic.com/album/clouds-mw0000103448")
+    }
     "invalid link returns None" in {
       when(allMusicHelper.isValidLink(any())).thenReturn(Future successful false)
       findAlbum("allmusic_discography.html", Album("A night at the opera", 1975, Artist("Queen"))

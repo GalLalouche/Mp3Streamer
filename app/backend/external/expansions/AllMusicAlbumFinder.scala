@@ -38,7 +38,7 @@ private class AllMusicAlbumFinder @Inject()(
                 year = albumRow.select(".year").asScala.head.text.toInt,
                 artist = album.artist)
           ).find(_._2.|>(score) >= 0.95)
-          .map(_._1.select("td a").asScala
+          .map(_._1.select("td.title a").asScala
               .head
               .attr("href")
               .mapIf(_.startsWith("http").isFalse).to("http://www.allmusic.com" + _)
