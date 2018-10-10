@@ -2,9 +2,11 @@ package backend.external.extensions
 
 import backend.external.{Host, MarkedLink, MarkedLinks}
 import backend.recon.{Album, Artist, Reconcilable}
+import common.rich.RichT._
 
 private sealed trait MusicBrainzExtender[R <: Reconcilable] extends LinkExtender[R] {
   override val host = Host.MusicBrainz
+  protected def extendGoogleSearch: Boolean
   protected def reconcilableType: String // TODO via manifest?
   protected def externalTypeIds: Map[Host, Int]
 
@@ -21,7 +23,9 @@ private sealed trait MusicBrainzExtender[R <: Reconcilable] extends LinkExtender
           .map(e => preseededEdit(e._1, e._2))
           .mkString("&")
       val editUrl = "edit" + (if (preseed.isEmpty) "" else "?" + preseed)
-      append(linkToModify, "edit" -> editUrl) ++ SearchExtension.apply(Host.MusicBrainz, t).extensions.toList
+      append(linkToModify, "edit" -> editUrl)
+          .mapIf(extendGoogleSearch)
+          .to(_ ++ SearchExtension.apply(Host.MusicBrainz, t).extensions.toList)
     }
   }
 
@@ -29,6 +33,7 @@ private sealed trait MusicBrainzExtender[R <: Reconcilable] extends LinkExtender
 }
 
 private object MusicBrainzArtistExtender extends MusicBrainzExtender[Artist] {
+  override protected def extendGoogleSearch = true
   override protected val reconcilableType = "artist"
   override protected val externalTypeIds = Map(
     Host.AllMusic -> 283,
@@ -41,6 +46,7 @@ private object MusicBrainzArtistExtender extends MusicBrainzExtender[Artist] {
 }
 
 private object MusicBrainzAlbumExtender extends MusicBrainzExtender[Album] {
+  override protected def extendGoogleSearch = false
   override protected val reconcilableType = "album"
   override protected val externalTypeIds = Map(
     Host.AllMusic -> 284,

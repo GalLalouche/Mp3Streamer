@@ -40,7 +40,6 @@ class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
           "&edit-album.url.1.text=wiki.pedia&edit-album.url.1.link_type_id=89"
       result shouldReturn Seq[LinkExtension[Album]](
         LinkExtension("edit", Url("music.brainz/edit?" + preseededEdit)),
-        LinkExtension("Google", Url("http://www.google.com/search?q=bar - foo MusicBrainz"))
       )
     }
   }

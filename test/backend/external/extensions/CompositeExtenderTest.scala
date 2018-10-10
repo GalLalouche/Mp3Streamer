@@ -38,8 +38,7 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
       val result = $.apply(artist, links)
 
       val expected: Map[Host, Seq[LinkExtension[Artist]]] = Map(
-        Host.MusicBrainz -> Seq(LinkExtension("edit", Url("foo.bar/edit")),
-          LinkExtension("Google", Url("http://www.google.com/search?q=foobar MusicBrainz"))),
+        Host.MusicBrainz -> Seq(LinkExtension("edit", Url("foo.bar/edit")), LinkExtension("Google", Url("http://www.google.com/search?q=foobar MusicBrainz"))),
         Host.AllMusic -> Seq(LinkExtension("discography", Url("foo.bar/discography"))),
         Host.LastFm -> Seq(LinkExtension("similar", Url("foo.bar/+similar"))),
       )
@@ -53,8 +52,7 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
       val result = $.apply(album, links)
 
       val expected: Map[Host, Seq[LinkExtension[Album]]] = Map(
-        Host.MusicBrainz -> Seq(LinkExtension("edit", Url("foo.bar/edit")),
-          LinkExtension("Google", Url("http://www.google.com/search?q=bar - foo MusicBrainz"))),
+        Host.MusicBrainz -> Seq(LinkExtension("edit", Url("foo.bar/edit"))),
         Host.AllMusic -> Seq(LinkExtension("similar", Url("foo.bar/similar"))),
       )
 
