@@ -4,8 +4,8 @@ import backend.Url
 import backend.external.{Host, MarkedLink}
 import backend.recon.Reconcilable
 
-case class LinkExtension[R <: Reconcilable](name: String, link: Url)
-case class ExtendedLink[R <: Reconcilable](link: Url, host: Host, isNew: Boolean,
+private[external] case class LinkExtension[R <: Reconcilable](name: String, link: Url)
+private[external] case class ExtendedLink[R <: Reconcilable](link: Url, host: Host, isNew: Boolean,
                                            extensions: Traversable[LinkExtension[R]]) {
   def unmark: ExtendedLink[_] = copy(isNew = false)
 }

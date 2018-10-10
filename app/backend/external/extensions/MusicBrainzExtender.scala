@@ -28,15 +28,6 @@ private sealed trait MusicBrainzExtender[R <: Reconcilable] extends LinkExtender
   override def extend = DynamicExtenderHelper.apply(dynamicExtender)
 }
 
-private object MusicBrainzAlbumExtender extends MusicBrainzExtender[Album] {
-  override protected val reconcilableType = "album"
-  override protected val externalTypeIds = Map(
-    Host.AllMusic -> 284,
-    Host.Wikipedia -> 89,
-    Host.RateYourMusic -> 96, // other databases
-  )
-}
-
 private object MusicBrainzArtistExtender extends MusicBrainzExtender[Artist] {
   override protected val reconcilableType = "artist"
   override protected val externalTypeIds = Map(
@@ -45,5 +36,16 @@ private object MusicBrainzArtistExtender extends MusicBrainzExtender[Artist] {
     Host.LastFm -> 840,
     Host.RateYourMusic -> 188, // other databases
     Host.Wikipedia -> 179,
+    Host.Wikidata -> 352,
+  )
+}
+
+private object MusicBrainzAlbumExtender extends MusicBrainzExtender[Album] {
+  override protected val reconcilableType = "album"
+  override protected val externalTypeIds = Map(
+    Host.AllMusic -> 284,
+    Host.Wikipedia -> 89,
+    Host.Wikidata -> 353,
+    Host.RateYourMusic -> 96, // other databases
   )
 }

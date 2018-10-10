@@ -7,10 +7,12 @@ import net.codingwell.scalaguice.ScalaModule
 private[external] object ExpansionsModule extends ScalaModule {
   @Provides private def artistLinkExpanders(
       f: WikidataEnglishExtenderFactory,
-  ): Traversable[ExternalLinkExpander[Artist]] = Vector(f.create)
+      w2w: WikipediaToWikidataExtenderFactory,
+  ): Traversable[ExternalLinkExpander[Artist]] = Vector(f.create, w2w.create)
 
   @Provides private def albumLinkExpanders(
       f: WikidataEnglishExtenderFactory,
       w: WikipediaAlbumExternalLinksExpander,
-  ): Traversable[ExternalLinkExpander[Album]] = Vector(f.create, w)
+      w2w: WikipediaToWikidataExtenderFactory,
+  ): Traversable[ExternalLinkExpander[Album]] = Vector(f.create, w2w.create, w)
 }
