@@ -2,8 +2,9 @@ package backend.external
 
 import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
-import backend.external.recons.{LinkRetriever, LinkRetrievers}
+import backend.external.recons.LinkRetrievers
 import backend.recon.{Reconcilable, ReconID}
+import common.rich.RichTuple._
 import common.rich.collections.RichSet._
 import common.rich.collections.RichTraversableOnce._
 import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances}
@@ -57,14 +58,17 @@ private class ExternalPipe[R <: Reconcilable](
     def aux(result: Set[BaseLink[R]]): Future[Set[BaseLink[R]]] = {
       val existingHosts = extractHosts(links ++ result)
       val nextExpandersByHost =
-        expanders.filterNot(_.potentialHostsExtracted.toSet <= existingHosts).mapBy(_.sourceHost)
+        expanders.filterNot(_.potentialHostsExtracted.toSet <= existingHosts).toMultiMap(_.sourceHost)
+      val expanderLinkPairs: Traversable[(ExternalLinkExpander[R], BaseLink[R])] = for {
+        r <- result
+        expanders <- nextExpandersByHost.get(r.host).toTraversable
+        expander <- expanders
+      } yield expander -> r
       for {
-        newLinkSet <- result.toTraversable.mproduct(nextExpandersByHost get _.host)
-            .traverseM {case (link, expander) => expander.expand(link)}
-            .map(_.toSet)
+        newLinkSet <- expanderLinkPairs.traverseM(_.reduce(_ expand _)).map(_.toSet)
         noNewLinks = newLinkSet <= result
-        result <- if (noNewLinks) Future successful result else aux(newLinkSet ++ result)
-      } yield result
+        r <- if (noNewLinks) Future successful result else aux(newLinkSet ++ result)
+      } yield r
     }
     aux(links.toSet)
   }
