@@ -1,21 +1,20 @@
 package playlist
 
-import controllers.FormatterUtils
+import controllers.PlayActionConverter
 import javax.inject.Inject
 import play.api.libs.json.JsValue
 import play.api.mvc.InjectedController
 
-class PlaylistController @Inject()($: PlaylistFormatter, formatterUtils: FormatterUtils)
+class PlaylistController @Inject()($: PlaylistFormatter, converter: PlayActionConverter)
     extends InjectedController {
-
-  def getQueue = formatterUtils.ok($.getQueue)
+  def getQueue = converter.ok($.getQueue)
   private def setAndReturnLocation(setFromJson: JsValue => Unit, path: String) =
-    formatterUtils.parseJson(j => {
+    converter.parseJson(j => {
       setFromJson(j)
       Created.withHeaders("Location" -> ("playlist/" + path))
     })
   def setQueue() = setAndReturnLocation($.setQueue, "queue")
 
-  def getState = formatterUtils.ok($.getState)
+  def getState = converter.ok($.getState)
   def setState() = setAndReturnLocation($.setState, "state")
 }

@@ -11,11 +11,8 @@ import play.api.mvc.{Action, AnyContent, InjectedController, Request, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FormatterUtils @Inject()(
-    ec: ExecutionContext,
-) extends InjectedController {
-  private implicit val iec: ExecutionContext = ec
-
+/** Converts common play-agnostic return values, usually from formatter helpers, to play Actions. */
+class PlayActionConverter @Inject()(implicit ec: ExecutionContext) extends InjectedController {
   def ok[C: Writeable](f: Future[C]): Action[AnyContent] = Action.async(f.map(Ok(_)))
   def ok[C: Writeable](c: C): Action[AnyContent] = Action(Ok(c))
 
@@ -47,7 +44,7 @@ class FormatterUtils @Inject()(
     implicit def asyncEv[A: Resultable]: Actionable[Future[A]] = f => Action.async(f(_).map(_.result))
   }
 
-  class _Parser[A] private[FormatterUtils](parse: Request[AnyContent] => A) {
+  class _Parser[A] private[PlayActionConverter](parse: Request[AnyContent] => A) {
     def apply[C: Actionable](f: A => C): Action[AnyContent] = implicitly[Actionable[C]].apply(parse andThen f)
   }
 

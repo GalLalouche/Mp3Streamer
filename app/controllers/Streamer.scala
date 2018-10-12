@@ -9,10 +9,11 @@ import scala.concurrent.ExecutionContext
 class Streamer @Inject()(
     ec: ExecutionContext,
     $: StreamerFormatter,
-    formatterUtils: FormatterUtils,
+    converter: PlayActionConverter,
 ) extends InjectedController {
   private implicit val iec: ExecutionContext = ec
-  def download(path: String) = formatterUtils.parse(
+
+  def download(path: String) = converter.parse(
     _.toTuple(_.headers.get("Range"), PlayControllerUtils.shouldEncodeMp3)
   ) {case (range, shouldEncode) => $(path, range, shouldEncode)}
 

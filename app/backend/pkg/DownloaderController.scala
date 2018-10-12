@@ -1,10 +1,10 @@
 package backend.pkg
 
-import controllers.FormatterUtils
+import controllers.PlayActionConverter
 import javax.inject.Inject
 import play.api.mvc.InjectedController
 
-class DownloaderController @Inject()($: DownloaderFormatter, formatterUtils: FormatterUtils)
+class DownloaderController @Inject()($: DownloaderFormatter, converter: PlayActionConverter)
     extends InjectedController {
-  def download(path: String) = formatterUtils.parse(_.headers get "Range")($(path, _))
+  def download(path: String) = converter.parse(_.headers get "Range")($(path, _))
 }
