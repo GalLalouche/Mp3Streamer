@@ -1,57 +1,25 @@
 package backend.search
 
-import backend.recent.NewDir
-import backend.search.MetadataCacher.IndexUpdate
-import common.io.DirectoryRef
-import common.json.{JsonWriteable, ToJsonableOps}
-import common.rich.RichT._
+import common.json.ToJsonableOps
 import controllers.websockets.PlayWebSocketRegistryFactory
+import controllers.PlayActionConverter
+import controllers.websockets.WebSocketRef.WebSocketRefReader
 import javax.inject.Inject
-import models.ModelJsonable._
-import play.api.libs.json.Json
 import play.api.mvc.{InjectedController, WebSocket}
-import rx.lang.scala.{Observable, Observer}
-import songs.SongSelectorState
-
-import scala.concurrent.ExecutionContext
 
 /** Used for updating the cache from the client. */
 class CacherController @Inject()(
-    ec: ExecutionContext,
-    searchState: SearchState,
-    songSelectorState: SongSelectorState,
-    cacherFactory: MetadataCacherFactory,
+    $: CacherFormatter,
+    converter: PlayActionConverter,
     webSocketFactory: PlayWebSocketRegistryFactory,
-    @NewDir newDirObserver: Observer[DirectoryRef]
 ) extends InjectedController with ToJsonableOps {
-  private implicit val iec: ExecutionContext = ec
-  private val cacher = cacherFactory.create
   private val webSocket = webSocketFactory("CacherController")
-
-  private implicit val writesIndexUpdate: JsonWriteable[IndexUpdate] = u => Json.obj(
-    "finished" -> u.currentIndex,
-    "total" -> u.totalNumber,
-    "currentDir" -> u.dir.name,
-  )
-
-  private def toRefreshStatus(o: Observable[IndexUpdate], updateRecent: Boolean) = {
-    if (updateRecent)
-      o.map(_.dir) foreach newDirObserver.onNext
-    o.map(_.jsonify.toString)
-        .doOnNext(webSocket.broadcast)
-        .doOnCompleted {
-          songSelectorState.update()
-          webSocket.broadcast("Reloading searcher")
-          searchState.update() foreach webSocket.broadcast("Finished").const
-        }.subscribe()
-    Ok(views.html.refresh())
+  private def run(wsReader: WebSocketRefReader) = converter.ok {
+    wsReader.run(webSocket)
+    views.html.refresh()
   }
 
-  def forceRefresh() = Action {
-    toRefreshStatus(cacher.indexAll(), updateRecent = false)
-  }
-  def quickRefresh() = Action {
-    toRefreshStatus(cacher.quickRefresh(), updateRecent = true)
-  }
+  def forceRefresh() = run($.forceRefresh())
+  def quickRefresh() = run($.quickRefresh())
   def accept(): WebSocket = webSocket.accept()
 }
