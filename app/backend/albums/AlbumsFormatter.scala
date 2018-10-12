@@ -28,8 +28,8 @@ class AlbumsFormatter @Inject()(ec: ExecutionContext, $: NewAlbums)
   def removeArtist(artistName: String): Future[_] = $.removeArtist(Artist(artistName))
   def ignoreArtist(artistName: String): Future[_] = $.ignoreArtist(Artist(artistName))
 
-  private def extractAlbum(json: JsObject): Album =
+  private def extractAlbum(json: JsValue): Album =
     Album(json str "title", json int "year", Artist(json str "artistName"))
-  def removeAlbum(album: JsObject): Future[_] = $.removeAlbum(extractAlbum(album))
-  def ignoreAlbum(album: JsObject): Future[_] = $.ignoreAlbum(extractAlbum(album))
+  def removeAlbum(album: JsValue): Future[_] = $.removeAlbum(extractAlbum(album))
+  def ignoreAlbum(album: JsValue): Future[_] = $.ignoreAlbum(extractAlbum(album))
 }

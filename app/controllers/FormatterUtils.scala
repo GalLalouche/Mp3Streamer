@@ -6,7 +6,7 @@ import javax.inject.Inject
 import play.api.http.{HttpEntity, Writeable}
 import play.api.libs.iteratee.streams.IterateeStreams
 import play.api.libs.iteratee.Enumerator
-import play.api.libs.json.JsObject
+import play.api.libs.json.JsValue
 import play.api.mvc.{Action, AnyContent, InjectedController, Request, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,6 +38,5 @@ class FormatterUtils @Inject()(
     f(requestParser(request)).map(implicitly[Resultable[C]].result)
   }
   def parseText[C: Resultable](f: String => Future[C]): Action[AnyContent] = parse(_.body.asText.get)(f)
-  def parseJson[C: Resultable](f: JsObject => Future[C]): Action[AnyContent] =
-    parse(_.body.asJson.get.asInstanceOf[JsObject])(f)
+  def parseJson[C: Resultable](f: JsValue => Future[C]): Action[AnyContent] = parse(_.body.asJson.get)(f)
 }
