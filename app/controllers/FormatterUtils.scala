@@ -16,6 +16,9 @@ class FormatterUtils @Inject()(
 ) extends InjectedController {
   private implicit val iec: ExecutionContext = ec
 
+  def ok[C: Writeable](f: Future[C]): Action[AnyContent] = Action.async(f.map(Ok(_)))
+  def ok[C: Writeable](c: C): Action[AnyContent] = Action(Ok(c))
+
   trait Resultable[A] {
     def result(a: A): Result
   }
@@ -31,12 +34,23 @@ class FormatterUtils @Inject()(
           .withHeaders(sr.headers.toSeq: _*)
     }
   }
-
-  def ok[C: Writeable](f: Future[C]): Action[AnyContent] = Action.async(f.map(Ok(_)))
-  def parse[C: Resultable, A](
-      requestParser: Request[AnyContent] => A)(f: A => Future[C]): Action[AnyContent] = Action.async {request =>
-    f(requestParser(request)).map(implicitly[Resultable[C]].result)
+  private implicit class ResultableOps[R: Resultable]($: R) {
+    def result: Result = implicitly[Resultable[R]].result($)
   }
-  def parseText[C: Resultable](f: String => Future[C]): Action[AnyContent] = parse(_.body.asText.get)(f)
-  def parseJson[C: Resultable](f: JsValue => Future[C]): Action[AnyContent] = parse(_.body.asJson.get)(f)
+
+  trait Actionable[A] {
+    def apply(f: Request[AnyContent] => A): Action[AnyContent]
+  }
+  object Actionable {
+    implicit def syncEv[A: Resultable]: Actionable[A] = f => Action(f(_).result)
+    implicit def asyncEv[A: Resultable]: Actionable[Future[A]] = f => Action.async(f(_).map(_.result))
+  }
+
+  class _Parser[A] private[FormatterUtils](parse: Request[AnyContent] => A) {
+    def apply[C: Actionable](f: A => C): Action[AnyContent] = implicitly[Actionable[C]].apply(parse andThen f)
+  }
+
+  def parse[A](parser: Request[AnyContent] => A): _Parser[A] = new _Parser[A](parser)
+  def parseText: _Parser[String] = parse(_.body.asText.get)
+  def parseJson: _Parser[JsValue] = parse(_.body.asJson.get)
 }
