@@ -5,7 +5,7 @@ import backend.search.MetadataCacher.IndexUpdate
 import common.io.DirectoryRef
 import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
-import controllers.websockets.WebSocketRegistryFactory
+import controllers.websockets.PlayWebSocketRegistryFactory
 import javax.inject.Inject
 import models.ModelJsonable._
 import play.api.libs.json.Json
@@ -21,7 +21,7 @@ class CacherController @Inject()(
     searchState: SearchState,
     songSelectorState: SongSelectorState,
     cacherFactory: MetadataCacherFactory,
-    webSocketFactory: WebSocketRegistryFactory,
+    webSocketFactory: PlayWebSocketRegistryFactory,
     @NewDir newDirObserver: Observer[DirectoryRef]
 ) extends InjectedController with ToJsonableOps {
   private implicit val iec: ExecutionContext = ec

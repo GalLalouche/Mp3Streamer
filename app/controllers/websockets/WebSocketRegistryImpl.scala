@@ -19,7 +19,7 @@ private object WebSocketRegistryImpl {
   private implicit val materializer: ActorMaterializer = ActorMaterializer()(system)
 }
 
-private class WebSocketRegistryImpl(logger: Logger, name: String) extends WebSocketRegistry {
+private class WebSocketRegistryImpl(logger: Logger, name: String) extends PlayWebSocketRef {
   import controllers.websockets.WebSocketRegistryImpl._
 
   // TODO extract this newSet BS to a helper class.

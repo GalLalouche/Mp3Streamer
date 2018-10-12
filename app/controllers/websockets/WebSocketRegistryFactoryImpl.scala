@@ -7,8 +7,8 @@ import javax.inject.{Inject, Singleton}
 import common.rich.collections.RichMap._
 
 @Singleton
-private class WebSocketRegistryFactoryImpl @Inject()(logger: Logger) extends WebSocketRegistryFactory {
-  private val registries = new ConcurrentHashMap[String, WebSocketRegistry]
-  override def apply(name: String): WebSocketRegistry =
+private class WebSocketRegistryFactoryImpl @Inject()(logger: Logger) extends PlayWebSocketRegistryFactory {
+  private val registries = new ConcurrentHashMap[String, PlayWebSocketRef]
+  override def apply(name: String): PlayWebSocketRef =
     registries.getOrPutIfAbsent(name, new WebSocketRegistryImpl(logger, name))
 }
