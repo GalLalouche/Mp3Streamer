@@ -3,7 +3,7 @@ package controllers
 import common.io.IODirectory
 import common.json.{JsonWriteable, ToJsonableOps}
 import common.rich.RichT._
-import controllers.PlayerFormatter.ShouldEncodeMp3Reader
+import controllers.SongFormatter.ShouldEncodeMp3Reader
 import decoders.Mp3Encoder
 import javax.inject.Inject
 import models._
@@ -14,7 +14,7 @@ import scala.language.implicitConversions
 
 import scalaz.Reader
 
-private class PlayerFormatter @Inject()(
+private class SongFormatter @Inject()(
     albumFactory: AlbumFactory,
     groups: SongGroups,
     songSelectorState: SongSelectorState,
@@ -67,6 +67,6 @@ private class PlayerFormatter @Inject()(
     songSelectorState.followingSong(urlPathUtils.parseSong(path)).get
 }
 
-object PlayerFormatter {
+object SongFormatter {
   type ShouldEncodeMp3Reader = Reader[Boolean, JsValue]
 }

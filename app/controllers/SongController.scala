@@ -2,13 +2,13 @@ package controllers
 
 import common.Debug
 import common.json.ToJsonableOps
-import controllers.PlayerFormatter.ShouldEncodeMp3Reader
+import controllers.SongFormatter.ShouldEncodeMp3Reader
 import javax.inject.Inject
 import play.api.mvc._
 
 /** Handles fetch requests of JSON information. */
-class Player @Inject()(
-    $: PlayerFormatter,
+class SongController @Inject()(
+    $: SongFormatter,
     converter: PlayActionConverter,
 ) extends InjectedController with ToJsonableOps with Debug {
   private def run(r: ShouldEncodeMp3Reader): Action[AnyContent] =

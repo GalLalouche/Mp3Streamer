@@ -3,74 +3,74 @@
 # ~~~~
 
 # Home page
-GET        /                             controllers.Application.index()
-GET        /mute                         controllers.Application.index()
-GET        /mp3                          controllers.Application.index()
-GET        /sjs                          controllers.Application.sjs()
-GET        /client/*file                 controllers.Application.sjsClient(file)
+GET         /                                        controllers.Application.index()
+GET         /mute                                    controllers.Application.index()
+GET         /mp3                                     controllers.Application.index()
+GET         /sjs                                     controllers.Application.sjs()
+GET         /client/*file                            controllers.Application.sjsClient(file)
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file                 controllers.MyAssets.asset(file)
-GET        /js/*file                     controllers.MyAssets.javascript(file)
+GET         /assets/*file                            controllers.MyAssets.asset(file)
+GET         /js/*file                                controllers.MyAssets.javascript(file)
 
-# Player!
-GET        /data/randomSong              controllers.Player.randomSong
-GET        /data/randomSong/mp3          controllers.Player.randomMp3Song
-GET        /data/randomSong/flac         controllers.Player.randomFlacSong
-GET        /data/albums/*path            controllers.Player.album(path)
-GET        /data/discs/:disc/*path       controllers.Player.discNumber(path, disc)
-GET        /data/songs/*path             controllers.Player.song(path)
-GET        /data/nextSong                controllers.Player.nextSong(path)
+# SongController!
+GET         /data/randomSong                         controllers.SongController.randomSong
+GET         /data/randomSong/mp3                     controllers.SongController.randomMp3Song
+GET         /data/randomSong/flac                    controllers.SongController.randomFlacSong
+GET         /data/albums/*path                       controllers.SongController.album(path)
+GET         /data/discs/:disc/*path                  controllers.SongController.discNumber(path, disc)
+GET         /data/songs/*path                        controllers.SongController.song(path)
+GET         /data/nextSong                           controllers.SongController.nextSong(path)
 
 # Streamer
-GET        /stream/download/*path        controllers.Streamer.download(path)
-GET        /stream/play/*path            controllers.Streamer.playSong(path)
+GET         /stream/download/*path                   controllers.Streamer.download(path)
+GET         /stream/play/*path                       controllers.Streamer.playSong(path)
 
 # Posters
-GET        /posters/*path                controllers.Posters.image(path)
+GET         /posters/*path                           controllers.Posters.image(path)
 
 # Lyrics
-GET        /lyrics/*path                         backend.lyrics.LyricsController.get(path)
-POST       /lyrics/push/*path                    backend.lyrics.LyricsController.push(path)
-POST       /lyrics/instrumental/song/*path       backend.lyrics.LyricsController.setInstrumentalSong(path)
-POST       /lyrics/instrumental/artist/*path     backend.lyrics.LyricsController.setInstrumentalArtist(path)
+GET         /lyrics/*path                            backend.lyrics.LyricsController.get(path)
+POST        /lyrics/push/*path                       backend.lyrics.LyricsController.push(path)
+POST        /lyrics/instrumental/song/*path          backend.lyrics.LyricsController.setInstrumentalSong(path)
+POST        /lyrics/instrumental/artist/*path        backend.lyrics.LyricsController.setInstrumentalArtist(path)
 
 # External
-GET        /external/refresh/*path       backend.external.ExternalController.refresh(path)
-POST       /external/recons/*path        backend.external.ExternalController.updateRecon(path)
-GET        /external/*path               backend.external.ExternalController.get(path)
+GET         /external/refresh/*path                  backend.external.ExternalController.refresh(path)
+POST        /external/recons/*path                   backend.external.ExternalController.updateRecon(path)
+GET         /external/*path                          backend.external.ExternalController.get(path)
 
 # Searcher
-GET        /search/*path                 backend.search.SearchController.search(path)
+GET         /search/*path                            backend.search.SearchController.search(path)
 
 # Web sockets
-GET        /ws/console                   controllers.websockets.ConsoleSocket.accept
-GET        /ws/refresh                   backend.search.CacherController.accept
+GET         /ws/console                              controllers.websockets.ConsoleSocket.accept
+GET         /ws/refresh                              backend.search.CacherController.accept
 
 # Playlist
-GET         /playlist/queue              playlist.PlaylistController.getQueue
-POST        /playlist/queue              playlist.PlaylistController.setQueue()
-GET         /playlist/state              playlist.PlaylistController.getState
-POST        /playlist/state              playlist.PlaylistController.setState()
+GET         /playlist/queue                          playlist.PlaylistController.getQueue
+POST        /playlist/queue                          playlist.PlaylistController.setQueue()
+GET         /playlist/state                          playlist.PlaylistController.getState
+POST        /playlist/state                          playlist.PlaylistController.setState()
 
 # Debug
-GET        /debug/slow_refresh           backend.search.CacherController.forceRefresh()
-GET        /debug/fast_refresh           backend.search.CacherController.quickRefresh()
+GET         /debug/slow_refresh                      backend.search.CacherController.forceRefresh()
+GET         /debug/fast_refresh                      backend.search.CacherController.quickRefresh()
 
 # Albums
-GET        /new_albums/index.html        backend.albums.AlbumsController.index
-GET        /new_albums/albums/           backend.albums.AlbumsController.albums
-PUT        /new_albums/artist/remove     backend.albums.AlbumsController.removeArtist
-PUT        /new_albums/artist/ignore     backend.albums.AlbumsController.ignoreArtist
-PUT        /new_albums/album/remove      backend.albums.AlbumsController.removeAlbum
-PUT        /new_albums/album/ignore      backend.albums.AlbumsController.ignoreAlbum
+GET         /new_albums/index.html                   backend.albums.AlbumsController.index
+GET         /new_albums/albums/                      backend.albums.AlbumsController.albums
+PUT         /new_albums/artist/remove                backend.albums.AlbumsController.removeArtist
+PUT         /new_albums/artist/ignore                backend.albums.AlbumsController.ignoreArtist
+PUT         /new_albums/album/remove                 backend.albums.AlbumsController.removeAlbum
+PUT         /new_albums/album/ignore                 backend.albums.AlbumsController.ignoreAlbum
 
 # Recent
-GET        /recent/albums/               backend.recent.RecentController.recent(amount: Int = 10)
-GET        /recent/albums/:amount        backend.recent.RecentController.recent(amount: Int)
-GET        /recent/last                  backend.recent.RecentController.last
-GET        /ws/last_album                backend.recent.RecentController.accept
+GET         /recent/albums/                          backend.recent.RecentController.recent(amount: Int = 10)
+GET         /recent/albums/:amount                   backend.recent.RecentController.recent(amount: Int)
+GET         /recent/last                             backend.recent.RecentController.last
+GET         /ws/last_album                           backend.recent.RecentController.accept
 
 # Downloader
-GET        /download/*path                 backend.pkg.DownloaderController.download(path)
+GET         /download/*path                          backend.pkg.DownloaderController.download(path)
