@@ -33,6 +33,7 @@ class FormatterUtils @Inject()(
           .sendEntity(HttpEntity.Streamed(source, Some(sr.contentLength), Some(sr.mimeType)))
           .withHeaders(sr.headers.toSeq: _*)
     }
+    implicit val resultEv: Resultable[Result] = e => e
   }
   private implicit class ResultableOps[R: Resultable]($: R) {
     def result: Result = implicitly[Resultable[R]].result($)
