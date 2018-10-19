@@ -47,7 +47,7 @@ private class AllMusicHelper @Inject()(
   def canonize[R <: Reconcilable](link: BaseLink[R]): Future[BaseLink[R]] = {
     val MaxTries = 5
     def followRedirect(currentTry: Int)(url: Url): Future[Url] =
-      if (canonicalLink.matcher(url.address dropAfterLast '/').matches)
+      if (canonicalLink.matcher(url.address takeAfterLast '/').matches)
         Future successful url
       else if (currentTry >= MaxTries) {
         logger.warn(s"AllMusic canonization gave up after <$MaxTries> tries")

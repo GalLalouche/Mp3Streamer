@@ -57,7 +57,7 @@ object Song {
         0 // Some songs, e.g., classical, don't have a year yet.
     }
     val discNumber = Option(tag.getFirst(FieldKey.DISC_NO)).map(_.trim).filterNot(_.isEmpty)
-    def parseReplayGain(s: String): String = s.dropAfterLast('=').drop(1).takeWhile(_ != '"')
+    def parseReplayGain(s: String): String = s.takeAfterLast('=').drop(1).takeWhile(_ != '"')
     // in flac files, REPLAYGAIN_TRACK_GAIN works. In regular files, it doesn't so it needs to be parsed manually :\
     val trackGain = (tag.getFields("REPLAYGAIN_TRACK_GAIN").asScala.headOption map (_.toString))
         .orElse(tag.getFields("TXXX").asScala map (_.toString) find (_ contains "track_gain") map parseReplayGain)

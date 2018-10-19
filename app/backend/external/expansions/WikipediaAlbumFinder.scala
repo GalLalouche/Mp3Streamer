@@ -29,7 +29,7 @@ private class WikipediaAlbumFinder @Inject()(
 
     private def isNotRedirected(link: Url): Future[Boolean] = {
       // TODO Should check if the redirection points to the original url.
-      val title = link.address dropAfterLast '/'
+      val title = link.address takeAfterLast '/'
       val urlWithoutRedirection = s"https://en.wikipedia.org/w/index.php?title=$title&redirect=no"
       it.downloadDocument(Url(urlWithoutRedirection))
           .map(_.select("span#redirectsub").asScala.headOption.exists(_.text == "Redirect page").isFalse)

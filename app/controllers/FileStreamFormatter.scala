@@ -12,7 +12,7 @@ class FileStreamFormatter
     extends ToMoreFoldableOps with OptionInstances {
   def apply(file: FileRef, mimeType: String, range: Option[String]): StreamResult = {
     // assumed format: [bytes=<start>-]
-    def parseRange(s: String): Long = s.dropAfterLast('=').takeWhile(_.isDigit).toLong
+    def parseRange(s: String): Long = s.takeAfterLast('=').takeWhile(_.isDigit).toLong
     val bytesToSkip = range.mapHeadOrElse(parseRange, 0L)
     val fis = file.inputStream
     fis.skip(bytesToSkip)

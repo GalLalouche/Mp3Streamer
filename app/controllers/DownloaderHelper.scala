@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext
 class DownloaderHelper @Inject()(implicit ec: ExecutionContext) extends Results {
   def apply(file: FileRef, mimeType: String, request: Request[AnyContent]): Result = {
     // assumed format: [bytes=<start>-]
-    def parseRange(s: String): Long = s.dropAfterLast('=').takeWhile(_.isDigit).toLong
+    def parseRange(s: String): Long = s.takeAfterLast('=').takeWhile(_.isDigit).toLong
     val bytesToSkip = request.headers get "Range" map parseRange getOrElse 0L
     val fis = file.inputStream
     fis.skip(bytesToSkip)
