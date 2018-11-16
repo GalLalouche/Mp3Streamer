@@ -23,5 +23,6 @@ class RecentFormatter @Inject()(
   def recent(amount: Int): Future[JsValue] = Future(recentAlbums(amount)).map(_.jsonify)
   def last: Future[JsValue] = recent(1)
 
-  def register: WebSocketRefReader = Reader(ws => newAlbumObservable.doOnNext(ws broadcast _.jsonify.toString))
+  def register: WebSocketRefReader =
+    Reader(ws => newAlbumObservable.doOnNext(ws broadcast _.jsonify.toString).subscribe())
 }
