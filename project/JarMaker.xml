@@ -95,6 +95,8 @@
       </manifest>
       <fileset dir="C:/dev/web/Mp3Streamer/target/scala-2.12/classes">
         <include name="common/"/>
+        <!-- TODO remove controller modules from AllModules; add them just to the module created by Play -->
+        <include name="controllers/"/>
         <include name="models/"/>
         <include name="decoders/"/>
         <include name="backend/"/>
