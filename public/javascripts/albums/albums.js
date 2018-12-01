@@ -37,7 +37,7 @@ $(function() {
   }
 
   $.get("albums/", function(e) {
-    Object.keys(e).forEach(artistName => addArtist(artistName, e[artistName]))
+    Object.keys(e).sort().forEach(artistName => addArtist(artistName, e[artistName]))
   })
 
   // buttons
