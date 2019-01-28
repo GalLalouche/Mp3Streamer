@@ -13,9 +13,9 @@ import common.rich.primitives.RichOption._
 import common.rich.primitives.RichString.richString
 import models.Song
 import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
-import org.jaudiotagger.tag.{FieldKey, Tag}
 
 import scala.annotation.tailrec
 import scala.util.Try
@@ -41,7 +41,7 @@ private object FixLabels {
     newTag
   }
 
-  private def fixFile(f: File, fixDiscNumber: Boolean) {
+  private def fixFile(f: File, fixDiscNumber: Boolean): Unit = {
     val audioFile = AudioFileIO read f
     val newTag = fixTag(f, fixDiscNumber)
     AudioFileIO delete audioFile
@@ -49,9 +49,11 @@ private object FixLabels {
     audioFile.commit()
   }
 
-  private def rename(f: File) {
-    Song(f) mapTo (song =>
-      f renameTo new File(f.parent, "%s - %s.%s".format(properTrackString(song.track), song.title, f.extension)))
+  private def properFileName(f: File): String =
+    Song(f) mapTo (song => s"${properTrackString(song.track)} - ${song.title}.${f.extension}")
+
+  private def rename(f: File): Unit = {
+    f renameTo new File(f.parent, properFileName(f))
   }
 
   private def retrieveYear(song: Song): Int =
@@ -98,4 +100,8 @@ private object FixLabels {
       case e: Exception => throw new Exception("could not rename the folder", e)
     }
   }
+
+  // Sometimes renaming FLAC files fails, but like, only for some files?!
+  def verify(dir: Directory): Boolean =
+    dir.files.filter(_.extension |> Set("mp3", "flac")) forall (f => f.name == properFileName(f))
 }

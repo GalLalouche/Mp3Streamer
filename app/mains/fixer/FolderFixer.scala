@@ -17,12 +17,11 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import scala.concurrent.Future
 
 import scalaz.std.FutureInstances
-import scalaz.syntax.ToFunctorOps
 
 object FolderFixer
-    extends ToFunctorOps with ToMoreMonadErrorOps with FutureInstances {
+    extends ToMoreMonadErrorOps with FutureInstances {
   private val injector = Guice createInjector StandaloneModule
-  private implicit val it: InternetTalker = injector.instance[InternetTalker]
+  private implicit val it = injector.instance[InternetTalker]
 
   private def findArtistFolder(artist: String): Option[Directory] = {
     println("finding matching folder")
@@ -66,7 +65,7 @@ object FolderFixer
         .void
   }
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     def extractArtistFromFile(folder: Directory): String = folder
         .files
         .filter(Set("mp3", "flac") contains _.extension)
@@ -80,7 +79,7 @@ object FolderFixer
     println("fixing directory")
     val fixedDirectory = FixLabels fix folder.cloneDir()
     moveDirectory(artist, location, folderImage, fixedDirectory)
-        .map(injector.instance[FoobarGain].calculateTrackGain)
+        .filterWithMessage(FixLabels.verify, "Failed to rename some files!")
         .>|(updateServer())
         .>|(println("--Done!--"))
         .get
