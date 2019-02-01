@@ -48,7 +48,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick" % "3.2.1",
   "io.reactivex" %% "rxscala" % "0.26.4",
   "me.tongfei" % "progressbar" % "0.7.1",
-  "my.net.jthink" % "jaudiotagger" % "2.2.6-SNAPSHOT",
+  "my.net.jthink" % "jaudiotagger" % "2.2.7-SNAPSHOT",
   "net.codingwell" %% "scala-guice" % "4.2.1",
   "org.apache.commons" % "commons-io" % "1.3.2",
   "org.jsoup" % "jsoup" % "1.8.3",

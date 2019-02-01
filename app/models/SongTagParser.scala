@@ -16,38 +16,35 @@ import scala.collection.JavaConverters._
 private object SongTagParser {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
 
-  private val customPattern =
-    """Description="([^"]+)"; Text="([^"]+)"; """.r
   private val yearPattern = """.*(\d{4}).*""".r
 
+  private val customPattern = """Description="([^"]+)"; Text="([^"]+)"; """.r
   private implicit class RichTag(private val $: Tag) extends AnyVal {
     private def filterNonEmpty(s: String): Option[String] = s.trim.opt.filter(_.nonEmpty)
     def firstNonEmpty(key: String): Option[String] = $.getFirst(key) |> filterNonEmpty
     def firstNonEmpty(key: FieldKey): Option[String] = $.getFirst(key) |> filterNonEmpty
+    def customTags = $.getFields("TXXX").asScala
+        .map(_.toString)
+        .filter(_ matches customPattern.pattern)
+        .map({case customPattern(key, value) => key -> value})
+        .toMap
   }
 
   private case class OptionalFields(
       trackGain: Option[Double],
-      opus: Option[String],
       performanceYear: Option[Int],
   )
   private def parseReplayGain(s: String): Double = s.split(' ').head.toDouble
   // FLAC tag supports proper custom tag fetching, but MP3 tags have to be parsed manually
   private def parseFlacTag(tag: Tag) = OptionalFields(
     trackGain = tag.firstNonEmpty("REPLAYGAIN_TRACK_GAIN").map(parseReplayGain),
-    opus = tag.firstNonEmpty("OPUS"),
     performanceYear = tag.firstNonEmpty("PERFORMANCEYEAR").map(_.toInt),
   )
   private def parseMp3Tag(tag: Tag) = {
-    val customTags = tag.getFields("TXXX").asScala
-        .map(_.toString)
-        .filter(_ matches customPattern.pattern)
-        .map({case customPattern(key, value) => key -> value})
-        .toMap
+    val ct = tag.customTags
     OptionalFields(
-      trackGain = customTags.get("replaygain_track_gain").map(parseReplayGain),
-      opus = customTags.get("OPUS"),
-      performanceYear = customTags.get("PERFORMANCEYEAR").map(_.toInt),
+      trackGain = ct.get("replaygain_track_gain").map(parseReplayGain),
+      performanceYear = ct.get("PERFORMANCEYEAR").map(_.toInt),
     )
   }
 
@@ -78,7 +75,7 @@ private object SongTagParser {
       discNumber = tag.firstNonEmpty(FieldKey.DISC_NO),
       trackGain = optionalFields.trackGain,
       composer = tag.firstNonEmpty(FieldKey.COMPOSER),
-      opus = optionalFields.opus,
+      opus = tag.firstNonEmpty(FieldKey.OPUS),
       performanceYear = optionalFields.performanceYear,
     )
   }
