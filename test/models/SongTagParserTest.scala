@@ -5,14 +5,14 @@ package models
 import common.AuxSpecs
 import org.scalatest.FreeSpec
 
-class SongTest extends FreeSpec with AuxSpecs {
+class SongTagParserTest extends FreeSpec with AuxSpecs {
   private def getSong(location: String) = getResourceFile(location)
 
   "Song" - {
     "parse id3tag" - {
       "mp3" - {
-        "commmon" in {
-          val $ = Song(getSong("song.mp3"))
+        "common" in {
+          val $ = SongTagParser(getSong("song.mp3"))
           $.title shouldReturn "Hidden Track"
           $.artistName shouldReturn "Sentenced"
           $.albumName shouldReturn "Crimson"
@@ -26,10 +26,10 @@ class SongTest extends FreeSpec with AuxSpecs {
         }
       }
       "parse year correctly" in {
-        Song(getSong("songWithYear.mp3")).year shouldReturn 1999
+        SongTagParser(getSong("songWithYear.mp3")).year shouldReturn 1999
       }
       "non-empty optionals" in {
-        val $: Song = Song(getSong("songWithMoreInfo.mp3"))
+        val $: Song = SongTagParser(getSong("songWithMoreInfo.mp3"))
         $.discNumber.get shouldReturn "Foobar"
         $.trackGain.get shouldReturn -1.25
         $.opus.get shouldReturn 42
@@ -40,7 +40,7 @@ class SongTest extends FreeSpec with AuxSpecs {
 
     "flac" - {
       "regular" in {
-        val $ = Song(getSong("flacSong.flac"))
+        val $ = SongTagParser(getSong("flacSong.flac"))
         $.title shouldReturn "Hidden Track"
         $.artistName shouldReturn "Ben Folds Five"
         $.albumName shouldReturn "Whatever and Ever Amen"
@@ -50,7 +50,7 @@ class SongTest extends FreeSpec with AuxSpecs {
         $.trackGain shouldReturn None
       }
       "with optionals" in {
-        val $ = Song(getSong("flacWithMoreInfo.flac"))
+        val $ = SongTagParser(getSong("flacWithMoreInfo.flac"))
         $.discNumber.get shouldReturn "1/2"
         $.trackGain.get shouldReturn 1.25
         $.opus.get shouldReturn 16
