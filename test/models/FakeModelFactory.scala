@@ -14,7 +14,7 @@ class FakeModelFactory {
   def song(filePath: String = s"${UUID.randomUUID()}.mp3", title: String = "title",
       artistName: String = "artist", albumName: String = "album", track: Int = 1, year: Int = 2000,
       bitRate: String = "320", duration: Int = 3600, size: Long = 1000, discNumber: Option[String] = None,
-      trackGain: Option[Double] = None, composer: Option[String] = None, opus: Option[Int] = None,
+      trackGain: Option[Double] = None, composer: Option[String] = None, opus: Option[String] = None,
       performanceYear: Option[Int] = None,
   ): MemorySong =
     MemorySong(root.addFile(filePath), title, artistName, albumName, track, year, bitRate, duration, size,

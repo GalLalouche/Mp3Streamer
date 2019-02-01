@@ -26,12 +26,16 @@ private object SongTagParser {
     def firstNonEmpty(key: FieldKey): Option[String] = $.getFirst(key) |> filterNonEmpty
   }
 
-  private case class OptionalFields(trackGain: Option[Double], opus: Option[Int], performanceYear: Option[Int])
+  private case class OptionalFields(
+      trackGain: Option[Double],
+      opus: Option[String],
+      performanceYear: Option[Int],
+  )
   private def parseReplayGain(s: String): Double = s.split(' ').head.toDouble
   // FLAC tag supports proper custom tag fetching, but MP3 tags have to be parsed manually
   private def parseFlacTag(tag: Tag) = OptionalFields(
     trackGain = tag.firstNonEmpty("REPLAYGAIN_TRACK_GAIN").map(parseReplayGain),
-    opus = tag.firstNonEmpty("OPUS").map(_.toInt),
+    opus = tag.firstNonEmpty("OPUS"),
     performanceYear = tag.firstNonEmpty("PERFORMANCEYEAR").map(_.toInt),
   )
   private def parseMp3Tag(tag: Tag) = {
@@ -42,7 +46,7 @@ private object SongTagParser {
         .toMap
     OptionalFields(
       trackGain = customTags.get("replaygain_track_gain").map(parseReplayGain),
-      opus = customTags.get("OPUS").map(_.toInt),
+      opus = customTags.get("OPUS"),
       performanceYear = customTags.get("PERFORMANCEYEAR").map(_.toInt),
     )
   }

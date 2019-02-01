@@ -32,7 +32,7 @@ object ModelJsonable extends ToJsonableOps {
         track = json int "track", year = json int "year", bitRate = json str "bitrate",
         duration = json int "duration", size = json int "size", discNumber = json ostr "discNumber",
         trackGain = json.\("trackGain").asOpt[Double], composer = json.\("composer").asOpt[String],
-        opus = json.\("opus").asOpt[Int], performanceYear = json.\("performanceYear").asOpt[Int],
+        opus = json.\("opus").asOpt[String], performanceYear = json.\("performanceYear").asOpt[Int],
       )
     }
   }

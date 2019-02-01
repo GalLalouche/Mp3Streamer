@@ -21,7 +21,7 @@ object ArbitraryModels {
     discNumber <- arbitrary[Option[String]]
     trackGain <- arbitrary[Option[Int]].map(_.map(_ % 10000).map(_ / 32.0))
     composer <- arbitrary[Option[String]]
-    opus <- arbitrary[Option[Int]].map(_.map(_ % 1000))
+    opus <- arbitrary[Option[String]]
     performanceYear <- arbitrary[Option[Int]].map(_.map(_ % 3000))
   } yield {
     IOSong(IOFile(new File(filePath).getAbsoluteFile),
