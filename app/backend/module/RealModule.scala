@@ -23,7 +23,7 @@ object RealModule extends ScalaModule with ModuleUtils {
     bind[DbProvider] toInstance new DbProvider {
       override lazy val profile: JdbcProfile = SQLiteProfile
       override lazy val db: profile.backend.DatabaseDef =
-        profile.api.Database.forURL("jdbc:sqlite:d:/media/music/MBRecon.sqlite", driver = "org.sqlite.JDBC")
+        profile.api.Database.forURL("jdbc:sqlite:d:/media/streamer/data/MBRecon.sqlite", driver = "org.sqlite.JDBC")
     }
 
     requireBinding[Logger]
