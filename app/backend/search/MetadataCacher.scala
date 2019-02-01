@@ -70,10 +70,16 @@ private class MetadataCacher(
 
   // TODO handle empty directories
   private def getDirectoryInfo(d: DirectoryRef, onParsingCompleted: () => Unit): DirectoryInfo = {
-    val songs = mf getSongsInDir d
-    val album = songs.head.album
-    onParsingCompleted()
-    DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))
+    try {
+      val songs = mf getSongsInDir d
+      val album = songs.head.album
+      onParsingCompleted()
+      DirectoryInfo(songs, album, Artist(songs.head.artistName, Set(album)))
+    } catch {
+      case e: Throwable =>
+        ec.reportFailure(e)
+        throw e
+    }
   }
   private val updatingActor =
     SimpleTypedActor.apply[UpdateType, Observable[IndexUpdate]]("MetadataCacher", _.apply())
