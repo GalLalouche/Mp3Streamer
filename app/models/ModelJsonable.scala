@@ -21,6 +21,9 @@ object ModelJsonable extends ToJsonableOps {
         "size" -> s.size,
         "discNumber" -> s.discNumber,
         "trackGain" -> s.trackGain,
+        "composer" -> s.composer,
+        "opus" -> s.opus,
+        "performanceYear" -> s.performanceYear
     )
     override def parse(json: JsObject): Song = {
       val file = new File(json str "file")
@@ -28,7 +31,9 @@ object ModelJsonable extends ToJsonableOps {
         artistName = json str "artistName", albumName = json str "albumName",
         track = json int "track", year = json int "year", bitRate = json str "bitrate",
         duration = json int "duration", size = json int "size", discNumber = json ostr "discNumber",
-        trackGain = json.\("trackGain").asOpt[Double])
+        trackGain = json.\("trackGain").asOpt[Double], composer = json.\("composer").asOpt[String],
+        opus = json.\("opus").asOpt[Int], performanceYear = json.\("performanceYear").asOpt[Int],
+      )
     }
   }
 
@@ -41,7 +46,7 @@ object ModelJsonable extends ToJsonableOps {
         "songs" -> a.songs.jsonify,
     )
     override def parse(json: JsObject): Album = {
-      new Album(
+      Album(
         new IODirectory(json str "dir"),
         title = json str "title",
         artistName = json str "artistName",
