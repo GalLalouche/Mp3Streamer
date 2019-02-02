@@ -1,5 +1,3 @@
-
-
 package models
 
 import common.AuxSpecs
@@ -34,6 +32,8 @@ class SongTagParserTest extends FreeSpec with AuxSpecs {
         $.trackGain.get shouldReturn -1.25
         $.opus.get shouldReturn "42"
         $.composer.get shouldReturn "Traditional"
+        $.conductor.get shouldReturn "yes"
+        $.orchestra.get shouldReturn "no"
         $.performanceYear.get shouldReturn 1995
       }
     }
@@ -55,6 +55,8 @@ class SongTagParserTest extends FreeSpec with AuxSpecs {
         $.trackGain.get shouldReturn 1.25
         $.opus.get shouldReturn "BWV 16"
         $.composer.get shouldReturn "Ben Folds"
+        $.conductor.get shouldReturn "Condi"
+        $.orchestra.get shouldReturn "Orci"
         $.performanceYear.get shouldReturn 1999
       }
     }

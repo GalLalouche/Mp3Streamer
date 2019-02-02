@@ -21,12 +21,14 @@ object ArbitraryModels {
     discNumber <- arbitrary[Option[String]]
     trackGain <- arbitrary[Option[Int]].map(_.map(_ % 10000).map(_ / 32.0))
     composer <- arbitrary[Option[String]]
+    conductor <- arbitrary[Option[String]]
+    orchestra <- arbitrary[Option[String]]
     opus <- arbitrary[Option[String]]
     performanceYear <- arbitrary[Option[Int]].map(_.map(_ % 3000))
   } yield {
     IOSong(IOFile(new File(filePath).getAbsoluteFile),
       title, artistName, albumName, track, year, bitRate, duration, size, discNumber, trackGain,
-      composer, opus, performanceYear)
+      composer, conductor, orchestra, opus, performanceYear)
   }
   implicit lazy val arbAlbum: Gen[Album] = for {
     filePath <- arbitrary[String]

@@ -25,6 +25,8 @@ class ControllerSongJsonifier @Inject()(urlPathUtils: UrlPathUtils)
           ("poster" -> JsString("/posters/" + Poster.getCoverArt(s.asInstanceOf[IOSong]).path)) +
           (s.file.extension -> JsString("/stream/download/" + urlPathUtils.encodePath(s)))
       appendOptional($, "composer", s.composer)
+          .mapTo(appendOptional(_, "conductor", s.conductor))
+          .mapTo(appendOptional(_, "orchestra", s.orchestra))
           .mapTo(appendOptional(_, "opus", s.opus))
           .mapTo(appendOptional(_, "performanceYear", s.performanceYear))
     }

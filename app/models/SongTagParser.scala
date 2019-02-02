@@ -75,6 +75,8 @@ private object SongTagParser {
       discNumber = tag.firstNonEmpty(FieldKey.DISC_NO),
       trackGain = optionalFields.trackGain,
       composer = tag.firstNonEmpty(FieldKey.COMPOSER),
+      conductor = tag.firstNonEmpty(FieldKey.CONDUCTOR),
+      orchestra = tag.firstNonEmpty(FieldKey.ORCHESTRA),
       opus = tag.firstNonEmpty(FieldKey.OPUS),
       performanceYear = optionalFields.performanceYear,
     )
