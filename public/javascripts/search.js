@@ -32,8 +32,19 @@ $(function() {
       const song = $(this).data()
       $(this).custom_tooltip(`${song.year}, ${song.albumName}, ${song.track}`)
     })
-    const albumItem = function(album) {
-      const item = `${icon(addEntireAlbum)} ${icon(downloadFile)} ${album.artistName}: ${album.title} (${album.year || "N/A"})`
+    function albumItem(album) {
+      function albumText() {
+        if (!album.composer) // Assumes all classical pieces have a composer field.
+          return `${album.artistName}: ${album.year || "NO_YEAR"} ${album.title}`
+
+        const titleContainsComposer = album.title.toLowerCase().includes(album.composer.toLowerCase())
+        const pieceTitle = titleContainsComposer ? album.title : `${album.composer}'s ${album.title}`
+        const base = `${album.artistName}: ${pieceTitle}`
+        const opus = album.opus ? `, ${album.opus}` : ''
+        const other = [album.performanceYear, album.conductor, album.orchestra].filter(x => x)
+        return base + opus + (other ? ` (${other.join(", ")})`: '')
+      }
+      const item = `${icon(addEntireAlbum)} ${icon(downloadFile)} ` + albumText()
       if (album.discNumbers) {
         const discNumberElements = album.discNumbers.map(d => `<span>${icon(addDisc)}${d}</span>`).join(" ")
         return item + "<br>&emsp;&emsp;" + discNumberElements
