@@ -267,16 +267,9 @@
 
       // The title is given next in the HTML otherwise the float:right on the free media corrupts in IE6/7
       const itemHref = `<a href='javascript:;' class='${this.options.playlistOptions.itemClass}' tabindex='1'>`
-      const albumMetadata = [
-        `${media.albumName}${media.discNumber ? "[" + media.discNumber + "]" : ""}`,
-        media.track,
-        media.year,
-        media.bitrate + "kbps",
-        media.duration.timeFormat(),
-      ]
-      const mediaMetadata = `by ${media.artistName} (${albumMetadata.join(", ")})`
-      listItem +=
-          `<span class='playlist-item'>${itemHref}${media.title} <span class='jp-artist'>${mediaMetadata}</span></a></span>`
+          + `${media.title} <span class='jp-artist'>${playlistUtils.mediaMetdata(media)}</span>`
+          + `</a>`
+      listItem += `<span class='playlist-item'>${itemHref}</span>`
       appendRemoveItem(options.removeThisClass, "&times;")
       appendRemoveItem(options.removeUpClass, "&uparrow;")
       appendRemoveItem(options.removeDownClass, "&downarrow;")

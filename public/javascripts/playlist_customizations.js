@@ -20,4 +20,17 @@ $(function() {
       return // Clicked song is currently playing
     playlist.play(clickedIndex)
   })
+
+  playlistUtils.mediaMetdata = function(media) {
+    const albumMetadata = [
+      `${media.albumName}${media.discNumber ? "[" + media.discNumber + "]" : ""}`,
+      media.track,
+      media.year,
+      media.bitrate + "kbps",
+      media.duration.timeFormat(),
+    ]
+    return `by <b>${media.artistName}</b> (${albumMetadata.join(", ")})`
+  }
 })
+
+playlistUtils = {}
