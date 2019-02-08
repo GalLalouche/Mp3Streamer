@@ -87,7 +87,8 @@ class Playlist {
     return this.songs().length
   }
   toString(song) {
-    return `${song.title} by ${song.artistName} (${song.albumName}, ${song.track}, ${song.year}, ${song.bitrate}kbps, ${song.duration.timeFormat()}`
+    const metadata = playlistUtils.mediaMetadata(song).replace(/<.*?>/g, '') // Remove <b> and stuff like that
+    return `${song.title}, ${metadata}`
   }
   // The list presentation reversed, so song at index 0 is the actually the last song, not the first.
   getDisplayedIndex(index) {

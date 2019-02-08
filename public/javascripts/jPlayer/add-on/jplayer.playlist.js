@@ -267,7 +267,7 @@
 
       // The title is given next in the HTML otherwise the float:right on the free media corrupts in IE6/7
       const itemHref = `<a href='javascript:;' class='${this.options.playlistOptions.itemClass}' tabindex='1'>`
-          + `${media.title} <span class='jp-artist'>${playlistUtils.mediaMetdata(media)}</span>`
+          + `${media.title} <span class='jp-artist'>${playlistUtils.mediaMetadata(media)}</span>`
           + `</a>`
       listItem += `<span class='playlist-item'>${itemHref}</span>`
       appendRemoveItem(options.removeThisClass, "&times;")

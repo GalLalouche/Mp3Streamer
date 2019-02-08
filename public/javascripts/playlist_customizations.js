@@ -21,15 +21,36 @@ $(function() {
     playlist.play(clickedIndex)
   })
 
-  playlistUtils.mediaMetdata = function(media) {
-    const albumMetadata = [
-      `${media.albumName}${media.discNumber ? "[" + media.discNumber + "]" : ""}`,
-      media.track,
-      media.year,
+  playlistUtils.mediaMetadata = function(media) {
+    const isClassicalPiece = media.composer
+    function additionalData() {
+      if (!isClassicalPiece)
+        return [
+          `${media.albumName}${media.discNumber ? "[" + media.discNumber + "]" : ""}`,
+          media.track,
+          media.year,
+        ]
+
+      const titleContainsComposer = media.albumName.toLowerCase().includes(media.composer.toLowerCase())
+      const pieceTitle = titleContainsComposer ? media.albumName : `${media.composer}'s ${media.albumName}`
+      const opusSuffix = media.opus ? `, ${media.opus}` : ''
+      return [
+        pieceTitle + opusSuffix,
+        media.year,
+        media.conductor,
+        media.orchestra,
+        media.performanceYear,
+        media.track,
+      ].filter(x => x)
+    }
+    const baseData = [
       media.bitrate + "kbps",
       media.duration.timeFormat(),
     ]
-    return `by <b>${media.artistName}</b> (${albumMetadata.join(", ")})`
+    const allData = additionalData().concat(baseData)
+
+    const byPrefix = (isClassicalPiece ? "performed by" : "by")
+    return `${byPrefix} <b>${media.artistName}</b> (${allData.join(", ")})`
   }
 })
 
