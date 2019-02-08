@@ -26,8 +26,21 @@ $(function() {
     if (parseInt(results.attr("time")) > requestTime)
       return // a later request has already set the result
     results.attr("time", requestTime)
-    specificResults("song", s =>
-        `${icon(add)} ${icon(play)} ${s.artistName}: ${s.title} (${s.duration.timeFormat()})`)
+    function songItem(song) {
+      function suffix() {
+        if (!song.composer)
+          return `${song.artistName}: ${song.title} (${song.duration.timeFormat()})`
+
+        // TODO handle code duplication of all the toStrings for composers
+        const albumNameContainsComposer = song.albumName.toLowerCase().includes(song.composer.toLowerCase())
+        const base = `${song.artistName}: ${song.title}`
+        const pieceTitle = albumNameContainsComposer ? song.albumName : `${song.composer}'s ${song.albumName}`
+        const opus = song.opus ? `, ${song.opus}` : ''
+        return `${base}, ${pieceTitle}${opus}`
+      }
+      return `${icon(add)} ${icon(play)} ${suffix()}`
+    }
+    specificResults("song", songItem)
     $.each($(".song-result"), function() {
       const song = $(this).data()
       $(this).custom_tooltip(`${song.year}, ${song.albumName}, ${song.track}`)
