@@ -23,8 +23,10 @@ object FindSongsNotInPlaylist
       throw new IllegalStateException("Please update the playlist file.")
     val playlistSongs = file // UTF-8 helps deal with Hebrew songs
         .lines
+        .toList
         // removes UTF-BOM at least until I fix it in ScalaCommon
         .mapIf(_.head.head.toInt == UtfBytemarkPrefix).to(e => e.tail :+ e.head.drop(1))
+        .mapIf(_.head == "#").to(_.tail) // Never version of Foobar2000 decided to add # to file header :\
         .map(musicFiles.dir.path.+("/").+)
         .map(_.toLowerCase.replaceAll("\\\\", "/"))
         .toSet
