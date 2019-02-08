@@ -3,8 +3,8 @@ package common
 import common.RichJson._
 import common.rich.RichT._
 import org.scalatest.{FreeSpec, Matchers}
+import play.api.libs.json.{JsNull, JsNumber, JsObject, Json}
 import play.api.libs.json.Json.JsValueWrapper
-import play.api.libs.json.{JsNull, JsObject, Json}
 
 class RichJsonTest extends FreeSpec with AuxSpecs with Matchers {
   private def withObject(a: JsValueWrapper): JsObject = Json.obj("foo" -> a)
@@ -33,6 +33,18 @@ class RichJsonTest extends FreeSpec with AuxSpecs with Matchers {
     }
     "empty string" in {
       withObject("") |> verifyHasNot
+    }
+  }
+
+  "DynamicJsonObject" - {
+    val $ = Json.obj("foo" -> 2)
+    "append" - {
+      "None" in {
+        $.append[Int]("bar" -> None) shouldReturn $
+      }
+      "Some" in {
+        $.append("bar" -> Some(4)) shouldReturn $ + ("bar" -> JsNumber(4))
+      }
     }
   }
 }
