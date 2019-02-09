@@ -1,6 +1,9 @@
 package backend.lyrics.retrievers
 
+import java.util.regex.Pattern
+
 import com.google.common.annotations.VisibleForTesting
+import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
 import javax.inject.Inject
 import models.Song
@@ -21,22 +24,22 @@ private[lyrics] class AzLyricsRetriever @Inject()(singleHostHelper: SingleHostPa
 
 private object AzLyricsRetriever {
   @VisibleForTesting
-  private[retrievers] val url = new SingleHostUrl {
+  private[retrievers] val url: SingleHostUrl = new SingleHostUrl {
     private def normalize(s: String): String = s.filter(e => e.isDigit || e.isLetter).toLowerCase
 
     override val hostPrefix: String = "https://www.azlyrics.com/lyrics"
     override def urlFor(s: Song) = s"$hostPrefix/${normalize(s.artistName)}/${normalize(s.title)}.html"
   }
   @VisibleForTesting
-  private[retrievers] val parser = new SingleHostParser {
+  private val XmlComment = Pattern.compile("<!--.*?-->\\s*")
+  private[retrievers] val parser: SingleHostParser = new SingleHostParser {
     // AZ lyrics don't support instrumental :\
     override def apply(d: Document, s: Song): LyricParseResult = LyricParseResult.Lyrics(
       d.select(".main-page .text-center div").asScala
           .filter(_.classNames.isEmpty)
           .single
           .html
-          // TODO replace with parsec
-          .replaceAll("<!--.*?-->\\s*", ""))
+          .mapTo(XmlComment.matcher(_).replaceAll("")))
     override val source = "AZLyrics"
   }
 }
