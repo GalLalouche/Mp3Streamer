@@ -7,13 +7,12 @@ import backend.external.{BaseLink, Host}
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
 import common.rich.collections.RichSeq._
+import common.rich.primitives.RichString._
 import javax.inject.Inject
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
-import common.rich.primitives.RichString._
 
-// TODO this really shouldn't be generic, but ~> polymorphic
 private class WikipediaToWikidataExtenderFactory @Inject()(helper: ExternalLinkExpanderHelper) {
   private def canonize(href: String): String = {
     val wikidataId = href.split("/").last

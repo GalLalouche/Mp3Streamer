@@ -10,7 +10,6 @@ import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
 
-// TODO this really shouldn't be generic, but ~> polymorphic
 private class WikidataEnglishExtenderFactory @Inject()(helper: ExternalLinkExpanderHelper) {
   @VisibleForTesting
   def parse[R <: Reconcilable](d: Document) =
