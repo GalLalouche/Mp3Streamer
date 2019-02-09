@@ -19,8 +19,7 @@ object CleanModule extends ScalaModule with ModuleUtils
     typeListener[Storage[_, _]](injectee => {
       import common.rich.RichFuture._
       implicit val ec: ExecutionContext = ecProvider.get()
-      // TODO createTableIfItDoesn'tExist?
-      injectee.utils.doesTableExist.ifFalse(injectee.utils.createTable).get
+      injectee.utils.createTableIfNotExists.get
     })
 
   override def configure(): Unit = {
