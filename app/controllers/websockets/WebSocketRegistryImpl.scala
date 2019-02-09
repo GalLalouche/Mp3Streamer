@@ -1,16 +1,13 @@
 package controllers.websockets
 
-import java.util.concurrent.ConcurrentHashMap
-import java.util.Collections
-
 import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
 import akka.stream.ActorMaterializer
 import backend.logging.Logger
+import common.rich.collections.RichSet
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.WebSocket
 import rx.lang.scala.Subject
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 private object WebSocketRegistryImpl {
@@ -22,9 +19,7 @@ private object WebSocketRegistryImpl {
 private class WebSocketRegistryImpl(logger: Logger, name: String) extends PlayWebSocketRef {
   import controllers.websockets.WebSocketRegistryImpl._
 
-  // TODO extract this newSet BS to a helper class.
-  private val actors: mutable.Set[ActorRef] =
-    Collections.newSetFromMap[ActorRef](new ConcurrentHashMap[ActorRef, java.lang.Boolean]()).asScala
+  private val actors: mutable.Set[ActorRef] = RichSet.concurrentSet
   private class SocketActor(out: ActorRef) extends Actor {
     override def preStart() = actors += this.self
     override def postStop() = actors -= this.self
