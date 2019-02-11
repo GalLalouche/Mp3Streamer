@@ -61,8 +61,11 @@ $(function() {
       }
       const item = `${icon(ADD_ENTIRE_ALBUM)} ${icon(DOWNLOAD_FILE)} ` + albumText()
       if (album.discNumbers) {
-        const discNumberElements = album.discNumbers.map(d => `<span>${icon(ADD_DISC)}${d}</span>`).join(" ")
-        return item + "<br>&emsp;&emsp;" + discNumberElements
+        const discNumberElements = album.discNumbers.map(d => `<td>${icon(ADD_DISC)}${d}</td>`).join(" ")
+        // Using a table handles the case where there are too many disc numbers to fit a in single line, e.g.,
+        // https://en.wikipedia.org/wiki/The_Color_Spectrum. In such a case, the list will simply overflow to
+        // the next line.
+        return item + `<table id="discNumbers"><tr>${discNumberElements}</tr></table>`
       } else
         return item
     })
@@ -104,22 +107,23 @@ $(function() {
     })
   }
 
+  const getData = e => $(e).closest("li").data()
   results.on("click", '#song-results .fa', function(e) {
-    const song = $(this).parent().data()
+    const song = getData(this)
     const isPlay = e.target.classList.contains("fa-play")
     $.get("data/songs/" + song.file, e => gplaylist.add(e, isPlay))
   })
   results.on("click", `.album-result .fa-${ADD_ENTIRE_ALBUM}`, function() {
-    const album = $(this).parent().data()
+    const album = getData(this)
     $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
   })
   results.on("click", `.album-result .fa-${ADD_DISC}`, function() {
-    const album = $(this).parent().parent().data()
+    const album = getData(this)
     const discNumber = $(this).parent().text()
     $.get(`data/discs/${discNumber}/${album.dir}`, e => gplaylist.add(e, false))
   })
   results.on("click", `.album-result .fa-${DOWNLOAD_FILE}`, function() {
-    const album = $(this).parent().data()
+    const album = getData(this)
     $.get("download/" + album.dir)
   })
 

@@ -18,3 +18,14 @@
 #search .ui-widget-header {
   border: 0 !important;
 }
+
+#search #discNumbers {
+  margin-left: 14px;
+  display: block;
+}
+#search #discNumbers td {
+  display: inline-block;
+}
+#search #discNumbers i {
+  margin: 1px
+}
