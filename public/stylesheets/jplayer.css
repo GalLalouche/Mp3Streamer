@@ -1,6 +1,6 @@
 @CHARSET "windows-1255";
 .poster {
-  margin-left: 0px;
+  margin-left: 0;
   background-color: transparent !important;
 }
 
@@ -8,7 +8,7 @@ body {
   background-color: #eee;
 }
 
-.playlist-item {
+.width-limited-playlist-span {
   max-width: 600px;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -17,12 +17,19 @@ body {
   vertical-align: middle;
 }
 
-.playlist-item a {
-  display: inline
+span.jp-playlist-item {
+  color: #666 !important;
+  display: inline;
+  outline-width: 0;
+  width: 650px
 }
 
 .fa {
-  cursor: pointer
+  cursor: pointer;
+}
+
+.jp-playlist ul li {
+  cursor: pointer;
 }
 
 .jp-video, .jstree {
@@ -89,11 +96,16 @@ body {
 .jp-title {
   font-size: 16px;
 }
+.jp-playlist-current .jp-title {
+  color: #0d88c1;
+}
 .jp-artist {
+  color: #666;
   font-weight: bold;
 }
 .jp-duration {
+  color: #666;
   display: inline-block;
-  width: 65px;
   vertical-align: bottom;
+  width: 65px;
 }

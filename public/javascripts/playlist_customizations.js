@@ -2,22 +2,23 @@
 $(function() {
   const playlistElement = $(".jp-playlist")
   const playlist = gplaylist
-  const playlistItem = ".playlist-item"
+  const playlistItem = "ul li"
+  // Display full song info on hover when the text overflows.
   playlistElement.on("mouseover", playlistItem, function() {
-    const el = $(this)
-    if (el.custom_overflown()) {
-      const index = el.closest("li").index()
-      const displayedIndex = playlist.getDisplayedIndex(index)
+    const listItem = $(this)
+    // The listItem can't overflow; what can overflow the width-limited descendent.
+    if (listItem.find(".width-limited-playlist-span").custom_overflown()) {
+      const displayedIndex = playlist.getDisplayedIndex(listItem.index())
       const song = playlist.songs()[displayedIndex]
-      el.custom_tooltip(playlist.toString(song))
+      listItem.custom_tooltip(playlist.toString(song))
     }
   })
-  // I must have deleted this somehow :\ Oh well.
+  // Move to song on click.
   playlistElement.on("click", playlistItem, function() {
-    const el = $(this)
-    const clickedIndex = playlist.getDisplayedIndex(el.closest("li").index())
+    const listItem = $(this)
+    const clickedIndex = playlist.getDisplayedIndex(listItem.index())
     if (gplaylist.currentIndex() === clickedIndex)
-      return // Clicked song is currently playing
+      return // Clicked song is currently playing.
     playlist.play(clickedIndex)
   })
 
@@ -57,10 +58,12 @@ $(function() {
     const isClassicalPiece = media.composer
     const byPrefix = (isClassicalPiece ? "performed by" : "by")
     const metadata = `${byPrefix} <span class="jp-artist">${media.artistName}</span> (<span class="jp-parens">${additionalData(media)}</span>`
-    const itemHref = `<a href='javascript:;' class='${this.options.playlistOptions.itemClass}' tabindex='1'>`
+    return `<span class='${this.options.playlistOptions.itemClass}' tabindex='1'>`
+        + `<span class="width-limited-playlist-span">`
         + `<span class="jp-title">${media.title}</span> <span class="jp-metadata">${metadata}</span>`
-        + `</a>`
-    return `<span class='playlist-item'>${itemHref}</span><span class="jp-duration">, ${media.duration.timeFormat()})</span>`
+        + `</span>`
+        + `<span class="jp-duration">, ${media.duration.timeFormat()})</span>`
+        + `</span>`
   }
 })
 
