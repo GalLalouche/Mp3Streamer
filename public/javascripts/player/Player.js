@@ -58,7 +58,7 @@ class Playlist {
   }
   next(count) {
     count = count || 1
-    for (var i = 0; i < count; i++)
+    for (let i = 0; i < count; i++)
       this._next()
   }
   play(index) {
@@ -87,8 +87,7 @@ class Playlist {
     return this.songs().length
   }
   toString(song) {
-    const metadata = playlistUtils.mediaMetadata(song).replace(/<.*?>/g, '') // Remove <b> and stuff like that
-    return `${song.title}, ${metadata}`
+    return playlistUtils.mediaMetadata(song);
   }
   // The list presentation reversed, so song at index 0 is the actually the last song, not the first.
   getDisplayedIndex(index) {

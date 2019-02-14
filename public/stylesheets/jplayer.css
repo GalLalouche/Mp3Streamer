@@ -9,7 +9,7 @@ body {
 }
 
 .playlist-item {
-  width: 650px;
+  max-width: 600px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -18,7 +18,7 @@ body {
 }
 
 .playlist-item a {
-  display: block
+  display: inline
 }
 
 .fa {
@@ -81,4 +81,19 @@ body {
   margin-right: auto;
   width: 30em;
   float: left;
+}
+
+.jp-metadata {
+  color: #666;
+}
+.jp-title {
+  font-size: 16px;
+}
+.jp-artist {
+  font-weight: bold;
+}
+.jp-duration {
+  display: inline-block;
+  width: 65px;
+  vertical-align: bottom;
 }

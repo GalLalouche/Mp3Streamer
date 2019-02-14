@@ -21,9 +21,9 @@ $(function() {
     playlist.play(clickedIndex)
   })
 
-  playlistUtils.mediaMetadata = function(media) {
-    const isClassicalPiece = media.composer
-    function additionalData() {
+  function additionalData(media) {
+    function aux() {
+      const isClassicalPiece = media.composer
       if (!isClassicalPiece)
         return [
           `${media.albumName}${media.discNumber ? "[" + media.discNumber + "]" : ""}`,
@@ -43,14 +43,24 @@ $(function() {
         media.track,
       ].filter(x => x)
     }
-    const baseData = [
-      media.bitrate + "kbps",
-      media.duration.timeFormat(),
-    ]
-    const allData = additionalData().concat(baseData)
+    return aux().concat([media.bitrate + "kbps"]).join(", ")
+  }
 
+  playlistUtils.mediaMetadata = media => [
+    media.title,
+    media.artistName,
+  ].concat(additionalData(media)).concat([
+    media.duration.timeFormat(),
+  ]).join(", ")
+
+  playlistUtils.mediaMetadataHtml = function(media) {
+    const isClassicalPiece = media.composer
     const byPrefix = (isClassicalPiece ? "performed by" : "by")
-    return `${byPrefix} <b>${media.artistName}</b> (${allData.join(", ")})`
+    const metadata = `${byPrefix} <span class="jp-artist">${media.artistName}</span> (<span class="jp-parens">${additionalData(media)}</span>`
+    const itemHref = `<a href='javascript:;' class='${this.options.playlistOptions.itemClass}' tabindex='1'>`
+        + `<span class="jp-title">${media.title}</span> <span class="jp-metadata">${metadata}</span>`
+        + `</a>`
+    return `<span class='playlist-item'>${itemHref}</span><span class="jp-duration">, ${media.duration.timeFormat()})</span>`
   }
 })
 
