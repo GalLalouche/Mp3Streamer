@@ -3,11 +3,13 @@ package backend.external.extensions
 import backend.external.{Host, MarkedLink, MarkedLinks}
 import backend.recon.{Album, Artist, Reconcilable}
 import common.rich.RichT._
+import common.rich.primitives.RichString._
 
-private sealed trait MusicBrainzExtender[R <: Reconcilable] extends LinkExtender[R] {
+private abstract sealed class MusicBrainzExtender[R <: Reconcilable: Manifest] extends LinkExtender[R] {
   override val host = Host.MusicBrainz
   protected def extendGoogleSearch: Boolean
-  protected def reconcilableType: String // TODO via manifest?
+  private val reconcilableType = manifest.runtimeClass.getCanonicalName.takeAfterLast('.').toLowerCase
+  assert(Set("artist", "album")(reconcilableType))
   protected def externalTypeIds: Map[Host, Int]
 
   private val dynamicExtender: DynamicExtender[R] = new DynamicExtender[R] {
@@ -34,7 +36,6 @@ private sealed trait MusicBrainzExtender[R <: Reconcilable] extends LinkExtender
 
 private object MusicBrainzArtistExtender extends MusicBrainzExtender[Artist] {
   override protected def extendGoogleSearch = true
-  override protected val reconcilableType = "artist"
   override protected val externalTypeIds = Map(
     Host.AllMusic -> 283,
     Host.Facebook -> 192, // social networking
@@ -47,7 +48,6 @@ private object MusicBrainzArtistExtender extends MusicBrainzExtender[Artist] {
 
 private object MusicBrainzAlbumExtender extends MusicBrainzExtender[Album] {
   override protected def extendGoogleSearch = false
-  override protected val reconcilableType = "album"
   override protected val externalTypeIds = Map(
     Host.AllMusic -> 284,
     Host.Wikipedia -> 89,
