@@ -1,8 +1,10 @@
 package mains
 
 import java.io.File
+import java.util
 
 import backend.logging.Logger
+import common.rich.collections.RichSeq._
 import common.rich.path.Directory
 import common.rich.path.RichFile.{richFile, _}
 import javax.inject.Inject
@@ -12,11 +14,13 @@ import org.apache.commons.io.FileUtils
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.audio.exceptions.{CannotWriteException, UnableToRenameFileException}
 import org.jaudiotagger.tag.images.StandardArtwork
+import org.jaudiotagger.tag.FieldKey
 
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext
 import scala.util.Random
 
+/** Selects n random songs and dumps them in a folder on D:\ */
 private class RandomFolderCreator @Inject()(ec: ExecutionContext, mf: IOMusicFinder) {
   private implicit val iec: ExecutionContext = ec
   private val songFiles = mf.getSongFiles.map(_.file)
@@ -40,15 +44,15 @@ private class RandomFolderCreator @Inject()(ec: ExecutionContext, mf: IOMusicFin
       FileUtils.copyFile(f, newFile)
       val audioFile = AudioFileIO.read(newFile)
       // If used on already filtered, i.e., called from copyFilteredSongs, the poster is already set.
-      try
-        audioFile.commit()
+      if (audioFile.getTag.getFields(FieldKey.COVER_ART).isEmpty)
+        try {
           audioFile.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(IOSong.read(f))))
-      catch {
-        // Because, I wanna say Windows?, is such a piece of crap, if the folder is open while process runs,
-        // committing the ID3 tag can sometimes fail.
-        case e: CannotWriteException => e.printStackTrace()
-        case e: UnableToRenameFileException => e.printStackTrace()
-      }
+          audioFile.commit()
+        } catch {
+          // Because—I wanna say Windows?—is such a piece of crap, if the folder is open while process runs,
+          // committing the ID3 tag can sometimes fail.
+          case e@(_: CannotWriteException | _: UnableToRenameFileException | _: Exception) => e.printStackTrace()
+        }
       newFile.renameTo(new File(outputDir.dir, f"$index%02d.${f.extension}"))
       pb.step()
     } catch {
@@ -56,28 +60,39 @@ private class RandomFolderCreator @Inject()(ec: ExecutionContext, mf: IOMusicFin
     }
   }
 }
-/** Selects n random songs and puts them in a folder on D:\ */
+
 private object RandomFolderCreator extends {
   import backend.module.StandaloneModule
   import com.google.inject.Guice
   import net.codingwell.scalaguice.InjectorExtensions._
   import resource._
 
-  def main(args: Array[String]): Unit = {
-    val injector = Guice createInjector StandaloneModule
-    val outputDir: Directory = Directory("D:/").addSubDir("RandomSongsOutput").clear()
-    val logger = injector.instance[Logger]
-    logger.info("Scanning for files")
+  private val injector = Guice createInjector StandaloneModule
+  private val logger = injector.instance[Logger]
+  util.logging.Logger.getLogger("org.jaudiotagger").setLevel(util.logging.Level.OFF)
+
+  private def copy(songs: Traversable[File], outputDir: Directory): Unit = {
     val $ = injector.instance[RandomFolderCreator]
-    logger.info("Choosing songs")
-    val numberOfSongsToCreate = 300
-    val songs = $.createSongSet(numberOfSongsToCreate)
-    for (pb <- managed(new ProgressBar("Copying songs", numberOfSongsToCreate))) {
-      val copier = $.copyFileToOutputDir(outputDir, pb) _
-      songs.zipWithIndex.foreach(copier.tupled)
-    }
+    for (pb <- managed(new ProgressBar("Copying songs", songs.size)))
+      songs.toVector.shuffle.zipWithIndex.foreach(($.copyFileToOutputDir(outputDir, pb) _).tupled)
     logger.info("Creating playlist file")
     $.createPlaylistFile(outputDir)
     logger.info("Done!")
+  }
+  private def dumpAll(rfc: RandomFolderCreator): Unit = {
+    val numberOfSongsToCreate = 500
+    val songs = rfc.createSongSet(numberOfSongsToCreate)
+    copy(songs, Directory.makeDir("D:/RandomSongsOutput").clear())
+  }
+  private def copyFilteredSongs(rfc: RandomFolderCreator): Unit = {
+    val songs = Directory("D:/RandomSongsOutput").files.toSet
+    copy(songs, Directory.makeDir("D:/Filtered Run Songs").clear())
+  }
+  def main(args: Array[String]): Unit = {
+    logger.info("Scanning for files")
+    val $ = injector.instance[RandomFolderCreator]
+    logger.info("Choosing songs")
+    dumpAll($)
+    //copyFilteredSongs($)
   }
 }
