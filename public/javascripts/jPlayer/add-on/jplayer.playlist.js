@@ -17,7 +17,6 @@
 /* global jPlayerPlaylist: true, jQuery:false, alert:false */
 
 (function($, undefined) {
-
   jPlayerPlaylist = function(cssSelector, playlist, options) {
     const self = this
 

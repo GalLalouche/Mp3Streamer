@@ -1,9 +1,8 @@
 $(function() {
   function ajaxJson(method, url, data, success) {
-    data = typeof data === 'string' ? data : JSON.stringify(data)
     $.ajax({
       url: url,
-      data: data,
+      data: typeof data === 'string' ? data : JSON.stringify(data),
       type: method,
       contentType: "application/json; charset=utf-8",
       dataType: "json",
@@ -25,18 +24,19 @@ $(function() {
   }
 })
 
-const elem = (name, content) => $(`<${name}>${content || ""}</${name}>`)
-String.prototype.format = String.prototype.f = function() {
-  let s = this, i = arguments.length
-
-  while (i--)
-    s = s.replace(new RegExp('\\{' + i + '\\}', 'gm'), arguments[i])
-  return s
+function elem(elementName, config) {
+  return typeof config === 'object' && config
+      ? $(`<${elementName}/>`, config)
+      : $(`<${elementName}>${config || ""}</${elementName}>`)
 }
 String.prototype.takeAfterLast = function(subs) {
   return this.substr(this.lastIndexOf(subs) + 1)
 }
+Boolean.prototype.isFalse = function() {
+  return !this.valueOf();
+}
 const button = text => elem("button", text)
+const span = config => elem("span", config)
 const div = () => elem('div')
 const br = () => elem('br')
 const icon = name => `<i class="fa fa-${name}"/>`
@@ -79,7 +79,7 @@ function copyTextToClipboard(text) {
 
   try {
     document.execCommand('copy')
-  } catch (err) {
+  } catch (ignored) {
     console.log('Oops, unable to copy')
   }
 
@@ -139,7 +139,7 @@ function validateBoxAndButton(textBox, button, validationFunction, buttonFunctio
   }
 
   const ENTER_CODE = 13
-  button.click(_ => runIfEnabled())
+  button.click(() => runIfEnabled())
   button.prop('disabled', true)
   textBox.keyup(function(event) {
     if (event.keyCode === ENTER_CODE)

@@ -1,8 +1,9 @@
 // Since jplayer.playlist.js is too freaking big, this extracts my customization
 $(function() {
+  /* Setup events */
   const playlistElement = $(".jp-playlist")
   const playlist = gplaylist
-  const playlistItem = "ul li"
+  const playlistItem = "> ul > li"
   // Display full song info on hover when the text overflows.
   playlistElement.on("mouseover", playlistItem, function() {
     const listItem = $(this)
@@ -22,10 +23,12 @@ $(function() {
     playlist.play(clickedIndex)
   })
 
+  /* Metadata stuff */
+  const isClassicalPiece = media => !!media.composer
+  playlistUtils.isClassicalPiece = isClassicalPiece
   function additionalData(media) {
     function aux() {
-      const isClassicalPiece = media.composer
-      if (!isClassicalPiece)
+      if (isClassicalPiece(media).isFalse())
         return [
           `${media.albumName}${media.discNumber ? "[" + media.discNumber + "]" : ""}`,
           media.track,
@@ -55,15 +58,18 @@ $(function() {
   ]).join(", ")
 
   playlistUtils.mediaMetadataHtml = function(media) {
-    const isClassicalPiece = media.composer
-    const byPrefix = (isClassicalPiece ? "performed by" : "by")
-    const metadata = `${byPrefix} <span class="jp-artist">${media.artistName}</span> (<span class="jp-parens">${additionalData(media)}</span>`
-    return `<span class='${this.options.playlistOptions.itemClass}' tabindex='1'>`
-        + `<span class="width-limited-playlist-span">`
-        + `<span class="jp-title">${media.title}</span> <span class="jp-metadata">${metadata}</span>`
-        + `</span>`
-        + `<span class="jp-duration">, ${media.duration.timeFormat()})</span>`
-        + `</span>`
+    const metadata = `${(isClassicalPiece(media) ? "performed by" : "by")} ` +
+        `<span class="jp-artist">${media.artistName}</span> ` +
+        `(<span class="jp-parens">${additionalData(media)}</span>`
+
+    // Duration is appended manually outside of metadata to ensure that it is always displayed, even if
+    // metadata overflows.
+    return `
+        <span class='${this.options.playlistOptions.itemClass}' tabindex='1'>
+          <span class="width-limited-playlist-span">
+            <span class="jp-title">${media.title}</span> <span class="jp-metadata">${metadata}</span>
+          </span><span class="jp-duration">, ${media.duration.timeFormat()})</span>
+        </span>`
   }
 })
 
