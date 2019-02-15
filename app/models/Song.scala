@@ -32,6 +32,9 @@ case class IOSong(file: IOFile, title: String, artistName: String, albumName: St
 ) extends Song {
   override type F = IOFile
 }
+object IOSong {
+  def read(f: File): IOSong = SongTagParser(f)
+}
 
 case class MemorySong(file: MemoryFile, title: String, artistName: String, albumName: String,
     track: Int, year: Int, bitRate: String, duration: Int, size: Long,
@@ -39,9 +42,4 @@ case class MemorySong(file: MemoryFile, title: String, artistName: String, album
     conductor: Option[String], orchestra: Option[String], opus: Option[String], performanceYear: Option[Int],
 ) extends Song {
   override type F = MemoryFile
-}
-
-object Song {
-  /** Parses ID3/FLAC data */
-  def apply(file: File): IOSong = SongTagParser(file)
 }

@@ -7,7 +7,7 @@ import common.{AuxSpecs, MutablePartialFunction}
 import common.rich.path.RichFile._
 import common.rich.RichFuture._
 import controllers.UrlPathUtils
-import models.Song
+import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpec}
 import org.scalatest.mockito.MockitoSugar
@@ -27,7 +27,7 @@ class LyricsFormatterTest extends FreeSpec with MockitoSugar
   private val injector = TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).injector
   private val $ = injector.instance[LyricsFormatter]
   private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-  private val song: Song = Song(getResourceFile("/models/song.mp3"))
+  private val song: Song = IOSong.read(getResourceFile("/models/song.mp3"))
   private val encodedSong: String = injector.instance[UrlPathUtils] encodePath song
 
   override protected def beforeAll(): Unit = {

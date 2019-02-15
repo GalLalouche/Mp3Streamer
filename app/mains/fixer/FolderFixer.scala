@@ -11,7 +11,7 @@ import common.rich.path.Directory
 import common.rich.path.RichFile._
 import mains.IOUtils
 import mains.cover.DownloadCover
-import models.Song
+import models.IOSong
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.Future
@@ -70,7 +70,7 @@ object FolderFixer
         .files
         .filter(Set("mp3", "flac") contains _.extension)
         .head
-        .mapTo(Song.apply)
+        .mapTo(IOSong.read)
         .artistName
     val folder = Directory(args(0))
     val artist = extractArtistFromFile(folder)

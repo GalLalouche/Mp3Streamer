@@ -11,7 +11,7 @@ import common.rich.path.RichPath.poorPath
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichOption._
 import common.rich.primitives.RichString.richString
-import models.Song
+import models.{IOSong, Song}
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.jaudiotagger.tag.flac.FlacTag
@@ -50,7 +50,7 @@ private object FixLabels {
   }
 
   private def properFileName(f: File): String =
-    Song(f) mapTo (song => s"${properTrackString(song.track)} - ${song.title}.${f.extension}")
+    IOSong.read(f) mapTo (song => s"${properTrackString(song.track)} - ${song.title}.${f.extension}")
 
   private def rename(f: File): Unit = {
     f renameTo new File(f.parent, properFileName(f))
@@ -87,7 +87,7 @@ private object FixLabels {
         .hasSameValues(_.getTag getFirst FieldKey.DISC_NO)
         .isFalse
 
-    val (year, album) = musicFiles.head.mapTo(Song.apply)
+    val (year, album) = musicFiles.head.mapTo(IOSong.read)
         .mapTo(firstSong => retrieveYear(firstSong) -> StringFixer(firstSong.albumName))
 
     musicFiles foreach (fixFile(_, hasNonTrivialDiscNumber))

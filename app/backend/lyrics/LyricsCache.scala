@@ -7,7 +7,7 @@ import backend.storage.OnlineRetrieverCacher
 import com.google.inject.Guice
 import common.rich.func.{ToMoreFunctorOps, ToMoreMonadErrorOps}
 import javax.inject.Inject
-import models.Song
+import models.{IOSong, Song}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -57,7 +57,7 @@ object LyricsCache {
   def main(args: Array[String]): Unit = {
     val injector = Guice createInjector CleanModule
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    val s = Song(new File("""D:\Media\Music\Rock\Punk\Heartsounds\2013 Internal Eyes\01 - A Total Separation of Self.mp3"""))
+    val s = IOSong.read(new File("""D:\Media\Music\Rock\Punk\Heartsounds\2013 Internal Eyes\01 - A Total Separation of Self.mp3"""))
     val $ = injector.instance[LyricsCache]
     println($.find(s).get)
   }

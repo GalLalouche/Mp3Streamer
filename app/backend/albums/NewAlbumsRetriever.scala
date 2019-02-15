@@ -7,7 +7,7 @@ import common.io.IODirectory
 import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 import javax.inject.Inject
-import models.{IOMusicFinder, Song}
+import models.{IOMusicFinder, IOSong}
 import rx.lang.scala.Observable
 
 import scala.concurrent.ExecutionContext
@@ -46,5 +46,5 @@ private object NewAlbumsRetriever {
   def dirToAlbum(dir: IODirectory, mf: IOMusicFinder): Option[Album] = dir.files
       .find(_.extension |> mf.extensions)
       .map(_.file)
-      .map(Song(_).release)
+      .map(IOSong.read(_).release)
 }

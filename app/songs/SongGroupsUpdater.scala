@@ -2,7 +2,7 @@ package songs
 
 import common.rich.RichT._
 import common.rich.path.Directory
-import models.Song
+import models.IOSong
 
 private object SongGroupsUpdater {
   private def trackNumbers(directory: String, trackNumbersFirst: Int, trackNumbersSecond: Int, trackNumbersRest: Int*): SongGroup = {
@@ -11,7 +11,7 @@ private object SongGroupsUpdater {
     val prefixes: Set[String] = trackNumbers.map(_.toString.mapIf(_.length < 2).to("0" + _)).toSet
     def isPrefix(s: String) = prefixes exists s.startsWith
     val songs = dir.files.filter(_.getName |> isPrefix)
-    SongGroup(songs.sortBy(_.getName).map(Song.apply))
+    SongGroup(songs.sortBy(_.getName).map(IOSong.read))
   }
 
   // Appends new groups and saves them

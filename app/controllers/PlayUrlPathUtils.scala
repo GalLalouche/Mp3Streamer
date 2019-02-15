@@ -29,7 +29,7 @@ private object PlayUrlPathUtils extends UrlPathUtils {
     URLDecoder.decode(fixedPath, Encoding)
   }
 
-  override def parseSong(path: String): IOSong = Song(parseFile(path))
+  override def parseSong(path: String): IOSong = IOSong.read(parseFile(path))
   override def parseFile(path: String): File = new File(decode(path))
   override def parseFileRef(path: String): IOFile = IOFile(parseFile(path))
 }

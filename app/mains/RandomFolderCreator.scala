@@ -7,7 +7,7 @@ import common.rich.path.Directory
 import common.rich.path.RichFile.{richFile, _}
 import javax.inject.Inject
 import me.tongfei.progressbar.ProgressBar
-import models.{IOMusicFinder, Poster, Song}
+import models.{IOMusicFinder, IOSong, Poster}
 import org.apache.commons.io.FileUtils
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.audio.exceptions.{CannotWriteException, UnableToRenameFileException}
@@ -39,9 +39,10 @@ private class RandomFolderCreator @Inject()(ec: ExecutionContext, mf: IOMusicFin
       val newFile = new File(outputDir.dir, f.name)
       FileUtils.copyFile(f, newFile)
       val audioFile = AudioFileIO.read(newFile)
-      audioFile.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(Song(f))))
+      // If used on already filtered, i.e., called from copyFilteredSongs, the poster is already set.
       try
         audioFile.commit()
+          audioFile.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(IOSong.read(f))))
       catch {
         // Because, I wanna say Windows?, is such a piece of crap, if the folder is open while process runs,
         // committing the ID3 tag can sometimes fail.

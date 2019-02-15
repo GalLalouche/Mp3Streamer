@@ -7,7 +7,7 @@ import com.google.inject
 import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
 import common.AuxSpecs
 import common.rich.RichFuture._
-import models.Song
+import models.{IOSong, Song}
 import org.scalatest.{Args, TestSuite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api
@@ -56,7 +56,7 @@ trait ControllerSpec extends AuxSpecs with GuiceOneServerPerSuite {self: TestSui
     def getBytes: Array[Byte] = ev.toBytes($)
     def getString: String = new String(getBytes, "UTF-8")
   }
-  lazy val song: Song = Song(getResourceFile("/models/song.mp3"))
+  lazy val song: Song = IOSong.read(getResourceFile("/models/song.mp3"))
   lazy val encodedSong: String = PlayUrlPathUtils encodePath song
   def get(path: String): Future[WSResponse] =
     app.injector.instanceOf[WSClient].url(s"http://localhost:$port/$path").get()

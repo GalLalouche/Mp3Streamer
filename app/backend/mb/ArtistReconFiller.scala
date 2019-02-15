@@ -1,14 +1,14 @@
 package backend.mb
 
 import backend.module.StandaloneModule
-import backend.recon.{Artist, ArtistReconStorage, ReconcilerCacher, ReconID}
+import backend.recon.{Artist, ArtistReconStorage, ReconcilerCacher}
 import backend.recon.StoredReconResult.NoRecon
 import com.google.inject.Guice
 import common.io.{IODirectory, IOSystem}
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.func.ToMoreMonadErrorOps
-import models.{IOMusicFinder, MusicFinder, Song}
+import models.{IOMusicFinder, IOSong, MusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +32,7 @@ private object ArtistReconFiller
         .map((_: IODirectory).files) // why is this needed? Who knows
         .map(_.find(e => mf.extensions.contains(e.extension)).get)
         .map(_.file)
-        .map(Song.apply)
+        .map(IOSong.read)
         .map(_.artistName |> Artist.apply)
         .toSet
     for (artist <- artists) {
