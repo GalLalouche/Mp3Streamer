@@ -55,6 +55,6 @@ $(function() {
 
   onClick("google-torrent", parent => {
     const data = parent.data()
-    window.open(`https://www.google.com/search?q=${data.artistName} ${data.title} torrent`)
+    window.open(`https://www.google.com/search?q=${data.artistName} ${data.title} "torrent"`)
   })
 })
