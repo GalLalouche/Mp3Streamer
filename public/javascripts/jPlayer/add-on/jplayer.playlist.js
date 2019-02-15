@@ -17,7 +17,7 @@
 /* global jPlayerPlaylist: true, jQuery:false, alert:false */
 
 (function($, undefined) {
-  jPlayerPlaylist = function(cssSelector, playlist, options) {
+  JPlayerPlaylist = function(cssSelector, playlist, options) {
     const self = this
 
     this.current = 0;
@@ -116,7 +116,7 @@
     $(this.cssSelector.jPlayer).jPlayer(this.options);
   };
 
-  jPlayerPlaylist.prototype = {
+  JPlayerPlaylist.prototype = {
     _cssSelector: { // static object, instanced in constructor
       jPlayer: "#jquery_jplayer_1",
       cssSelectorAncestor: "#jp_container_1"

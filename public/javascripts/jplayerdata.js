@@ -1,7 +1,8 @@
 $(function() {
   const randomSongUrl = "data/randomSong";
-  // Init playlist
-  playlist = new jPlayerPlaylist({
+  // Initialize playlist
+  // noinspection JSUndeclaredVariable
+  playlist = new JPlayerPlaylist({ // Explicitly global.
     jPlayer: "#jquery_jplayer_1",
     cssSelectorAncestor: "#jp_container_1"
   }, [], {
