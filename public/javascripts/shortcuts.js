@@ -2,10 +2,10 @@ $(function() {
   $(document).keyup(function(e) {
     {
       const tag = e.target.tagName.toLowerCase()
-      const isFromInput = tag == 'input' || tag == 'textarea'
+      const isFromInput = tag === 'input' || tag === 'textarea'
 
       if (isFromInput) // ignore text input into boxes
-        if (e.keyCode == 27) // Esc key
+        if (e.keyCode === 27) // Esc key
           e.target.blur()
         else
           return
@@ -45,8 +45,8 @@ $(function() {
     for (let index = gplaylist.currentIndex(); index < gplaylist.length() - 1; index++) {
       const currentSong = songs[index]
       const nextSong = songs[index + 1]
-      const same = field => currentSong[field] == nextSong[field]
-      if (false == (same("artistName") && same("albumName") && currentSong.track + 1 == nextSong.track))
+      const same = field => currentSong[field] === nextSong[field]
+      if ((same("artistName") && same("albumName") && currentSong.track + 1 === nextSong.track).isFalse())
         return
     }
     $.get("data/nextSong?path=" + gplaylist.last().file, function(song) {

@@ -1,5 +1,5 @@
 $(function() {
-	openConnection("console", function(msg) {
-		console.log("(Server)" + msg.data)
-	});
+  openConnection("console", function(msg) {
+    console.log("(Server)" + msg.data)
+  }).isFalse();
 });

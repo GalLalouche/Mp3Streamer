@@ -1,9 +1,9 @@
 $(function() {
-  const defaultGain = -10.0
-  let volumeBaseline = 40.0 // The volume that was preset by the user. Start at 40.0, so it could increase 2.5 fold.
-  let currentGain = defaultGain
+  const DEFAULT_GAIN = -10.0
+  let volumeBaseline = 20.0 // The volume that was preset by the user. Start at 20.0, so it could increase 5 fold.
+  let currentGain = DEFAULT_GAIN
 
-  const calculateVolumeCoefficientFromGain = () => Math.pow(2, currentGain / 8.0)
+  const calculateVolumeCoefficientFromGain = () => Math.pow(2, currentGain / 10.0)
 
   function updateVolume() {
     // +10 dB is twice as loud. Or something.
@@ -11,12 +11,12 @@ $(function() {
   }
 
   Volume.setManualVolume = function(v) {
-    v = v < 1 && v > 0 ? v * 100 : v // if v is between 0 and 1, convert to be between 0 and 100
-    volumeBaseline = v / calculateVolumeCoefficientFromGain()
+     // if v is between 0 and 1, convert to be between 0 and 100
+    volumeBaseline = (v < 1 && v > 0 ? v * 100 : v) / calculateVolumeCoefficientFromGain()
     updateVolume()
   }
   Volume.setPeak = function(song) {
-    currentGain = song.trackGain || defaultGain
+    currentGain = song.trackGain || DEFAULT_GAIN
     updateVolume()
   }
   // Volume.setManualVolume(Volume.getVolumeBaseline) should be a no-op.
