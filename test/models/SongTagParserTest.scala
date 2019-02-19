@@ -30,7 +30,7 @@ class SongTagParserTest extends FreeSpec with AuxSpecs {
         val $: Song = SongTagParser(getSong("songWithMoreInfo.mp3"))
         $.discNumber.get shouldReturn "Foobar"
         $.trackGain.get shouldReturn -1.25
-        $.opus.get shouldReturn "42"
+        $.opus.get shouldReturn "Op. 42"
         $.composer.get shouldReturn "Traditional"
         $.conductor.get shouldReturn "yes"
         $.orchestra.get shouldReturn "no"

@@ -12,6 +12,7 @@ import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.{FieldKey, Tag}
 
 import scala.collection.JavaConverters._
+import common.rich.RichT._
 
 private object SongTagParser {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
@@ -77,7 +78,7 @@ private object SongTagParser {
       composer = tag.firstNonEmpty(FieldKey.COMPOSER),
       conductor = tag.firstNonEmpty(FieldKey.CONDUCTOR),
       orchestra = tag.firstNonEmpty(FieldKey.ORCHESTRA),
-      opus = tag.firstNonEmpty(FieldKey.OPUS),
+      opus = tag.firstNonEmpty(FieldKey.OPUS).map(_.mapIf(_.head.isDigit).to("Op. " + _)),
       performanceYear = optionalFields.performanceYear,
     )
   }
