@@ -58,7 +58,7 @@ span.jp-playlist-item {
 
 #last_albums {
   position: absolute;
-  top: 400px;
+  top: 600px;
   left: 800px;
   float: right;
 }
@@ -72,7 +72,7 @@ span.jp-playlist-item {
 #external {
   position: absolute;
   left: 800px;
-  top: 500px;
+  top: 700px;
   float: right;
 }
 
