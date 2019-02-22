@@ -5,31 +5,16 @@ import java.util.logging.{Level, Logger}
 
 import common.io.IOFile
 import common.rich.path.RichFile._
-import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
-import common.rich.primitives.RichString._
+import common.rich.RichT._
+import models.RichTag._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.{FieldKey, Tag}
 
-import scala.collection.JavaConverters._
-import common.rich.RichT._
-
-private object SongTagParser {
+object SongTagParser {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
 
   private val yearPattern = """.*(\d{4}).*""".r
-
-  private val customPattern = """Description="([^"]+)"; Text="([^"]+)"; """.r
-  private implicit class RichTag(private val $: Tag) extends AnyVal {
-    private def filterNonEmpty(s: String): Option[String] = s.trim.opt.filter(_.nonEmpty)
-    def firstNonEmpty(key: String): Option[String] = $.getFirst(key) |> filterNonEmpty
-    def firstNonEmpty(key: FieldKey): Option[String] = $.getFirst(key) |> filterNonEmpty
-    def customTags = $.getFields("TXXX").asScala
-        .map(_.toString)
-        .filter(_ matches customPattern.pattern)
-        .map({case customPattern(key, value) => key -> value})
-        .toMap
-  }
 
   private case class OptionalFields(
       trackGain: Option[Double],
