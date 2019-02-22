@@ -12,6 +12,7 @@ import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichOption._
 import common.rich.primitives.RichString.richString
 import models.{IOSong, Song}
+import models.RichTag._
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.jaudiotagger.tag.flac.FlacTag
@@ -20,7 +21,7 @@ import org.jaudiotagger.tag.id3.ID3v24Tag
 import scala.annotation.tailrec
 import scala.util.Try
 
-/** Fixes ID3 tags on mp3 (and flac) files to proper casing, etc. */
+/** Fixes ID3 tags on mp3 and flac files to proper casing, delete unused tags, etc. */
 private object FixLabels {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   private def properTrackString(track: Int): String = if (track < 10) "0" + track else track.toString
@@ -30,14 +31,22 @@ private object FixLabels {
     val originalTag = audioFile.getTag
     val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
 
-    Seq(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.ALBUM, FieldKey.YEAR)
-        .foreach(f => newTag.setField(f, originalTag getFirst f mapTo StringFixer.apply))
+    Iterator(FieldKey.ARTIST, FieldKey.TITLE, FieldKey.ALBUM, FieldKey.YEAR)
+        .foreach(f => newTag.setField(f, StringFixer(originalTag.getFirst(f))))
+
     newTag.setField(FieldKey.TRACK, originalTag.getFirst(FieldKey.TRACK).toInt mapTo properTrackString)
     // Not all track need to have a disc number property, e.g., bonus track
     if (fixDiscNumber && originalTag.hasField(FieldKey.DISC_NO))
       newTag.setField(FieldKey.DISC_NO, originalTag
           .getFirst(FieldKey.DISC_NO)
           .mapIf(_ matches "\\d+[/\\\\].*").to(_ takeWhile (_.isDigit)))
+
+    // Performance year should only exist if it was manually added, i.e., we can assume the user added other
+    // classical tags. Otherwise, we can assume they're BS and delete them (by not copying them from the
+    // original tag).
+    if (originalTag.getFields(FieldKey.PERFORMANCE_YEAR).iterator.hasNext)
+      Iterator(FieldKey.COMPOSER, FieldKey.CONDUCTOR, FieldKey.ORCHESTRA, FieldKey.OPUS, FieldKey.PERFORMANCE_YEAR)
+          .foreach(f => newTag.setOption(f, originalTag.firstNonEmpty(f).map(StringFixer)))
 
     newTag
   }

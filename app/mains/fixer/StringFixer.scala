@@ -5,10 +5,10 @@ import java.util.regex.Pattern
 
 import com.google.common.annotations.VisibleForTesting
 import common.rich.RichT._
-import common.rich.primitives.RichString._
 import common.rich.primitives.RichBoolean._
+import common.rich.primitives.RichString._
 
-object StringFixer {
+object StringFixer extends (String => String) {
   @VisibleForTesting
   private[fixer] val lowerCaseWords = List("a", "ain't", "all", "am", "an", "and", "are", "aren't", "as",
     "at", "be", "but", "by", "can", "can't", "cannot", "did", "didn't", "do", "doesn't", "don't", "for",
@@ -70,7 +70,7 @@ object StringFixer {
     }
   }
 
-  def apply(str: String): String = {
+  override def apply(str: String): String = {
     val head :: tail = splitWithDelimiters(str.trim)
     val fixed = fixWord(head, isFirstWord = true) :: tail.map(fixWord(_, isFirstWord = false))
     fixed map asciiNormalize mkString ""

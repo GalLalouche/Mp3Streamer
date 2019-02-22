@@ -7,11 +7,11 @@ import org.scalatest.FreeSpec
 import scala.collection.JavaConverters._
 
 class FixLabelsTest extends FreeSpec with AuxSpecs {
-  private def getSongFile(path: String)  = getResourceFile("../../models/" + path)
+  private def getSongFile(path: String) = getResourceFile("../../models/" + path)
   private def getTagValue(t: Tag)(f: FieldKey): String = t getFirst f
   "fixTag" - {
     "mp3" - {
-      val song = getSongFile("songWithMoreInfo.mp3")
+      val song = getSongFile("song.mp3")
       "basic info" - {
         val fixedTag = FixLabels.fixTag(song, fixDiscNumber = false)
         "correct fixes" in {
@@ -28,7 +28,7 @@ class FixLabelsTest extends FreeSpec with AuxSpecs {
       }
       "When asked to fix discNumber" - {
         "String number" in {
-          val fixedTag = FixLabels.fixTag(song, fixDiscNumber = true)
+          val fixedTag = FixLabels.fixTag(getSongFile("songWithMoreInfo.mp3"), fixDiscNumber = true)
           getTagValue(fixedTag)(FieldKey.DISC_NO) shouldReturn "Foobar"
         }
         "Partial number" in {

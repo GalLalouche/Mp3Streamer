@@ -88,7 +88,7 @@
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.typelevel/macro-compat_2.12/jars/macro-compat_2.12-1.1.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.xerial/sqlite-jdbc/jars/sqlite-jdbc-3.7.2.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/local/org.me/scalacommon_2.12/1.0/jars/scalacommon_2.12.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.m2/repository/my/net/jthink/jaudiotagger/2.2.6-SNAPSHOT/jaudiotagger-2.2.6-SNAPSHOT.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.m2/repository/my/net/jthink/jaudiotagger/2.2.8-SNAPSHOT/jaudiotagger-2.2.8-SNAPSHOT.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.sbt/boot/scala-2.12.3/lib/scala-compiler.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.sbt/boot/scala-2.12.3/lib/scala-library.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.sbt/boot/scala-2.12.3/lib/scala-reflect.jar" />
