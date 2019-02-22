@@ -12,7 +12,7 @@ import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichOption._
 import common.rich.primitives.RichString.richString
 import models.{IOSong, Song}
-import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
@@ -24,8 +24,9 @@ import scala.util.Try
 private object FixLabels {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   private def properTrackString(track: Int): String = if (track < 10) "0" + track else track.toString
-  private[fixer] def fixTag(f: File, fixDiscNumber: Boolean): Tag = {
-    val audioFile = AudioFileIO read f
+  private[fixer] def fixTag(f: File, fixDiscNumber: Boolean): Tag =
+    fixTag(f, fixDiscNumber, AudioFileIO read f)
+  private def fixTag(f: File, fixDiscNumber: Boolean, audioFile: AudioFile): Tag = {
     val originalTag = audioFile.getTag
     val newTag = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
 
@@ -43,7 +44,7 @@ private object FixLabels {
 
   private def fixFile(f: File, fixDiscNumber: Boolean): Unit = {
     val audioFile = AudioFileIO read f
-    val newTag = fixTag(f, fixDiscNumber)
+    val newTag = fixTag(f, fixDiscNumber, audioFile)
     AudioFileIO delete audioFile
     audioFile setTag newTag
     audioFile.commit()
