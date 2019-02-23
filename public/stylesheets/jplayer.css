@@ -83,11 +83,15 @@ span.jp-playlist-item {
 }
 
 .jp-currently-playing {
+  display: inline-block;
+  float: left;
   font-size: 0.8em;
   margin-left: auto;
   margin-right: auto;
-  width: 30em;
-  float: left;
+  max-width: 600px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .jp-metadata {
@@ -108,4 +112,8 @@ span.jp-playlist-item {
   display: inline-block;
   vertical-align: bottom;
   width: 65px;
+}
+
+div.jp-controls-holder {
+  margin-top: 5px;
 }
