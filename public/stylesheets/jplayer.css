@@ -103,6 +103,10 @@ span.jp-playlist-item {
 .jp-playlist-current .jp-title {
   color: #0d88c1;
 }
+.jp-playlist-current div a {
+  font-size: 20px;
+  margin-top: -4px;
+}
 .jp-artist {
   color: #666;
   font-weight: bold;
