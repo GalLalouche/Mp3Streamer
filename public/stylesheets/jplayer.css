@@ -103,7 +103,7 @@ span.jp-playlist-item {
   color: #666;
   font-weight: bold;
 }
-.jp-duration {
+.jp-list-duration {
   color: #666;
   display: inline-block;
   vertical-align: bottom;
