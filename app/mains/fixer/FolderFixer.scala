@@ -6,7 +6,7 @@ import com.google.inject.Guice
 import common.io.InternetTalker
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.func.ToMoreMonadErrorOps
+import common.rich.func.{ToMoreFunctorOps, ToMoreMonadErrorOps}
 import common.rich.path.Directory
 import common.rich.path.RichFile._
 import mains.IOUtils
@@ -19,9 +19,9 @@ import scala.concurrent.Future
 import scalaz.std.FutureInstances
 
 object FolderFixer
-    extends ToMoreMonadErrorOps with FutureInstances {
+    extends ToMoreFunctorOps with ToMoreMonadErrorOps with FutureInstances {
   private val injector = Guice createInjector StandaloneModule
-  private implicit val it = injector.instance[InternetTalker]
+  private implicit val it: InternetTalker = injector.instance[InternetTalker]
 
   private def findArtistFolder(artist: String): Option[Directory] = {
     println("finding matching folder")
@@ -79,6 +79,7 @@ object FolderFixer
     println("fixing directory")
     val fixedDirectory = FixLabels fix folder.cloneDir()
     moveDirectory(artist, location, folderImage, fixedDirectory)
+        .listen(injector.instance[FoobarGain].calculateTrackGain)
         .filterWithMessage(FixLabels.verify, "Failed to rename some files!")
         .>|(updateServer())
         .>|(println("--Done!--"))
