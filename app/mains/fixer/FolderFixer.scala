@@ -83,6 +83,7 @@ object FolderFixer
         .filterWithMessage(FixLabels.verify, "Failed to rename some files!")
         .>|(updateServer())
         .>|(println("--Done!--"))
+
         .get
   }
 }
