@@ -44,7 +44,7 @@ class SongTagParserTest extends FreeSpec with AuxSpecs {
         $.title shouldReturn "Hidden Track"
         $.artistName shouldReturn "Ben Folds Five"
         $.albumName shouldReturn "Whatever and Ever Amen"
-        $.track shouldReturn 1
+        $.track shouldReturn 1 // Track is actually equal to "01/08".
         $.year shouldReturn 1997
         $.discNumber shouldReturn None
         $.trackGain shouldReturn None

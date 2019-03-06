@@ -53,7 +53,7 @@ object SongTagParser {
       title = tag.getFirst(FieldKey.TITLE),
       artistName = tag.getFirst(FieldKey.ARTIST),
       albumName = tag.getFirst(FieldKey.ALBUM),
-      track = tag.getFirst(FieldKey.TRACK).toInt,
+      track = tag.getFirst(FieldKey.TRACK).takeWhile(_.isDigit).toInt, // takeWhile handles 01/08 formats.
       year = year,
       bitRate = header.getBitRate,
       duration = header.getTrackLength,
