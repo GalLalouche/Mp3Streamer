@@ -13,7 +13,7 @@ class FixLabelsTest extends FreeSpec with AuxSpecs {
     "mp3" - {
       val song = getSongFile("song.mp3")
       "basic info" - {
-        val fixedTag = FixLabels.fixTag(song, fixDiscNumber = false)
+        val fixedTag = FixLabels.getFixedTag(song, fixDiscNumber = false)
         "correct fixes" in {
           val getTag = getTagValue(fixedTag) _
           getTag(FieldKey.TITLE) shouldReturn "Hidden Track"
@@ -28,14 +28,26 @@ class FixLabelsTest extends FreeSpec with AuxSpecs {
       }
       "When asked to fix discNumber" - {
         "String number" in {
-          val fixedTag = FixLabels.fixTag(getSongFile("songWithMoreInfo.mp3"), fixDiscNumber = true)
+          val fixedTag = FixLabels.getFixedTag(getSongFile("songWithMoreInfo.mp3"), fixDiscNumber = true)
           getTagValue(fixedTag)(FieldKey.DISC_NO) shouldReturn "Foobar"
         }
         "Partial number" in {
-          val fixedTag = FixLabels.fixTag(getSongFile("flacWithMoreInfo.flac"), fixDiscNumber = true)
+          val fixedTag = FixLabels.getFixedTag(getSongFile("flacWithMoreInfo.flac"), fixDiscNumber = true)
           getTagValue(fixedTag)(FieldKey.DISC_NO) shouldReturn "1"
         }
       }
+    }
+  }
+
+  "validFileName" - {
+    "if already valid returns self" in {
+      FixLabels.validFileName("foo and the bar 123") shouldReturn "foo and the bar 123"
+    }
+    "invalid characters are removed" in {
+      FixLabels.validFileName("foo/bar") shouldReturn "foobar"
+    }
+    "Should not return multiple spaces" in {
+      FixLabels.validFileName("foo / bar") shouldReturn "foo bar"
     }
   }
 }

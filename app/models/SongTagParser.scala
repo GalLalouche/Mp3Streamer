@@ -8,7 +8,7 @@ import common.rich.path.RichFile._
 import common.rich.primitives.RichBoolean._
 import common.rich.RichT._
 import models.RichTag._
-import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
 
 object SongTagParser {
@@ -35,10 +35,12 @@ object SongTagParser {
   }
 
   def apply(file: File): IOSong = {
-    require(file != null)
     require(file.exists, file + " doesn't exist")
     require(file.isDirectory.isFalse, file + " is a directory")
-    val (tag, header) = AudioFileIO.read(file).mapTo(e => (e.getTag, e.getAudioHeader))
+    apply(file, AudioFileIO read file)
+  }
+  def apply(file: File, audioFile: AudioFile): IOSong = {
+    val (tag, header) = audioFile.toTuple(_.getTag, _.getAudioHeader)
     val year = try
       yearPattern.findAllIn(tag.getFirst(FieldKey.YEAR)).matchData.next().group(1).toInt
     catch {
