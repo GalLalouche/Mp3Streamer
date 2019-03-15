@@ -6,6 +6,7 @@
 
 body {
   background-color: #eee;
+  margin: 20px;
 }
 
 .width-limited-playlist-span {
@@ -46,6 +47,7 @@ span.jp-playlist-item {
   position: absolute;
   left: 800px;
   float: right;
+  margin-top: 5px;
 }
 #search-results {
   width: 400px
@@ -120,4 +122,12 @@ span.jp-playlist-item {
 
 div.jp-controls-holder {
   margin-top: 5px;
+}
+
+div.jp-interface {
+  border: 0 !important;
+}
+
+#jp_container_1 {
+  margin-top: 3px;
 }

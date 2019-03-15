@@ -1,0 +1,21 @@
+.poster-buttons {
+  min-width: 125px;
+  height: 100%;
+}
+.poster-buttons button {
+  height: 33%;
+  width: 100%;
+}
+.poster-buttons:nth-child(n+3) button {
+  height: 33%;
+  width: 100%;
+}
+#jp_poster_0 {
+  width: 500px;
+  height: 500px;
+}
+
+#poster-table {
+  height: 100%;
+  margin-bottom: 100px;
+}

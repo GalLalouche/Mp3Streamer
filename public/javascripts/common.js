@@ -24,10 +24,15 @@ $(function() {
   }
 })
 
-function elem(elementName, config) {
-  return typeof config === 'object' && config
-      ? $(`<${elementName}/>`, config)
-      : $(`<${elementName}>${config || ""}</${elementName}>`)
+function elem(elementName, config, innerText) {
+  if (innerText) {
+    // If innerText is given, config has to be a config, otherwise it can be an innerText
+    assert(typeof config === 'object' && typeof innerText === 'string')
+    return $(`<${elementName}/>`, config).html(innerText)
+  }
+  if (config && typeof config === 'object')
+    return $(`<${elementName}/>`, config)
+  return $(`<${elementName}>${config || ""}</${elementName}>`)
 }
 String.prototype.takeAfterLast = function(subs) {
   return this.substr(this.lastIndexOf(subs) + 1)
@@ -35,11 +40,16 @@ String.prototype.takeAfterLast = function(subs) {
 Boolean.prototype.isFalse = function() {
   return !this.valueOf();
 }
-const button = text => elem("button", text)
+
+const elemFactory = e => config => elem(e, config)
+const button = (config, text) => elem("button", config, text)
 const span = config => elem("span", config)
-const div = () => elem('div')
-const br = () => elem('br')
+const div = elemFactory('div')
+const br = elemFactory('br')
 const icon = name => `<i class="fa fa-${name}"/>`
+const table = elemFactory('table')
+const td = elemFactory('td')
+const tr = elemFactory('tr')
 
 function appendBr(elementToAppendTo) {
   elementToAppendTo.append(br())

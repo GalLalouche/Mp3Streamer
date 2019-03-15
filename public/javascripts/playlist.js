@@ -1,10 +1,14 @@
 // Loading and saving playlists, either locally (backup) or from the server.
 $(function() {
-  $("#update_playlist").click(function() {
+  const body = $("body")
+  function listenToClick(id, callback) {
+    body.on("click", "#" + id, callback)
+  }
+  listenToClick("update_playlist", function() {
     const playlist = gplaylist.songs().slice(gplaylist.currentIndex()).map(x => x.file);
     postJson("playlist/queue", playlist, () => $.toast("Playlist successfully updated"))
   })
-  $("#load_playlist").click(function() {
+  listenToClick("load_playlist", function() {
     $.get("playlist/queue", x => x.forEach(e => gplaylist.add(e, false)))
   })
 
@@ -15,7 +19,7 @@ $(function() {
       duration: gplayer.currentPlayingInSeconds()
     }
   }
-  $("#update_state").click(function() {
+  listenToClick("update_state", function() {
     const state = getState()
     state.songs = state.songs.map(x => x.file)
     postJson("playlist/state", state, () => $.toast("State successfully updated"))
@@ -28,7 +32,7 @@ $(function() {
     gplayer.skip(state.duration)
     // gplayer.playCurrentSong()
   }
-  $("#load_state").click(function() {
+  listenToClick("load_state", function() {
     $.get("playlist/state", setState)
   })
 
@@ -41,11 +45,11 @@ $(function() {
   function loadBackup() {
     return JSON.parse(localStorage.getItem(backupKey))
   }
-  $("#update_backup").click(function() {
+  listenToClick("update_backup", function() {
     saveBackup()
     $.toast("Backup successfully created")
   })
-  $("#load_backup").click(() => {
+  listenToClick("load_backup", function() {
     const state = loadBackup()
     setState(state)
     Volume.setManualVolume(state.volume)

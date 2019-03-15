@@ -56,7 +56,4 @@ $(function() {
     if (shouldLoadNextSongFromRandom() && isSongNearlyFinished)
       loadNextRandom(false);
   }, (WAIT_DELAY - 5) * 1000);
-
-  // Technically CSS, but can't be done with pure css it seems.
-  poster.css("margin-left", (($(".jp-video").width() - poster.width()) / 2) + "px")
 });
