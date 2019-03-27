@@ -33,4 +33,8 @@ class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
       "https://en.wikipedia.org/w/index.php?title=Preachers_of_the_Night&redirect=no" -> Redirected)
         .get.link shouldReturn Url("https://en.wikipedia.org/wiki/Preachers_of_the_Night_(album)")
   }
+
+  "Ignores external links" in {
+    findAlbum("wikipedia_http_prefix.html", Album("Tick Tock", 2009, Artist("Gazpacho"))) shouldReturn None
+  }
 }

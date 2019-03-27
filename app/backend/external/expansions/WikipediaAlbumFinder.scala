@@ -30,6 +30,7 @@ private class WikipediaAlbumFinder @Inject()(
     private def isNotRedirected(link: Url): Future[Boolean] = {
       // TODO Should check if the redirection points to the original url.
       val title = link.address takeAfterLast '/'
+      assert(title.nonEmpty)
       val urlWithoutRedirection = s"https://en.wikipedia.org/w/index.php?title=$title&redirect=no"
       it.downloadDocument(Url(urlWithoutRedirection))
           .map(_.select("span#redirectsub").asScala.headOption.exists(_.text == "Redirect page").isFalse)
@@ -40,8 +41,10 @@ private class WikipediaAlbumFinder @Inject()(
           .filter(e => score(e.text) > 0.95)
           .map(_.attr("href"))
           .filter(_.nonEmpty)
+          .filterNot(_ startsWith "http") // Filters external links
           .filterNot(_ contains "redlink=1")
           .map("https://en.wikipedia.org" + _ |> Url)
+          .ensuring(_.forall(_.isValid))
           .filterTraverse(isNotRedirected)
           .map(_.headOption)
     }

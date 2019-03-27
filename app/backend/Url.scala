@@ -1,7 +1,9 @@
 package backend
 
-import common.rich.primitives.RichBoolean._
 import java.net.URL
+
+import common.rich.primitives.RichBoolean._
+import org.apache.commons.validator.routines.UrlValidator
 
 case class Url(address: String) {
   def toURL: URL = new URL(address)
@@ -17,4 +19,5 @@ case class Url(address: String) {
       Url(address + (if (address.last == s.head) s.drop(1) else s))
     else
       Url(s"$address/$s")
+  def isValid: Boolean = UrlValidator.getInstance().isValid(address)
 }
