@@ -5,6 +5,7 @@ import java.util.regex.Pattern
 
 import backend.Url
 import backend.external.BaseLink
+import backend.external.expansions.AllMusicHelper._
 import backend.logging.Logger
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
@@ -14,6 +15,7 @@ import common.rich.func.ToMoreMonadErrorOps
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 import javax.inject.Inject
+import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,17 +33,9 @@ private class AllMusicHelper @Inject()(
   private val allmusicPrefix = "(?:http://www.)?allmusic.com/album/"
   private val canonicalRe = s"$allmusicPrefix($canonicalLink)".r
 
-  @VisibleForTesting
-  def hasStaffReview(u: Url): Future[Boolean] = it.downloadDocument(u)
-      .map(_.select("div[itemprop=reviewBody]").asScala.headOption.exists(_.html.nonEmpty))
-  @VisibleForTesting
-  def hasRating(u: Url): Future[Boolean] = it.downloadDocument(u)
-      .map(_.select(".allmusic-rating").asScala.single.hasClass("rating-allmusic-0").isFalse)
   // TODO this should only be invoked once, from the external pipe
-  def isValidLink(u: Url): Future[Boolean] = for {
-    rated <- hasRating(u)
-    staffReviewed <- hasStaffReview(u)
-  } yield rated && staffReviewed
+  def isValidLink(u: Url): Future[Boolean] = it.downloadDocument(u)
+      .map(d => hasRating(d) && hasStaffReview(d))
   def isCanonical(link: String): Boolean = canonicalRe.findAllMatchIn(link).hasNext
 
   def canonize[R <: Reconcilable](link: BaseLink[R]): Future[BaseLink[R]] = {
@@ -62,4 +56,13 @@ private class AllMusicHelper @Inject()(
             .flatMap(followRedirect(currentTry + 1))
     followRedirect(0)(link.link).map(BaseLink[R](_, link.host))
   }
+}
+
+private object AllMusicHelper {
+  @VisibleForTesting
+  def hasStaffReview(d: Document): Boolean =
+    d.select("div[itemprop=reviewBody]").asScala.headOption.exists(_.html.nonEmpty)
+  @VisibleForTesting
+  def hasRating(d: Document): Boolean =
+    d.select(".allmusic-rating").asScala.single.hasClass("rating-allmusic-0").isFalse
 }

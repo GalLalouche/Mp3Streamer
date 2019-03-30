@@ -3,8 +3,8 @@ package backend.external.expansions
 import java.net.HttpURLConnection
 
 import backend.Url
-import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.external.{BaseLink, DocumentSpecs, Host}
+import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import common.io.WSAliases._
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -34,26 +34,26 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
     }
   }
   "validity" - {
-    val helperPointsToValid = create(withDocument("allmusic_has_rating.html"))
-    val helperPointsToEmpty = create(withDocument("allmusic_no_rating.html"))
-    val url = Url("http://foobar")
     "hasRating" - {
       "yes" in {
-        helperPointsToValid.hasRating(url).get shouldReturn true
+        AllMusicHelper.hasRating(getDocument("allmusic_has_rating.html")) shouldReturn true
       }
       "no" in {
-        helperPointsToEmpty.hasRating(url).get shouldReturn false
+        AllMusicHelper.hasRating(getDocument("allmusic_no_rating.html")) shouldReturn false
       }
     }
     "hasStaffReview" - {
       "yes" in {
-        helperPointsToValid.hasStaffReview(url).get shouldReturn true
+        AllMusicHelper.hasStaffReview(getDocument("allmusic_has_rating.html")) shouldReturn true
       }
       "no" in {
-        helperPointsToEmpty.hasStaffReview(url).get shouldReturn false
+        AllMusicHelper.hasStaffReview(getDocument("allmusic_no_rating.html")) shouldReturn false
       }
     }
     "isValid" - {
+      val helperPointsToValid = create(withDocument("allmusic_has_rating.html"))
+      val helperPointsToEmpty = create(withDocument("allmusic_no_rating.html"))
+      val url = Url("http://foobar")
       "yes" in {
         helperPointsToValid.isValidLink(url).get shouldReturn true
       }
