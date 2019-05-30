@@ -6,7 +6,7 @@ import backend.Url
 import backend.external.{BaseLink, Host}
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
-import common.rich.collections.RichSeq._
+import common.rich.collections.RichIterable._
 import common.rich.primitives.RichString._
 import javax.inject.Inject
 import org.jsoup.nodes.Document

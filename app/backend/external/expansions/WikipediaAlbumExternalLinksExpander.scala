@@ -9,6 +9,7 @@ import com.google.inject.Guice
 import common.io.InternetTalker
 import common.rich.RichT._
 import common.rich.collections.RichSeq._
+import common.rich.collections.RichIterable._
 import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 import javax.inject.Inject
 import org.jsoup.nodes.Document
