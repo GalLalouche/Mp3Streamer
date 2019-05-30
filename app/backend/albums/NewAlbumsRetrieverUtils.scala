@@ -6,7 +6,7 @@ import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.{Album, AlbumReconStorage, Artist, IgnoredReconResult, ReconcilerCacher, ReconID}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import common.rich.RichT._
-import common.rich.func.{MoreObservableInstances, MoreSeqInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
+import common.rich.func.{MoreObservableInstances, MoreSeqInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreFunctorOps, ToMoreMonadErrorOps, ToMoreMonadPlusOps, ToTraverseMonadPlusOps}
 import common.rich.RichObservable._
 import javax.inject.Inject
 import rx.lang.scala.Observable
@@ -25,7 +25,7 @@ private class NewAlbumsRetrieverUtils @Inject()(
 ) extends ToMoreMonadErrorOps with ToMoreFunctorOps with FutureInstances
     with ToTraverseMonadPlusOps with MoreSeqInstances with MoreTraverseInstances
     with ToMoreFoldableOps with OptionInstances
-    with MoreObservableInstances {
+    with MoreObservableInstances with ToMoreMonadPlusOps {
   private implicit val iec: ExecutionContext = ec
 
   def getReconId(artist: Artist): Observable[ReconID] =

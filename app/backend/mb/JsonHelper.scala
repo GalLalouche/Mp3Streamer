@@ -1,7 +1,7 @@
 package backend.mb
 
 import common.io.InternetTalker
-import common.rich.func.ToMoreMonadErrorOps
+import common.rich.func.ToMoreMonadErrorOps._
 import common.rich.primitives.RichBoolean._
 import javax.inject.Inject
 import play.api.http.Status
@@ -12,8 +12,9 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 
 import scalaz.std.FutureInstances
+import scalaz.std.scalaFuture.futureInstance
 
-private class JsonHelper @Inject()(it: InternetTalker) extends ToMoreMonadErrorOps with FutureInstances {
+private class JsonHelper @Inject()(it: InternetTalker) {
   private implicit val iec: ExecutionContext = it
 
   def retry[T](f: () => Future[T], times: Int, retryWait: Duration): Future[T] = {

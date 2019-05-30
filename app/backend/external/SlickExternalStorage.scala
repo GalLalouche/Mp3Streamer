@@ -7,12 +7,16 @@ import backend.RichTime._
 import backend.logging.Logger
 import backend.recon.{Album, Artist, Reconcilable}
 import backend.storage.{AlwaysFresh, DatedFreshness, DbProvider, Freshness, SlickStorageTemplateFromConf}
+import common.rich.func.ToMoreFoldableOps._
 import common.storage.{ColumnMappers, StringSerializable}
 import javax.inject.Inject
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
 
 import scala.concurrent.{ExecutionContext, Future}
+
+import scalaz.std.option.optionInstance
+import scalaz.syntax.applicative._
 
 // TODO replace with composition
 private[external] abstract class SlickExternalStorage[R <: Reconcilable](

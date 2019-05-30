@@ -2,6 +2,7 @@ package backend.recon
 
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
+import common.rich.func.ToMoreFoldableOps._
 import javax.inject.{Inject, Singleton}
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
@@ -9,6 +10,8 @@ import slick.jdbc.JdbcType
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.OptionT
+import scalaz.std.option.optionInstance
+import scalaz.syntax.applicative._
 
 // TODO replace with composition
 sealed abstract class SlickReconStorage[R <: Reconcilable](ec: ExecutionContext, dbP: DbProvider)
