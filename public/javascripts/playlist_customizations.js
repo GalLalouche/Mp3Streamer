@@ -15,7 +15,9 @@ $(function() {
     }
   })
   // Move to song on click.
-  playlistElement.on("click", playlistItem, function() {
+  playlistElement.on("click", playlistItem, function(e) {
+    if (e.target.localName !== "span")
+      return // Only listens to clicks on the text, to avoid handling misclicks near the buttons.
     const listItem = $(this)
     const clickedIndex = playlist.getDisplayedIndex(listItem.index())
     if (gplaylist.currentIndex() === clickedIndex)
