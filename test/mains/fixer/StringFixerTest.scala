@@ -56,4 +56,9 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   "stupid apostrophe" in {
     verifyFix("I’m a stupid apostrophe", "I'm a Stupid Apostrophe")
   }
+
+  "Ignores Hebrew" in  {
+    verifyFix("אהבת נעוריי", "אהבת נעוריי")
+  }
+
 }

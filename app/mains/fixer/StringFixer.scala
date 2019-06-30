@@ -70,7 +70,9 @@ object StringFixer extends (String => String) {
     }
   }
 
-  override def apply(str: String): String = {
+  private val hebrewPattern = """\p{InHebrew}""".r.unanchored
+  private def isHebrew(str: String): Boolean = hebrewPattern.findFirstIn(str).isDefined
+  override def apply(str: String): String = if (isHebrew(str)) str else {
     val head :: tail = splitWithDelimiters(str.trim)
     val fixed = fixWord(head, isFirstWord = true) :: tail.map(fixWord(_, isFirstWord = false))
     fixed map asciiNormalize mkString ""
