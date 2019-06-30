@@ -32,7 +32,7 @@ $(function() {
     function aux() {
       if (isClassicalPiece(media).isFalse())
         return [
-          `${media.albumName}${media.discNumber ? "[" + media.discNumber + "]" : ""}`,
+          `<span dir='ltr'>${media.albumName}</span>${media.discNumber ? "[" + media.discNumber + "]" : ""}`,
           media.track,
           media.year,
         ]
@@ -61,7 +61,7 @@ $(function() {
 
   playlistUtils.mediaMetadataHtml = function(media) {
     const metadata = `${(isClassicalPiece(media) ? "performed by" : "by")} ` +
-        `<span class="jp-artist">${media.artistName}</span> ` +
+        `<span class="jp-artist" dir="ltr">${media.artistName}</span> ` +
         `(<span class="jp-parens">${additionalData(media)}</span>`
 
     // Duration is appended manually outside of metadata to ensure that it is always displayed, even if
