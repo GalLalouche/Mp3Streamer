@@ -19,7 +19,9 @@ private[lyrics] class LyricsWikiaRetriever @Inject()(
 
   private val urlHelper = new SingleHostUrlHelper(url, parse)
   override val get = urlHelper.get
-  override val doesUrlMatchHost = urlHelper.doesUrlMatchHost
+  // TODO RichBoolean.or
+  override val doesUrlMatchHost =
+    u => urlHelper.doesUrlMatchHost(u) || u.address.contains("lyrics.fandom.com/wiki")
 }
 
 private object LyricsWikiaRetriever {
