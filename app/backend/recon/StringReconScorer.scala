@@ -10,5 +10,20 @@ object StringReconScorer extends ((String, String) => Double) {
     Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
   private def canonize(s: String): String =
     s.toLowerCase.split(' ').filterNot(badWords).mkString(" ").filter(_.isLetterOrDigit) |> normalize
-  override def apply(s1: String, s2: String): Double = if (canonize(s1) == canonize(s2)) 1.0 else 0.0
+
+  // TODO handle code duplication with StringFixer
+  private val hebrewPattern =
+    """\p{InHebrew}""".r.unanchored
+  private def isHebrew(str: String): Boolean = hebrewPattern.findFirstIn(str).isDefined
+
+  private def sameAndNonEmpty(s1: String, s2: String) = {
+    val trim = s1.trim
+    trim.nonEmpty && trim == s2.trim
+  }
+  override def apply(s1: String, s2: String): Double = {
+    val same =
+      if (isHebrew(s1) || isHebrew(s2)) sameAndNonEmpty(s1, s2)
+      else sameAndNonEmpty(canonize(s1), canonize(s2))
+    if (same) 1 else 0
+  }
 }

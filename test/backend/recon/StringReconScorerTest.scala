@@ -1,14 +1,23 @@
 package backend.recon
 
-import common.AuxSpecs
 import org.scalatest.FreeSpec
+
+import common.AuxSpecs
 
 class StringReconScorerTest extends FreeSpec with AuxSpecs {
   private val $ = StringReconScorer
-  def verifyHighReconScore(str1: String, str2: String): Unit = {
-    s"$str1 and $str2 should have a high recon score" in {
-      $(str1,str2) should be > 0.9
+  def verifyLowReconScore(str1: String, str2: String): Unit = {
+    s"<$str1> and <$str2> should have a low recon score" in {
+      $(str1, str2) should be <= 0.9
     }
+  }
+  def verifyHighReconScore(str1: String, str2: String): Unit = {
+    s"<$str1> and <$str2> should have a high recon score" in {
+      $(str1, str2) should be > 0.9
+    }
+  }
+  "An empty string has a low recon score" - {
+    verifyLowReconScore("", "   ")
   }
   "ascii" - {
     verifyHighReconScore("Verisäkeet", "Verisakeet")
@@ -22,5 +31,13 @@ class StringReconScorerTest extends FreeSpec with AuxSpecs {
   }
   "ignores punctuations" - {
     verifyHighReconScore("Grand Opening and Closing!", "Grand Opening and Closing")
+  }
+  "Hebrew" - {
+    "Exact match returns true" - {
+      verifyHighReconScore("משה", "משה")
+    }
+    "Non-exact else returns false" - {
+      verifyLowReconScore("חיים", "משה")
+    }
   }
 }
