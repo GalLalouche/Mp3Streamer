@@ -117,6 +117,3 @@ private[backend] class AlbumExternalStorage @Inject()(
     existingRows `<*ByName` db.run(artistRows.delete)
   }
 }
-
-
-

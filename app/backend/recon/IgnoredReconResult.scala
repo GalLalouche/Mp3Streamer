@@ -12,5 +12,3 @@ object IgnoredReconResult {
     case Some(b) => if (b) Ignored else NotIgnored
   }
 }
-
-

@@ -30,4 +30,3 @@ object NewAlbum {
       albumType = AlbumType.withName(json str "albumType"))
   }
 }
-

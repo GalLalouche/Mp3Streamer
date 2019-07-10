@@ -62,5 +62,3 @@ case class TestModuleConfiguration(
 
   val injector = Guice.createInjector(module)
 }
-
-

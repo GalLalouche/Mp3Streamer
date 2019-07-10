@@ -2,7 +2,6 @@ package common.io
 
 import java.io.{ByteArrayOutputStream, InputStream}
 
-
 object RichStream {
   implicit class RichStream(val is: InputStream) {
     require(is != null)

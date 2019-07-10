@@ -40,11 +40,9 @@ object CompositeDateFormat {
   }
 }
 
-
 /** Tries several parsers in a sequence until the first one succeeds. Isn't total. */
 class CompositeDateFormat private(parsers: Seq[Parser]) {
   def parse(source: String): Option[LocalDateTime] = parsers.toStream.flatMap(_ (source)).headOption
   def orElse[T: CompositeDateFormat.LocalDateTimeable](parser: String): CompositeDateFormat =
     new CompositeDateFormat(parsers :+ CompositeDateFormat.toParser(parser))
 }
-

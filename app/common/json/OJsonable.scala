@@ -18,6 +18,3 @@ object OJsonable {
     override def parse(json: JsObject): A = ev.reads(json).get
   }
 }
-
-
-
