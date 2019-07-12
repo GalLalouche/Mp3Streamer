@@ -1,12 +1,13 @@
 package mains.fixer
 
-import java.text.Normalizer
 import java.util.regex.Pattern
 
 import com.google.common.annotations.VisibleForTesting
+
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
+import common.LanguageString._
 
 object StringFixer extends (String => String) {
   @VisibleForTesting
@@ -65,15 +66,13 @@ object StringFixer extends (String => String) {
     if (s.isWhitespaceOrEmpty) s
     else {
       val withoutSpecialQuotes = s.replaceAll("[‘’“”]", "'")
-      Normalizer.normalize(withoutSpecialQuotes, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+      withoutSpecialQuotes.keepAscii
           .mapIf(_.isWhitespaceOrEmpty).to(asciiNormalize(withoutSpecialQuotes.map(cyrillicMap).mkString("")))
     }
   }
 
-  private val hebrewPattern = """\p{InHebrew}""".r.unanchored
-  private def isHebrew(str: String): Boolean = hebrewPattern.findFirstIn(str).isDefined
-  override def apply(str: String): String = if (isHebrew(str)) str else {
-    val head :: tail = splitWithDelimiters(str.trim)
+  override def apply(s: String): String = s.mapIf(_.hasHebrew.isFalse).to {
+    val head :: tail = splitWithDelimiters(s.trim)
     val fixed = fixWord(head, isFirstWord = true) :: tail.map(fixWord(_, isFirstWord = false))
     fixed map asciiNormalize mkString ""
   }
