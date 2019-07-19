@@ -1,7 +1,8 @@
 package models
 
-import common.AuxSpecs
 import org.scalatest.FreeSpec
+
+import common.AuxSpecs
 
 class SongTagParserTest extends FreeSpec with AuxSpecs {
   private def getSong(location: String) = getResourceFile(location)
@@ -24,7 +25,7 @@ class SongTagParserTest extends FreeSpec with AuxSpecs {
         }
       }
       "parse year correctly" in {
-        SongTagParser(getSong("songWithYear.mp3")).year shouldReturn 1999
+        SongTagParser(getSong("songWithFullDate.mp3")).year shouldReturn 1999
       }
       "non-empty optionals" in {
         val $: Song = SongTagParser(getSong("songWithMoreInfo.mp3"))
