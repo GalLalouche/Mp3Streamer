@@ -29,7 +29,7 @@ private object ImagesSupplier {
       fillCache()
       $
     }
-    def fillCache() {
+    def fillCache(): Unit = {
       ec.execute(() => {
         while (urls.hasNext && cache.size < cacheSize)
           cache.put(downloader(urls.next()))

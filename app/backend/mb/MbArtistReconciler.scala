@@ -63,7 +63,7 @@ object MbArtistReconciler {
   private val compositeDateFormat =
     CompositeDateFormat[LocalDate]("yyyy-MM-dd").orElse[YearMonth]("yyyy-MM").orElse[Year]("yyyy")
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     val injector = Guice createInjector StandaloneModule
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val $ = injector.instance[MbArtistReconciler]

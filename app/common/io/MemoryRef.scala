@@ -22,7 +22,7 @@ case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with Memo
   private var content: String = ""
   private var lastUpdatedTime: LocalDateTime = _
   touch()
-  private def touch() {
+  private def touch(): Unit = {
     lastUpdatedTime = LocalDateTime.now
   }
   override def bytes = content.getBytes

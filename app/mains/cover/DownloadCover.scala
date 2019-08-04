@@ -49,8 +49,7 @@ object DownloadCover {
       case OpenBrowser =>
         // String interpolation is acting funky for some reason (will fail at runtime)
         Process(
-          """C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe "%s""""
-              .format(searchUrl)).!!
+          s"""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe "$searchUrl"""").!!
         throw new RuntimeException("User opened browser")
       case Cancelled => throw new RuntimeException("User opted out")
     }
@@ -77,7 +76,7 @@ object DownloadCover {
       imageDownloader.withOutput(IODirectory apply tempFolder),
       cacheSize = 12))
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     import common.rich.RichFuture._
     val folder = Directory(args mkString " ")
     println("Downloading cover image for " + folder.path)

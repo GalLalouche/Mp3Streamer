@@ -49,7 +49,7 @@ private class AsyncFolderImagePanel(rows: Int, cols: Int, imagesSupplier: Images
     Component.wrap(imageLabel).onMouseClick(() => AsyncFolderImagePanel.this.publish(Selected(folderImage)))
   }
 
-  def refresh() {
+  def refresh(): Unit = {
     contents.clear()
     // Pre-populate the grid to avoid images moving around.
     val range = 0 until rows * cols
