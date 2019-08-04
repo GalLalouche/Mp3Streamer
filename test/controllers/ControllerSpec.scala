@@ -5,8 +5,6 @@ import akka.stream.ActorMaterializer
 import backend.module.TestModuleConfiguration
 import com.google.inject
 import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
-import common.AuxSpecs
-import common.rich.RichFuture._
 import models.{IOSong, Song}
 import org.scalatest.{Args, TestSuite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -17,13 +15,16 @@ import play.api.mvc.Result
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import common.AuxSpecs
+import common.rich.RichFuture._
+import common.rich.collections.RichSet._
+
 trait ControllerSpec extends AuxSpecs with GuiceOneServerPerSuite {self: TestSuite =>
   // Play, being moronic as usual, will initialize an application even if the test is to be excluded,
   // resulting in poor performance.
   // TODO create new issue in github https://github.com/playframework/playframework/issues/new
   abstract override def run(testName: Option[String], args: Args) = {
-    // TODO Move insect.nonEmpty to common
-    if (args.filter.tagsToExclude.intersect(getClass.getAnnotations.map(_.annotationType().getName).toSet).nonEmpty)
+    if (args.filter.tagsToExclude.intersects(getClass.getAnnotations.map(_.annotationType().getName).toSet))
       org.scalatest.SucceededStatus
     else
       super.run(testName, args)
