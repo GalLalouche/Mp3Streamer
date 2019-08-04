@@ -60,5 +60,4 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   "Ignores Hebrew" in  {
     verifyFix("אהבת נעוריי", "אהבת נעוריי")
   }
-
 }
