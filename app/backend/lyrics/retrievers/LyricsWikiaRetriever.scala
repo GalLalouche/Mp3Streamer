@@ -4,11 +4,12 @@ import java.net.URLEncoder
 import java.util.NoSuchElementException
 
 import com.google.common.annotations.VisibleForTesting
-import common.rich.RichT._
-import common.rich.primitives.RichBoolean._
 import javax.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
+
+import common.rich.RichT._
+import common.rich.primitives.RichBoolean._
 
 private[lyrics] class LyricsWikiaRetriever @Inject()(
     singleHostHelper: SingleHostParsingHelper,
@@ -19,9 +20,8 @@ private[lyrics] class LyricsWikiaRetriever @Inject()(
 
   private val urlHelper = new SingleHostUrlHelper(url, parse)
   override val get = urlHelper.get
-  // TODO RichBoolean.or
   override val doesUrlMatchHost =
-    u => urlHelper.doesUrlMatchHost(u) || u.address.contains("lyrics.fandom.com/wiki")
+    or(urlHelper.doesUrlMatchHost, _.address.contains("lyrics.fandom.com/wiki"))
 }
 
 private object LyricsWikiaRetriever {
