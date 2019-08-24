@@ -61,8 +61,8 @@ GET         /debug/fast_refresh                      backend.search.CacherContro
 # Albums
 GET         /new_albums/index.html                   backend.albums.AlbumsController.index
 GET         /new_albums/albums/                      backend.albums.AlbumsController.albums
-PUT         /new_albums/artist/remove                backend.albums.AlbumsController.removeArtist
-PUT         /new_albums/artist/ignore                backend.albums.AlbumsController.ignoreArtist
+PUT         /new_albums/artist/remove/*artist        backend.albums.AlbumsController.removeArtist(artist)
+PUT         /new_albums/artist/ignore/*artist        backend.albums.AlbumsController.ignoreArtist(artist)
 PUT         /new_albums/album/remove                 backend.albums.AlbumsController.removeAlbum
 PUT         /new_albums/album/ignore                 backend.albums.AlbumsController.ignoreAlbum
 

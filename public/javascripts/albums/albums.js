@@ -4,9 +4,9 @@ $(function() {
   const button = (text, clazz) => elem("button", text).addClass(clazz)
   const createHideButton = () => button("Hide", "hide")
 
-  function putText(url, text, success) {
+  function putArtist(actionType, text, success) {
     $.ajax({
-      url: url,
+      url: `artist/${actionType}/${text}`,
       data: text,
       type: "PUT",
       contentType: "text/plain",
@@ -48,8 +48,8 @@ $(function() {
   }
 
   onClick("hide", parent => parent.hide())
-  onClick("ignore-artist", parent => putText("artist/ignore", parent.data("artistName"), hideParent(parent)))
-  onClick("remove-artist", parent => putText("artist/remove", parent.data("artistName"), hideParent(parent)))
+  onClick("ignore-artist", parent => putArtist("ignore", parent.data("artistName"), hideParent(parent)))
+  onClick("remove-artist", parent => putArtist("remove", parent.data("artistName"), hideParent(parent)))
   onClick("ignore-album", parent => putJson("album/ignore", parent.data(), hideParent(parent)))
   onClick("remove-album", parent => putJson("album/remove", parent.data(), hideParent(parent)))
 

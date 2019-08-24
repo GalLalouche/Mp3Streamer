@@ -11,10 +11,16 @@ import play.api.mvc.{Action, AnyContent, InjectedController, Request, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.functor.ToFunctorOps
+
 /** Converts common play-agnostic return values, usually from formatter helpers, to play Actions. */
 class PlayActionConverter @Inject()(implicit ec: ExecutionContext) extends InjectedController {
   def ok[C: Writeable](f: Future[C]): Action[AnyContent] = Action.async(f.map(Ok(_)))
   def ok[C: Writeable](c: C): Action[AnyContent] = Action(Ok(c))
+
+  def noContent(f: Future[Any]): Action[AnyContent] = Action.async(f >| NoContent)
+  def noContent(a: Any): Action[AnyContent] = Action(NoContent)
 
   trait Resultable[A] {
     def result(a: A): Result
