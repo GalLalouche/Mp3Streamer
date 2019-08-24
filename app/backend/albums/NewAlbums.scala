@@ -58,7 +58,7 @@ private class NewAlbums @Inject()(
 
   def removeArtist(a: Artist): Future[Unit] = {
     logger.debug(s"Removing $a")
-    loadAlbumsByArtist.map(_ - a).map(save)
+    loadAlbumsByArtist.map(_.ensuring(_.contains(a)) - a).map(save)
   }
   def ignoreArtist(a: Artist): Future[Unit] = ignore(a, artistReconStorage) >> removeArtist(a)
   def removeAlbum(a: Album): Future[Unit] = {
