@@ -47,9 +47,9 @@ object DownloadCover {
     } yield selection match {
       case Selected(img) => fileMover(img)
       case OpenBrowser =>
-        // String interpolation is acting funky for some reason (will fail at runtime)
+        // String interpolation is acting funky for some reason (will fail at runtime for unicode).
         Process(
-          s"""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe "$searchUrl"""").!!
+          """C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe """" + searchUrl + "\"").!!
         throw new RuntimeException("User opened browser")
       case Cancelled => throw new RuntimeException("User opted out")
     }
