@@ -3,12 +3,13 @@ package decoders
 import java.io.{File, IOException}
 
 import backend.logging.Logger
-import common.Debug
-import common.io.FileRef
-import common.rich.path.RichFile._
 import javax.inject.Inject
 
 import scala.sys.process.{Process, ProcessLogger}
+
+import common.Debug
+import common.io.{FileRef, IOFile}
+import common.rich.path.RichFile._
 
 private class DbPowerampCodec @Inject()(implicit logger: Logger) extends Encoder with Debug {
   // Do this less hackishly
@@ -17,7 +18,6 @@ private class DbPowerampCodec @Inject()(implicit logger: Logger) extends Encoder
 
   override def encode(srcFile: FileRef, dstFile: FileRef, dstType: CodecType): Unit = dstType match {
     case Mp3 =>
-      // create the arguments for the application invocation
       val args = List(converterFile.path,
         "-infile=" + quote(srcFile.path),
         "-outfile=" + quote(dstFile.path),
@@ -28,6 +28,7 @@ private class DbPowerampCodec @Inject()(implicit logger: Logger) extends Encoder
         if (Process(args) !< devNull != 0)
           throw new IOException("DbPowerAmp failed to convert file")
       }
+      TagCopier(srcFile.asInstanceOf[IOFile], dstFile.asInstanceOf[IOFile])
     case Flac => ???
   }
   private val devNull = new ProcessLogger {
