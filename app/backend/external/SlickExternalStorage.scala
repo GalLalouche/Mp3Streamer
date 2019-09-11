@@ -7,8 +7,6 @@ import backend.RichTime._
 import backend.logging.Logger
 import backend.recon.{Album, Artist, Reconcilable}
 import backend.storage.{AlwaysFresh, DatedFreshness, DbProvider, Freshness, SlickStorageTemplateFromConf}
-import common.rich.func.ToMoreFoldableOps._
-import common.storage.{ColumnMappers, StringSerializable}
 import javax.inject.Inject
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
@@ -16,7 +14,11 @@ import slick.jdbc.JdbcType
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.option.optionInstance
-import scalaz.syntax.applicative._
+import common.rich.func.ToMoreFoldableOps._
+import common.rich.func.ToMoreMonadErrorOps._
+
+import common.rich.RichT._
+import common.storage.{ColumnMappers, StringSerializable}
 
 // TODO replace with composition
 private[external] abstract class SlickExternalStorage[R <: Reconcilable](
@@ -24,27 +26,30 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](
     dbP: DbProvider,
     logger: Logger,
 ) extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Freshness)](ec, dbP) with ExternalStorage[R] {
-  private class OldStorageEntry extends Exception
+  private case class InvalidEntry(entry: String) extends Exception
   private implicit val iec: ExecutionContext = ec
   import profile.api._
 
   protected implicit val localDateTimeColumn: JdbcType[LocalDateTime] =
     MappedColumnType.base[LocalDateTime, Long](_.toMillis, _.toLocalDateTime)
   private implicit def markedLinkStringSerializable: StringSerializable[MarkedLink[R]] =
+  // FIXME some URLs include ";". We solve this by using "-;-" in those rare cases, but one should find a less hacky hack.
     new StringSerializable[MarkedLink[R]] {
-      private val splitChar = ";"
+      private val SplitChar = ";"
+      private val SplitCharBackup = "-;-"
       override def separator = ";;"
       override def parse(s: String): MarkedLink[R] = {
-        val split = s split splitChar
-        if (split.length != 4)
-          throw new OldStorageEntry
+        val split = s.split(if (s.contains(SplitCharBackup)) SplitCharBackup else SplitChar)
+            .ifNot(_.length == 4).thenThrow(InvalidEntry(s))
         MarkedLink[R](
           link = Url(split(2)),
           host = Host(name = split(0), url = Url(split(1))),
           isNew = split(3).toBoolean)
       }
-      override def stringify(e: MarkedLink[R]): String =
-        List(e.host.name, e.host.url.address, e.link.address, e.isNew) mkString splitChar
+      override def stringify(e: MarkedLink[R]): String = {
+        val encodedLink = Vector(e.host.name, e.host.url.address, e.link.address, e.isNew)
+        encodedLink.mkString(if (encodedLink.toString.contains(";")) SplitCharBackup else SplitChar)
+      }
     }
   // Can't use the type alias because it messes up the type inference.
   protected implicit val markedLinksColumns: JdbcType[Traversable[MarkedLink[R]]] =
@@ -53,13 +58,9 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](
   override protected type Id = String
   override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
   override protected def extractId(r: R) = r.normalize
-  override def load(r: R): FutureOption[(MarkedLinks[R], Freshness)] =
-    super.load(r).recoverWith {
-      case _: OldStorageEntry =>
-        logger.error(s"Encountered an old storage entry for entity $r; removing entry")
-        // Using internalDelete since regular delete also loads which results in an infinite recursion.
-        internalDelete(r).>|(None)
-    }
+  override def load(r: R): FutureOption[(MarkedLinks[R], Freshness)] = super.load(r).mapError {
+    case InvalidEntry(e) => new AssertionError(s"Encountered an invalid entry <$e> for entity <$r>")
+  }
 }
 
 private[backend] class ArtistExternalStorage @Inject()(

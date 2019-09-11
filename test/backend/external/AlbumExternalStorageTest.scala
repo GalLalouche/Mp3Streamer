@@ -48,4 +48,11 @@ class AlbumExternalStorageTest extends FreeSpec with AuxSpecs with StorageSetup 
     storage.load(album).get shouldReturn None
     storage.load(album2).get shouldReturn None
   }
+
+  "Can handle links with ';' in their text" in {
+    val link3 = MarkedLink[Album](Url("www.bazqux.com/baz/quxlt&;.html"), Host("annoying", Url("annoying.com")), true)
+    val value = List(link1, link2, link3) -> DatedFreshness(LocalDateTime.now)
+    storage.store(album, value).get
+    storage.load(album).get.get shouldReturn value
+  }
 }
