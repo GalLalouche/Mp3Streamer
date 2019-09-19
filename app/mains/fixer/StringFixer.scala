@@ -4,6 +4,7 @@ import java.util.regex.Pattern
 
 import com.google.common.annotations.VisibleForTesting
 
+import common.rich.collections.RichSeq._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
@@ -19,29 +20,22 @@ object StringFixer extends (String => String) {
     "through", "to", "too", "up", "upon", "was", "wasn't", "were", "weren't", "will", "with", "without",
     "won't", "would", "wouldn't", "your")
   private val lowerCaseSet = lowerCaseWords.toSet
-  private val delimiters = " ()-:/\\".toSet
 
   private def pascalCaseWord(w: String): String = w.toLowerCase.capitalize
 
   private val RomanPattern = Pattern compile "[IVXMLivxml]+"
   private val MixedCapsPattern = Pattern compile ".*[A-Z].*"
   private val DottedAcronymPattern = Pattern compile "(\\w\\.)+"
-  private def fixWord(word: String, isFirstWord: Boolean): String =
-    if (isFirstWord.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase
+  private def fixWord(word: String, forceCapitalization: Boolean): String = asciiNormalize(
+    if (forceCapitalization.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase
     else if (word matches MixedCapsPattern) word // mixed caps
     else if (word.head.isDigit) word.toLowerCase // 1st, 2nd, etc.
     else if (word matches RomanPattern) word.toUpperCase // roman numbers, also handles pronoun "I"
     else if (word matches DottedAcronymPattern) word.toUpperCase // A.B.C. pattern
     else pascalCaseWord(word)
+  )
 
-  private def splitWithDelimiters(s: String): List[String] =
-    s.foldLeft((List[String](), new StringBuilder)) {
-      case ((agg, sb), c) =>
-        if (delimiters(c)) (c.toString :: sb.toString :: agg, new StringBuilder) // delimiter
-        else (agg, sb append c)
-    }.mapTo(e => e._2.toString :: e._1) // append last SB to list
-        .filterNot(_.isEmpty)
-        .reverse
+  private val Delimiters = Pattern compile """[ ()\-:/"&]+"""
 
   // Modified from https://stackoverflow.com/a/29364083/736508
   private val cyrillicMap = Map(
@@ -71,9 +65,12 @@ object StringFixer extends (String => String) {
     }
   }
 
-  override def apply(s: String): String = s.mapIf(_.hasHebrew.isFalse).to {
-    val head :: tail = splitWithDelimiters(s.trim)
-    val fixed = fixWord(head, isFirstWord = true) :: tail.map(fixWord(_, isFirstWord = false))
-    fixed map asciiNormalize mkString ""
+  override def apply(s: String): String = s.trim.mapIf(_.hasHebrew.isFalse).to {s =>
+    val words = s.splitWithDelimiters(Delimiters)
+    // The first word is always capitalized (e.g., The Who), while the other words will only be
+    // force-capitalized if they appear after a separator, e.g., The Whole (The Song of the Band).
+    fixWord(words.head, forceCapitalization = true) + words.pairSliding.map {
+      case (wordBefore, word) => fixWord(word, forceCapitalization = wordBefore.trim.matches(Delimiters))
+    }.mkString("")
   }
 }

@@ -1,14 +1,13 @@
 package mains.fixer
 
-import common.AuxSpecs
 import org.scalatest.FreeSpec
+
+import common.AuxSpecs
 
 class StringFixerTest extends FreeSpec with AuxSpecs {
   private val $ = StringFixer
 
-  private def verifyFix(original: String, fix: String): Unit = {
-    $(original) shouldReturn fix
-  }
+  private def verifyFix(original: String, fix: String): Unit = $(original) shouldReturn fix
 
   "Ordered numerals" in {
     verifyFix("1st", "1st")
@@ -57,7 +56,13 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
     verifyFix("I’m a stupid apostrophe", "I'm a Stupid Apostrophe")
   }
 
-  "Ignores Hebrew" in  {
+  "Ignores (but trims) Hebrew" in {
     verifyFix("אהבת נעוריי", "אהבת נעוריי")
+    verifyFix("  אהבת נעוריי ", "אהבת נעוריי")
+  }
+
+  "colons and other delimiters" in {
+    verifyFix("The band: The Album & The movie", "The Band: The Album & The Movie")
+    verifyFix("The band (the album)", "The Band (The Album)")
   }
 }
