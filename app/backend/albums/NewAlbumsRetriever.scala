@@ -3,11 +3,12 @@ package backend.albums
 import backend.logging.Logger
 import backend.recon.{Album, AlbumReconStorage, Artist, ReconcilerCacher}
 import backend.recon.Reconcilable.SongExtractor
-import common.io.IODirectory
+
+import common.io.{DirectoryRef, IODirectory}
 import common.rich.RichT._
 import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreFunctorOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 import javax.inject.Inject
-import models.{IOMusicFinder, IOSong}
+import models.{IOMusicFinder, IOSong, MusicFinder}
 import rx.lang.scala.Observable
 
 import scala.concurrent.ExecutionContext
@@ -18,7 +19,7 @@ private class NewAlbumsRetriever @Inject()(
     albumReconStorage: AlbumReconStorage,
     logger: Logger,
     ec: ExecutionContext,
-    mf: IOMusicFinder,
+    mf: MusicFinder,
     reconciler: ReconcilerCacher[Artist],
     utils: NewAlbumsRetrieverUtils,
 ) extends FutureInstances with MoreTraverseInstances with ToMoreFunctorOps
@@ -43,8 +44,7 @@ private class NewAlbumsRetriever @Inject()(
 }
 
 private object NewAlbumsRetriever {
-  def dirToAlbum(dir: IODirectory, mf: IOMusicFinder): Option[Album] = dir.files
+  def dirToAlbum(dir: DirectoryRef, mf: MusicFinder): Option[Album] = dir.files
       .find(_.extension |> mf.extensions)
-      .map(_.file)
-      .map(IOSong.read(_).release)
+      .map(mf.parseSong(_).release)
 }

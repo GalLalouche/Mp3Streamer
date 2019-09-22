@@ -24,11 +24,9 @@ class LyricsControllerTest extends FreeSpec with MockitoSugar with ControllerSpe
   private val InstrumentalArtistHtml = "<img src='assets/images/TrebleClef.png' width='30' height='68' /><b>Instrumental</b><br><br>Source: Default for artist"
   // Modified by some tests
   private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]
-  override def fakeApplication() = {
-    GuiceApplicationBuilder()
-        .overrides(TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).module)
-        .build
-  }
+  override def fakeApplication() = GuiceApplicationBuilder()
+      .overrides(TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).module)
+      .build
 
   override protected def beforeAll(): Unit = {
     (app.injector.instanceOf[LyricsStorage].utils.createTable() >>
