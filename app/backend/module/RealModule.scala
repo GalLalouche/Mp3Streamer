@@ -17,8 +17,6 @@ import common.io.{DirectoryRef, InternetTalker, IODirectory, RootDirectory}
 
 object RealModule extends ScalaModule with ModuleUtils {
   override def configure(): Unit = {
-    install(AllModules)
-
     bind[Clock] toInstance Clock.systemDefaultZone
     bind[DbProvider] toInstance new DbProvider {
       override lazy val profile: JdbcProfile = SQLiteProfile
@@ -30,7 +28,6 @@ object RealModule extends ScalaModule with ModuleUtils {
     requireBinding[ExecutionContext]
     requireBinding[InternetTalker]
 
-    // TODO why do I need two installs?
     install(AllModules)
     install(IOMusicFinderModule)
   }
