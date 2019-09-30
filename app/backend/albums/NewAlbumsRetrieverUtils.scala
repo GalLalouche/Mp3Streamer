@@ -5,9 +5,6 @@ import backend.mb.MbArtistReconciler
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.{Album, AlbumReconStorage, Artist, IgnoredReconResult, ReconcilerCacher, ReconID}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
-import common.rich.RichT._
-import common.rich.func.{MoreObservableInstances, MoreSeqInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreFunctorOps, ToMoreMonadErrorOps, ToMoreMonadPlusOps, ToTraverseMonadPlusOps}
-import common.rich.RichObservable._
 import javax.inject.Inject
 import rx.lang.scala.Observable
 
@@ -15,6 +12,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.{-\/, \/-}
 import scalaz.std.{FutureInstances, OptionInstances}
+import common.rich.func.{MoreObservableInstances, MoreSeqInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreFunctorOps, ToMoreMonadPlusOps, ToTraverseMonadPlusOps}
+import common.rich.func.ToMoreMonadErrorOps._
+
+import common.rich.RichObservable._
+import common.rich.RichT._
 
 private class NewAlbumsRetrieverUtils @Inject()(
     logger: Logger,
@@ -22,7 +24,7 @@ private class NewAlbumsRetrieverUtils @Inject()(
     ec: ExecutionContext,
     meta: MbArtistReconciler,
     albumReconStorage: AlbumReconStorage,
-) extends ToMoreMonadErrorOps with ToMoreFunctorOps with FutureInstances
+) extends ToMoreFunctorOps with FutureInstances
     with ToTraverseMonadPlusOps with MoreSeqInstances with MoreTraverseInstances
     with ToMoreFoldableOps with OptionInstances
     with MoreObservableInstances with ToMoreMonadPlusOps {
