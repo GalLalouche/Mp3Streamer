@@ -1,14 +1,8 @@
 $(() => {
-// <button id="update_playlist">Update playlist</button>
-//   <button id="load_playlist">Load playlist</button>
-//   <br/>
-//   <button id="update_state">Update state</button>
-//   <button id="load_state">Load state</button>
-//   <br/>
-//   <button id="update_backup">Update backup</button>
-//   <button id="load_backup">Load backup</button>
   const buttonAux = (id, text) => button({"id": id}, text)
+
   const poster = $("#jp_poster_0")
+  poster.addClass("poster")
   const parent = poster.parent()
   const posterAndButtonsDiv = table({"id": "poster-table"}).append(
       tr().append(
@@ -26,4 +20,15 @@ $(() => {
       )
   )
   parent.prepend(posterAndButtonsDiv)
+
+  const colorThief = new ColorThief()
+  const posterElement = poster[0]
+  posterElement.addEventListener('load', updateBackground)
+  function updateBackground() {
+    const rgb = colorThief.getColor(posterElement)
+    const hsl = rgb2hsl(rgb)
+    // Make it a lot lighter (l is measured in %).
+    const lighter = hsl[2] + (100 - hsl[2]) / 1.2
+    document.body.style.backgroundColor = `hsl(${hsl[0]}, ${hsl[1]}%, ${lighter}%)`
+  }
 })
