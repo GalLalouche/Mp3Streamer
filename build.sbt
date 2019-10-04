@@ -2,7 +2,7 @@ name := "Mp3Streamer"
 version := "1.0-SNAPSHOT"
 
 resourceDirectory in Test := baseDirectory.value / "test-resources"
-val scalaVersionStr = "2.12.7"
+val scalaVersionStr = "2.12.10"
 scalaVersion := scalaVersionStr
 version := "1.0-SNAPSHOT"
 routesGenerator := InjectedRoutesGenerator
