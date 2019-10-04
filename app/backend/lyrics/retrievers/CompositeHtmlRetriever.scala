@@ -2,13 +2,14 @@ package backend.lyrics.retrievers
 
 import backend.Url
 import backend.logging.Logger
-import common.rich.func.ToMoreFoldableOps
+import backend.lyrics.retrievers.genius.GeniusLyricsRetriever
 import javax.inject.Inject
 import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.OptionInstances
+import common.rich.func.ToMoreFoldableOps
 
 private[lyrics] class CompositeHtmlRetriever(
     ec: ExecutionContext, logger: Logger, retrievers: Seq[LyricsRetriever])
@@ -20,12 +21,12 @@ private[lyrics] class CompositeHtmlRetriever(
       lyricsWikiaRetriever: LyricsWikiaRetriever,
       darkLyricsRetriever: DarkLyricsRetriever,
       azLyricsRetriever: AzLyricsRetriever,
-      //geniusLyricsRetriever: GeniusLyricsRetriever,
+      geniusLyricsRetriever: GeniusLyricsRetriever,
   ) = this(ec, logger, Vector(
     lyricsWikiaRetriever,
     darkLyricsRetriever,
     azLyricsRetriever,
-    //geniusLyricsRetriever,
+    geniusLyricsRetriever,
   ))
   private implicit val iec: ExecutionContext = ec
 

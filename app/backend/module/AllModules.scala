@@ -1,6 +1,7 @@
 package backend.module
 
 import backend.external.ExternalModule
+import backend.lyrics.LyricsModule
 import backend.mb.MbModule
 import backend.recent.RecentModule
 import backend.recon.ReconModule
@@ -18,5 +19,6 @@ object AllModules extends ScalaModule {
     install(SearchModule)
     install(SongsModule)
     install(ControllerModule)
+    install(LyricsModule)
   }
 }
