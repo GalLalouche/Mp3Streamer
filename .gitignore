@@ -29,3 +29,4 @@ jPlayer
 *.sh
 /app/mains/QuickJava.java
 *.log
+**/tokens.properties

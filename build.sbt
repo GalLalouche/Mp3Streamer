@@ -1,7 +1,6 @@
 name := "Mp3Streamer"
 version := "1.0-SNAPSHOT"
 
-resourceDirectory in Compile := baseDirectory.value / "resources"
 resourceDirectory in Test := baseDirectory.value / "test-resources"
 val scalaVersionStr = "2.12.10"
 scalaVersion := scalaVersionStr
@@ -52,7 +51,7 @@ libraryDependencies ++= Seq(
   "my.net.jthink" % "jaudiotagger" % "2.2.9-SNAPSHOT",
   "net.codingwell" %% "scala-guice" % "4.2.1",
   "org.apache.commons" % "commons-io" % "1.3.2",
-  "org.jsoup" % "jsoup" % "1.8.3",
+  "org.jsoup" % "jsoup" % "1.12.1",
   "org.me" %% "scalacommon" % "1.0" changing(),
   "org.mockito" % "mockito-all" % "1.9.5" % "test",
   "org.scala-lang.modules" %% "scala-swing" % "2.0.0",
