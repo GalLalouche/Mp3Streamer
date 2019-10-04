@@ -7,7 +7,7 @@ import slick.ast.{BaseTypedType, ScalaBaseType}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class InstrumentalArtistStorage @Inject()(
+private[lyrics] class InstrumentalArtistStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider,
 ) extends SlickStorageTemplateFromConf[String, Unit](ec, dbP) {
