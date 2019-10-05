@@ -2,7 +2,7 @@ package common.concurrency
 
 import scala.concurrent.Future
 
-/** An actor with neither input nor output. Also provides an overload to avoid passing Unit explicitly. */
+/** An actor with neither input nor output, i.e., an object you can tell "go do that thing you do". */
 trait Extra extends SimpleActor[Unit] {
   final def !(): Future[Unit] = this.!(())
 }
