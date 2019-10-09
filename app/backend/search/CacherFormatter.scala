@@ -2,9 +2,6 @@ package backend.search
 
 import backend.recent.NewDir
 import backend.search.MetadataCacher.IndexUpdate
-import common.io.DirectoryRef
-import common.json.{JsonWriteable, ToJsonableOps}
-import common.rich.RichT._
 import controllers.websockets.WebSocketRef.WebSocketRefReader
 import javax.inject.Inject
 import models.ModelJsonable._
@@ -16,14 +13,19 @@ import scala.concurrent.ExecutionContext
 
 import scalaz.Reader
 
+import common.io.DirectoryRef
+import common.json.JsonWriteable
+import common.json.ToJsonableOps._
+import common.rich.RichT._
+
 /** Used for updating the cache from the client. */
 class CacherFormatter @Inject()(
     ec: ExecutionContext,
     searchState: SearchState,
     songSelectorState: SongSelectorState,
     cacherFactory: MetadataCacherFactory,
-    @NewDir newDirObserver: Observer[DirectoryRef]
-) extends ToJsonableOps {
+    @NewDir newDirObserver: Observer[DirectoryRef],
+) {
   private implicit val iec: ExecutionContext = ec
   private val cacher = cacherFactory.create
 

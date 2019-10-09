@@ -1,8 +1,5 @@
 package controllers
 
-import common.io.IODirectory
-import common.json.{JsonWriteable, ToJsonableOps}
-import common.rich.RichT._
 import controllers.SongFormatter.ShouldEncodeMp3Reader
 import decoders.Mp3Encoder
 import javax.inject.Inject
@@ -14,6 +11,11 @@ import scala.language.implicitConversions
 
 import scalaz.Reader
 
+import common.io.IODirectory
+import common.json.JsonWriteable
+import common.json.ToJsonableOps._
+import common.rich.RichT._
+
 private class SongFormatter @Inject()(
     albumFactory: AlbumFactory,
     groups: SongGroups,
@@ -21,7 +23,7 @@ private class SongFormatter @Inject()(
     encoder: Mp3Encoder,
     urlPathUtils: UrlPathUtils,
     songJsonifier: ControllerSongJsonifier,
-) extends ToJsonableOps {
+) {
   import songJsonifier.songJsonable
 
   private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(groups.load)

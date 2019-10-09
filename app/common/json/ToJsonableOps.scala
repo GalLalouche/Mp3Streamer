@@ -17,3 +17,5 @@ trait ToJsonableOps {
     def parse[T](implicit ev: JsonReadable[T]): Seq[T] = $.value map ev.parse
   }
 }
+
+object ToJsonableOps extends ToJsonableOps

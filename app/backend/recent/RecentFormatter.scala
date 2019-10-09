@@ -1,6 +1,5 @@
 package backend.recent
 
-import common.json.ToJsonableOps
 import controllers.websockets.WebSocketRef.WebSocketRefReader
 import javax.inject.Inject
 import models.Album
@@ -13,11 +12,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.Reader
 
+import common.json.ToJsonableOps._
+
 class RecentFormatter @Inject()(
     ec: ExecutionContext,
     recentAlbums: RecentAlbums,
-    @NewDir newAlbumObservable: Observable[Album]
-) extends InjectedController with ToJsonableOps {
+    @NewDir newAlbumObservable: Observable[Album],
+) extends InjectedController {
   private implicit val iec: ExecutionContext = ec
 
   def recent(amount: Int): Future[JsValue] = Future(recentAlbums(amount)).map(_.jsonify)

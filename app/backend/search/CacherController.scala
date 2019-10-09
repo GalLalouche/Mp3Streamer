@@ -1,6 +1,5 @@
 package backend.search
 
-import common.json.ToJsonableOps
 import controllers.websockets.PlayWebSocketRegistryFactory
 import controllers.PlayActionConverter
 import controllers.websockets.WebSocketRef.WebSocketRefReader
@@ -12,7 +11,7 @@ class CacherController @Inject()(
     $: CacherFormatter,
     converter: PlayActionConverter,
     webSocketFactory: PlayWebSocketRegistryFactory,
-) extends InjectedController with ToJsonableOps {
+) extends InjectedController {
   private val webSocket = webSocketFactory("CacherController")
   private def run(wsReader: WebSocketRefReader) = converter.ok {
     wsReader.run(webSocket)

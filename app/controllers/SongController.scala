@@ -1,16 +1,16 @@
 package controllers
 
-import common.Debug
-import common.json.ToJsonableOps
 import controllers.SongFormatter.ShouldEncodeMp3Reader
 import javax.inject.Inject
 import play.api.mvc._
+
+import common.Debug
 
 /** Handles fetch requests of JSON information. */
 class SongController @Inject()(
     $: SongFormatter,
     converter: PlayActionConverter,
-) extends InjectedController with ToJsonableOps with Debug {
+) extends InjectedController with Debug {
   private def run(r: ShouldEncodeMp3Reader): Action[AnyContent] =
     converter.parse(PlayControllerUtils.shouldEncodeMp3)(r.run)
 

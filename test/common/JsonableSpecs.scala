@@ -1,16 +1,18 @@
 package common
 
-import common.json.{Jsonable, ToJsonableOps}
 import org.scalacheck.Arbitrary
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{PropSpec, Suite}
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
-trait JsonableSpecs extends PropSpec with GeneratorDrivenPropertyChecks with AuxSpecs with ToJsonableOps { self: Suite =>
+import common.json.Jsonable
+import common.json.ToJsonableOps._
+
+trait JsonableSpecs extends PropSpec with GeneratorDrivenPropertyChecks with AuxSpecs {self: Suite =>
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 10, workers = 5)
   def propJsonTest[T: Jsonable : Arbitrary : Manifest](): Unit = {
     property(manifest.runtimeClass.getCanonicalName + " Jsonable") {
-      forAll { xs: T => jsonTest(xs) }
+      forAll {xs: T => jsonTest(xs)}
     }
   }
   def jsonTest[T: Jsonable](t: T): Unit = {

@@ -1,15 +1,17 @@
 package songs
 
-import common.io.{DirectoryRef, RootDirectory}
-import common.json.{Jsonable, ToJsonableOps}
-import common.rich.RichT._
-import common.rich.func.MoreSeqInstances
 import javax.inject.Inject
 import models.Song
 
 import scalaz.syntax.ToFunctorOps
+import common.rich.func.MoreSeqInstances
 
-class SongGroups @Inject()(@RootDirectory rootDirectory: DirectoryRef) extends ToJsonableOps {
+import common.io.{DirectoryRef, RootDirectory}
+import common.json.Jsonable
+import common.json.ToJsonableOps._
+import common.rich.RichT._
+
+class SongGroups @Inject()(@RootDirectory rootDirectory: DirectoryRef) {
   private lazy val jsonFile = rootDirectory addFile "song_groups.json"
 
   def save(groups: Traversable[SongGroup])(implicit songJsonable: Jsonable[Song]): Unit = groups

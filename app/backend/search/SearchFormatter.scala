@@ -2,9 +2,6 @@ package backend.search
 
 import java.net.URLDecoder
 
-import common.json.{JsonableOverrider, OJsonable, ToJsonableOps}
-import common.RichJson._
-import common.rich.func.MoreTraverseInstances
 import javax.inject.Inject
 import models.{Album, ModelJsonable}
 import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
@@ -12,8 +9,13 @@ import play.api.libs.json.{JsObject, Json}
 
 import scalaz.std.OptionInstances
 import scalaz.syntax.ToTraverseOps
+import common.rich.func.MoreTraverseInstances
 
-private class SearchFormatter @Inject()(state: SearchState) extends ToJsonableOps {
+import common.json.{JsonableOverrider, OJsonable}
+import common.RichJson._
+import common.json.ToJsonableOps._
+
+private class SearchFormatter @Inject()(state: SearchState) {
   private implicit val albumJsonableWithDiscNumber: OJsonable[Album] =
     JsonableOverrider.oJsonify[Album]((a, original) => original
         .append("discNumbers", SearchFormatter.discNumbers(a))

@@ -2,21 +2,23 @@ package playlist
 
 import java.util.concurrent.TimeUnit
 
-import common.json.ToJsonableOps
 import models.Song
 import play.api.libs.json.JsValue
 
 import scala.concurrent.duration.Duration
+
+import common.json.ToJsonableOps._
 
 private case class PlaylistState(songs: Seq[Song], currentIndex: Int, currentDuration: Duration) {
   require(currentIndex < songs.length && currentIndex >= 0, s"currentIndex <$currentIndex> out of range (0-${songs.length})")
   require(currentDuration != null)
 }
 
-private object PlaylistState extends ToJsonableOps {
+private object PlaylistState {
+  import play.api.libs.json.{JsObject, Json}
+
   import common.RichJson._
   import common.json.Jsonable
-  import play.api.libs.json.{JsObject, Json}
 
   implicit def PlaylistStateJsonable(implicit songJsonable: Jsonable[Song]): Jsonable[PlaylistState] =
     new Jsonable[PlaylistState] {

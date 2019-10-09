@@ -1,21 +1,21 @@
 package backend.albums
 
 import backend.recon.{Album, Artist}
-import common.RichJson._
-import common.json.ToJsonableOps
-import common.rich.RichT._
 import javax.inject.Inject
 import mains.fixer.StringFixer
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.JsValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.FutureInstances
 import scalaz.syntax.ToFunctorOps
 
+import common.RichJson._
+import common.json.ToJsonableOps._
+import common.rich.RichT._
+
 class AlbumsFormatter @Inject()(ec: ExecutionContext, $: NewAlbums)
-    extends ToFunctorOps with FutureInstances
-        with ToJsonableOps {
+    extends ToFunctorOps with FutureInstances {
   private implicit val iec: ExecutionContext = ec
 
   def albums: Future[JsValue] = $.loadAlbumsByArtist

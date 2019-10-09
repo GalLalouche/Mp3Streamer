@@ -2,12 +2,14 @@ package models
 
 import java.io.File
 
-import common.RichJson._
-import common.io.{IODirectory, IOFile}
-import common.json.{OJsonable, ToJsonableOps}
 import play.api.libs.json.{JsObject, Json}
 
-object ModelJsonable extends ToJsonableOps {
+import common.RichJson._
+import common.io.{IODirectory, IOFile}
+import common.json.OJsonable
+import common.json.ToJsonableOps._
+
+object ModelJsonable {
   implicit object SongJsonifier extends OJsonable[Song] {
     override def jsonify(s: Song) = Json obj(
         "file" -> s.file.path,

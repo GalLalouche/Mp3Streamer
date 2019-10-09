@@ -6,16 +6,18 @@ import java.time.{LocalDateTime, ZoneOffset}
 import backend.module.TestModuleConfiguration
 import com.google.inject.Guice
 import com.google.inject.util.Modules
-import common.AuxSpecs
-import common.RichJson._
-import common.json.{Jsonable, ToJsonableOps}
-import common.rich.RichT._
-import net.codingwell.scalaguice.ScalaModule
 import net.codingwell.scalaguice.InjectorExtensions._
+import net.codingwell.scalaguice.ScalaModule
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, Json, JsValue}
 
-class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs with ToJsonableOps {
+import common.AuxSpecs
+import common.RichJson._
+import common.json.Jsonable
+import common.json.ToJsonableOps._
+import common.rich.RichT._
+
+class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   // TODO Answer why not take the one from TestConfiguration?
   private val root = new MemoryRoot
   private val c = new TestModuleConfiguration() {
