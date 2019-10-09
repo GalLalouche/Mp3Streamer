@@ -7,22 +7,17 @@ import play.api.libs.json.JsValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.FutureInstances
-import scalaz.syntax.ToFunctorOps
-
 import common.RichJson._
 import common.json.ToJsonableOps._
 import common.rich.RichT._
 
-class AlbumsFormatter @Inject()(ec: ExecutionContext, $: NewAlbums)
-    extends ToFunctorOps with FutureInstances {
+private class AlbumsFormatter @Inject()(ec: ExecutionContext, $: NewAlbums) {
   private implicit val iec: ExecutionContext = ec
 
   def albums: Future[JsValue] = $.loadAlbumsByArtist
       .map(
-        _.map {
-          case (artist, newAlbums) =>
-            artist.name -> newAlbums.map(NewAlbum.title.modify(_ tryOrKeep StringFixer.apply)).jsonify
+        _.map {case (artist, newAlbums) =>
+          artist.name -> newAlbums.map(NewAlbum.title.modify(_ tryOrKeep StringFixer.apply)).jsonify
         }.jsonify)
 
   def removeArtist(artistName: String): Future[_] = $.removeArtist(Artist(artistName))

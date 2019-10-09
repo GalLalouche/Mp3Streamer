@@ -30,6 +30,7 @@ val guiceVersion = "4.2.0"
 
 libraryDependencies ++= Seq(
   guice,
+  "com.beachape" %% "enumeratum" % "1.5.13",
   "com.github.julien-truffaut" %% "monocle-core" % monocleVersion,
   "com.github.julien-truffaut" %% "monocle-macro" % monocleVersion,
   "com.github.mpilquist" %% "simulacrum" % "0.10.0",

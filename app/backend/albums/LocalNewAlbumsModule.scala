@@ -13,18 +13,17 @@ import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 import scala.concurrent.ExecutionContext
 
-import common.rich.RichT._
-import common.ModuleUtils
 import common.concurrency.SingleThreadedJobQueue
 import common.io.InternetTalker
 import common.io.WSAliases.WSClient
 import common.rich.RichFuture
+import common.rich.RichT._
 
 // Ensures MusicBrainz aren't flooded since:
 // 1. A limited number of WS can be used at any given time (semaphores).
 // 2. A request for a client has a 1 second delay.
-private object LocalNewAlbumsModule extends ScalaModule with ModuleUtils {
-  private val it: InternetTalker = new InternetTalker {
+private object LocalNewAlbumsModule extends ScalaModule {
+  private def newAlbumsInternetTalker: InternetTalker = new InternetTalker {
     private val am = ActorMaterializer()(
       ActorSystem.create("NewAlbumsModule-System", RealInternetTalkerModule.warningOnlyConfig))
 
@@ -49,7 +48,7 @@ private object LocalNewAlbumsModule extends ScalaModule with ModuleUtils {
 
   override def configure(): Unit = {
     bind[ExecutionContext] toInstance ExecutionContext.Implicits.global
-    bind[InternetTalker] toInstance it
+    bind[InternetTalker] toInstance newAlbumsInternetTalker
 
     install(LoggingModules.ConsoleWithFiltering)
     install(new IOMusicFinderModule(

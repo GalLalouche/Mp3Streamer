@@ -2,24 +2,26 @@ package backend.albums
 
 import java.util.logging.{Level, Logger => JLogger}
 
+import backend.albums.NewAlbum.NewAlbumJsonable
 import backend.logging.{FilteringLogger, Logger, LoggingLevel}
 import backend.mb.MbArtistReconciler
 import backend.module.RealModule
 import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage, Reconcilable, ReconStorage, StoredReconResult}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import com.google.inject.util.Modules
-import common.io.JsonableSaver
-import common.rich.func.ToMoreFunctorOps
-import common.rich.RichObservable._
 import javax.inject.Inject
 import mains.fixer.StringFixer
-import monocle.function.IndexFunctions
-import monocle.syntax.ApplySyntax
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.FutureInstances
-import scalaz.syntax.ToBindOps
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.bind.ToBindOps
+import common.rich.func.ToMoreFunctorOps._
+import monocle.function.Index._
+import monocle.syntax.apply._
+
+import common.io.JsonableSaver
+import common.rich.RichObservable._
 
 private class NewAlbums @Inject()(
     ec: ExecutionContext,
@@ -29,15 +31,10 @@ private class NewAlbums @Inject()(
     albumReconStorage: AlbumReconStorage,
     mbArtistReconciler: MbArtistReconciler,
     jsonableSaver: JsonableSaver,
-) extends ToBindOps with ToMoreFunctorOps with FutureInstances
-    with ApplySyntax with IndexFunctions {
-  import NewAlbum.NewAlbumJsonable
-
+) {
   private implicit val iec: ExecutionContext = ec
 
-  private def save(m: Map[Artist, Seq[NewAlbum]]): Unit = {
-    jsonableSaver save m.flatMap(_._2)
-  }
+  private def save(m: Map[Artist, Seq[NewAlbum]]): Unit = jsonableSaver save m.flatMap(_._2)
 
   private def ignore[R <: Reconcilable](r: R, reconStorage: ReconStorage[R]): Future[Unit] = {
     logger.debug(s"Ignoring $r")
@@ -69,24 +66,23 @@ private class NewAlbums @Inject()(
 
   private def store(newAlbumRecon: NewAlbumRecon): Unit = albumReconStorage.store(
     newAlbumRecon.newAlbum.toAlbum, StoredReconResult.unignored(newAlbumRecon.reconId))
-  def fetchAndSave: Future[Traversable[NewAlbum]] =
-    retriever.findNewAlbums
-        .doOnNext(store)
-        .map(_.newAlbum)
-        .toFuture[Traversable]
-        .listen(jsonableSaver save _)
+  def fetchAndSave: Future[Traversable[NewAlbum]] = retriever.findNewAlbums
+      .doOnNext(store)
+      .map(_.newAlbum)
+      .toFuture[Traversable]
+      .listen(jsonableSaver save _)
 }
 
 object NewAlbums {
   import com.google.inject.Guice
-  import common.rich.RichFuture._
   import net.codingwell.scalaguice.InjectorExtensions._
+
+  import common.rich.RichFuture._
 
   def main(args: Array[String]): Unit = {
     JLogger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
     val injector = Guice.createInjector(Modules `override` RealModule `with` LocalNewAlbumsModule)
-    val logger = injector.instance[FilteringLogger]
-    logger.setCurrentLevel(LoggingLevel.Verbose)
+    injector.instance[FilteringLogger].setCurrentLevel(LoggingLevel.Verbose)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     injector.instance[NewAlbums].fetchAndSave.get
     println("Done!")

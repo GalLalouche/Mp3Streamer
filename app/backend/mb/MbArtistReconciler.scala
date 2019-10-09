@@ -3,14 +3,10 @@ package backend.mb
 import java.time.{Clock, LocalDate, Year, YearMonth}
 
 import backend.RichTime._
-import backend.albums.NewAlbum.AlbumType
+import backend.albums.AlbumType
 import backend.mb.MbArtistReconciler.MbAlbumMetadata
 import backend.recon.{Artist, Reconciler, ReconID}
 import backend.FutureOption
-import common.CompositeDateFormat
-import common.RichJson._
-import common.rich.RichFuture
-import common.rich.func.ToMoreMonadErrorOps
 import javax.inject.Inject
 import play.api.libs.json.{JsObject, JsValue}
 
@@ -19,6 +15,11 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.DurationInt
 
 import scalaz.std.FutureInstances
+import common.rich.func.ToMoreMonadErrorOps
+
+import common.CompositeDateFormat
+import common.RichJson._
+import common.rich.RichFuture
 
 class MbArtistReconciler @Inject()(
     ec: ExecutionContext,
@@ -56,9 +57,10 @@ class MbArtistReconciler @Inject()(
 object MbArtistReconciler {
   import backend.module.StandaloneModule
   import com.google.inject.Guice
+  import net.codingwell.scalaguice.InjectorExtensions._
+
   import RichFuture._
   import common.rich.RichT._
-  import net.codingwell.scalaguice.InjectorExtensions._
 
   private val compositeDateFormat =
     CompositeDateFormat[LocalDate]("yyyy-MM-dd").orElse[YearMonth]("yyyy-MM").orElse[Year]("yyyy")
@@ -71,7 +73,7 @@ object MbArtistReconciler {
     System exit 0
   }
 
-  case class MbAlbumMetadata(title: String, releaseDate: LocalDate, albumType: AlbumType.AlbumType, reconId: ReconID) {
+  case class MbAlbumMetadata(title: String, releaseDate: LocalDate, albumType: AlbumType, reconId: ReconID) {
     def isOut: Boolean = releaseDate.atStartOfDay < Clock.systemDefaultZone().getLocalDateTime
   }
 }
