@@ -1,8 +1,7 @@
 package backend.albums
 
 import backend.logging.Logger
-import backend.mb.MbArtistReconciler
-import backend.mb.MbArtistReconciler.MbAlbumMetadata
+import backend.mb.{MbAlbumMetadata, MbArtistReconciler}
 import backend.recon.{Album, AlbumReconStorage, Artist, IgnoredReconResult, ReconcilerCacher, ReconID}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import javax.inject.Inject

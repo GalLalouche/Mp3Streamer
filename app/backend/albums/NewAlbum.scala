@@ -1,6 +1,6 @@
 package backend.albums
 
-import backend.mb.MbArtistReconciler.MbAlbumMetadata
+import backend.mb.MbAlbumMetadata
 import backend.recon.{Album, Artist}
 import play.api.libs.json.{Json, JsValue}
 
