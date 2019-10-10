@@ -1,41 +1,45 @@
 package backend.search
 
 import backend.search.WeightedIndexable.ops._
-import common.ds.Trie
-import common.rich.RichT._
-import common.rich.collections.RichMap._
-import common.rich.collections.RichTraversableOnce._
-import common.rich.func.MoreSeqInstances
-import monocle.std.Tuple2Optics
-import monocle.syntax.{ApplySyntax, FieldsSyntax}
 
 import scalaz.Semigroup
-import scalaz.std.SetInstances
-import scalaz.syntax.{ToFunctorOps, ToSemigroupOps}
+import scalaz.syntax.functor.ToFunctorOps
+import common.rich.func.MoreIterableInstances._
+import common.rich.func.MoreSetInstances._
 
-/** to allow artist's name to be factored in the song search */
-private object WeightedIndexBuilder
-    extends ToSemigroupOps with ToFunctorOps with SetInstances with MoreSeqInstances
-        with ApplySyntax with FieldsSyntax with Tuple2Optics {
-  implicit object DoubleSemi extends Semigroup[Double] {
+import common.ds.Trie
+import common.rich.collections.RichMap._
+import common.rich.collections.RichTraversableOnce._
+
+/**
+* Weighing allows ranking of different term sources. Like a regular index, every term points to a list of
+* documents (songs, albums, artists). In addition, every document also has a score for said term. So song
+* titles are given a higher score than the artists, e.g., If the query was "River", the song "The River" would
+* be ranked higher than songs by the band "Riverside". When searching for multiple terms, the sum of all the
+* term scores as the final score for the document is taken.
+*/
+private object WeightedIndexBuilder {
+  private implicit object DoubleSemi extends Semigroup[Double] {
     override def append(f1: Double, f2: => Double): Double = f1 + f2
   }
 
-  def buildIndexFor[T: WeightedIndexable](ts: TraversableOnce[T]): Index[T] = ts
-      .flatMap(e => e.terms strengthL e)
-      .map(_.&|->(_2).^|->(_1).modify(_.toLowerCase))
-      .aggregateMap(_._2._1, e => Set(e._1 -> e._2._2))
-      .mapValues(_.toVector.sortBy(_._2))
-      .mapTo(Trie.fromSeqMap)
-      .mapTo(new WeightedIndex(_))
+  def buildIndexFor[T: WeightedIndexable](ts: Iterable[T]): Index[T] = {
+    val documentsToScoredTerms: TraversableOnce[(T, (String, Double))] = ts
+        .view
+        .flatMap(e => e.terms strengthL e)
+    val scoredDocumentByTerm: Map[String, Seq[(T, Double)]] = documentsToScoredTerms
+        .aggregateMap(_._2._1, e => Set(e._1 -> e._2._2))
+        .mapValues(_.toVector.sortBy(_._2))
+    new WeightedIndex(Trie.fromSeqMap(scoredDocumentByTerm))
+  }
 
   private class WeightedIndex[T: WeightedIndexable](trie: Trie[(T, Double)]) extends Index[T] {
     override def findIntersection(ss: Traversable[String]): Seq[T] = {
       val lastQuery :: allButLast = ss.toList.reverse
       allButLast
           .map(trie.exact(_).toMap)
-          ./:(trie.prefixes(lastQuery).toMap)(_ mergeIntersecting _)
-          .toSeq.sortBy(-_._2)
+          .foldLeft(trie.prefixes(lastQuery).toMap)(_ mergeIntersecting _)
+          .toVector.sortBy(-_._2)
           .map(_._1)
     }
   }

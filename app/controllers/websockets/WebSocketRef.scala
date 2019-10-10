@@ -2,6 +2,8 @@ package controllers.websockets
 
 import rx.lang.scala.Observable
 
+import scala.concurrent.Future
+
 import scalaz.Reader
 
 trait WebSocketRef {
@@ -14,4 +16,5 @@ trait WebSocketRef {
 
 object WebSocketRef {
   type WebSocketRefReader = Reader[WebSocketRef, Unit]
+  type AsyncWebSocketRefReader = Reader[WebSocketRef, Future[Unit]]
 }

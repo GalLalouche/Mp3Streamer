@@ -1,28 +1,31 @@
 package backend.search
 
-import common.rich.func.ToMoreFoldableOps
-import models._
+import backend.search.WeightedIndexable._
+import models.{Album, Artist, Song}
 import simulacrum.typeclass
 
-import scalaz.std.OptionInstances
-
-@typeclass private trait WeightedIndexable[T]
-    extends ToMoreFoldableOps with OptionInstances {
+@typeclass private trait WeightedIndexable[T] {
   protected def mainTerm(t: T): String
-  protected def secondaryTerms(t: T): Traversable[String]
-  private def split(s: String, weight: Double) = s split " " map (_ -> weight)
-  def terms(t: T): Seq[(String, Double)] = split(mainTerm(t), 1.0) ++ secondaryTerms(t).flatMap(split(_, 0.1))
+  protected def secondaryTerms(t: T): Iterable[String]
+  private def split(s: String) = s.toLowerCase.split(" ")
+  private def weigh(s: Set[String], weight: Double) = s.map(_ -> weight)
+  def terms(t: T): Iterable[(String, Double)] = {
+    val primaryTerms = split(mainTerm(t)).toSet
+    weigh(primaryTerms, PrimaryWeight) ++
+        weigh(secondaryTerms(t).flatMap(split).toSet.filterNot(primaryTerms), SecondaryWeight)
+  }
   def sortBy(t: T): Product
 }
 
 private object WeightedIndexable {
-  private def classicalMusicTerms(s: Song): Traversable[String] =
-    s.composer ++ s.orchestra ++ s.conductor ++ s.opus
+  private val PrimaryWeight = 1.0
+  private val SecondaryWeight = 0.1
   implicit object SongIndexer extends WeightedIndexable[Song] {
+    private def classicalMusicTerms(s: Song): Traversable[String] =
+      s.composer ++ s.orchestra ++ s.conductor ++ s.opus ++ s.performanceYear.map(_.toString)
     override protected def mainTerm(t: Song) = t.title
-    override def secondaryTerms(t: Song) =
-      Set(t.artistName) ++ classicalMusicTerms(t)
-    override def sortBy(s: Song): Product = (s.artistName, s.title, s.year, s.albumName, s.track)
+    override def secondaryTerms(t: Song) = Set(t.artistName, t.albumName, t.year.toString) ++ classicalMusicTerms(t)
+    override def sortBy(s: Song): Product = (s.artistName, s.title, s.year, s.performanceYear, s.albumName, s.track)
   }
   implicit object AlbumIndex extends WeightedIndexable[Album] {
     override protected def mainTerm(t: Album) = t.title
