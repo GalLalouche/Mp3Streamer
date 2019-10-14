@@ -38,7 +38,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
   // MemorySong, the verifier will try to load a MemorySong, resulting in no data, since JsonableSaver loads
   // data using a compile-time manifest. Yeah... :|
   private def verifyData[T: Jsonable : Manifest](xs: Seq[T]): Unit =
-    jsonableSaver.loadArray[T].toSet shouldReturn xs.toSet
+    jsonableSaver.loadArray[T] shouldMultiSetEqual xs
   private def verifyData(data: Song*): Unit = verifyData(data)
   private def verifyData(data: Album*)(implicit d: DummyImplicit): Unit = verifyData(data)
   private def verifyData(data: Artist*)(implicit d: DummyImplicit, d2: DummyImplicit): Unit = verifyData(data)

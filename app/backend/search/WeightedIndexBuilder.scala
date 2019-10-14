@@ -30,7 +30,7 @@ private object WeightedIndexBuilder {
     val scoredDocumentByTerm: Map[String, Seq[(T, Double)]] = documentsToScoredTerms
         .aggregateMap(_._2._1, e => Set(e._1 -> e._2._2))
         .mapValues(_.toVector.sortBy(_._2))
-    new WeightedIndex(Trie.fromSeqMap(scoredDocumentByTerm))
+    new WeightedIndex(Trie.fromMultiMap(scoredDocumentByTerm))
   }
 
   private class WeightedIndex[T: WeightedIndexable](trie: Trie[(T, Double)]) extends Index[T] {
@@ -38,7 +38,7 @@ private object WeightedIndexBuilder {
       val lastQuery :: allButLast = ss.toList.reverse
       allButLast
           .map(trie.exact(_).toMap)
-          .foldLeft(trie.prefixes(lastQuery).toMap)(_ mergeIntersecting _)
+          .foldLeft(trie.withPrefix(lastQuery).toMap)(_ mergeIntersecting _)
           .toVector.sortBy(-_._2)
           .map(_._1)
     }

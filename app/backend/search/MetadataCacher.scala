@@ -16,7 +16,7 @@ import scalaz.std.vector.vectorInstance
 import scalaz.syntax.traverse.ToTraverseOps
 
 import common.concurrency.SingleThreadedJobQueue
-import common.ds.{Collectable, IndexedSet}
+import common.ds.IndexedSet
 import common.io.{DirectoryRef, JsonableSaver}
 import common.json.Jsonable
 import common.rich.RichT._
@@ -47,7 +47,7 @@ private class MetadataCacher(
 
   private object CacheAll extends Updater {
     override def targets = mf.albumDirs
-    override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver save xs
+    override def apply[A: Manifest : Jsonable](xs: Iterable[A]): Unit = saver save xs
     override def apply(artists: IndexedSet[Artist]): Unit = apply(artists.toSeq)
   }
 
@@ -62,7 +62,7 @@ private class MetadataCacher(
             .min
       mf.albumDirs.filter(_.lastModified isAfter lastUpdateTime)
     }
-    override def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit = saver.update[T](_ ++ xs)
+    override def apply[A: Manifest : Jsonable](xs: Iterable[A]): Unit = saver.update[A](_ ++ xs)
     override def apply(artists: IndexedSet[Artist]): Unit = saver.update[Artist](artists ++ _)
   }
 
@@ -105,27 +105,25 @@ private class MetadataCacher(
 }
 
 private object MetadataCacher {
-
   private implicit object ArtistSemigroup extends Semigroup[Artist] {
     override def append(f1: Artist, f2: => Artist): Artist = f1 merge f2
   }
   private val emptyArtistSet: IndexedSet[Artist] = IndexedSet[String, Artist](_.name)
 
-  private case class AllInfo(songs: Seq[Song], albums: List[Album], artists: IndexedSet[Artist])
-  private implicit object AllInfoCollectable extends Collectable[DirectoryInfo, AllInfo] {
-    override def empty: AllInfo = AllInfo(List(), List(), emptyArtistSet)
-    override def +(agg: AllInfo, t: DirectoryInfo): AllInfo =
-      AllInfo(t.songs ++ agg.songs, t.album :: agg.albums, agg.artists + t.artist)
-  }
-
+  private case class AllInfo(songs: Vector[Song], albums: List[Album], artists: IndexedSet[Artist])
   private case class DirectoryInfo(songs: Seq[Song], album: Album, artist: Artist)
-  private def gatherInfo($: GenSeq[DirectoryInfo]) = Collectable fromList $
+  private def gatherInfo($: GenSeq[DirectoryInfo]): AllInfo =
+    $.foldLeft(AllInfo(Vector(), List(), emptyArtistSet)) {
+      (agg, t) => AllInfo(agg.songs ++ t.songs, t.album :: agg.albums, agg.artists + t.artist)
+    }
 
   case class CacheUpdate(currentIndex: Int, totalNumber: Int, dir: DirectoryRef)
 
   private trait Updater {
     def targets: GenSeq[DirectoryRef]
-    def apply[T: Manifest : Jsonable](xs: Seq[T]): Unit
+    def apply[A: Manifest : Jsonable](xs: Iterable[A]): Unit
+    // Existing artists can be modified with new albums, so we can't just concatenate them as we do we the
+    // other elements.
     def apply(artists: IndexedSet[Artist]): Unit
   }
 }

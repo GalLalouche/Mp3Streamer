@@ -1,34 +1,41 @@
 package common.ds
+
 import scala.annotation.tailrec
 
-sealed class Trie[+T] private(map: Map[Char, Trie[T]], private val values: List[T]) {
-  private def orDefault(c: Char): Trie[T] = map.getOrElse(c, EmptyTrie)
-  def this() = this(Map(), Nil)
-  final def +[S >: T](key: String, v: S): Trie[S] =
-    if (key.isEmpty)
-      new Trie(map, v :: values)
-    else
-      new Trie(map + ((key.head ,orDefault(key.head).+[S](key.tail, v))), values)
-  final def +[S >: T](e: (String, S)): Trie[S] = this.+(e._1, e._2)
-  private def allValues: Seq[T] = values ++ map.values.flatMap(_.allValues)
-  @tailrec
-  final def prefixes(key: String): Seq[T] =
-    if (key.isEmpty)
-      allValues
-    else
-      orDefault(key.head).prefixes(key.tail)
-  @tailrec
-  final def exact(key: String): Seq[T] =
-    if (key.isEmpty)
-      values
-    else
-      orDefault(key.head).exact(key.tail)
-  def size: Int = values.size + map.values.map(_.size).sum
+import common.rich.RichTuple._
+
+sealed trait Trie[+A] {
+  def +[B >: A](key: String, v: B): Trie[B]
+  def +[B >: A](e: (String, B)): Trie[B]
+  /** Returns all values who key is prefixed by the input key. */
+  def withPrefix(key: String): Iterable[A]
+  /** Returns all values with the exact key. */
+  def exact(key: String): Iterable[A]
+  /** The number of values in this Trie. */
+  def size: Int
 }
+
 object Trie {
-  def fromMap[T](map: Map[String, T]): Trie[T] = map./:(new Trie[T])(_ + _)
-  def fromSeqMap[T](map: Map[String, Seq[T]]): Trie[T] = map./:(new Trie[T]) {
-    case (trie, (key, value)) => value./:(trie)(_.+(key, _))
+  private case class TrieImpl[+A](map: Map[Char, TrieImpl[A]], values: Vector[A]) extends Trie[A] {
+    private def getOrEmpty(c: Char): TrieImpl[A] = map.getOrElse(c, NIL)
+    override def +[B >: A](key: String, v: B): TrieImpl[B] =
+      if (key.isEmpty) copy(values = values :+ v)
+      else copy(map = map + (key.head -> (getOrEmpty(key.head) + (key.tail -> v))))
+    @inline def +[B >: A](e: (String, B)): TrieImpl[B] = e reduce this.+
+    private def allValues: Iterable[A] = values ++ map.values.flatMap(_.allValues)
+    override lazy val size: Int = values.size + map.valuesIterator.map(_.size).sum
+    @tailrec
+    private def aux[B >: A](key: String, onEmptyKey: TrieImpl[B] => Iterable[B]): Iterable[B] =
+      if (key.isEmpty) onEmptyKey(this) else getOrEmpty(key.head).aux(key.tail, onEmptyKey)
+    override def withPrefix(key: String): Iterable[A] = aux(key, onEmptyKey = _.allValues)
+    override def exact(key: String): Iterable[A] = aux(key, onEmptyKey = _.values)
+  }
+
+  private val NIL: TrieImpl[Nothing] = TrieImpl(Map(), Vector.empty)
+  def empty[A]: Trie[A] = NIL
+
+  def fromMap[A](map: Map[String, A]): Trie[A] = map.foldLeft(empty[A])(_ + _)
+  def fromMultiMap[A](map: Map[String, Iterable[A]]): Trie[A] = map.foldLeft(empty[A]) {
+    case (trie, (key, value)) => value.foldLeft(trie)(_.+(key, _))
   }
 }
-private object EmptyTrie extends Trie[Nothing]
