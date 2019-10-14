@@ -14,8 +14,8 @@ import scalaz.OptionT
 import scalaz.std.FutureInstances
 
 /**
-  * Keep a timestamp for every value. If the timestamp does not exist (but the value does), it means
-  * that the value does not need to be updated.
+  * Keeps a timestamp for every value. If the timestamp does not exist (but the value does), it means that the
+  * value does not need to be updated.
   */
 class FreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshness)], clock: Clock)
     (implicit ec: ExecutionContext)
