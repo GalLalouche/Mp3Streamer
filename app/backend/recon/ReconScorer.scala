@@ -10,7 +10,10 @@ object ReconScorers {
     override def apply(a1: Artist, a2: Artist): Double = stringMatcher(a1.name, a2.name)
   }
   object AlbumReconScorer extends ReconScorer[Album] {
-    override def apply(a1: Album, a2: Album): Double =
-      List(ArtistReconsScorer(a1.artist, a2.artist), yearMatch(a1.year, a2.year), stringMatcher(a1.title, a2.title)).product
+    override def apply(a1: Album, a2: Album): Double = Vector(
+      ArtistReconsScorer(a1.artist, a2.artist),
+      yearMatch(a1.year, a2.year),
+      stringMatcher(a1.title, a2.title),
+    ).product
   }
 }

@@ -11,17 +11,11 @@ object ReconModule extends ScalaModule {
       artistReconStorage: ArtistReconStorage,
       mbArtistReconciler: MbArtistReconciler,
       ec: ExecutionContext
-  ): ReconcilerCacher[Artist] = {
-    implicit val iec: ExecutionContext = ec
-    new ReconcilerCacher[Artist](artistReconStorage, mbArtistReconciler)
-  }
+  ): ReconcilerCacher[Artist] = new ReconcilerCacher[Artist](artistReconStorage, mbArtistReconciler)(ec)
 
   @Provides private def albumReconcilerCacher(
       artistReconStorage: AlbumReconStorage,
       mbAlbumReconciler: Reconciler[Album],
       ec: ExecutionContext
-  ): ReconcilerCacher[Album] = {
-    implicit val iec: ExecutionContext = ec
-    new ReconcilerCacher[Album](artistReconStorage, mbAlbumReconciler)
-  }
+  ): ReconcilerCacher[Album] = new ReconcilerCacher[Album](artistReconStorage, mbAlbumReconciler)(ec)
 }
