@@ -28,10 +28,13 @@ trait InternetTalker extends ExecutionContext {
     $ consumeTry client.close().const
   }
 
-  private val agentUrl =
-    "user-agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36"
   final def asBrowser[T](url: Url, f: Retriever[WSRequest, T]): Future[T] =
-    useWs(_.url(url.address).addHttpHeaders("user-agent" -> agentUrl) |> f)
+    useWs(_.url(url.address).addHttpHeaders("user-agent" -> InternetTalker.AgentUrl) |> f)
   final def downloadDocument(url: Url): Future[Document] = asBrowser(url, _.document)
   final def get(url: Url): Future[WSResponse] = useWs(_.url(url.address).get())
+}
+
+object InternetTalker {
+  private val AgentUrl =
+    "user-agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36"
 }

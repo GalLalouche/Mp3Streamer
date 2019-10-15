@@ -11,7 +11,8 @@ trait RefSystem {self =>
   type F <: FileRef {type S = self.S}
   type D <: DirectoryRef {type S = self.S}
 }
-/** Either a file or a dir */
+
+/** Either a file or a directory. */
 trait PathRef {
   type S <: RefSystem
   def path: String
@@ -20,7 +21,7 @@ trait PathRef {
   def parent: S#D
 }
 
-/** must exist */
+/** Must exist. */
 trait FileRef extends PathRef {
   type S <: RefSystem
 
@@ -32,8 +33,8 @@ trait FileRef extends PathRef {
   def appendLine(line: String): S#F
   def readAll: String
   final def lines: Seq[String] = {
+    // Splitting an empty string returns [""].
     val content = readAll
-    // split on an empty string returns an array with a single element, "".
     if (content.isEmpty) Nil else content split "\n"
   }
   def inputStream: InputStream
@@ -51,6 +52,7 @@ trait FileRef extends PathRef {
   def delete: Boolean
 }
 
+/** Must exist. */
 trait DirectoryRef extends PathRef {self =>
   type S <: RefSystem
   def addFile(name: String): S#F

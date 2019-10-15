@@ -38,7 +38,7 @@ private class Zipper @Inject()(
     } finally
       deleteJson(dir)
     )
-  } <* cleaner.!()
+  } <* cleaner.clean()
 }
 
 private object Zipper {

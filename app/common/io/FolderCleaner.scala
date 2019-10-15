@@ -7,10 +7,10 @@ import common.concurrency.Extra
 
 import scala.concurrent.Future
 
-class FolderCleaner(dir: DirectoryRef) extends Extra {
+class FolderCleaner(dir: DirectoryRef) {
   private val extra = Extra(s"FolderCleaner for <$dir>", {
     val minimumCreationTime = LocalDateTime.now.minusWeeks(1)
     dir.files.filter(_.lastAccessTime < minimumCreationTime).foreach(_.delete)
   })
-  override def !(m: => Unit): Future[Unit] = extra.!()
+  def clean(): Future[Unit] = extra.!()
 }
