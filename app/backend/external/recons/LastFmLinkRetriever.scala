@@ -6,21 +6,21 @@ import backend.{FutureOption, Url}
 import backend.external.{BaseLink, Host}
 import backend.recon.Artist
 import com.google.common.annotations.VisibleForTesting
-import common.io.InternetTalker
-import common.io.WSAliases._
 import javax.inject.Inject
 import org.jsoup.Jsoup
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.FutureInstances
-import scalaz.syntax.ToBindOps
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.bind.ToBindOps
+
+import common.io.InternetTalker
+import common.io.WSAliases._
 
 private class LastFmLinkRetriever @VisibleForTesting private[recons](
     it: InternetTalker, millisBetweenRedirects: Long
-) extends LinkRetriever[Artist]
-    with ToBindOps with FutureInstances {
+) extends LinkRetriever[Artist] {
   @Inject() def this(it: InternetTalker) = this(it, millisBetweenRedirects = 100)
 
   override val host = Host.LastFm

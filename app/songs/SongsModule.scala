@@ -2,18 +2,18 @@ package songs
 
 import backend.logging.Logger
 import com.google.inject.Provides
-import common.ModuleUtils
 import models.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
 import songs.SongSelector.SongSelectorProxy
 
 import scala.concurrent.ExecutionContext
 
-import scalaz.std.FutureInstances
-import scalaz.syntax.ToFunctorOps
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.functor.ToFunctorOps
 
-object SongsModule extends ScalaModule with ModuleUtils
-    with ToFunctorOps with FutureInstances {
+import common.ModuleUtils
+
+object SongsModule extends ScalaModule with ModuleUtils {
   override def configure(): Unit = {
     requireBinding[ExecutionContext]
     requireBinding[MusicFinder]

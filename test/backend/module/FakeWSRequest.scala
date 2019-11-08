@@ -1,16 +1,18 @@
 package backend.module
 
 import backend.Url
-import common.io.WSAliases._
-import common.rich.RichT._
-import common.rich.collections.RichMap._
-import common.rich.collections.RichSeq._
-import common.rich.func.MoreSeqInstances
-import monocle.macros.GenLens
 import play.api.libs.ws.{BodyWritable, EmptyBody, WSAuthScheme, WSBody, WSCookie, WSProxyServer, WSRequestFilter, WSSignatureCalculator}
 
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
+
+import common.rich.func.MoreSeqInstances._
+import monocle.macros.GenLens
+
+import common.io.WSAliases._
+import common.rich.RichT._
+import common.rich.collections.RichMap._
+import common.rich.collections.RichSeq._
 
 private case class FakeWSRequest private(
     response: WSRequest => FakeWSResponse,
@@ -24,7 +26,7 @@ private case class FakeWSRequest private(
     followRedirects: Option[Boolean] = None,
     requestTimeout: Option[Int] = None,
     virtualHost: Option[String] = None,
-    proxyServer: Option[WSProxyServer] = None) extends WSRequest with MoreSeqInstances {
+    proxyServer: Option[WSProxyServer] = None) extends WSRequest {
   override val url: String = u.address
   override type Self = FakeWSRequest
   override type Response = FakeWSResponse

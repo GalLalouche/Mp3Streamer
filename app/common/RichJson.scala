@@ -2,14 +2,13 @@ package common
 
 import play.api.libs.json._
 
-import scalaz.std.OptionInstances
-import common.rich.func.ToMoreFoldableOps
+import scalaz.std.option.optionInstance
+import common.rich.func.ToMoreFoldableOps._
 
 import common.json.JsonWriteable
 import common.json.ToJsonableOps._
 
-object RichJson
-    extends ToMoreFoldableOps with OptionInstances {
+object RichJson {
   implicit class DynamicJson(private val $: JsValue) extends AnyVal {
     def value(str: String): JsValue = $.\(str).get
     def has(str: String): Boolean =

@@ -7,7 +7,7 @@ import javax.swing.ImageIcon
 import common.io.{FileRef, IOFile}
 import common.rich.path.Directory
 
-trait FolderImage {
+private trait FolderImage {
   def file: FileRef
   def isLocal: Boolean
   def width: Int

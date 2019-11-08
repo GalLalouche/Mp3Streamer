@@ -3,18 +3,15 @@ package backend.module
 import com.google.inject.Provider
 import com.google.inject.matcher.Matchers
 import com.google.inject.spi.TypeListener
-import common.ModuleUtils
-import common.rich.func.ToMoreMonadOps
-import common.storage.Storage
 import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext
 
-import scalaz.std.FutureInstances
+import common.ModuleUtils
+import common.storage.Storage
 
 /** Creates the in-memory tables after creating the storage instances. */
-object CleanModule extends ScalaModule with ModuleUtils
-    with ToMoreMonadOps with FutureInstances {
+object CleanModule extends ScalaModule with ModuleUtils {
   private def storageListener(ecProvider: Provider[ExecutionContext]): TypeListener =
     typeListener[Storage[_, _]](injectee => {
       import common.rich.RichFuture._

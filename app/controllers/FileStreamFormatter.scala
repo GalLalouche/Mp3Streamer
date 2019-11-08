@@ -2,14 +2,13 @@ package controllers
 
 import java.net.HttpURLConnection
 
+import scalaz.std.option.optionInstance
+import common.rich.func.ToMoreFoldableOps._
+
 import common.io.FileRef
-import common.rich.func.ToMoreFoldableOps
 import common.rich.primitives.RichString._
 
-import scalaz.std.OptionInstances
-
-class FileStreamFormatter
-    extends ToMoreFoldableOps with OptionInstances {
+class FileStreamFormatter {
   def apply(file: FileRef, mimeType: String, range: Option[String]): StreamResult = {
     // assumed format: [bytes=<start>-]
     def parseRange(s: String): Long = s.takeAfterLast('=').takeWhile(_.isDigit).toLong

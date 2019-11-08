@@ -9,6 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 
 import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.monadError.ToMonadErrorOps
 import common.rich.func.ToMoreMonadErrorOps._
 
 import common.io.InternetTalker

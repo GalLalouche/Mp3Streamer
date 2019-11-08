@@ -2,20 +2,20 @@ package backend.lyrics
 
 import backend.Url
 import backend.lyrics.retrievers.RetrievedLyricsResult
-import common.rich.func.ToMoreMonadErrorOps
 import controllers.UrlPathUtils
 import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.{-\/, \/-}
-import scalaz.std.FutureInstances
+import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.ToMoreMonadErrorOps._
 
 private class LyricsFormatter @Inject()(
     ec: ExecutionContext,
     backend: LyricsCache,
     urlPathUtils: UrlPathUtils,
-) extends ToMoreMonadErrorOps with FutureInstances {
+) {
   private implicit val iec: ExecutionContext = ec
 
   // TODO replace with Writable typeclass?

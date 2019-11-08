@@ -7,7 +7,7 @@ import javax.swing.{ImageIcon, JLabel}
 
 import scala.swing.Component
 
-trait SwingUtils {
+private trait SwingUtils {
   implicit class RichComponent($: Component) {
     // Because reactions is BS and doesn't work.
     def onMouseClick(f: () => Any): Component = {

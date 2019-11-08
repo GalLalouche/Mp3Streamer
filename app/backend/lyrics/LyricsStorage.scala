@@ -1,20 +1,19 @@
 package backend.lyrics
 
 import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
-import common.rich.func.ToMoreFoldableOps
 import javax.inject.Inject
 import models.Song
 import slick.ast.{BaseTypedType, ScalaBaseType}
 
 import scala.concurrent.ExecutionContext
 
-import scalaz.std.OptionInstances
+import scalaz.std.option.optionInstance
+import common.rich.func.ToMoreFoldableOps._
 
 class LyricsStorage @Inject()(
     ec: ExecutionContext,
     val dbP: DbProvider,
-) extends SlickStorageTemplateFromConf[Song, Lyrics](ec, dbP)
-    with ToMoreFoldableOps with OptionInstances {
+) extends SlickStorageTemplateFromConf[Song, Lyrics](ec, dbP) {
   import profile.api._
 
   override protected type Profile = dbP.profile.type

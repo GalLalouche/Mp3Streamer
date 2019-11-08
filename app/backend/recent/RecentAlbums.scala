@@ -1,12 +1,13 @@
 package backend.recent
 
-import common.rich.func.{MoreSeqInstances, ToMoreFoldableOps}
-import javax.inject.Inject
 import backend.RichTime.OrderingLocalDateTime
+import javax.inject.Inject
 import models.{Album, AlbumFactory, MusicFinder}
 
-private class RecentAlbums @Inject()(mf: MusicFinder, albumFactory: AlbumFactory)
-    extends ToMoreFoldableOps with MoreSeqInstances {
+import common.rich.func.MoreSeqInstances._
+import common.rich.func.ToMoreFoldableOps._
+
+private class RecentAlbums @Inject()(mf: MusicFinder, albumFactory: AlbumFactory) {
   def apply(amount: Int): Seq[Album] = mf.genreDirs
       .flatMap(_.deepDirs)
       .filter(mf.getSongFilesInDir(_).nonEmpty)

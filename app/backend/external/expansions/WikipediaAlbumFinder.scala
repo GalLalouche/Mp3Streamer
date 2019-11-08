@@ -3,24 +3,26 @@ package backend.external.expansions
 import backend.{FutureOption, Url}
 import backend.external.Host
 import backend.recon.{Album, StringReconScorer}
-import common.io.InternetTalker
-import common.rich.primitives.RichBoolean._
-import common.rich.RichT._
-import common.rich.func.{MoreSeqInstances, MoreTraverseInstances, ToTraverseMonadPlusOps}
-import common.rich.primitives.RichString._
 import javax.inject.Inject
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.FutureInstances
+import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.MoreSeqInstances._
+import common.rich.func.MoreTraverseInstances._
+import common.rich.func.ToTraverseMonadPlusOps._
+
+import common.io.InternetTalker
+import common.rich.primitives.RichBoolean._
+import common.rich.RichT._
+import common.rich.primitives.RichString._
 
 private class WikipediaAlbumFinder @Inject()(
     sameHostExpanderHelper: SameHostExpanderHelper,
     it: InternetTalker,
-) extends SameHostExpander
-    with ToTraverseMonadPlusOps with FutureInstances with MoreSeqInstances with MoreTraverseInstances {
+) extends SameHostExpander {
   private implicit val iec: ExecutionContext = it
   override val host = Host.Wikipedia
 

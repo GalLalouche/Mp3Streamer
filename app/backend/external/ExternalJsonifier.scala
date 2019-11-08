@@ -5,19 +5,19 @@ import java.time.format.DateTimeFormatter
 import backend.external.extensions.{ExtendedLink, LinkExtension}
 import backend.external.ExternalJsonifier._
 import backend.external.Host.{Wikidata, Wikipedia}
-import common.rich.RichT._
-import common.rich.collections.RichTraversableOnce._
-import common.rich.func.ToMoreMonadErrorOps
 import javax.inject.Inject
 import play.api.libs.json.{JsObject, Json, JsString}
 import play.api.libs.json.Json.JsValueWrapper
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.FutureInstances
+import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.ToMoreMonadErrorOps._
 
-private class ExternalJsonifier @Inject()(implicit ec: ExecutionContext)
-    extends ToMoreMonadErrorOps with FutureInstances {
+import common.rich.RichT._
+import common.rich.collections.RichTraversableOnce._
+
+private class ExternalJsonifier @Inject()(implicit ec: ExecutionContext) {
   private type KVPair = (String, JsValueWrapper)
   private def canonizeHost(e: ExtendedLink[_]): String = {
     val isMissing = e.host.name.endsWith("?")

@@ -1,7 +1,5 @@
 package songs
 
-import common.io.RefSystem
-import common.rich.RichT._
 import javax.inject.Inject
 import models.{MusicFinder, Song}
 
@@ -9,8 +7,11 @@ import scala.annotation.tailrec
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
-import scalaz.std.FutureInstances
-import scalaz.syntax.{ToBindOps, ToFunctorOps}
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.functor.ToFunctorOps
+
+import common.io.RefSystem
+import common.rich.RichT._
 
 trait SongSelector {
   def randomSong: Song
@@ -26,7 +27,7 @@ trait SongSelector {
 
 private class SongSelectorImpl[Sys <: RefSystem](
     songs: IndexedSeq[Sys#F])(musicFinder: MusicFinder {type S = Sys})
-    extends SongSelector with ToFunctorOps {
+    extends SongSelector {
   private val random = new Random()
   def randomSong: Song = random.nextInt(songs.length) mapTo songs.apply mapTo musicFinder.parseSong
   def followingSong(song: Song): Option[Song] =
@@ -36,8 +37,7 @@ private class SongSelectorImpl[Sys <: RefSystem](
         .lift(song.track)
 }
 
-object SongSelector
-    extends ToBindOps with FutureInstances {
+object SongSelector {
   import common.rich.RichFuture._
 
   /** A mutable-updateable wrapper of SongSelector */

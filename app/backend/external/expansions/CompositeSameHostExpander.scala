@@ -3,23 +3,24 @@ package backend.external.expansions
 import backend.external.{BaseLink, BaseLinks, Host}
 import backend.external.recons.LinkRetrievers
 import backend.recon.{Album, Artist}
-import common.rich.collections.RichTraversableOnce._
-import common.rich.func.{MoreTraverseInstances, ToMoreFoldableOps}
 import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.Traverse
-import scalaz.std.{FutureInstances, OptionInstances}
-import scalaz.syntax.ToTraverseOps
+import scalaz.std.option.optionInstance
+import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.MoreTraverseInstances._
+import common.rich.func.ToMoreFoldableOps._
+
+import common.rich.collections.RichTraversableOnce._
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums. */
 private[external] class CompositeSameHostExpander @Inject()(
     wiki: WikipediaAlbumFinder,
     am: AllMusicAlbumFinder,
     ec: ExecutionContext,
-) extends ToTraverseOps with MoreTraverseInstances with ToMoreFoldableOps
-    with OptionInstances with FutureInstances {
+) {
   private implicit val iec: ExecutionContext = ec
 
   private val expanders: Map[Host, SameHostExpander] = Iterator(wiki, am).mapBy(_.host)

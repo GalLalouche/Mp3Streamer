@@ -2,19 +2,19 @@ package backend.search
 
 import java.net.URLDecoder
 
+import backend.search.SearchFormatter._
 import javax.inject.Inject
 import models.{Album, ModelJsonable}
 import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
 import play.api.libs.json.{JsObject, Json}
 
+import scalaz.std.option.optionInstance
 import scalaz.syntax.traverse.ToTraverseOps
 import common.rich.func.MoreTraverseInstances._
 
 import common.json.{JsonableOverrider, OJsonable}
 import common.RichJson._
 import common.json.ToJsonableOps._
-import SearchFormatter._
-import com.google.common.annotations.VisibleForTesting
 
 private class SearchFormatter @Inject()(state: SearchState) {
   def search(path: String): JsObject = {

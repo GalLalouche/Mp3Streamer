@@ -1,8 +1,6 @@
 package backend.pkg
 
 import backend.Retriever
-import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
-import common.rich.func.ToMoreFoldableOps
 import controllers.UrlPathUtils
 import javax.inject.Inject
 import models.MusicFinder
@@ -11,17 +9,17 @@ import play.api.libs.json.{Json, JsString}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process._
 
-import scalaz.std.{FutureInstances, OptionInstances}
-import scalaz.syntax.ToApplicativeOps
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.apply.ToApplyOps
+
+import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
 
 private class Zipper @Inject()(
     ec: ExecutionContext,
     mf: MusicFinder,
     urlPathUtils: UrlPathUtils,
     @RootDirectory rootDirectory: DirectoryRef,
-) extends Retriever[DirectoryRef, FileRef]
-    with ToMoreFoldableOps with OptionInstances
-    with ToApplicativeOps with FutureInstances {
+) extends Retriever[DirectoryRef, FileRef] {
   import Zipper._
 
   private implicit val iec: ExecutionContext = ec

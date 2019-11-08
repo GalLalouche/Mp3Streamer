@@ -3,16 +3,16 @@ package mains
 import java.io.File
 import java.time.Duration
 
-import common.rich.RichT.richT
-import common.rich.func.ToMoreMonadPlusOps
-import common.rich.path.RichFile._
 import models.IOMusicFinder
 
-import scalaz.std.VectorInstances
+import scalaz.std.vector.vectorInstance
+import common.rich.func.ToMoreMonadPlusOps._
+
+import common.rich.RichT.richT
+import common.rich.path.RichFile._
 
 // finds songs that are in the music directory but are not saved in the playlist file
-object FindSongsNotInPlaylist
-    extends ToMoreMonadPlusOps with VectorInstances {
+object FindSongsNotInPlaylist {
   private val musicFiles = new IOMusicFinder {
     override val extensions = Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
   }
@@ -26,7 +26,7 @@ object FindSongsNotInPlaylist
         .toList
         // removes UTF-BOM at least until I fix it in ScalaCommon
         .mapIf(_.head.head.toInt == UtfBytemarkPrefix).to(e => e.tail :+ e.head.drop(1))
-        .mapIf(_.head == "#").to(_.tail) // Never version of Foobar2000 decided to add # to file header :\
+        .mapIf(_.head == "#").to(_.tail) // Newer version of Foobar2000 decided to add # to file header :\
         .map(musicFiles.dir.path.+("/").+)
         .map(_.toLowerCase.replaceAll("\\\\", "/"))
         .toSet
@@ -36,7 +36,7 @@ object FindSongsNotInPlaylist
         .toSet
     println(s"actual songs |${realSongs.size}|")
     val playlistMissing = realSongs.diff(playlistSongs).toVector.sorted
-    playlistMissing // opens the windows with the files
+    playlistMissing
         .map(new File(_).parent.dir)
         .uniqueBy(_.getAbsolutePath)
         .take(10)

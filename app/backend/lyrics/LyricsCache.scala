@@ -5,14 +5,16 @@ import backend.logging.Logger
 import backend.lyrics.retrievers.{RetrievedLyricsResult, _}
 import backend.storage.OnlineRetrieverCacher
 import com.google.inject.Guice
-import common.rich.func.{ToMoreFunctorOps, ToMoreMonadErrorOps}
 import javax.inject.Inject
 import models.{IOSong, Song}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.{-\/, \/-}
-import scalaz.std.FutureInstances
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.functor._
+import common.rich.func.ToMoreFunctorOps._
+import common.rich.func.ToMoreMonadErrorOps._
 
 private class LyricsCache @Inject()(
     ec: ExecutionContext,
@@ -20,7 +22,7 @@ private class LyricsCache @Inject()(
     defaultArtistInstrumental: InstrumentalArtist,
     htmlComposites: CompositeHtmlRetriever,
     lyricsStorage: LyricsStorage,
-) extends ToMoreFunctorOps with ToMoreMonadErrorOps with FutureInstances {
+) {
   private implicit val iec: ExecutionContext = ec
   private val firstDefaultRetrievers = DefaultClassicalInstrumental
   private val lastDefaultRetrievers = defaultArtistInstrumental
@@ -51,8 +53,9 @@ object LyricsCache {
   import java.io.File
 
   import backend.module.CleanModule
-  import common.rich.RichFuture._
   import net.codingwell.scalaguice.InjectorExtensions._
+
+  import common.rich.RichFuture._
 
   def main(args: Array[String]): Unit = {
     val injector = Guice createInjector CleanModule

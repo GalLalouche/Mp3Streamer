@@ -2,20 +2,21 @@ package backend.external
 
 import java.time.{Clock, Duration}
 
-import backend.recon.{Reconcilable, ReconcilerCacher, ReconID, StoredReconResult}
+import backend.recon.{Reconcilable, ReconcilerCacher, ReconID}
 import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
 import backend.external.recons.LinkRetrievers
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.storage.{FreshnessStorage, RefreshableStorage}
-import common.rich.RichT._
-import common.rich.func.ToMoreMonadErrorOps
 import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.{-\/, \/-}
-import scalaz.std.FutureInstances
+import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.ToMoreMonadErrorOps._
+
+import common.rich.RichT._
 
 private class ExternalPipeWrapper[R <: Reconcilable] @Inject()(
     clock: Clock,
@@ -24,7 +25,7 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject()(
     storage: ExternalStorage[R],
     provider: Retriever[ReconID, BaseLinks[R]],
     expanders: Traversable[ExternalLinkExpander[R]],
-) extends ToMoreMonadErrorOps with FutureInstances {
+) {
   private implicit val iec: ExecutionContext = ec
 
   def apply(

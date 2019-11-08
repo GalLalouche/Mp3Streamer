@@ -9,25 +9,24 @@ import backend.external.expansions.AllMusicHelper._
 import backend.logging.Logger
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
-import common.io.InternetTalker
-import common.rich.collections.RichTraversableOnce._
-import common.rich.func.ToMoreMonadErrorOps
-import common.rich.primitives.RichBoolean._
-import common.rich.primitives.RichString._
 import javax.inject.Inject
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.{FutureInstances, TupleInstances}
-import scalaz.syntax.ToFoldableOps
+import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.ToMoreMonadErrorOps._
+
+import common.io.InternetTalker
+import common.rich.collections.RichTraversableOnce._
+import common.rich.primitives.RichBoolean._
+import common.rich.primitives.RichString._
 
 private class AllMusicHelper @Inject()(
     it: InternetTalker,
     logger: Logger,
-) extends ToFoldableOps with TupleInstances
-    with FutureInstances with ToMoreMonadErrorOps {
+) {
   private implicit val iec: ExecutionContext = it
   private val canonicalLink = Pattern compile "[a-zA-Z\\-0-9]+-mw\\d+"
   private val allmusicPrefix = "(?:http://www.)?allmusic.com/album/"

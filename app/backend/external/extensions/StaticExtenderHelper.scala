@@ -3,12 +3,13 @@ package backend.external.extensions
 import backend.external.MarkedLinks
 import backend.logging.Logger
 import backend.recon.Reconcilable
-import common.rich.func.{MoreTraversableInstances, ToMoreFoldableOps}
 import javax.inject.Inject
 
+import common.rich.func.MoreTraversableInstances._
+import common.rich.func.ToMoreFoldableOps._
+
 /** For extenders whose result is not dependent on other links. */
-private final class StaticExtenderHelper @Inject()(logger: Logger)
-    extends ToMoreFoldableOps with MoreTraversableInstances {
+private final class StaticExtenderHelper @Inject()(logger: Logger) {
   def apply[R <: Reconcilable](extender: StaticExtender[R])(r: R, e: MarkedLinks[R]): Seq[LinkExtension[R]] = {
     val linksForHost = e.filter(_.host == extender.host)
     if (linksForHost.size > 1)

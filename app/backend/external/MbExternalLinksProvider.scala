@@ -10,8 +10,8 @@ import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.FutureInstances
-import scalaz.syntax.ToBindOps
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.bind.ToBindOps
 
 private class MbExternalLinksProvider @Inject()(
     ec: ExecutionContext,
@@ -25,7 +25,7 @@ private class MbExternalLinksProvider @Inject()(
     extender: CompositeExtender,
     artistPipeWrapper: ExternalPipeWrapper[Artist],
     albumPipeWrapper: ExternalPipeWrapper[Album],
-) extends ToBindOps with FutureInstances {
+) {
   private implicit val iec: ExecutionContext = ec
   private val artistPipe = artistPipeWrapper(artistLinkRetrievers)
 

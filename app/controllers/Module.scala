@@ -3,10 +3,11 @@ package controllers
 import backend.logging.{CompositeLogger, ConsoleLogger, DirectoryLogger, FilteringLogger, Logger, LoggingLevel}
 import backend.module.{RealInternetTalkerModule, RealModule}
 import com.google.inject.Provides
-import common.io.{DirectoryRef, RootDirectory}
 import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext
+
+import common.io.{DirectoryRef, RootDirectory}
 
 // Has to be a class for Play to instantiate.
 class Module extends ScalaModule {

@@ -7,8 +7,8 @@ import models.Song
 
 trait UrlPathUtils extends UrlDecodeUtils {
   /**
-  * A unique, URL-safe path of the song. Clients can use this url when requesting, e.g., lyrics or streaming
-  * of songs from the server .
+  * Returns a unique, URL-safe path of the song. Clients can use this url when requesting, e.g., lyrics or
+  * streaming of songs from the server.
   */
   def encodePath(s: Song): String
   override def decode(s: String): String

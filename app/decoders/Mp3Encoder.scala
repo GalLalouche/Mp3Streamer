@@ -1,22 +1,22 @@
 package decoders
 
-import common.concurrency.SimpleTypedActor
-import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
-import common.rich.RichT._
 import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.FutureInstances
-import scalaz.syntax.ToApplicativeOps
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.apply.ToApplyOps
+
+import common.concurrency.SimpleTypedActor
+import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
+import common.rich.RichT._
 
 /** Encodes audio files files to mp3. Also handles caching. */
 class Mp3Encoder @Inject()(
     @RootDirectory rootDirectory: DirectoryRef,
     encoder: Encoder,
     ec: ExecutionContext,
-) extends SimpleTypedActor[FileRef, FileRef]
-    with ToApplicativeOps with FutureInstances {
+) extends SimpleTypedActor[FileRef, FileRef] {
   private implicit val iec: ExecutionContext = ec
   private val outputDir = rootDirectory addSubDir "musicOutput"
   private val cleaner = new FolderCleaner(outputDir)

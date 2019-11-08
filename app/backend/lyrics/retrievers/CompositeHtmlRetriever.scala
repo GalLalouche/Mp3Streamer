@@ -8,13 +8,13 @@ import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.OptionInstances
-import common.rich.func.ToMoreFoldableOps
+import scalaz.std.option.optionInstance
+import common.rich.func.ToMoreFoldableOps._
 
 private[lyrics] class CompositeHtmlRetriever(
     ec: ExecutionContext, logger: Logger, retrievers: Seq[LyricsRetriever])
     extends CompositeLyricsRetriever(ec, logger, retrievers)
-        with HtmlRetriever with ToMoreFoldableOps with OptionInstances {
+        with HtmlRetriever {
   @Inject() def this(
       ec: ExecutionContext,
       logger: Logger,

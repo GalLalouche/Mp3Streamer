@@ -2,11 +2,10 @@ package backend.external.extensions
 
 import backend.external.{Host, MarkedLink, MarkedLinks}
 import backend.recon.Reconcilable
-import common.rich.func.{MoreSeqInstances, TuplePLenses}
-import monocle.std.Tuple2Optics
-import monocle.syntax.{ApplySyntax, FieldsSyntax}
 
-import scalaz.syntax.ToFunctorOps
+import scalaz.syntax.functor._ // Otherwise IntelliJ will drop ToFunctorOpsUnapply
+import common.rich.func.MoreSeqInstances._
+import common.rich.func.TuplePLenses
 
 /**
 * Extenders (not to be confused with Ex<b>p</b>anders) provide additional links to a given links,
@@ -14,9 +13,7 @@ import scalaz.syntax.ToFunctorOps
 * HTML; rather, the extensions are hard-coded, e.g., the discography link will always be in
 * $link/discography. Therefore, these extensions neither need to be saved, nor do they involve Futures.
 */
-private trait LinkExtender[R <: Reconcilable]
-    extends ToFunctorOps with MoreSeqInstances
-        with Tuple2Optics with ApplySyntax with FieldsSyntax {
+private trait LinkExtender[R <: Reconcilable] {
   def host: Host
   // When the name of the extended link is identical to the URL suffix.
   // For example, create a discography link with the URL www.foo.com/some_artist/discography.

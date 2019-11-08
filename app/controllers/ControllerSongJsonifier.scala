@@ -1,18 +1,15 @@
 package controllers
 
-import common.json.{JsonableOverrider, OJsonable, OJsonableOverrider}
-import common.RichJson._
-import common.rich.func.ToMoreFoldableOps
-import common.rich.path.RichFile._
 import javax.inject.Inject
 import models.{IOSong, ModelJsonable, Poster, Song}
 import models.ModelJsonable.SongJsonifier
 import play.api.libs.json.{JsObject, JsString}
 
-import scalaz.std.OptionInstances
+import common.json.{JsonableOverrider, OJsonable, OJsonableOverrider}
+import common.RichJson._
+import common.rich.path.RichFile._
 
-class ControllerSongJsonifier @Inject()(urlPathUtils: UrlPathUtils)
-    extends ToMoreFoldableOps with OptionInstances {
+class ControllerSongJsonifier @Inject()(urlPathUtils: UrlPathUtils) {
   implicit val songJsonable: OJsonable[Song] = JsonableOverrider[Song](new OJsonableOverrider[Song] {
     override def jsonify(s: Song, original: => JsObject) = {
       val $ = original +

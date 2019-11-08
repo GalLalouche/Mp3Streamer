@@ -12,6 +12,7 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.functor.ToFunctorOps
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.ToMoreMonadErrorOps._
 

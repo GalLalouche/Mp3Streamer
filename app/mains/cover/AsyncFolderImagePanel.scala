@@ -9,10 +9,10 @@ import mains.SwingUtils
 import scala.concurrent.ExecutionContext
 import scala.swing._
 
-private[this] object AsyncFolderImagePanel {
-  val Height = 500
-  val Width = 500
-  case class TextLabelProps(verticalAlignment: Int, horizontalAlignment: Int, color: Color) {
+private object AsyncFolderImagePanel {
+  private val Height = 500
+  private val Width = 500
+  private case class TextLabelProps(verticalAlignment: Int, horizontalAlignment: Int, color: Color) {
     def label(text: String): JLabel = {
       val $ = new JLabel(text)
       $.setFont(new Font("Consolas", Font.PLAIN, 20))
@@ -23,7 +23,7 @@ private[this] object AsyncFolderImagePanel {
       $
     }
   }
-  val TextProps = Seq(
+  private val TextProps = Seq(
     // multiple colors and locations to ensure visibility
     TextLabelProps(SwingConstants.TOP, SwingConstants.LEFT, Color.BLACK),
     TextLabelProps(SwingConstants.TOP, SwingConstants.RIGHT, Color.GREEN),
@@ -31,7 +31,7 @@ private[this] object AsyncFolderImagePanel {
     TextLabelProps(SwingConstants.BOTTOM, SwingConstants.LEFT, Color.BLUE),
   )
 
-  def fileSize(numOfBytes: Long): String = s"${numOfBytes / 1024}KB"
+  private def fileSize(numOfBytes: Long): String = s"${numOfBytes / 1024}KB"
 }
 
 /** Eventually publishes an ImageChoice event. */

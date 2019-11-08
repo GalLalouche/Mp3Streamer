@@ -3,24 +3,25 @@ package backend.external
 import backend.external.extensions.SearchExtension
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon.ReconID
-import common.RichJson._
-import common.rich.RichT._
 import controllers.UrlPathUtils
 import javax.inject.Inject
 import models.Song
-import play.api.libs.json.{JsObject, Json, JsValue}
+import play.api.libs.json.{Json, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.FutureInstances
-import scalaz.syntax.ToBindOps
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.bind.ToBindOps
+
+import common.RichJson._
+import common.rich.RichT._
 
 private class ExternalFormatter @Inject()(
     ec: ExecutionContext,
     external: MbExternalLinksProvider,
     jsonifier: ExternalJsonifier,
     urlPathUtils: UrlPathUtils,
-) extends ToBindOps with FutureInstances {
+) {
   private implicit val iec: ExecutionContext = ec
 
   private def getLinks(song: Song): Future[JsValue] = {

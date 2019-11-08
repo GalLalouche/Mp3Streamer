@@ -3,9 +3,6 @@ package backend.lyrics
 import backend.lyrics.retrievers.InstrumentalArtistStorage
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.Url
-import common.{AuxSpecs, MutablePartialFunction}
-import common.rich.path.RichFile._
-import common.rich.RichFuture._
 import controllers.UrlPathUtils
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -15,12 +12,15 @@ import play.api.http.Status
 
 import scala.concurrent.ExecutionContext
 
-import scalaz.std.FutureInstances
-import scalaz.syntax.ToBindOps
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.bind.ToBindOps
+
+import common.{AuxSpecs, MutablePartialFunction}
+import common.rich.path.RichFile._
+import common.rich.RichFuture._
 
 class LyricsFormatterTest extends FreeSpec with MockitoSugar
     with BeforeAndAfterAll with BeforeAndAfter
-    with ToBindOps with FutureInstances
     with AuxSpecs {
   // Modified by some tests
   private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]

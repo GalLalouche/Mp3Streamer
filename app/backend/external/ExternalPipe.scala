@@ -4,15 +4,18 @@ import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
 import backend.external.recons.LinkRetrievers
 import backend.recon.{Reconcilable, ReconID}
-import common.rich.RichTuple._
-import common.rich.collections.RichSet._
-import common.rich.collections.RichTraversableOnce._
-import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances}
+
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.bind.ToBindOps
+import scalaz.syntax.traverse._
+import common.rich.func.MoreTraversableInstances._
+import common.rich.func.MoreTraverseInstances._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.FutureInstances
-import scalaz.syntax.{ToBindOps, ToTraverseOps}
+import common.rich.RichTuple._
+import common.rich.collections.RichSet._
+import common.rich.collections.RichTraversableOnce._
 
 /**
  * Encompasses all online steps for fetching the external links for a given entity.
@@ -27,9 +30,7 @@ private class ExternalPipe[R <: Reconcilable](
     linksRetriever: Retriever[ReconID, BaseLinks[R]],
     standaloneReconcilers: LinkRetrievers[R],
     expanders: Traversable[ExternalLinkExpander[R]],
-)(implicit ec: ExecutionContext) extends Retriever[R, MarkedLinks[R]]
-    with ToTraverseOps with ToBindOps
-    with FutureInstances with MoreTraverseInstances with MoreTraversableInstances {
+)(implicit ec: ExecutionContext) extends Retriever[R, MarkedLinks[R]] {
   override def apply(r: R): Future[MarkedLinks[R]] = reconciler(r) >>= linksRetriever >>= expand(r)
 
   private def expand(r: R)(existingLinks: BaseLinks[R]): Future[MarkedLinks[R]] = {

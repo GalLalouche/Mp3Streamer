@@ -4,23 +4,26 @@ import backend.{FutureOption, Url}
 import backend.external.Host
 import backend.recon.Album
 import backend.recon.ReconScorers.AlbumReconScorer
-import common.rich.RichT._
-import common.rich.func.{MoreSeqInstances, ToMoreMonadPlusOps, ToTraverseMonadPlusOps}
-import common.rich.primitives.RichBoolean._
 import javax.inject.Inject
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 
-import scalaz.std.{FutureInstances, OptionInstances}
+import scalaz.std.option.optionInstance
+import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.MoreSeqInstances._
+import common.rich.func.ToMoreMonadPlusOps._
+import common.rich.func.ToTraverseMonadPlusOps._
+
+import common.rich.RichT._
+import common.rich.primitives.RichBoolean._
 
 private class AllMusicAlbumFinder @Inject()(
     allMusicHelper: AllMusicHelper,
     sameHostExpanderHelper: SameHostExpanderHelper,
     ec: ExecutionContext
-) extends SameHostExpander with ToMoreMonadPlusOps with ToTraverseMonadPlusOps
-    with MoreSeqInstances with OptionInstances with FutureInstances {
+) extends SameHostExpander {
   private implicit val iec: ExecutionContext = ec
 
   override val host = Host.AllMusic

@@ -2,17 +2,18 @@ package backend.external.extensions
 
 import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
-import common.rich.collections.RichTraversableOnce._
-import common.rich.func.ToMoreFoldableOps
 import javax.inject.Inject
 
-import scalaz.std.OptionInstances
+import scalaz.std.option.optionInstance
+import common.rich.func.ToMoreFoldableOps._
+
+import common.rich.collections.RichTraversableOnce._
 
 private[external] class CompositeExtender @Inject()(
     allMusicArtistExtender: AllMusicArtistExtender,
     lastFmArtistExtender: LastFmArtistExtender,
-    allMusicAlbumExtender: AllMusicAlbumExtender)
-    extends ToMoreFoldableOps with OptionInstances {
+    allMusicAlbumExtender: AllMusicAlbumExtender,
+) {
   private val artistExtendersMap: HostMap[LinkExtender[Artist]] =
     Seq(allMusicArtistExtender, lastFmArtistExtender, MusicBrainzArtistExtender).mapBy(_.host)
   private val albumExtenderMap: HostMap[LinkExtender[Album]] =

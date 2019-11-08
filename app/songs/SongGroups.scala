@@ -3,8 +3,8 @@ package songs
 import javax.inject.Inject
 import models.Song
 
-import scalaz.syntax.ToFunctorOps
-import common.rich.func.MoreSeqInstances
+import scalaz.syntax.functor.ToFunctorOps
+import common.rich.func.MoreSeqInstances._
 
 import common.io.{DirectoryRef, RootDirectory}
 import common.json.Jsonable
@@ -23,7 +23,7 @@ class SongGroups @Inject()(@RootDirectory rootDirectory: DirectoryRef) {
       .toSet
 }
 
-object SongGroups extends MoreSeqInstances with ToFunctorOps {
+object SongGroups {
   def fromGroups(groups: Traversable[SongGroup]): Map[Song, SongGroup] =
     groups.foldLeft(Map[Song, SongGroup]())((agg, group) => agg ++ group.songs.fproduct(group.const))
 }

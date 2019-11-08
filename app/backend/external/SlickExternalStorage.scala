@@ -14,6 +14,7 @@ import slick.jdbc.JdbcType
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.option.optionInstance
+import scalaz.syntax.apply.ToApplyOps
 import common.rich.func.ToMoreFoldableOps._
 import common.rich.func.ToMoreMonadErrorOps._
 

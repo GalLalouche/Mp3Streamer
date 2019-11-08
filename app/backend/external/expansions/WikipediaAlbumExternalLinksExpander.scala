@@ -6,11 +6,6 @@ import backend.logging.Logger
 import backend.recon.Album
 import com.google.common.annotations.VisibleForTesting
 import com.google.inject.Guice
-import common.io.InternetTalker
-import common.rich.RichT._
-import common.rich.collections.RichSeq._
-import common.rich.collections.RichIterable._
-import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 import javax.inject.Inject
 import org.jsoup.nodes.Document
 
@@ -18,16 +13,24 @@ import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 
 import scalaz.Traverse
-import scalaz.std.{FutureInstances, OptionInstances}
+import scalaz.std.option.optionInstance
+import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.MoreTraversableInstances._
+import common.rich.func.MoreTraverseInstances._
+import common.rich.func.ToMoreFoldableOps._
+import common.rich.func.ToMoreMonadErrorOps._
+import common.rich.func.ToTraverseMonadPlusOps._
+
+import common.io.InternetTalker
+import common.rich.RichT._
+import common.rich.collections.RichIterable._
 
 private class WikipediaAlbumExternalLinksExpander @Inject()(
     it: InternetTalker,
     logger: Logger,
     allMusicHelper: AllMusicHelper,
     expanderHelper: ExternalLinkExpanderHelper,
-) extends ExternalLinkExpander[Album]
-    with MoreTraversableInstances with ToTraverseMonadPlusOps with ToMoreMonadErrorOps
-    with ToMoreFoldableOps with FutureInstances with OptionInstances with MoreTraverseInstances {
+) extends ExternalLinkExpander[Album] {
   private implicit val iec: ExecutionContext = it
   override val sourceHost = Host.Wikipedia
   override val potentialHostsExtracted = Vector(Host.AllMusic)
