@@ -5,33 +5,41 @@ import backend.module.StandaloneModule
 import com.google.inject.Guice
 import javax.inject.Inject
 import mains.IOUtils
-import mains.cover.DownloadCover
+import mains.cover.{CoverException, DownloadCover}
 import models.IOMusicFinder
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.bind.ToBindOpsUnapply
 import scalaz.syntax.functor.ToFunctorOps
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.ToMoreMonadErrorOps._
 
 import common.io.{InternetTalker, IODirectory}
+import common.rich.primitives.RichString._
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.path.Directory
 
 class FolderFixer @Inject()(
-    fixLabels: FixLabels, mf: IOMusicFinder, it: InternetTalker, foobarGain: FoobarGain) {
+    fixLabels: FixLabels,
+    mf: IOMusicFinder,
+    it: InternetTalker,
+    foobarGain: FoobarGain,
+    downloader: DownloadCover,
+) {
   private implicit val iec: ExecutionContext = it
 
   private def findArtistFolder(artist: String): Option[Directory] = {
     println("finding matching folder")
+    // See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
     val canonicalArtistFolderName = artist.toLowerCase
         // A windows folder name cannot end in '.'.
-        .replaceAll("""\.*$""", "")
+        .removeAll("""\.*$""")
         // A windows folder name cannot contain '<', '>', ':', '"', '/', '\', '\', '|', '?', '*'.
-        .replaceAll("""[<>:"/\\|?*]""", "")
+        .removeAll("""[<>:"/\\|?*]""")
 
     mf.genreDirs
         .flatMap(_.deepDirs)
@@ -39,24 +47,25 @@ class FolderFixer @Inject()(
         .map(_.dir)
   }
 
-  private def moveDirectory(artist: String, destination: FutureOption[Directory],
-      folderImage: Future[Directory => Unit], fixedDirectory: Future[FixedDirectory]): Future[Directory] = {
-    val destinationParent: Future[Directory] = destination.map(_ getOrElse NewArtistFolderCreator(artist).get)
-    for {
-      d <- destinationParent
-      folderImageMover <- folderImage
-      fixed <- fixedDirectory
-    } yield {
-      println("Copying folder image")
-      val $ = fixed move d
-      folderImageMover($)
-      IOUtils focus $
-      $
-    }
+  private def moveDirectory(
+      artist: String,
+      destination: FutureOption[Directory],
+      folderImage: Future[Directory => Unit],
+      fixedDirectory: Future[FixedDirectory],
+  ): Future[Directory] = for {
+    destinationParent <- destination.map(_ getOrElse NewArtistFolderCreator(artist).get)
+    folderImageMover <- folderImage
+    fixed <- fixedDirectory
+  } yield {
+    println("Copying folder image")
+    fixed.move(destinationParent).<|(folderImageMover).<|(IOUtils.focus(_))
   }
 
-  private def downloadCover(newPath: Directory): Future[Directory => Unit] = DownloadCover(newPath).recover {
-    case e: RuntimeException => println("Auto downloading picture aborted: " + e.getMessage).const
+  private def downloadCover(newPath: Directory): Future[Directory => Unit] = downloader(newPath).recover {
+    case CoverException(msg) => println("Auto downloading picture aborted: " + msg).const
+    case e: RuntimeException =>
+      e.printStackTrace()
+      ().const
   }
 
   private def updateServer(): Future[Unit] = {
@@ -74,9 +83,9 @@ class FolderFixer @Inject()(
     println("fixing directory")
     val fixedDirectory = Future(fixLabels.fix(folder.cloneDir()))
     moveDirectory(artist, destination, folderImage, fixedDirectory)
-        .listen(foobarGain.calculateTrackGain)
+        .listen(foobarGain.apply)
         .filterWithMessage(fixLabels.verify, "Failed to rename some files!")
-        .>|(updateServer())
+        .>>(updateServer())
         .>|(println("--Done!--"))
         .get
   }

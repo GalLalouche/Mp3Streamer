@@ -21,7 +21,7 @@ private object FixLabelsUtils {
 
   private val NumberFollowedBySlash = Pattern compile """\d+[/\\].*"""
   private val InvalidFileCharacters = Pattern compile """[:\\/*?|<>]"""
-  private val MultiSpacePattern = Pattern compile " +"
+  private val MultiSpace = Pattern compile " +"
 
   private def properTrackString(track: Int): String = if (track < 10) "0" + track else track.toString
   def getFixedTag(f: File, fixDiscNumber: Boolean): Tag = getFixedTag(f, fixDiscNumber, AudioFileIO read f)
@@ -60,9 +60,8 @@ private object FixLabelsUtils {
 
     $
   }
-  // TODO RichString.removeAll
   def validFileName(requestedFileName: String): String =
-    requestedFileName.replaceAll(InvalidFileCharacters, "").replaceAll(MultiSpacePattern, " ")
+    requestedFileName.removeAll(InvalidFileCharacters).replaceAll(MultiSpace, " ")
 
   def newFileName(song: Song, extension: String): String =
     s"${properTrackString(song.track)} - ${validFileName(song.title)}.$extension"

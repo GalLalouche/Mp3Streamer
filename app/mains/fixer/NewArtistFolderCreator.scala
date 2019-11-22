@@ -1,15 +1,15 @@
 package mains.fixer
 
 import javax.imageio.ImageIO
-
-import common.rich.path.Directory
-import mains.SwingUtils
+import mains.SwingUtils._
 
 import scala.concurrent.{Future, Promise}
-import scala.swing.event.WindowClosing
 import scala.swing.{BoxPanel, Component, Frame, GridPanel, Label, Orientation}
+import scala.swing.event.WindowClosing
 
-private object NewArtistFolderCreator extends SwingUtils {
+import common.rich.path.Directory
+
+private object NewArtistFolderCreator {
   private val NumberOfLabelRows = 1
   def apply(artistName: String): Future[Directory] = {
     val promise = Promise[Directory]()

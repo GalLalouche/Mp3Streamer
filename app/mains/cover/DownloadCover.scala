@@ -5,32 +5,33 @@ import java.net.URLEncoder
 import backend.Url
 import backend.module.StandaloneModule
 import com.google.inject.Guice
-import common.io.{IODirectory, IOFile}
-import common.rich.path.{Directory, RichFileUtils, TempDirectory}
-import common.rich.path.RichFile.richFile
+import javax.inject.Inject
+import mains.cover.DownloadCover._
 import models.{AlbumFactory, MusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process.Process
 
-object DownloadCover {
-  private val injector = Guice createInjector StandaloneModule
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-  private val mf = injector.instance[MusicFinder]
-  private val albumFactory = injector.instance[AlbumFactory]
-  private val imageFinder = injector.instance[ImageFinder]
-  private val imageDownloader = injector.instance[ImageDownloader]
+import common.io.{IODirectory, IOFile}
+import common.rich.path.{Directory, RichFileUtils, TempDirectory}
+import common.rich.path.RichFile.richFile
+
+private[mains] class DownloadCover @Inject()(
+    ec: ExecutionContext,
+    mf: MusicFinder,
+    albumFactory: AlbumFactory,
+    imageFinder: ImageFinder,
+    imageDownloader: ImageDownloader,
+) {
   import albumFactory._
 
-  private case class CoverException(str: String, e: Exception) extends Exception(e)
-
-  private lazy val tempFolder: Directory = TempDirectory.apply()
+  private implicit val iec: ExecutionContext = ec
 
   /**
    * Downloads a new image for the album.
    *
-   * @param albumDir Should contain the songs. The songs' metadata will be used to search for the correct picture.
+   * @param albumDir Should contain the songs. The song metadata will be used to search for the correct picture.
    * @return A future command that moves the downloaded file to the input directory and deletes all temporary files.
    */
   def apply(albumDir: Directory): Future[Directory => Unit] = {
@@ -48,12 +49,23 @@ object DownloadCover {
       case Selected(img) => fileMover(img)
       case OpenBrowser =>
         // String interpolation is acting funky for some reason (will fail at runtime for unicode).
-        Process(
-          """C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe """" + searchUrl + "\"").!!
-        throw new RuntimeException("User opened browser")
-      case Cancelled => throw new RuntimeException("User opted out")
+        Process("""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe """" + searchUrl + "\"").!!
+        throw CoverException("User opened browser")
+      case Cancelled => throw CoverException("User opted out")
     }
   }
+
+  private def selectImage(imageURLs: Seq[ImageSource]): Future[ImageChoice] = ImageSelectionPanel(
+    ImagesSupplier.withCache(
+      imageURLs.iterator.filter(i => i.isSquare && i.width >= 500).ensuring(_.hasNext),
+      imageDownloader.withOutput(IODirectory(DownloadCover.tempFolder)),
+      cacheSize = 12,
+    )
+  )
+}
+
+private object DownloadCover {
+  private lazy val tempFolder: Directory = TempDirectory.apply()
 
   private def fileMover(f: FolderImage)(outputDirectory: Directory): Unit = {
     val file = f.file.asInstanceOf[IOFile].file
@@ -70,16 +82,12 @@ object DownloadCover {
     f.move(outputDirectory)
   }
 
-  private def selectImage(imageURLs: Seq[ImageSource]): Future[ImageChoice] = ImageSelectionPanel(
-    ImagesSupplier.withCache(
-      imageURLs.iterator.filter(i => i.isSquare && i.width >= 500),
-      imageDownloader.withOutput(IODirectory apply tempFolder),
-      cacheSize = 12))
-
   def main(args: Array[String]): Unit = {
     import common.rich.RichFuture._
+    val injector = Guice createInjector (StandaloneModule)
     val folder = Directory(args mkString " ")
     println("Downloading cover image for " + folder.path)
-    apply(folder).get.apply(folder)
+    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+    injector.instance[DownloadCover].apply(folder).get.apply(folder)
   }
 }
