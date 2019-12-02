@@ -26,6 +26,8 @@ object StringFixer extends (String => String) {
   private val RomanPattern = Pattern compile "[IVXMLivxml]+"
   private val MixedCapsPattern = Pattern compile ".*[A-Z].*"
   private val DottedAcronymPattern = Pattern compile "(\\w\\.)+"
+  private val SpecialQuotes = Pattern compile "[‘’“”]"
+  private val SpecialDashes = Pattern compile "[—–-−]"
   private def fixWord(word: String, forceCapitalization: Boolean): String = asciiNormalize(
     if (forceCapitalization.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase
     else if (word matches MixedCapsPattern) word // mixed caps
@@ -38,7 +40,7 @@ object StringFixer extends (String => String) {
   private val Delimiters = Pattern compile """[ ()\-:/"&]+"""
 
   // Modified from https://stackoverflow.com/a/29364083/736508
-  private val cyrillicMap = Map(
+  private val toAscii = Map(
     ' ' -> " ", 'A' -> "A", 'B' -> "B", 'C' -> "C", 'D' -> "D", 'E' -> "E", 'F' -> "F", 'G' -> "G",
     'H' -> "H", 'I' -> "I", 'J' -> "J", 'K' -> "K", 'L' -> "L", 'M' -> "M", 'N' -> "N", 'O' -> "O",
     'P' -> "P", 'Q' -> "Q", 'R' -> "R", 'S' -> "S", 'T' -> "T", 'U' -> "U", 'V' -> "V", 'W' -> "W",
@@ -59,9 +61,11 @@ object StringFixer extends (String => String) {
     import common.rich.primitives.RichString._
     if (s.isWhitespaceOrEmpty) s
     else {
-      val withoutSpecialQuotes = s.replaceAll("[‘’“”]", "'")
-      withoutSpecialQuotes.keepAscii
-          .mapIf(_.isWhitespaceOrEmpty).to(asciiNormalize(withoutSpecialQuotes.map(cyrillicMap).mkString("")))
+      val withoutSpecialCharacters =
+        s.replaceAll(SpecialQuotes, "'").replaceAll(SpecialDashes, "-")
+      withoutSpecialCharacters
+          .keepAscii
+          .mapIf(_.isWhitespaceOrEmpty).to(asciiNormalize(withoutSpecialCharacters.map(toAscii).mkString("")))
     }
   }
 
