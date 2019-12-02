@@ -59,8 +59,10 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
     verifyFix("A−B-C–D-E—F", "A-B-C-D-E-F")
   }
 
-  "Ignores (but trims) Hebrew" in {
+  "Only minimal changes are done to Hebrew" in {
     verifyFix("אהבת נעוריי", "אהבת נעוריי")
+    verifyFix("אביב גדג’", "אביב גדג'")
+    verifyFix("שב”ק", "שב\"ק")
     verifyFix("  אהבת נעוריי ", "אהבת נעוריי")
   }
 

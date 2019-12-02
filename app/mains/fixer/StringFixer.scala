@@ -26,7 +26,8 @@ object StringFixer extends (String => String) {
   private val RomanPattern = Pattern compile "[IVXMLivxml]+"
   private val MixedCapsPattern = Pattern compile ".*[A-Z].*"
   private val DottedAcronymPattern = Pattern compile "(\\w\\.)+"
-  private val SpecialQuotes = Pattern compile "[‘’“”]"
+  private val SpecialQuotes = Pattern compile "[“”]"
+  private val SpecialApostrophes = Pattern compile "[‘’]"
   private val SpecialDashes = Pattern compile "[—–-−]"
   private def fixWord(word: String, forceCapitalization: Boolean): String = asciiNormalize(
     if (forceCapitalization.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase
@@ -61,20 +62,30 @@ object StringFixer extends (String => String) {
     import common.rich.primitives.RichString._
     if (s.isWhitespaceOrEmpty) s
     else {
-      val withoutSpecialCharacters =
-        s.replaceAll(SpecialQuotes, "'").replaceAll(SpecialDashes, "-")
+      val withoutSpecialCharacters = s
+          .replaceAll(SpecialQuotes, "'")
+          .replaceAll(SpecialApostrophes, "'")
+          .replaceAll(SpecialDashes, "-")
       withoutSpecialCharacters
           .keepAscii
           .mapIf(_.isWhitespaceOrEmpty).to(asciiNormalize(withoutSpecialCharacters.map(toAscii).mkString("")))
     }
   }
 
-  override def apply(s: String): String = s.trim.mapIf(_.hasHebrew.isFalse).to {s =>
-    val words = s.splitWithDelimiters(Delimiters)
-    // The first word is always capitalized (e.g., The Who), while the other words will only be
-    // force-capitalized if they appear after a separator, e.g., The Whole (The Song of the Band).
-    fixWord(words.head, forceCapitalization = true) + words.pairSliding.map {
-      case (wordBefore, word) => fixWord(word, forceCapitalization = wordBefore.trim.matches(Delimiters))
-    }.mkString("")
+  override def apply(s: String): String = {
+    val trimmed = s.trim
+    if (trimmed.hasHebrew)
+      trimmed
+          .replaceAll(SpecialQuotes, "\"")
+          .replaceAll(SpecialApostrophes, "'")
+          .replaceAll(SpecialDashes, "-")
+    else {
+      val words = trimmed.splitWithDelimiters(Delimiters)
+      // The first word is always capitalized (e.g., The Who), while the other words will only be
+      // force-capitalized if they appear after a separator, e.g., The Whole (The Song of the Band).
+      fixWord(words.head, forceCapitalization = true) + words.pairSliding.map {
+        case (wordBefore, word) => fixWord(word, forceCapitalization = wordBefore.trim.matches(Delimiters))
+      }.mkString("")
+    }
   }
 }
