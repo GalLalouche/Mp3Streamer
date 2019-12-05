@@ -1,4 +1,5 @@
 $(() => {
+  colorThief = new ColorThief()
   const buttonAux = (id, text) => button({"id": id}, text)
 
   const poster = $("#jp_poster_0")
@@ -21,14 +22,11 @@ $(() => {
   )
   parent.prepend(posterAndButtonsDiv)
 
-  const colorThief = new ColorThief()
-  const posterElement = poster[0]
-  posterElement.addEventListener('load', updateBackground)
-  function updateBackground() {
-    const rgb = colorThief.getColor(posterElement)
+  getColorAsync(poster, rgb => {
     const hsl = rgb2hsl(rgb)
     // Make it a lot lighter (l is measured in %).
     const lighter = hsl[2] + (100 - hsl[2]) / 1.2
     document.body.style.backgroundColor = `hsl(${hsl[0]}, ${hsl[1]}%, ${lighter}%)`
-  }
+  })
 })
+let colorThief = {}

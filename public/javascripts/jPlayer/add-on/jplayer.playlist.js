@@ -266,14 +266,22 @@
 
       this.mediaMetadataHtml = playlistUtils.mediaMetadataHtml
       // The title is given next in the HTML otherwise the float:right on the free media corrupts in IE6/7
-      listItem += `<img src='${media.poster}' class="playlist-item-poster"/>`;
+      const posterClass = "playlist-item-poster"
       listItem += this.mediaMetadataHtml(media)
       appendIcon(options.removeThisClass, "&times;")
       appendIcon(options.removeUpClass, "&uparrow;")
       appendIcon(options.removeDownClass, "&downarrow;")
       listItem += "</div></li>";
 
-      return listItem;
+      const result = $(listItem);
+      result.prepend($("<img>").attr("src", media.poster).addClass(posterClass))
+      getColorAsync(result.find("img." + posterClass), rgb => {
+        const hsl = rgb2hsl(rgb)
+        // Make it a lot lighter (l is measured in %).
+        const lighter = hsl[2] + (100 - hsl[2]) / 1.1
+        result.css('background-color', `hsl(${hsl[0]}, ${hsl[1]}%, ${lighter}%)`)
+      })
+      return result;
     },
     _createItemHandlers: function() {
       const self = this;
