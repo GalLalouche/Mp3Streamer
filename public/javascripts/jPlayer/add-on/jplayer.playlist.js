@@ -266,6 +266,7 @@
 
       this.mediaMetadataHtml = playlistUtils.mediaMetadataHtml
       // The title is given next in the HTML otherwise the float:right on the free media corrupts in IE6/7
+      listItem += `<img src='${media.poster}' class="playlist-item-poster"/>`;
       listItem += this.mediaMetadataHtml(media)
       appendIcon(options.removeThisClass, "&times;")
       appendIcon(options.removeUpClass, "&uparrow;")

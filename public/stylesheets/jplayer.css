@@ -10,11 +10,16 @@ body {
 }
 
 .width-limited-playlist-span {
-  max-width: 600px;
+  max-width: 550px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   display: inline-block;
+  vertical-align: middle;
+}
+.playlist-item-poster {
+  width: 3%;
+  padding-right: 5px;
   vertical-align: middle;
 }
 
