@@ -45,6 +45,7 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   "Asciify" in {
     verifyFix("Köyliönjärven jäällä", "Koylionjarven Jaalla")
     verifyFix("Епосі нескорених поетів", "Eposi Neskorenikh Poetiv")
+    verifyFix("Æther", "Aether")
   }
   "with delimiters" in {
     verifyFix("foo/bar", "Foo/Bar")

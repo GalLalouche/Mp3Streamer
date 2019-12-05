@@ -42,34 +42,34 @@ object StringFixer extends (String => String) {
 
   // Modified from https://stackoverflow.com/a/29364083/736508
   private val toAscii = Map(
-    ' ' -> " ", 'A' -> "A", 'B' -> "B", 'C' -> "C", 'D' -> "D", 'E' -> "E", 'F' -> "F", 'G' -> "G",
-    'H' -> "H", 'I' -> "I", 'J' -> "J", 'K' -> "K", 'L' -> "L", 'M' -> "M", 'N' -> "N", 'O' -> "O",
-    'P' -> "P", 'Q' -> "Q", 'R' -> "R", 'S' -> "S", 'T' -> "T", 'U' -> "U", 'V' -> "V", 'W' -> "W",
-    'X' -> "X", 'Y' -> "Y", 'Z' -> "Z", 'a' -> "a", 'b' -> "b", 'c' -> "c", 'd' -> "d", 'e' -> "e",
-    'f' -> "f", 'g' -> "g", 'h' -> "h", 'i' -> "i", 'j' -> "j", 'k' -> "k", 'l' -> "l", 'm' -> "m",
-    'n' -> "n", 'o' -> "o", 'p' -> "p", 'q' -> "q", 'r' -> "r", 's' -> "s", 't' -> "t", 'u' -> "u",
-    'v' -> "v", 'w' -> "w", 'x' -> "x", 'y' -> "y", 'z' -> "z", 'Ё' -> "E", 'А' -> "A", 'Б' -> "B",
-    'В' -> "V", 'Г' -> "G", 'Д' -> "D", 'Е' -> "E", 'Ж' -> "Zh", 'З' -> "Z", 'И' -> "I", 'Й' -> "Y",
-    'К' -> "K", 'Л' -> "L", 'М' -> "M", 'Н' -> "N", 'О' -> "O", 'П' -> "P", 'Р' -> "R", 'С' -> "S",
-    'Т' -> "T", 'У' -> "U", 'Ф' -> "F", 'Х' -> "H", 'Ц' -> "Ts", 'Ч' -> "Ch", 'Ш' -> "Sh",
-    'Щ' -> "Sch", 'Ъ' -> "", 'Ы' -> "I", 'Ь' -> "", 'Э' -> "E", 'Ю' -> "Ju", 'Я' -> "Ja",
-    'а' -> "a", 'б' -> "b", 'в' -> "v", 'г' -> "g", 'д' -> "d", 'е' -> "e", 'ж' -> "zh", 'з' -> "z",
-    'и' -> "i", 'й' -> "y", 'к' -> "k", 'л' -> "l", 'м' -> "m", 'н' -> "n", 'о' -> "o", 'п' -> "p",
-    'р' -> "r", 'с' -> "s", 'т' -> "t", 'у' -> "u", 'ф' -> "f", 'х' -> "kh", 'ц' -> "ts",
+    ' ' -> " ", 'A' -> "A", 'Æ' -> "Ae", 'B' -> "B", 'C' -> "C", 'D' -> "D", 'E' -> "E", 'F' -> "F",
+    'G' -> "G", 'H' -> "H", 'I' -> "I", 'J' -> "J", 'K' -> "K", 'L' -> "L", 'M' -> "M", 'N' -> "N",
+    'O' -> "O", 'P' -> "P", 'Q' -> "Q", 'R' -> "R", 'S' -> "S", 'T' -> "T", 'U' -> "U", 'V' -> "V",
+    'W' -> "W", 'X' -> "X", 'Y' -> "Y", 'Z' -> "Z",
+    'a' -> "a", 'æ' -> "ae", 'b' -> "b", 'c' -> "c", 'd' -> "d", 'e' -> "e", 'f' -> "f", 'g' -> "g",
+    'h' -> "h", 'i' -> "i", 'j' -> "j", 'k' -> "k", 'l' -> "l", 'm' -> "m", 'n' -> "n", 'o' -> "o",
+    'p' -> "p", 'q' -> "q", 'r' -> "r", 's' -> "s", 't' -> "t", 'u' -> "u", 'v' -> "v", 'w' -> "w",
+    'x' -> "x", 'y' -> "y", 'z' -> "z",
+    'Ё' -> "E", 'А' -> "A", 'Б' -> "B", 'В' -> "V", 'Г' -> "G", 'Д' -> "D", 'Е' -> "E", 'Ж' -> "Zh",
+    'З' -> "Z", 'И' -> "I", 'Й' -> "Y", 'К' -> "K", 'Л' -> "L", 'М' -> "M", 'Н' -> "N", 'О' -> "O",
+    'П' -> "P", 'Р' -> "R", 'С' -> "S", 'Т' -> "T", 'У' -> "U", 'Ф' -> "F", 'Х' -> "H", 'Ц' -> "Ts",
+    'Ч' -> "Ch", 'Ш' -> "Sh", 'Щ' -> "Sch", 'Ъ' -> "", 'Ы' -> "I", 'Ь' -> "", 'Э' -> "E", 'Ю' -> "Ju",
+    'Я' -> "Ja", 'а' -> "a", 'б' -> "b", 'в' -> "v", 'г' -> "g", 'д' -> "d", 'е' -> "e", 'ж' -> "zh",
+    'з' -> "z", 'и' -> "i", 'й' -> "y", 'к' -> "k", 'л' -> "l", 'м' -> "m", 'н' -> "n", 'о' -> "o",
+    'п' -> "p", 'р' -> "r", 'с' -> "s", 'т' -> "t", 'у' -> "u", 'ф' -> "f", 'х' -> "kh", 'ц' -> "ts",
     'ч' -> "ch", 'ш' -> "sh", 'щ' -> "sch", 'ъ' -> "", 'ы' -> "i", 'ь' -> "", 'э' -> "e",
     'ю' -> "ju", 'я' -> "ja", 'ё' -> "e", 'і' -> "i", '’' -> "'")
   private def normalizeDashesAndApostrophes(s: String) =
     s.replaceAll(SpecialApostrophes, "'").replaceAll(SpecialDashes, "-")
   private def asciiNormalize(s: String): String = {
     import common.rich.primitives.RichString._
-    if (s.isWhitespaceOrEmpty) s
-    else {
-      val withoutSpecialCharacters =
-        s.replaceAll(SpecialQuotes, "'") |> normalizeDashesAndApostrophes
-      withoutSpecialCharacters
-          .keepAscii
-          .mapIf(_.isWhitespaceOrEmpty).to(asciiNormalize(withoutSpecialCharacters.map(toAscii).mkString("")))
-    }
+    if (s.isWhitespaceOrEmpty)
+      return s
+    val withoutSpecialCharacters =
+      s.replaceAll(SpecialQuotes, "'") |> normalizeDashesAndApostrophes
+    withoutSpecialCharacters.keepAscii
+        .mapIf(_.length < withoutSpecialCharacters.length)
+        .to(asciiNormalize(withoutSpecialCharacters.flatMap(toAscii(_))))
   }
 
   override def apply(s: String): String = {
