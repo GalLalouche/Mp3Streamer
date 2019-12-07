@@ -15,7 +15,7 @@ private object LyricsParser extends SingleHostParser {
   override val source = "GeniusLyrics"
   override def apply(d: Document, s: Song): LyricParseResult =
     d.selectSingle("div .lyrics").wholeText.trim match {
-      case "[Instrumental]" => LyricParseResult.Instrumental
+      case "[Instrumental]" | "Instrumental" => LyricParseResult.Instrumental
       case s => LyricParseResult.Lyrics(
         s.removeAll(Annotations)
             .simpleReplace(GapBetweenAnnotations, "\n\n")

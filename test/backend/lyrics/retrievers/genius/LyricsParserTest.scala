@@ -16,8 +16,13 @@ class LyricsParserTest extends LyricsSpec {
         "The boys who kiss and bite",
         "I will be sure we shake the mountains while we dance")
     }
-    "instrumental" in {
-      LyricsParser(getDocument("instrumental.html"), fakeModelFactory.song()) should be an instrumental
+    "instrumental" - {
+      "[instrumental]" in {
+        LyricsParser(getDocument("instrumental1.html"), fakeModelFactory.song()) should be an instrumental
+      }
+      "no brackets" in {
+        LyricsParser(getDocument("instrumental2.html"), fakeModelFactory.song()) should be an instrumental
+      }
     }
   }
 }
