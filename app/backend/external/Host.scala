@@ -1,17 +1,26 @@
 package backend.external
 
+import java.util.regex.Pattern
+
 import backend.Url
-import common.rich.collections.RichTraversableOnce._
+import com.google.common.annotations.VisibleForTesting
+
 import monocle.macros.Lenses
 
+import common.rich.collections.RichTraversableOnce._
+import common.rich.primitives.RichString._
+
+// TODO make an Enum
 @Lenses
 case class Host(name: String, url: Url) {
   import Host._
 
-  def canonize: Host = hostsByName.getOrElse(name.toLowerCase.replaceAll("[*?]$", ""), defaultFor(url))
+  // TODO Host is being abused by representing two different things. Extract this behavior to a class.
+  def canonical: Host = hostsByName.getOrElse(name.toLowerCase.removeAll(Suffixes), defaultFor(url))
 }
 
 object Host {
+  private val Suffixes = Pattern compile "[*?]$"
   object AllMusic extends Host("AllMusic", Url("www.allmusic.com"))
   object Facebook extends Host("Facebook", Url("www.facebook.com"))
   object LastFm extends Host("LastFm", Url("www.last.fm"))
@@ -34,12 +43,14 @@ object Host {
   private val hostsByName = hosts.mapBy(_.name.toLowerCase)
 
   def fromUrl(url: Url): Option[Host] = hostsByUrl get url.host
-  def defaultFor(url: Url): Host = {
-    Host(name = url.address
+  @VisibleForTesting
+  private[external] def defaultFor(url: Url): Host = Host(
+    name = url.address
         .toLowerCase
         .replaceAll("^https?://", "")
         .replaceAll("^www\\.", "")
-        .takeWhile(_ != '.'), url = url.host)
-  }
+        .takeWhile(_ != '.'),
+    url = url.host,
+  )
 }
 

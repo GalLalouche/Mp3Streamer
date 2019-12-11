@@ -21,7 +21,7 @@ private class ExternalJsonifier @Inject()(implicit ec: ExecutionContext) {
   private type KVPair = (String, JsValueWrapper)
   private def canonizeHost(e: ExtendedLink[_]): String = {
     val isMissing = e.host.name.endsWith("?")
-    val canonized = e.host.canonize.name
+    val canonized = e.host.canonical.name
 
     if (e.isNew) canonized + "*"
     else if (isMissing) canonized + "?"
@@ -35,12 +35,12 @@ private class ExternalJsonifier @Inject()(implicit ec: ExecutionContext) {
     "extensions" -> Json.obj(link.extensions.map(toJson).toSeq: _*),
   )
   private def toJson(linkses: Traversable[ExtendedLink[_]]): JsObject =
-    linkses.filterAndSortBy(_.host.canonize, Hosts)
+    linkses.filterAndSortBy(_.host.canonical, Hosts)
         // Filter non-new Wikidata, because there's we don't show them in the client.
-        .filter(e => e.host.canonize != Wikidata || e.isNew)
+        .filter(e => e.host.canonical != Wikidata || e.isNew)
         // Unmark new Wikipedia links, because MusicBrainz only uses Wikidata now.
         // Using mapIf messes up the link's type inference due to existential types.
-        .map(e => if (e.host.canonize == Wikipedia) e.unmark else e)
+        .map(e => if (e.host.canonical == Wikipedia) e.unmark else e)
         .map(toJson) |> Json.obj
   private def toJson(e: TimestampedExtendedLinks[_]): JsObject =
     toJson(e.links) + ("timestamp" -> JsString(e.timestamp |> DateStringPattern.format))
