@@ -7,6 +7,8 @@ import play.api.mvc._
 
 import scala.concurrent.ExecutionContext
 
+import common.rich.primitives.RichString._
+
 class Application @Inject()(implicit ec: ExecutionContext) extends InjectedController {
   def index = Action {
     Ok(views.html.main())
@@ -16,7 +18,7 @@ class Application @Inject()(implicit ec: ExecutionContext) extends InjectedContr
     val file = new File("C:/dev/web/play-2.1.2/Mp3Streamer/public/resources/songs/13 Wonderwall.mp3")
     Status(200).sendFile(file).withHeaders(("Content-length", file.length.toString), ("Accept-Ranges", "bytes"),
       ("X-Pad", "avoid browser bug"), ("Content-Transfer-Encoding", "binary"), ("Cache-Control", "no-cache"),
-      ("Content-Disposition", "attachment; filename=" + file.getName.replaceAll(",", "%2c")),
+      ("Content-Disposition", "attachment; filename=" + file.getName.simpleReplace(",", "%2c")),
       ("Content-Range", s"byte ${file.length}/${file.length}"), ("Content", "audio/mp3"))
   }
 

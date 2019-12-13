@@ -58,14 +58,14 @@ object StringFixer extends (String => String) {
     'р' -> "r", 'с' -> "s", 'т' -> "t", 'у' -> "u", 'ф' -> "f", 'х' -> "kh", 'ц' -> "ts",
     'ч' -> "ch", 'ш' -> "sh", 'щ' -> "sch", 'ъ' -> "", 'ы' -> "i", 'ь' -> "", 'э' -> "e",
     'ю' -> "ju", 'я' -> "ja", 'ё' -> "e", 'і' -> "i", '’' -> "'")
+  private def normalizeDashesAndApostrophes(s: String) =
+    s.replaceAll(SpecialApostrophes, "'").replaceAll(SpecialDashes, "-")
   private def asciiNormalize(s: String): String = {
     import common.rich.primitives.RichString._
     if (s.isWhitespaceOrEmpty) s
     else {
-      val withoutSpecialCharacters = s
-          .replaceAll(SpecialQuotes, "'")
-          .replaceAll(SpecialApostrophes, "'")
-          .replaceAll(SpecialDashes, "-")
+      val withoutSpecialCharacters =
+        s.replaceAll(SpecialQuotes, "'") |> normalizeDashesAndApostrophes
       withoutSpecialCharacters
           .keepAscii
           .mapIf(_.isWhitespaceOrEmpty).to(asciiNormalize(withoutSpecialCharacters.map(toAscii).mkString("")))
@@ -75,10 +75,8 @@ object StringFixer extends (String => String) {
   override def apply(s: String): String = {
     val trimmed = s.trim
     if (trimmed.hasHebrew)
-      trimmed
-          .replaceAll(SpecialQuotes, "\"")
-          .replaceAll(SpecialApostrophes, "'")
-          .replaceAll(SpecialDashes, "-")
+    // Keep '"' for Hebrew acronyms.
+      trimmed.replaceAll(SpecialQuotes, "\"") |> normalizeDashesAndApostrophes
     else {
       val words = trimmed.splitWithDelimiters(Delimiters)
       // The first word is always capitalized (e.g., The Who), while the other words will only be

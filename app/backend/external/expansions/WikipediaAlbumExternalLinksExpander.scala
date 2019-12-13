@@ -1,7 +1,10 @@
 package backend.external.expansions
 
+import java.util.regex.Pattern
+
 import backend.Url
 import backend.external.{BaseLink, BaseLinks, Host}
+import backend.external.expansions.WikipediaAlbumExternalLinksExpander._
 import backend.logging.Logger
 import backend.recon.Album
 import com.google.common.annotations.VisibleForTesting
@@ -14,14 +17,11 @@ import scala.concurrent.ExecutionContext
 
 import scalaz.Traverse
 import scalaz.std.option.optionInstance
-import scalaz.std.scalaFuture.futureInstance
-import common.rich.func.MoreTraversableInstances._
-import common.rich.func.MoreTraverseInstances._
-import common.rich.func.ToMoreFoldableOps._
-import common.rich.func.ToMoreMonadErrorOps._
-import common.rich.func.ToTraverseMonadPlusOps._
+import scalaz.std.FutureInstances
+import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 
 import common.io.InternetTalker
+import common.rich.primitives.RichString._
 import common.rich.RichT._
 import common.rich.collections.RichIterable._
 
@@ -30,7 +30,11 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
     logger: Logger,
     allMusicHelper: AllMusicHelper,
     expanderHelper: ExternalLinkExpanderHelper,
-) extends ExternalLinkExpander[Album] {
+) extends ExternalLinkExpander[Album]
+    // Use ops and instance traits since IntelliJ thinks the code doesn't compile and therefore will remove
+    // ops and instance imports on optimization.
+    with FutureInstances with MoreTraversableInstances with MoreTraverseInstances
+    with ToMoreFoldableOps with ToMoreMonadErrorOps with ToTraverseMonadPlusOps {
   private implicit val iec: ExecutionContext = it
   override val sourceHost = Host.Wikipedia
   override val potentialHostsExtracted = Vector(Host.AllMusic)
@@ -40,7 +44,7 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
       .map(_.toLowerCase)
       .filter(_ contains "allmusic.com/album")
       // Canonize links, specifically the case where www. is missing, because trolls.
-      .map(_.replaceFirst("^(https?://)?(www.)?allmusic.com/album/", ""))
+      .map(_.removeAll(AlbumPrefixPattern))
       .map("http://www.allmusic.com/album/" + _)
 
   /** Returns the first canonical link if one exists, otherwise returns the entire list */
@@ -72,8 +76,9 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
 
 private object WikipediaAlbumExternalLinksExpander {
   import backend.module.CleanModule
-  import common.rich.RichFuture._
   import net.codingwell.scalaguice.InjectorExtensions._
+
+  import common.rich.RichFuture._
 
   def forUrl(path: String): BaseLink[Album] = new BaseLink[Album](Url(path), Host.Wikipedia)
   def main(args: Array[String]): Unit = {
@@ -82,4 +87,6 @@ private object WikipediaAlbumExternalLinksExpander {
     val $ = injector.instance[WikipediaAlbumExternalLinksExpander]
     $.expand(forUrl("""https://en.wikipedia.org/wiki/Ghost_(Devin_Townsend_Project_album)""")).get.log()
   }
+
+  private val AlbumPrefixPattern = Pattern compile "^(https?://)?(www.)?allmusic.com/album/"
 }

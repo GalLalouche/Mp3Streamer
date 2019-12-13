@@ -40,7 +40,7 @@ private class LastFmLinkRetriever @VisibleForTesting private[recons](
   }
 
   override def apply(a: Artist): FutureOption[BaseLink[Artist]] = {
-    val url = Url(s"https://www.last.fm/music/" + a.name.toLowerCase.replaceAll(" ", "+"))
+    val url = Url(s"https://www.last.fm/music/" + a.name.toLowerCase.replace(' ', '+'))
     it.get(url) map handleReply recoverWith {
       case _: TempRedirect => Future(Thread sleep millisBetweenRedirects).>>(apply(a))
       case e: MatchError => Future.failed(new UnsupportedOperationException("last.fm returned an unsupported status code", e))

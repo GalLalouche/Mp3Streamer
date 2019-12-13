@@ -6,12 +6,12 @@ import java.util.regex.Pattern
 import common.rich.primitives.RichString._
 
 object LanguageString {
-  private val hebrewPattern = """\p{InHebrew}""".r.unanchored
-  private val notAsciiPattern = Pattern.compile("[^\\p{ASCII}]")
+  private val HebrewPattern = """\p{InHebrew}""".r.unanchored
+  private val NotAsciiPattern = Pattern.compile("[^\\p{ASCII}]")
 
   implicit class languageString($: String) {
-    def hasHebrew: Boolean = hebrewPattern.findFirstIn($).isDefined
+    def hasHebrew: Boolean = HebrewPattern.findFirstIn($).isDefined
 
-    def keepAscii: String = Normalizer.normalize($, Normalizer.Form.NFD).replaceAll(notAsciiPattern, "")
+    def keepAscii: String = Normalizer.normalize($, Normalizer.Form.NFD).removeAll(NotAsciiPattern)
   }
 }

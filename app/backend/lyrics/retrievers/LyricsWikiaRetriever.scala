@@ -26,7 +26,7 @@ private[lyrics] class LyricsWikiaRetriever @Inject()(
 private object LyricsWikiaRetriever {
   @VisibleForTesting
   private[retrievers] val url = new SingleHostUrl {
-    private def normalize(s: String): String = s.replaceAll(" ", "_").mapTo(URLEncoder.encode(_, "UTF-8"))
+    private def normalize(s: String): String = s.replace(' ', '_').mapTo(URLEncoder.encode(_, "UTF-8"))
 
     override val hostPrefix: String = "http://lyrics.wikia.com/wiki"
     override def urlFor(s: Song): String = s"$hostPrefix/${normalize(s.artistName)}:${normalize(s.title)}"

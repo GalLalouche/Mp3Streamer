@@ -1,11 +1,15 @@
 package backend.lyrics.retrievers
 
+import java.util.regex.Pattern
+
 import com.google.common.annotations.VisibleForTesting
-import common.rich.RichT._
-import common.rich.primitives.RichBoolean._
 import javax.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
+
+import common.rich.RichT._
+import common.rich.primitives.RichBoolean._
+import common.rich.primitives.RichString._
 
 private[lyrics] class DarkLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
     extends HtmlRetriever {
@@ -20,7 +24,7 @@ private[lyrics] class DarkLyricsRetriever @Inject()(singleHostHelper: SingleHost
 
 private object DarkLyricsRetriever {
   @VisibleForTesting
-  private[retrievers] val url = new SingleHostUrl {
+  private[retrievers] val url: SingleHostUrl = new SingleHostUrl {
     private def normalize(s: String): String = s.toLowerCase.filter(_.isLetter)
 
     override val hostPrefix: String = "http://www.darklyrics.com/lyrics"
@@ -29,22 +33,24 @@ private object DarkLyricsRetriever {
   }
 
   @VisibleForTesting
-  private[retrievers] val parser = new SingleHostParser {
+  private[retrievers] val parser: SingleHostParser = new SingleHostParser {
+    private val BreakLinesOrNewLinePattern = Pattern compile "((<br>)|\\n)"
     private def isInstrumental(html: String) =
-      html.replaceAll("((<br>)|\\n)", "").toLowerCase() == "<i>[instrumental]</i>"
-    private def removeWrappingWhiteSpace(s: String) = s.replaceAll("^\\s+", "").replaceAll("\\s$", "")
-    private def removeEndingBreaklines(ss: Seq[String]) = ss.reverse.dropWhile(_.matches("<br>")).reverse
+      html.removeAll(BreakLinesOrNewLinePattern).toLowerCase == "<i>[instrumental]</i>"
+    private val BreakLinesPattern = Pattern compile "<br>"
+    private def removeEndingBreakLines(ss: Seq[String]) =
+      ss.reverse.dropWhile(_.matches(BreakLinesPattern)).reverse
 
     override val source: String = "DarkLyrics"
     // HTML is structured for shit, so might as well parse it by hand
     override def apply(html: Document, s: Song) = {
       val $ = html.toString
           .split("\n").toList
-          .dropWhile(_.matches( s""".*a name="${s.track}".*""").isFalse)
+          .dropWhile(_.matches(s""".*a name="${s.track}".*""").isFalse)
           .drop(1)
           .takeWhile(e => e.matches(".*<h3>.*").isFalse && e.matches(".*<div.*").isFalse) // this fucking site...
-          .map(removeWrappingWhiteSpace)
-          .mapTo(removeEndingBreaklines)
+          .map(_.trim)
+          .mapTo(removeEndingBreakLines)
           .mkString("\n")
       if (isInstrumental($)) LyricParseResult.Instrumental else LyricParseResult.Lyrics($)
     }

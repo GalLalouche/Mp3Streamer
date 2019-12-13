@@ -64,7 +64,7 @@ private class FixLabels @Inject()(mf: IOMusicFinder) {
       val songs = mf.getSongsInDir(ioDir)
       require(songs.hasSameValues(_.toTuple(_.year, _.albumName)))
       val (year, album) = songs.head.toTuple(_.year, _.albumName)
-      s"$year ${FixLabelsUtils.validFileName(album).replaceAll(FixLabels.EndingDots, "")}"
+      s"$year ${FixLabelsUtils.validFileName(album).removeAll(FixLabels.EndingDots)}"
     }
 
     // In addition to regular file name limitations, a directory name cannot end in ".".

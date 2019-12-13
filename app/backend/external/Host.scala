@@ -43,12 +43,14 @@ object Host {
   private val hostsByName = hosts.mapBy(_.name.toLowerCase)
 
   def fromUrl(url: Url): Option[Host] = hostsByUrl get url.host
+  private val PrefixProtocol = Pattern compile "^https?://"
+  private val PrefixWWW = Pattern compile "^www\\."
   @VisibleForTesting
   private[external] def defaultFor(url: Url): Host = Host(
     name = url.address
         .toLowerCase
-        .replaceAll("^https?://", "")
-        .replaceAll("^www\\.", "")
+        .removeAll(PrefixProtocol)
+        .removeAll(PrefixWWW)
         .takeWhile(_ != '.'),
     url = url.host,
   )

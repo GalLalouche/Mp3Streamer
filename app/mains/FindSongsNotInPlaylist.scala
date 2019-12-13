@@ -8,6 +8,7 @@ import models.IOMusicFinder
 import scalaz.std.vector.vectorInstance
 import common.rich.func.ToMoreMonadPlusOps._
 
+import common.rich.primitives.RichString._
 import common.rich.RichT.richT
 import common.rich.path.RichFile._
 
@@ -17,6 +18,7 @@ object FindSongsNotInPlaylist {
     override val extensions = Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
   }
   private val UtfBytemarkPrefix = 65279
+  private def normalizePath(s: String) = s.toLowerCase.simpleReplace("""\""", "/")
   def main(args: Array[String]): Unit = {
     val file = musicFiles.dir.addFile("playlist.m3u8").file
     if (Duration.ofMillis(System.currentTimeMillis() - file.lastModified()).toHours > 1)
@@ -28,11 +30,11 @@ object FindSongsNotInPlaylist {
         .mapIf(_.head.head.toInt == UtfBytemarkPrefix).to(e => e.tail :+ e.head.drop(1))
         .mapIf(_.head == "#").to(_.tail) // Newer version of Foobar2000 decided to add # to file header :\
         .map(musicFiles.dir.path.+("/").+)
-        .map(_.toLowerCase.replaceAll("\\\\", "/"))
+        .map(normalizePath)
         .toSet
     println(s"playlist songs |${playlistSongs.size}|")
     val realSongs = musicFiles.getSongFiles
-        .map(_.path.toLowerCase.replaceAll("\\\\", "/"))
+        .map(_.path |> normalizePath)
         .toSet
     println(s"actual songs |${realSongs.size}|")
     val playlistMissing = realSongs.diff(playlistSongs).toVector.sorted

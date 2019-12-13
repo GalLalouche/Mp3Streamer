@@ -3,13 +3,15 @@ package backend.lyrics.retrievers
 import java.util.regex.Pattern
 
 import com.google.common.annotations.VisibleForTesting
-import common.rich.RichT._
-import common.rich.collections.RichTraversableOnce._
 import javax.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
 
 import scala.collection.JavaConverters._
+
+import common.rich.RichT._
+import common.rich.collections.RichTraversableOnce._
+import common.rich.primitives.RichString._
 
 private[lyrics] class AzLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
     extends HtmlRetriever {
@@ -39,7 +41,7 @@ private object AzLyricsRetriever {
           .filter(_.classNames.isEmpty)
           .single
           .html
-          .mapTo(XmlComment.matcher(_).replaceAll("")))
+          .mapTo(_.removeAll(XmlComment)))
     override val source = "AZLyrics"
   }
 }

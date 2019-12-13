@@ -2,6 +2,7 @@ package common.io
 
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
+import java.util.regex.Pattern
 
 import javax.inject.Inject
 import play.api.libs.json.{Json, JsValue}
@@ -12,6 +13,7 @@ import common.rich.func.ToMoreFoldableOps
 import common.json.Jsonable
 import common.json.ToJsonableOps._
 import common.rich.primitives.RichOption._
+import common.rich.primitives.RichString._
 import common.rich.RichT._
 
 /** Saves in json format to a file. */
@@ -19,7 +21,7 @@ class JsonableSaver @Inject()(@RootDirectory rootDirectory: DirectoryRef) extend
     ToMoreFoldableOps with OptionInstances {
   private val workingDir = rootDirectory addSubDir "data" addSubDir "json"
   protected def jsonFileName[T: Manifest]: String =
-    s"${manifest.runtimeClass.getSimpleName.replaceAll("\\$", "")}s.json"
+    s"${manifest.runtimeClass.getSimpleName.removeAll(JsonableSaver.TrailingSlashes)}s.json"
   private def save[T: Manifest](js: JsValue): Unit = workingDir addFile jsonFileName write js.toString
 
   /**
@@ -35,9 +37,10 @@ class JsonableSaver @Inject()(@RootDirectory rootDirectory: DirectoryRef) extend
 
   /**
    * Similar to save, but doesn't overwrite the data
+   *
    * @param dataAppender A function that takes the old data and appends the new data. Since some
-   *     constraints can exist on the data save, e.g., uniqueness, a simple concatenation of old
-   *     and new data isn't enough.
+   *                     constraints can exist on the data save, e.g., uniqueness, a simple concatenation of old
+   *                     and new data isn't enough.
    */
   //TODO this could perhaps be handled by a type class that would know its saving constraints?
   def update[T: Jsonable : Manifest](dataAppender: Seq[T] => TraversableOnce[T]): Unit = {
@@ -55,4 +58,8 @@ class JsonableSaver @Inject()(@RootDirectory rootDirectory: DirectoryRef) extend
   // Require T: Jsonable, otherwise T will always be inferred as Nothing
   def lastUpdateTime[T: Jsonable : Manifest]: Option[LocalDateTime] =
     workingDir getFile jsonFileName map (_.lastModified)
+}
+
+private object JsonableSaver {
+  private val TrailingSlashes = Pattern compile """\$"""
 }

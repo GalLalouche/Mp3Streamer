@@ -7,6 +7,8 @@ import org.scalatest.matchers.{BePropertyMatcher, BePropertyMatchResult}
 
 import scala.PartialFunction.cond
 
+import common.rich.primitives.RichString._
+
 trait LyricsSpec extends FreeSpec with DocumentSpecs {
   protected[retrievers] val instrumental: BePropertyMatcher[LyricParseResult] =
     e => BePropertyMatchResult(e == LyricParseResult.Instrumental, "instrumental")
@@ -16,7 +18,7 @@ trait LyricsSpec extends FreeSpec with DocumentSpecs {
     }, "instrumental")
   protected[retrievers] def verifyLyrics(res: LyricParseResult, firstLine: String, lastLine: String): Unit = res match {
     case LyricParseResult.Lyrics(l) =>
-      val lines = l.replaceAll("<br>\\s*", "").split("\n").filter(_.nonEmpty).toVector
+      val lines = l.removeAll("<br>\\s*").split("\n").filter(_.nonEmpty).toVector
       lines.head shouldReturn firstLine
       lines.last shouldReturn lastLine
     case _ => fail(s"Invalid result: <$res>")
