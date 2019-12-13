@@ -33,7 +33,7 @@ private class API @Inject()(
 }
 
 private object API {
-  import common.RichJson._
+  import common.json.RichJson._
 
   private def split(s: String) = s split " "
   @VisibleForTesting def parse(song: Song, json: JsObject): Option[String] = for {

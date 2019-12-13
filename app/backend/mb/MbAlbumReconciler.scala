@@ -12,7 +12,7 @@ import scalaz.std.scalaFuture.futureInstance
 import common.rich.func.RichOptionT._
 
 import common.rich.RichT._
-import common.RichJson._
+import common.json.RichJson._
 
 private class MbAlbumReconciler @Inject()(
     ec: ExecutionContext,

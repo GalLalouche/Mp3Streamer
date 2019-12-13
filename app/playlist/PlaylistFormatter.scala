@@ -10,7 +10,7 @@ import common.io.JsonableSaver
 import common.json.JsonReadable
 import common.json.ToJsonableOps._
 import common.rich.RichT._
-import common.RichJson._
+import common.json.RichJson._
 
 private class PlaylistFormatter @Inject()(
     saver: JsonableSaver,

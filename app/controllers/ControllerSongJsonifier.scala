@@ -6,7 +6,7 @@ import models.ModelJsonable.SongJsonifier
 import play.api.libs.json.{JsObject, JsString}
 
 import common.json.{JsonableOverrider, OJsonable, OJsonableOverrider}
-import common.RichJson._
+import common.json.RichJson._
 import common.rich.path.RichFile._
 
 class ControllerSongJsonifier @Inject()(urlPathUtils: UrlPathUtils) {

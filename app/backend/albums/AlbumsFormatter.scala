@@ -7,7 +7,7 @@ import play.api.libs.json.JsValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.RichJson._
+import common.json.RichJson._
 import common.json.ToJsonableOps._
 import common.rich.RichT._
 

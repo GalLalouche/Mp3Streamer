@@ -12,7 +12,7 @@ import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, Json, JsValue}
 
 import common.AuxSpecs
-import common.RichJson._
+import common.json.RichJson._
 import common.json.Jsonable
 import common.json.ToJsonableOps._
 import common.rich.RichT._

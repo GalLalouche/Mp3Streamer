@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
 
-import common.RichJson._
+import common.json.RichJson._
 import common.rich.RichT._
 
 private class ExternalFormatter @Inject()(

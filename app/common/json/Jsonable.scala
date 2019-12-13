@@ -6,7 +6,7 @@ import scala.annotation.implicitNotFound
 
 import monocle.Iso
 
-import common.RichJson._
+import RichJson._
 import common.json.ToJsonableOps._
 
 /** Saner names for play's JSON trait, and less optionality. */

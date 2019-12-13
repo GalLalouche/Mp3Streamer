@@ -4,7 +4,7 @@ import java.io.File
 
 import play.api.libs.json.{JsObject, Json}
 
-import common.RichJson._
+import common.json.RichJson._
 import common.io.{IODirectory, IOFile}
 import common.json.OJsonable
 import common.json.ToJsonableOps._

@@ -1,7 +1,7 @@
 package mains.cover
 
 import backend.Url
-import common.RichJson._
+import common.json.RichJson._
 import common.io.InternetTalker
 import javax.inject.Inject
 import org.jsoup.nodes.{Document, Element}

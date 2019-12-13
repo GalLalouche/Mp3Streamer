@@ -14,7 +14,7 @@ import scalaz.std.scalaFuture.futureInstance
 import common.rich.func.ToMoreMonadErrorOps._
 
 import common.CompositeDateFormat
-import common.RichJson._
+import common.json.RichJson._
 
 class MbArtistReconciler @Inject()(
     ec: ExecutionContext,

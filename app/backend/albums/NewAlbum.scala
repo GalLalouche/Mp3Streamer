@@ -6,7 +6,7 @@ import play.api.libs.json.{Json, JsValue}
 
 import monocle.macros.Lenses
 
-import common.RichJson._
+import common.json.RichJson._
 import common.json.Jsonable
 
 @Lenses

@@ -1,6 +1,6 @@
 package common
 
-import common.RichJson._
+import common.json.RichJson._
 import common.rich.RichT._
 import org.scalatest.{FreeSpec, Matchers}
 import play.api.libs.json.{JsNull, JsNumber, JsObject, Json}

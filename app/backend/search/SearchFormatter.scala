@@ -13,7 +13,7 @@ import scalaz.syntax.traverse.ToTraverseOps
 import common.rich.func.MoreTraverseInstances._
 
 import common.json.{JsonableOverrider, OJsonable}
-import common.RichJson._
+import common.json.RichJson._
 import common.json.ToJsonableOps._
 
 private class SearchFormatter @Inject()(state: SearchState) {

@@ -1,12 +1,11 @@
-package common
+package common.json
 
-import play.api.libs.json._
+import play.api.libs.json.{JsArray, JsNull, JsObject, JsValue}
 
 import scalaz.std.option.optionInstance
 import common.rich.func.ToMoreFoldableOps._
 
-import common.json.JsonWriteable
-import common.json.ToJsonableOps._
+import common.json.ToJsonableOps.jsonifySingle
 
 object RichJson {
   implicit class DynamicJson(private val $: JsValue) extends AnyVal {
@@ -23,7 +22,6 @@ object RichJson {
   }
 
   implicit class DynamicJsonObject(private val $: JsObject) extends AnyVal {
-
     def append[A: JsonWriteable](e: (String, Option[A])): JsObject =
       e._2.map(_.jsonify).map(e._1.->).mapHeadOrElse($.+, $)
   }

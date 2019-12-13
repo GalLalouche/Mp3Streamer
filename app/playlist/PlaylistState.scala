@@ -17,7 +17,7 @@ private case class PlaylistState(songs: Seq[Song], currentIndex: Int, currentDur
 private object PlaylistState {
   import play.api.libs.json.{JsObject, Json}
 
-  import common.RichJson._
+  import common.json.RichJson._
   import common.json.Jsonable
 
   implicit def PlaylistStateJsonable(implicit songJsonable: Jsonable[Song]): Jsonable[PlaylistState] =
