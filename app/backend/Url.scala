@@ -1,26 +1,22 @@
 package backend
 
-import java.net.URL
-
 import org.apache.commons.validator.routines.UrlValidator
 
+import scala.annotation.tailrec
+
+import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 
 case class Url(address: String) {
-  def toURL: URL = new URL(address)
-
   require(address.isWhitespaceOrEmpty.isFalse, "empty address")
-  def host = Url(
+  def host: Url = Url(
     if (address startsWith "http")
-      address split '/' apply 2
+      address.split('/')(2)
     else
-      address takeWhile (_ != '/'))
-  def +/(s: String): Url = Url(
-    if (address.last == '/' || s.head == '/')
-      address + (if (address.last == s.head) s.drop(1) else s)
-    else
-      s"$address/$s"
+      address.takeWhile(_ != '/')
   )
+  @tailrec final def +/(s: String): Url =
+    if (s.head == '/') +/(s.tail) else Url(address + s.mapIf(address.last != '/').to('/' + _))
   def isValid: Boolean = UrlValidator.getInstance().isValid(address)
 }
