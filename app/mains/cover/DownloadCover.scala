@@ -84,7 +84,7 @@ private object DownloadCover {
 
   def main(args: Array[String]): Unit = {
     import common.rich.RichFuture._
-    val injector = Guice createInjector (StandaloneModule)
+    val injector = Guice.createInjector(StandaloneModule)
     val folder = Directory(args mkString " ")
     println("Downloading cover image for " + folder.path)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]

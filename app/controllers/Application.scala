@@ -8,6 +8,7 @@ import play.api.mvc._
 import scala.concurrent.ExecutionContext
 
 import common.rich.primitives.RichString._
+import resource.managed
 
 class Application @Inject()(implicit ec: ExecutionContext) extends InjectedController {
   def index = Action {
@@ -24,11 +25,15 @@ class Application @Inject()(implicit ec: ExecutionContext) extends InjectedContr
 
   def sjs() = Action {
     val f: File = new File("C:/dev/web/Mp3Streamer/client/player.html")
-    Ok(scala.io.Source.fromFile(f.getCanonicalPath).mkString).as("text/html")
+    managed(scala.io.Source.fromFile(f.getCanonicalPath)).acquireAndGet(s =>
+      Ok(s.mkString).as("text/html")
+    )
   }
 
   def sjsClient(path: String) = Action {
     val f: File = new File("C:/dev/web/Mp3Streamer/client/" + path)
-    Ok(scala.io.Source.fromFile(f.getCanonicalPath).mkString).as("text/script")
+    managed(scala.io.Source.fromFile(f.getCanonicalPath)).acquireAndGet(s =>
+      Ok(s.mkString).as("text/script")
+    )
   }
 }

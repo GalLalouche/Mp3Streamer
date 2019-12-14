@@ -14,11 +14,6 @@ private class Initializer @Inject()(mf: IOMusicFinder) {
         .flatMap(mf.getSongFilesInDir)
         .map(SongTagParser optionalSong _.file)
         .sortBy(_.file)
-    private def headOr(set: Set[Any]) = set.toList match {
-      case Nil => ""
-      case x :: Nil => x.toString
-      case _ => Tags.Keep
-    }
     private def headOrKeep(set: Set[Any]): String = set.toList match {
       case Nil => ""
       case x :: Nil => x.toString

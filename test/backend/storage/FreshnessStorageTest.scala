@@ -38,7 +38,7 @@ class FreshnessStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTes
       $.storeWithoutTimestamp(1, 2).>>($ freshness 1).get.get shouldReturn AlwaysFresh
     }
     "existing data with timestamp" in {
-      $.store(1, 2).>>($ freshness 1).get.get.localDateTime.get shouldReturn clock.instant.toLocalDateTime
+      $.store(1, 2).>>($ freshness 1).get.get.localDateTime.get shouldReturn clock.instant().toLocalDateTime
     }
   }
   "mapStore updates timestamp" in {
