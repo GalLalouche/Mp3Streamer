@@ -12,16 +12,15 @@ import com.google.common.annotations.VisibleForTesting
 import javax.inject.Inject
 import org.jsoup.nodes.Document
 
-import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
 import common.rich.func.ToMoreMonadErrorOps._
 
 import common.io.InternetTalker
-import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
+import common.RichJsoup._
 
 private class AllMusicHelper @Inject()(
     it: InternetTalker,
@@ -60,8 +59,8 @@ private class AllMusicHelper @Inject()(
 private object AllMusicHelper {
   @VisibleForTesting
   def hasStaffReview(d: Document): Boolean =
-    d.select("div[itemprop=reviewBody]").asScala.headOption.exists(_.html.nonEmpty)
+    d.find("div[itemprop=reviewBody]").exists(_.html.nonEmpty)
   @VisibleForTesting
   def hasRating(d: Document): Boolean =
-    d.select(".allmusic-rating").asScala.single.hasClass("rating-allmusic-0").isFalse
+    d.selectSingle(".allmusic-rating").hasClass("rating-allmusic-0").isFalse
 }

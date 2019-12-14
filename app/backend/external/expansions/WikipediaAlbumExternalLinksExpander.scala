@@ -12,7 +12,6 @@ import com.google.inject.Guice
 import javax.inject.Inject
 import org.jsoup.nodes.Document
 
-import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext
 
 import scalaz.Traverse
@@ -20,10 +19,11 @@ import scalaz.std.option.optionInstance
 import scalaz.std.FutureInstances
 import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
 
+import common.RichJsoup._
 import common.io.InternetTalker
+import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
 import common.rich.RichT._
-import common.rich.collections.RichIterable._
 
 private class WikipediaAlbumExternalLinksExpander @Inject()(
     it: InternetTalker,
@@ -48,18 +48,16 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
       .map("http://www.allmusic.com/album/" + _)
 
   /** Returns the first canonical link if one exists, otherwise returns the entire list */
-  private def preferCanonical(xs: Seq[String]): Seq[String] =
+  private def preferCanonical(xs: TraversableOnce[String]): TraversableOnce[String] =
     xs.find(allMusicHelper.isCanonical).mapHeadOrElse(List(_), xs)
 
   private def extractAllMusicLink(d: Document): Option[Url] = d
-      .select("a").asScala
+      .selectIterator("a")
       .map(_.attr("href"))
       .flatMap(extractSemiCanonicalAllMusicLink)
       .mapTo(preferCanonical)
       .map(Url)
-      .mapTo(urls =>
-        if (urls hasAtMostSizeOf 1) urls.headOption
-        else throw new IllegalStateException("extracted too many AllMusic links"))
+      .mapTo(_.singleOpt)
 
   @VisibleForTesting
   def parseDocument(d: Document): BaseLinks[Album] =

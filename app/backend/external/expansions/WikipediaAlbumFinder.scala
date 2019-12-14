@@ -10,14 +10,14 @@ import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
-import common.rich.func.MoreSeqInstances._
-import common.rich.func.MoreTraverseInstances._
+import scalaz.std.vector.vectorInstance
 import common.rich.func.ToTraverseMonadPlusOps._
 
 import common.io.InternetTalker
 import common.rich.primitives.RichBoolean._
 import common.rich.RichT._
 import common.rich.primitives.RichString._
+import common.RichJsoup._
 
 private class WikipediaAlbumFinder @Inject()(
     sameHostExpanderHelper: SameHostExpanderHelper,
@@ -35,18 +35,18 @@ private class WikipediaAlbumFinder @Inject()(
       assert(title.nonEmpty)
       val urlWithoutRedirection = s"https://en.wikipedia.org/w/index.php?title=$title&redirect=no"
       it.downloadDocument(Url(urlWithoutRedirection))
-          .map(_.select("span#redirectsub").asScala.headOption.exists(_.text == "Redirect page").isFalse)
+          .map(_.find("span#redirectsub").exists(_.text == "Redirect page").isFalse)
     }
     def findAlbum(d: Document, a: Album): FutureOption[Url] = {
       def score(linkName: String): Double = StringReconScorer(a.title, linkName)
-      d.select("a").asScala.toSeq
+      d.selectIterator("a")
           .filter(e => score(e.text) > 0.95)
           .map(_.attr("href"))
           .filter(_.nonEmpty)
           .filterNot(_ startsWith "http") // Filters external links
           .filterNot(_ contains "redlink=1")
           .map("https://en.wikipedia.org" + _ |> Url)
-          .ensuring(_.forall(_.isValid))
+          .mapTo(_.toVector.ensuring(_.forall(_.isValid)))
           .filterTraverse(isNotRedirected)
           .map(_.headOption)
     }

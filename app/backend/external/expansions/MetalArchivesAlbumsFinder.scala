@@ -6,8 +6,9 @@ import backend.recon.Album
 import javax.inject.Inject
 import org.jsoup.nodes.Document
 
-import scala.collection.JavaConverters._
 import scala.concurrent.Future
+
+import common.RichJsoup._
 
 private class MetalArchivesAlbumsFinder @Inject()(sameHostExpanderHelper: SameHostExpanderHelper)
     extends SameHostExpander {
@@ -23,7 +24,7 @@ private class MetalArchivesAlbumsFinder @Inject()(sameHostExpanderHelper: SameHo
       Url(s"http://www.metal-archives.com/band/discography/id/$artistId/tab/all")
     }
     override def findAlbum(d: Document, a: Album): FutureOption[Url] =
-      Future.successful(d.select(".display.discog tr td a").asScala
+      Future.successful(d.selectIterator(".display.discog tr td a")
           .find(_.text.toLowerCase == a.title.toLowerCase)
           .map(_.attr("href"))
           .map(Url))

@@ -17,6 +17,7 @@ import scalaz.syntax.bind.ToBindOps
 
 import common.io.InternetTalker
 import common.io.WSAliases._
+import common.RichJsoup._
 
 private class LastFmLinkRetriever @VisibleForTesting private[recons](
     it: InternetTalker, millisBetweenRedirects: Long
@@ -30,13 +31,11 @@ private class LastFmLinkRetriever @VisibleForTesting private[recons](
   private def handleReply(h: WSResponse): Option[BaseLink[Artist]] = h.status match {
     case HttpURLConnection.HTTP_NOT_FOUND => None
     case HttpURLConnection.HTTP_MOVED_TEMP => throw new TempRedirect
-    case HttpURLConnection.HTTP_OK =>
-      Jsoup.parse(h.body)
-          .select("link").asScala
-          .find(_.attr("rel") == "canonical")
-          .map(_.attr("href"))
-          .filter(_.nonEmpty)
-          .map(e => BaseLink[Artist](Url(e), Host.LastFm))
+    case HttpURLConnection.HTTP_OK => Jsoup.parse(h.body)
+        .find("link[rel=canonical]")
+        .map(_.attr("href"))
+        .filter(_.nonEmpty)
+        .map(e => BaseLink[Artist](Url(e), Host.LastFm))
   }
 
   override def apply(a: Artist): FutureOption[BaseLink[Artist]] = {

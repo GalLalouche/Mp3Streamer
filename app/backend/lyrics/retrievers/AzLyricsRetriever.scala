@@ -7,10 +7,8 @@ import javax.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
 
-import scala.collection.JavaConverters._
-
+import common.RichJsoup._
 import common.rich.RichT._
-import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
 
 private[lyrics] class AzLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
@@ -37,11 +35,10 @@ private object AzLyricsRetriever {
   private[retrievers] val parser: SingleHostParser = new SingleHostParser {
     // AZ lyrics don't support instrumental :\
     override def apply(d: Document, s: Song): LyricParseResult = LyricParseResult.Lyrics(
-      d.select(".main-page .text-center div").asScala
-          .filter(_.classNames.isEmpty)
-          .single
+      d.selectSingle(".main-page .text-center div:not([class])")
           .html
-          .mapTo(_.removeAll(XmlComment)))
+          .mapTo(_.removeAll(XmlComment))
+    )
     override val source = "AZLyrics"
   }
 }

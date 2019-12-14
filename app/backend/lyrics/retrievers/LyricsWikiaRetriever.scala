@@ -8,6 +8,7 @@ import javax.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
 
+import common.RichJsoup._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 
@@ -37,7 +38,7 @@ private object LyricsWikiaRetriever {
     override val source = "LyricsWikia"
     override def apply(d: Document, s: Song): LyricParseResult = {
       val lyrics = d
-          .select(".lyricbox")
+          .selectSingle(".lyricbox")
           .html
           .split("\n")
           .takeWhile(_.startsWith("<!--").isFalse)
