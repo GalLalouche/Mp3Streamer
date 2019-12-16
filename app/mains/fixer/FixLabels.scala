@@ -26,10 +26,10 @@ import common.rich.primitives.RichBoolean._
 /** Fixes ID3 tags on mp3 and flac files to proper casing, delete unused tags, etc. */
 private class FixLabels @Inject()(mf: IOMusicFinder) {
   private def fixFile(f: File, fixDiscNumber: Boolean): Unit = {
-    val audioFile = AudioFileIO read f
+    val audioFile = AudioFileIO.read(f)
     val newTag = FixLabelsUtils.getFixedTag(f, fixDiscNumber, audioFile)
-    AudioFileIO delete audioFile
-    audioFile setTag newTag
+    audioFile.delete()
+    audioFile.setTag(newTag)
     audioFile.commit()
   }
 
@@ -43,7 +43,8 @@ private class FixLabels @Inject()(mf: IOMusicFinder) {
 
   def fix(dir: Directory): FixedDirectory = {
     def containsASingleFileWithExtension(extension: String) = dir.files.count(_.extension == extension) == 1
-    require((containsASingleFileWithExtension("flac") && containsASingleFileWithExtension("cue")).isFalse,
+    require(
+      (containsASingleFileWithExtension("flac") && containsASingleFileWithExtension("cue")).isFalse,
       "Folder contains an unsplit flac file; please split the file and try again.")
 
     dir.files.foreach(_ setWritable true) // Stupid bittorrent.
@@ -61,9 +62,7 @@ private class FixLabels @Inject()(mf: IOMusicFinder) {
     musicFiles.foreach(f => f renameTo new File(f.parent, newFileName(f)))
 
     val expectedName = {
-      val songs = mf.getSongsInDir(ioDir)
-      require(songs.hasSameValues(_.toTuple(_.year, _.albumName)))
-      val (year, album) = songs.head.toTuple(_.year, _.albumName)
+      val (year, album) = mf.getSongsInDir(ioDir).map(_.toTuple(_.year, _.albumName)).toSet.single
       s"$year ${FixLabelsUtils.validFileName(album).removeAll(FixLabels.EndingDots)}"
     }
 
@@ -73,9 +72,9 @@ private class FixLabels @Inject()(mf: IOMusicFinder) {
         .get
   }
 
-  // This should never happen now that validFileName is used!
+  // "This should never happen" now that validFileName is used!
   def verify(dir: Directory): Boolean =
-    dir.files.filter(_.extension |> Set("mp3", "flac")) forall (f => f.name == newFileName(f))
+    dir.files.filter(Set("mp3", "flac") contains _.extension).forall(f => f.name == newFileName(f))
 }
 
 private object FixLabels {

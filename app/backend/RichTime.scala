@@ -3,9 +3,7 @@ package backend
 import java.time._
 
 object RichTime {
-  implicit object OrderingLocalDateTime extends Ordering[LocalDateTime] {
-    override def compare(x: LocalDateTime, y: LocalDateTime) = x.toMillis compareTo y.toMillis
-  }
+  implicit val OrderingLocalDateTime: Ordering[LocalDateTime] = Ordering.by(_.toMillis)
 
   implicit class RichInstant($: Instant) {
     def toLocalDateTime: LocalDateTime = LocalDateTime from $.atZone(ZoneId.systemDefault)

@@ -38,26 +38,24 @@ private class RandomFolderCreator @Inject()(ec: ExecutionContext, mf: IOMusicFin
     if (existing.size == numberOfSongsToCreate) existing
     else createSongSet(numberOfSongsToCreate, existing + songFiles(random nextInt songFiles.length))
 
-  private def copyFileToOutputDir(outputDir: Directory, pb: ProgressBar)(f: File, index: Int): Unit = {
-    try {
-      val newFile = new File(outputDir.dir, f.name)
-      FileUtils.copyFile(f, newFile)
-      val audioFile = AudioFileIO.read(newFile)
-      // If used on already filtered, i.e., called from copyFilteredSongs, the poster is already set.
-      if (audioFile.getTag.getFields(FieldKey.COVER_ART).isEmpty)
-        try {
-          audioFile.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(IOSong.read(f))))
-          audioFile.commit()
-        } catch {
-          // Because—I wanna say Windows?—is such a piece of crap, if the folder is open while process runs,
-          // committing the ID3 tag can sometimes fail.
-          case e@(_: CannotWriteException | _: UnableToRenameFileException | _: Exception) => e.printStackTrace()
-        }
-      newFile.renameTo(new File(outputDir.dir, f"$index%02d.${f.extension}"))
-      pb.step()
-    } catch {
-      case e: Exception => println("\rFailed @ " + f); e.printStackTrace(); throw e
-    }
+  private def copyFileToOutputDir(outputDir: Directory, pb: ProgressBar)(f: File, index: Int): Unit = try {
+    val newFile = new File(outputDir.dir, f.name)
+    FileUtils.copyFile(f, newFile)
+    val audioFile = AudioFileIO.read(newFile)
+    // If used on already filtered, i.e., called from copyFilteredSongs, the poster is already set.
+    if (audioFile.getTag.getFields(FieldKey.COVER_ART).isEmpty)
+      try {
+        audioFile.getTag.setField(StandardArtwork.createArtworkFromFile(Poster.getCoverArt(IOSong.read(f))))
+        audioFile.commit()
+      } catch {
+        // Because—I wanna say Windows?—is such a piece of crap, if the folder is open while process runs,
+        // committing the ID3 tag can sometimes fail.
+        case e@(_: CannotWriteException | _: UnableToRenameFileException) => e.printStackTrace()
+      }
+    newFile.renameTo(new File(outputDir.dir, f"$index%02d.${f.extension}"))
+    pb.step()
+  } catch {
+    case e: Exception => println("\rFailed @ " + f); e.printStackTrace(); throw e
   }
 }
 
@@ -80,8 +78,7 @@ private object RandomFolderCreator extends {
     logger.info("Done!")
   }
   private def dumpAll(rfc: RandomFolderCreator): Unit = {
-    val numberOfSongsToCreate = 500
-    val songs = rfc.createSongSet(numberOfSongsToCreate)
+    val songs = rfc.createSongSet(numberOfSongsToCreate = 300)
     copy(songs, Directory.makeDir("D:/RandomSongsOutput").clear())
   }
   private def copyFilteredSongs(rfc: RandomFolderCreator): Unit = {

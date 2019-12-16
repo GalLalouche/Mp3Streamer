@@ -4,6 +4,7 @@ import backend.Url
 import backend.lyrics.retrievers.RetrievedLyricsResult
 import controllers.UrlPathUtils
 import javax.inject.Inject
+import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -20,20 +21,19 @@ private class LyricsFormatter @Inject()(
 
   // TODO replace with Writable typeclass?
   private def toString(l: Lyrics): String = l.html + "<br><br>Source: " + l.source
-  def get(path: String): Future[String] =
-    backend.find(urlPathUtils parseSong path)
-        .map(toString)
-        .listenError(_.printStackTrace())
-        .orElse("Failed to get lyrics :(")
-  def push(path: String, url: Url): Future[String] = {
-    val song = urlPathUtils parseSong path
-    backend.parse(url, song).mapEitherMessage({
-      case RetrievedLyricsResult.RetrievedLyrics(l) => \/-(toString(l))
-      case _ => -\/("Failed to parse lyrics :(")
-    })
-  }
+  def get(path: String): Future[String] = backend.find(urlPathUtils parseSong path)
+      .map(toString)
+      //.listenError(_.printStackTrace())
+      .orElse("Failed to get lyrics :(")
+  def push(path: String, url: Url): Future[String] = backend.parse(url, urlPathUtils parseSong path)
+      .mapEitherMessage {
+        case RetrievedLyricsResult.RetrievedLyrics(l) => \/-(toString(l))
+        case _ => -\/("Failed to parse lyrics :(")
+      }
+  private def setInstrumentalAux(path: String, f: Song => Future[Instrumental]) =
+    f(urlPathUtils.parseSong(path)).map(toString)
   def setInstrumentalSong(path: String): Future[String] =
-    backend.setInstrumentalSong(urlPathUtils.parseSong(path)).map(toString)
+    setInstrumentalAux(path, backend.setInstrumentalSong)
   def setInstrumentalArtist(path: String): Future[String] =
-    backend.setInstrumentalArtist(urlPathUtils.parseSong(path)).map(toString)
+    setInstrumentalAux(path, backend.setInstrumentalArtist)
 }

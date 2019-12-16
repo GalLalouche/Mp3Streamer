@@ -24,12 +24,10 @@ object SongTagParser {
 
   private def parseTrack(s: String): Int = s.takeWhile(_.isDigit).toInt // takeWhile handles "01/08" formats.
 
-  def apply(file: File): IOSong = {
+  private def validateRealFile(file: File): Unit = {
     require(file.exists, file + " doesn't exist")
     require(file.isDirectory.isFalse, file + " is a directory")
-    apply(file, AudioFileIO read file)
   }
-
   private val YearPattern = """(\d{4})""".r.unanchored
   private def findYear(s: String) = YearPattern.findAllIn(s)
   private def extractYear(file: File, tag: Tag): Option[Int] = findYear(tag.getFirst(FieldKey.YEAR))
@@ -38,6 +36,10 @@ object SongTagParser {
       .orElse(extractYearFromName(file.parent.name))
   @VisibleForTesting private[models] def extractYearFromName(s: String): Option[Int] =
     findYear(s).singleOpt.map(_.toInt)
+  def apply(file: File): IOSong = {
+    validateRealFile(file)
+    apply(file, AudioFileIO read file)
+  }
   def apply(file: File, audioFile: AudioFile): IOSong = {
     val (tag, header) = audioFile.toTuple(_.getTag, _.getAudioHeader)
     val year = extractYear(file, tag).getOrThrow(s"No year in <$file>")
@@ -60,11 +62,8 @@ object SongTagParser {
       performanceYear = tag.firstNonEmpty(FieldKey.PERFORMANCE_YEAR).map(_.toInt),
     )
   }
-  // TODO handle code with above
   def optionalSong(file: File): OptionalSong = {
-    require(file != null)
-    require(file.exists, file + " doesn't exist")
-    require(file.isDirectory.isFalse, file + " is a directory")
+    validateRealFile(file)
     val tag = AudioFileIO.read(file).getTag
     val year = extractYear(file, tag)
     OptionalSong(
