@@ -6,23 +6,21 @@ import java.util.logging.{Level, Logger}
 import com.google.common.annotations.VisibleForTesting
 import models.RichTag._
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
-import org.jaudiotagger.tag.FieldKey
-
-import scala.util.Try
+import org.jaudiotagger.tag.{FieldKey, Tag}
 
 import common.io.IOFile
+import common.rich.collections.RichTraversableOnce._
 import common.rich.path.RichFile._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichOption._
 import common.rich.RichT._
+import common.rich.collections.RichIterator._
 
 object SongTagParser {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
 
-  private val yearPattern = """(\d{4})""".r.unanchored
-
-  private def parseReplayGain(s: String): Double = s.split(' ').head.toDouble
   // FLAC tag supports proper custom tag fetching, but MP3 tags have to be parsed manually
+  private def parseReplayGain(s: String): Double = s.split(' ').head.toDouble
 
   private def parseTrack(s: String): Int = s.takeWhile(_.isDigit).toInt // takeWhile handles "01/08" formats.
 
@@ -31,18 +29,18 @@ object SongTagParser {
     require(file.isDirectory.isFalse, file + " is a directory")
     apply(file, AudioFileIO read file)
   }
-  @VisibleForTesting private[models] def extractYearFromName(s: String): Option[Int] = {
-    val v = yearPattern.findAllIn(s).toVector
-    require(v.size <= 1)
-    v.headOption.map(_.toInt)
-  }
+
+  private val YearPattern = """(\d{4})""".r.unanchored
+  private def findYear(s: String) = YearPattern.findAllIn(s)
+  private def extractYear(file: File, tag: Tag): Option[Int] = findYear(tag.getFirst(FieldKey.YEAR))
+      .matchData.headOption()
+      .map(_.group(1).toInt)
+      .orElse(extractYearFromName(file.parent.name))
+  @VisibleForTesting private[models] def extractYearFromName(s: String): Option[Int] =
+    findYear(s).singleOpt.map(_.toInt)
   def apply(file: File, audioFile: AudioFile): IOSong = {
     val (tag, header) = audioFile.toTuple(_.getTag, _.getAudioHeader)
-    val year =
-      Try(yearPattern.findAllIn(tag.getFirst(FieldKey.YEAR)).matchData.next().group(1).toInt)
-          .toOption.orElse(extractYearFromName(file.parent.name))
-          .getOrThrow(s"No year in <$file>")
-
+    val year = extractYear(file, tag).getOrThrow(s"No year in <$file>")
     IOSong(
       file = IOFile(file),
       title = tag.getFirst(FieldKey.TITLE),
@@ -62,17 +60,13 @@ object SongTagParser {
       performanceYear = tag.firstNonEmpty(FieldKey.PERFORMANCE_YEAR).map(_.toInt),
     )
   }
-
   // TODO handle code with above
   def optionalSong(file: File): OptionalSong = {
     require(file != null)
     require(file.exists, file + " doesn't exist")
     require(file.isDirectory.isFalse, file + " is a directory")
     val tag = AudioFileIO.read(file).getTag
-    val year =
-      Try(yearPattern.findAllIn(tag.getFirst(FieldKey.YEAR)).matchData.next().group(1).toInt)
-          .toOption.orElse(extractYearFromName(file.parent.name))
-
+    val year = extractYear(file, tag)
     OptionalSong(
       file = file.path,
       title = tag.firstNonEmpty(FieldKey.TITLE),

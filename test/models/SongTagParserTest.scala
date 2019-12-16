@@ -1,13 +1,19 @@
 package models
 
+import java.util.logging.{Level, Logger}
+
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.FieldKey
 import org.scalatest.FreeSpec
 
-import common.AuxSpecs
+import common.{AuxSpecs, DirectorySpecs}
+import common.rich.path.RichFile._
 
-class SongTagParserTest extends FreeSpec with AuxSpecs {
+class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
+  Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   private def getSong(location: String) = getResourceFile(location)
 
-  "Song" - {
+  "apply" - {
     "parse id3tag" - {
       "mp3" - {
         "common" in {
@@ -26,6 +32,20 @@ class SongTagParserTest extends FreeSpec with AuxSpecs {
       }
       "parse year correctly" in {
         SongTagParser(getSong("songWithFullDate.mp3")).year shouldReturn 1999
+      }
+      "parse year from directory if no year tag" in {
+        val existingFile = getResourceFile("song.mp3")
+        val dir = tempDir.addSubDir("2020 foo bar")
+        val copiedFile = existingFile.copyTo(dir)
+
+        val audioFile = AudioFileIO.read(copiedFile)
+        val tag = audioFile.getTag
+        tag.deleteField(FieldKey.YEAR)
+        audioFile.delete()
+        audioFile.setTag(tag)
+        audioFile.commit()
+
+        SongTagParser(copiedFile).year shouldReturn 2020
       }
       "non-empty optionals" in {
         val $: Song = SongTagParser(getSong("songWithMoreInfo.mp3"))
@@ -71,9 +91,7 @@ class SongTagParserTest extends FreeSpec with AuxSpecs {
       SongTagParser.extractYearFromName("blah blah 1234 blah") shouldReturn Some(1234)
     }
     "multiple years throws" in {
-      an[IllegalArgumentException] shouldBe thrownBy {
-        SongTagParser.extractYearFromName("blah 5678 blah 1234 blah")
-      }
+      an[Exception] shouldBe thrownBy {SongTagParser.extractYearFromName("blah 5678 blah 1234 blah")}
     }
   }
 }
