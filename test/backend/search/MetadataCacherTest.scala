@@ -12,11 +12,9 @@ import rx.lang.scala.Observable
 
 import scala.concurrent.{Await, ExecutionContext, Promise}
 
-import common.rich.RichObservable._
 import common.AuxSpecs
 import common.io.{JsonableSaver, MemoryRoot}
 import common.json.Jsonable
-import common.rich.RichFuture._
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory
@@ -24,7 +22,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
   private val songs = root.addSubDir("songs")
   private val mf: FakeMusicFinder = new FakeMusicFinder(songs)
   private val c = TestModuleConfiguration().copy(_root = root, _mf = mf)
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
+  private val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val jsonableSaver = c.injector.instance[JsonableSaver]
   private val albumFactory = c.injector.instance[AlbumFactory]
   private val fakeJsonable = new FakeModelJsonable
@@ -118,7 +116,7 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
       verifyData(Artist("artist1", Set(album1, album2)))
     }
     "throws if no index exists" in {
-      an[IllegalStateException] shouldBe thrownBy {$.quickRefresh().toFuture[Vector].get}
+      an[IllegalStateException] shouldBe thrownBy {$.quickRefresh()}
     }
   }
 

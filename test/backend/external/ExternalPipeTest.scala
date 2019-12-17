@@ -7,17 +7,15 @@ import backend.external.recons.{LinkRetriever, LinkRetrievers}
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, ReconID}
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.FreeSpec
+import org.scalatest.{AsyncFreeSpec, FreeSpec}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.AuxSpecs
-import common.rich.RichFuture._
 import common.rich.RichT._
 
-class ExternalPipeTest extends FreeSpec with AuxSpecs {
+class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
   private val injector = TestModuleConfiguration().injector
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
   private val existingHost: Host = Host("existinghost", Url("existinghosturl"))
   private val existingLink: BaseLink[Album] = BaseLink(Url("existing"), existingHost)
   private val existingMarkedLink: MarkedLink[Album] = MarkedLink markExisting existingLink
@@ -49,7 +47,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
       LinkRetrievers(Vector(newLinkReconciler)),
       Vector(newLinkExpander),
     )
-    $(null).get shouldReturn (Set(existingMarkedLink) ++ expectedNewLinks)
+    $(null).map(_ shouldReturn (Set(existingMarkedLink) ++ expectedNewLinks))
   }
   "Doesn't invoke hosts if there's no need" - {
     val failed = Future failed new AssertionError("Shouldn't have been invoked")
@@ -69,7 +67,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
         LinkRetrievers(Vector(failedReconciler(existingHost), newLinkReconciler)),
         Vector(failedExpander(existingHost), newLinkExpander),
       )
-      $(null).get shouldSetEqual Set(existingMarkedLink) ++ expectedNewLinks
+      $(null).map(_ shouldSetEqual Set(existingMarkedLink) ++ expectedNewLinks)
     }
     "Should not invoke expanders if reconcilers already returned the host" in {
       val $ = new ExternalPipe[Album](
@@ -78,7 +76,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
         LinkRetrievers(Vector(newLinkReconciler)),
         Vector(failedExpander(reconciledLink.host)),
       )
-      $(null).get shouldSetEqual Set(existingMarkedLink, markedReconciledLink)
+      $(null).map(_ shouldSetEqual Set(existingMarkedLink, markedReconciledLink))
     }
   }
   "Should ignored new, extra links" in {
@@ -88,7 +86,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
       LinkRetrievers(Vector(newLinkReconciler)),
       Vector(constExpander(expandedLink, rehashedLinks)),
     )
-    $(null).get shouldSetEqual Set(existingMarkedLink) ++ expectedNewLinks
+    $(null).map(_ shouldSetEqual Set(existingMarkedLink) ++ expectedNewLinks)
   }
   "Should not fail when there are multiple entries with the same host in existing" in {
     val $ = new ExternalPipe[Album](
@@ -97,7 +95,7 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
       LinkRetrievers(Vector(newLinkReconciler)),
       Vector(newLinkExpander),
     )
-    $(null).get should have size 4
+    $(null).map(_ should have size 4)
   }
   "Should apply its finders recursively, but once at most" in {
     val wikiLink = BaseLink[Album](Url("wiki"), Wikipedia)
@@ -126,6 +124,6 @@ class ExternalPipeTest extends FreeSpec with AuxSpecs {
     )
     val expectedNewLinks: Vector[MarkedLink[Album]] =
       Vector(wikiLink, allMusicLink, rateYouMusicLink, reconciledLink).map(MarkedLink.markNew)
-    $(null).get shouldSetEqual (Set(existingMarkedLink) ++ expectedNewLinks)
+    $(null).map(_ shouldSetEqual (Set(existingMarkedLink) ++ expectedNewLinks))
   }
 }

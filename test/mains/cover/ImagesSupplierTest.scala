@@ -1,20 +1,19 @@
 package mains.cover
 
 import backend.Url
-import backend.module.TestModuleConfiguration
-import common.{AuxSpecs, MockerWithId}
-import common.rich.RichFuture._
-import common.rich.primitives.RichBoolean._
-import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.{FreeSpec, OneInstancePerTest}
+import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
+import common.{AuxSpecs, MockerWithId}
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.bind._
+import common.rich.primitives.RichBoolean._
+
+class ImagesSupplierTest extends AsyncFreeSpec with OneInstancePerTest with AuxSpecs {
   private val mockerWithId = new MockerWithId
-  private implicit val ec: ExecutionContext = TestModuleConfiguration().injector.instance[ExecutionContext]
   private def downloadImage(is: ImageSource): Future[FolderImage] =
-    Future successful mockerWithId(is match {
+    Future successful mockerWithId[FolderImage](is match {
       case UrlSource(url, _, _) => url.address
       case LocalSource(file) => file.path
     })
@@ -35,9 +34,9 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
     val $ = ImagesSupplier(urls, downloadImage)
     "Should fetch when needed" in {
       urls.remaining shouldReturn 2
-      $.next().get shouldReturn mockerWithId("foo")
-      urls.remaining shouldReturn 1
-      $.next().get shouldReturn mockerWithId("bar")
+      $.next().map(_ shouldReturn mockerWithId("foo")) >|
+          urls.remaining.shouldReturn(1) >>
+          $.next().map(_ shouldReturn mockerWithId("bar"))
     }
     "Should throw an exception when out of nexts" in {
       $.next()
@@ -46,6 +45,10 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
     }
   }
   "Cached" - {
+    val sameThreadExecutionContext: ExecutionContext = new ExecutionContext {
+      override def execute(runnable: Runnable) = runnable.run()
+      override def reportFailure(cause: Throwable) = throw cause
+    }
     "Should prefetch" in {
       class TogellableImageDownloader extends (ImageSource => Future[FolderImage]) {
         var stopped = false
@@ -55,7 +58,7 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
         def stop() = stopped = true
       }
       val downloader = new TogellableImageDownloader
-      val $ = ImagesSupplier.withCache(urls, downloader, 2)
+      val $ = ImagesSupplier.withCache(urls, downloader, 2)(sameThreadExecutionContext)
       // Should start downloading immediately; since it's on the same thread, it will block until done.
       downloader.stop()
       // If it didn't start, next would fail.
@@ -63,18 +66,18 @@ class ImagesSupplierTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
       $.next().value.get.get shouldReturn mockerWithId("bar")
     }
     "Should not fetch more than allotted size" in {
-      val $ = ImagesSupplier.withCache(urls, downloadImage, 1)
+      val $ = ImagesSupplier.withCache(urls, downloadImage, 1)(sameThreadExecutionContext)
       urls.remaining shouldReturn 1
       $.next().value.get.get shouldReturn mockerWithId("foo")
       urls.remaining shouldReturn 0
       $.next().value.get.get shouldReturn mockerWithId("bar")
     }
     "Should not throw if tried to fetch more than available" in {
-      val $ = ImagesSupplier.withCache(urls, downloadImage, 5)
+      val $ = ImagesSupplier.withCache(urls, downloadImage, 5)(sameThreadExecutionContext)
       $.next().value.get.get shouldReturn mockerWithId("foo")
     }
     "But should throw on enough nexts" in {
-      val $ = ImagesSupplier.withCache(urls, downloadImage, 5, 10)
+      val $ = ImagesSupplier.withCache(urls, downloadImage, 5, 10)(sameThreadExecutionContext)
       $.next()
       $.next()
       a[NoSuchElementException] should be thrownBy $.next()

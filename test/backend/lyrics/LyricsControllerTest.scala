@@ -20,8 +20,6 @@ import common.MutablePartialFunction
 @Slow
 class LyricsControllerTest extends FreeSpec with MockitoSugar with ControllerSpec with DocumentSpecs
     with BeforeAndAfterAll with BeforeAndAfter {
-  private val InstrumentalSongHtml = "<img src='assets/images/TrebleClef.png' width='30' height='68' /><b>Instrumental</b><br><br>Source: Manual override"
-  private val InstrumentalArtistHtml = "<img src='assets/images/TrebleClef.png' width='30' height='68' /><b>Instrumental</b><br><br>Source: Default for artist"
   // Modified by some tests
   private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]
   override def fakeApplication() = GuiceApplicationBuilder()
@@ -61,14 +59,14 @@ class LyricsControllerTest extends FreeSpec with MockitoSugar with ControllerSpe
   }
 
   "setInstrumentalSong" in {
-    post("lyrics/instrumental/song/" + encodedSong).getString shouldReturn InstrumentalSongHtml
-    getLyricsForSong shouldReturn InstrumentalSongHtml
+    post("lyrics/instrumental/song/" + encodedSong).getString shouldReturn Htmls.InstrumentalSongHtml
+    getLyricsForSong shouldReturn Htmls.InstrumentalSongHtml
   }
 
   "setInstrumentalArtist" in {
     // Make all HTML retrievers fail
     urlToResponseMapper const FakeWSResponse(status = Status.NOT_FOUND)
-    post("lyrics/instrumental/artist/" + encodedSong).getString shouldReturn InstrumentalArtistHtml
-    getLyricsForSong shouldReturn InstrumentalArtistHtml
+    post("lyrics/instrumental/artist/" + encodedSong).getString shouldReturn Htmls.InstrumentalArtistHtml
+    getLyricsForSong shouldReturn Htmls.InstrumentalArtistHtml
   }
 }

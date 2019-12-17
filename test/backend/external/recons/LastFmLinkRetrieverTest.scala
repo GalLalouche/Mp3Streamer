@@ -3,33 +3,31 @@ package backend.external.recons
 import java.net.HttpURLConnection
 
 import backend.Url
-import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.external.{BaseLink, DocumentSpecs, Host}
+import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.Artist
+import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.AsyncFreeSpec
+import org.scalatest.OptionValues._
+
 import common.AuxSpecs
 import common.io.InternetTalker
-import common.rich.RichFuture._
 import common.rich.RichT._
-import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.FreeSpec
 
-import scala.concurrent.ExecutionContext
-
-class LastFmLinkRetrieverTest extends FreeSpec with AuxSpecs with DocumentSpecs {
+class LastFmLinkRetrieverTest extends AsyncFreeSpec with AuxSpecs with DocumentSpecs {
   private val config = new TestModuleConfiguration
-  private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   private def create(config: TestModuleConfiguration): LastFmLinkRetriever = {
     new LastFmLinkRetriever(config.injector.instance[InternetTalker], millisBetweenRedirects = 1)
   }
   "404" in {
     val c = config.copy(_urlToResponseMapper =
         FakeWSResponse(status = HttpURLConnection.HTTP_NOT_FOUND).partialConst)
-    create(c)(Artist("Foobar")).get shouldBe 'empty
+    create(c)(Artist("Foobar")).map(_ shouldBe 'empty)
   }
   "200" in {
     val c = config.copy(_urlToBytesMapper = getBytes("last_fm.html").partialConst)
-    create(c)(Artist("dreamtheater")).get.get shouldReturn
-        BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm)
+    create(c)(Artist("dreamtheater")).map(_.value shouldReturn
+        BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm))
   }
   "302" in {
     var first = false
@@ -40,7 +38,7 @@ class LastFmLinkRetrieverTest extends FreeSpec with AuxSpecs with DocumentSpecs 
       case _ =>
         FakeWSResponse(status = HttpURLConnection.HTTP_OK, bytes = getBytes("last_fm.html"))
     })
-    create(c)(Artist("Foobar")).get.get shouldReturn
-        BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm)
+    create(c)(Artist("Foobar")).map(_.value shouldReturn
+        BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm))
   }
 }

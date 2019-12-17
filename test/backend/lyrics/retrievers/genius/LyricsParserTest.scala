@@ -2,8 +2,9 @@ package backend.lyrics.retrievers.genius
 
 import backend.lyrics.retrievers.LyricsSpec
 import models.FakeModelFactory
+import org.scalatest.FreeSpec
 
-class LyricsParserTest extends LyricsSpec {
+class LyricsParserTest extends FreeSpec with LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
   "fromHtml" - {
     "has lyrics" in {

@@ -5,21 +5,20 @@ import java.net.HttpURLConnection
 import backend.Url
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
+import backend.recon.Album
+import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.AsyncFreeSpec
+
 import common.io.WSAliases._
-import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
-import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.FreeSpec
 
-import scala.concurrent.ExecutionContext
-
-class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
+class AllMusicHelperTest extends AsyncFreeSpec with DocumentSpecs {
   private val config = TestModuleConfiguration()
-  private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   private def withDocument(s: String) = config.copy(_urlToBytesMapper = getBytes(s).partialConst)
   private def create(c: TestModuleConfiguration) = c.injector.instance[AllMusicHelper]
   private val $ = create(config)
+
   "isCanonical" - {
     "yes" in {
       $ isCanonical "http://www.allmusic.com/album/machine-head-mw0000189625" shouldReturn true
@@ -33,6 +32,7 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
       }
     }
   }
+
   "validity" - {
     "hasRating" - {
       "yes" in {
@@ -55,10 +55,10 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
       val helperPointsToEmpty = create(withDocument("allmusic_no_rating.html"))
       val url = Url("http://foobar")
       "yes" in {
-        helperPointsToValid.isValidLink(url).get shouldReturn true
+        helperPointsToValid.isValidLink(url) map (_ shouldReturn true)
       }
       "no" in {
-        helperPointsToEmpty.isValidLink(url).get shouldReturn false
+        helperPointsToEmpty.isValidLink(url).map(_ shouldReturn false)
       }
     }
   }
@@ -66,8 +66,8 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
   "canonize" - {
     "mw link" in {
       $.canonize(
-        BaseLink(Url("http://www.allmusic.com/album/born-in-the-usa-mw0000191830"), Host.Wikipedia))
-          .get.link.address shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
+        BaseLink[Album](Url("http://www.allmusic.com/album/born-in-the-usa-mw0000191830"), Host.Wikipedia))
+          .map(_.link.address shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830")
     }
     "rlink" - {
       def withRedirectingMock(sourceToDest: (String, String)*) = {
@@ -82,29 +82,30 @@ class AllMusicHelperTest extends FreeSpec with DocumentSpecs {
       "regular" in {
         withRedirectingMock("http://www.allmusic.com/album/r827504" ->
             "http://www.allmusic.com/album/home-mw0000533017")
-            .canonize(BaseLink(Url("http://www.allmusic.com/album/r827504"), Host.Wikipedia))
-            .get.link.address shouldReturn "http://www.allmusic.com/album/home-mw0000533017"
+            .canonize(BaseLink[Album](Url("http://www.allmusic.com/album/r827504"), Host.Wikipedia))
+            .map(_.link.address shouldReturn "http://www.allmusic.com/album/home-mw0000533017")
       }
+      val link = BaseLink[Album](Url("http://www.allmusic.com/album/ghost-r2202519"), Host.Wikipedia)
       "without www" in {
         withRedirectingMock("http://www.allmusic.com/album/ghost-r2202519" ->
             "http://www.allmusic.com/album/ghost-mw0002150605")
-            .canonize(BaseLink(Url("http://www.allmusic.com/album/ghost-r2202519"), Host.Wikipedia))
-            .get.link.address shouldReturn "http://www.allmusic.com/album/ghost-mw0002150605"
+            .canonize(link)
+            .map(_.link.address shouldReturn "http://www.allmusic.com/album/ghost-mw0002150605")
       }
       "multiple retries" - {
         "succeeds after second" in {
           withRedirectingMock(
             "http://www.allmusic.com/album/ghost-r2202519" -> "http://www.allmusic.com/album/ghost-r2202520",
             "http://www.allmusic.com/album/ghost-r2202520" -> "http://www.allmusic.com/album/ghost-mw0002150605")
-              .canonize(BaseLink(Url("http://www.allmusic.com/album/ghost-r2202519"), Host.Wikipedia))
-              .get.link.address shouldReturn "http://www.allmusic.com/album/ghost-mw0002150605"
+              .canonize(link)
+              .map(_.link.address shouldReturn "http://www.allmusic.com/album/ghost-mw0002150605")
         }
         "gives up eventually, returning the last url" in {
           withRedirectingMock(
             "http://www.allmusic.com/album/ghost-r2202519" -> "http://www.allmusic.com/album/ghost-r2202520",
             "http://www.allmusic.com/album/ghost-r2202520" -> "http://www.allmusic.com/album/ghost-r2202520")
-              .canonize(BaseLink(Url("http://www.allmusic.com/album/ghost-r2202519"), Host.Wikipedia))
-              .get.link.address shouldReturn "http://www.allmusic.com/album/ghost-r2202520"
+              .canonize(link)
+              .map(_.link.address shouldReturn "http://www.allmusic.com/album/ghost-r2202520")
         }
       }
     }

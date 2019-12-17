@@ -6,17 +6,18 @@ import controllers.websockets.WebSocketRef
 import controllers.websockets.WebSocketRef.AsyncWebSocketRefReader
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.mockito.Mockito.when
-import org.scalatest.{FreeSpec, OneInstancePerTest}
+import org.scalatest.{Assertion, AsyncFreeSpec, OneInstancePerTest}
 import org.scalatest.mockito.MockitoSugar._
 import rx.lang.scala.Observable
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
+
+import scalaz.syntax.functor.ToFunctorOps
 
 import common.{AuxSpecs, MockitoSyrup}
 import common.io.MemoryRoot
-import common.rich.RichFuture._
 
-class IndexFormatterTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
+class IndexFormatterTest extends AsyncFreeSpec with AuxSpecs with OneInstancePerTest {
   private val indexer = mock[Indexer]
   private val $ = new IndexFormatter(indexer)
 
@@ -27,10 +28,9 @@ class IndexFormatterTest extends FreeSpec with AuxSpecs with OneInstancePerTest 
 
   private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
 
-  private def verifyCacheUpdates(r: AsyncWebSocketRefReader): Unit = {
+  private def verifyCacheUpdates(r: AsyncWebSocketRefReader): Future[Assertion] = {
     val websocket = mock[WebSocketRef]
-    r.run(websocket).get
-    MockitoSyrup.captureAll(websocket)[String](_ broadcast _) shouldReturn Vector(
+    r.run(websocket) >| MockitoSyrup.captureAll(websocket)[String](_ broadcast _) shouldReturn Vector(
       """{"finished":1,"total":2,"currentDir":"foo"}""",
       """{"finished":2,"total":2,"currentDir":"bar"}""",
       "Finished",

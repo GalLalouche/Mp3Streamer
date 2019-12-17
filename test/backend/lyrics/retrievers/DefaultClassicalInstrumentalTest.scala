@@ -1,16 +1,12 @@
 package backend.lyrics.retrievers
 
-import backend.module.TestModuleConfiguration
-import common.io.{MemoryDir, MemoryRoot}
-import common.rich.RichFuture._
 import models.{FakeModelFactory, Song}
-import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.AsyncFreeSpec
 
-import scala.concurrent.ExecutionContext
+import common.io.{MemoryDir, MemoryRoot}
 
-class DefaultClassicalInstrumentalTest extends LyricsSpec {
+class DefaultClassicalInstrumentalTest extends AsyncFreeSpec with LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
-  private implicit val ec: ExecutionContext = TestModuleConfiguration().injector.instance[ExecutionContext]
   private val $ = DefaultClassicalInstrumental
   private def songWithPath(path: String): Song = {
     val split = path.split("/")
@@ -23,12 +19,12 @@ class DefaultClassicalInstrumentalTest extends LyricsSpec {
     """D:/Media/Music/Classical/Glenn Gould/1955 Goldberg Variations/01 - Aria.flac""")
 
   "Classical file" in {
-    $(classicalSong).get should be a retrievedInstrumental
+    $(classicalSong).map(_ should be a retrievedInstrumental)
   }
 
   "Non classical file" in {
     val nonClassicalSong = songWithPath(
       """D:/Media/Music/Rock/Pop/My Lame Band/01 - My crappy pop song.mp3""")
-    $(nonClassicalSong).get shouldReturn RetrievedLyricsResult.NoLyrics
+    $(nonClassicalSong).map(_ shouldReturn RetrievedLyricsResult.NoLyrics)
   }
 }

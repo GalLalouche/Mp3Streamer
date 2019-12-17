@@ -2,27 +2,25 @@ package backend.lyrics.retrievers
 
 import backend.StorageSetup
 import backend.module.TestModuleConfiguration
-import common.AuxSpecs
-import common.rich.RichFuture._
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.FreeSpec
+import org.scalatest.AsyncFreeSpec
 
-import scala.concurrent.ExecutionContext
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.bind.ToBindOps
 
-class InstrumentalArtistStorageTest extends FreeSpec with AuxSpecs with StorageSetup {
+import common.AuxSpecs
+
+class InstrumentalArtistStorageTest extends AsyncFreeSpec with AuxSpecs with StorageSetup {
   override protected val config = TestModuleConfiguration()
-  private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   override protected def storage = config.injector.instance[InstrumentalArtistStorage]
   private val artistName = "foo"
 
   "store and load" in {
-    storage.load(artistName).get shouldReturn None
-    storage.store(artistName).get
-    storage.load(artistName).get shouldReturn Some(())
+    storage.load(artistName).map(_ shouldReturn None) >>
+        storage.store(artistName) >>
+        storage.load(artistName).map(_ shouldReturn Some())
   }
   "delete" in {
-    storage.store(artistName).get
-    storage.delete(artistName).get
-    storage.load(artistName).get shouldReturn None
+    storage.store(artistName) >> storage.delete(artistName) >> storage.load(artistName).map(_ shouldBe 'empty)
   }
 }

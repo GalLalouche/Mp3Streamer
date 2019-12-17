@@ -6,75 +6,63 @@ import backend.Url
 import controllers.UrlPathUtils
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpec}
-import org.scalatest.mockito.MockitoSugar
+import org.scalatest.{AsyncFreeSpec, BeforeAndAfterAll, BeforeAndAfterEach}
+import org.scalatest.concurrent.ScalaFutures
 import play.api.http.Status
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
 
 import common.{AuxSpecs, MutablePartialFunction}
 import common.rich.path.RichFile._
-import common.rich.RichFuture._
+import common.storage.Storage
 
-class LyricsFormatterTest extends FreeSpec with MockitoSugar
-    with BeforeAndAfterAll with BeforeAndAfter
-    with AuxSpecs {
+class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterAll with BeforeAndAfterEach with AuxSpecs
+    with ScalaFutures {
   // Modified by some tests
   private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]
   private val injector = TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).injector
   private val $ = injector.instance[LyricsFormatter]
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
   private val song: Song = IOSong.read(getResourceFile("/models/song.mp3"))
   private val encodedSong: String = injector.instance[UrlPathUtils] encodePath song
 
-  override protected def beforeAll(): Unit = {
-    (injector.instance[LyricsStorage].utils.createTable() >>
-        injector.instance[InstrumentalArtistStorage].utils.createTable()).get
-  }
+  private def setup(s: Storage[_, _]) = s.utils.clearOrCreateTable()
+  private def setup(): Future[_] =
+    setup(injector.instance[InstrumentalArtistStorage]) >> setup(injector.instance[LyricsStorage])
 
-  before {
-    urlToResponseMapper.clear()
-  }
-
-  after {
-    (injector.instance[LyricsStorage].utils.clearTable() >>
-        injector.instance[InstrumentalArtistStorage].utils.clearTable()).get
-  }
-
-  private def getLyricsForSong: String = $.get(encodedSong).get
+  private def getLyricsForSong: Future[String] = $.get(encodedSong)
 
   "get" in {
-    injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar")).get
-    $.get(encodedSong).get shouldReturn "bar<br><br>Source: foo"
+    setup() >>
+        injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar")) >>
+        $.get(encodedSong).map(_ shouldReturn "bar<br><br>Source: foo")
   }
 
   "push" in {
-    injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar")).get
     urlToResponseMapper += {
       case Url("http://lyrics.wikia.com/wiki/Foobar") =>
         FakeWSResponse(bytes = getResourceFile("/backend/lyrics/retrievers/lyrics_wikia_lyrics.html").bytes)
     }
-    $.push(encodedSong, Url("http://lyrics.wikia.com/wiki/Foobar"))
-        .get should startWith("Daddy's flown across the ocean")
-    getLyricsForSong should startWith("Daddy's flown across the ocean")
+    setup() >>
+        injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar")) >>
+        $.push(encodedSong, Url("http://lyrics.wikia.com/wiki/Foobar"))
+            .map(_ should startWith("Daddy's flown across the ocean")) >>
+        getLyricsForSong.map(_ should startWith("Daddy's flown across the ocean"))
   }
 
   "setInstrumentalSong" in {
-    val InstrumentalSongHtml =
-      "<img src='assets/images/TrebleClef.png' width='30' height='68' /><b>Instrumental</b><br><br>Source: Manual override"
-    $.setInstrumentalSong(encodedSong).get shouldReturn InstrumentalSongHtml
-    getLyricsForSong shouldReturn InstrumentalSongHtml
+    setup() >>
+        $.setInstrumentalSong(encodedSong).map(_ shouldReturn Htmls.InstrumentalSongHtml) >>
+        getLyricsForSong.map(_ shouldReturn Htmls.InstrumentalSongHtml)
   }
 
   "setInstrumentalArtist" in {
     // Make all HTML retrievers fail
     urlToResponseMapper const FakeWSResponse(status = Status.NOT_FOUND)
-    val InstrumentalArtistHtml =
-      "<img src='assets/images/TrebleClef.png' width='30' height='68' /><b>Instrumental</b><br><br>Source: Default for artist"
-    $.setInstrumentalArtist(encodedSong).get shouldReturn InstrumentalArtistHtml
-    getLyricsForSong shouldReturn InstrumentalArtistHtml
+    setup() >>
+        $.setInstrumentalArtist(encodedSong).map(_ shouldReturn Htmls.InstrumentalArtistHtml) >>
+        getLyricsForSong.map(_ shouldReturn Htmls.InstrumentalArtistHtml)
   }
 }

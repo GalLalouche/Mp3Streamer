@@ -4,19 +4,15 @@ import java.time.{LocalDate, Month}
 
 import backend.external.extensions.{ExtendedLink, SearchExtension}
 import backend.Url
-import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist}
-import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.FreeSpec
+import org.scalatest.AsyncFreeSpec
 import play.api.libs.json.Json
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 import common.AuxSpecs
 
-class ExternalJsonifierTest extends FreeSpec with AuxSpecs {
-  private val injector = TestModuleConfiguration().injector
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
   private val $ = new ExternalJsonifier()
   private val time = LocalDate.of(1980, Month.OCTOBER, 17).atStartOfDay
 

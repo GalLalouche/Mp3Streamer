@@ -1,8 +1,9 @@
 package backend.lyrics.retrievers
 
 import models.FakeModelFactory
+import org.scalatest.FreeSpec
 
-class AzLyricsRetrieverTest extends LyricsSpec {
+class AzLyricsRetrieverTest extends FreeSpec with LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
 
   "getUrl" in {

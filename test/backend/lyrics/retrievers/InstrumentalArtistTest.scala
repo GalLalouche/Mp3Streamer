@@ -3,29 +3,29 @@ package backend.lyrics.retrievers
 import backend.StorageSetup
 import backend.lyrics.Instrumental
 import backend.module.TestModuleConfiguration
-import common.AuxSpecs
-import common.rich.RichFuture._
 import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.FreeSpec
+import org.scalatest.AsyncFreeSpec
 
-import scala.concurrent.ExecutionContext
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.bind.ToBindOps
 
-class InstrumentalArtistTest extends FreeSpec with AuxSpecs with StorageSetup {
+import common.AuxSpecs
+
+class InstrumentalArtistTest extends AsyncFreeSpec with AuxSpecs with StorageSetup {
   override protected val config = TestModuleConfiguration()
-  private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   override protected lazy val storage = config.injector.instance[InstrumentalArtistStorage]
   private val factory = new FakeModelFactory
   private val $ = config.injector.instance[InstrumentalArtist]
 
   "exists" in {
     val song = factory.song(artistName = "foo")
-    storage.store("foo").get
-    $(song).get shouldReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("Default for artist"))
+    storage.store("foo").>>($(song))
+        .map(_ shouldReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("Default for artist")))
   }
   "doesn't exist" in {
     val song = factory.song(artistName = "foo")
-    storage.store("bar").get
-    $(song).get shouldReturn RetrievedLyricsResult.NoLyrics
+    storage.store("bar").>>($(song))
+        .map(_ shouldReturn RetrievedLyricsResult.NoLyrics)
   }
 }

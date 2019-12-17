@@ -5,49 +5,46 @@ import java.time.Clock
 import backend.RichTime._
 import backend.module.TestModuleConfiguration
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.{FreeSpec, OneInstancePerTest}
-
-import scala.concurrent.ExecutionContext
+import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
+import org.scalatest.OptionValues._
 
 import scalaz.std.scalaFuture.futureInstance
-import scalaz.syntax.bind.ToBindOps
+import scalaz.syntax.bind._
 
 import common.{AuxSpecs, FakeClock}
-import common.rich.RichFuture._
 
-class FreshnessStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
+class FreshnessStorageTest extends AsyncFreeSpec with AuxSpecs with OneInstancePerTest {
   private val c = TestModuleConfiguration()
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val clock: FakeClock = c.injector.instance[FakeClock]
 
   private val $ = new FreshnessStorage[Int, Int](new MemoryBackedStorage, c.injector.instance[Clock])
 
   "store and load" - {
     "Can load stored data" in {
-      $.store(1, 2).>>($ load 1).get.get shouldReturn 2
+      $.store(1, 2) >> $.load(1).map(_.value shouldReturn 2)
     }
     "Returns none if no data" in {
-      $.load(1).get shouldReturn None
+      $.load(1).map(_ shouldReturn None)
     }
   }
   "freshness" - {
     "no existing data" in {
-      $.freshness(1).get shouldReturn None
+      $.freshness(1).map(_ shouldReturn None)
     }
     "existing data but no timestamp" in {
-      $.storeWithoutTimestamp(1, 2).>>($ freshness 1).get.get shouldReturn AlwaysFresh
+      $.storeWithoutTimestamp(1, 2) >> $.freshness(1).map(_.value shouldReturn AlwaysFresh)
     }
     "existing data with timestamp" in {
-      $.store(1, 2).>>($ freshness 1).get.get.localDateTime.get shouldReturn clock.instant().toLocalDateTime
+      $.store(1, 2) >>
+          $.freshness(1).map(_.value.localDateTime.value shouldReturn clock.instant().toLocalDateTime)
     }
   }
   "mapStore updates timestamp" in {
-    $.store(1, 2).get
-    clock advance 1
-    $.freshness(1).get.get.localDateTime.get shouldReturn 0.toLocalDateTime
-
-    $.mapStore(1, _ * 2, ???).get.get shouldReturn 2
-    $.load(1).get.get shouldReturn 4
-    $.freshness(1).get.get.localDateTime.get shouldReturn 1.toLocalDateTime
+    $.store(1, 2) >|
+        clock.advance(1) >>
+        $.freshness(1).map(_.value.localDateTime.value shouldReturn 0.toLocalDateTime) >>
+        $.mapStore(1, _ * 2, ???).map(_.value shouldReturn 2) >>
+        $.load(1).map(_.value shouldReturn 4) >>
+        $.freshness(1).map(_.value.localDateTime.value shouldReturn 1.toLocalDateTime)
   }
 }

@@ -1,17 +1,14 @@
 package backend.external.expansions
 
-import backend.Url
+import backend.{FutureOption, Url}
 import backend.external.{BaseLink, DocumentSpecs}
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist}
 import com.google.inject.{Guice, Module}
-import common.rich.RichFuture._
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.FreeSpec
+import org.scalatest.AsyncFreeSpec
 
-import scala.concurrent.ExecutionContext
-
-abstract class SameHostExpanderSpec extends FreeSpec with DocumentSpecs {
+abstract class SameHostExpanderSpec extends AsyncFreeSpec with DocumentSpecs {
   protected def module: Module
 
   protected def artistUrl = "Url"
@@ -20,7 +17,7 @@ abstract class SameHostExpanderSpec extends FreeSpec with DocumentSpecs {
       documentName: String,
       album: Album,
       additionalMappings: (String, String)*,
-  ): Option[BaseLink[Album]] = {
+  ): FutureOption[BaseLink[Album]] = {
     val urlToBytesMapper: PartialFunction[Url, Array[Byte]] = {
       case Url(address) if address == expandingUrl => getBytes(documentName)
     }
@@ -30,8 +27,7 @@ abstract class SameHostExpanderSpec extends FreeSpec with DocumentSpecs {
       TestModuleConfiguration(_urlToBytesMapper = urlToBytesMapper.orElse {
         case Url(address) => getBytes(additionalMappings.toMap.apply(address))
       }).module)
-    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val $ = injector.instance[SameHostExpander]
-    $.apply(BaseLink[Artist](Url(artistUrl), $.host), album).get
+    $.apply(BaseLink[Artist](Url(artistUrl), $.host), album)
   }
 }

@@ -3,53 +3,53 @@ package backend.storage
 import java.time.{Clock, Duration}
 
 import backend.module.TestModuleConfiguration
-import common.{AuxSpecs, FakeClock}
-import common.rich.RichFuture._
-import common.rich.RichT._
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.{FreeSpec, OneInstancePerTest}
+import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
+import org.scalatest.OptionValues._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class RefreshableStorageTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
+import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.bind._
+
+import common.{AuxSpecs, FakeClock}
+import common.rich.RichT._
+
+class RefreshableStorageTest extends AsyncFreeSpec with AuxSpecs with OneInstancePerTest {
   private val c = new TestModuleConfiguration
-  private implicit val ec: ExecutionContext = c.injector.instance[ExecutionContext]
   private val clock = c.injector.instance[FakeClock]
   private var i = 0
   private val freshnessStorage = new FreshnessStorage[String, String](
     new MemoryBackedStorage, c.injector.instance[Clock])
-  private val $ =
-    new RefreshableStorage[String, String](
-      freshnessStorage,
-      e => {
-        i += 1
-        Future successful (e.reverse + i)
-      },
-      Duration ofMillis 50,
-      c.injector.instance[Clock]
-    )
+  private val $ = new RefreshableStorage[String, String](
+    freshnessStorage,
+    e => {
+      i += 1
+      Future successful (e.reverse + i)
+    },
+    Duration ofMillis 50,
+    c.injector.instance[Clock]
+  )
   "apply" - {
     "no previous value should insert new value in" in {
-      freshnessStorage.load("foobar").get shouldReturn None
-      $("foobar").get shouldReturn "raboof1"
-      freshnessStorage.load("foobar").get.get shouldReturn "raboof1"
+      freshnessStorage.load("foobar").map(_ shouldReturn None) >>
+          $("foobar").map(_ shouldReturn "raboof1") >>
+          freshnessStorage.load("foobar").map(_.value shouldReturn "raboof1")
     }
     "existing value is fresh should return existing value" in {
-      freshnessStorage.store("foobar", "bazqux")
-      $("foobar").get shouldReturn "bazqux"
-      freshnessStorage.load("foobar").get.get shouldReturn "bazqux"
+      freshnessStorage.store("foobar", "bazqux") >>
+          $("foobar").map(_ shouldReturn "bazqux") >>
+          freshnessStorage.load("foobar").map(_.value shouldReturn "bazqux")
     }
     "existing value is stale should refresh" in {
-      freshnessStorage.store("foobar", "bazqux")
-      clock advance 100
-      $("foobar").get shouldReturn "raboof1"
-      freshnessStorage.load("foobar").get.get shouldReturn "raboof1"
-      $("foobar").get shouldReturn "raboof1"
+      freshnessStorage.store("foobar", "bazqux") >|
+          clock.advance(100) >>
+          $("foobar").map(_ shouldReturn "raboof1") >>
+          freshnessStorage.load("foobar").map(_.value shouldReturn "raboof1") >>
+          $("foobar").map(_ shouldReturn "raboof1")
     }
     "existing value has no datetime" in {
-      freshnessStorage.storeWithoutTimestamp("foobar", "bazqux")
-
-      $("foobar").get shouldReturn "bazqux"
+      freshnessStorage.storeWithoutTimestamp("foobar", "bazqux") >> $("foobar").map(_ shouldReturn "bazqux")
     }
     "reuse existing value on failure" - {
       "previous value exists" in {
@@ -58,12 +58,14 @@ class RefreshableStorageTest extends FreeSpec with AuxSpecs with OneInstancePerT
           Duration ofMillis 50,
           c.injector.instance[Clock],
         )
-        freshnessStorage.store("foo", "bar")
-        val dataFreshness = freshnessStorage.freshness("foo").get
-        clock advance 100
-        assert($.needsRefresh("foo").get)
-        $.apply("foo").get shouldReturn "bar"
-        freshnessStorage.freshness("foo").get shouldReturn dataFreshness
+        for {
+          _ <- freshnessStorage.store("foo", "bar")
+          dataFreshness <- freshnessStorage.freshness("foo")
+          _ = clock advance 100
+          a <- $.needsRefresh("foo").map(_ shouldReturn true) >>
+              $.apply("foo").map(_ shouldReturn "bar") >>
+              freshnessStorage.freshness("foo").map(_ shouldReturn dataFreshness)
+        } yield a
       }
       "previous does not exist, returns the original failure" in {
         val exception = new RuntimeException("failure")
@@ -72,13 +74,16 @@ class RefreshableStorageTest extends FreeSpec with AuxSpecs with OneInstancePerT
           Duration ofMillis 50,
           c.injector.instance[Clock],
         )
-        $.apply("foo").getFailure shouldReturn exception
+        $("foo").checkFailure(_ shouldReturn exception)
       }
     }
   }
   "withAge" in {
-    freshnessStorage.store("foobar", "bazqux")
-    val timestamp = freshnessStorage.freshness("foobar").get.get.localDateTime.get // Yeah :|
-    $.withAge("foobar").get shouldReturn ("bazqux" -> DatedFreshness(timestamp))
+    for {
+      _ <- freshnessStorage.store("foobar", "bazqux")
+      timestamp <- freshnessStorage.freshness("foobar")
+      ld = timestamp.value.localDateTime.value
+      age <- $.withAge("foobar")
+    } yield age shouldReturn ("bazqux" -> DatedFreshness(ld))
   }
 }

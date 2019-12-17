@@ -4,17 +4,16 @@ import backend.Url
 import backend.logging.Logger
 import backend.lyrics.Instrumental
 import backend.module.TestModuleConfiguration
-import common.AuxSpecs
-import common.rich.RichFuture._
 import models.{FakeModelFactory, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.{FreeSpec, OneInstancePerTest}
+import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
+import common.AuxSpecs
+
+class CompositeHtmlRetrieverTest extends AsyncFreeSpec with AuxSpecs with OneInstancePerTest {
   private val injector = TestModuleConfiguration().injector
-  private implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
   private class FakeLyricsRetriever(
       songsToFind: Song, urlToMatch: Url, instrumentalText: String) extends HtmlRetriever {
     var numberOfTimesInvoked = 0 // Mockito spy is throwing NPE for some reason
@@ -44,7 +43,7 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
   private val r1 = new FakeLyricsRetriever(song1, Url("foo"), "foo")
   private val r2 = new FakeLyricsRetriever(song2, Url("bar"), "bar")
   private val r3 = new FakeLyricsRetriever(song3, Url("bazz"), "quxx")
-  private val $ = new CompositeHtmlRetriever(ec, injector.instance[Logger], Vector(r1, r2, r3))
+  private val $ = new CompositeHtmlRetriever(executionContext, injector.instance[Logger], Vector(r1, r2, r3))
 
   "doesUrlMatch" - {
     "when one of the URLs match" in {
@@ -56,20 +55,20 @@ class CompositeHtmlRetrieverTest extends FreeSpec with AuxSpecs with OneInstance
   }
   "find" - {
     "when one of the URLs match, shouldn't check all the subsequent URLs" in {
-      $(song2).get shouldReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar"))
+      $(song2).map(_ shouldReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar")))
       r3.numberOfTimesInvoked shouldReturn 0
     }
     "when none of the URLs match" in {
-      $(unfoundSong).get shouldReturn RetrievedLyricsResult.NoLyrics
+      $(unfoundSong).map(_ shouldReturn RetrievedLyricsResult.NoLyrics)
     }
   }
   "parse" - {
     "when one of the URLs match it doesn't try to the others" in {
-      $.parse(Url("bar"), song2).get shouldReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar"))
+      $.parse(Url("bar"), song2).map(_ shouldReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar")))
       r3.numberOfTimesInvoked shouldReturn 0
     }
     "when none of the URLs match" in {
-      $(unfoundSong).get shouldReturn RetrievedLyricsResult.NoLyrics
+      $(unfoundSong).map(_ shouldReturn RetrievedLyricsResult.NoLyrics)
     }
   }
 }
