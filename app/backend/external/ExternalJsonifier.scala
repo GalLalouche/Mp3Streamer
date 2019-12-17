@@ -19,28 +19,25 @@ import common.rich.collections.RichTraversableOnce._
 
 private class ExternalJsonifier @Inject()(implicit ec: ExecutionContext) {
   private type KVPair = (String, JsValueWrapper)
-  private def canonizeHost(e: ExtendedLink[_]): String = {
-    val isMissing = e.host.name.endsWith("?")
-    val canonized = e.host.canonical.name
-
-    if (e.isNew) canonized + "*"
-    else if (isMissing) canonized + "?"
-    else canonized
-  }
+  private def formatHost(e: ExtendedLink[_]): String = e.host.name + (e.mark match {
+    case LinkMark.None => ""
+    case LinkMark.New => "*"
+    case LinkMark.Missing => "?"
+  })
   private def toJson(extension: LinkExtension[_]): KVPair = extension.name -> extension.link.address
   private def toJson(link: ExtendedLink[_]): KVPair = link.host.name -> Json.obj(
     // This has to be canonized late, otherwise the "*" will be deleted.
-    "host" -> canonizeHost(link),
+    "host" -> formatHost(link),
     "main" -> link.link.address,
-    "extensions" -> Json.obj(link.extensions.map(toJson).toSeq: _*),
+    "extensions" -> Json.obj(link.extensions.map(toJson).toVector: _*),
   )
   private def toJson(linkses: Traversable[ExtendedLink[_]]): JsObject =
-    linkses.filterAndSortBy(_.host.canonical, Hosts)
-        // Filter non-new Wikidata, because there's we don't show them in the client.
-        .filter(e => e.host.canonical != Wikidata || e.isNew)
+    linkses.filterAndSortBy(_.host, Hosts)
+        // Filter non-new Wikidata, because they aren't shown in the client.
+        .filter(e => e.host != Wikidata || e.isNew)
         // Unmark new Wikipedia links, because MusicBrainz only uses Wikidata now.
         // Using mapIf messes up the link's type inference due to existential types.
-        .map(e => if (e.host.canonical == Wikipedia) e.unmark else e)
+        .map(e => if (e.host == Wikipedia && e.isNew) e.unmark else e)
         .map(toJson) |> Json.obj
   private def toJson(e: TimestampedExtendedLinks[_]): JsObject =
     toJson(e.links) + ("timestamp" -> JsString(e.timestamp |> DateStringPattern.format))

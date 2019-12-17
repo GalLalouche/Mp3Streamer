@@ -26,7 +26,8 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](
     ec: ExecutionContext,
     dbP: DbProvider,
     logger: Logger,
-) extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Freshness)](ec, dbP) with ExternalStorage[R] {
+) extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Freshness)](ec, dbP)
+    with ExternalStorage[R] {
   private case class InvalidEntry(entry: String) extends Exception
   private implicit val iec: ExecutionContext = ec
   import profile.api._
@@ -45,10 +46,11 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](
         MarkedLink[R](
           link = Url(split(2)),
           host = Host(name = split(0), url = Url(split(1))),
-          isNew = split(3).toBoolean)
+          mark = LinkMark.withName(split(3)),
+        )
       }
       override def stringify(e: MarkedLink[R]): String = {
-        val encodedLink = Vector(e.host.name, e.host.url.address, e.link.address, e.isNew)
+        val encodedLink = Vector(e.host.name, e.host.url.address, e.link.address, e.mark)
         encodedLink.mkString(if (encodedLink.toString.contains(";")) SplitCharBackup else SplitChar)
       }
     }

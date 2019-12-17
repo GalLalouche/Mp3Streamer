@@ -1,26 +1,13 @@
 package backend.external
 
-import java.util.regex.Pattern
-
 import backend.Url
-import com.google.common.annotations.VisibleForTesting
-
-import monocle.macros.Lenses
+import enumeratum.{Enum, EnumEntry}
 
 import common.rich.collections.RichTraversableOnce._
-import common.rich.primitives.RichString._
 
-// TODO make an Enum
-@Lenses
-case class Host(name: String, url: Url) {
-  import Host._
+sealed case class Host private(name: String, url: Url) extends EnumEntry
 
-  // TODO Host is being abused by representing two different things. Extract this behavior to a class.
-  def canonical: Host = hostsByName.getOrElse(name.toLowerCase.removeAll(Suffixes), defaultFor(url))
-}
-
-object Host {
-  private val Suffixes = Pattern compile "[*?]$"
+object Host extends Enum[Host] {
   object AllMusic extends Host("AllMusic", Url("www.allmusic.com"))
   object Facebook extends Host("Facebook", Url("www.facebook.com"))
   object LastFm extends Host("LastFm", Url("www.last.fm"))
@@ -29,30 +16,9 @@ object Host {
   object RateYourMusic extends Host("RateYourMusic", Url("rateyourmusic.com"))
   object Wikipedia extends Host("Wikipedia", Url("en.wikipedia.org"))
   object Wikidata extends Host("Wikidata", Url("www.wikidata.org"))
-  val hosts = Vector(
-    AllMusic,
-    Facebook,
-    LastFm,
-    MetalArchives,
-    MusicBrainz,
-    RateYourMusic,
-    Wikipedia,
-    Wikidata,
-  )
-  private val hostsByUrl = hosts.mapBy(_.url)
-  private val hostsByName = hosts.mapBy(_.name.toLowerCase)
+  override val values = findValues
 
-  def fromUrl(url: Url): Option[Host] = hostsByUrl get url.host
-  private val PrefixProtocol = Pattern compile "^https?://"
-  private val PrefixWWW = Pattern compile "^www\\."
-  @VisibleForTesting
-  private[external] def defaultFor(url: Url): Host = Host(
-    name = url.address
-        .toLowerCase
-        .removeAll(PrefixProtocol)
-        .removeAll(PrefixWWW)
-        .takeWhile(_ != '.'),
-    url = url.host,
-  )
+  def withUrl(url: Url): Option[Host] = hostsByUrl.get(url.host)
+  private val hostsByUrl = values.mapBy(_.url)
 }
 

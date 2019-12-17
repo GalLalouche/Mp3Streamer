@@ -3,19 +3,19 @@ package backend.external.extensions
 import java.time.LocalDateTime
 
 import backend.Url
-import backend.module.TestModuleConfiguration
 import backend.external._
+import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, Reconcilable}
-import common.AuxSpecs
-import common.rich.RichT._
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
+
+import common.AuxSpecs
+import common.rich.RichT._
 
 class CompositeExtenderTest extends FreeSpec with AuxSpecs {
   private val $ = TestModuleConfiguration().injector.instance[CompositeExtender]
 
-  private def toMarked[R <: Reconcilable](e: ExtendedLink[R]) =
-    MarkedLink[R](link = e.link, host = e.host, isNew = e.isNew)
+  private def toMarked[R <: Reconcilable](e: ExtendedLink[R]) = MarkedLink[R](e.link, e.host, e.mark)
 
   private def verify[R <: Reconcilable](source: TimestampedLinks[R],
       actual: TimestampedExtendedLinks[R], expected: Map[Host, Seq[LinkExtension[R]]]): Unit = {
@@ -33,7 +33,7 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
   "default adds all links" - {
     "artist" in {
       val artist = Artist("Foobar")
-      val links = Host.hosts.map(MarkedLink[Artist](Url("foo.bar"), _, false))
+      val links = Host.values.map(MarkedLink[Artist](Url("foo.bar"), _, LinkMark.None))
           .mapTo(TimestampedLinks(_, LocalDateTime.now))
       val result = $.apply(artist, links)
 
@@ -47,7 +47,7 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
     }
     "album" in {
       val album = Album("Foo", 2000, Artist("Bar"))
-      val links = Host.hosts.map(MarkedLink[Album](Url("foo.bar"), _, false))
+      val links = Host.values.map(MarkedLink[Album](Url("foo.bar"), _, LinkMark.None))
           .mapTo(TimestampedLinks(_, LocalDateTime.now))
       val result = $.apply(album, links)
 

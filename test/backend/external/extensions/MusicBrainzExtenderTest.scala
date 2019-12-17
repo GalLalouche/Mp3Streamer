@@ -1,20 +1,22 @@
 package backend.external.extensions
+
 import backend.Url
-import backend.external.{Host, MarkedLink}
+import backend.external.{Host, LinkMark, MarkedLink}
 import backend.recon.{Album, Artist}
-import common.AuxSpecs
 import org.scalatest.FreeSpec
+
+import common.AuxSpecs
 
 class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
   "Preseeded" - {
     "Artist" in {
       val artist = Artist("Foobar")
       val links = Seq(
-        MarkedLink[Artist](Url("music.brainz"), Host.MusicBrainz, false),
-        MarkedLink[Artist](Url("all.music"), Host.AllMusic, false),
-        MarkedLink[Artist](Url("face.book"), Host.Facebook, true),
-        MarkedLink[Artist](Url("wiki.pedia"), Host.Wikipedia, false),
-        MarkedLink[Artist](Url("last.fm"), Host.LastFm, true),
+        MarkedLink[Artist](Url("music.brainz"), Host.MusicBrainz, LinkMark.None),
+        MarkedLink[Artist](Url("all.music"), Host.AllMusic, LinkMark.None),
+        MarkedLink[Artist](Url("face.book"), Host.Facebook, LinkMark.New),
+        MarkedLink[Artist](Url("wiki.pedia"), Host.Wikipedia, LinkMark.None),
+        MarkedLink[Artist](Url("last.fm"), Host.LastFm, LinkMark.New),
       )
 
       val result: Seq[LinkExtension[Artist]] = MusicBrainzArtistExtender.extend(artist, links)
@@ -29,9 +31,9 @@ class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
     "Album" in {
       val album = Album("Foo", 2000, Artist("Bar"))
       val links = Seq(
-        MarkedLink[Album](Url("music.brainz"), Host.MusicBrainz, false),
-        MarkedLink[Album](Url("all.music"), Host.AllMusic, true),
-        MarkedLink[Album](Url("wiki.pedia"), Host.Wikipedia, true),
+        MarkedLink[Album](Url("music.brainz"), Host.MusicBrainz, LinkMark.None),
+        MarkedLink[Album](Url("all.music"), Host.AllMusic, LinkMark.New),
+        MarkedLink[Album](Url("wiki.pedia"), Host.Wikipedia, LinkMark.New),
       )
 
       val result = MusicBrainzAlbumExtender.extend(album, links)
