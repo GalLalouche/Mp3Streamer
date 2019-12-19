@@ -10,16 +10,11 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.AsyncFreeSpec
 import org.scalatest.OptionValues._
 
-import scala.concurrent.ExecutionContext
-
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
 
-import common.AuxSpecs
-
-class AlbumExternalStorageTest extends AsyncFreeSpec with AuxSpecs with StorageSetup {
+class AlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
   override protected val config: TestModuleConfiguration = new TestModuleConfiguration
-  private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   override protected val storage = config.injector.instance[AlbumExternalStorage]
 
   private val album: Album = Album("the spam album", 2000, Artist("foo and the bar band"))

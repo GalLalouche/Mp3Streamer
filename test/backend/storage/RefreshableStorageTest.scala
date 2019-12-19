@@ -12,10 +12,10 @@ import scala.concurrent.Future
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind._
 
-import common.{AuxSpecs, FakeClock}
+import common.{AsyncAuxSpecs, FakeClock}
 import common.rich.RichT._
 
-class RefreshableStorageTest extends AsyncFreeSpec with AuxSpecs with OneInstancePerTest {
+class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
   private val c = new TestModuleConfiguration
   private val clock = c.injector.instance[FakeClock]
   private var i = 0

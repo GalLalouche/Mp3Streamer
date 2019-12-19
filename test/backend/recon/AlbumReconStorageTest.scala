@@ -4,17 +4,14 @@ import backend.StorageSetup
 import backend.module.TestModuleConfiguration
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.{AsyncFreeSpec, Matchers}
+import org.scalatest.AsyncFreeSpec
 
 import scala.concurrent.ExecutionContext
 
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOpsUnapply
 
-import common.AuxSpecs
-
-class AlbumReconStorageTest extends AsyncFreeSpec with AuxSpecs
-    with Matchers with StorageSetup {
+class AlbumReconStorageTest extends AsyncFreeSpec with StorageSetup {
   override protected val config = new TestModuleConfiguration
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
   override protected def storage = config.injector.instance[AlbumReconStorage]

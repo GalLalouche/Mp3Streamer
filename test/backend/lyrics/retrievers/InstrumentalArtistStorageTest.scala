@@ -8,9 +8,7 @@ import org.scalatest.AsyncFreeSpec
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
 
-import common.AuxSpecs
-
-class InstrumentalArtistStorageTest extends AsyncFreeSpec with AuxSpecs with StorageSetup {
+class InstrumentalArtistStorageTest extends AsyncFreeSpec with StorageSetup {
   override protected val config = TestModuleConfiguration()
   override protected def storage = config.injector.instance[InstrumentalArtistStorage]
   private val artistName = "foo"
