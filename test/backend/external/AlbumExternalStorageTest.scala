@@ -49,9 +49,9 @@ class AlbumExternalStorageTest extends AsyncFreeSpec with AuxSpecs with StorageS
     val value1 = Vector(link1) -> AlwaysFresh
     val album2 = album.copy(title = "sophomore effort")
     val value2 = Vector(link2) -> DatedFreshness(LocalDateTime.now)
-    val expected = Set((album.normalize, value1._1, value1._2), (album2.normalize, value2._1, value2._2))
+    val expected = Vector((album.normalize, value1._1, value1._2), (album2.normalize, value2._1, value2._2))
     storage.store(album, value1) >> storage.store(album2, value2) >>
-        storage.deleteAllLinks(album.artist).map(_ shouldSetEqual expected) >>
+        storage.deleteAllLinks(album.artist).map(_ shouldMultiSetEqual expected) >>
         storage.load(album).map(_ shouldReturn None) >>
         storage.load(album2).map(_ shouldReturn None)
   }

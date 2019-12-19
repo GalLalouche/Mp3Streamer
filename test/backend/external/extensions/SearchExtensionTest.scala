@@ -16,10 +16,10 @@ class SearchExtensionTest extends FreeSpec with AuxSpecs {
     $.mark shouldReturn LinkMark.Missing
   }
   "extend missing" in {
-    val hosts = Seq(Host.Wikipedia, Host.AllMusic)
+    val hosts = Vector(Host.Wikipedia, Host.AllMusic)
     val $ = SearchExtension.extendMissing(
-      hosts, Artist("foo bar"))(Seq(ExtendedLink[Artist](Url("???"), Host.Wikipedia, LinkMark.None, Nil)))
-    $.map(_.host).toSet shouldSetEqual hosts.toSet
+      hosts, Artist("foo bar"))(Vector(ExtendedLink[Artist](Url("???"), Host.Wikipedia, LinkMark.None, Nil)))
+    $.map(_.host) shouldMultiSetEqual hosts
     $.find(_.host == Host.AllMusic).get.extensions.single.link.address shouldReturn
         "http://www.google.com/search?q=foo bar AllMusic"
   }

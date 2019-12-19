@@ -27,7 +27,7 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
     val unexpectedExtendedHosts = (sourceHosts &~ extendedHosts).filter(expected.contains)
     unexpectedExtendedHosts shouldBe 'empty
 
-    actual.links.filter(_.extensions.nonEmpty).map(e => e.host -> e.extensions) shouldSetEqual expected
+    actual.links.filter(_.extensions.nonEmpty).map(e => e.host -> e.extensions) shouldMultiSetEqual expected
   }
 
   "default adds all links" - {
@@ -38,9 +38,9 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
       val result = $.apply(artist, links)
 
       val expected: Map[Host, Seq[LinkExtension[Artist]]] = Map(
-        Host.MusicBrainz -> Seq(LinkExtension("edit", Url("foo.bar/edit")), LinkExtension("Google", Url("http://www.google.com/search?q=foobar MusicBrainz"))),
-        Host.AllMusic -> Seq(LinkExtension("discography", Url("foo.bar/discography"))),
-        Host.LastFm -> Seq(LinkExtension("similar", Url("foo.bar/+similar"))),
+        Host.MusicBrainz -> Vector(LinkExtension("edit", Url("foo.bar/edit")), LinkExtension("Google", Url("http://www.google.com/search?q=foobar MusicBrainz"))),
+        Host.AllMusic -> Vector(LinkExtension("discography", Url("foo.bar/discography"))),
+        Host.LastFm -> Vector(LinkExtension("similar", Url("foo.bar/+similar"))),
       )
 
       verify(links, result, expected)
@@ -52,8 +52,8 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
       val result = $.apply(album, links)
 
       val expected: Map[Host, Seq[LinkExtension[Album]]] = Map(
-        Host.MusicBrainz -> Seq(LinkExtension("edit", Url("foo.bar/edit"))),
-        Host.AllMusic -> Seq(LinkExtension("similar", Url("foo.bar/similar"))),
+        Host.MusicBrainz -> Vector(LinkExtension("edit", Url("foo.bar/edit"))),
+        Host.AllMusic -> Vector(LinkExtension("similar", Url("foo.bar/similar"))),
       )
 
       verify(links, result, expected)

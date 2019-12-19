@@ -16,7 +16,7 @@ class MbHtmlLinkExtractorTest extends AsyncFreeSpec with DocumentSpecs {
     val injector = withDocument("artist")
     // Instance with type aliases is bugged it seems
     val $ = injector.getInstance(new Key[ExternalLinkProvider[Artist]]() {})
-    val expected = Set(
+    val expected = Vector(
       BaseLink[Artist](Url("http://www.allmusic.com/artist/mn0002658855"), Host.AllMusic),
       BaseLink[Artist](Url("http://www.last.fm/music/Deafheaven"), Host.LastFm),
       BaseLink[Artist](Url("https://rateyourmusic.com/artist/deafheaven"), Host("RateYourMusic", Url("rateyourmusic.com"))),
@@ -34,13 +34,13 @@ class MbHtmlLinkExtractorTest extends AsyncFreeSpec with DocumentSpecs {
       //BaseLink[Artist](Url("https://twitter.com/deafheavenband"), Host("twitter", Url("twitter.com"))),
     )
 
-    $(ReconID("foobar")).map(_ shouldSetEqual expected)
+    $(ReconID("foobar")).map(_ shouldMultiSetEqual expected)
   }
 
   "parse album links" in {
     val injector = withDocument("album")
     val $ = injector.getInstance(new Key[ExternalLinkProvider[Album]]() {})
-    val expected = Set(
+    val expected = Vector(
       BaseLink[Album](Url("https://rateyourmusic.com/release/album/deafheaven/sunbather/"), Host("RateYourMusic", Url("rateyourmusic.com"))),
       BaseLink[Album](Url("https://www.wikidata.org/wiki/Q15717528"), Host.Wikidata),
       BaseLink[Album](Url("https://en.wikipedia.org/wiki/Sunbather_(album)"), Host.Wikipedia),
@@ -49,6 +49,6 @@ class MbHtmlLinkExtractorTest extends AsyncFreeSpec with DocumentSpecs {
       //BaseLink[Album](Url("http://www.discogs.com/master/559132"), Host("discogs", Url("www.discogs.com"))),
     )
 
-    $(ReconID("foobar")).map(_ shouldSetEqual expected)
+    $(ReconID("foobar")).map(_ shouldMultiSetEqual expected)
   }
 }
