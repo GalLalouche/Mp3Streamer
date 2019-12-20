@@ -17,8 +17,8 @@ object StringFixer extends (String => String) {
     "from", "get", "got", "gotten", "had", "has", "have", "her", "his", "in", "into", "is", "isn't", "it",
     "it's", "its", "may", "me", "mine", "my", "not", "of", "on", "or", "our", "ours", "ov", "shall", "should",
     "so", "than", "that", "the", "their", "theirs", "them", "then", "there", "these", "this", "those",
-    "through", "to", "too", "up", "upon", "was", "wasn't", "were", "weren't", "will", "with", "without",
-    "won't", "would", "wouldn't", "your")
+    "through", "to", "too", "up", "upon", "van", "von", "was", "wasn't", "were", "weren't", "will", "with",
+    "without", "won't", "would", "wouldn't", "your")
   private val lowerCaseSet = lowerCaseWords.toSet
 
   private def pascalCaseWord(w: String): String = w.toLowerCase.capitalize
