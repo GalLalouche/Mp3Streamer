@@ -3,10 +3,12 @@ package mains.cover
 import java.net.URLEncoder
 
 import backend.Url
+import backend.logging.Logger
 import backend.module.StandaloneModule
 import com.google.inject.Guice
 import javax.inject.Inject
 import mains.cover.DownloadCover._
+import mains.cover.image.ImageFinder
 import models.{AlbumFactory, MusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions._
 
@@ -16,6 +18,8 @@ import scala.sys.process.Process
 import common.io.{IODirectory, IOFile}
 import common.rich.path.{Directory, RichFileUtils, TempDirectory}
 import common.rich.path.RichFile.richFile
+import common.rich.primitives.RichString._
+import common.rich.primitives.RichTry._
 
 private[mains] class DownloadCover @Inject()(
     ec: ExecutionContext,
@@ -23,6 +27,7 @@ private[mains] class DownloadCover @Inject()(
     albumFactory: AlbumFactory,
     imageFinder: ImageFinder,
     imageDownloader: ImageDownloader,
+    logger: Logger,
 ) {
   import albumFactory._
 
@@ -42,14 +47,17 @@ private[mains] class DownloadCover @Inject()(
       s"https://www.google.com/search?tbm=isch&q=$query&tbs=iar:s"
     }
     for {
-      urls <- imageFinder find Url(searchUrl)
+      urls <- imageFinder.find(Url(searchUrl)).map(_.getOrElseF {e =>
+        logger.error("Could not fetch images from google", e)
+        Nil
+      })
       locals <- LocalImageFetcher(IODirectory(albumDir))
       selection <- selectImage(locals ++ urls)
     } yield selection match {
       case Selected(img) => fileMover(img)
       case OpenBrowser =>
         // String interpolation is acting funky for some reason (will fail at runtime for unicode).
-        Process("""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe """" + searchUrl + "\"").!!
+        Process("""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe """ + searchUrl.quote).!!
         throw CoverException("User opened browser")
       case Cancelled => throw CoverException("User opted out")
     }
@@ -57,7 +65,7 @@ private[mains] class DownloadCover @Inject()(
 
   private def selectImage(imageURLs: Seq[ImageSource]): Future[ImageChoice] = ImageSelectionPanel(
     ImagesSupplier.withCache(
-      imageURLs.iterator.filter(i => i.isSquare && i.width >= 500).ensuring(_.hasNext),
+      imageURLs.iterator.filter(i => i.isSquare && i.width >= 500),
       imageDownloader.withOutput(IODirectory(DownloadCover.tempFolder)),
       cacheSize = 12,
     )

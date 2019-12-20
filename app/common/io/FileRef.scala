@@ -29,7 +29,7 @@ trait FileRef extends PathRef {
   def bytes: Array[Byte]
   def write(s: String): S#F
   def write(bs: Array[Byte]): S#F
-  def clear(): Unit = write("")
+  def clear(): FileRef = write("")
   def appendLine(line: String): S#F
   def readAll: String
   final def lines: Seq[String] = {

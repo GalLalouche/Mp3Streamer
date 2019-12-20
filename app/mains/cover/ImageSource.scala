@@ -1,9 +1,10 @@
 package mains.cover
 
 import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
 
 import backend.Url
+import javax.imageio.ImageIO
+
 import common.io.{FileRef, IOFile}
 
 private sealed trait ImageSource {

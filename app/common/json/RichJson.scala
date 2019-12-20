@@ -19,6 +19,10 @@ object RichJson {
     def ostr(s: String): Option[String] = $.\(s).asOpt[String]
     def array(s: String): JsArray = value(s).as[JsArray]
     def objects(s: String): Seq[JsObject] = value(s).as[JsArray].value.map(_.as[JsObject])
+
+    def arrayAt(i: Int): JsArray = $.\(i).as[JsArray]
+    def intAt(i: Int): Int = $.\(i).as[Int]
+    def stringAt(i: Int): String = $.\(i).as[String]
   }
 
   implicit class DynamicJsonObject(private val $: JsObject) extends AnyVal {
