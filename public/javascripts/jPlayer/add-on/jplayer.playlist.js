@@ -274,7 +274,7 @@
       listItem += "</div></li>";
 
       const result = $(listItem);
-      result.prepend($(`<img>`).attr("src", media.poster).addClass(posterClass))
+      result.prepend(img(media.poster).addClass(posterClass))
       getColorAsync(media.poster, rgb => {
         result.css('background-color', rgb2String(makeLighter(rgb, 0.1)))
       })

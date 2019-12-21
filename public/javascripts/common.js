@@ -30,8 +30,10 @@ function elem(elementName, config, innerText) {
     assert(typeof config === 'object' && typeof innerText === 'string')
     return $(`<${elementName}/>`, config).html(innerText)
   }
-  if (config && typeof config === 'object')
+
+  if (typeof config === 'object')
     return $(`<${elementName}/>`, config)
+
   return $(`<${elementName}>${config || ""}</${elementName}>`)
 }
 String.prototype.takeAfterLast = function(subs) {
@@ -40,11 +42,13 @@ String.prototype.takeAfterLast = function(subs) {
 Boolean.prototype.isFalse = function() {
   return !this.valueOf();
 }
+const not = b => b.isFalse()
 
 const elemFactory = e => config => elem(e, config)
 const button = (config, text) => elem("button", config, text)
 const span = config => elem("span", config)
 const div = elemFactory('div')
+const img = src => elem('img').attr("src", src)
 const br = elemFactory('br')
 const icon = name => `<i class="fa fa-${name}"/>`
 const table = elemFactory('table')

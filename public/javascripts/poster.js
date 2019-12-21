@@ -1,5 +1,4 @@
 $(() => {
-  colorThief = new ColorThief()
   const buttonAux = (id, text) => button({"id": id}, text)
 
   const poster = $("#jp_poster_0")
@@ -24,8 +23,7 @@ $(() => {
 
   poster[0].addEventListener('load', function() {
     getColorAsync(poster.attr("src"), rgb => {
-      document.body.style.backgroundColor = rgb2String(makeLighter(rgb, 0.3))
+      document.body.style.backgroundColor = rgb2String(makeLighter(rgb, 0.5))
     })
   })
 })
-let colorThief = {}
