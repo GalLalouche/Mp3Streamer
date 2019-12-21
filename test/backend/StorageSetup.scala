@@ -2,20 +2,20 @@ package backend
 
 import backend.module.TestModuleConfiguration
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.{AsyncTestSuite, OneInstancePerTest}
+import org.scalatest.AsyncTestSuite
 import org.scalatest.tags.Slow
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
+import common.{AuxSpecs, BeforeAndAfterEachAsync}
 import common.storage.Storage
-import common.AsyncAuxSpecs
 
 @Slow
-trait StorageSetup extends OneInstancePerTest with AsyncAuxSpecs {self: AsyncTestSuite =>
+trait StorageSetup extends AuxSpecs with BeforeAndAfterEachAsync {self: AsyncTestSuite =>
   protected def config: TestModuleConfiguration
   private implicit def ec: ExecutionContext = config.injector.instance[ExecutionContext]
   protected def storage: Storage[_, _]
   private lazy val utils = storage.utils
 
-  override def withFixture(test: NoArgAsyncTest) = runBefore(utils.createTable())(test)
+  override protected def beforeEach(): Future[_] = utils.clearOrCreateTable()
 }

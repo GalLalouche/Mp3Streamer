@@ -6,7 +6,7 @@ import backend.Url
 import controllers.UrlPathUtils
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.{AsyncFreeSpec, BeforeAndAfterAll, BeforeAndAfterEach}
+import org.scalatest.AsyncFreeSpec
 import play.api.http.Status
 
 import scala.concurrent.Future
@@ -14,12 +14,11 @@ import scala.concurrent.Future
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
 
-import common.{AsyncAuxSpecs, MutablePartialFunction}
+import common.{AuxSpecs, BeforeAndAfterEachAsync, MutablePartialFunction}
 import common.rich.path.RichFile._
 import common.storage.Storage
 
-class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterAll with BeforeAndAfterEach
-    with AsyncAuxSpecs {
+class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterEachAsync with AuxSpecs {
   // Modified by some tests
   private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]
   private val injector = TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).injector
@@ -28,9 +27,8 @@ class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterAll with Befo
   private val encodedSong: String = injector.instance[UrlPathUtils] encodePath song
 
   private def setup(s: Storage[_, _]) = s.utils.clearOrCreateTable()
-  override def withFixture(test: NoArgAsyncTest) = runBefore(
+  override def beforeEach(): Future[_] =
     setup(injector.instance[InstrumentalArtistStorage]) >> setup(injector.instance[LyricsStorage])
-  )(test)
 
   private def getLyricsForSong: Future[String] = $.get(encodedSong)
 
