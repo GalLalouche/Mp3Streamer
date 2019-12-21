@@ -22,11 +22,10 @@ $(() => {
   )
   parent.prepend(posterAndButtonsDiv)
 
-  getColorAsync(poster, rgb => {
-    const hsl = rgb2hsl(rgb)
-    // Make it a lot lighter (l is measured in %).
-    const lighter = hsl[2] + (100 - hsl[2]) / 1.2
-    document.body.style.backgroundColor = `hsl(${hsl[0]}, ${hsl[1]}%, ${lighter}%)`
+  poster[0].addEventListener('load', function() {
+    getColorAsync(poster.attr("src"), rgb => {
+      document.body.style.backgroundColor = rgb2String(makeLighter(rgb, 0.3))
+    })
   })
 })
 let colorThief = {}

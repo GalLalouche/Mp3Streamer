@@ -274,12 +274,9 @@
       listItem += "</div></li>";
 
       const result = $(listItem);
-      result.prepend($("<img>").attr("src", media.poster).addClass(posterClass))
-      getColorAsync(result.find("img." + posterClass), rgb => {
-        const hsl = rgb2hsl(rgb)
-        // Make it a lot lighter (l is measured in %).
-        const lighter = hsl[2] + (100 - hsl[2]) / 1.1
-        result.css('background-color', `hsl(${hsl[0]}, ${hsl[1]}%, ${lighter}%)`)
+      result.prepend($(`<img>`).attr("src", media.poster).addClass(posterClass))
+      getColorAsync(media.poster, rgb => {
+        result.css('background-color', rgb2String(makeLighter(rgb, 0.1)))
       })
       return result;
     },
