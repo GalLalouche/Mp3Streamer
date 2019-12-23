@@ -1,0 +1,26 @@
+<html>
+<title>My MP3 Site</title>
+<head>
+  <script type="text/javascript" src="/assets/javascripts/jquery.js"></script>
+  <script type="text/javascript" src="/assets/javascripts/common.js"></script>
+  <script type="text/javascript" src="/assets/javascripts/ws/common.js"></script>
+  <script type="text/javascript">
+    $(function() {
+      openConnection("refresh", function(msg, connection) {
+        try {
+          const json = JSON.parse(msg.data);
+          document.title = `${Math.floor(100 * json.finished / json.total)}%`
+          $("#status").text(msg.data);
+        } catch (err) {
+          document.title = msg.data
+          if (msg.data === "Finished")
+            connection.close()
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  Status: <p id="status"></p>
+</body>
+</html>

@@ -15,5 +15,5 @@ class AlbumsController @Inject()($: AlbumsFormatter, converter: PlayActionConver
   def removeAlbum() = converter.parseJson($.removeAlbum)
   def ignoreAlbum() = converter.parseJson($.ignoreAlbum)
 
-  def index = Action(Ok(views.html.new_albums()))
+  def index = converter.html("new_albums")
 }

@@ -4,16 +4,15 @@ import java.io.File
 
 import javax.inject.Inject
 import play.api.mvc._
+import resource.managed
 
 import scala.concurrent.ExecutionContext
 
 import common.rich.primitives.RichString._
-import resource.managed
 
-class Application @Inject()(implicit ec: ExecutionContext) extends InjectedController {
-  def index = Action {
-    Ok(views.html.main())
-  }
+class Application @Inject()(ec: ExecutionContext, converter: PlayActionConverter) extends InjectedController {
+  private implicit val iec: ExecutionContext = ec
+  def index = converter.html("main")
 
   def song = Action {
     val file = new File("C:/dev/web/play-2.1.2/Mp3Streamer/public/resources/songs/13 Wonderwall.mp3")
