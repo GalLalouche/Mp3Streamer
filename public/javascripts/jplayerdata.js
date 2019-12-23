@@ -47,7 +47,17 @@ $(function() {
     })
   }
 
-  loadNextRandom(true)
+  const debugStartSong = getDebugSong()
+  const debugStartAlbum = getDebugAlbum()
+  if (debugStartSong) {
+    console.log(`Adding debug song <${debugStartSong}>`)
+    $.get("/data/songs/" + debugStartSong, data => gplaylist.add(data, true))
+  } else if (debugStartAlbum) {
+    console.log(`Adding debug album <${debugStartAlbum}>`)
+    // No idea why this is reversed in the playlist :|
+    $.get("/data/albums/" + debugStartAlbum, data => gplaylist.add(data.reverse(), true))
+  } else
+    loadNextRandom(true)
   // Fetches new songs before current song ends.
   setInterval(function() {
     const media = $(playlist.cssSelector.jPlayer).data("jPlayer").htmlElement.media
