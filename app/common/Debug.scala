@@ -8,7 +8,7 @@ trait Debug {
     val start = System.currentTimeMillis
     l.verbose(s"starts $task")
     val $ = f
-    l.verbose("%s took %d ms".format(task, System.currentTimeMillis - start))
+    l.verbose(s"$task took ${System.currentTimeMillis - start} ms")
     $
   }
 

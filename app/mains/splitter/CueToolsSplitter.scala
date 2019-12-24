@@ -2,9 +2,10 @@ package mains.splitter
 
 import java.io.File
 
-import common.rich.path.Directory
-
+import scala.language.postfixOps
 import scala.sys.process.Process
+
+import common.rich.path.Directory
 
 private object CueToolsSplitter extends CueSplitter {
   private val CueToolsExe = """C:\Program Files (x86)\CUETools_2.1.5\CUETools.exe"""

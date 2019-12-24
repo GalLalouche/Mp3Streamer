@@ -14,7 +14,7 @@ import scalaz.Reader
 
 import common.json.ToJsonableOps._
 
-class RecentFormatter @Inject()(
+private class RecentFormatter @Inject()(
     ec: ExecutionContext,
     recentAlbums: RecentAlbums,
     @NewDir newAlbumObservable: Observable[Album],

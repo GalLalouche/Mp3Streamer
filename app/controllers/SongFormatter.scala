@@ -62,7 +62,7 @@ private class SongFormatter @Inject()(
     urlPathUtils.parseFile(path) |> IODirectory.apply |> albumFactory.fromDir |> Album.songs.get
   def album(path: String): ShouldEncodeMp3Reader = songsInAlbum(path)
   def discNumber(path: String, requestedDiscNumber: String): ShouldEncodeMp3Reader =
-    songsInAlbum(path).filter(_.discNumber.exists(requestedDiscNumber ==)).ensuring(_.nonEmpty)
+    songsInAlbum(path).filter(_.discNumber.contains(requestedDiscNumber)).ensuring(_.nonEmpty)
 
   def song(path: String): ShouldEncodeMp3Reader = group(urlPathUtils parseSong path)
   def nextSong(path: String): ShouldEncodeMp3Reader =

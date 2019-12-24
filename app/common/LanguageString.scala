@@ -7,7 +7,7 @@ import common.rich.primitives.RichString._
 
 object LanguageString {
   private val HebrewPattern = """\p{InHebrew}""".r.unanchored
-  private val NotAsciiPattern = Pattern.compile("[^\\p{ASCII}]")
+  private val NotAsciiPattern = Pattern.compile("""[^\p{ASCII}]""")
 
   implicit class languageString($: String) {
     def hasHebrew: Boolean = HebrewPattern.findFirstIn($).isDefined

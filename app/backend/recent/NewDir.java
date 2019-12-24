@@ -11,5 +11,4 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @BindingAnnotation
 @Target(PARAMETER)
 @Retention(RUNTIME)
-public @interface NewDir {
-}
+public @interface NewDir {}

@@ -8,6 +8,7 @@ import net.codingwell.scalaguice.ScalaModule
 import scala.concurrent.ExecutionContext
 
 import common.io.{DirectoryRef, RootDirectory}
+import common.rich.RichT._
 
 // Has to be a class for Play to instantiate.
 class Module extends ScalaModule {
@@ -18,7 +19,7 @@ class Module extends ScalaModule {
 
   @Provides private def logger(
       @RootDirectory rootDirectory: DirectoryRef, ec: ExecutionContext): Logger = new CompositeLogger(
-    new ConsoleLogger with FilteringLogger {setCurrentLevel(LoggingLevel.Verbose)},
+    (new ConsoleLogger with FilteringLogger).<|(_.setCurrentLevel(LoggingLevel.Verbose)),
     new DirectoryLogger(rootDirectory)(ec),
   )
 }
