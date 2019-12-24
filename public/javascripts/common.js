@@ -42,7 +42,7 @@ String.prototype.takeAfterLast = function(subs) {
 Boolean.prototype.isFalse = function() {
   return !this.valueOf();
 }
-const not = b => b.isFalse()
+const not = b => !b
 
 const elemFactory = e => config => elem(e, config)
 const button = (config, text) => elem("button", config, text)
@@ -64,6 +64,7 @@ Number.prototype.timeFormat = function() {
   let minutes = Math.floor((this - (hours * 3600)) / 60)
   let seconds = this - (hours * 3600) - (minutes * 60)
 
+  hours = (0 < hours && hours < 10 ? "0" : "") + hours
   if (hours < 10) hours = "0" + hours
   if (minutes < 10) minutes = "0" + minutes
   if (seconds < 10) seconds = "0" + seconds
@@ -71,7 +72,7 @@ Number.prototype.timeFormat = function() {
   const hourPrefix = hours === "00" ? "" : hours + ":"
   return hourPrefix + minutes + ':' + seconds
 }
-// Copied from http://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript#answer-30810322.
+// Copied from https://stackoverflow.com/a/30810322/736508
 // Comments removed for brevity.
 function copyTextToClipboard(text) {
   const textArea = document.createElement("textarea")
@@ -101,21 +102,16 @@ function copyTextToClipboard(text) {
 }
 
 function isEmptyObject(obj) {
-  for (const prop in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+  for (const prop in obj)
+    if (Object.prototype.hasOwnProperty.call(obj, prop))
       return false
-    }
-  }
   return true
 }
 
 jQuery.each(["put", "delete"], function(i, method) {
   jQuery[method] = function(url, data, callback, type) {
-    if (jQuery.isFunction(data)) {
-      type = type || callback
-      callback = data
-      data = undefined
-    }
+    if (jQuery.isFunction(data))
+      return arguments.callee(url, undefined, data, type || callback)
 
     return jQuery.ajax({
       url: url,
@@ -127,12 +123,12 @@ jQuery.each(["put", "delete"], function(i, method) {
   }
 })
 
+const _URL_PATTERN = new RegExp('^(https?:\\/\\/)?' + // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+    '(\\:\\d+)?.*') // port and path
 function isValidUrl(urlString) {
-  const pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
-      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-      '(\\:\\d+)?.*') // port and path
-  return pattern.test(urlString)
+  return _URL_PATTERN.test(urlString)
 }
 
 /**
@@ -175,11 +171,9 @@ Array.prototype.custom_last = function() {
 }
 
 function assert(condition, message) {
-  if (!condition) {
-    message = message || "Assertion failed";
-    if (typeof Error !== "undefined") {
-      throw new Error(message);
-    }
-    throw message; // Fallback
-  }
+  if (condition)
+    return
+  if (not(message))
+    return assert(condition, "Assertion failed")
+  throw typeof Error === "undefined" ? message : new Error(message)
 }

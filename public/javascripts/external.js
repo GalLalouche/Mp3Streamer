@@ -27,7 +27,7 @@ $(function() {
       const id = elem[0].placeholder.split(" ")[0].toLowerCase()
       const text = elem.val().takeAfterLast("/")
       if (text.length !== 0) {
-        assert(reconRegex.test(text))
+        assert(RECON_REGEX.test(text))
         json[id] = text
       }
     }
@@ -76,11 +76,11 @@ $(function() {
         })
   }
 
-  const hexa = "[a-f0-9]"
+  const HEXA = "[a-f0-9]"
   // E.g., d8f63b51-73e0-4f65-8bd3-bcfe6892fb0e
-  const reconRegex = new RegExp(`^(.*/)?${hexa}{8}-(?:${hexa}{4}-){3}${hexa}{12}$`)
+  const RECON_REGEX = new RegExp(`^(.*/)?${HEXA}{8}-(?:${HEXA}{4}-){3}${HEXA}{12}$`)
   // Update recon on pressing Enter
-  validateBoxAndButton($(".external-recon-id"), updateReconButton, s => reconRegex.test(s), updateRecon)
+  validateBoxAndButton($(".external-recon-id"), updateReconButton, s => RECON_REGEX.test(s), updateRecon)
   externalDiv.on("click", ".copy-to-clipboard", function() {
     copyTextToClipboard($(this).attr("url"))
   })

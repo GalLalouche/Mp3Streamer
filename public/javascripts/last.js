@@ -6,7 +6,10 @@ $(function() {
 
   function onMessage(msg) {
     const album = JSON.parse(msg.data)
-    const listElement = elem("li", `${icon(add)} ${icon(download)} ${icon(remove)} ${album.artistName}: ${album.title}`).addClass("last-album")
+    const listElement = elem(
+        "li",
+        `${icon(add)} ${icon(download)} ${icon(remove)} ${album.artistName}: ${album.title}`
+    ).addClass("last-album")
     listElement.find(".fa-" + add).click(function() {
       listElement.remove()
       $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))

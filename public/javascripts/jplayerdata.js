@@ -35,11 +35,7 @@ $(function() {
     Volume.setPeak(currentlyPlayingSong)
   }
   $("#jquery_jplayer_1").addClass("poster")
-  // Mute for debugging if requested
-  if (mute)
-    $(".jp-mute").click()
-  else
-    $(".jp-volume-max").click()
+  $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()
 
   function loadNextRandom(playNow) {
     $.get(randomSongUrl, function(data) {
