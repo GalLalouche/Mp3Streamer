@@ -1,11 +1,12 @@
 package common
 
-import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime, Year, YearMonth}
-
-import common.CompositeDateFormat.Parser
+import java.time.format.DateTimeFormatter
 
 import scala.util.Try
+
+import common.CompositeDateFormat.Parser
+import common.rich.collections.RichTraversableOnce._
 
 object CompositeDateFormat {
   private def toParser[T](pattern: String)(implicit ev: LocalDateTimeable[T]): Parser = source =>
@@ -42,7 +43,7 @@ object CompositeDateFormat {
 
 /** Tries several parsers in a sequence until the first one succeeds. Isn't total. */
 class CompositeDateFormat private(parsers: Seq[Parser]) {
-  def parse(source: String): Option[LocalDateTime] = parsers.toStream.flatMap(_ (source)).headOption
+  def parse(source: String): Option[LocalDateTime] = parsers.mapFirst(_ (source))
   def orElse[T: CompositeDateFormat.LocalDateTimeable](parser: String): CompositeDateFormat =
     new CompositeDateFormat(parsers :+ CompositeDateFormat.toParser(parser))
 }
