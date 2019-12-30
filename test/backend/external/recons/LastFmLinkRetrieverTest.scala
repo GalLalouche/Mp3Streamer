@@ -10,9 +10,9 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.AsyncFreeSpec
 import org.scalatest.OptionValues._
 
-import common.AuxSpecs
 import common.io.InternetTalker
 import common.rich.RichT._
+import common.test.AuxSpecs
 
 class LastFmLinkRetrieverTest extends AsyncFreeSpec with AuxSpecs with DocumentSpecs {
   private val config = new TestModuleConfiguration

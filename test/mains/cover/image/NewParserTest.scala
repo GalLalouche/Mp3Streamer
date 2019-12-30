@@ -1,10 +1,10 @@
 package mains.cover.image
 
 import backend.Url
-import org.scalatest.OptionValues._
 import backend.external.DocumentSpecs
 import mains.cover.UrlSource
 import org.scalatest.FreeSpec
+import org.scalatest.OptionValues._
 
 class NewParserTest extends FreeSpec with DocumentSpecs {
   "parse images old new format" in {

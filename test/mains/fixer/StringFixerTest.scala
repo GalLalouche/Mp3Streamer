@@ -2,7 +2,7 @@ package mains.fixer
 
 import org.scalatest.FreeSpec
 
-import common.AuxSpecs
+import common.test.AuxSpecs
 
 class StringFixerTest extends FreeSpec with AuxSpecs {
   private val $ = StringFixer

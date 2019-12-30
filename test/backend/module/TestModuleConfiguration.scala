@@ -6,13 +6,14 @@ import backend.Url
 import backend.storage.DbProvider
 import com.google.inject.{Guice, Module, Provides}
 import com.google.inject.util.Modules
-import common.io.{InternetTalker, MemoryRoot, RootDirectory}
-import common.io.WSAliases._
-import common.rich.RichT._
 import net.codingwell.scalaguice.ScalaModule
 import slick.jdbc.{H2Profile, JdbcProfile}
 
 import scala.concurrent.ExecutionContext
+
+import common.io.{InternetTalker, MemoryRoot, RootDirectory}
+import common.io.WSAliases._
+import common.rich.RichT._
 
 // It's a case class so its copy constructor could be used by clients in order to configure it.
 case class TestModuleConfiguration(

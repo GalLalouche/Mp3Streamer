@@ -5,8 +5,8 @@ import backend.external.{Host, LinkMark}
 import backend.recon.Artist
 import org.scalatest.FreeSpec
 
-import common.AuxSpecs
 import common.rich.collections.RichTraversableOnce._
+import common.test.AuxSpecs
 
 class SearchExtensionTest extends FreeSpec with AuxSpecs {
   "apply" in {

@@ -2,8 +2,9 @@ package mains.vimtag
 
 import java.io.File
 
-import common.AuxSpecs
 import org.scalatest.FreeSpec
+
+import common.test.AuxSpecs
 
 class ParserTest extends FreeSpec with AuxSpecs {
   "apply" - {

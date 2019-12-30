@@ -2,9 +2,10 @@ package models
 
 import java.io.File
 
-import common.io.{IODirectory, IOFile}
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.arbitrary
+
+import common.io.{IODirectory, IOFile}
 
 object ArbitraryModels {
   private implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])

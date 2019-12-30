@@ -9,8 +9,8 @@ import org.scalatest.AsyncFreeSpec
 
 import scala.concurrent.Future
 
-import common.AuxSpecs
 import common.rich.RichT._
+import common.test.AuxSpecs
 
 class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
   private val existingHost: Host = Host("existinghost", Url("existinghosturl"))

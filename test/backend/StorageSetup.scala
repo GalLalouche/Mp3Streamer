@@ -7,8 +7,8 @@ import org.scalatest.tags.Slow
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.{AuxSpecs, BeforeAndAfterEachAsync}
 import common.storage.Storage
+import common.test.{AuxSpecs, BeforeAndAfterEachAsync}
 
 @Slow
 trait StorageSetup extends AuxSpecs with BeforeAndAfterEachAsync {self: AsyncTestSuite =>

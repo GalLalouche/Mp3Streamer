@@ -1,13 +1,14 @@
 package backend.logging
 
 import backend.module.TestModuleConfiguration
-import common.AuxSpecs
-import common.io.{DirectoryRef, FileRef, RootDirectory}
-import common.rich.collections.RichTraversableOnce._
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import scala.concurrent.ExecutionContext
+
+import common.io.{DirectoryRef, FileRef, RootDirectory}
+import common.rich.collections.RichTraversableOnce._
+import common.test.AuxSpecs
 
 class DirectoryLoggerTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
   private val injector = TestModuleConfiguration().injector

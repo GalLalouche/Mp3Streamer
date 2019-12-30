@@ -5,9 +5,9 @@ import backend.module.TestModuleConfiguration
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.AsyncFreeSpec
 
-import common.AuxSpecs
 import common.io.MemoryRoot
 import common.rich.RichT._
+import common.test.AuxSpecs
 
 class ImageDownloaderTest extends AsyncFreeSpec with AuxSpecs {
   private val tempDir = new MemoryRoot

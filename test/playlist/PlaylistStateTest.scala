@@ -2,11 +2,12 @@ package playlist
 
 import java.util.concurrent.TimeUnit
 
-import common.JsonableSpecs
 import models.ArbitraryModels
 import org.scalacheck.{Arbitrary, Gen}
 
 import scala.concurrent.duration.Duration
+
+import common.JsonableSpecs
 
 class PlaylistStateTest extends JsonableSpecs {
   import PlaylistState.PlaylistStateJsonable

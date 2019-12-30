@@ -1,11 +1,11 @@
 package models
 
-import common.JsonableSpecs
+import models.ArbitraryModels._
 import models.ModelJsonable._
 
-class ModelJsonableTest extends JsonableSpecs {
-  import models.ArbitraryModels._
+import common.JsonableSpecs
 
+class ModelJsonableTest extends JsonableSpecs {
   propJsonTest[Song]()
   propJsonTest[Album]()
   propJsonTest[Artist]()

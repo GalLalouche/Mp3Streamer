@@ -11,11 +11,11 @@ import net.codingwell.scalaguice.ScalaModule
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, Json, JsValue}
 
-import common.AuxSpecs
-import common.json.RichJson._
 import common.json.Jsonable
+import common.json.RichJson._
 import common.json.ToJsonableOps._
 import common.rich.RichT._
+import common.test.AuxSpecs
 
 class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   // TODO Answer why not take the one from TestConfiguration?

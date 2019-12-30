@@ -11,7 +11,8 @@ import org.scalatest.OptionValues._
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind._
 
-import common.{AuxSpecs, FakeClock}
+import common.FakeClock
+import common.test.AuxSpecs
 
 class FreshnessStorageTest extends AsyncFreeSpec with AuxSpecs with OneInstancePerTest {
   private val c = TestModuleConfiguration()

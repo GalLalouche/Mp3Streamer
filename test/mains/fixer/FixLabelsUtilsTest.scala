@@ -6,7 +6,7 @@ import org.scalatest.FreeSpec
 
 import scala.collection.JavaConverters._
 
-import common.AuxSpecs
+import common.test.AuxSpecs
 
 class FixLabelsUtilsTest extends FreeSpec with AuxSpecs {
   private val $ = FixLabelsUtils

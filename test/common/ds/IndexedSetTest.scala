@@ -1,9 +1,10 @@
 package common.ds
 
-import common.AuxSpecs
 import org.scalatest.FreeSpec
 
 import scalaz.Semigroup
+
+import common.test.AuxSpecs
 
 class IndexedSetTest extends FreeSpec with AuxSpecs {
   "just work" in {

@@ -1,8 +1,9 @@
 package controllers
 
-import common.AuxSpecs
 import models.FakeModelFactory
 import org.scalatest.FreeSpec
+
+import common.test.AuxSpecs
 
 class PlayUrlPathUtilsTest extends FreeSpec with AuxSpecs {
   private val $ = PlayUrlPathUtils

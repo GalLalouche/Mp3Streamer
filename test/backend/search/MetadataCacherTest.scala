@@ -12,9 +12,9 @@ import rx.lang.scala.Observable
 
 import scala.concurrent.{Await, ExecutionContext, Promise}
 
-import common.AuxSpecs
 import common.io.{JsonableSaver, MemoryRoot}
 import common.json.Jsonable
+import common.test.AuxSpecs
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory

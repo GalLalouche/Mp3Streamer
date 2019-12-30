@@ -4,15 +4,16 @@ import java.time.LocalDateTime
 import java.util.concurrent.{Semaphore, TimeoutException, TimeUnit}
 
 import backend.module.TestModuleConfiguration
-import common.io.{MemoryFile, MemoryRoot, RootDirectory}
-import common.rich.collections.RichTraversableOnce._
-import common.rich.primitives.RichBoolean._
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, Matchers}
 import org.scalatest.concurrent.TimeLimitedTests
 import org.scalatest.time.{Second, Span}
 
 import scala.concurrent.ExecutionContext
+
+import common.io.{MemoryFile, MemoryRoot, RootDirectory}
+import common.rich.collections.RichTraversableOnce._
+import common.rich.primitives.RichBoolean._
 
 /** A special kind of file that blocks on reads and writes. */
 private[this] class BlockFileRef(val f: MemoryFile) extends MemoryFile(f.parent, f.name) {

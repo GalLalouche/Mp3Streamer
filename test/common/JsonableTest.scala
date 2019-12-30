@@ -1,10 +1,12 @@
 package common
 
-import common.json.Jsonable
-import monocle.Iso
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
 import play.api.libs.json.{JsNumber, JsString, JsValue}
+
+import monocle.Iso
+
+import common.json.Jsonable
 
 class JsonableTest extends JsonableSpecs {
   private implicit object IntJsonable extends Jsonable[Int] {

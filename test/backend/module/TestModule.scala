@@ -4,10 +4,11 @@ import java.time.Clock
 
 import backend.logging.{Logger, StringBuilderLogger}
 import com.google.inject.Provides
-import common.{FakeClock, ModuleUtils}
-import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
 import models.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
+
+import common.{FakeClock, ModuleUtils}
+import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
 
 class TestModule extends ScalaModule with ModuleUtils {
   override def configure() = {

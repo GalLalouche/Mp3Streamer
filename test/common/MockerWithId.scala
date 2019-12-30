@@ -1,9 +1,10 @@
 package common
 
-import common.rich.primitives.RichBoolean._
 import org.mockito.Mockito
 
 import scala.collection.mutable
+
+import common.rich.primitives.RichBoolean._
 
 final class MockerWithId {
   private val map = new mutable.HashMap[Any, Any]()

@@ -12,8 +12,9 @@ import scala.concurrent.Future
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind._
 
-import common.{AsyncAuxSpecs, FakeClock}
+import common.FakeClock
 import common.rich.RichT._
+import common.test.AsyncAuxSpecs
 
 class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
   private val c = new TestModuleConfiguration

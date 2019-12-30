@@ -2,9 +2,10 @@ package models
 
 import java.util.UUID
 
-import common.io.MemoryRoot
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
+
+import common.io.MemoryRoot
 
 class FakeModelFactory {
   private val root = new MemoryRoot

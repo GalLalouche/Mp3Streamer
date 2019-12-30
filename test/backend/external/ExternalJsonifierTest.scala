@@ -10,7 +10,7 @@ import play.api.libs.json.Json
 
 import scala.concurrent.Future
 
-import common.AuxSpecs
+import common.test.AuxSpecs
 
 class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
   private val $ = new ExternalJsonifier()

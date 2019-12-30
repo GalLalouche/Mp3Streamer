@@ -3,7 +3,7 @@ package backend.external
 import backend.Url
 import org.scalatest.FreeSpec
 
-import common.AuxSpecs
+import common.test.AuxSpecs
 
 class HostTest extends FreeSpec with AuxSpecs {
   "fromUrl" - {

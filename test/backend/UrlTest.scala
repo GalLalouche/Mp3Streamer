@@ -1,7 +1,8 @@
 package backend
 
-import common.AuxSpecs
 import org.scalatest.FreeSpec
+
+import common.test.AuxSpecs
 
 class UrlTest extends FreeSpec with AuxSpecs {
   "ctor" - {

@@ -15,9 +15,9 @@ import play.api.mvc.Result
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.AuxSpecs
 import common.rich.RichFuture._
 import common.rich.collections.RichSet._
+import common.test.AuxSpecs
 
 trait ControllerSpec extends AuxSpecs with GuiceOneServerPerSuite {self: TestSuite =>
   // Play, being moronic as usual, will initialize an application even if the test is to be excluded,

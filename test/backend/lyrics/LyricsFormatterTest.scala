@@ -14,9 +14,10 @@ import scala.concurrent.Future
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
 
-import common.{AuxSpecs, BeforeAndAfterEachAsync, MutablePartialFunction}
 import common.rich.path.RichFile._
 import common.storage.Storage
+import common.test.{AuxSpecs, BeforeAndAfterEachAsync}
+import common.MutablePartialFunction
 
 class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterEachAsync with AuxSpecs {
   // Modified by some tests

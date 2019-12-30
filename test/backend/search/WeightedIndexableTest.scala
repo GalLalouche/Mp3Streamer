@@ -4,7 +4,7 @@ import backend.search.WeightedIndexable.ops._
 import models.{Artist, FakeModelFactory, Song}
 import org.scalatest.FreeSpec
 
-import common.AuxSpecs
+import common.test.AuxSpecs
 
 class WeightedIndexableTest extends FreeSpec with AuxSpecs {
   val factory = new FakeModelFactory

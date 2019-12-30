@@ -5,10 +5,12 @@ import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.{AuxSpecs, MockerWithId}
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind._
+
+import common.MockerWithId
 import common.rich.primitives.RichBoolean._
+import common.test.AuxSpecs
 
 class ImagesSupplierTest extends AsyncFreeSpec with OneInstancePerTest with AuxSpecs {
   private val mockerWithId = new MockerWithId

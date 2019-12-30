@@ -5,7 +5,7 @@ import backend.external.{Host, LinkMark, MarkedLink}
 import backend.recon.{Album, Artist}
 import org.scalatest.FreeSpec
 
-import common.AuxSpecs
+import common.test.AuxSpecs
 
 class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
   "Preseeded" - {

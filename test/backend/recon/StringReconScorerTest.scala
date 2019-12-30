@@ -2,7 +2,7 @@ package backend.recon
 
 import org.scalatest.FreeSpec
 
-import common.AuxSpecs
+import common.test.AuxSpecs
 
 class StringReconScorerTest extends FreeSpec with AuxSpecs {
   private val $ = StringReconScorer

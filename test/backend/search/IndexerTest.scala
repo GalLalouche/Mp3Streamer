@@ -15,9 +15,9 @@ import scala.concurrent.Future
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
 
-import common.AuxSpecs
 import common.io.{DirectoryRef, MemoryRoot}
 import common.rich.RichObservable._
+import common.test.AuxSpecs
 
 class IndexerTest extends AsyncFreeSpec with AuxSpecs with OneInstancePerTest {
   private val searchState = mock[SearchState]

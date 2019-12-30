@@ -14,8 +14,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.syntax.functor.ToFunctorOps
 
-import common.{AuxSpecs, MockitoSyrup}
+import common.MockitoSyrup
 import common.io.MemoryRoot
+import common.test.AuxSpecs
 
 class IndexFormatterTest extends AsyncFreeSpec with AuxSpecs with OneInstancePerTest {
   private val indexer = mock[Indexer]

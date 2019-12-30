@@ -1,9 +1,10 @@
 package controllers
 
-import common.rich.path.RichFile._
 import org.scalatest.FreeSpec
 import org.scalatest.tags.Slow
 import play.api.test._
+
+import common.rich.path.RichFile._
 
 @Slow
 class PostersTest extends FreeSpec with ControllerSpec {

@@ -1,8 +1,8 @@
 package backend.storage
-import common.storage.Storage
-
 import scala.collection.mutable
 import scala.concurrent.Future
+
+import common.storage.Storage
 
 class MemoryBackedStorage[Key, Value] extends Storage[Key, Value] {
   private val map = new mutable.HashMap[Key, Value]

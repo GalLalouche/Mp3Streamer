@@ -3,7 +3,7 @@ package backend.search
 import backend.search.ProductOrdering.Impl
 import org.scalatest.FreeSpec
 
-import common.AuxSpecs
+import common.test.AuxSpecs
 
 class ProductOrderingTest extends FreeSpec with AuxSpecs {
   private def product(a: Any*): Product = new Product {

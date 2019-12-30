@@ -10,7 +10,7 @@ import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
 import scala.concurrent.Future
 
-import common.AuxSpecs
+import common.test.AuxSpecs
 
 class CompositeHtmlRetrieverTest extends AsyncFreeSpec with AuxSpecs with OneInstancePerTest {
   private val injector = TestModuleConfiguration().injector

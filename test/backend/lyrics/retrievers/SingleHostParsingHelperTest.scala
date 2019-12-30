@@ -8,7 +8,7 @@ import org.jsoup.nodes.Document
 import org.scalatest.AsyncFreeSpec
 import play.api.http.Status
 
-import common.AuxSpecs
+import common.test.AuxSpecs
 
 class SingleHostParsingHelperTest extends AsyncFreeSpec with AuxSpecs {
   "404 returns NoLyrics" in {

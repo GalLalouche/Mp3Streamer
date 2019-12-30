@@ -4,7 +4,7 @@ import models.FakeModelFactory
 import org.scalatest.FreeSpec
 import play.api.libs.json.{JsObject, Json}
 
-import common.AuxSpecs
+import common.test.AuxSpecs
 
 class APITest extends FreeSpec with AuxSpecs {
   private val factory = new FakeModelFactory

@@ -1,10 +1,11 @@
 package models
 
 import backend.module.FakeMusicFinder
-import common.AuxSpecs
+import org.scalatest.{FreeSpec, OneInstancePerTest}
+
 import common.io.MemoryRoot
 import common.rich.collections.RichTraversableOnce._
-import org.scalatest.{FreeSpec, OneInstancePerTest}
+import common.test.AuxSpecs
 
 class MusicFinderTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val root = new MemoryRoot

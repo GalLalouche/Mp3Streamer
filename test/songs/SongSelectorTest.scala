@@ -1,12 +1,13 @@
 package songs
 
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
-import common.AuxSpecs
 import models.{FakeModelFactory, MemorySong}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalacheck.Arbitrary._
 import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
+
+import common.test.AuxSpecs
 
 class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs with GeneratorDrivenPropertyChecks
     with Matchers {

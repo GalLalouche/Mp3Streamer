@@ -6,6 +6,7 @@ import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
 import common.json.Jsonable
 import common.json.ToJsonableOps._
+import common.test.AuxSpecs
 
 trait JsonableSpecs extends PropSpec with GeneratorDrivenPropertyChecks with AuxSpecs {self: Suite =>
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =

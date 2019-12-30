@@ -2,9 +2,9 @@ package mains.cover.image
 
 import backend.Url
 import backend.external.DocumentSpecs
-import org.scalatest.OptionValues._
 import mains.cover.UrlSource
 import org.scalatest.FreeSpec
+import org.scalatest.OptionValues._
 
 class OldParserTest extends FreeSpec with DocumentSpecs {
   "parse images on old format" in {

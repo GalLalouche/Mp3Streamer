@@ -6,8 +6,8 @@ import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 import org.scalatest.FreeSpec
 
-import common.{AuxSpecs, DirectorySpecs}
 import common.rich.path.RichFile._
+import common.test.{AuxSpecs, DirectorySpecs}
 
 class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)

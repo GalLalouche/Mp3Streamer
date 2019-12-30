@@ -9,8 +9,8 @@ import backend.recon.{Album, Artist, Reconcilable}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
 
-import common.AuxSpecs
 import common.rich.RichT._
+import common.test.AuxSpecs
 
 class CompositeExtenderTest extends FreeSpec with AuxSpecs {
   private val $ = TestModuleConfiguration().injector.instance[CompositeExtender]
