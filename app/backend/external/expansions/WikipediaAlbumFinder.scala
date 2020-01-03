@@ -6,7 +6,6 @@ import backend.recon.{Album, StringReconScorer}
 import javax.inject.Inject
 import org.jsoup.nodes.Document
 
-import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
@@ -19,6 +18,7 @@ import common.rich.RichT._
 import common.rich.primitives.RichString._
 import common.RichJsoup._
 
+/** Finds Wikipedia album links in an artist's Wikipedia page. */
 private class WikipediaAlbumFinder @Inject()(
     sameHostExpanderHelper: SameHostExpanderHelper,
     it: InternetTalker,
@@ -29,15 +29,20 @@ private class WikipediaAlbumFinder @Inject()(
   private val documentToAlbumParser: DocumentToAlbumParser = new DocumentToAlbumParser {
     override def host: Host = WikipediaAlbumFinder.this.host
 
-    private def isNotRedirected(link: Url): Future[Boolean] = {
+    private def isNotRedirected(lang: String)(link: Url): Future[Boolean] = {
       // TODO Should check if the redirection points to the original url.
       val title = link.address takeAfterLast '/'
       assert(title.nonEmpty)
-      val urlWithoutRedirection = s"https://en.wikipedia.org/w/index.php?title=$title&redirect=no"
+      val urlWithoutRedirection = s"https://$lang.wikipedia.org/w/index.php?title=$title&redirect=no"
       it.downloadDocument(Url(urlWithoutRedirection))
           .map(_.find("span#redirectsub").exists(_.text == "Redirect page").isFalse)
     }
     def findAlbum(d: Document, a: Album): FutureOption[Url] = {
+      val documentLanguage = d.selectSingle("html").attr("lang") match {
+        case "en" => "en"
+        case "he" => "he"
+        case _ => throw new AssertionError("Unsupported document language")
+      }
       def score(linkName: String): Double = StringReconScorer(a.title, linkName)
       d.selectIterator("a")
           .filter(e => score(e.text) > 0.95)
@@ -45,9 +50,9 @@ private class WikipediaAlbumFinder @Inject()(
           .filter(_.nonEmpty)
           .filterNot(_ startsWith "http") // Filters external links
           .filterNot(_ contains "redlink=1")
-          .map("https://en.wikipedia.org" + _ |> Url)
+          .map(s"https://$documentLanguage.wikipedia.org" + _ |> Url)
           .mapTo(_.toVector.ensuring(_.forall(_.isValid)))
-          .filterTraverse(isNotRedirected)
+          .filterTraverse(isNotRedirected(documentLanguage))
           .map(_.headOption)
     }
   }

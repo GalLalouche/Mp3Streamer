@@ -13,6 +13,8 @@ class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
   }
   private val DiscographyExtractLink =
     "https://en.wikipedia.org/w/index.php?title=Lady_in_Gold_(album)&redirect=no"
+  private val HebrewDiscographyExtractLink =
+    "https://he.wikipedia.org/w/index.php?title=%D7%91%D7%A9%D7%93%D7%95%D7%AA&redirect=no"
   private val Redirected = "wiki_redirected.html"
   private val NotRedirected = "wikipedia-discography.html"
 
@@ -20,6 +22,11 @@ class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
     findAlbum("wikipedia-discography.html", Album("Lady in Gold", 2016, Artist("Blues Pills")),
       DiscographyExtractLink -> NotRedirected)
         .map(_.value.link shouldReturn Url("https://en.wikipedia.org/wiki/Lady_in_Gold_(album)"))
+  }
+  "Choose correct language" in {
+    findAlbum("wikipedia-discography-hebrew.html", Album("בשדות", 2006, Artist("גבריאל בלחסן")),
+      HebrewDiscographyExtractLink -> NotRedirected)
+        .map(_.value.link shouldReturn Url("https://he.wikipedia.org/wiki/%D7%91%D7%A9%D7%93%D7%95%D7%AA"))
   }
   "Return nothing on red link" in {
     findAlbum("wiki_redlink.html", Album("Graveward", 2015, Artist("Sigh"))).map(_ shouldReturn None)

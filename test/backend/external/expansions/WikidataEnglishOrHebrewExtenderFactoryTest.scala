@@ -6,7 +6,7 @@ import org.scalatest.FreeSpec
 
 import common.rich.collections.RichTraversableOnce._
 
-class WikidataEnglishExtenderFactoryTest extends FreeSpec with DocumentSpecs {
+class WikidataEnglishOrHebrewExtenderFactoryTest extends FreeSpec with DocumentSpecs {
   "parse" - {
     "extract English links if they exist" in {
       WikidataEnglishOrHebrewExtenderFactory.parse(getDocument("wikidata.htm")).single shouldReturn
