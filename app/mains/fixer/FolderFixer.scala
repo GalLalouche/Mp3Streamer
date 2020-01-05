@@ -33,14 +33,14 @@ class FolderFixer @Inject()(
   private implicit val iec: ExecutionContext = it
 
   private def findArtistFolder(artist: String): Option[Directory] = {
-    println("finding matching folder")
     // See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
-    val canonicalArtistFolderName = artist.toLowerCase
+    val canonicalArtistFolderName = StringFixer(artist).toLowerCase
         // A windows folder name cannot end in '.'.
         .removeAll("""\.*$""")
         // A windows folder name cannot contain '<', '>', ':', '"', '/', '\', '\', '|', '?', '*'.
         .removeAll("""[<>:"/\\|?*]""")
 
+    println(s"finding matching folder for artist <$canonicalArtistFolderName>")
     mf.genreDirs
         .flatMap(_.deepDirs)
         .find(_.name.toLowerCase == canonicalArtistFolderName)
