@@ -88,6 +88,14 @@ span.jp-playlist-item {
   left: 1300px;
   float: right;
 }
+#lyric-box {
+  height: 770px;
+  overflow-y: scroll;
+  direction: ltr;
+}
+#lyric-contents {
+  margin-right: 10px;
+}
 
 .jp-currently-playing {
   display: inline-block;

@@ -1,12 +1,16 @@
 $(function() {
   const lyricsDiv = $('#lyrics')
-  const lyricsContent = $('<div style="overflow-y: scroll; height:770px;"/>').appendTo(lyricsDiv)
+  // Wraps the actual lyrics with an extra div. Ensures the scroll bar is always on the right regardless of
+  // text direction, and that there is a margin between the lyrics with the bar. Also ensures the bar is only
+  // on the lyrics, not the buttons and text box.
+  const lyricBox = div({id: 'lyric-box'}).appendTo(lyricsDiv)
+  const lyricsContent = div({id: 'lyric-contents'}).appendTo(lyricBox)
   appendBr(lyricsDiv)
   const lyricsPusher = div().appendTo(lyricsDiv)
   const lyricsUrlBox = $("<input id='lyrics-url' placeholder='Lyrics URL' type='text'/>").appendTo(lyricsPusher)
   const updateLyricsButton = button("Update lyrics").appendTo(lyricsPusher)
-  const instrumentalSongButton = button("Instrumental Song").appendTo(lyricsPusher)
-  const instrumentalArtistButton = button("Instrumental Artist").appendTo(lyricsPusher)
+  const instrumentalSongButton = button("Instr. Song").appendTo(lyricsPusher)
+  const instrumentalArtistButton = button("Instr. Artist").appendTo(lyricsPusher)
   validateBoxAndButton(lyricsUrlBox, updateLyricsButton, isValidUrl, updateLyrics)
 
   lyricsUrlBox.keyup(function() { // the validateBoxAndButton only applies to updateLyricsButton
@@ -42,11 +46,14 @@ $(function() {
     lyricsUrlBox.trigger("keyup")
   }
 
-
+  const HEBREW_REGEX = /[\u0590-\u05FF]/
   function showLyrics(content) {
     clearButtons()
     autoScroll = true
     lyricsContent.html(content)
+    const hasHebrew = content.search(HEBREW_REGEX) >= 0;
+    // The "direction" property also changes the overflow ruler; fuck that.
+    lyricsContent.css("direction", hasHebrew ? "rtl" : "ltr")
     if (previousContent === lyricsContent.html()) // Ensure the same HTML formatting is used for comparison
       return // HTML wasn't changed, so don't reset the baselines
     previousContent = lyricsContent.html() // Ensure the same HTML formatting is used for comparison
@@ -74,7 +81,7 @@ $(function() {
     const heightBaseline = scrollBaseline || (lyricsContent.height() / -1.75)
     const timePercentage = (gplayer.percentageOfSongPlayed() - timeBaseline) / 100.0
     autoScroll = true
-    lyricsContent.scrollTop(lyricsContent.prop('scrollHeight') * timePercentage + heightBaseline)
+    lyricBox.scrollTop(lyricBox.prop('scrollHeight') * timePercentage + heightBaseline)
   }
 
   setInterval(scrollLyrics, 100)
