@@ -5,10 +5,10 @@ import backend.lyrics.retrievers.RetrievedLyricsResult
 import controllers.UrlPathUtils
 import javax.inject.Inject
 import models.Song
+import play.twirl.api.utils.StringEscapeUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.{-\/, \/-}
 import scalaz.std.scalaFuture.futureInstance
 import common.rich.func.ToMoreMonadErrorOps._
 
@@ -25,11 +25,11 @@ private class LyricsFormatter @Inject()(
       .map(toString)
       //.listenError(_.printStackTrace())
       .orElse("Failed to get lyrics :(")
-  def push(path: String, url: Url): Future[String] = backend.parse(url, urlPathUtils parseSong path)
-      .mapEitherMessage {
-        case RetrievedLyricsResult.RetrievedLyrics(l) => \/-(toString(l))
-        case _ => -\/("Failed to parse lyrics :(")
-      }
+  def push(path: String, url: Url): Future[String] = backend.parse(url, urlPathUtils parseSong path).map {
+    case RetrievedLyricsResult.RetrievedLyrics(l) => toString(l)
+    case RetrievedLyricsResult.Error(e) => StringEscapeUtils.escapeXml11(e.getMessage)
+    case RetrievedLyricsResult.NoLyrics => "No lyrics were found :("
+  }
   private def setInstrumentalAux(path: String, f: Song => Future[Instrumental]) =
     f(urlPathUtils.parseSong(path)).map(toString)
   def setInstrumentalSong(path: String): Future[String] =

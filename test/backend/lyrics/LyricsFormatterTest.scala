@@ -1,15 +1,17 @@
 package backend.lyrics
 
-import backend.lyrics.retrievers.InstrumentalArtistStorage
+import backend.lyrics.retrievers.{InstrumentalArtistStorage, RetrievedLyricsResult}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
+import org.mockito.Mockito.when
 import backend.Url
 import controllers.UrlPathUtils
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.AsyncFreeSpec
+import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
@@ -19,7 +21,7 @@ import common.storage.Storage
 import common.test.{AuxSpecs, BeforeAndAfterEachAsync}
 import common.MutablePartialFunction
 
-class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterEachAsync with AuxSpecs {
+class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterEachAsync with AuxSpecs with MockitoSugar {
   // Modified by some tests
   private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]
   private val injector = TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).injector
@@ -38,15 +40,29 @@ class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterEachAsync wit
         $.get(encodedSong).map(_ shouldReturn "bar<br><br>Source: foo")
   }
 
-  "push" in {
-    urlToResponseMapper += {
-      case Url("http://lyrics.wikia.com/wiki/Foobar") =>
-        FakeWSResponse(bytes = getResourceFile("/backend/lyrics/retrievers/lyrics_wikia_lyrics.html").bytes)
+  "push" - {
+    "success" in {
+      urlToResponseMapper += {
+        case Url("http://lyrics.wikia.com/wiki/Foobar") =>
+          FakeWSResponse(bytes = getResourceFile("/backend/lyrics/retrievers/lyrics_wikia_lyrics.html").bytes)
+      }
+      injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar")) >>
+          $.push(encodedSong, Url("http://lyrics.wikia.com/wiki/Foobar"))
+              .map(_ should startWith("Daddy's flown across the ocean")) >>
+          getLyricsForSong.map(_ should startWith("Daddy's flown across the ocean"))
     }
-    injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar")) >>
-        $.push(encodedSong, Url("http://lyrics.wikia.com/wiki/Foobar"))
-            .map(_ should startWith("Daddy's flown across the ocean")) >>
-        getLyricsForSong.map(_ should startWith("Daddy's flown across the ocean"))
+    "failure returns the actual error" in {
+      val cache = mock[LyricsCache]
+      when(cache.parse(Url("bar"), song))
+          .thenReturn(Future.successful(RetrievedLyricsResult.Error(new Exception("Oopsy <daisy>"))))
+      new LyricsFormatter(
+        injector.instance[ExecutionContext],
+        cache,
+        injector.instance[UrlPathUtils],
+      )
+          .push(encodedSong, Url("bar"))
+          .map(_ shouldReturn "Oopsy &lt;daisy&gt;")
+    }
   }
 
   "setInstrumentalSong" in {
