@@ -11,16 +11,22 @@ import models.{IOSong, Song}
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.{-\/, \/-}
+import scalaz.std.option.optionInstance
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.functor._
+import common.rich.func.ToMoreFoldableOps._
 import common.rich.func.ToMoreFunctorOps._
 import common.rich.func.ToMoreMonadErrorOps._
 
+import common.rich.RichT._
+
+// TODO test
 private class LyricsCache @Inject()(
     ec: ExecutionContext,
     logger: Logger,
     defaultArtistInstrumental: InstrumentalArtist,
     htmlComposites: CompositeHtmlRetriever,
+    @CompositePassiveParser passiveParsers: PassiveParser,
     lyricsStorage: LyricsStorage,
 ) {
   private implicit val iec: ExecutionContext = ec
@@ -36,11 +42,16 @@ private class LyricsCache @Inject()(
     }
   )
   def find(s: Song): Future[Lyrics] = cache(s)
-  def parse(url: Url, s: Song): Future[RetrievedLyricsResult] = htmlComposites.parse(url, s)
-      .listen {
-        case RetrievedLyricsResult.RetrievedLyrics(l) => cache.forceStore(s, l)
-        case _ => ()
-      }
+  def parse(url: Url, s: Song): Future[RetrievedLyricsResult] = {
+    def aux(parser: PassiveParser): Future[RetrievedLyricsResult] = parser.parse(url, s).listen {
+      case RetrievedLyricsResult.RetrievedLyrics(l) => cache.forceStore(s, l)
+      case _ => ()
+    }
+    def check(pp: PassiveParser): Option[PassiveParser] = pp.optFilter(_.doesUrlMatchHost(url))
+    check(htmlComposites)
+        .orElse(check(passiveParsers))
+        .mapHeadOrElse(aux, Future.successful(RetrievedLyricsResult.Error.unsupportedHost(url)))
+  }
 
   def setInstrumentalSong(s: Song): Future[Instrumental] = {
     val instrumental = Instrumental("Manual override")
