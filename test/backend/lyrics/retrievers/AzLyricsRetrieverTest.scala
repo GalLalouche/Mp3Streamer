@@ -13,9 +13,10 @@ class AzLyricsRetrieverTest extends FreeSpec with LyricsSpec {
   }
   "fromHtml" - {
     "has lyrics" in {
-      verifyLyrics(AzLyricsRetriever.parser(getDocument("az_lyrics.html"), fakeModelFactory.song()),
-        "Ascending in sectarian rapture",
-        "To pierce the eye ov JHWH")
+      verifyLyrics(
+        AzLyricsRetriever.parser(getDocument("az_lyrics.html"), fakeModelFactory.song()),
+        "az_lyrics.txt",
+      )
     }
   }
 }

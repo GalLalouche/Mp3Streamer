@@ -15,8 +15,8 @@ class LyricsWikiaRetrieverTest extends FreeSpec with LyricsSpec {
     "has lyrics" in {
       verifyLyrics(
         LyricsWikiaRetriever.parser(getDocument("lyrics_wikia_lyrics.html"), fakeModelFactory.song()),
-        "Daddy's flown across the ocean",
-        "All in all it was all just bricks in the wall")
+        "lyrics_wikia_lyrics.txt",
+      )
     }
     "instrumental" in {
       LyricsWikiaRetriever.parser(

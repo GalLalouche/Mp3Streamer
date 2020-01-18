@@ -39,15 +39,18 @@ private object LyricsWikiaRetriever {
     override def apply(d: Document, s: Song): LyricParseResult = {
       val lyrics = d
           .selectSingle(".lyricbox")
-          .html
+          .html()
           .split("\n")
+          .view
           .takeWhile(_.startsWith("<!--").isFalse)
-          .filterNot(_.matches("<div class=\"lyricsbreak\"></div>"))
+          .filterNot(_ contains "lyricsbreak")
           .mkString("\n")
-      if (lyrics.toLowerCase.contains("we are not licensed to display the full lyrics"))
+      if (lyrics contains "TrebleClef")
+        LyricParseResult.Instrumental
+      else if (lyrics.toLowerCase contains "we are not licensed to display the full lyrics")
         LyricParseResult.Error(new NoSuchElementException("No actual lyrics (no license)"))
-      else if (lyrics contains "TrebleClef") LyricParseResult.Instrumental
-      else LyricParseResult.Lyrics(lyrics |> HtmlLyricsUtils.canonize)
+      else
+        LyricParseResult.Lyrics(HtmlLyricsUtils.canonize(lyrics))
     }
   }
 }

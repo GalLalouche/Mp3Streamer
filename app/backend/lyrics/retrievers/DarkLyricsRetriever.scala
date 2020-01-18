@@ -50,7 +50,10 @@ private object DarkLyricsRetriever {
           .takeWhile(e => e.doesNotMatch(Heading) && e.doesNotMatch(Div)) // this fucking site...
           .map(_.trim)
           .mkString("\n")
-          .|>(HtmlLyricsUtils.trimBreakLines).|>(HtmlLyricsUtils.canonize).trim
+          .|>(HtmlLyricsUtils.trimBreakLines)
+          .trim
+          .|>(HtmlLyricsUtils.canonize)
+
       if (isInstrumental($)) LyricParseResult.Instrumental else LyricParseResult.Lyrics($)
     }
   }

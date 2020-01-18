@@ -4,13 +4,12 @@ import java.util.regex.Pattern
 
 import backend.external.DocumentSpecs
 import backend.lyrics.Instrumental
-import backend.lyrics.retrievers.LyricsSpec._
 import org.scalatest.{Assertion, Suite}
 import org.scalatest.matchers.{BePropertyMatcher, BePropertyMatchResult}
+import resource.managed
 
 import scala.PartialFunction.cond
-
-import common.rich.primitives.RichString._
+import scala.io.Source
 
 trait LyricsSpec extends DocumentSpecs {self: Suite =>
   protected[retrievers] val instrumental: BePropertyMatcher[LyricParseResult] =
@@ -19,13 +18,11 @@ trait LyricsSpec extends DocumentSpecs {self: Suite =>
     e => BePropertyMatchResult(cond(e) {
       case RetrievedLyricsResult.RetrievedLyrics(Instrumental(_)) => true
     }, "instrumental")
-  // TODO match entire lyrics, not just the first lines
-  protected[retrievers] def verifyLyrics(
-      res: LyricParseResult, firstLine: String, lastLine: String): Assertion = res match {
+  protected[retrievers] def verifyLyrics(res: LyricParseResult, resultPath: String): Assertion = res match {
     case LyricParseResult.Lyrics(l) =>
-      val lines = l.split(HtmlNewLine)
-      lines.head shouldReturn firstLine
-      lines.last shouldReturn lastLine
+      // RichFile.readAll doesn't read the final linebreak... Fixing it would probably cause way too many bugs :|
+      val contents = managed(Source.fromFile(getResourceFile(resultPath), "UTF-8")).map(_.mkString).opt.get
+      l shouldReturn contents
     case _ => fail(s"Invalid result: <$res>")
   }
   protected[retrievers] def verifyError(result: LyricParseResult): Assertion =

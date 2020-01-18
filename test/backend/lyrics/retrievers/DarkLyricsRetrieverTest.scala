@@ -13,16 +13,11 @@ class DarkLyricsRetrieverTest extends FreeSpec with LyricsSpec {
   "fromHtml" - {
     def getHtml(trackNumber: Int, html: String = "dark_lyrics.html") =
       DarkLyricsRetriever.parser(getDocument(html), fakeModelFactory.song(track = trackNumber))
-    "first song" in {
-      verifyLyrics(getHtml(1),
-        "<i>[Samples from the film \"The Dead\", an adaptation of James Joyce's short story from his book]</i>",
-        "\"I know all about the honor of God, Mary Jane.\"")
-    }
-    "middle song" in {
-      verifyLyrics(getHtml(8), "Daybreak", "and you can tell your stepfather I said so")
-    }
-    "last song" in {
-      verifyLyrics(getHtml(11), "Falling through pages of Martens on angels", "And I'll never be open again")
+    "vanilla" - {
+      def testEntireLyrics(i: Int) = verifyLyrics(getHtml(i), s"dark_lyrics_$i.txt")
+      "first song" in testEntireLyrics(1)
+      "middle song" in testEntireLyrics(8)
+      "last song" in testEntireLyrics(11)
     }
     "instrumental" in {
       getHtml(4) should be an instrumental
@@ -31,7 +26,7 @@ class DarkLyricsRetrieverTest extends FreeSpec with LyricsSpec {
       getHtml(1, "dark_lyrics3.html") should be an instrumental
     }
     "instrumental in part of song" in {
-      verifyLyrics(getHtml(9, "dark_lyrics2.html"), "<i>[I. The Message]</i>", "How will it be?")
+      verifyLyrics(getHtml(9, "dark_lyrics2.html"), "dark_lyrics_9.txt")
     }
   }
 }

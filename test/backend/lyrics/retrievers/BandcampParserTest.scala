@@ -21,15 +21,13 @@ class BandcampParserTest extends FreeSpec with LyricsSpec with MockitoSugar {
     "english" in {
       verifyLyrics(
         BandcampParser.parser(getDocument("bandcamp_english.html"), fakeModelFactory.song()),
-        "you can tell",
-        "I AM THE GIRL ANACHRONISM",
+        "bandcamp_english.txt",
       )
     }
-    "hebrew" in {
+    "hebrew" in { // SBT has issues with hebrew files it seems
       verifyLyrics(
         BandcampParser.parser(getDocument("bandcamp_hebrew.html"), fakeModelFactory.song()),
-        "ג'נה לבדה יושבת על הדשא",
-        "וכל מה שידעה פתאום נעלם ממנה כמו חלום",
+        "bandcamp_hebrew.txt"
       )
     }
   }

@@ -8,14 +8,16 @@ class LyricsParserTest extends FreeSpec with LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
   "fromHtml" - {
     "has lyrics" in {
-      verifyLyrics(LyricsParser(getDocument("lyrics1.html"), fakeModelFactory.song()),
-        "Take me down to the Paradise City",
-        "Baby")
+      verifyLyrics(
+        LyricsParser(getDocument("lyrics1.html"), fakeModelFactory.song()),
+        "lyrics1.txt",
+      )
     }
     "has lyrics2" in {
-      verifyLyrics(LyricsParser(getDocument("lyrics2.html"), fakeModelFactory.song()),
-        "The boys who kiss and bite",
-        "I will be sure we shake the mountains while we dance")
+      verifyLyrics(
+        LyricsParser(getDocument("lyrics2.html"), fakeModelFactory.song()),
+        "lyrics2.txt",
+      )
     }
     "instrumental" - {
       "[instrumental]" in {
