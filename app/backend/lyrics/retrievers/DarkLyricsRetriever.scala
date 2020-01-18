@@ -8,7 +8,6 @@ import models.Song
 import org.jsoup.nodes.Document
 
 import common.rich.RichT._
-import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 
 private class DarkLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
@@ -34,24 +33,24 @@ private object DarkLyricsRetriever {
 
   @VisibleForTesting
   private[retrievers] val parser: SingleHostParser = new SingleHostParser {
-    private val BreakLinesOrNewLinePattern = Pattern compile "((<br>)|\\n)"
+    private val BreakLinesOrNewLinePattern = Pattern compile """((<br>)|\n)"""
     private def isInstrumental(html: String) =
       html.removeAll(BreakLinesOrNewLinePattern).toLowerCase == "<i>[instrumental]</i>"
-    private val BreakLinesPattern = Pattern compile "<br>"
-    private def removeEndingBreakLines(ss: Seq[String]) =
-      ss.reverse.dropWhile(_.matches(BreakLinesPattern)).reverse
 
     override val source: String = "DarkLyrics"
-    // HTML is structured for shit, so might as well parse it by hand
+    // HTML is structured for shit, so might as well parse it by hand.
+    private val Heading = Pattern compile ".*<h3>.*"
+    private val Div = Pattern compile ".*<div.*"
     override def apply(html: Document, s: Song) = {
+      val currentTrack = Pattern compile s""".*a name="${s.track}".*"""
       val $ = html.toString
           .split("\n").toList
-          .dropWhile(_.matches(s""".*a name="${s.track}".*""").isFalse)
+          .dropWhile(_ doesNotMatch currentTrack)
           .drop(1)
-          .takeWhile(e => e.matches(".*<h3>.*").isFalse && e.matches(".*<div.*").isFalse) // this fucking site...
+          .takeWhile(e => e.doesNotMatch(Heading) && e.doesNotMatch(Div)) // this fucking site...
           .map(_.trim)
-          .mapTo(removeEndingBreakLines)
           .mkString("\n")
+          .|>(HtmlLyricsUtils.trimBreakLines).|>(HtmlLyricsUtils.canonize).trim
       if (isInstrumental($)) LyricParseResult.Instrumental else LyricParseResult.Lyrics($)
     }
   }

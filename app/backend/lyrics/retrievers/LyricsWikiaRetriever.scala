@@ -47,7 +47,7 @@ private object LyricsWikiaRetriever {
       if (lyrics.toLowerCase.contains("we are not licensed to display the full lyrics"))
         LyricParseResult.Error(new NoSuchElementException("No actual lyrics (no license)"))
       else if (lyrics contains "TrebleClef") LyricParseResult.Instrumental
-      else LyricParseResult.Lyrics(lyrics)
+      else LyricParseResult.Lyrics(lyrics |> HtmlLyricsUtils.canonize)
     }
   }
 }

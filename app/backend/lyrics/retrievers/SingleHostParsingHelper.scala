@@ -33,11 +33,11 @@ private class SingleHostParsingHelper @Inject()(it: InternetTalker, logger: Logg
           case LyricParseResult.Error(e) => RetrievedLyricsResult.Error(e)
         })
       .filterWithMessage({
-        case RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(_, h)) => h doesNotMatch emptyHtmlRegex
+        case RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(_, h)) => h doesNotMatch EmptyHtmlRegex
         case _ => true
       }, s"Lyrics in $url were empty")
 }
 
 private object SingleHostParsingHelper {
-  private val emptyHtmlRegex: Pattern = Pattern compile "[\\s<br>/]*"
+  private val EmptyHtmlRegex: Pattern = Pattern compile "[\\s<br>/]*"
 }

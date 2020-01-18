@@ -8,6 +8,7 @@ import javax.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
 
+import common.rich.RichT._
 import common.RichJsoup._
 import common.rich.primitives.RichString._
 
@@ -21,7 +22,7 @@ private object BandcampParser {
   @VisibleForTesting private[retrievers] val parser = new SingleHostParser {
     override def source = "Bandcamp"
     override def apply(d: Document, s: Song) = LyricParseResult.Lyrics(
-      d.selectSingle(".lyricsText").wholeText.simpleReplace("\n", "\n<BR>\n")
+      d.selectSingle(".lyricsText").wholeText |> HtmlLyricsUtils.addBreakLines
     )
   }
 }

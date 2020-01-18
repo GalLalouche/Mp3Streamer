@@ -20,7 +20,7 @@ private object LyricsParser extends SingleHostParser {
         s.removeAll(Annotations)
             .simpleReplace(GapBetweenAnnotations, "\n\n")
             .trim
-            .simpleReplace("\n", "\n<BR>\n")
+            .simpleReplace("\n", "<BR>\n")
       )
     }
 }

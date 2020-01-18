@@ -10,7 +10,6 @@ import org.scalatest.matchers.{BePropertyMatcher, BePropertyMatchResult}
 
 import scala.PartialFunction.cond
 
-import common.rich.RichT._
 import common.rich.primitives.RichString._
 
 trait LyricsSpec extends DocumentSpecs {self: Suite =>
@@ -20,12 +19,11 @@ trait LyricsSpec extends DocumentSpecs {self: Suite =>
     e => BePropertyMatchResult(cond(e) {
       case RetrievedLyricsResult.RetrievedLyrics(Instrumental(_)) => true
     }, "instrumental")
+  // TODO match entire lyrics, not just the first lines
   protected[retrievers] def verifyLyrics(
       res: LyricParseResult, firstLine: String, lastLine: String): Assertion = res match {
     case LyricParseResult.Lyrics(l) =>
-      // TODO RichString.split
-      // TODO Verify the existence of <BR>, otherwise the HTML won't be displayed correctly.
-      val lines = l.removeAll(BrPattern).|>(OsAgnosticNewLine.split).filter(_.nonEmpty).toVector
+      val lines = l.split(HtmlNewLine)
       lines.head shouldReturn firstLine
       lines.last shouldReturn lastLine
     case _ => fail(s"Invalid result: <$res>")
@@ -35,6 +33,5 @@ trait LyricsSpec extends DocumentSpecs {self: Suite =>
 }
 
 private object LyricsSpec {
-  private val BrPattern = Pattern compile "<br>\\s*"
-  private val OsAgnosticNewLine = Pattern compile "\r?\n"
+  private val HtmlNewLine = Pattern.compile("<BR>\r?\n", Pattern.CASE_INSENSITIVE)
 }

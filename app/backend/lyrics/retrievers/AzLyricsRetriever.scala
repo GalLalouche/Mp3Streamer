@@ -1,15 +1,12 @@
 package backend.lyrics.retrievers
 
-import java.util.regex.Pattern
-
 import com.google.common.annotations.VisibleForTesting
 import javax.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
 
-import common.RichJsoup._
 import common.rich.RichT._
-import common.rich.primitives.RichString._
+import common.RichJsoup._
 
 private class AzLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
     extends HtmlRetriever {
@@ -31,13 +28,11 @@ private object AzLyricsRetriever {
     override def urlFor(s: Song) = s"$hostPrefix/${normalize(s.artistName)}/${normalize(s.title)}.html"
   }
   @VisibleForTesting
-  private val XmlComment = Pattern.compile("<!--.*?-->\\s*")
   private[retrievers] val parser: SingleHostParser = new SingleHostParser {
     // AZ lyrics don't support instrumental :\
     override def apply(d: Document, s: Song): LyricParseResult = LyricParseResult.Lyrics(
       d.selectSingle(".main-page .text-center div:not([class])")
-          .html
-          .mapTo(_.removeAll(XmlComment))
+          .wholeText.trim.|>(HtmlLyricsUtils.addBreakLines)
     )
     override val source = "AZLyrics"
   }
