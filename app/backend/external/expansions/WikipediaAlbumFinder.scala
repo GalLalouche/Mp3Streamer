@@ -48,7 +48,7 @@ private class WikipediaAlbumFinder @Inject()(
           .filter(e => score(e.text) > 0.95)
           .map(_.attr("href"))
           .filter(_.nonEmpty)
-          .filterNot(_ startsWith "http") // Filters external links
+          .filterNot(_ contains "//") // Remove external links, see https://stackoverflow.com/q/4071117/736508
           .filterNot(_ contains "redlink=1")
           .map(s"https://$documentLanguage.wikipedia.org" + _ |> Url)
           .mapTo(_.toVector.ensuring(_.forall(_.isValid)))

@@ -42,6 +42,11 @@ class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
       "https://en.wikipedia.org/w/index.php?title=Preachers_of_the_Night&redirect=no" -> Redirected)
         .map(_.value.link shouldReturn Url("https://en.wikipedia.org/wiki/Preachers_of_the_Night_(album)"))
   }
+  "Links starting with // are ignored" in {
+    findAlbum("wiki_double_slash_external.html", Album("Alvvays", 2014, Artist("Alvvays")),
+      "https://en.wikipedia.org/w/index.php?title=Alvvays_(album)&redirect=no" -> NotRedirected)
+        .map(_.value.link shouldReturn Url("https://en.wikipedia.org/wiki/Alvvays_(album)"))
+  }
 
   "Ignores external links" in {
     findAlbum("wikipedia_http_prefix.html", Album("Tick Tock", 2009, Artist("Gazpacho")))
