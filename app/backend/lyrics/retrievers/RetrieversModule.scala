@@ -1,5 +1,6 @@
 package backend.lyrics.retrievers
 
+import backend.lyrics.retrievers.bandcamp.BandcampParser
 import com.google.inject.Provides
 import net.codingwell.scalaguice.ScalaModule
 
