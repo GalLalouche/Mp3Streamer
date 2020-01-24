@@ -11,7 +11,7 @@ import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 
-private[lyrics] class DarkLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
+private class DarkLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
     extends HtmlRetriever {
   import DarkLyricsRetriever._
 

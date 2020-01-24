@@ -11,7 +11,7 @@ import common.RichJsoup._
 import common.rich.RichT._
 import common.rich.primitives.RichString._
 
-private[lyrics] class AzLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
+private class AzLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
     extends HtmlRetriever {
   import AzLyricsRetriever._
 

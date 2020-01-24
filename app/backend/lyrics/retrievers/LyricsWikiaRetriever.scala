@@ -12,7 +12,7 @@ import common.RichJsoup._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 
-private[lyrics] class LyricsWikiaRetriever @Inject()(
+private class LyricsWikiaRetriever @Inject()(
     singleHostHelper: SingleHostParsingHelper,
 ) extends HtmlRetriever {
   import LyricsWikiaRetriever._

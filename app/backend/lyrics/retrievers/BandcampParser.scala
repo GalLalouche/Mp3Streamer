@@ -11,12 +11,12 @@ import org.jsoup.nodes.Document
 import common.RichJsoup._
 import common.rich.primitives.RichString._
 
-class BandcampParser @Inject()(helper: SingleHostParsingHelper) extends PassiveParser {
+private class BandcampParser @Inject()(helper: SingleHostParsingHelper) extends PassiveParser {
   override val parse = helper(parser)
   override val doesUrlMatchHost = _.address matches UrlPattern
 }
 
-object BandcampParser {
+private object BandcampParser {
   private val UrlPattern = Pattern compile """.+\.bandcamp.com/track/.*"""
   @VisibleForTesting private[retrievers] val parser = new SingleHostParser {
     override def source = "Bandcamp"
