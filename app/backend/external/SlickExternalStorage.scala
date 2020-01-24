@@ -43,9 +43,10 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](
       override def parse(s: String): MarkedLink[R] = {
         val split = s.split(if (s.contains(SplitCharBackup)) SplitCharBackup else SplitChar)
             .ifNot(_.length == 4).thenThrow(InvalidEntry(s))
+        val url = Url(split(1))
         MarkedLink[R](
           link = Url(split(2)),
-          host = Host(name = split(0), url = Url(split(1))),
+          host = Host.withUrl(url).getOrElse(Host(name = split(0), url = url)),
           mark = LinkMark.withName(split(3)),
         )
       }

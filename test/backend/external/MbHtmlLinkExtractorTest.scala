@@ -25,10 +25,10 @@ class MbHtmlLinkExtractorTest extends AsyncFreeSpec with DocumentSpecs {
       BaseLink[Artist](Url("https://www.wikidata.org/wiki/Q5245804"), Host.Wikidata),
       BaseLink[Artist](Url("https://en.wikipedia.org/wiki/Deafheaven"), Host.Wikipedia),
       BaseLink[Artist](Url("https://musicbrainz.org/artist/foobar"), Host.MusicBrainz),
+      BaseLink[Artist](Url("https://deafheavens.bandcamp.com/"), Host.Bandcamp),
       /* Ignored */
       //BaseLink[Artist](Url("http://deafheaven.com/"), Host("home", Url("deafheaven.com"))),
       //BaseLink[Artist](Url("https://itunes.apple.com/es/album/id1123970968"), Host("itunes", Url("itunes.apple.com"))),
-      //BaseLink[Artist](Url("https://deafheavens.bandcamp.com/"), Host("bandcamp", Url("deafheavens.bandcamp.com"))),
       //BaseLink[Artist](Url("http://www.discogs.com/artist/2025280"), Host("discogs", Url("www.discogs.com"))),
       //BaseLink[Artist](Url("https://myspace.com/deafheaven"), Host("myspace", Url("myspace.com"))),
       //BaseLink[Artist](Url("https://twitter.com/deafheavenband"), Host("twitter", Url("twitter.com"))),

@@ -22,6 +22,12 @@ class UrlTest extends FreeSpec with AuxSpecs {
     "without http" in {
       Url("www.metal-archives.com/bands/Cruachan/86/").host shouldReturn Url("www.metal-archives.com")
     }
+    "for bandcamp" in {
+     Url("https://shanipeleg1.bandcamp.com/album/-").host shouldReturn Url("bandcamp.com")
+    }
+    "no www" in {
+      Url("https://bandcamp.com").host shouldReturn Url("bandcamp.com")
+    }
   }
   "+/" - {
     "should add / if needed" in {

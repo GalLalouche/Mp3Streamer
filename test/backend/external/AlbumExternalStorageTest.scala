@@ -57,4 +57,12 @@ class AlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
     val value = Vector(link1, link2, link3, link4) -> DatedFreshness(LocalDateTime.now)
     storage.store(album, value) >> storage.load(album).map(_.value shouldReturn value)
   }
+  "canonicalizes host on extraction" in {
+    val nonStandardWikipediaLink = MarkedLink[Album](
+      Url("en.wikipedia.org/foo/bar.html"), Host("Wikipedia", Url("en.wikipedia.org")), LinkMark.New)
+    val standardWikipediaLink = MarkedLink[Album](
+      Url("en.wikipedia.org/foo/bar.html"), Host.Wikipedia, LinkMark.New)
+    storage.store(album, Vector(nonStandardWikipediaLink) -> AlwaysFresh)
+        .>>(storage.load(album)).map(_.value shouldReturn Vector(standardWikipediaLink) -> AlwaysFresh)
+  }
 }
