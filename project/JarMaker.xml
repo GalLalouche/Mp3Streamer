@@ -31,6 +31,7 @@
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.google.inject/guice/jars/guice-4.2.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.google.j2objc/j2objc-annotations/jars/j2objc-annotations-1.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.h2database/h2/jars/h2-1.4.196.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.jsuereth/scala-arm_2.12/jars/scala-arm_2.12-2.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.typesafe.akka/akka-actor_2.12/jars/akka-actor_2.12-2.5.4.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.typesafe.akka/akka-http-core_2.12/jars/akka-http-core_2.12-10.0.10.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.typesafe.akka/akka-parsing_2.12/jars/akka-parsing_2.12-10.0.10.jar" />

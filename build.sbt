@@ -2,6 +2,7 @@ name := "Mp3Streamer"
 version := "1.0-SNAPSHOT"
 
 resourceDirectory in Test := baseDirectory.value / "test-resources"
+resourceDirectory in Compile := baseDirectory.value / "conf"
 val scalaVersionStr = "2.12.10"
 scalaVersion := scalaVersionStr
 version := "1.0-SNAPSHOT"

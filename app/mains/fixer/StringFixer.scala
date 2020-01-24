@@ -1,10 +1,17 @@
 package mains.fixer
 
+import java.io.File
+
+import resource._
 import java.util.regex.Pattern
 
 import com.google.common.annotations.VisibleForTesting
 
+import scala.io.Source
+
 import common.rich.collections.RichSeq._
+import common.rich.collections.RichTraversableOnce._
+import common.rich.path.RichFile._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
@@ -41,28 +48,15 @@ object StringFixer extends (String => String) {
   private val Delimiters = Pattern compile """[ ()\-:/"&]+"""
 
   // Modified from https://stackoverflow.com/a/29364083/736508
-  private val toAscii = Map(
-    ' ' -> " ", 'A' -> "A", 'Æ' -> "Ae", 'B' -> "B", 'C' -> "C", 'D' -> "D", 'E' -> "E", 'F' -> "F",
-    'G' -> "G", 'H' -> "H", 'I' -> "I", 'J' -> "J", 'K' -> "K", 'L' -> "L", 'M' -> "M", 'N' -> "N",
-    'O' -> "O", 'P' -> "P", 'Q' -> "Q", 'R' -> "R", 'S' -> "S", 'T' -> "T", 'U' -> "U", 'V' -> "V",
-    'W' -> "W", 'X' -> "X", 'Y' -> "Y", 'Z' -> "Z",
-    'a' -> "a", 'æ' -> "ae", 'b' -> "b", 'c' -> "c", 'd' -> "d", 'e' -> "e", 'f' -> "f", 'g' -> "g",
-    'h' -> "h", 'i' -> "i", 'j' -> "j", 'k' -> "k", 'l' -> "l", 'm' -> "m", 'n' -> "n", 'o' -> "o",
-    'ø' -> "o", 'p' -> "p", 'q' -> "q", 'r' -> "r", 's' -> "s", 't' -> "t", 'u' -> "u", 'v' -> "v",
-    'w' -> "w", 'x' -> "x", 'y' -> "y", 'z' -> "z",
-    'Ё' -> "E", 'А' -> "A", 'Б' -> "B", 'В' -> "V", 'Г' -> "G", 'Д' -> "D", 'Е' -> "E", 'Ж' -> "Zh",
-    'З' -> "Z", 'И' -> "I", 'Й' -> "Y", 'К' -> "K", 'Л' -> "L", 'М' -> "M", 'Н' -> "N", 'О' -> "O",
-    'П' -> "P", 'Р' -> "R", 'С' -> "S", 'Т' -> "T", 'У' -> "U", 'Ф' -> "F", 'Х' -> "H", 'Ц' -> "Ts",
-    'Ч' -> "Ch", 'Ш' -> "Sh", 'Щ' -> "Sch", 'Ъ' -> "", 'Ы' -> "I", 'Ь' -> "", 'Э' -> "E", 'Ю' -> "Ju",
-    'Я' -> "Ja", 'а' -> "a", 'б' -> "b", 'в' -> "v", 'г' -> "g", 'д' -> "d", 'е' -> "e", 'ж' -> "zh",
-    'з' -> "z", 'и' -> "i", 'й' -> "y", 'к' -> "k", 'л' -> "l", 'м' -> "m", 'н' -> "n", 'о' -> "o",
-    'п' -> "p", 'р' -> "r", 'с' -> "s", 'т' -> "t", 'у' -> "u", 'ф' -> "f", 'х' -> "kh", 'ц' -> "ts",
-    'ч' -> "ch", 'ш' -> "sh", 'щ' -> "sch", 'ъ' -> "", 'ы' -> "i", 'ь' -> "", 'э' -> "e",
-    'ю' -> "ju", 'я' -> "ja", 'ё' -> "e", 'і' -> "i", '’' -> "'")
+  // TODO RichFile should really start using UTF-8 by default
+  private val toAscii: Map[Char, String] =
+    managed(Source.fromInputStream(getClass.getResourceAsStream("ascii.txt"), "UTF-8"))
+        .map(_.getLines().map(_.splitParse(":", _.toSeq.single, identity)).toMap)
+        .opt.get
+        .++('A'.to('z').map(_ :-> (_.toString)))
   private def normalizeDashesAndApostrophes(s: String) =
     s.replaceAll(SpecialApostrophes, "'").replaceAll(SpecialDashes, "-")
   private def asciiNormalize(s: String): String = {
-    import common.rich.primitives.RichString._
     if (s.isWhitespaceOrEmpty)
       return s
     val withoutSpecialCharacters =
