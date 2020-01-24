@@ -27,13 +27,14 @@ private class LyricsCache @Inject()(
     defaultArtistInstrumental: InstrumentalArtist,
     htmlComposites: CompositeHtmlRetriever,
     @CompositePassiveParser passiveParsers: PassiveParser,
+    @CompositeAlbumParser albumParsers: HtmlRetriever,
     lyricsStorage: LyricsStorage,
 ) {
   private implicit val iec: ExecutionContext = ec
   private val firstDefaultRetrievers = DefaultClassicalInstrumental
   private val lastDefaultRetrievers = defaultArtistInstrumental
   private val allComposite = new CompositeLyricsRetriever(
-    ec, logger, Vector(htmlComposites, lastDefaultRetrievers, firstDefaultRetrievers))
+    logger, Vector(htmlComposites, albumParsers, lastDefaultRetrievers, firstDefaultRetrievers))
   private val cache = new OnlineRetrieverCacher[Song, Lyrics](
     lyricsStorage,
     allComposite(_) mapEitherMessage {

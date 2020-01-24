@@ -7,8 +7,8 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 private[lyrics] class CompositeHtmlRetriever(
-    ec: ExecutionContext, logger: Logger, retrievers: Seq[LyricsRetriever])
-    extends CompositeLyricsRetriever(ec, logger, retrievers)
+    ec: ExecutionContext, logger: Logger, retrievers: Seq[HtmlRetriever])
+    extends CompositeLyricsRetriever(logger, retrievers)(ec)
         with HtmlRetriever {
   @Inject() def this(
       ec: ExecutionContext,
@@ -25,8 +25,7 @@ private[lyrics] class CompositeHtmlRetriever(
   ))
   private implicit val iec: ExecutionContext = ec
 
-  private val htmlRetrievers = retrievers.asInstanceOf[Seq[HtmlRetriever]]
-  private val aux = PassiveParser.composite(htmlRetrievers)
+  private val aux = PassiveParser.composite(retrievers: _*)
 
   override def doesUrlMatchHost = aux.doesUrlMatchHost
   override val parse = aux.parse

@@ -11,7 +11,8 @@ import common.RichJsoup._
 import common.io.InternetTalker
 import common.rich.RichT._
 
-private class MbHtmlLinkExtractorHelper @Inject()(it: InternetTalker) {
+/** Because MusicBrainz's API *still* doesn't allow for url-rel in release-groups. */
+private[backend] class MbHtmlLinkExtractorHelper @Inject()(it: InternetTalker) {
   private implicit val iec: ExecutionContext = it
   def apply[R <: Reconcilable](metadataType: String)(id: ReconID): Future[BaseLinks[R]] = {
     def extractLink(e: Element): Option[BaseLink[R]] = {
@@ -23,7 +24,7 @@ private class MbHtmlLinkExtractorHelper @Inject()(it: InternetTalker) {
     }
     def extractLinks(d: Document): List[BaseLink[R]] = d
         .selectIterator(".external_links li")
-        .filterNot(_.className() == "all-relationships")
+        .filterNot(_.className == "all-relationships")
         .flatMap(extractLink)
         .toList
 

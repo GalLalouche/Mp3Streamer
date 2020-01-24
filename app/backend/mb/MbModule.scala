@@ -14,7 +14,7 @@ object MbModule extends ScalaPrivateModule {
     expose[Reconciler[Album]]
   }
 
-  @Provides private def albumReconciler(
+  @Provides private def artistReconciler(
       artistReconciler: ReconcilerCacher[Artist],
       ec: ExecutionContext
   ): OptionRetriever[Artist, ReconID] = {
