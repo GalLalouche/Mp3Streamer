@@ -39,5 +39,9 @@ class StringReconScorerTest extends FreeSpec with AuxSpecs {
     "Non-exact else returns false" - {
       verifyLowReconScore("חיים", "משה")
     }
+    "English and hebrew returns true" - {
+      verifyHighReconScore("Habiluim - הבילויים", "הבילויים")
+      verifyHighReconScore("Sheger Peger - שגר פגר", "שגר פגר")
+    }
   }
 }
