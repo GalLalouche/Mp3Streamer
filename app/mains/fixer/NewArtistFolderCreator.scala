@@ -8,6 +8,8 @@ import scala.swing.{BoxPanel, Component, Frame, GridPanel, Label, Orientation}
 import scala.swing.event.WindowClosing
 
 import common.rich.path.Directory
+import common.rich.primitives.RichBoolean._
+import common.rich.RichT._
 
 private object NewArtistFolderCreator {
   private val NumberOfLabelRows = 1
@@ -23,7 +25,8 @@ private object NewArtistFolderCreator {
       private def genreComponent(d: Directory): Component =
         if (d == null) new Label("") else
           new BoxPanel(Orientation.Horizontal) {
-            contents += ImageIO.read(d / "folder.jpg").toSquareImageIcon(40).toComponent
+            val folderImage = d.\("folder.jpg").mapIf(_.exists().isFalse).to(d / "folder.png")
+            contents += ImageIO.read(folderImage).toSquareImageIcon(40).toComponent
             contents += new Label(d.name)
           }.onMouseClick(() => {
             frame.dispose()
