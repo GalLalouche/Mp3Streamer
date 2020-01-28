@@ -2,16 +2,18 @@ package mains.splitter
 
 import java.io.File
 
-import common.io.IODirectory
-import common.rich.collections.RichTraversableOnce._
-import common.rich.path.{Directory, RichFileUtils}
-import common.rich.path.RichFile._
 import javax.inject.Inject
 import models.IOMusicFinder
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
 import scala.collection.JavaConverters._
+
+import common.io.IODirectory
+import common.rich.collections.RichIterable._
+import common.rich.collections.RichTraversableOnce._
+import common.rich.path.{Directory, RichFileUtils}
+import common.rich.path.RichFile._
 
 // Splits cue file and fixes the flac output.
 private class FlacSplitter @Inject()(cueSplitter: CueSplitter, mf: IOMusicFinder) {
@@ -40,7 +42,13 @@ private class FlacSplitter @Inject()(cueSplitter: CueSplitter, mf: IOMusicFinder
 
   def apply(cueFile: File): Unit = {
     val dir = cueFile.parent
-    val bigFlacFile = dir.files.filter(_.extension == "flac").single
+    val bigFlacFile = {
+      val $ = dir.files.filter(_.extension == "flac")
+      if ($ hasExactlySizeOf 1)
+        $.single
+      else
+        $.filter(_.nameWithoutExtension == cueFile.nameWithoutExtension).single
+    }
     val output = cueSplitter(cueFile)
     clean(output, dir, bigFlacFile)
     println("Done")
