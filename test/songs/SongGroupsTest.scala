@@ -16,9 +16,9 @@ class SongGroupsTest extends FreeSpec with AuxSpecs {
   private val song2 = fakeModelFactory.song()
   private val song3 = fakeModelFactory.song()
   private val song4 = fakeModelFactory.song()
-  private val group1 = SongGroup(Seq(song1, song2))
-  private val group2 = SongGroup(Seq(song3, song4))
-  private val groups = Seq(group1, group2)
+  private val group1 = SongGroup(Vector(song1, song2))
+  private val group2 = SongGroup(Vector(song3, song4))
+  private val groups = Vector(group1, group2)
   "fromSongs" in {
     val song5 = fakeModelFactory.song()
     val $ = SongGroups.fromGroups(groups)

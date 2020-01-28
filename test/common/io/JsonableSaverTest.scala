@@ -38,12 +38,12 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   val p3 = Person(3, "name3")
   "save" - {
     "can later load" in {
-      $ save Seq(p1)
+      $ save Vector(p1)
       $.loadArray.head shouldReturn p1
     }
     "overwrites previous save" in {
-      $ save Seq(p1)
-      $ save Seq(p2)
+      $ save Vector(p1)
+      $ save Vector(p2)
       $.loadArray.head shouldReturn p2
     }
     "object" - {
@@ -65,7 +65,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
       root.files shouldBe empty
     }
     "in order saved" in {
-      val persons: Seq[Person] = Seq(p1, p2, p3)
+      val persons: Seq[Person] = Vector(p1, p2, p3)
       $ save persons
       $.loadArray shouldReturn persons
     }
@@ -75,20 +75,20 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
         override def jsonify(ps: Persons): JsValue = ps.ps.jsonify
         override def parse(json: JsValue): Persons = Persons(json.parse[Seq[Person]])
       }
-      val persons = Persons(Seq(p1, p2, p3))
+      val persons = Persons(Vector(p1, p2, p3))
       $ save persons
       $.loadObject[Persons] shouldReturn persons
     }
   }
   "update" - {
     "saves data" in {
-      $.update[Person](_ ++ Seq(p1))
+      $.update[Person](_ ++ Vector(p1))
       $.loadArray.head shouldReturn p1
     }
     "doesn't overwrite data" in {
-      $ save Seq(p1, p2)
-      $.update[Person](_ ++ Seq(p3))
-      $.loadArray shouldReturn Seq(p1, p2, p3)
+      $ save Vector(p1, p2)
+      $.update[Person](_ ++ Vector(p3))
+      $.loadArray shouldReturn Vector(p1, p2, p3)
     }
   }
   "lastUpdateTime" - {

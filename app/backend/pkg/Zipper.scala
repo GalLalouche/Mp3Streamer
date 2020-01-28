@@ -31,7 +31,7 @@ private class Zipper @Inject()(
     val outputName = dir.name + ".zip"
     zipsDir.getFile(outputName).getOrElse(try {
       createJsonIn(dir)
-      Seq(ZipAppPath, "a", "-r", "-mx0", s"${zipsDir.path}/$outputName", dir.path + "/*").!!
+      Vector(ZipAppPath, "a", "-r", "-mx0", s"${zipsDir.path}/$outputName", dir.path + "/*").!!
       zipsDir.getFile(outputName).get
     } finally
       deleteJson(dir)

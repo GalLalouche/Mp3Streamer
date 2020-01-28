@@ -11,7 +11,7 @@ class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
   "Preseeded" - {
     "Artist" in {
       val artist = Artist("Foobar")
-      val links = Seq(
+      val links = Vector(
         MarkedLink[Artist](Url("music.brainz"), Host.MusicBrainz, LinkMark.None),
         MarkedLink[Artist](Url("all.music"), Host.AllMusic, LinkMark.None),
         MarkedLink[Artist](Url("face.book"), Host.Facebook, LinkMark.New),
@@ -30,7 +30,7 @@ class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
     }
     "Album" in {
       val album = Album("Foo", 2000, Artist("Bar"))
-      val links = Seq(
+      val links = Vector(
         MarkedLink[Album](Url("music.brainz"), Host.MusicBrainz, LinkMark.None),
         MarkedLink[Album](Url("all.music"), Host.AllMusic, LinkMark.New),
         MarkedLink[Album](Url("wiki.pedia"), Host.Wikipedia, LinkMark.New),

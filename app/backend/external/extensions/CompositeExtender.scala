@@ -15,9 +15,9 @@ private[external] class CompositeExtender @Inject()(
     allMusicAlbumExtender: AllMusicAlbumExtender,
 ) {
   private val artistExtendersMap: HostMap[LinkExtender[Artist]] =
-    Seq(allMusicArtistExtender, lastFmArtistExtender, MusicBrainzArtistExtender).mapBy(_.host)
+    Vector(allMusicArtistExtender, lastFmArtistExtender, MusicBrainzArtistExtender).mapBy(_.host)
   private val albumExtenderMap: HostMap[LinkExtender[Album]] =
-    Seq(allMusicAlbumExtender, MusicBrainzAlbumExtender).mapBy(_.host)
+    Vector(allMusicAlbumExtender, MusicBrainzAlbumExtender).mapBy(_.host)
 
   private val artistClass = classOf[Artist]
   private val albumClass = classOf[Album]

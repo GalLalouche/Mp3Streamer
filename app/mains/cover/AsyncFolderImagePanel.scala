@@ -60,7 +60,7 @@ private object AsyncFolderImagePanel {
       $
     }
   }
-  private val TextProps = Seq(
+  private val TextProps = Vector(
     // Multiple colors and locations to ensure visibility regardless of image content.
     TextLabelProps(SwingConstants.TOP, SwingConstants.LEFT, Color.BLACK),
     TextLabelProps(SwingConstants.TOP, SwingConstants.RIGHT, Color.GREEN),

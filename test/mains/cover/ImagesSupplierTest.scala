@@ -31,7 +31,7 @@ class ImagesSupplierTest extends AsyncFreeSpec with OneInstancePerTest with AuxS
     def remaining: Int = ts.size - iterated
   }
   private val urls =
-    new RemainingIterator(Seq("foo", "bar").map(e => UrlSource(Url(e), width = 500, height = 500)): _*)
+    new RemainingIterator(Vector("foo", "bar").map(e => UrlSource(Url(e), width = 500, height = 500)): _*)
   "Simple" - {
     val $ = ImagesSupplier(urls, downloadImage)
     "Should fetch when needed" in {

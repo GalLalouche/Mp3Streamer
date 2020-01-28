@@ -10,7 +10,7 @@ import common.io.MemoryRoot
 class FakeModelFactory {
   private val root = new MemoryRoot
   def album(dirName: String = UUID.randomUUID().toString, title: String = "album",
-      artistName: String = "artist", year: Int = 2000, songs: Seq[Song] = Seq()) =
+      artistName: String = "artist", year: Int = 2000, songs: Seq[Song] = Nil) =
     Album(root addSubDir dirName, title = title, artistName = artistName, year = year, songs = songs)
   def song(filePath: String = s"${UUID.randomUUID()}.mp3", title: String = "title",
       artistName: String = "artist", albumName: String = "album", track: Int = 1, year: Int = 2000,
@@ -21,7 +21,7 @@ class FakeModelFactory {
   ): MemorySong =
     MemorySong(root.addFile(filePath), title, artistName, albumName, track, year, bitRate, duration, size,
       discNumber, trackGain, composer, conductor, orchestra, opus, performanceYear)
-  def artist(name: String = "artist", albums: Seq[Album] = Seq()): Artist = Artist(name, albums.toSet)
+  def artist(name: String = "artist", albums: Seq[Album] = Nil): Artist = Artist(name, albums.toSet)
   implicit val arbSong: Arbitrary[MemorySong] = Arbitrary(for {
     title <- arbitrary[String]
     artistName <- arbitrary[String]

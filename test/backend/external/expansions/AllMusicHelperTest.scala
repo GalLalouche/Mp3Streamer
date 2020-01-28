@@ -76,7 +76,7 @@ class AllMusicHelperTest extends AsyncFreeSpec with DocumentSpecs {
           case r: WSRequest if asMap.contains(r.url) && r.followRedirects.exists(_.isFalse) =>
             FakeWSResponse(
               status = HttpURLConnection.HTTP_MOVED_PERM,
-              allHeaders = Map("location" -> Seq(asMap(r.url))))
+              allHeaders = Map("location" -> Vector(asMap(r.url))))
         }))
       }
       "regular" in {

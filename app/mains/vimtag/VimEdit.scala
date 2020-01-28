@@ -22,7 +22,7 @@ private class VimEdit @Inject()(implicit ec: ExecutionContext) {
     temp -> inFile(temp)
   }
   def inFile(file: File): Future[Seq[String]] = Future {
-    Seq(VimLocation + FormattedCommands, file.path).!!
+    Vector(VimLocation + FormattedCommands, file.path).!!
     file.lines.filterNot(_ startsWith "#").toVector
   }
 }

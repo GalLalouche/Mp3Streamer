@@ -7,7 +7,7 @@ import common.io.WSAliases._
 case class FakeWSResponse(
     allHeaders: Map[String, Seq[String]] = Map(),
     status: Int = -1,
-    cookies: Seq[WSCookie] = Seq(),
+    cookies: Seq[WSCookie] = Nil,
     bytes: Array[Byte] = Array()) extends WSResponse {
   override def underlying[T] = this.asInstanceOf[T]
   override def header(key: String) = allHeaders(key).headOption
