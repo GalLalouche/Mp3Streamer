@@ -7,24 +7,18 @@ import org.scalatest.FreeSpec
 class LyricsParserTest extends FreeSpec with LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
   "fromHtml" - {
-    "has lyrics" in {
-      verifyLyrics(
-        LyricsParser(getDocument("lyrics1.html"), fakeModelFactory.song()),
-        "lyrics1.txt",
-      )
-    }
-    "has lyrics2" in {
-      verifyLyrics(
-        LyricsParser(getDocument("lyrics2.html"), fakeModelFactory.song()),
-        "lyrics2.txt",
-      )
-    }
+    def getLyrics(name: String) = LyricsParser(getDocument(name + ".html"), fakeModelFactory.song())
+    def checkLyrics(name: String) = verifyLyrics(getLyrics(name), name + ".txt")
+
+    "has lyrics" in {checkLyrics("lyrics1")}
+    "has lyrics2" in {checkLyrics("lyrics2")}
+    "Ignores parenthesis comments" in {checkLyrics("parens")}
     "instrumental" - {
       "[instrumental]" in {
-        LyricsParser(getDocument("instrumental1.html"), fakeModelFactory.song()) should be an instrumental
+        getLyrics("instrumental1") should be an instrumental
       }
       "no brackets" in {
-        LyricsParser(getDocument("instrumental2.html"), fakeModelFactory.song()) should be an instrumental
+        getLyrics("instrumental2") should be an instrumental
       }
     }
   }

@@ -13,6 +13,8 @@ import common.rich.primitives.RichString._
 private object LyricsParser extends SingleHostParser {
   private val Annotations = Pattern compile """\[.*?\]"""
   private val GapBetweenAnnotations = Pattern compile "\n{2,}"
+  // Because some assholes add (Chorus 1) to the lyrics inside of the annotations.
+  private val SongParts = Pattern compile "((^)|(\n\n))\\(\\w+( \\d+)?\\)\n"
   override val source = "GeniusLyrics"
   override def apply(d: Document, s: Song): LyricParseResult =
     d.selectSingle("div .lyrics").wholeText.trim match {
@@ -20,6 +22,7 @@ private object LyricsParser extends SingleHostParser {
       case s => LyricParseResult.Lyrics(
         s.removeAll(Annotations)
             .replaceAll(GapBetweenAnnotations, "\n\n")
+            .replaceAll(SongParts, "\n\n")
             .trim |> HtmlLyricsUtils.addBreakLines
       )
     }
