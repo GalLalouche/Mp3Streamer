@@ -4,22 +4,23 @@ import models.{FakeModelFactory, Song}
 import org.scalatest.AsyncFreeSpec
 
 import common.io.{MemoryDir, MemoryRoot}
+import common.test.AuxSpecs
 
-class DefaultClassicalInstrumentalTest extends AsyncFreeSpec with LyricsSpec {
-  private val fakeModelFactory = new FakeModelFactory
+class DefaultClassicalInstrumentalTest extends AsyncFreeSpec with AuxSpecs {
+  protected val factory = new FakeModelFactory
   private val $ = DefaultClassicalInstrumental
   private def songWithPath(path: String): Song = {
     val split = path.split("/")
     val fileName = split.last
     val file = split.dropRight(1).foldLeft(new MemoryRoot: MemoryDir)(_ addSubDir _).addFile(fileName)
-    fakeModelFactory.song().copy(file = file)
+    factory.song().copy(file = file)
   }
 
   private val classicalSong = songWithPath(
     """D:/Media/Music/Classical/Glenn Gould/1955 Goldberg Variations/01 - Aria.flac""")
 
   "Classical file" in {
-    $(classicalSong).map(_ should be a retrievedInstrumental)
+    $(classicalSong).map(_ should be a LyricsSpec.retrievedInstrumental)
   }
 
   "Non classical file" in {

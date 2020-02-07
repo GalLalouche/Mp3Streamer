@@ -34,7 +34,7 @@ private object LyricsWikiaRetriever {
   }
 
   @VisibleForTesting
-  private[retrievers] val parser = new SingleHostParser {
+  private[retrievers] val parser: SingleHostParser = new SingleHostParser {
     override val source = "LyricsWikia"
     override def apply(d: Document, s: Song): LyricParseResult = {
       val lyrics = d

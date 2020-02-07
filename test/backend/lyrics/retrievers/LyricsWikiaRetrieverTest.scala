@@ -5,6 +5,7 @@ import org.scalatest.FreeSpec
 
 class LyricsWikiaRetrieverTest extends FreeSpec with LyricsSpec {
   private val fakeModelFactory = new FakeModelFactory
+  override private[retrievers] def parser = LyricsWikiaRetriever.parser
 
   "getUrl" in {
     LyricsWikiaRetriever.url.urlFor(
@@ -12,19 +13,8 @@ class LyricsWikiaRetrieverTest extends FreeSpec with LyricsSpec {
         "http://lyrics.wikia.com/wiki/Foo_Bar:Bazz_Qux"
   }
   "lyrics" - {
-    "has lyrics" in {
-      verifyLyrics(
-        LyricsWikiaRetriever.parser(getDocument("lyrics_wikia_lyrics.html"), fakeModelFactory.song()),
-        "lyrics_wikia_lyrics.txt",
-      )
-    }
-    "instrumental" in {
-      LyricsWikiaRetriever.parser(
-        getDocument("lyrics_wikia_instrumental.html"), fakeModelFactory.song()) should be an instrumental
-    }
-    "No license returns error" in {
-      verifyError(
-        LyricsWikiaRetriever.parser(getDocument("lyrics_wikia_no_license.html"), fakeModelFactory.song()))
-    }
+    "has lyrics" in {verifyLyrics("lyrics_wikia_lyrics")}
+    "instrumental" in {verifyInstrumental("lyrics_wikia_instrumental")}
+    "No license returns error" in {verifyError("lyrics_wikia_no_license")}
   }
 }

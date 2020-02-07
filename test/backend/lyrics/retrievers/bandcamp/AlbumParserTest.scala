@@ -1,21 +1,14 @@
 package backend.lyrics.retrievers.bandcamp
 
 import backend.lyrics.retrievers.LyricsSpec
-import models.FakeModelFactory
 import org.scalatest.FreeSpec
 
 class AlbumParserTest extends FreeSpec with LyricsSpec {
-  private val fakeModelFactory = new FakeModelFactory
+  override private[retrievers] def parser = AlbumParser
   "English" in {
-    verifyLyrics(
-      AlbumParser(getDocument("bandcamp_album_english.html"), fakeModelFactory.song(track = 2)),
-      "bandcamp_english.txt",
-    )
+    verifyLyrics("bandcamp_album_english", "bandcamp_english", trackNumber = 2)
   }
   "Hebrew" in {
-    verifyLyrics(
-      AlbumParser(getDocument("bandcamp_album_hebrew.html"), fakeModelFactory.song(track = 3)),
-      "bandcamp_hebrew.txt",
-    )
+    verifyLyrics("bandcamp_album_hebrew", "bandcamp_hebrew", trackNumber = 3)
   }
 }
