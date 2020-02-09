@@ -23,6 +23,7 @@ private object NewParser extends HtmlParser {
       // containing the links...
       val internalArray = Iterator.iterate(json)(dig)(4)
       internalArray.value.view
+          .filter(_ has 1)
           // Again, the actual links are nested within each element, but this time we can't search for the
           // head links, since the array we're actually interested in does not contain said links.
           .map(_ arrayAt 1 arrayAt 3 ensuring (_.value.length == 3))

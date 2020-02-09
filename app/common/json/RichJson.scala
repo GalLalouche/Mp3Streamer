@@ -1,17 +1,19 @@
 package common.json
 
-import play.api.libs.json.{JsArray, JsNull, JsObject, JsValue}
+import play.api.libs.json.{JsArray, JsLookupResult, JsNull, JsObject, JsValue}
 
 import scalaz.std.option.optionInstance
 import common.rich.func.ToMoreFoldableOps._
 
 import common.json.ToJsonableOps.jsonifySingle
+import common.rich.RichT._
 
 object RichJson {
   implicit class DynamicJson(private val $: JsValue) extends AnyVal {
     def value(str: String): JsValue = $.\(str).get
-    def has(str: String): Boolean =
-      $.\(str).toOption.exists(e => e != JsNull && e.asOpt[String].forall(_.nonEmpty))
+    private def isDefined: JsLookupResult => Boolean = _.toOption.exists(e => e != JsNull && e.asOpt[String].forall(_.nonEmpty))
+    def has(str: String): Boolean = $ \ str |> isDefined
+    def has(i: Int): Boolean = $ \ i |> isDefined
     def /(s: String): JsObject = value(s).as[JsObject]
     def str(s: String): String = value(s).as[String]
     def int(s: String): Int = value(s).as[Int]
