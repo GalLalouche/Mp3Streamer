@@ -3,6 +3,8 @@ package mains.cover.image
 import mains.cover.UrlSource
 import org.jsoup.nodes.Document
 
+import scala.util.Try
+
 import common.io.DirectoryRef
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichOption._
@@ -18,7 +20,7 @@ private object HtmlParser {
   def composite(dumpDir: DirectoryRef, p1: HtmlParser, ps: HtmlParser*): Document => Seq[UrlSource] = {
     val parsers = p1 :: ps.toList
     document =>
-      parsers.mapFirst(_ (document)).getOrThrow {
+      Try(parsers.mapFirst(_ (document))).toOption.flatten.getOrThrow {
         val dumpFile = dumpDir.addFile(dumpPath)
         dumpFile.clear().write(document.toString)
         "No parser found images in document; dumping to " + dumpFile.path
