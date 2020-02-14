@@ -9,4 +9,11 @@ private object LinkMark extends Enum[LinkMark] {
   case object None extends LinkMark
   case object New extends LinkMark
   case object Missing extends LinkMark
+  case class Text(s: String) extends LinkMark
+  object Text {
+    def read(s: String): Text = {
+      require(s.startsWith("Text("))
+      Text(s.substring(5, s.length - 1))
+    }
+  }
 }

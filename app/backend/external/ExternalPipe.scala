@@ -2,6 +2,7 @@ package backend.external
 
 import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
+import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.LinkRetrievers
 import backend.recon.{Reconcilable, ReconID}
 
@@ -10,12 +11,13 @@ import scalaz.syntax.bind.ToBindOps
 import scalaz.syntax.traverse._
 import common.rich.func.MoreTraversableInstances._
 import common.rich.func.MoreTraverseInstances._
-
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.RichTuple._
 import common.rich.collections.RichSet._
 import common.rich.collections.RichTraversableOnce._
+import common.rich.func.ToMoreFoldableOps._
+import scalaz.std.option.optionInstance
 
 /**
  * Encompasses all online steps for fetching the external links for a given entity.
@@ -24,14 +26,16 @@ import common.rich.collections.RichTraversableOnce._
  * @param linksRetriever        Fetches the external links attached to the entity's ID
  * @param standaloneReconcilers Any additional, standalone reconciliations that can be performed
  * @param expanders             Attempts to expand the links found by scraping the initial set
+ * @param markers:
  */
 private class ExternalPipe[R <: Reconcilable](
     reconciler: Retriever[R, ReconID],
     linksRetriever: Retriever[ReconID, BaseLinks[R]],
     standaloneReconcilers: LinkRetrievers[R],
     expanders: Traversable[ExternalLinkExpander[R]],
+    markers: Traversable[ExternalLinkMarker[R]],
 )(implicit ec: ExecutionContext) extends Retriever[R, MarkedLinks[R]] {
-  override def apply(r: R): Future[MarkedLinks[R]] = reconciler(r) >>= linksRetriever >>= expand(r)
+  override def apply(r: R): Future[MarkedLinks[R]] = reconciler(r) >>= linksRetriever >>= expand(r) >>= mark
 
   private def expand(r: R)(existingLinks: BaseLinks[R]): Future[MarkedLinks[R]] = {
     for {
@@ -73,4 +77,11 @@ private class ExternalPipe[R <: Reconcilable](
     }
     aux(links.toSet)
   }
+
+  private def mark(links: Traversable[MarkedLink[R]]): Future[MarkedLinks[R]] = links.traverse(l =>
+    markers
+        .filter(_.host == l.host)
+        .singleOpt
+        .mapHeadOrElse(_(l).map(m => l.copy(mark = m)), Future.successful(l))
+  )
 }

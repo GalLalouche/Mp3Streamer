@@ -5,6 +5,7 @@ import java.time.{Clock, Duration}
 import backend.recon.{Reconcilable, ReconcilerCacher, ReconID}
 import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
+import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.LinkRetrievers
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.storage.{FreshnessStorage, RefreshableStorage}
@@ -25,6 +26,7 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject()(
     storage: ExternalStorage[R],
     provider: Retriever[ReconID, BaseLinks[R]],
     expanders: Traversable[ExternalLinkExpander[R]],
+    markers: Traversable[ExternalLinkMarker[R]],
 ) {
   private implicit val iec: ExecutionContext = ec
 
@@ -40,6 +42,7 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject()(
       provider,
       standaloneReconcilers,
       expanders,
+      markers,
     ),
     maxAge = Duration ofDays 28,
     clock = clock,

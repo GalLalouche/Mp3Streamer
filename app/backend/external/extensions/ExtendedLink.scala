@@ -8,6 +8,7 @@ private[external] case class LinkExtension[R <: Reconcilable](name: String, link
 private[external] case class ExtendedLink[R <: Reconcilable](
     link: Url, host: Host, mark: LinkMark, extensions: Traversable[LinkExtension[R]]) {
   def isNew = mark == LinkMark.New
+  def hasText = mark.isInstanceOf[LinkMark.Text]
 
   def unmark: ExtendedLink[_] = copy(mark = LinkMark.None)
 }

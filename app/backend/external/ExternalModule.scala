@@ -1,6 +1,7 @@
 package backend.external
 
 import backend.external.expansions.ExpansionsModule
+import backend.external.mark.MarkModule
 import backend.external.recons.ReconsModule
 import backend.recon.{Album, Artist, ReconID}
 import com.google.inject.Provides
@@ -10,6 +11,7 @@ object ExternalModule extends ScalaModule {
   override def configure(): Unit = {
     install(ExpansionsModule)
     install(ReconsModule)
+    install(MarkModule)
   }
 
   @Provides private def artistLinkExtractor(helper: MbHtmlLinkExtractorHelper): ExternalLinkProvider[Artist] =
@@ -23,6 +25,6 @@ object ExternalModule extends ScalaModule {
       override def apply(v1: ReconID) = aux(v1)
     }
 
-  @Provides def artistReconStorage($: ArtistExternalStorage): ExternalStorage[Artist] = $
-  @Provides def albumReconStorage($: AlbumExternalStorage): ExternalStorage[Album] = $
+  @Provides private def artistReconStorage($: ArtistExternalStorage): ExternalStorage[Artist] = $
+  @Provides private def albumReconStorage($: AlbumExternalStorage): ExternalStorage[Album] = $
 }

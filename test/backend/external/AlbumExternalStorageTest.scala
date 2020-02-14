@@ -24,6 +24,8 @@ class AlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
     Url("www.bazqux.com/baz/qux.html"), Host("bazqux", Url("www.bazqux.com")), LinkMark.None)
   private val link3 = MarkedLink[Album](
     Url("www.spam.com/eggs/ni.html"), Host("bazqux", Url("www.spam.com")), LinkMark.Missing)
+  private val link4 = MarkedLink[Album](
+    Url("www.spam.com/eggs/ni.html"), Host("egg", Url("www.grault.com")), LinkMark.Text("corge"))
 
   "Can load what is stored" in {
     val value = Vector(link1, link2, link3) -> DatedFreshness(LocalDateTime.now)
@@ -52,9 +54,9 @@ class AlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
   }
 
   "Can handle links with ';' in their text" in {
-    val link4 = MarkedLink[Album](
+    val link5 = MarkedLink[Album](
       Url("www.bazqux.com/baz/quxlt&;.html"), Host("annoying", Url("annoying.com")), LinkMark.New)
-    val value = Vector(link1, link2, link3, link4) -> DatedFreshness(LocalDateTime.now)
+    val value = Vector(link1, link2, link3, link4, link5) -> DatedFreshness(LocalDateTime.now)
     storage.store(album, value) >> storage.load(album).map(_.value shouldReturn value)
   }
   "canonicalizes host on extraction" in {

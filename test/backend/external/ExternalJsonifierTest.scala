@@ -22,7 +22,7 @@ class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
         new ExtendedLink(
           Url("https://www.wikidata.org/wiki/Q1340975"),
           Host.Wikidata,
-          LinkMark.New,
+          LinkMark.Text("The River (1980 double studio album by Bruce Springsteen)"),
           extensions = Nil,
         ),
         new ExtendedLink(
@@ -41,7 +41,7 @@ class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
             "extensions" -> Json.obj(),
           ),
           "Wikidata" -> Json.obj(
-            "host" -> "Wikidata*",
+            "host" -> "Wikidata* The River (1980 double studio album by Bruce Springsteen)",
             "main" -> "https://www.wikidata.org/wiki/Q1340975",
             "extensions" -> Json.obj(),
           ),

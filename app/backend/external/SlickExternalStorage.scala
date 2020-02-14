@@ -44,10 +44,14 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](
         val split = s.split(if (s.contains(SplitCharBackup)) SplitCharBackup else SplitChar)
             .ifNot(_.length == 4).thenThrow(InvalidEntry(s))
         val url = Url(split(1))
+        val mark = {
+          val markText = split(3)
+          LinkMark.withNameOption(markText).getOrElse(LinkMark.Text.read(markText))
+        }
         MarkedLink[R](
           link = Url(split(2)),
           host = Host.withUrl(url).getOrElse(Host(name = split(0), url = url)),
-          mark = LinkMark.withName(split(3)),
+          mark = mark,
         )
       }
       override def stringify(e: MarkedLink[R]): String = {

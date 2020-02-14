@@ -3,6 +3,7 @@ package backend.external
 import backend.Url
 import backend.external.Host.{AllMusic, RateYourMusic, Wikipedia}
 import backend.external.expansions.ExternalLinkExpander
+import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.{LinkRetriever, LinkRetrievers}
 import backend.recon.{Album, ReconID}
 import org.scalatest.AsyncFreeSpec
@@ -36,6 +37,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
   }
   private val newLinkExpander = constExpander(expandedLink)
   private val newLinkReconciler = constReconciler(reconciledLink.host, reconciledLink)
+  private val marker = constReconciler(reconciledLink.host, reconciledLink)
   private def constFuture[T](t: T) = Future.successful(t).const
   "should mark new links" in {
     val $ = new ExternalPipe[Album](
@@ -43,6 +45,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
       Vector(existingLink) |> constFuture,
       LinkRetrievers(Vector(newLinkReconciler)),
       Vector(newLinkExpander),
+      Nil,
     )
     $(null).map(_ shouldMultiSetEqual (existingMarkedLink +: expectedNewLinks))
   }
@@ -63,6 +66,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
         Vector(existingLink) |> constFuture,
         LinkRetrievers(Vector(failedReconciler(existingHost), newLinkReconciler)),
         Vector(failedExpander(existingHost), newLinkExpander),
+        Nil
       )
       $(null).map(_ shouldMultiSetEqual (existingMarkedLink +: expectedNewLinks))
     }
@@ -72,6 +76,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
         Vector(existingLink) |> constFuture,
         LinkRetrievers(Vector(newLinkReconciler)),
         Vector(failedExpander(reconciledLink.host)),
+        Nil
       )
       $(null).map(_ shouldContainExactly(existingMarkedLink, markedReconciledLink))
     }
@@ -82,6 +87,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
       Vector(existingLink) |> constFuture,
       LinkRetrievers(Vector(newLinkReconciler)),
       Vector(constExpander(expandedLink, rehashedLinks)),
+      Nil
     )
     $(null).map(_ shouldMultiSetEqual (existingMarkedLink +: expectedNewLinks))
   }
@@ -91,6 +97,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
       Vector[BaseLink[Album]](existingLink, existingLink.copy(link = Url("existing2"))) |> constFuture,
       LinkRetrievers(Vector(newLinkReconciler)),
       Vector(newLinkExpander),
+      Nil
     )
     $(null).map(_ should have size 4)
   }
@@ -118,9 +125,31 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
       Vector(existingLink) |> constFuture,
       LinkRetrievers(Vector(wikiReconciler, newLinkReconciler)),
       Vector(expander1, expander2),
+      Nil
     )
     val expectedNewLinks: Vector[MarkedLink[Album]] =
       Vector(wikiLink, allMusicLink, rateYouMusicLink, reconciledLink).map(MarkedLink.markNew)
+    $(null).map(_ shouldMultiSetEqual (existingMarkedLink +: expectedNewLinks))
+  }
+
+  "should apply extra markers" in {
+    //MarkedLink[Album](Url("new2"), Host("newhost2", Url("newhosturl2")), LinkMark.New)
+    val marker = new ExternalLinkMarker[Album] {
+      override def host = markedReconciledLink.host
+      override def apply(l: MarkedLink[Album]) =
+        Future.successful(LinkMark.Text("foobar"))
+    }
+    val $ = new ExternalPipe[Album](
+      ReconID("foobar") |> constFuture,
+      Vector(existingLink) |> constFuture,
+      LinkRetrievers(Vector(newLinkReconciler)),
+      Vector(newLinkExpander),
+      Vector(marker),
+    )
+    val expectedNewLinks = Vector(
+      MarkedLink[Album](Url("new"), Host("newhost", Url("newhosturl")), LinkMark.New),
+      MarkedLink[Album](Url("new2"), Host("newhost2", Url("newhosturl2")), LinkMark.Text("foobar"))
+    )
     $(null).map(_ shouldMultiSetEqual (existingMarkedLink +: expectedNewLinks))
   }
 }

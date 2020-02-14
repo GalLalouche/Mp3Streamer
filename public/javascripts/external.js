@@ -15,7 +15,7 @@ $(function() {
 
   function getExtensions(link) {
     const $ = Object.keys(link.extensions).map(k => href(link.extensions[k], k)).join(", ")
-    return $ + (link.host.endsWith("*") ?
+    return $ + (link.host.includes("*") ?
         `${$ === '' ? '' : ', '}<a class='copy-to-clipboard' href='javascript:void(0)' url='${link.main}'>copy</a>` :
         "")
   }
@@ -58,7 +58,7 @@ $(function() {
               return
             const extensions = getExtensions(link)
             const links = href(link.main, link.host) + (extensions ? ` (${extensions})` : "")
-            const imageIcon = `"list-style-image: url('assets/images/${link.host.replace(/[*?]$/g, "")}_icon.png')"`
+            const imageIcon = `"list-style-image: url('assets/images/${link.host.replace(/[*?].*$/g, "")}_icon.png')"`
             ul.append($(`<li style=${imageIcon}>${links}</li>`))
           })
         }

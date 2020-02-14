@@ -23,6 +23,7 @@ private class ExternalJsonifier @Inject()(implicit ec: ExecutionContext) {
     case LinkMark.None => ""
     case LinkMark.New => "*"
     case LinkMark.Missing => "?"
+    case LinkMark.Text(s) => s"* $s" // Currently, Text is only added to new links
   })
   private def toJson(extension: LinkExtension[_]): KVPair = extension.name -> extension.link.address
   private def toJson(link: ExtendedLink[_]): KVPair = link.host.name -> Json.obj(
@@ -34,7 +35,7 @@ private class ExternalJsonifier @Inject()(implicit ec: ExecutionContext) {
   private def toJson(linkses: Traversable[ExtendedLink[_]]): JsObject =
     linkses.filterAndSortBy(_.host, Hosts)
         // Filter non-new Wikidata, because they aren't shown in the client.
-        .filter(e => e.host != Wikidata || e.isNew)
+        .filter(e => e.host != Wikidata || e.isNew || e.hasText)
         // Unmark new Wikipedia links, because MusicBrainz only uses Wikidata now.
         // Using mapIf messes up the link's type inference due to existential types.
         .map(e => if (e.host == Wikipedia && e.isNew) e.unmark else e)
