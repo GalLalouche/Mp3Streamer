@@ -9,7 +9,6 @@ import models.ModelJsonable._
 import common.json.Jsonable
 
 /** Index for songs, albums and artists. */
-// TODO HLists ;)
 private class CompositeIndex(songs: Index[Song], albums: Index[Album], artists: Index[Artist]) {
   def search(terms: Seq[String]): (Seq[Song], Seq[Album], Seq[Artist]) = {
     val finder = new Finder(terms)
