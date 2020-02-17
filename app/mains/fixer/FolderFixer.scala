@@ -62,7 +62,7 @@ class FolderFixer @Inject()(
   }
 
   private def downloadCover(newPath: Directory): Future[Directory => Unit] = downloader(newPath).recover {
-    case CoverException(msg) => println("Auto downloading picture aborted: " + msg).const
+    case _: CoverException => println("Auto downloading picture aborted").const
     case e: RuntimeException =>
       e.printStackTrace()
       ().const

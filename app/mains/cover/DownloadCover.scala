@@ -58,8 +58,8 @@ private[mains] class DownloadCover @Inject()(
       case OpenBrowser =>
         // String interpolation is acting funky for some reason (will fail at runtime for unicode).
         Process("""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe """ + searchUrl.quote).!!
-        throw CoverException("User opened browser")
-      case Cancelled => throw CoverException("User opted out")
+        throw new CoverException.UserOpenedBrowser
+      case Cancelled => throw new CoverException.UserClosedGUI
     }
   }
 
