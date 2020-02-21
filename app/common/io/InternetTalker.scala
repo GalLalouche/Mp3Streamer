@@ -30,7 +30,8 @@ trait InternetTalker extends ExecutionContext {
 
   final def asBrowser[T](url: Url, f: Retriever[WSRequest, T]): Future[T] =
     useWs(_.url(url.address).addHttpHeaders("user-agent" -> InternetTalker.AgentUrl) |> f)
-  final def downloadDocument(url: Url): Future[Document] = asBrowser(url, _.document)
+  final def downloadDocument(url: Url, decodeUtf: Boolean = false): Future[Document] =
+    asBrowser(url, _.document(decodeUtf))
   final def get(url: Url): Future[WSResponse] = useWs(_.url(url.address).get())
 }
 

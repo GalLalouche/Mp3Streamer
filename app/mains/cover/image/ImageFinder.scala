@@ -13,5 +13,6 @@ import common.io.{DirectoryRef, InternetTalker, RootDirectory}
 private[cover] class ImageFinder @Inject()(it: InternetTalker, @RootDirectory dumpDir: DirectoryRef) {
   private implicit val iec: ExecutionContext = it
   private val parser = HtmlParser.composite(dumpDir, OldParser, NewParser)
-  def find(url: Url): Future[Try[Seq[UrlSource]]] = it.downloadDocument(url).map(parser.apply).toTry
+  def find(url: Url): Future[Try[Seq[UrlSource]]] =
+    it.downloadDocument(url, decodeUtf = true).map(parser.apply).toTry
 }
