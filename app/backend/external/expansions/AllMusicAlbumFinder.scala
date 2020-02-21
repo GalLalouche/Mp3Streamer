@@ -43,7 +43,7 @@ private class AllMusicAlbumFinder @Inject()(
           )
           .find(_._2.|>(score) >= 0.95)
           .map(_._1.selectFirst("td.title a")
-              .attr("href")
+              .href
               .mapIf(_.startsWith("http").isFalse).to("http://www.allmusic.com" + _)
               .mapTo(Url)
           )

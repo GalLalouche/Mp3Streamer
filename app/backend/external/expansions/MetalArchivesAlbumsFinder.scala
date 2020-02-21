@@ -26,7 +26,7 @@ private class MetalArchivesAlbumsFinder @Inject()(sameHostExpanderHelper: SameHo
     override def findAlbum(d: Document, a: Album): FutureOption[Url] =
       Future.successful(d.selectIterator(".display.discog tr td a")
           .find(_.text.toLowerCase == a.title.toLowerCase)
-          .map(_.attr("href"))
+          .map(_.href)
           .map(Url))
   }
 

@@ -46,7 +46,7 @@ private class WikipediaAlbumFinder @Inject()(
       def score(linkName: String): Double = StringReconScorer(a.title, linkName)
       d.selectIterator("a")
           .filter(e => score(e.text) > 0.95)
-          .map(_.attr("href"))
+          .map(_.href)
           .filter(_.nonEmpty)
           .filterNot(_ contains "//") // Remove external links, see https://stackoverflow.com/q/4071117/736508
           .filterNot(_ contains "redlink=1")

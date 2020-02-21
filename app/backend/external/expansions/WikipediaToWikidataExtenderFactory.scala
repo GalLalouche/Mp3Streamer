@@ -22,7 +22,7 @@ private class WikipediaToWikidataExtenderFactory @Inject()(helper: ExternalLinkE
   @VisibleForTesting
   def parse[R <: Reconcilable](d: Document) =
     d.selectSingleOpt("#t-wikibase a")
-        .map(e => BaseLink[R](Url(canonize(e.attr("href"))), Host.Wikidata))
+        .map(e => BaseLink[R](Url(canonize(e.href)), Host.Wikidata))
         .toVector
   def create[R <: Reconcilable]: ExternalLinkExpander[R] = new ExternalLinkExpander[R] {
     override def sourceHost: Host = Host.Wikipedia

@@ -18,7 +18,7 @@ private object NewParser extends HtmlParser {
   override def apply(d: Document): Option[Seq[UrlSource]] = (for {
     // A magical class which contains a link that is later referenced in the <script> elements.
     anchor <- d.selectIterator("a.VFACy.kGQAp")
-    href = anchor.attr("href")
+    href = anchor.href
     // The *actual* links are hidden inside <script> elements.
     script <- d.selectIterator("script")
     innerHtml = script.html

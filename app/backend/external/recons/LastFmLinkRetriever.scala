@@ -33,7 +33,7 @@ private class LastFmLinkRetriever @VisibleForTesting private[recons](
     case HttpURLConnection.HTTP_MOVED_TEMP => throw new TempRedirect
     case HttpURLConnection.HTTP_OK => Jsoup.parse(h.body)
         .find("link[rel=canonical]")
-        .map(_.attr("href"))
+        .map(_.href)
         .filter(_.nonEmpty)
         .map(e => BaseLink[Artist](Url(e), Host.LastFm))
   }

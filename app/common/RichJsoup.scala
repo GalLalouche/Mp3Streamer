@@ -12,5 +12,7 @@ object RichJsoup {
     def selectSingle(cssQuery: String): Element = selectIterator(cssQuery).single
     def selectSingleOpt(cssQuery: String): Option[Element] = selectIterator(cssQuery).singleOpt
     def find(cssQuery: String): Option[Element] = Option($.selectFirst(cssQuery))
+
+    def href = $.attr("href")
   }
 }

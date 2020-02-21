@@ -53,7 +53,7 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
 
   private def extractAllMusicLink(d: Document): Option[Url] = d
       .selectIterator("a")
-      .map(_.attr("href"))
+      .map(_.href)
       .flatMap(extractSemiCanonicalAllMusicLink)
       .mapTo(preferCanonical)
       .map(Url)

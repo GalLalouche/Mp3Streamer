@@ -16,10 +16,7 @@ private[backend] class MbHtmlLinkExtractorHelper @Inject()(it: InternetTalker) {
   private implicit val iec: ExecutionContext = it
   def apply[R <: Reconcilable](metadataType: String)(id: ReconID): Future[BaseLinks[R]] = {
     def extractLink(e: Element): Option[BaseLink[R]] = {
-      val url = Url(e.selectSingle("a")
-          .attr("href")
-          .mapIf(_.startsWith("//")).to("https:" + _)
-      )
+      val url = Url(e.selectSingle("a").href.mapIf(_.startsWith("//")).to("https:" + _))
       Host.withUrl(url).map(BaseLink(url, _))
     }
     def extractLinks(d: Document): List[BaseLink[R]] = d

@@ -24,7 +24,7 @@ private object WikidataEnglishOrHebrewExtenderFactory {
       d.selectSingleOpt(
         s"""div[data-wb-sitelinks-group="wikipedia"] li[data-wb-siteid="${lang}wiki"] a[hreflang="$lang"]""")
     selectLanguage("en").orElse(selectLanguage("he"))
-        .map(e => BaseLink[R](Url(e.attr("href")), Host.Wikipedia))
+        .map(e => BaseLink[R](Url(e.href), Host.Wikipedia))
         .toVector
   }
 }
