@@ -7,7 +7,7 @@ $(function() {
   // Display full song info on hover when the text overflows.
   playlistElement.on("mouseover", playlistItem, function() {
     const listItem = $(this)
-    // The listItem can't overflow; what can overflow the width-limited descendent.
+    // The listItem can't overflow; what can overflow is the width-limited descendent.
     if (listItem.find(".width-limited-playlist-span").custom_overflown()) {
       const displayedIndex = playlist.getDisplayedIndex(listItem.index())
       const song = playlist.songs()[displayedIndex]
@@ -29,27 +29,32 @@ $(function() {
   const isClassicalPiece = media => !!media.composer
   playlistUtils.isClassicalPiece = isClassicalPiece
   function additionalData(media) {
-    function aux() {
-      if (isClassicalPiece(media).isFalse())
-        return [
-          `<span dir='ltr'>${media.albumName}</span>${media.discNumber ? "[" + media.discNumber + "]" : ""}`,
-          media.track,
-          media.year,
-        ]
-
-      const titleContainsComposer = media.albumName.toLowerCase().includes(media.composer.toLowerCase())
-      const pieceTitle = titleContainsComposer ? media.albumName : `${media.composer}'s ${media.albumName}`
-      const opusSuffix = media.opus ? `, ${media.opus}` : ''
+    if (isClassicalPiece(media).isFalse())
       return [
-        pieceTitle + opusSuffix,
-        media.year,
-        media.conductor,
-        media.orchestra,
-        media.performanceYear,
+        `${media.albumName}${media.discNumber ? "[" + media.discNumber + "]" : ""}`,
         media.track,
-      ].filter(x => x)
-    }
-    return aux().concat([media.bitrate + "kbps"]).join(", ")
+        media.year,
+      ]
+
+    const titleContainsComposer = media.albumName.toLowerCase().includes(media.composer.toLowerCase())
+    const pieceTitle = titleContainsComposer ? media.albumName : `${media.composer}'s ${media.albumName}`
+    const opusSuffix = media.opus ? `, ${media.opus}` : ''
+    return [
+      pieceTitle + opusSuffix,
+      media.year,
+      media.conductor,
+      media.orchestra,
+      media.performanceYear,
+      media.track,
+    ].filter(x => x)
+  }
+
+  function formattedMetadata(media) {
+    const res = additionalData(media)
+    const head = `<span dir="ltr">${res[0]}</span>`
+    res.shift()
+    res.push(media.bitrate + "kbps")
+    return `${head}, <span dir="ltr">${res.join(", ")}</span>`
   }
 
   playlistUtils.mediaMetadata = media => [
@@ -60,18 +65,18 @@ $(function() {
   ]).join(", ")
 
   playlistUtils.mediaMetadataHtml = function(media) {
-    const metadata = `${(isClassicalPiece(media) ? "performed by" : "by")} ` +
+    const metadata =
         `<span class="jp-artist" dir="ltr">${media.artistName}</span> ` +
-        `(<span class="jp-parens">${additionalData(media)}</span>`
+        `(<span class="jp-parens">${formattedMetadata(media)}</span>`
 
     // Duration is appended manually outside of metadata to ensure that it is always displayed, even if
-    // metadata overflows.
-    return `
-        <span class='${this.options.playlistOptions.itemClass}' tabindex='1'>
-          <span class="width-limited-playlist-span">
-            <span class="jp-title">${media.title}</span> <span class="jp-metadata">${metadata}</span>
-          </span><span class="jp-list-duration">, ${media.duration.timeFormat()})</span>
-        </span>`
+    // metadata overflows. That's the reason for the odd parens too.
+    return `<span class='${this.options.playlistOptions.itemClass}' tabindex='1'>
+              <span class="width-limited-playlist-span">
+                <span class="jp-title">${media.title}</span> <span class="jp-metadata">${metadata}</span>
+              </span>
+              <span class="jp-list-duration">, ${media.duration.timeFormat()})</span>
+            </span>`
   }
 })
 
