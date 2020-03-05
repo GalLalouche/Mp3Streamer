@@ -10,7 +10,7 @@ body {
 }
 
 .width-limited-playlist-span {
-  max-width: 550px;
+  max-width: 580px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
