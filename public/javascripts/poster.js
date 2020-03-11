@@ -3,7 +3,7 @@ $(() => {
 
   const poster = $("#jp_poster_0")
   poster.addClass("poster")
-  const parent = poster.parent()
+  const div = poster.closest("div")
   const posterAndButtonsDiv = table({"id": "poster-table"}).append(
       tr().append(
           td({"class": "poster-buttons left-poster-buttons"}).append(
@@ -19,7 +19,7 @@ $(() => {
           ),
       )
   )
-  parent.prepend(posterAndButtonsDiv)
+  div.prepend(posterAndButtonsDiv)
 
   poster[0].addEventListener('load', function() {
     getColorAsync(poster.attr("src"), rgb => {

@@ -119,7 +119,7 @@ $(function() {
   })
   results.on("click", `.album-result .fa-${ADD_DISC}`, function() {
     const album = getData(this)
-    const discNumber = $(this).parent().text()
+    const discNumber = $(this).closest("td").text()
     $.get(`data/discs/${discNumber}/${album.dir}`, e => gplaylist.add(e, false))
   })
   results.on("click", `.album-result .fa-${DOWNLOAD_FILE}`, function() {

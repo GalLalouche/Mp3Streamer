@@ -248,7 +248,7 @@
       // Create .live() handlers that disable free media links to force access via right click.
       $(`${playlistSelector} a.${this.options.playlistOptions.freeItemClass}`).off("click").on(
           "click", function() {
-            $(this).parent().parent().find("." + self.options.playlistOptions.itemClass).click();
+            $(this).closest("li").find("." + self.options.playlistOptions.itemClass).click();
             $(this).blur();
             return false;
           });
@@ -284,7 +284,7 @@
           return x => x.next()
         }
 
-        removeItemAux(getNextFunction(), trigger.parent().parent())
+        removeItemAux(getNextFunction(), trigger.closest("li"))
         return false;
       });
     },

@@ -44,7 +44,7 @@ $(function() {
   const hideParent = parent => () => parent.hide()
 
   function onClick(classSelector, f) {
-    div.on("click", "." + classSelector, e => f($(e.target).parent()))
+    div.on("click", "." + classSelector, e => f($(e.target).closest("li")))
   }
 
   onClick("hide", parent => parent.hide())

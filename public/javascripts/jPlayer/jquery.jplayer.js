@@ -1256,7 +1256,7 @@
       // Note that it can increase to non-100 values due to seeking; if someone seeked to 100 for some reason,
       // screw him.
       const playBar = this.css.jq.playBar
-      let currentPercentage = 100 * playBar.width() / playBar.parent().width()
+      let currentPercentage = 100 * playBar.width() / playBar.closest(".jp-progress").width()
       if (requestedNewPercentage === 100 && currentPercentage < 99) {
         console.log(`Avoiding update of playBar from ${currentPercentage} to ${requestedNewPercentage}`)
         return
@@ -1429,7 +1429,7 @@
           return time
         const playBar = self.css.jq.playBar
         // TODO extract?
-        const ratio = playBar.width() / playBar.parent().parent().width()
+        const ratio = playBar.width() / playBar.closest(".jp-progress").width()
         if (ratio >= 0.01 && ratio <= 0.99)
           return ratio * self.htmlElement.media.duration
         return NaN
