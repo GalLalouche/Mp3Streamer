@@ -8,7 +8,8 @@ import mains.SwingUtils._
 import scala.concurrent.ExecutionContext
 import scala.swing._
 
-import common.rich.RichT._
+import scalaz.std.string.stringInstance
+import common.rich.func.ToMoreMonoidOps._
 
 /** Eventually publishes an ImageChoice event. */
 private class AsyncFolderImagePanel(
@@ -19,7 +20,7 @@ private class AsyncFolderImagePanel(
   private def createImagePanel(folderImage: FolderImage): Component = {
     val imageIcon = folderImage.toIcon(Width, Height)
     val text = s"${folderImage.width}x${folderImage.height} ${fileSize(folderImage.file.size)}" +
-        " LOCAL".onlyIf(folderImage.isLocal)
+        " LOCAL".monoidFilter(folderImage.isLocal)
     val imageLabel = new JLabel(imageIcon)
     imageLabel.setLayout(new SpringLayout())
     TextProps.map(_ label text) foreach imageLabel.add

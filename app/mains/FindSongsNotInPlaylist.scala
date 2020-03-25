@@ -5,8 +5,10 @@ import java.time.Duration
 
 import models.IOMusicFinder
 
+import scalaz.std.string.stringInstance
 import scalaz.std.vector.vectorInstance
 import common.rich.func.ToMoreMonadPlusOps._
+import common.rich.func.ToMoreMonoidOps._
 
 import common.rich.primitives.RichString._
 import common.rich.RichT.richT
@@ -47,7 +49,7 @@ object FindSongsNotInPlaylist {
     println(s"Server is missing ${serverMissing.size} songs. " +
         s"${
           ("It's possible that these songs are in the playlist but the files themselves have been deleted, " +
-              "or were added from a different folder, e.g., bittorent.").onlyIf(serverMissing.nonEmpty)
+              "or were added from a different folder, e.g., bittorent.").monoidFilter(serverMissing.nonEmpty)
         }")
     println(serverMissing mkString "\n")
     println(s"Playlist is missing ${playlistMissing.size} songs")
