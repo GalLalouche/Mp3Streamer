@@ -1,4 +1,4 @@
-package backend.albums
+package backend.albums.filler
 
 import backend.logging.Logger
 import backend.mb.{MbAlbumMetadata, MbArtistReconciler}
