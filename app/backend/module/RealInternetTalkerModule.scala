@@ -4,13 +4,14 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.google.inject.{Module, Provides}
 import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
-import common.ModuleUtils
-import common.io.InternetTalker
-import common.io.WSAliases.WSClient
 import net.codingwell.scalaguice.ScalaPrivateModule
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 import scala.concurrent.ExecutionContext
+
+import common.ModuleUtils
+import common.io.InternetTalker
+import common.io.WSAliases.WSClient
 
 private class RealInternetTalkerModule private(am: ActorMaterializer) extends ScalaPrivateModule with ModuleUtils {
   override def configure(): Unit = {
@@ -30,13 +31,14 @@ private class RealInternetTalkerModule private(am: ActorMaterializer) extends Sc
 }
 
 object RealInternetTalkerModule {
-  val warningOnlyConfig: Config = ConfigFactory.load()
+  private val warningOnlyConfig: Config = ConfigFactory.load()
       .withValue("akka.loglevel", ConfigValueFactory.fromAnyRef("WARNING"))
       .withValue("akka.stdout-loglevel", ConfigValueFactory.fromAnyRef("WARNING"))
+  val warningOnlyDaemonicConfig: Config = warningOnlyConfig
+      .withValue("akka.daemonic", ConfigValueFactory.fromAnyRef(true))
   def daemonic: Module = new RealInternetTalkerModule(
-    ActorMaterializer()(ActorSystem.create(
-      "Standalone-Config-WS-System", warningOnlyConfig
-          .withValue("akka.daemonic", ConfigValueFactory.fromAnyRef(true)))))
+    ActorMaterializer()(ActorSystem.create("Standalone-Config-WS-System", warningOnlyDaemonicConfig))
+  )
 
   def nonDaemonic: Module = new RealInternetTalkerModule(
     ActorMaterializer()(ActorSystem.create("RealConfigWS-System", warningOnlyConfig)))

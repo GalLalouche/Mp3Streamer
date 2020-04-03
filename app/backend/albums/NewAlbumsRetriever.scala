@@ -18,17 +18,11 @@ private class NewAlbumsRetriever @Inject()(
     mf: MusicFinder,
     reconciler: ReconcilerCacher[Artist],
     utils: NewAlbumsRetrieverUtils,
+    cache: ExistingAlbumsCache,
 ) {
   private implicit val iec: ExecutionContext = ec
-  private val log = logger.verbose _
-  private def getExistingAlbums: Seq[Album] = mf.genreDirs
-      .flatMap(_.deepDirs)
-      .flatMap(NewAlbumsRetriever.dirToAlbum(_, mf))
-
   def findNewAlbums: Observable[NewAlbumRecon] = {
-    log("Creating cache")
-    val cache = ArtistLastYearCache from getExistingAlbums
-    log("Getting albums")
+    logger.verbose("Getting albums")
     for {
       artist <- Observable from cache.artists
       reconId <- utils getReconId artist

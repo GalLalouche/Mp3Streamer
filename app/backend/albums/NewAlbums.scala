@@ -1,14 +1,9 @@
 package backend.albums
 
-import java.util.logging.{Level, Logger => JLogger}
-
 import backend.albums.NewAlbum.NewAlbumJsonable
-import backend.logging.{FilteringLogger, Logger, LoggingLevel}
-import backend.mb.MbArtistReconciler
-import backend.module.RealModule
-import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage, Reconcilable, ReconStorage, StoredReconResult}
+import backend.logging.Logger
+import backend.recon.{Album, AlbumReconStorage, Artist, ArtistReconStorage, Reconcilable, ReconStorage}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
-import com.google.inject.util.Modules
 import javax.inject.Inject
 import mains.fixer.StringFixer
 
@@ -16,20 +11,16 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
-import common.rich.func.ToMoreFunctorOps._
 import monocle.function.Index._
 import monocle.syntax.apply._
 
 import common.io.JsonableSaver
-import common.rich.RichObservable._
 
 private class NewAlbums @Inject()(
     ec: ExecutionContext,
-    retriever: NewAlbumsRetriever,
     logger: Logger,
     artistReconStorage: ArtistReconStorage,
     albumReconStorage: AlbumReconStorage,
-    mbArtistReconciler: MbArtistReconciler,
     jsonableSaver: JsonableSaver,
 ) {
   private implicit val iec: ExecutionContext = ec
@@ -63,28 +54,4 @@ private class NewAlbums @Inject()(
     loadAlbumsByArtist.map(_ &|-? index(a.artist) modify (_.filterNot(_.title == a.title))).map(save)
   }
   def ignoreAlbum(a: Album): Future[Unit] = ignore(a, albumReconStorage) >> removeAlbum(a)
-
-  private def store(newAlbumRecon: NewAlbumRecon): Unit = albumReconStorage.store(
-    newAlbumRecon.newAlbum.toAlbum, StoredReconResult.unignored(newAlbumRecon.reconId))
-  def fetchAndSave: Future[Traversable[NewAlbum]] = retriever.findNewAlbums
-      .doOnNext(store)
-      .map(_.newAlbum)
-      .toFuture[Traversable]
-      .listen(jsonableSaver save _)
-}
-
-object NewAlbums {
-  import com.google.inject.Guice
-  import net.codingwell.scalaguice.InjectorExtensions._
-
-  import common.rich.RichFuture._
-
-  def main(args: Array[String]): Unit = {
-    JLogger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
-    val injector = Guice.createInjector(Modules `override` RealModule `with` LocalNewAlbumsModule)
-    injector.instance[FilteringLogger].setCurrentLevel(LoggingLevel.Verbose)
-    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    injector.instance[NewAlbums].fetchAndSave.get
-    println("Done!")
-  }
 }

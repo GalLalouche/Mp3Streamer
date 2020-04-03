@@ -5,9 +5,10 @@ import java.util.concurrent.Semaphore
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import backend.Retriever
-import backend.logging.LoggingModules
+import backend.logging.{Logger, LoggingModules}
 import backend.module.RealInternetTalkerModule
-import models.{IOMusicFinder, IOMusicFinderModule}
+import com.google.inject.{Provides, Singleton}
+import models.{IOMusicFinder, IOMusicFinderModule, MusicFinder}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
@@ -25,7 +26,7 @@ import common.rich.RichT._
 private object LocalNewAlbumsModule extends ScalaModule {
   private def newAlbumsInternetTalker: InternetTalker = new InternetTalker {
     private val am = ActorMaterializer()(
-      ActorSystem.create("NewAlbumsModule-System", RealInternetTalkerModule.warningOnlyConfig))
+      ActorSystem.create("NewAlbumsModule-System", RealInternetTalkerModule.warningOnlyDaemonicConfig))
 
     override def execute(runnable: Runnable) = semaphoreReleasingContext.execute(runnable)
     override def reportFailure(cause: Throwable) = semaphoreReleasingContext.reportFailure(cause)
@@ -56,5 +57,16 @@ private object LocalNewAlbumsModule extends ScalaModule {
         override val subDirNames: List[String] = List("Rock", "Metal")
       }
     ))
+  }
+
+  @Provides
+  @Singleton
+  private def existingAlbumsCache(mf: MusicFinder, logger: Logger): ExistingAlbumsCache = {
+    logger.verbose("Creating cache")
+    ExistingAlbumsCache.from(mf.genreDirs.view
+        .flatMap(_.deepDirs)
+        .flatMap(NewAlbumsRetriever.dirToAlbum(_, mf))
+        .toVector
+    )
   }
 }
