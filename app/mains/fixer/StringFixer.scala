@@ -33,8 +33,8 @@ object StringFixer extends (String => String) {
   private val RomanPattern = Pattern compile "[IVXMLivxml]+"
   private val MixedCapsPattern = Pattern compile ".*[A-Z].*"
   private val DottedAcronymPattern = Pattern compile "(\\w\\.)+"
-  private val SpecialQuotes = Pattern compile "[“”]"
-  private val SpecialApostrophes = Pattern compile "[‘’]"
+  val SpecialQuotes: Pattern = Pattern compile "[“”]"
+  val SpecialApostrophes: Pattern = Pattern compile "[‘’]"
   private val SpecialDashes = Pattern compile "[—–-−]"
   private def fixWord(word: String, forceCapitalization: Boolean): String = asciiNormalize(
     if (forceCapitalization.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase

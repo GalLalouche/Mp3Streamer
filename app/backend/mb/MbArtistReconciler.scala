@@ -1,11 +1,13 @@
 package backend.mb
 
 import java.time.{LocalDate, Year, YearMonth}
+import java.util.regex.Pattern
 
 import backend.albums.AlbumType
 import backend.recon.{Artist, Reconciler, ReconID}
 import backend.FutureOption
 import javax.inject.Inject
+import mains.fixer.StringFixer
 import play.api.libs.json.{JsObject, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -13,6 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.scalaFuture.futureInstance
 import common.rich.func.ToMoreMonadErrorOps._
 
+import common.rich.primitives.RichString._
 import common.CompositeDateFormat
 import common.json.RichJson._
 
@@ -31,7 +34,7 @@ class MbArtistReconciler @Inject()(
     MbArtistReconciler.DateFormatter.parse(js.str("first-release-date")).get.toLocalDate
 
   private def parseJson(json: JsObject) = MbAlbumMetadata(
-    title = json str "title",
+    title = MbArtistReconciler.fixQuotes(json str "title"),
     releaseDate = parseDate(json),
     albumType = AlbumType.withName(json str "primary-type"),
     reconId = ReconID(json str "id"),
@@ -49,6 +52,8 @@ class MbArtistReconciler @Inject()(
 }
 
 object MbArtistReconciler {
+  private def fixQuotes(s: String): String =
+    s.replaceAll(StringFixer.SpecialQuotes, "\"").replaceAll(StringFixer.SpecialApostrophes, "'")
   private val DateFormatter =
     CompositeDateFormat[LocalDate]("yyyy-MM-dd").orElse[YearMonth]("yyyy-MM").orElse[Year]("yyyy")
 }

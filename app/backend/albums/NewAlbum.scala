@@ -2,15 +2,19 @@ package backend.albums
 
 import backend.mb.MbAlbumMetadata
 import backend.recon.{Album, Artist}
+import mains.fixer.StringFixer
 import play.api.libs.json.{Json, JsValue}
 
 import monocle.macros.Lenses
 
-import common.json.RichJson._
 import common.json.Jsonable
+import common.json.RichJson._
+import common.rich.primitives.RichBoolean._
 
 @Lenses
 private case class NewAlbum(title: String, year: Int, artist: Artist, albumType: AlbumType) {
+  assert(StringFixer.SpecialQuotes.matcher(title).find().isFalse, title)
+  assert(StringFixer.SpecialApostrophes.matcher(title).find().isFalse, title)
   def toAlbum: Album = Album(title = title, year = year, artist = artist)
 }
 
