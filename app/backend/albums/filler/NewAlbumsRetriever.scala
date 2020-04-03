@@ -18,7 +18,7 @@ private class NewAlbumsRetriever @Inject()(
     mf: MusicFinder,
     reconciler: ReconcilerCacher[Artist],
     utils: NewAlbumsRetrieverUtils,
-    cache: ExistingAlbumsCache,
+    cache: ExistingAlbums,
 ) {
   private implicit val iec: ExecutionContext = ec
   def findNewAlbums: Observable[NewAlbumRecon] = {

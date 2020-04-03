@@ -51,7 +51,7 @@ private class NewAlbumsRetrieverUtils @Inject()(
     albums filterTraverse isNotIgnored
   }
   def findNewAlbums(
-      cache: ExistingAlbumsCache, artist: Artist, reconId: ReconID): Observable[NewAlbumRecon] = {
+      cache: ExistingAlbums, artist: Artist, reconId: ReconID): Observable[NewAlbumRecon] = {
     logger.debug(s"Fetching new albums for <$artist>")
     val recons: Future[Seq[NewAlbumRecon]] = meta.getAlbumsMetadata(reconId)
         .flatMap(removeIgnoredAlbums(artist, _))

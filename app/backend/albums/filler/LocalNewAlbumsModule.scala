@@ -24,7 +24,20 @@ import common.rich.RichT._
 // 1. A limited number of WS can be used at any given time (semaphores).
 // 2. A request for a client has a 1 second delay.
 private object LocalNewAlbumsModule extends ScalaModule {
-  private def newAlbumsInternetTalker: InternetTalker = new InternetTalker {
+  override def configure(): Unit = {
+    bind[ExecutionContext] toInstance ExecutionContext.Implicits.global
+
+    install(LoggingModules.ConsoleWithFiltering)
+    install(new IOMusicFinderModule(
+      new IOMusicFinder {
+        override val subDirNames: List[String] = List("Rock", "Metal")
+      }
+    ))
+  }
+
+  @Provides
+  @Singleton
+  private def internetTalker: InternetTalker = new InternetTalker {
     private val am = ActorMaterializer()(
       ActorSystem.create("NewAlbumsModule-System", RealInternetTalkerModule.warningOnlyDaemonicConfig))
 
@@ -47,23 +60,11 @@ private object LocalNewAlbumsModule extends ScalaModule {
     }
   }
 
-  override def configure(): Unit = {
-    bind[ExecutionContext] toInstance ExecutionContext.Implicits.global
-    bind[InternetTalker] toInstance newAlbumsInternetTalker
-
-    install(LoggingModules.ConsoleWithFiltering)
-    install(new IOMusicFinderModule(
-      new IOMusicFinder {
-        override val subDirNames: List[String] = List("Rock", "Metal")
-      }
-    ))
-  }
-
   @Provides
   @Singleton
-  private def existingAlbumsCache(mf: MusicFinder, logger: Logger): ExistingAlbumsCache = {
+  private def existingAlbumsCache(mf: MusicFinder, logger: Logger): ExistingAlbums = {
     logger.verbose("Creating cache")
-    ExistingAlbumsCache.from(mf.genreDirs.view
+    ExistingAlbums.from(mf.genreDirs.view
         .flatMap(_.deepDirs)
         .flatMap(NewAlbumsRetriever.dirToAlbum(_, mf))
         .toVector

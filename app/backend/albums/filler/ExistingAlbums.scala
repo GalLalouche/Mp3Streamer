@@ -8,8 +8,8 @@ import models.MusicFinder
 import common.rich.collections.RichTraversableOnce._
 import common.rich.RichT._
 
-private class ExistingAlbumsCache private(existingAlbums: Map[Artist, Set[Album]]) {
-  import ExistingAlbumsCache._
+private class ExistingAlbums private(existingAlbums: Map[Artist, Set[Album]]) {
+  import ExistingAlbums._
 
   def artists: Iterable[Artist] = existingAlbums.keys
 
@@ -22,20 +22,20 @@ private class ExistingAlbumsCache private(existingAlbums: Map[Artist, Set[Album]
   } yield filler.NewAlbumRecon(NewAlbum.from(artist, album), album.reconId)
 }
 
-private object ExistingAlbumsCache {
+private object ExistingAlbums {
   private def canonicalize(a: Artist): Artist = Artist(a.normalize)
-  def from(albums: Seq[Album]) = new ExistingAlbumsCache(albums
+  def from(albums: Seq[Album]) = new ExistingAlbums(albums
       .groupBy(_.artist |> canonicalize)
       .mapValues(_.toSet)
       .view.force
   )
 
-  def singleArtist(artist: Artist, mf: MusicFinder): ExistingAlbumsCache = {
+  def singleArtist(artist: Artist, mf: MusicFinder): ExistingAlbums = {
     val artistDir = mf.genreDirs
         .flatMap(_.deepDirs)
         .find(_.name.toLowerCase == artist.name.toLowerCase)
         .get
-    ExistingAlbumsCache.from(artistDir
+    ExistingAlbums.from(artistDir
         .dirs
         .mapIf(_.isEmpty).to(Vector(artistDir))
         .flatMap(NewAlbumsRetriever.dirToAlbum(_, mf)))
