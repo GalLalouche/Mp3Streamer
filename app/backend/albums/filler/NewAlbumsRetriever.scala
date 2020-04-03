@@ -21,7 +21,7 @@ private class NewAlbumsRetriever @Inject()(
     cache: ExistingAlbums,
 ) {
   private implicit val iec: ExecutionContext = ec
-  def findNewAlbums: Observable[NewAlbumRecon] = {
+  def findNewAlbums: Observable[Seq[NewAlbumRecon]] = {
     logger.verbose("Getting albums")
     for {
       artist <- Observable from cache.artists

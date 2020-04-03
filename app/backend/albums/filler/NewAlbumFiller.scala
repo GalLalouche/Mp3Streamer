@@ -13,6 +13,9 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.functor.ToFunctorOps
+import scalaz.syntax.traverse.ToTraverseOps
+import common.rich.func.MoreTraverseInstances._
 import common.rich.func.ToMoreFunctorOps._
 import common.rich.func.ToMoreMonadErrorOps._
 
@@ -28,21 +31,28 @@ private class NewAlbumFiller @Inject()(
     logger: Logger,
 ) {
   private implicit val iec: ExecutionContext = ec
-  private def store(newAlbumRecon: NewAlbumRecon): Future[Unit] = {
-    val album = newAlbumRecon.newAlbum.toAlbum
-    val storeResult = for {
-      exists <- albumReconStorage.load(album).map(_.isDefined)
-      if exists.isFalse
-      _ = logger.verbose(s"Storing <$newAlbumRecon>")
-      _ <- albumReconStorage.store(album, StoredReconResult.unignored(newAlbumRecon.reconId))
-    } yield ()
-    storeResult.handleErrorFlat {
-      case _: NoSuchElementException => ()
-      case s => s.printStackTrace()
+  private def store(newAlbumRecon: Seq[NewAlbumRecon]): Future[Unit] = {
+    val artist = newAlbumRecon.head.newAlbum.artist
+    logger.verbose(s"Storing albums for <$artist>")
+    newAlbumRecon.traverse {newAlbumRecon =>
+      val album = newAlbumRecon.newAlbum.toAlbum
+      val storeResult = for {
+        exists <- albumReconStorage.load(album).map(_.isDefined)
+        if exists.isFalse
+        _ = logger.verbose(s"Storing <$newAlbumRecon>")
+        _ <- albumReconStorage.store(album, StoredReconResult.unignored(newAlbumRecon.reconId))
+      } yield ()
+      storeResult.handleErrorFlat {
+        case _: NoSuchElementException => ()
+        case s => s.printStackTrace()
+      }
     }
+        .listen(_ => logger.verbose(s"Finished storing <$artist> albums"))
+        .void
   }
   def fetchAndSave: Future[Traversable[NewAlbum]] = retriever.findNewAlbums
       .doOnNextAsync(store)
+      .flattenElements
       .map(_.newAlbum)
       .toFuture[Stream]
       .listen(jsonableSaver save _)

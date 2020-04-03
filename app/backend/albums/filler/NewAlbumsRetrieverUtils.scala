@@ -36,7 +36,7 @@ private class NewAlbumsRetrieverUtils @Inject()(
       case NoRecon => -\/("No recon")
       case HasReconResult(reconId, isIgnored) => if (isIgnored) -\/("Ignored") else \/-(reconId)
     }.foldEither(_.fold(e => {
-      logger.info(s"Did not fetch albums for artist <${artist.name}>; reason: <${e.getMessage}>")
+      logger.debug(s"Did not fetch albums for artist <${artist.name}>; reason: <${e.getMessage}>")
       None
     }, Some.apply)
     ) |> (Observable.from(_).present)
@@ -51,9 +51,9 @@ private class NewAlbumsRetrieverUtils @Inject()(
     albums filterTraverse isNotIgnored
   }
   def findNewAlbums(
-      cache: ExistingAlbums, artist: Artist, reconId: ReconID): Observable[NewAlbumRecon] = {
-    logger.debug(s"Fetching new albums for <$artist>")
+      cache: ExistingAlbums, artist: Artist, reconId: ReconID): Observable[Seq[NewAlbumRecon]] = {
     val recons: Future[Seq[NewAlbumRecon]] = meta.getAlbumsMetadata(reconId)
+        .listen(_ => logger.debug(s"Fetching new albums for <$artist>"))
         .flatMap(removeIgnoredAlbums(artist, _))
         .map(cache.removeExistingAlbums(artist, _))
         .listen(albums => logger.debug(
@@ -64,6 +64,6 @@ private class NewAlbumsRetrieverUtils @Inject()(
           case e: FilteredException => logger.debug(s"<$artist> was filtered, reason: <${e.getMessage}>")
           case e: Throwable => e.printStackTrace()
         }.orElse(Nil)
-    Observable.from(recons).flattenElements
+    Observable.from(recons).filter(_.nonEmpty)
   }
 }

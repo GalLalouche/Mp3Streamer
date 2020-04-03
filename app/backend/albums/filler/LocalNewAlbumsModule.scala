@@ -18,7 +18,6 @@ import common.concurrency.SingleThreadedJobQueue
 import common.io.InternetTalker
 import common.io.WSAliases.WSClient
 import common.rich.RichFuture
-import common.rich.RichT._
 
 // Ensures MusicBrainz aren't flooded since:
 // 1. A limited number of WS can be used at any given time (semaphores).
@@ -37,26 +36,26 @@ private object LocalNewAlbumsModule extends ScalaModule {
 
   @Provides
   @Singleton
-  private def internetTalker: InternetTalker = new InternetTalker {
+  private def internetTalker(ec: ExecutionContext): InternetTalker = new InternetTalker {
     private val am = ActorMaterializer()(
       ActorSystem.create("NewAlbumsModule-System", RealInternetTalkerModule.warningOnlyDaemonicConfig))
 
-    override def execute(runnable: Runnable) = semaphoreReleasingContext.execute(runnable)
-    override def reportFailure(cause: Throwable) = semaphoreReleasingContext.reportFailure(cause)
+    private val internetTalkingThread = new SingleThreadedJobQueue("InternetTalkingThread").asExecutionContext
+    override def execute(runnable: Runnable) = internetTalkingThread.execute(runnable)
+    override def reportFailure(cause: Throwable) = internetTalkingThread.reportFailure(cause)
 
     private val semaphore = new Semaphore(1)
-    private val semaphoreReleasingContext: ExecutionContext =
-      new SingleThreadedJobQueue("LocalNewAlbumsModule").asExecutionContext
+    private val semaphoreReleasingContext = new SingleThreadedJobQueue("SemaphoreReleasingContext")
 
-    override protected def createWsClient() = {
-      Thread sleep 1000
-      StandaloneAhcWSClient()(am)
-    }
+    override protected def createWsClient() = StandaloneAhcWSClient()(am)
     override def useWs[T](f: Retriever[WSClient, T]) = {
       semaphore.acquire()
       // As an extra precaution of arguable efficacy, all semaphores are released by a single thread.
-      RichFuture.richFuture(super.useWs(f))(semaphoreReleasingContext)
-          .consumeTry(semaphoreReleasingContext.execute(() => semaphore.release()).const)
+      RichFuture.richFuture(super.useWs(f))(internetTalkingThread)
+          .consumeTry(_ => semaphoreReleasingContext {
+            Thread sleep 1000
+            semaphore.release()
+          })
     }
   }
 
