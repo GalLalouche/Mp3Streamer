@@ -5,7 +5,7 @@ import java.util.concurrent.Semaphore
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import backend.Retriever
-import backend.logging.{Logger, LoggingModules}
+import backend.logging.{Logger, LoggingLevel, LoggingModules}
 import backend.module.RealInternetTalkerModule
 import com.google.inject.{Provides, Singleton}
 import models.{IOMusicFinder, IOMusicFinderModule, MusicFinder}
@@ -18,11 +18,12 @@ import common.concurrency.SingleThreadedJobQueue
 import common.io.InternetTalker
 import common.io.WSAliases.WSClient
 import common.rich.RichFuture
+import common.Debug
 
 // Ensures MusicBrainz aren't flooded since:
 // 1. A limited number of WS can be used at any given time (semaphores).
 // 2. A request for a client has a 1 second delay.
-private object LocalNewAlbumsModule extends ScalaModule {
+private object LocalNewAlbumsModule extends ScalaModule with Debug {
   override def configure(): Unit = {
     bind[ExecutionContext] toInstance ExecutionContext.Implicits.global
 
@@ -61,12 +62,12 @@ private object LocalNewAlbumsModule extends ScalaModule {
 
   @Provides
   @Singleton
-  private def existingAlbumsCache(mf: MusicFinder, logger: Logger): ExistingAlbums = {
-    logger.verbose("Creating cache")
-    ExistingAlbums.from(mf.genreDirs.view
-        .flatMap(_.deepDirs)
-        .flatMap(NewAlbumsRetriever.dirToAlbum(_, mf))
-        .toVector
-    )
+  private def existingAlbumsCache(implicit mf: MusicFinder, logger: Logger): ExistingAlbums = {
+    timed("Creating cache", LoggingLevel.Info) {
+      ExistingAlbums.from(mf.genreDirs.view
+          .flatMap(_.deepDirs)
+          .flatMap(NewAlbumsRetriever.dirToAlbum(_, mf))
+      )
+    }
   }
 }

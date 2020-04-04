@@ -1,14 +1,14 @@
 package common
 
-import backend.logging.Logger
+import backend.logging.{Logger, LoggingLevel}
 
 trait Debug {
-  protected def timed[T](f: => T)(implicit l: Logger): T = timed("Task")(f)
-  protected def timed[T](task: String)(f: => T)(implicit l: Logger): T = {
+  //protected def timed[T](f: => T)(implicit l: Logger): T = timed("Task", LoggingLevel.Verbose)(f)
+  protected def timed[T](task: String, logLevel: LoggingLevel = LoggingLevel.Verbose)(f: => T)(implicit l: Logger): T = {
     val start = System.currentTimeMillis
-    l.verbose(s"starts $task")
+    l.log(s"starts $task", logLevel)
     val $ = f
-    l.verbose(s"$task took ${System.currentTimeMillis - start} ms")
+    l.log(s"$task took ${System.currentTimeMillis - start} ms", logLevel)
     $
   }
 

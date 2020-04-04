@@ -44,7 +44,7 @@ private class NewAlbumFiller @Inject()(
       } yield ()
       storeResult.handleErrorFlat {
         case _: NoSuchElementException => ()
-        case s => s.printStackTrace()
+        case e => logger.error(s"Error while storing <$artist> albums", e)
       }
     }
         .listen(_ => logger.verbose(s"Finished storing <$artist> albums"))
@@ -55,7 +55,7 @@ private class NewAlbumFiller @Inject()(
       .flattenElements
       .map(_.newAlbum)
       .toFuture[Stream]
-      .listen(jsonableSaver save _)
+      .listen(jsonableSaver.save)
 }
 
 private object NewAlbumFiller {
@@ -66,7 +66,7 @@ private object NewAlbumFiller {
 
   def main(args: Array[String]): Unit = {
     val injector = Guice.createInjector(Modules `override` RealModule `with` LocalNewAlbumsModule)
-    injector.instance[FilteringLogger].setCurrentLevel(LoggingLevel.Verbose)
+    injector.instance[FilteringLogger].setCurrentLevel(LoggingLevel.Debug)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     injector.instance[NewAlbumFiller].fetchAndSave.get
     println("Done!")
