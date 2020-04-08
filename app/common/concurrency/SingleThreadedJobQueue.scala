@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext
 
 import common.rich.RichT._
 
-class SingleThreadedJobQueue(queueName: String) {
+private class SingleThreadedJobQueue(queueName: String) {
   private val queue = Executors.newFixedThreadPool(
     1, (r: Runnable) => new Thread(r, s"<$queueName>'s single threaded job queue").<|(_ setDaemon true))
 
@@ -17,7 +17,7 @@ class SingleThreadedJobQueue(queueName: String) {
   def apply(a: => Unit): Unit = queue submit new Callable[Unit] {override def call() = a}
 }
 
-object SingleThreadedJobQueue {
+private object SingleThreadedJobQueue {
   def executionContext(serviceName: String): ExecutionContext =
     new SingleThreadedJobQueue(serviceName).asExecutionContext
 }

@@ -15,7 +15,7 @@ import scalaz.std.option.optionInstance
 import scalaz.std.vector.vectorInstance
 import scalaz.syntax.traverse.ToTraverseOps
 
-import common.concurrency.SingleThreadedJobQueue
+import common.concurrency.DaemonFixedPool
 import common.ds.IndexedSet
 import common.io.{DirectoryRef, JsonableSaver}
 import common.json.Jsonable
@@ -66,7 +66,7 @@ private class MetadataCacher(
     override def apply(artists: IndexedSet[Artist]): Unit = saver.update[Artist](artists ++ _)
   }
 
-  private val queue = new SingleThreadedJobQueue("MetadataCacher")
+  private val queue = DaemonFixedPool.single("MetadataCacher")
   private def update(updater: Updater): Observable[CacheUpdate] = {
     import common.concurrency.toRunnable
     val targets = updater.targets
@@ -84,7 +84,7 @@ private class MetadataCacher(
         .replay
         // connect has to be invoked asynchronously, otherwise the observers would only be notified after the
         // update has been completed.
-        .<|(queue apply _.connect)
+        .<|(s => queue.execute(() => s.connect))
   }
 
   import albumFactory.AlbumFactorySongOps

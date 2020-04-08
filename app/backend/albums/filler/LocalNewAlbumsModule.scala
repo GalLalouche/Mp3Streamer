@@ -14,7 +14,7 @@ import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 import scala.concurrent.ExecutionContext
 
-import common.concurrency.SingleThreadedJobQueue
+import common.concurrency.{DaemonFixedPool, SingleThreadedJobQueue}
 import common.io.InternetTalker
 import common.io.WSAliases.WSClient
 import common.rich.RichFuture
@@ -41,22 +41,22 @@ private object LocalNewAlbumsModule extends ScalaModule with Debug {
     private val am = ActorMaterializer()(
       ActorSystem.create("NewAlbumsModule-System", RealInternetTalkerModule.warningOnlyDaemonicConfig))
 
-    private val internetTalkingThread = new SingleThreadedJobQueue("InternetTalkingThread").asExecutionContext
+    private val internetTalkingThread = DaemonFixedPool.single("InternetTalkingThread")
     override def execute(runnable: Runnable) = internetTalkingThread.execute(runnable)
     override def reportFailure(cause: Throwable) = internetTalkingThread.reportFailure(cause)
 
     private val semaphore = new Semaphore(1)
-    private val semaphoreReleasingContext = new SingleThreadedJobQueue("SemaphoreReleasingContext")
+    private val semaphoreReleasingContext = DaemonFixedPool.single("SemaphoreReleasingContext")
 
     override protected def createWsClient() = StandaloneAhcWSClient()(am)
     override def useWs[T](f: Retriever[WSClient, T]) = {
       semaphore.acquire()
       // As an extra precaution of arguable efficacy, all semaphores are released by a single thread.
       RichFuture.richFuture(super.useWs(f))(internetTalkingThread)
-          .consumeTry(_ => semaphoreReleasingContext {
+          .consumeTry(_ => semaphoreReleasingContext.execute(() => {
             Thread sleep 1000
             semaphore.release()
-          })
+          }))
     }
   }
 
