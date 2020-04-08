@@ -9,6 +9,7 @@ sealed trait Reconcilable {
 @Lenses
 case class Artist(name: String) extends Reconcilable {
   override def normalize: String = name.toLowerCase
+  def normalized: Artist = Artist(normalize)
 }
 case class Album(title: String, year: Int, artist: Artist) extends Reconcilable {
   def artistName: String = artist.name

@@ -1,74 +1,41 @@
 package backend.albums.filler
 
-import java.util.NoSuchElementException
+import java.util.concurrent.Executors
 
-import backend.albums.NewAlbum
-import backend.albums.NewAlbum.NewAlbumJsonable
-import backend.logging.{FilteringLogger, Logger, LoggingLevel}
-import backend.module.RealModule
-import backend.recon.{AlbumReconStorage, StoredReconResult}
+import backend.logging.{FilteringLogger, LoggingLevel}
+import backend.module.StandaloneModule
 import com.google.inject.util.Modules
+import com.google.inject.Guice
 import javax.inject.Inject
+import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
-import scalaz.syntax.functor.ToFunctorOps
+import scalaz.syntax.bind._
 import scalaz.syntax.traverse.ToTraverseOps
 import common.rich.func.MoreTraverseInstances._
-import common.rich.func.ToMoreFunctorOps._
-import common.rich.func.ToMoreMonadErrorOps._
 
-import common.io.JsonableSaver
-import common.rich.primitives.RichBoolean._
-import common.rich.RichObservable._
+import common.rich.RichFuture._
+import common.rich.RichT._
 
 private class NewAlbumFiller @Inject()(
-    ec: ExecutionContext,
-    retriever: NewAlbumsRetriever,
-    albumReconStorage: AlbumReconStorage,
-    jsonableSaver: JsonableSaver,
-    logger: Logger,
+    cache: ExistingAlbums,
+    newAlbumFetcher: NewAlbumFetcher,
 ) {
-  private implicit val iec: ExecutionContext = ec
-  private def store(newAlbumRecon: Seq[NewAlbumRecon]): Future[Unit] = {
-    val artist = newAlbumRecon.head.newAlbum.artist
-    logger.verbose(s"Storing albums for <$artist>")
-    newAlbumRecon.traverse {newAlbumRecon =>
-      val album = newAlbumRecon.newAlbum.toAlbum
-      val storeResult = for {
-        exists <- albumReconStorage.load(album).map(_.isDefined)
-        if exists.isFalse
-        _ = logger.verbose(s"Storing <$newAlbumRecon>")
-        _ <- albumReconStorage.store(album, StoredReconResult.unignored(newAlbumRecon.reconId))
-      } yield ()
-      storeResult.handleErrorFlat {
-        case _: NoSuchElementException => ()
-        case e => logger.error(s"Error while storing <$artist> albums", e)
-      }
-    }
-        .listen(_ => logger.verbose(s"Finished storing <$artist> albums"))
-        .void
-  }
-  def fetchAndSave: Future[Traversable[NewAlbum]] = retriever.findNewAlbums
-      .doOnNextAsync(store)
-      .flattenElements
-      .map(_.newAlbum)
-      .toFuture[Stream]
-      .listen(jsonableSaver.save)
+  private implicit val ec: ExecutionContext =
+    ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(10,
+      (r: Runnable) => new Thread(r, this.simpleName).<|(_.setDaemon(true))))
+
+  def go(): Future[_] = cache.artists.traverse(newAlbumFetcher ! _).void
 }
 
 private object NewAlbumFiller {
-  import com.google.inject.Guice
-  import net.codingwell.scalaguice.InjectorExtensions._
-
-  import common.rich.RichFuture._
-
   def main(args: Array[String]): Unit = {
-    val injector = Guice.createInjector(Modules `override` RealModule `with` LocalNewAlbumsModule)
-    injector.instance[FilteringLogger].setCurrentLevel(LoggingLevel.Debug)
+    val injector = Guice.createInjector(Modules `override` StandaloneModule `with` LocalNewAlbumsModule)
+    injector.instance[FilteringLogger].setCurrentLevel(LoggingLevel.Verbose)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    injector.instance[NewAlbumFiller].fetchAndSave.get
+    injector.instance[NewAlbumFiller].go().get
     println("Done!")
   }
 }
