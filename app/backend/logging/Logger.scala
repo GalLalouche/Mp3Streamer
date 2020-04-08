@@ -17,3 +17,9 @@ trait Logger {
   def error(what: String, e: Throwable): Unit =
     error(what + "\n" + RichString.fromPrintStream(e.printStackTrace))
 }
+
+object Logger {
+  object Empty extends Logger {
+    override def log(what: String, level: LoggingLevel, when: LocalDateTime): Unit = ()
+  }
+}
