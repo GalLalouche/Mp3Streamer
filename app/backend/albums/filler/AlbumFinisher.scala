@@ -10,6 +10,7 @@ import com.google.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
+import scalaz.syntax.bind.ToBindOps
 import scalaz.syntax.functor.ToFunctorOps
 import scalaz.syntax.traverse.ToTraverseOps
 import common.rich.func.MoreSeqInstances._
@@ -18,7 +19,7 @@ import common.rich.func.ToMoreFunctorOps._
 import common.rich.func.ToMoreMonadErrorOps._
 import common.rich.func.ToTraverseMonadPlusOps._
 
-import common.concurrency.{DaemonFixedPool, SimpleTypedActor}
+import common.concurrency.DaemonFixedPool
 import common.rich.primitives.RichBoolean._
 import common.rich.RichT._
 
@@ -26,7 +27,7 @@ import common.rich.RichT._
     logger: Logger,
     albumReconStorage: AlbumReconStorage,
     cache: ExistingAlbums,
-) extends SimpleTypedActor[(Artist, Seq[MbAlbumMetadata]), Seq[NewAlbumRecon]] {
+) {
   private implicit val ec: ExecutionContext = DaemonFixedPool(this.simpleName, 10)
 
   private def store(newAlbumRecon: Seq[NewAlbumRecon]): Future[Unit] = {
@@ -59,17 +60,11 @@ import common.rich.RichT._
           .map(_ != IgnoredReconResult.Ignored)
     albums filterTraverse isNotIgnored
   }
-  override def !(m: => (Artist, Seq[MbAlbumMetadata])): Future[Seq[NewAlbumRecon]] = {
-    val (artist, albums) = m
-    if (albums.isEmpty)
-      return Future.successful(Nil)
-    for {
-      removeIgnored <- removeIgnoredAlbums(artist, albums)
-      _ = logger.debug(
-        s"Finished working on $artist; " +
-            s"found ${if (albums.isEmpty) "no" else s"<${albums.size}>"} new albums.")
-      removeExisting = cache.removeExistingAlbums(artist, removeIgnored)
-      _ <- store(removeExisting)
-    } yield removeExisting
-  }
+  def apply(artist: Artist, albums: Seq[MbAlbumMetadata]): Future[Seq[NewAlbumRecon]] =
+    removeIgnoredAlbums(artist, albums)
+        .listen(albums => logger.debug(
+          s"Finished working on $artist; " +
+              s"found ${if (albums.isEmpty) "no" else s"<${albums.size}>"} new albums."
+        )).map(cache.removeExistingAlbums(artist, _))
+        .>>!(store)
 }

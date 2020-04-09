@@ -27,12 +27,12 @@ private class NewAlbumFiller @Inject()(
     ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(10,
       (r: Runnable) => new Thread(r, this.simpleName).<|(_.setDaemon(true))))
 
-  def go(): Future[_] = cache.artists.traverse(newAlbumFetcher ! _).void
+  def go(): Future[_] = cache.artists.traverse(newAlbumFetcher.apply).void
 }
 
 private object NewAlbumFiller {
   def main(args: Array[String]): Unit = {
-    val injector = Guice.createInjector(Modules `override` StandaloneModule `with` LocalNewAlbumsModule)
+    val injector = Guice.createInjector(Modules `override` StandaloneModule `with` LocalNewAlbumsModule.default)
     injector.instance[FilteringLogger].setCurrentLevel(LoggingLevel.Verbose)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     injector.instance[NewAlbumFiller].go().get

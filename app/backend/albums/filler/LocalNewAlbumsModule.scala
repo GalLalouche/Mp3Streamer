@@ -28,13 +28,9 @@ private object LocalNewAlbumsModule extends Debug {
   def default = new LocalNewAlbumsModule(new ScalaModule {
     @Provides
     @Singleton
-    private def existingAlbumsCache(implicit mf: MusicFinder, logger: Logger): ExistingAlbums = {
+    private def existingAlbumsCache(implicit mf: MusicFinder, logger: Logger): ExistingAlbums =
       timed("Creating cache", LoggingLevel.Info) {
-        ExistingAlbums.from(
-          mf.genreDirs.view.flatMap(_.deepDirs),
-          mf
-        )
+        ExistingAlbums.from(mf.genreDirs.view.flatMap(_.deepDirs), mf)
       }
-    }
   })
 }
