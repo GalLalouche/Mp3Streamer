@@ -8,6 +8,8 @@ import net.codingwell.scalaguice.ScalaPrivateModule
 
 import scala.concurrent.ExecutionContext
 
+import scalaz.OptionT
+
 object MbModule extends ScalaPrivateModule {
   override def configure(): Unit = {
     bind[Reconciler[Album]].to[MbAlbumReconciler]
@@ -17,9 +19,9 @@ object MbModule extends ScalaPrivateModule {
   @Provides private def artistReconciler(
       artistReconciler: ReconcilerCacher[Artist],
       ec: ExecutionContext
-  ): OptionRetriever[Artist, ReconID] = {
+  ): OptionRetriever[Artist, ReconID] = artist => OptionT {
     implicit val iec: ExecutionContext = ec
-    artistReconciler(_).map {
+    artistReconciler(artist).map {
       case NoRecon => None
       case HasReconResult(reconId, _) => Some(reconId)
     }

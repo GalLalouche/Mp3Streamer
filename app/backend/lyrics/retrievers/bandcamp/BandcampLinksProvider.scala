@@ -11,6 +11,7 @@ import models.Song
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
+import scalaz.OptionT
 
 import common.rich.collections.RichTraversableOnce._
 
@@ -31,6 +32,7 @@ private class BandcampLinksProvider @Inject()(
   private def getBandcampLink(releaseID: ReconID): Future[Option[Url]] =
     mbHtmlLinkExtractorHelper[Album]("release")(releaseID)
         .map(_.find(_.host == Host.Bandcamp).map(_.link))
-  def apply(s: Song): FutureOption[Url] = musicBrainzReleaseFetcher(s.release)
-      .flatMap(_.mapFirstF(getBandcampLink))
+  def apply(s: Song): FutureOption[Url] = OptionT(
+    musicBrainzReleaseFetcher(s.release)
+        .flatMap(_.mapFirstF(getBandcampLink)))
 }

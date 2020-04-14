@@ -56,7 +56,7 @@ private class LyricsCache @Inject()(
 
   def setInstrumentalSong(s: Song): Future[Instrumental] = {
     val instrumental = Instrumental("Manual override")
-    cache.forceStore(s, instrumental) >| instrumental
+    cache.forceStore(s, instrumental).run >| instrumental
   }
   def setInstrumentalArtist(s: Song): Future[Instrumental] = defaultArtistInstrumental add s
 }

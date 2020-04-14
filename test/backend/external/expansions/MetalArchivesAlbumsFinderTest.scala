@@ -3,7 +3,6 @@ package backend.external.expansions
 import backend.Url
 import backend.recon.{Album, Artist}
 import net.codingwell.scalaguice.ScalaModule
-import org.scalatest.OptionValues._
 
 class MetalArchivesAlbumsFinderTest extends SameHostExpanderSpec {
   override protected def module = new ScalaModule {
@@ -16,11 +15,11 @@ class MetalArchivesAlbumsFinderTest extends SameHostExpanderSpec {
 
   "return none when there is no matching album" in {
     findAlbum("metal-archives-discography.html", Album("Let it Bleed", 1928, Artist("Cruachan")))
-        .map(_ shouldReturn None)
+        .shouldEventuallyReturnNone()
   }
   "find album" in {
     findAlbum("metal-archives-discography.html", Album("Blood for the Blood God", 2014, Artist("Cruachan")))
-        .map(_.value.link shouldReturn Url(
+        .mapValue(_.link shouldReturn Url(
           "http://www.metal-archives.com/albums/Cruachan/Blood_for_the_Blood_God/475926"))
   }
 }

@@ -52,7 +52,7 @@ private class ExternalPipe[R <: Reconcilable](
   private def extractHosts(ls: BaseLinks[R]) = ls.map(_.host).toSet
 
   private def applyNewHostReconcilers(entity: R, existingHosts: Set[Host]): Future[BaseLinks[R]] =
-    standaloneReconcilers.get.filterNot(existingHosts apply _.host).traverse(_ (entity)).map(_.flatten)
+    standaloneReconcilers.get.filterNot(existingHosts apply _.host).traverse(_ (entity).run).map(_.flatten)
 
   private def filterLinksWithNewHosts(existingLinks: BaseLinks[R], newLinks: BaseLinks[R]): BaseLinks[R] = {
     val map = existingLinks.map(_.host).toSet
@@ -82,6 +82,6 @@ private class ExternalPipe[R <: Reconcilable](
     markers
         .filter(_.host == l.host)
         .singleOpt
-        .mapHeadOrElse(_(l).map(m => l.copy(mark = m)), Future.successful(l))
+        .mapHeadOrElse(_ (l).map(m => l.copy(mark = m)), Future.successful(l))
   )
 }

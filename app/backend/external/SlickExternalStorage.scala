@@ -2,9 +2,8 @@ package backend.external
 
 import java.time.LocalDateTime
 
-import backend.{FutureOption, Url}
 import backend.RichTime._
-import backend.logging.Logger
+import backend.Url
 import backend.recon.{Album, Artist, Reconcilable}
 import backend.storage.{AlwaysFresh, DatedFreshness, DbProvider, Freshness, SlickStorageTemplateFromConf}
 import javax.inject.Inject
@@ -26,7 +25,6 @@ import common.storage.{ColumnMappers, StringSerializable}
 private[external] abstract class SlickExternalStorage[R <: Reconcilable](
     ec: ExecutionContext,
     dbP: DbProvider,
-    logger: Logger,
 ) extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Freshness)](ec, dbP)
     with ExternalStorage[R] {
   private case class InvalidEntry(entry: String) extends Exception
@@ -67,7 +65,7 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](
   override protected type Id = String
   override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
   override protected def extractId(r: R) = r.normalize
-  override def load(r: R): FutureOption[(MarkedLinks[R], Freshness)] = super.load(r).mapError {
+  override def load(r: R) = super.load(r).mapError {
     case InvalidEntry(e) => new AssertionError(s"Encountered an invalid entry <$e> for entity <$r>")
   }
 }
@@ -75,8 +73,7 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](
 private[backend] class ArtistExternalStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider,
-    logger: Logger,
-) extends SlickExternalStorage[Artist](ec, dbP, logger) {
+) extends SlickExternalStorage[Artist](ec, dbP) {
   import profile.api._
 
   override protected type Entity = (String, MarkedLinks[Artist], Option[LocalDateTime])
@@ -97,8 +94,7 @@ private[backend] class ArtistExternalStorage @Inject()(
 private[backend] class AlbumExternalStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider,
-    logger: Logger,
-) extends SlickExternalStorage[Album](ec, dbP, logger) {
+) extends SlickExternalStorage[Album](ec, dbP) {
   private implicit val iec: ExecutionContext = ec
   import profile.api._
 

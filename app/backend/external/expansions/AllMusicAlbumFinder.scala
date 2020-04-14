@@ -11,6 +11,7 @@ import scala.concurrent.ExecutionContext
 
 import scalaz.std.option.optionInstance
 import scalaz.std.scalaFuture.futureInstance
+import scalaz.OptionT
 import common.rich.func.MoreIteratorInstances._
 import common.rich.func.ToMoreMonadPlusOps._
 import common.rich.func.ToTraverseMonadPlusOps._
@@ -22,7 +23,7 @@ import common.rich.primitives.RichBoolean._
 private class AllMusicAlbumFinder @Inject()(
     allMusicHelper: AllMusicHelper,
     sameHostExpanderHelper: SameHostExpanderHelper,
-    ec: ExecutionContext
+    ec: ExecutionContext,
 ) extends SameHostExpander {
   private implicit val iec: ExecutionContext = ec
 
@@ -32,8 +33,8 @@ private class AllMusicAlbumFinder @Inject()(
     override def host: Host = AllMusicAlbumFinder.this.host
 
     override def modifyUrl(u: Url, a: Album) = u +/ "discography"
-    override def findAlbum(d: Document, album: Album): FutureOption[Url] = {
-      def score(other: Album): Double = AlbumReconScorer.apply(album, other)
+    override def findAlbum(d: Document, album: Album): FutureOption[Url] = OptionT {
+      def score(other: Album): Double = AlbumReconScorer(album, other)
       d.selectIterator(".discography table tbody tr")
           .tryMap(albumRow => albumRow ->
               Album(

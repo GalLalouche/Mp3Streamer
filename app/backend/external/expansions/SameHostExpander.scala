@@ -13,7 +13,6 @@ private trait SameHostExpander {
   def apply: (BaseLink[Artist], Album) => FutureOption[BaseLink[Album]]
   def toReconciler(artistLinks: BaseLink[Artist]): LinkRetriever[Album] = new LinkRetriever[Album] {
     override def host = SameHostExpander.this.host
-    override def apply(a: Album): FutureOption[BaseLink[Album]] =
-      SameHostExpander.this.apply(artistLinks, a)
+    override def apply(a: Album) = SameHostExpander.this.apply(artistLinks, a)
   }
 }

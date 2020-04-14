@@ -1,17 +1,11 @@
 package backend.external.expansions
 
-import backend.external.{BaseLink, BaseLinks, Host}
+import backend.external.{BaseLinks, Host}
 import backend.external.recons.LinkRetrievers
 import backend.recon.{Album, Artist}
 import javax.inject.Inject
 
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.Traverse
-import scalaz.std.option.optionInstance
-import scalaz.std.scalaFuture.futureInstance
-import common.rich.func.MoreTraverseInstances._
-import common.rich.func.ToMoreFoldableOps._
+import scala.concurrent.ExecutionContext
 
 import common.rich.collections.RichTraversableOnce._
 
@@ -24,13 +18,6 @@ private[external] class CompositeSameHostExpander @Inject()(
   private implicit val iec: ExecutionContext = ec
 
   private val expanders: Map[Host, SameHostExpander] = Iterator(wiki, am).mapBy(_.host)
-
-  // Not future option due to implicit inference
-  def apply(link: BaseLink[Artist], a: Album): Future[Option[BaseLink[Album]]] =
-    expanders.get(link.host).mapHeadOrElse(_.apply(link, a), Future successful None)
-
-  def apply(links: BaseLinks[Artist], a: Album): Future[BaseLinks[Album]] =
-    Traverse[Traversable].traverse(links)(apply(_, a)).map(_.flatten)
   def toReconcilers(ls: BaseLinks[Artist]): LinkRetrievers[Album] = {
     val availableHosts = ls.toMultiMap(_.host).mapValues(_.head)
     LinkRetrievers(expanders.flatMap(e => availableHosts.get(e._1).map(e._2.toReconciler)))

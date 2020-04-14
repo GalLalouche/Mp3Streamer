@@ -4,10 +4,9 @@ import backend.lyrics.retrievers.{HtmlRetriever, SingleHostParsingHelper}
 import backend.lyrics.retrievers.RetrievedLyricsResult.NoLyrics
 import javax.inject.Inject
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-import scalaz.std.option.optionInstance
-import common.rich.func.ToMoreFoldableOps._
+import scalaz.std.scalaFuture.futureInstance
 
 private[lyrics] class GeniusLyricsRetriever @Inject()(
     singleHostHelper: SingleHostParsingHelper,
@@ -18,8 +17,5 @@ private[lyrics] class GeniusLyricsRetriever @Inject()(
 
   override val parse = singleHostHelper(LyricsParser)
   override val doesUrlMatchHost = _.address startsWith "https://genius.com"
-  override val get = song => api.getLyricUrl(song).flatMap(_.mapHeadOrElse(
-    f = parse(_, song),
-    default = Future.successful(NoLyrics))
-  )
+  override val get = song => api.getLyricUrl(song).flatMapF(parse(_, song)) | NoLyrics
 }

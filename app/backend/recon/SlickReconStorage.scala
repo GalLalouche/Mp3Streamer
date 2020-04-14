@@ -8,7 +8,6 @@ import slick.jdbc.JdbcType
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.OptionT
 import scalaz.std.option.optionInstance
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.applicative.ToApplyOps
@@ -24,10 +23,8 @@ sealed abstract class SlickReconStorage[R <: Reconcilable](ec: ExecutionContext,
     MappedColumnType.base[ReconID, String](_.id, ReconID)
   override protected type Id = String
   override protected implicit def btt: BaseTypedType[String] = ScalaBaseType.stringType
-  override def isIgnored(k: R): Future[IgnoredReconResult] = OptionT(load(k))
-      .map(_.isIgnored)
-      .run
-      .map(IgnoredReconResult.from)
+  override def isIgnored(k: R): Future[IgnoredReconResult] = load(k).map(_.isIgnored)
+      .run.map(IgnoredReconResult.from)
 
   override protected def extractId(r: R) = r.normalize
 }

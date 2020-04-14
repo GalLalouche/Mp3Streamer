@@ -10,6 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.std.vector.vectorInstance
+import scalaz.OptionT
 import common.rich.func.ToTraverseMonadPlusOps._
 
 import common.io.InternetTalker
@@ -37,7 +38,7 @@ private class WikipediaAlbumFinder @Inject()(
       it.downloadDocument(Url(urlWithoutRedirection))
           .map(_.find("span#redirectsub").exists(_.text == "Redirect page").isFalse)
     }
-    def findAlbum(d: Document, a: Album): FutureOption[Url] = {
+    def findAlbum(d: Document, a: Album): FutureOption[Url] = OptionT {
       val documentLanguage = d.selectSingle("html").attr("lang") match {
         case "en" => "en"
         case "he" => "he"

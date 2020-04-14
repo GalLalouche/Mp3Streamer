@@ -14,6 +14,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOpsUnapply
 import scalaz.syntax.functor.ToFunctorOps
+import scalaz.OptionT
+import common.rich.func.RichOptionT._
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.ToMoreMonadErrorOps._
 
@@ -53,7 +55,7 @@ class FolderFixer @Inject()(
       folderImage: Future[Directory => Unit],
       fixedDirectory: Future[FixedDirectory],
   ): Future[Directory] = for {
-    destinationParent <- destination.map(_ getOrElse NewArtistFolderCreator(artist).get)
+    destinationParent <- destination |||| NewArtistFolderCreator(artist)
     folderImageMover <- folderImage
     fixed <- fixedDirectory
   } yield {
@@ -78,7 +80,7 @@ class FolderFixer @Inject()(
 
   private def run(folder: Directory): Unit = {
     val artist = mf.getSongsInDir(IODirectory(folder)).head.artistName
-    val destination = Future(findArtistFolder(artist))
+    val destination = OptionT(Future(findArtistFolder(artist)))
     val folderImage = downloadCover(folder)
     println("fixing directory")
     val fixedDirectory = Future(fixLabels.fix(folder.cloneDir()))

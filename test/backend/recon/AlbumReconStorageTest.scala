@@ -27,15 +27,16 @@ class AlbumReconStorageTest extends AsyncFreeSpec with StorageSetup {
       val album3: Album = Album("eggs", 2002, artist)
       storage.store(album1, HasReconResult(ReconID("recon1"), true)) >>
           storage.store(album2, HasReconResult(ReconID("recon2"), false)) >>
-          storage.store(album3, NoRecon) >>
-          storage.deleteAllRecons(artist).map(_ shouldMultiSetEqual Set(
-            ("bar - foo", Some(ReconID("recon1")), true),
-            ("bar - spam", Some(ReconID("recon2")), false),
-            ("bar - eggs", None, true),
-          )) >>
-          storage.load(album1).map(_ shouldBe 'empty) >>
-          storage.load(album2).map(_ shouldBe 'empty) >>
-          storage.load(album3).map(_ shouldBe 'empty)
+          storage.store(album3, NoRecon) >> checkAll(
+        storage.deleteAllRecons(artist).map(_ shouldMultiSetEqual Set(
+          ("bar - foo", Some(ReconID("recon1")), true),
+          ("bar - spam", Some(ReconID("recon2")), false),
+          ("bar - eggs", None, true),
+        )),
+        storage.load(album1).shouldEventuallyReturnNone(),
+        storage.load(album2).shouldEventuallyReturnNone(),
+        storage.load(album3).shouldEventuallyReturnNone(),
+      )
     }
   }
 }

@@ -11,6 +11,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
+import scalaz.syntax.functor.ToFunctorOps
+import common.rich.func.RichOptionT._
 import monocle.function.Index._
 import monocle.syntax.apply._
 
@@ -29,14 +31,11 @@ private class NewAlbums @Inject()(
 
   private def ignore[R <: Reconcilable](r: R, reconStorage: ReconStorage[R]): Future[Unit] = {
     logger.debug(s"Ignoring $r")
-    reconStorage.load(r).map {existing =>
-      assert(existing.isDefined)
-      existing.get match {
-        case NoRecon => throw new AssertionError()
-        case recon@HasReconResult(_, _) =>
-          reconStorage.forceStore(r, recon.ignored)
-      }
-    }
+    reconStorage.load(r).get.map {
+      case NoRecon => throw new AssertionError()
+      case recon@HasReconResult(_, _) =>
+        reconStorage.forceStore(r, recon.ignored)
+    }.void
   }
 
   def loadAlbumsByArtist: Future[Map[Artist, Seq[NewAlbum]]] = Future(jsonableSaver.loadArray)

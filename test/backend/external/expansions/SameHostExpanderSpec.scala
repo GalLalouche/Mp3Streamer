@@ -8,7 +8,9 @@ import com.google.inject.{Guice, Module}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.AsyncFreeSpec
 
-abstract class SameHostExpanderSpec extends AsyncFreeSpec with DocumentSpecs {
+import common.test.AsyncAuxSpecs
+
+abstract class SameHostExpanderSpec extends AsyncFreeSpec with DocumentSpecs with AsyncAuxSpecs {
   protected def module: Module
 
   protected def artistUrl = "Url"

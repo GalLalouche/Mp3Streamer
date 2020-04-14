@@ -10,6 +10,10 @@ import org.scalatest.AsyncFreeSpec
 
 import scala.concurrent.Future
 
+import scalaz.OptionT
+import common.rich.func.BetterFutureInstances._
+import common.rich.func.RichOptionT
+
 import common.rich.RichT._
 import common.test.AuxSpecs
 
@@ -33,7 +37,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
   }
   private def constReconciler(_host: Host, link: BaseLink[Album]) = new LinkRetriever[Album] {
     override val host = _host
-    override def apply(v1: Album) = Future successful Some(link)
+    override def apply(v1: Album) = RichOptionT.pointSome[Future].apply(link)
   }
   private val newLinkExpander = constExpander(expandedLink)
   private val newLinkReconciler = constReconciler(reconciledLink.host, reconciledLink)
@@ -58,7 +62,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
     }
     def failedReconciler(_host: Host) = new LinkRetriever[Album] {
       override val host = _host
-      override def apply(a: Album) = failed
+      override def apply(a: Album) = OptionT[Future, BaseLink[Album]](failed)
     }
     "Should not invoke on existing hosts" in {
       val $ = new ExternalPipe[Album](

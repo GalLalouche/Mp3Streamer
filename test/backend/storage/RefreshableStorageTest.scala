@@ -33,21 +33,23 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
   )
   "apply" - {
     "no previous value should insert new value in" in {
-      freshnessStorage.load("foobar").map(_ shouldReturn None) >>
-          $("foobar").map(_ shouldReturn "raboof1") >>
-          freshnessStorage.load("foobar").map(_.value shouldReturn "raboof1")
+      freshnessStorage.load("foobar").shouldEventuallyReturnNone() >> checkAll(
+        $("foobar").map(_ shouldReturn "raboof1"),
+        freshnessStorage.load("foobar").mapValue(_ shouldReturn "raboof1"),
+      )
     }
     "existing value is fresh should return existing value" in {
-      freshnessStorage.store("foobar", "bazqux") >>
-          $("foobar").map(_ shouldReturn "bazqux") >>
-          freshnessStorage.load("foobar").map(_.value shouldReturn "bazqux")
+      freshnessStorage.store("foobar", "bazqux") >> checkAll(
+        $("foobar").map(_ shouldReturn "bazqux"),
+        freshnessStorage.load("foobar").mapValue(_ shouldReturn "bazqux"),
+      )
     }
     "existing value is stale should refresh" in {
-      freshnessStorage.store("foobar", "bazqux") >|
-          clock.advance(100) >>
-          $("foobar").map(_ shouldReturn "raboof1") >>
-          freshnessStorage.load("foobar").map(_.value shouldReturn "raboof1") >>
-          $("foobar").map(_ shouldReturn "raboof1")
+      freshnessStorage.store("foobar", "bazqux") >| clock.advance(100) >> checkAll(
+        $("foobar").map(_ shouldReturn "raboof1"),
+        freshnessStorage.load("foobar").mapValue(_ shouldReturn "raboof1"),
+        $("foobar").map(_ shouldReturn "raboof1"),
+      )
     }
     "existing value has no datetime" in {
       freshnessStorage.storeWithoutTimestamp("foobar", "bazqux") >> $("foobar").map(_ shouldReturn "bazqux")
@@ -61,11 +63,13 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
         )
         for {
           _ <- freshnessStorage.store("foo", "bar")
-          dataFreshness <- freshnessStorage.freshness("foo")
+          dataFreshness <- freshnessStorage.freshness("foo").run
           _ = clock advance 100
-          a <- $.needsRefresh("foo").map(_ shouldReturn true) >>
-              $.apply("foo").map(_ shouldReturn "bar") >>
-              freshnessStorage.freshness("foo").map(_ shouldReturn dataFreshness)
+          a <- checkAll(
+            $.needsRefresh("foo").map(_ shouldReturn true),
+            $.apply("foo").map(_ shouldReturn "bar"),
+            freshnessStorage.freshness("foo").run.map(_ shouldReturn dataFreshness),
+          )
         } yield a
       }
       "previous does not exist, returns the original failure" in {
@@ -82,7 +86,7 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
   "withAge" in {
     for {
       _ <- freshnessStorage.store("foobar", "bazqux")
-      timestamp <- freshnessStorage.freshness("foobar")
+      timestamp <- freshnessStorage.freshness("foobar").run
       ld = timestamp.value.localDateTime.value
       age <- $.withAge("foobar")
     } yield age shouldReturn ("bazqux" -> DatedFreshness(ld))

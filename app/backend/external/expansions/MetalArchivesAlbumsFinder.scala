@@ -8,6 +8,9 @@ import org.jsoup.nodes.Document
 
 import scala.concurrent.Future
 
+import common.rich.func.BetterFutureInstances._
+import common.rich.func.RichOptionT
+
 import common.RichJsoup._
 
 private class MetalArchivesAlbumsFinder @Inject()(sameHostExpanderHelper: SameHostExpanderHelper)
@@ -23,11 +26,12 @@ private class MetalArchivesAlbumsFinder @Inject()(sameHostExpanderHelper: SameHo
       val artistId = address.split('/').last.toInt
       Url(s"http://www.metal-archives.com/band/discography/id/$artistId/tab/all")
     }
-    override def findAlbum(d: Document, a: Album): FutureOption[Url] =
-      Future.successful(d.selectIterator(".display.discog tr td a")
+    override def findAlbum(d: Document, a: Album): FutureOption[Url] = RichOptionT.app[Future].apply {
+      d.selectIterator(".display.discog tr td a")
           .find(_.text.toLowerCase == a.title.toLowerCase)
           .map(_.href)
-          .map(Url))
+          .map(Url)
+    }
   }
 
   override def apply = sameHostExpanderHelper.apply(documentToAlbumParser)

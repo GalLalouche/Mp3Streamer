@@ -11,6 +11,8 @@ import play.api.libs.json.{JsObject, Json}
 
 import scala.concurrent.ExecutionContext
 
+import scalaz.OptionT
+
 import common.io.InternetTalker
 import common.rich.RichT._
 
@@ -20,7 +22,7 @@ private class API @Inject()(
 ) {
   private implicit val ec: ExecutionContext = it
 
-  def getLyricUrl(song: Song): FutureOption[Url] = {
+  def getLyricUrl(song: Song): FutureOption[Url] = OptionT {
     val query = split(song.artistName) ++ split(song.title) mkString "+"
     it.get(Url(s"https://api.genius.com/search?access_token=$accessToken&q=$query"))
         .map(_.optFilter(_.status == Status.OK)

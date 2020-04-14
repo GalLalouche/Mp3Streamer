@@ -38,7 +38,7 @@ import common.rich.RichT._
     newAlbumRecon.traverse {newAlbumRecon =>
       val album = newAlbumRecon.newAlbum.toAlbum
       val storeResult = for {
-        exists <- albumReconStorage.load(album).map(_.isDefined)
+        exists <- albumReconStorage.exists(album)
         if exists.isFalse
         _ = logger.verbose(s"Storing <$newAlbumRecon>")
         _ <- albumReconStorage.store(album, StoredReconResult.unignored(newAlbumRecon.reconId))

@@ -9,11 +9,11 @@ import com.google.common.annotations.VisibleForTesting
 import javax.inject.Inject
 import org.jsoup.Jsoup
 
-import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
+import scalaz.OptionT
 
 import common.io.InternetTalker
 import common.io.WSAliases._
@@ -38,11 +38,15 @@ private class LastFmLinkRetriever @VisibleForTesting private[recons](
         .map(e => BaseLink[Artist](Url(e), Host.LastFm))
   }
 
-  override def apply(a: Artist): FutureOption[BaseLink[Artist]] = {
+  override def apply(a: Artist): FutureOption[BaseLink[Artist]] = OptionT {
     val url = Url(s"https://www.last.fm/music/" + a.name.toLowerCase.replace(' ', '+'))
-    it.get(url) map handleReply recoverWith {
-      case _: TempRedirect => Future(Thread sleep millisBetweenRedirects).>>(apply(a))
-      case e: MatchError => Future.failed(new UnsupportedOperationException("last.fm returned an unsupported status code", e))
-    }
+    it.get(url)
+        .map(handleReply)
+        .recoverWith {
+          case _: TempRedirect =>
+            Future(Thread sleep millisBetweenRedirects) >> apply(a).run
+          case e: MatchError =>
+            Future.failed(new UnsupportedOperationException("last.fm returned an unsupported status code", e))
+        }
   }
 }

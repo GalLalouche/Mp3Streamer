@@ -17,7 +17,8 @@ private[lyrics] class InstrumentalArtist @Inject()(
 ) extends DefaultInstrumental {
   private implicit val iec: ExecutionContext = ec
 
-  override protected def isInstrumental(s: Song) = storage.load(s.artistName).map(_.isDefined).get
+  // FIXME Why get?
+  override protected def isInstrumental(s: Song) = storage.exists(s.artistName).get
   override protected val defaultType = "artist"
   def add(s: Song): Future[Instrumental] = storage.store(s.artistName) >| instrumental
 }

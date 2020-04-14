@@ -14,11 +14,12 @@ class InstrumentalArtistStorageTest extends AsyncFreeSpec with StorageSetup {
   private val artistName = "foo"
 
   "store and load" in {
-    storage.load(artistName).map(_ shouldReturn None) >>
+    storage.load(artistName).shouldEventuallyReturnNone() >>
         storage.store(artistName) >>
-        storage.load(artistName).map(_ shouldReturn Some())
+        storage.load(artistName).mapValue(_ shouldReturn ())
   }
   "delete" in {
-    storage.store(artistName) >> storage.delete(artistName) >> storage.load(artistName).map(_ shouldBe 'empty)
+    storage.store(artistName) >> storage.delete(artistName).run >>
+        storage.load(artistName).shouldEventuallyReturnNone()
   }
 }
