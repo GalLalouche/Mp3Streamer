@@ -1,7 +1,7 @@
 package backend.search
 
 import controllers.websockets.PlayWebSocketRegistryFactory
-import controllers.{Assets, PlayActionConverter}
+import controllers.PlayActionConverter
 import controllers.websockets.WebSocketRef.AsyncWebSocketRefReader
 import javax.inject.Inject
 import play.api.mvc.{InjectedController, WebSocket}
@@ -11,7 +11,6 @@ class IndexController @Inject()(
     $: IndexFormatter,
     converter: PlayActionConverter,
     webSocketFactory: PlayWebSocketRegistryFactory,
-    assets: Assets,
 ) extends InjectedController {
   private val webSocket = webSocketFactory("IndexController")
   private def run(wsReader: AsyncWebSocketRefReader) = {

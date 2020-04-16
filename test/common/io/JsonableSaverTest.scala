@@ -4,10 +4,7 @@ import java.io.FileNotFoundException
 import java.time.{LocalDateTime, ZoneOffset}
 
 import backend.module.TestModuleConfiguration
-import com.google.inject.Guice
-import com.google.inject.util.Modules
 import net.codingwell.scalaguice.InjectorExtensions._
-import net.codingwell.scalaguice.ScalaModule
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import play.api.libs.json.{JsObject, Json, JsValue}
 
@@ -17,25 +14,23 @@ import common.json.ToJsonableOps._
 import common.rich.RichT._
 import common.test.AuxSpecs
 
-class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
-  // TODO Answer why not take the one from TestConfiguration?
-  private val root = new MemoryRoot
-  private val c = new TestModuleConfiguration() {
-    override val injector = Guice.createInjector(Modules `override` module `with` new ScalaModule {
-      override def configure() = {
-        bind[MemoryRoot].annotatedWith[RootDirectory] toInstance root
-      }
-    })
-  }
-  private val $ = c.injector.instance[JsonableSaver]
-  case class Person(age: Int, name: String)
-  implicit object PersonJsonable extends Jsonable[Person] {
+private object JsonableSaverTest {
+  private case class Person(age: Int, name: String)
+  private implicit object JsonableEv extends Jsonable[Person] {
     override def jsonify(p: Person): JsObject = Json obj("age" -> p.age, "name" -> p.name)
     override def parse(json: JsValue): Person = Person(json int "age", json str "name")
   }
-  val p1 = Person(1, "name1")
-  val p2 = Person(2, "name2")
-  val p3 = Person(3, "name3")
+}
+class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
+  import common.io.JsonableSaverTest._
+
+  private val c = TestModuleConfiguration()
+  private val root = c.injector.instance[MemoryRoot, RootDirectory]
+
+  private val $ = c.injector.instance[JsonableSaver]
+  private val p1 = Person(1, "name1")
+  private val p2 = Person(2, "name2")
+  private val p3 = Person(3, "name3")
   "save" - {
     "can later load" in {
       $ save Vector(p1)

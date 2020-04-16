@@ -15,7 +15,7 @@ object SimpleTypedActor {
     new SimpleTypedActorAsyncImpl(name, f)
   /**
   * Ensures uniqueness of the messages in the message queue, i.e., if a sent message already exists in the
-  * queue it will be dropped. This can used to avoid doing unnecessary work.
+  * queue it will be dropped. This can be used to avoid doing unnecessary work.
   */
   def unique[Msg, Result](name: String, f: Msg => Result): SimpleTypedActor[Msg, Result] =
     new UniqueSimpleTypedActorImpl(name, f)

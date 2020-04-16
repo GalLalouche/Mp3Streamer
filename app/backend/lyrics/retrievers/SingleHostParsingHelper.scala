@@ -3,7 +3,6 @@ package backend.lyrics.retrievers
 import java.util.regex.Pattern
 
 import backend.Url
-import backend.logging.Logger
 import backend.lyrics.{HtmlLyrics, Instrumental}
 import backend.lyrics.retrievers.SingleHostParsingHelper._
 import javax.inject.Inject
@@ -19,7 +18,7 @@ import common.io.InternetTalker
 import common.io.RichWSResponse._
 import common.rich.primitives.RichString._
 
-private class SingleHostParsingHelper @Inject()(it: InternetTalker, logger: Logger) {
+private class SingleHostParsingHelper @Inject()(it: InternetTalker) {
   private implicit val iec: ExecutionContext = it
 
   def apply(p: SingleHostParser)(url: Url, s: Song): Future[RetrievedLyricsResult] = it.get(url)

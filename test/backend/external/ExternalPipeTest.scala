@@ -137,11 +137,9 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
   }
 
   "should apply extra markers" in {
-    //MarkedLink[Album](Url("new2"), Host("newhost2", Url("newhosturl2")), LinkMark.New)
     val marker = new ExternalLinkMarker[Album] {
       override def host = markedReconciledLink.host
-      override def apply(l: MarkedLink[Album]) =
-        Future.successful(LinkMark.Text("foobar"))
+      override def apply(l: MarkedLink[Album]) = Future.successful(LinkMark.Text("foobar"))
     }
     val $ = new ExternalPipe[Album](
       ReconID("foobar") |> constFuture,
@@ -152,7 +150,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
     )
     val expectedNewLinks = Vector(
       MarkedLink[Album](Url("new"), Host("newhost", Url("newhosturl")), LinkMark.New),
-      MarkedLink[Album](Url("new2"), Host("newhost2", Url("newhosturl2")), LinkMark.Text("foobar"))
+      MarkedLink[Album](Url("new2"), Host("newhost2", Url("newhosturl2")), LinkMark.Text("foobar")),
     )
     $(null).map(_ shouldMultiSetEqual (existingMarkedLink +: expectedNewLinks))
   }
