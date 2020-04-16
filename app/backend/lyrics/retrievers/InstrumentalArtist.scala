@@ -9,16 +9,13 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.functor.ToFunctorOps
 
-import common.rich.RichFuture._
-
 private[lyrics] class InstrumentalArtist @Inject()(
     ec: ExecutionContext,
     storage: InstrumentalArtistStorage,
-) extends DefaultInstrumental {
+) extends LyricsRetriever {
   private implicit val iec: ExecutionContext = ec
+  private val helper = new DefaultInstrumentalHelper("artist")
 
-  // FIXME Why get?
-  override protected def isInstrumental(s: Song) = storage.exists(s.artistName).get
-  override protected val defaultType = "artist"
-  def add(s: Song): Future[Instrumental] = storage.store(s.artistName) >| instrumental
+  override def get = s => storage.exists(s.artistName).map(helper.apply)
+  def add(s: Song): Future[Instrumental] = storage.store(s.artistName) >| helper.instrumental
 }
