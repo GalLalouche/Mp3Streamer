@@ -11,8 +11,8 @@ import play.api.mvc.{Action, AnyContent, InjectedController, Request, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.functor.ToFunctorOps
+import common.rich.func.BetterFutureInstances._
 
 /** Converts common play-agnostic return values, usually from formatter helpers, to play Actions. */
 class PlayActionConverter @Inject()(ec: ExecutionContext, assets: Assets) extends InjectedController {

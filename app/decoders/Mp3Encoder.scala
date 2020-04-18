@@ -6,8 +6,8 @@ import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.apply.ToApplyOps
+import common.rich.func.BetterFutureInstances._
 
 import common.concurrency.SimpleTypedActor
 import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}

@@ -12,8 +12,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.{-\/, \/-}
 import scalaz.std.option.optionInstance
-import scalaz.std.scalaFuture.futureInstance
-import scalaz.syntax.functor._
+import scalaz.syntax.functor.ToFunctorOps
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFoldableOps._
 import common.rich.func.ToMoreFunctorOps._
 import common.rich.func.ToMoreMonadErrorOps._

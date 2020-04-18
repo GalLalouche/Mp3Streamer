@@ -10,8 +10,8 @@ import play.api.libs.json.{Json, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
+import common.rich.func.BetterFutureInstances._
 
 import common.json.RichJson._
 import common.rich.RichT._

@@ -11,8 +11,8 @@ import org.scalatest.tags.Slow
 import play.api.http.Status
 import play.api.inject.guice.GuiceApplicationBuilder
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
+import common.rich.func.BetterFutureInstances._
 
 import common.rich.RichFuture._
 import common.MutablePartialFunction

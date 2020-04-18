@@ -7,7 +7,7 @@ import backend.RichTime._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.FutureInstances
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.TuplePLenses
 
 import common.rich.RichT._
@@ -18,8 +18,7 @@ import common.storage.Storage
   * value does not need to be updated.
   */
 class FreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshness)], clock: Clock)
-    (implicit ec: ExecutionContext)
-    extends Storage[Key, Value] with FutureInstances {
+    (implicit ec: ExecutionContext) extends Storage[Key, Value] {
   private def now(v: Value): (Value, Freshness) = v -> DatedFreshness(clock.instant.toLocalDateTime)
   private def toValue[A](v: FutureOption[(Value, A)]): FutureOption[Value] = v.map(_._1)
   def freshness(k: Key): FutureOption[Freshness] = storage.load(k).map(_._2)

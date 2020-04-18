@@ -11,7 +11,7 @@ import play.api.libs.json.Json.JsValueWrapper
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 
 import common.rich.RichT._

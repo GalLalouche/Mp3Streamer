@@ -11,10 +11,10 @@ import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOpsUnapply
 import scalaz.syntax.functor.ToFunctorOps
 import scalaz.OptionT
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.ToMoreMonadErrorOps._

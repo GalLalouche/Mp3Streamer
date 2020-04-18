@@ -10,8 +10,8 @@ import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
+import common.rich.func.BetterFutureInstances._
 
 private class MbExternalLinksProvider @Inject()(
     ec: ExecutionContext,

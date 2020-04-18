@@ -9,8 +9,8 @@ import play.api.libs.json.{Json, JsString}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process._
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.apply.ToApplyOps
+import common.rich.func.BetterFutureInstances._
 
 import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
 

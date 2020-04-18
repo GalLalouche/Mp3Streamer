@@ -7,8 +7,8 @@ import backend.Retriever
 import scala.Ordering.Implicits._
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
 import common.rich.func.ToMoreMonadErrorOps._
 

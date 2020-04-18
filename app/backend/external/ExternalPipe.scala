@@ -6,18 +6,19 @@ import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.LinkRetrievers
 import backend.recon.{Reconcilable, ReconID}
 
-import scalaz.std.scalaFuture.futureInstance
-import scalaz.syntax.bind.ToBindOps
-import scalaz.syntax.traverse._
+import scala.concurrent.{ExecutionContext, Future}
+
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreTraversableInstances._
 import common.rich.func.MoreTraverseInstances._
-import scala.concurrent.{ExecutionContext, Future}
+import common.rich.func.ToMoreFoldableOps._
+import scalaz.std.option.optionInstance
+import scalaz.syntax.bind.ToBindOps
+import scalaz.syntax.traverse.ToTraverseOps
 
 import common.rich.RichTuple._
 import common.rich.collections.RichSet._
 import common.rich.collections.RichTraversableOnce._
-import common.rich.func.ToMoreFoldableOps._
-import scalaz.std.option.optionInstance
 
 /**
  * Encompasses all online steps for fetching the external links for a given entity.

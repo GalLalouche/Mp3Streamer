@@ -8,8 +8,9 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 import org.scalatest.OptionValues._
 
-import scalaz.std.scalaFuture.futureInstance
-import scalaz.syntax.bind._
+import scalaz.syntax.bind.ToBindOps
+import scalaz.syntax.functor.ToFunctorOps
+import common.rich.func.BetterFutureInstances._
 
 import common.FakeClock
 import common.test.AsyncAuxSpecs

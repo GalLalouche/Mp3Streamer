@@ -2,19 +2,19 @@ package backend.lyrics
 
 import backend.lyrics.retrievers.{InstrumentalArtistStorage, RetrievedLyricsResult}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
-import org.mockito.Mockito.when
 import backend.Url
 import controllers.UrlPathUtils
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
+import org.mockito.Mockito.when
 import org.scalatest.AsyncFreeSpec
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
+import common.rich.func.BetterFutureInstances._
 
 import common.rich.path.RichFile._
 import common.storage.Storage

@@ -3,7 +3,7 @@ package backend.external.extensions
 import backend.external.{Host, MarkedLink, MarkedLinks}
 import backend.recon.Reconcilable
 
-import scalaz.syntax.functor._ // Otherwise IntelliJ will drop ToFunctorOpsUnapply
+import scalaz.syntax.functor.ToFunctorOpsUnapply
 import common.rich.func.MoreSeqInstances._
 import common.rich.func.TuplePLenses
 

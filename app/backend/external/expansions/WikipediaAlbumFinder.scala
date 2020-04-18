@@ -8,9 +8,9 @@ import org.jsoup.nodes.Document
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.std.vector.vectorInstance
 import scalaz.OptionT
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToTraverseMonadPlusOps._
 
 import common.io.InternetTalker

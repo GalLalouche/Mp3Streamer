@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 import scala.concurrent.ExecutionContext
 
-import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
 
 import common.io.InternetTalker

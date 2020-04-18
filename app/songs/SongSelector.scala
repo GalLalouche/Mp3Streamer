@@ -7,8 +7,8 @@ import scala.annotation.tailrec
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.functor.ToFunctorOps
+import common.rich.func.BetterFutureInstances._
 
 import common.io.RefSystem
 import common.rich.RichT._

@@ -8,8 +8,8 @@ import org.scalatest.AsyncFreeSpec
 
 import scala.concurrent.ExecutionContext
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOpsUnapply
+import common.rich.func.BetterFutureInstances._
 
 class AlbumReconStorageTest extends AsyncFreeSpec with StorageSetup {
   override protected val config = new TestModuleConfiguration

@@ -9,8 +9,8 @@ import slick.jdbc.JdbcType
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.std.option.optionInstance
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.applicative.ToApplyOps
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFoldableOps._
 
 // TODO replace with composition

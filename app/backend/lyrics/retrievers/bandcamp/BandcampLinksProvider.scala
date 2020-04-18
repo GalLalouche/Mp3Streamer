@@ -10,8 +10,8 @@ import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.OptionT
+import common.rich.func.BetterFutureInstances._
 
 import common.rich.collections.RichTraversableOnce._
 

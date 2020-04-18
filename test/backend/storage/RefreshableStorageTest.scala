@@ -9,8 +9,9 @@ import org.scalatest.OptionValues._
 
 import scala.concurrent.Future
 
-import scalaz.std.scalaFuture.futureInstance
-import scalaz.syntax.bind._
+import scalaz.syntax.bind.ToBindOps
+import scalaz.syntax.functor.ToFunctorOps
+import common.rich.func.BetterFutureInstances._
 
 import common.FakeClock
 import common.rich.RichT._

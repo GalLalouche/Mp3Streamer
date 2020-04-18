@@ -9,12 +9,12 @@ import mains.fixer.StringFixer
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
 import scalaz.syntax.functor.ToFunctorOps
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
 import monocle.function.Index._
-import monocle.syntax.apply._
+import monocle.syntax.apply.toApplyOptionalOps
 
 import common.io.JsonableSaver
 

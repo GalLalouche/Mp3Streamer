@@ -9,7 +9,7 @@ import play.twirl.api.utils.StringEscapeUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 
 private class LyricsFormatter @Inject()(

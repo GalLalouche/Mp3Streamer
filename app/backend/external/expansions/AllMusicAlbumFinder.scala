@@ -10,8 +10,8 @@ import org.jsoup.nodes.Document
 import scala.concurrent.ExecutionContext
 
 import scalaz.std.option.optionInstance
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.OptionT
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreIteratorInstances._
 import common.rich.func.ToMoreMonadPlusOps._
 import common.rich.func.ToTraverseMonadPlusOps._

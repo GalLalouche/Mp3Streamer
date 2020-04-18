@@ -4,7 +4,7 @@ import backend.Retriever
 
 import scala.concurrent.ExecutionContext
 
-import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
 import common.rich.func.ToMoreFunctorOps._
 import common.rich.func.ToMoreMonadErrorOps._

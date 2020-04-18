@@ -7,8 +7,8 @@ import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.AsyncFreeSpec
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.bind.ToBindOps
+import common.rich.func.BetterFutureInstances._
 
 class InstrumentalArtistTest extends AsyncFreeSpec with StorageSetup {
   override protected val config = TestModuleConfiguration()

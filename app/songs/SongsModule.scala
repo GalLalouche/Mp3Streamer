@@ -8,8 +8,8 @@ import songs.SongSelector.SongSelectorProxy
 
 import scala.concurrent.ExecutionContext
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.syntax.functor.ToFunctorOps
+import common.rich.func.BetterFutureInstances._
 
 import common.ModuleUtils
 

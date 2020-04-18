@@ -16,8 +16,8 @@ import scala.concurrent.ExecutionContext
 
 import scalaz.Traverse
 import scalaz.std.option.optionInstance
-import scalaz.std.FutureInstances
 import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
+import common.rich.func.BetterFutureInstances._
 
 import common.RichJsoup._
 import common.io.InternetTalker
@@ -33,7 +33,7 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
 ) extends ExternalLinkExpander[Album]
     // Use ops and instance traits since IntelliJ thinks the code doesn't compile and therefore will remove
     // ops and instance imports on optimization.
-    with FutureInstances with MoreTraversableInstances with MoreTraverseInstances
+    with MoreTraversableInstances with MoreTraverseInstances
     with ToMoreFoldableOps with ToMoreMonadErrorOps with ToTraverseMonadPlusOps {
   private implicit val iec: ExecutionContext = it
   override val sourceHost = Host.Wikipedia

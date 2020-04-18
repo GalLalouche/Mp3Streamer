@@ -11,9 +11,9 @@ import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
-import scalaz.syntax.bind._
+import scalaz.syntax.functor.ToFunctorOps
 import scalaz.syntax.traverse.ToTraverseOps
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreTraverseInstances._
 
 import common.rich.RichFuture._

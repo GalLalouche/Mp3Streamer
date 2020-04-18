@@ -6,8 +6,8 @@ import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.scalaFuture.futureInstance
 import scalaz.OptionT
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 
 import common.json.RichJson._

@@ -7,7 +7,7 @@ import play.api.libs.json.{JsObject, JsValue}
 
 import scala.concurrent.ExecutionContext
 
-import scalaz.std.scalaFuture.futureInstance
+import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
 
 import common.json.RichJson._
