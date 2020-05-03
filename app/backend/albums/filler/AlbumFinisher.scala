@@ -58,7 +58,7 @@ import common.rich.RichT._
     def isNotIgnored(metadata: MbAlbumMetadata): Future[Boolean] =
       albumReconStorage.isIgnored(toAlbum(metadata))
           .map(_ != IgnoredReconResult.Ignored)
-    albums filterTraverse isNotIgnored
+    albums filterM isNotIgnored
   }
   def apply(artist: Artist, albums: Seq[MbAlbumMetadata]): Future[Seq[NewAlbumRecon]] =
     removeIgnoredAlbums(artist, albums)

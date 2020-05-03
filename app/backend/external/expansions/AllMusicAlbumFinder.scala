@@ -48,7 +48,7 @@ private class AllMusicAlbumFinder @Inject()(
               .mapIf(_.startsWith("http").isFalse).to("http://www.allmusic.com" + _)
               .mapTo(Url)
           )
-          .filterTraverse(allMusicHelper.isValidLink)
+          .filterM(allMusicHelper.isValidLink)
     }
   }
 

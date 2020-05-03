@@ -66,7 +66,7 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
   override def expand = expanderHelper(parseDocument)(_)
       // Compiler won't pick up type definitions, so explicitly naming Traverse is necessary
       .flatMap(Traverse[Traversable].traverse(_)(allMusicHelper.canonize))
-      .flatMap(_.filterTraverse(link => allMusicHelper isValidLink link.link))
+      .flatMap(_.filterM(link => allMusicHelper isValidLink link.link))
       .listenError(
         logger.error("WikipediaAlbumExternalLinksExpander failed to extract links", _))
       .orElse(Nil)

@@ -53,7 +53,7 @@ private class WikipediaAlbumFinder @Inject()(
           .filterNot(_ contains "redlink=1")
           .map(s"https://$documentLanguage.wikipedia.org" + _ |> Url)
           .mapTo(_.toVector.ensuring(_.forall(_.isValid)))
-          .filterTraverse(isNotRedirected(documentLanguage))
+          .filterM(isNotRedirected(documentLanguage))
           .map(_.headOption)
     }
   }
