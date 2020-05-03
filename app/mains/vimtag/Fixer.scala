@@ -2,16 +2,19 @@ package mains.vimtag
 
 import java.util.logging.{Level, Logger}
 
-import common.io.DirectoryRef
-import common.rich.path.RichFile._
 import models.RichTag._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
 import org.jaudiotagger.tag.FieldKey
 
+import common.io.DirectoryRef
+import common.rich.path.RichFile._
+import common.rich.primitives.RichInt._
+
 private object Fixer {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
+
   def apply(dir: DirectoryRef, parsedId3: ParsedId3): Unit = for (individual <- parsedId3.songId3s) {
     val file = individual.file
     val audioFile = AudioFileIO read file
@@ -32,7 +35,7 @@ private object Fixer {
 
       setOption(FieldKey.PERFORMANCE_YEAR, _.performanceYear)
       $.setField(FieldKey.TITLE, individual.title)
-      $.setField(FieldKey.TRACK, individual.track.toString)
+      $.setField(FieldKey.TRACK, individual.track padLeftZeros 2)
       $.setOption(FieldKey.DISC_NO, individual.discNumber)
 
       def copyTag(fieldKey: FieldKey): Unit = $.setOption(fieldKey, existingTag.firstNonEmpty(fieldKey))

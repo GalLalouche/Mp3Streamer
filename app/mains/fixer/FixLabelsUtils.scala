@@ -14,6 +14,7 @@ import scala.annotation.tailrec
 
 import common.rich.RichT.{richT, _}
 import common.rich.path.RichFile.richFile
+import common.rich.primitives.RichInt._
 import common.rich.primitives.RichString.richString
 
 private object FixLabelsUtils {
@@ -23,7 +24,7 @@ private object FixLabelsUtils {
   private val InvalidFileCharacters = Pattern compile """[:\\/*?|<>]"""
   private val MultiSpace = Pattern compile " +"
 
-  private def properTrackString(track: Int): String = if (track < 10) "0" + track else track.toString
+  private def properTrackString(track: Int): String = track padLeftZeros 2
   def getFixedTag(f: File, fixDiscNumber: Boolean): Tag = getFixedTag(f, fixDiscNumber, AudioFileIO read f)
   def getFixedTag(f: File, fixDiscNumber: Boolean, audioFile: AudioFile): Tag = {
     val song = SongTagParser(f, audioFile)
