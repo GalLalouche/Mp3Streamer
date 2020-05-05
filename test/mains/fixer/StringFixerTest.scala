@@ -1,5 +1,6 @@
 package mains.fixer
 
+import org.apache.commons.lang3.StringUtils
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
@@ -50,7 +51,9 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
     verifyFix("Rundtgåing", "Rundtgaing")
     verifyFix("Død", "Dod")
     verifyFix("Níðhöggr", "Nidhoggr")
+    verifyFix("Palästinalied", "Palastinalied")
   }
+
   "with delimiters" in {
     verifyFix("foo/bar", "Foo/Bar")
   }

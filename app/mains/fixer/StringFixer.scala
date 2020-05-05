@@ -1,17 +1,15 @@
 package mains.fixer
 
-import java.io.File
-
-import resource._
 import java.util.regex.Pattern
 
 import com.google.common.annotations.VisibleForTesting
+import org.apache.commons.lang3.StringUtils
+import resource._
 
 import scala.io.Source
 
 import common.rich.collections.RichSeq._
 import common.rich.collections.RichTraversableOnce._
-import common.rich.path.RichFile._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
@@ -50,28 +48,32 @@ object StringFixer extends (String => String) {
   // Modified from https://stackoverflow.com/a/29364083/736508
   // TODO RichFile should really start using UTF-8 by default
   private val toAscii: Map[Char, String] =
-    managed(Source.fromInputStream(getClass.getResourceAsStream("ascii.txt"), "UTF-8"))
-        .map(_.getLines().map(_.splitParse(":", _.toSeq.single, identity)).toMap)
-        .opt.get
-        .++('A'.to('z').map(_ :-> (_.toString)))
+  managed(Source.fromInputStream(getClass.getResourceAsStream("ascii.txt"), "UTF-8"))
+      .map(_.getLines().map(_.splitParse(":", _.toSeq.single, identity)).toMap)
+      .tried.get
+      .++('A'.to('z').map(_ :-> (_.toString)))
   private def normalizeDashesAndApostrophes(s: String) =
     s.replaceAll(SpecialApostrophes, "'").replaceAll(SpecialDashes, "-")
-  private def asciiNormalize(s: String): String = {
+  private def asciiNormalize(s: String): String = try {
     if (s.isWhitespaceOrEmpty)
       return s
     val withoutSpecialCharacters =
-      s.replaceAll(SpecialQuotes, "'") |> normalizeDashesAndApostrophes
+      s.replaceAll(SpecialQuotes, "'") |> normalizeDashesAndApostrophes |> StringUtils.stripAccents
     withoutSpecialCharacters.keepAscii
         .mapIf(_.length < withoutSpecialCharacters.length)
-        .to(asciiNormalize(withoutSpecialCharacters.flatMap(toAscii(_))))
+        .to(asciiNormalize(withoutSpecialCharacters.flatMap(toAscii.apply)))
+  } catch {
+    case e: Exception =>
+      println(s"Could not asciify <$s>")
+      throw e
   }
 
   override def apply(s: String): String = {
     val trimmed = s.trim
     if (trimmed.hasHebrew)
     // Keep '"' for Hebrew acronyms.
-      trimmed.replaceAll(SpecialQuotes, "\"") |> normalizeDashesAndApostrophes
-    else {
+    trimmed.replaceAll(SpecialQuotes, "\"") |> normalizeDashesAndApostrophes
+        else {
       val words = trimmed.splitWithDelimiters(Delimiters)
       // The first word is always capitalized (e.g., The Who), while the other words will only be
       // force-capitalized if they appear after a separator, e.g., The Whole (The Song of the Band).
