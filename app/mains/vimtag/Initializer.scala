@@ -1,11 +1,13 @@
 package mains.vimtag
 
+import javax.inject.Inject
+import models.{IOMusicFinder, OptionalSong, SongTagParser}
+
+import common.rich.func.TuplePLenses
+
 import common.io.DirectoryRef
 import common.rich.collections.RichSeq._
 import common.rich.RichTuple._
-import common.rich.func.TuplePLenses
-import javax.inject.Inject
-import models.{IOMusicFinder, OptionalSong, SongTagParser}
 
 /** Sets up the initial lines. */
 private class Initializer @Inject()(mf: IOMusicFinder) {
@@ -53,7 +55,7 @@ private class Initializer @Inject()(mf: IOMusicFinder) {
       "# All properties use the format 'TAG: value'; Empty and missing properties will be removed",
       s"# Use the special string '${Tags.Keep}' to avoid changing the ID3 tag",
       s"# Use the special string '${Tags.ExplicitEmpty}' for explicitly empty required tags, e.g., for year",
-      "# Use ':cq' to exit with error, which stops application and doesn't update any ID3 metadata.",
+      "# Use ':cq' to exit with error, which stops the application and doesn't update any ID3 metadata.",
       "# ----------------------------",
     )
     val globalTags = Vector(
@@ -68,6 +70,7 @@ private class Initializer @Inject()(mf: IOMusicFinder) {
       $.conductor,
       $.orchestra,
       $.performanceYear,
+    ) ++ Flag.defaultInstructions ++ Vector(
       "# Individual tags",
       "# Individual tracks are pre-ordered by track number",
       "# FILE isn't actually a tag but is used later on in the process (so don't delete or modify it!)",

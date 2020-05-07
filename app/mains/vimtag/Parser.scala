@@ -42,6 +42,8 @@ private object Parser {
       orchestra = optional(Tags.Orchestra),
       performanceYear = optional(Tags.PerformanceYear).map(_.toInt),
 
+      flags = Flag.parse(lines),
+
       songId3s = individuals.map(individual),
     )
   }

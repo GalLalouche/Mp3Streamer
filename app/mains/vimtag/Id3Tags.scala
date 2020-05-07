@@ -13,6 +13,8 @@ private case class ParsedId3(
     orchestra: ParsedTag[String],
     performanceYear: ParsedTag[Int],
 
+    flags: Set[Flag],
+
     songId3s: Seq[IndividualId3],
 ) {
   def files: Seq[File] = songId3s.map(_.file)
