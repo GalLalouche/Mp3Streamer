@@ -1,5 +1,7 @@
 package mains.fixer
 
+import java.net.ConnectException
+
 import backend.{FutureOption, Url}
 import backend.module.StandaloneModule
 import com.google.inject.Guice
@@ -74,8 +76,11 @@ class FolderFixer @Inject()(
     println("Updating remote server if running...")
     it.get(Url("http://localhost:9000/debug/fast_refresh"))
         .>|(println("Updated!"))
-        .listenError(e => println("Failed to update server: " + e.getMessage))
-        .void
+        .collectHandle {
+          case e: ConnectException =>
+            println("Could not connect to the server, maybe it's down? " + e.getMessage)
+            ()
+        }.listenError(e => println("Failed to update server: " + e.getMessage))
   }
 
   private def run(folder: Directory): Unit = {
