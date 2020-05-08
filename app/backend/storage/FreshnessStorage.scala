@@ -8,9 +8,9 @@ import backend.RichTime._
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.BetterFutureInstances._
-import common.rich.func.TuplePLenses
 
 import common.rich.RichT._
+import common.rich.RichTuple._
 import common.storage.Storage
 
 /**
@@ -25,7 +25,7 @@ class FreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshness)], cl
   def storeWithoutTimestamp(k: Key, v: Value): Future[Unit] = storage.store(k, v -> AlwaysFresh)
   override def store(k: Key, v: Value) = storage.store(k, v |> now)
   override def storeMultiple(kvs: Seq[(Key, Value)]) =
-    storage storeMultiple kvs.map(TuplePLenses.tuple2Second modify now)
+    storage storeMultiple kvs.map(_ modifySecond now)
   override def load(k: Key) = storage.load(k) |> toValue
   override def exists(k: Key) = storage.exists(k)
   override def forceStore(k: Key, v: Value) = storage.forceStore(k, v |> now) |> toValue

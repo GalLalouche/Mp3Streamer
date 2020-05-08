@@ -2,8 +2,10 @@ package mains.vimtag
 
 import java.io.File
 
+import scalaz.std.tuple.tuple2Bitraverse
+import scalaz.syntax.bifunctor.ToBifunctorOps
+
 import common.rich.RichT._
-import common.rich.RichTuple._
 import common.rich.collections.RichSeq._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichOption._
@@ -27,7 +29,7 @@ private object Parser {
 
   def apply(lines: Seq[String]): ParsedId3 = {
     val (globals: Map[String, String], individuals: Seq[Map[String, String]]) =
-      lines.span(_.startsWith(Tags.File).isFalse).map2(splitMap, toMaps)
+      lines.span(_.startsWith(Tags.File).isFalse).bimap(splitMap, toMaps)
     def required(key: String): RequiredTag[String] = RequiredTag(globals(key))
     def optional(tag: String): ParsedTag[String] =
       globals.get(tag).filter(_.nonEmpty).map(RequiredTag.apply).getOrElse(Empty)

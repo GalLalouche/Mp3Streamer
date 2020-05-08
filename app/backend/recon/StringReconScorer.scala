@@ -1,7 +1,7 @@
 package backend.recon
 
-import common.LanguageString._
 import common.rich.RichTuple._
+import common.LanguageString._
 
 /**
 * A placeholder for a class that might some day in the future actually measure the similarity between two

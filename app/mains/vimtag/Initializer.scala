@@ -3,8 +3,6 @@ package mains.vimtag
 import javax.inject.Inject
 import models.{IOMusicFinder, OptionalSong, SongTagParser}
 
-import common.rich.func.TuplePLenses
-
 import common.io.DirectoryRef
 import common.rich.collections.RichSeq._
 import common.rich.RichTuple._
@@ -44,7 +42,7 @@ private class Initializer @Inject()(mf: IOMusicFinder) {
     def files: Seq[String] = sequence(Tags.File, _.file)
     def titles: Seq[String] = sequence(Tags.Title, _.title.getOrElse(""))
     def tracks: Seq[String] = songs.zipWithIndex
-        .map(TuplePLenses.tuple2Second.modify(_ + 1))
+        .map(_.modifySecond(_ + 1))
         .map(_.reduce(_.track.getOrElse(_))).map(s"${Tags.Track}: ".+)
     def discNumbers: Seq[String] = sequence(Tags.DiscNo, _.discNumber.getOrElse(""))
   }

@@ -5,7 +5,8 @@ import backend.recon.Reconcilable
 
 import scalaz.syntax.functor.ToFunctorOpsUnapply
 import common.rich.func.MoreSeqInstances._
-import common.rich.func.TuplePLenses
+
+import common.rich.RichTuple._
 
 /**
 * Extenders (not to be confused with Ex<b>p</b>anders) provide additional links to a given links,
@@ -20,7 +21,7 @@ private trait LinkExtender[R <: Reconcilable] {
   protected def appendSameSuffix(e: MarkedLink[R], suffixes: String*): Seq[LinkExtension[R]] =
     append(e, suffixes.fpair: _*)
   protected def append(e: MarkedLink[R], suffixes: (String, String)*): Seq[LinkExtension[R]] =
-    suffixes.map(TuplePLenses.tuple2Second.modify(e.link.+/)).map((LinkExtension.apply[R] _).tupled)
+    suffixes.map(_.modifySecond(e.link.+/)).map((LinkExtension.apply[R] _).tupled)
   // For point free style.
   def extend: (R, MarkedLinks[R]) => Seq[LinkExtension[R]]
 }
