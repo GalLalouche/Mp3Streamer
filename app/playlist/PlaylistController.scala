@@ -9,10 +9,10 @@ class PlaylistController @Inject()($: PlaylistFormatter, converter: PlayActionCo
     extends InjectedController {
   def getQueue = converter.ok($.getQueue)
   private def setAndReturnLocation(setFromJson: JsValue => Unit, path: String) =
-    converter.parseJson(j => {
+    converter.parseJson {j =>
       setFromJson(j)
       Created.withHeaders("Location" -> ("playlist/" + path))
-    })
+    }
   def setQueue() = setAndReturnLocation($.setQueue, "queue")
 
   def getState = converter.ok($.getState)

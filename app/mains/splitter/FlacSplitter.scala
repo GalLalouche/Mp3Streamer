@@ -28,16 +28,16 @@ private class FlacSplitter @Inject()(cueSplitter: CueSplitter, mf: IOMusicFinder
     // Append year manually if it doesn't exist, since for some reason the splitters won't
     lazy val bigFlacAudioFile = AudioFileIO.read(bigFlac)
 
-    bigFlacAudioFile.getTag.getFields(FieldKey.YEAR).asScala.headOption.foreach(year => {
-      mf.getSongFilesInDir(IODirectory(destination)).foreach(f => {
+    bigFlacAudioFile.getTag.getFields(FieldKey.YEAR).asScala.headOption.foreach(year =>
+      mf.getSongFilesInDir(IODirectory(destination)).foreach {f =>
         val audioFile = AudioFileIO.read(f.file)
         if (audioFile.getTag.getFields(FieldKey.YEAR).isEmpty) {
           println("Fixing year on " + f.name)
           audioFile.getTag.setField(year)
           audioFile.commit()
         }
-      })
-    })
+      }
+    )
   }
 
   def apply(cueFile: File): Unit = {

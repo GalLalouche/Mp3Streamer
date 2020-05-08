@@ -29,10 +29,10 @@ private object ImagesSupplier {
       fillCache()
       $
     }
-    def fillCache(): Unit = ec.execute(() => {
+    def fillCache(): Unit = ec.execute(() =>
       while (urls.hasNext && cache.size < cacheSize)
         cache.put(downloader(urls.next()))
-    })
+    )
   }
   def withCache(urls: Iterator[ImageSource], downloader: FolderImageDownloader, cacheSize: Int,
       timeoutInMillis: Int = 5000)(implicit ec: ExecutionContext): ImagesSupplier =

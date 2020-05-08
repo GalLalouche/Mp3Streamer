@@ -28,10 +28,10 @@ private object NewArtistFolderCreator {
             val folderImage = d.\("folder.jpg").mapIf(_.exists().isFalse).to(d / "folder.png")
             contents += ImageIO.read(folderImage).toSquareImageIcon(40).toComponent
             contents += new Label(d.name)
-          }.onMouseClick(() => {
+          }.onMouseClick {() =>
             frame.dispose()
             promise.success(d addSubDir artistName)
-          })
+          }
       contents += new Label("Rock")
       contents += new Label("Metal")
       // ensures correct order in the grid
