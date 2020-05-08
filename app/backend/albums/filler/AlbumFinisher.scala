@@ -1,7 +1,5 @@
 package backend.albums.filler
 
-import java.util.NoSuchElementException
-
 import backend.logging.Logger
 import backend.mb.MbAlbumMetadata
 import backend.recon.{Album, AlbumReconStorage, Artist, IgnoredReconResult, StoredReconResult}
@@ -9,14 +7,16 @@ import com.google.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import scalaz.ListT
 import scalaz.syntax.bind.ToBindOps
 import scalaz.syntax.functor.ToFunctorOps
-import scalaz.syntax.traverse.ToTraverseOps
+import scalaz.syntax.monad.ToMonadOps
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreSeqInstances._
 import common.rich.func.MoreTraverseInstances._
 import common.rich.func.ToMoreFunctorOps._
-import common.rich.func.ToMoreMonadErrorOps._
+import common.rich.func.ToMoreMonadPlusOps._
+import common.rich.func.ToMoreMonadTransOps._
 import common.rich.func.ToTraverseMonadPlusOps._
 
 import common.concurrency.DaemonFixedPool
@@ -30,26 +30,19 @@ import common.rich.RichT._
 ) {
   private implicit val ec: ExecutionContext = DaemonFixedPool(this.simpleName, 10)
 
-  private def store(newAlbumRecon: Seq[NewAlbumRecon]): Future[Unit] = {
-    if (newAlbumRecon.isEmpty)
+  private def store(newAlbumRecons: Seq[NewAlbumRecon]): Future[Unit] = {
+    if (newAlbumRecons.isEmpty)
       return Future.successful()
-    val artist = newAlbumRecon.head.newAlbum.artist
+    val artist = newAlbumRecons.head.newAlbum.artist
     logger.verbose(s"Storing albums for <$artist>")
-    newAlbumRecon.traverse {newAlbumRecon =>
-      val album = newAlbumRecon.newAlbum.toAlbum
-      val storeResult = for {
-        exists <- albumReconStorage.exists(album)
-        if exists.isFalse
-        _ = logger.verbose(s"Storing <$newAlbumRecon>")
-        _ <- albumReconStorage.store(album, StoredReconResult.unignored(newAlbumRecon.reconId))
-      } yield ()
-      storeResult.handleErrorFlat {
-        case _: NoSuchElementException => ()
-        case e => logger.error(s"Error while storing <$artist> albums", e)
-      }
-    }
-        .listen(_ => logger.verbose(s"Finished storing <$artist> albums"))
-        .void
+    (for {
+      newAlbumRecon <- newAlbumRecons.toList.hoistId
+      album = newAlbumRecon.newAlbum.toAlbum
+      _ <- albumReconStorage.exists(album).map(_.isFalse).liftM[ListT].toGuard
+      _ = logger.verbose(s"storing <$newAlbumRecon>")
+      _ <- albumReconStorage.store(album, StoredReconResult.unignored(newAlbumRecon.reconId)).liftM[ListT]
+    } yield ())
+        .run >| logger.verbose(s"Finished storing <$artist> albums")
   }
   private def removeIgnoredAlbums(
       artist: Artist, albums: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
