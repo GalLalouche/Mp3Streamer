@@ -91,11 +91,16 @@ private object DownloadCover {
   }
 
   def main(args: Array[String]): Unit = {
+    import scalaz.std.scalaFuture.futureInstance
+    import common.rich.func.ToMoreMonadErrorOps._
+
     import common.rich.RichFuture._
     val injector = Guice.createInjector(StandaloneModule)
     val folder = Directory(args mkString " ")
     println("Downloading cover image for " + folder.path)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    injector.instance[DownloadCover].apply(folder).get.apply(folder)
+    injector.instance[DownloadCover].apply(folder).collectHandle {
+      case _: CoverException => _ => ()
+    }.get.apply(folder)
   }
 }
