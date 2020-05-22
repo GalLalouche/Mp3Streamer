@@ -10,13 +10,13 @@ import common.io.DirectoryRef
 import common.rich.collections.RichTraversableOnce._
 import common.rich.RichT._
 
-private class ExistingAlbums private(existingAlbums: Map[Artist, Set[Album]]) {
-  def artists: Iterable[Artist] = existingAlbums.keys
+private class ExistingAlbums private(val map: Map[Artist, Set[Album]]) {
+  def artists: Iterable[Artist] = map.keys
 
   def removeExistingAlbums(artist: Artist, albums: Seq[MbAlbumMetadata]): Seq[NewAlbumRecon] = for {
     album <- albums
     // TODO this should use the album's ReconID.
-    if album.isReleased && existingAlbums(artist.normalized)
+    if album.isReleased && map(artist.normalized)
         .map(_.title)
         .fornone(StringReconScorer(_, album.title) > 0.95)
   } yield NewAlbumRecon(NewAlbum.from(artist, album), album.reconId)

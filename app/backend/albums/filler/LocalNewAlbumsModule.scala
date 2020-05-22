@@ -1,8 +1,10 @@
 package backend.albums.filler
 
 import backend.logging.{Logger, LoggingLevel, LoggingModules}
+import backend.module.StandaloneModule
 import backend.recon.Artist
-import com.google.inject.{Module, Provides, Singleton}
+import com.google.inject.{Guice, Injector, Module, Provides, Singleton}
+import com.google.inject.util.Modules
 import models.{IOMusicFinder, IOMusicFinderModule, MusicFinder}
 import net.codingwell.scalaguice.ScalaModule
 
@@ -33,4 +35,6 @@ private object LocalNewAlbumsModule extends Debug {
         ExistingAlbums.from(mf.genreDirs.view.flatMap(_.deepDirs), mf)
       }
   })
+  def overridingStandalone(lnam: LocalNewAlbumsModule): Injector =
+    Guice.createInjector(Modules `override` StandaloneModule `with` lnam)
 }
