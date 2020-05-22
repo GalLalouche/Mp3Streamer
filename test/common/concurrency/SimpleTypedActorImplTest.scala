@@ -2,18 +2,15 @@ package common.concurrency
 
 import java.util.concurrent.Semaphore
 
-import org.scalatest.{FreeSpec, OneInstancePerTest}
+import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
-import scala.concurrent._
-import scala.concurrent.duration._
 import scala.language.postfixOps
 
-import common.test.AuxSpecs
+import common.test.AsyncAuxSpecs
 
-class SimpleTypedActorImplTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
+class SimpleTypedActorImplTest extends AsyncFreeSpec with OneInstancePerTest with AsyncAuxSpecs {
   "basic test" in {
-    val $ = SimpleTypedActor[String, Int]("MyName", _.length) ! "Foobar"
-    Await.result($, 1 second) shouldReturn 6
+    (SimpleTypedActor[String, Int]("MyName", _.length) ! "Foobar").map(_ shouldReturn 6)
   }
   "process requests in FIFO" in {
     val sb = new StringBuilder
