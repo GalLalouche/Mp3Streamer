@@ -4,16 +4,19 @@ import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import backend.search.MetadataCacher.CacheUpdate
+import backend.search.MetadataCacherTest._
 import models._
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import org.scalatest.matchers.{Matcher, MatchResult}
 import rx.lang.scala.Observable
 
-import scala.concurrent.{Await, ExecutionContext, Promise}
+import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.duration.DurationInt
 
 import common.io.{JsonableSaver, MemoryRoot}
 import common.json.Jsonable
+import common.rich.RichObservable._
 import common.test.AuxSpecs
 
 class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
@@ -43,12 +46,6 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
 
   private val $ = new MetadataCacher(jsonableSaver, ec, mf, albumFactory)
 
-  private def awaitCompletion($: Observable[Any]): Unit = {
-    val p = Promise[Unit]
-    $.doOnCompleted(p success Unit) subscribe()
-    import scala.concurrent.duration.DurationInt
-    Await.ready(p.future, 2.seconds)
-  }
   private def indexAllAndWait(): Unit = awaitCompletion($.cacheAll())
   private def quickRefreshAndWait(): Unit = awaitCompletion($.quickRefresh())
 
@@ -142,4 +139,8 @@ class MetadataCacherTest extends FreeSpec with OneInstancePerTest with AuxSpecs 
     verifyData(album1, album2, album3)
     verifyData(Artist("artist1", Set(album1, album2)), Artist("artist2", Set(album3)))
   }
+}
+
+object MetadataCacherTest {
+  private def awaitCompletion($: Observable[Any]): Unit = Await.ready($.toFuture, 2.seconds)
 }
