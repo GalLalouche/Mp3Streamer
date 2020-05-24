@@ -7,8 +7,8 @@ import models.IOMusicFinder
 
 import scalaz.std.string.stringInstance
 import scalaz.std.vector.vectorInstance
-import common.rich.func.ToMoreMonadPlusOps._
 import common.rich.func.ToMoreMonoidOps._
+import common.rich.func.ToTraverseMonadPlusOps._
 
 import common.rich.primitives.RichString._
 import common.rich.RichT.richT
