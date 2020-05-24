@@ -28,7 +28,7 @@ import common.rich.RichT._
     albumReconStorage: AlbumReconStorage,
     cache: ExistingAlbums,
 ) {
-  private implicit val ec: ExecutionContext = DaemonFixedPool(this.simpleName, 10)
+  private implicit val ec: ExecutionContext = DaemonFixedPool.single(this.simpleName)
 
   private def store(newAlbumRecons: Seq[NewAlbumRecon]): Future[Unit] = {
     if (newAlbumRecons.isEmpty)
@@ -42,12 +42,13 @@ import common.rich.RichT._
       _ = logger.verbose(s"storing <$newAlbumRecon>")
       _ <- albumReconStorage.store(album, StoredReconResult.unignored(newAlbumRecon.reconId)).liftM[ListT]
     } yield ())
-        .run >| logger.verbose(s"Finished storing <$artist> albums")
+        .run
+        .listenError(logger.error(s"Error storing albums for <$artist>", _))
+        .>|(logger.verbose(s"Finished storing <$artist> albums"))
   }
   private def removeIgnoredAlbums(
       artist: Artist, albums: Seq[MbAlbumMetadata]): Future[Seq[MbAlbumMetadata]] = {
-    def toAlbum(album: MbAlbumMetadata) = Album(
-      title = album.title, year = album.releaseDate.getYear, artist = artist)
+    def toAlbum(album: MbAlbumMetadata) = Album(album.title, album.releaseDate.getYear, artist)
     def isNotIgnored(metadata: MbAlbumMetadata): Future[Boolean] =
       albumReconStorage.isIgnored(toAlbum(metadata))
           .map(_ != IgnoredReconResult.Ignored)
