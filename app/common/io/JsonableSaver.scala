@@ -7,8 +7,8 @@ import java.util.regex.Pattern
 import javax.inject.Inject
 import play.api.libs.json.{Json, JsValue}
 
-import scalaz.std.OptionInstances
-import common.rich.func.ToMoreFoldableOps
+import scalaz.std.option.optionInstance
+import common.rich.func.ToMoreFoldableOps._
 
 import common.json.Jsonable
 import common.json.ToJsonableOps._
@@ -17,8 +17,7 @@ import common.rich.primitives.RichString._
 import common.rich.RichT._
 
 /** Saves in json format to a file. */
-class JsonableSaver @Inject()(@RootDirectory rootDirectory: DirectoryRef) extends
-    ToMoreFoldableOps with OptionInstances {
+class JsonableSaver @Inject()(@RootDirectory rootDirectory: DirectoryRef) {
   private val workingDir = rootDirectory addSubDir "data" addSubDir "json"
   protected def jsonFileName[T: Manifest]: String =
     s"${manifest.runtimeClass.getSimpleName.removeAll(JsonableSaver.TrailingSlashes)}s.json"

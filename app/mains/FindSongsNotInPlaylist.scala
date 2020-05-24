@@ -31,7 +31,7 @@ object FindSongsNotInPlaylist {
         // removes UTF-BOM at least until I fix it in ScalaCommon
         .mapIf(_.head.head.toInt == UtfBytemarkPrefix).to(e => e.tail :+ e.head.drop(1))
         .mapIf(_.head == "#").to(_.tail) // Newer version of Foobar2000 decided to add # to file header :\
-        .map(musicFiles.dir.path.+("/").+)
+        .map(s"${musicFiles.dir.path}/".+)
         .map(normalizePath)
         .toSet
     println(s"playlist songs |${playlistSongs.size}|")
@@ -46,9 +46,8 @@ object FindSongsNotInPlaylist {
         .take(10)
         .foreach(IOUtils.focus)
     val serverMissing = playlistSongs.diff(realSongs).toList.sorted
-    println(s"Server is missing ${serverMissing.size} songs. " +
-        s"${
-          ("It's possible that these songs are in the playlist but the files themselves have been deleted, " +
+    println(s"Server is missing ${serverMissing.size} songs.${
+          (" It's possible that these songs are in the playlist but the files themselves have been deleted, " +
               "or were added from a different folder, e.g., bittorent.").monoidFilter(serverMissing.nonEmpty)
         }")
     println(serverMissing mkString "\n")

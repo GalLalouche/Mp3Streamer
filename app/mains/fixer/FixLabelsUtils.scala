@@ -4,6 +4,7 @@ import java.io.File
 import java.util.logging.{Level, Logger}
 import java.util.regex.Pattern
 
+import com.google.common.annotations.VisibleForTesting
 import models.{Song, SongTagParser}
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
@@ -25,6 +26,7 @@ private object FixLabelsUtils {
   private val MultiSpace = Pattern compile " +"
 
   private def properTrackString(track: Int): String = track padLeftZeros 2
+  @VisibleForTesting
   def getFixedTag(f: File, fixDiscNumber: Boolean): Tag = getFixedTag(f, fixDiscNumber, AudioFileIO read f)
   def getFixedTag(f: File, fixDiscNumber: Boolean, audioFile: AudioFile): Tag = {
     val song = SongTagParser(f, audioFile)
@@ -42,7 +44,7 @@ private object FixLabelsUtils {
     set(FieldKey.ALBUM, song.albumName)
     set(FieldKey.YEAR, song.year)
     $.setField(FieldKey.TRACK, properTrackString(song.track))
-    // Not all track need to have a disc number property, e.g., bonus track
+    // Not all track need to have a disc number property, e.g., bonus track.
     song.discNumber
         .filter(fixDiscNumber.const)
         // Replace 1/2 with 1

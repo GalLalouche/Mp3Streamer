@@ -63,10 +63,10 @@ private class FixLabels @Inject()(mf: IOMusicFinder) {
 
     val expectedName = {
       val (year, album) = mf.getSongsInDir(ioDir).map(_.toTuple(_.year, _.albumName)).toSet.single
+      // In addition to regular file name limitations, a directory name cannot end in ".".
       s"$year ${FixLabelsUtils.validFileName(album).removeAll(FixLabels.EndingDots)}"
     }
 
-    // In addition to regular file name limitations, a directory name cannot end in ".".
     Try(new FixedDirectory(renameFolder(dir, expectedName), expectedName))
         .mapError(new Exception("could not rename the folder", _))
         .get

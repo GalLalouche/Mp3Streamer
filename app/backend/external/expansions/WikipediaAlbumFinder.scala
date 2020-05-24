@@ -36,7 +36,7 @@ private class WikipediaAlbumFinder @Inject()(
       assert(title.nonEmpty)
       val urlWithoutRedirection = s"https://$lang.wikipedia.org/w/index.php?title=$title&redirect=no"
       it.downloadDocument(Url(urlWithoutRedirection))
-          .map(_.find("span#redirectsub").exists(_.text == "Redirect page").isFalse)
+          .map(_.find("span#redirectsub").forall(_.text != "Redirect page"))
     }
     def findAlbum(d: Document, a: Album): FutureOption[Url] = OptionT {
       val documentLanguage = d.selectSingle("html").attr("lang") match {

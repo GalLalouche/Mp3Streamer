@@ -71,9 +71,8 @@ object StringFixer extends (String => String) {
   override def apply(s: String): String = {
     val trimmed = s.trim
     if (trimmed.hasHebrew)
-    // Keep '"' for Hebrew acronyms.
-    trimmed.replaceAll(SpecialQuotes, "\"") |> normalizeDashesAndApostrophes
-        else {
+      trimmed.replaceAll(SpecialQuotes, "\"") |> normalizeDashesAndApostrophes // Keep '"' for Hebrew acronyms.
+    else {
       val words = trimmed.splitWithDelimiters(Delimiters)
       // The first word is always capitalized (e.g., The Who), while the other words will only be
       // force-capitalized if they appear after a separator, e.g., The Whole (The Song of the Band).

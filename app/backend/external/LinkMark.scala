@@ -12,7 +12,7 @@ private object LinkMark extends Enum[LinkMark] {
   case class Text(s: String) extends LinkMark
   object Text {
     def read(s: String): Text = {
-      require(s.startsWith("Text("))
+      require(s.startsWith("Text("), s)
       Text(s.substring(5, s.length - 1))
     }
   }

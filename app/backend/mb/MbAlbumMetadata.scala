@@ -9,10 +9,10 @@ import mains.fixer.StringFixer
 
 import scala.Ordering.Implicits._
 
-import common.rich.primitives.RichBoolean._
+import common.rich.primitives.RichString._
 
 case class MbAlbumMetadata(title: String, releaseDate: LocalDate, albumType: AlbumType, reconId: ReconID) {
-  assert(StringFixer.SpecialQuotes.matcher(title).find().isFalse)
-  assert(StringFixer.SpecialApostrophes.matcher(title).find().isFalse)
+  assert(title doesNotContainMatch StringFixer.SpecialQuotes)
+  assert(title doesNotContainMatch StringFixer.SpecialApostrophes)
   def isReleased: Boolean = releaseDate.atStartOfDay < Clock.systemDefaultZone().getLocalDateTime
 }
