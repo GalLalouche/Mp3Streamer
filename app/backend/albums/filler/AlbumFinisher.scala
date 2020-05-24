@@ -15,12 +15,12 @@ import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreSeqInstances._
 import common.rich.func.MoreTraverseInstances._
 import common.rich.func.ToMoreFunctorOps._
+import common.rich.func.ToMoreMonadErrorOps._
 import common.rich.func.ToMoreMonadPlusOps._
 import common.rich.func.ToMoreMonadTransOps._
 import common.rich.func.ToTraverseMonadPlusOps._
 
 import common.concurrency.DaemonFixedPool
-import common.rich.primitives.RichBoolean._
 import common.rich.RichT._
 
 @Singleton private class AlbumFinisher @Inject()(
@@ -38,7 +38,7 @@ import common.rich.RichT._
     (for {
       newAlbumRecon <- newAlbumRecons.toList.hoistId
       album = newAlbumRecon.newAlbum.toAlbum
-      _ <- albumReconStorage.exists(album).map(_.isFalse).liftM[ListT].toGuard
+      _ <- albumReconStorage.exists(album).negated.liftM[ListT].toGuard
       _ = logger.verbose(s"storing <$newAlbumRecon>")
       _ <- albumReconStorage.store(album, StoredReconResult.unignored(newAlbumRecon.reconId)).liftM[ListT]
     } yield ())

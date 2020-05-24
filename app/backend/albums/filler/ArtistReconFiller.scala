@@ -13,6 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.syntax.bind.ToBindOps
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreObservableInstances._
+import common.rich.func.ToMoreFunctorOps._
 
 import common.concurrency.SimpleActor
 import common.rich.primitives.RichBoolean._
@@ -39,7 +40,7 @@ private class ArtistReconFiller @Inject()(
     if ArtistReconFiller.intersects(ea.map(artist), reconAlbums)
   } yield reconId
   private def newRecons: Observable[(Artist, ReconID)] = {
-    def hasNoRecon(a: Artist): Future[Boolean] = storage.exists(a).map(_.isFalse)
+    def hasNoRecon(a: Artist): Future[Boolean] = storage.exists(a).negated
     Observable.from(ea.artists).filterFuture(hasNoRecon).mproduct(go)
   }
 
