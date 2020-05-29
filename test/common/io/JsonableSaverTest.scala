@@ -104,7 +104,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
     }
     $ save p1
     val files = root.deepFiles
-    files.toList.map(_.name) shouldReturn List("foobars.json")
+    files.toVector.map(_.name) shouldReturn Vector("foobars.json")
     $.loadObject shouldReturn p1
   }
 }

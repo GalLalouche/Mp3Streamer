@@ -6,7 +6,7 @@ import common.io.{FileRef, IODirectory, IOFile, IOSystem}
 class IOMusicFinder extends MusicFinder {
   override final type S = IOSystem
   override val dir = IODirectory("d:/media/music")
-  override protected val subDirNames = List("Rock", "New Age", "Classical", "Metal", "Jazz")
+  override protected val subDirNames: Seq[String] = Vector("Rock", "New Age", "Classical", "Metal", "Jazz")
   override val extensions = Set("mp3", "flac")
   override def parseSong(f: FileRef) = IOSong.read(f.asInstanceOf[IOFile].file)
 }

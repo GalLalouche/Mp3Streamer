@@ -44,7 +44,8 @@ private object DarkLyricsRetriever {
     override def apply(html: Document, s: Song) = {
       val currentTrack = Pattern compile s""".*a name="${s.track}".*"""
       val $ = html.toString
-          .split("\n").toList
+          .split("\n")
+          .iterator
           .dropWhile(_ doesNotMatch currentTrack)
           .drop(1)
           .takeWhile(e => e.doesNotMatch(Heading) && e.doesNotMatch(Div)) // this fucking site...

@@ -10,7 +10,7 @@ import common.test.AuxSpecs
 class MusicFinderTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val root = new MemoryRoot
   private val mf = new FakeMusicFinder(root) {
-    protected override def subDirNames = List("a", "b", "c")
+    protected override def subDirNames = Vector("a", "b", "c")
     subDirNames.foreach(root.addSubDir)
     override val extensions = Set("mp3", "flac")
   }

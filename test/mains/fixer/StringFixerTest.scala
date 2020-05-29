@@ -1,6 +1,5 @@
 package mains.fixer
 
-import org.apache.commons.lang3.StringUtils
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
@@ -25,10 +24,10 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
     verifyFix("foo i", "Foo I")
   }
   "Mixed caps" in {
-    List("FOO", "FoO", "fOo").foreach(e => verifyFix(e, e))
+    Vector("FOO", "FoO", "fOo").foreach(e => verifyFix(e, e))
   }
   "Capitalize" in {
-    List("foobar", "Foobar").foreach(verifyFix(_, "Foobar"))
+    Vector("foobar", "Foobar").foreach(verifyFix(_, "Foobar"))
   }
   "Sentence" in {
     verifyFix("i am a rock", "I am a Rock")
@@ -38,7 +37,7 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
     $.lowerCaseWords.sorted shouldReturn $.lowerCaseWords
   }
   "With dots" in {
-    List("F.F.S.", "f.f.s.").foreach(verifyFix(_, "F.F.S."))
+    Vector("F.F.S.", "f.f.s.").foreach(verifyFix(_, "F.F.S."))
   }
   "Roman numerals" in {
     verifyFix("mmxvi", "MMXVI")

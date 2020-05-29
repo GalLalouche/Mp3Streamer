@@ -49,7 +49,7 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
 
   /** Returns the first canonical link if one exists, otherwise returns the entire list */
   private def preferCanonical(xs: TraversableOnce[String]): TraversableOnce[String] =
-    xs.find(allMusicHelper.isCanonical).mapHeadOrElse(List(_), xs)
+    xs.find(allMusicHelper.isCanonical).mapHeadOrElse(Vector(_), xs)
 
   private def extractAllMusicLink(d: Document): Option[Url] = d
       .selectIterator("a")

@@ -18,7 +18,7 @@ private class DbPowerampCodec @Inject()(implicit logger: Logger) extends Encoder
 
   override def encode(srcFile: FileRef, dstFile: FileRef, dstType: CodecType): Unit = dstType match {
     case Mp3 =>
-      val args = List(converterFile.path,
+      val args = Vector(converterFile.path,
         "-infile=" + quote(srcFile.path),
         "-outfile=" + quote(dstFile.path),
         "-convert_to=" + quote("mp3 (lame)"),

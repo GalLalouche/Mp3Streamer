@@ -17,7 +17,7 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
   import factory.arbSong
 
   "returns a random song" in {
-    forAll {ss: List[MemorySong] =>
+    forAll {ss: Vector[MemorySong] =>
       whenever(ss.nonEmpty) {
         val c = new TestModuleConfiguration
         val mf = c.injector.instance[FakeMusicFinder]

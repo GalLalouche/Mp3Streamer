@@ -27,7 +27,7 @@ private abstract sealed class MusicBrainzExtender[R <: Reconcilable: Manifest] e
       val editUrl = "edit" + (if (preseed.isEmpty) "" else "?" + preseed)
       append(linkToModify, "edit" -> editUrl)
           .mapIf(extendGoogleSearch)
-          .to(_ ++ SearchExtension.apply(Host.MusicBrainz, t).extensions.toList)
+          .to(_ ++ SearchExtension.apply(Host.MusicBrainz, t).extensions)
     }
   }
 
