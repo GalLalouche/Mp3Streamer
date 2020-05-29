@@ -8,7 +8,7 @@ import common.rich.RichT._
 
 private class SingleThreadedJobQueue(queueName: String) {
   private val queue = Executors.newFixedThreadPool(
-    1, (r: Runnable) => new Thread(r, s"<$queueName>'s single threaded job queue").<|(_ setDaemon true))
+    1, DaemonThreadFactory(s"<$queueName>'s single threaded job queue"))
 
   lazy val asExecutionContext: ExecutionContext = new ExecutionContext {
     override def execute(runnable: Runnable): Unit = queue submit runnable
