@@ -2,8 +2,8 @@ package backend.mb
 
 import enumeratum.{Enum, EnumEntry}
 
-sealed trait AlbumType extends EnumEntry
-object AlbumType extends Enum[AlbumType] {
+private[backend] sealed trait AlbumType extends EnumEntry
+private[backend] object AlbumType extends Enum[AlbumType] {
   override val values = findValues
 
   case object EP extends AlbumType

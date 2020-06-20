@@ -13,7 +13,7 @@ import common.rich.func.RichOptionT._
 import common.json.RichJson._
 import common.rich.RichT._
 
-private[backend] class MbAlbumReconciler @Inject()(
+private class MbAlbumReconciler @Inject()(
     ec: ExecutionContext,
     downloader: JsonDownloader,
     artistReconciler: OptionRetriever[Artist, ReconID],

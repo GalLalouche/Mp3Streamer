@@ -12,7 +12,7 @@ import common.rich.func.ToMoreMonadErrorOps._
 
 import common.json.RichJson._
 
-class MbArtistReconciler @Inject()(
+private[backend] class MbArtistReconciler @Inject()(
     ec: ExecutionContext,
     parser: AlbumParser,
     downloader: JsonDownloader,
