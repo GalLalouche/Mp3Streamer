@@ -2,7 +2,6 @@ package backend.mb
 
 import java.time.{LocalDate, Year, YearMonth}
 
-import backend.albums.AlbumType
 import backend.logging.Logger
 import backend.mb.AlbumParser._
 import backend.recon.ReconID

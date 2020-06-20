@@ -1,4 +1,4 @@
-package backend.albums
+package backend.mb
 
 import enumeratum.{Enum, EnumEntry}
 

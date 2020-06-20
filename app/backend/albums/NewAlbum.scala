@@ -1,6 +1,6 @@
 package backend.albums
 
-import backend.mb.MbAlbumMetadata
+import backend.mb.{AlbumType, MbAlbumMetadata}
 import backend.recon.{Album, Artist}
 import mains.fixer.StringFixer
 import play.api.libs.json.{Json, JsValue}

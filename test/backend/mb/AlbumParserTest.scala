@@ -2,7 +2,6 @@ package backend.mb
 
 import java.time.LocalDate
 
-import backend.albums.AlbumType
 import backend.logging.Logger
 import backend.recon.ReconID
 import org.scalatest.FreeSpec
