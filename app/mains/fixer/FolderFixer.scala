@@ -46,7 +46,8 @@ class FolderFixer @Inject()(
 
     println(s"finding matching folder for artist <$canonicalArtistFolderName>")
     mf.genreDirs
-        .flatMap(_.deepDirs)
+        .flatMap(_.dirs) // Subgenres
+        .flatMap(_.dirs) // Artists
         .find(_.name.toLowerCase == canonicalArtistFolderName)
         .map(_.dir)
   }
