@@ -23,13 +23,22 @@ private class ExistingAlbums private(val map: Map[Artist, Set[Album]]) {
 }
 
 private object ExistingAlbums {
+  private val invalidDirectoryNames: Map[String, String] = Map(
+    // Some artists have invalid directory characters in their name, so their directory won't match
+    // the artist name. As a stupid hack, just aggregate them below.
+    "ArchMatheos" -> "Arch / Matheos",
+  )
   def from(albums: Seq[DirectoryRef], mf: MusicFinder) = {
     def toAlbum(dir: DirectoryRef): Option[Album] = mf.getSongFilesInDir(dir)
         .headOption
         .map(firstSong =>
           if (dir.name.take(4).forall(_.isDigit)) {
             val split = dir.name.split(" ", 2).ensuring(_.length == 2)
-            Album(title = split(1), year = split(0).take(4).toInt, Artist(dir.parent.name))
+            Album(
+              title = split(1),
+              year = split(0).take(4).toInt,
+              Artist(dir.parent.name optionOrKeep invalidDirectoryNames.get),
+            )
           } else // Single album artist
             mf.parseSong(firstSong).release
         )
