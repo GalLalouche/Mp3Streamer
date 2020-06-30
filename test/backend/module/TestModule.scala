@@ -7,7 +7,8 @@ import com.google.inject.Provides
 import models.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
 
-import common.{FakeClock, ModuleUtils}
+import common.FakeClock
+import common.guice.ModuleUtils
 import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
 
 class TestModule extends ScalaModule with ModuleUtils {
@@ -15,7 +16,6 @@ class TestModule extends ScalaModule with ModuleUtils {
     bind[FakeClock] toInstance new FakeClock
     bind[Logger] toInstance new StringBuilderLogger(new StringBuilder)
 
-    // TODO make a pullrequest to fix this in scalaguice?
     requireBinding[MemoryRoot]
     requireBinding[FakeMusicFinder]
 

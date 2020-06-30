@@ -8,7 +8,7 @@ import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext
 
-import common.ModuleUtils
+import common.guice.ModuleUtils
 import common.io.JsonableSaver
 
 object SearchModule extends ScalaModule with ModuleUtils {

@@ -7,7 +7,7 @@ import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext
 
-import common.ModuleUtils
+import common.guice.ModuleUtils
 import common.storage.Storage
 
 /** Creates the in-memory tables after creating the storage instances. */

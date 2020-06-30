@@ -12,7 +12,7 @@ import slick.jdbc.{JdbcProfile, SQLiteProfile}
 
 import scala.concurrent.ExecutionContext
 
-import common.ModuleUtils
+import common.guice.ModuleUtils
 import common.io.{DirectoryRef, InternetTalker, IODirectory, RootDirectory}
 
 object RealModule extends ScalaModule with ModuleUtils {

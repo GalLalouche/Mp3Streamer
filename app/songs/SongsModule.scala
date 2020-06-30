@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext
 import scalaz.syntax.functor.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
 
-import common.ModuleUtils
+import common.guice.ModuleUtils
 
 object SongsModule extends ScalaModule with ModuleUtils {
   override def configure(): Unit = {

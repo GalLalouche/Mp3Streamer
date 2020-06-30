@@ -9,7 +9,7 @@ import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 import scala.concurrent.ExecutionContext
 
-import common.ModuleUtils
+import common.guice.ModuleUtils
 import common.io.InternetTalker
 import common.io.WSAliases.WSClient
 
