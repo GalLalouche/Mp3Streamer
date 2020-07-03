@@ -27,7 +27,7 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.path.Directory
 
-class FolderFixer @Inject()(
+private class FolderFixer @Inject()(
     fixLabels: FixLabels,
     mf: IOMusicFinder,
     it: InternetTalker,
@@ -45,11 +45,7 @@ class FolderFixer @Inject()(
         .removeAll("""[<>:"/\\|?*]""")
 
     println(s"finding matching folder for artist <$canonicalArtistFolderName>")
-    mf.genreDirs
-        .flatMap(_.dirs) // Subgenres
-        .flatMap(_.dirs) // Artists
-        .find(_.name.toLowerCase == canonicalArtistFolderName)
-        .map(_.dir)
+    mf.findArtistDir(canonicalArtistFolderName).map(_.dir)
   }
 
   private def moveDirectory(
@@ -99,7 +95,7 @@ class FolderFixer @Inject()(
   }
 }
 
-object FolderFixer {
+private object FolderFixer {
   def main(args: Array[String]): Unit =
     Guice.createInjector(StandaloneModule).instance[FolderFixer].run(Directory(args(0)))
 }

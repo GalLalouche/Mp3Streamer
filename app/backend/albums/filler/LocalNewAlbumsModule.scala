@@ -32,7 +32,7 @@ private object LocalNewAlbumsModule extends Debug {
     @Singleton
     private def existingAlbumsCache(implicit mf: MusicFinder, logger: Logger): ExistingAlbums =
       timed("Creating cache", LoggingLevel.Info) {
-        ExistingAlbums.from(mf.genreDirs.view.flatMap(_.deepDirs), mf)
+        ExistingAlbums.from(mf.albumDirs, mf)
       }
   })
   def overridingStandalone(lnam: LocalNewAlbumsModule): Injector =

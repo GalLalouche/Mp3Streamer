@@ -2,16 +2,18 @@ package models
 
 import common.io.{DirectoryRef, FileRef, RefSystem}
 
-import scala.collection.GenSeq
-
-trait MusicFinder { self =>
+trait MusicFinder {self =>
   type S <: RefSystem {type S = self.S}
   def dir: S#D
   protected def subDirNames: Seq[String]
   def extensions: Set[String]
 
-  def genreDirs: Seq[S#D] = subDirNames.sorted.map(dir.getDir(_).get)
-  def albumDirs: GenSeq[S#D] = genreDirs
+  private def genreDirs: Seq[S#D] = subDirNames.sorted.map(dir.getDir(_).get)
+  def findArtistDir(name: String): Option[S#D] = {
+    val normalizedName = name.toLowerCase
+    genreDirs.view.flatMap(_.dirs).flatMap(_.dirs).find(_.name.toLowerCase == normalizedName)
+  }
+  def albumDirs: Seq[S#D] = genreDirs
       .flatMap(_.deepDirs)
       .toVector
       .filter(_.files.exists(f => extensions.contains(f.extension)))

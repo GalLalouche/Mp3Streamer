@@ -8,9 +8,7 @@ import common.rich.func.MoreSeqInstances._
 import common.rich.func.ToMoreFoldableOps._
 
 private class RecentAlbums @Inject()(mf: MusicFinder, albumFactory: AlbumFactory) {
-  def apply(amount: Int): Seq[Album] = mf.genreDirs
-      .flatMap(_.deepDirs)
-      .filter(mf.getSongFilesInDir(_).nonEmpty)
+  def apply(amount: Int): Seq[Album] = mf.albumDirs
       .topK(amount)(Ordering.by(_.lastModified))
       .map(albumFactory.fromDir(_).copy(songs = Nil)) // recent doesn't care about songs
 }
