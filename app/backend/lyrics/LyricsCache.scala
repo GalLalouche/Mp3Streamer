@@ -4,9 +4,8 @@ import backend.Url
 import backend.logging.Logger
 import backend.lyrics.retrievers.{RetrievedLyricsResult, _}
 import backend.storage.OnlineRetrieverCacher
-import com.google.inject.Guice
 import javax.inject.Inject
-import models.{IOSong, Song}
+import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -59,21 +58,4 @@ private class LyricsCache @Inject()(
     cache.forceStore(s, instrumental).run >| instrumental
   }
   def setInstrumentalArtist(s: Song): Future[Instrumental] = defaultArtistInstrumental add s
-}
-
-object LyricsCache {
-  import java.io.File
-
-  import backend.module.CleanModule
-  import net.codingwell.scalaguice.InjectorExtensions._
-
-  import common.rich.RichFuture._
-
-  def main(args: Array[String]): Unit = {
-    val injector = Guice createInjector CleanModule
-    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    val s = IOSong.read(new File("""D:\Media\Music\Rock\Punk\Heartsounds\2013 Internal Eyes\01 - A Total Separation of Self.mp3"""))
-    val $ = injector.instance[LyricsCache]
-    println($.find(s).get)
-  }
 }

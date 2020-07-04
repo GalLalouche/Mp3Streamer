@@ -8,7 +8,6 @@ import backend.external.expansions.WikipediaAlbumExternalLinksExpander._
 import backend.logging.Logger
 import backend.recon.Album
 import com.google.common.annotations.VisibleForTesting
-import com.google.inject.Guice
 import javax.inject.Inject
 import org.jsoup.nodes.Document
 
@@ -66,25 +65,11 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
   override def expand = expanderHelper(parseDocument)(_)
       // Compiler won't pick up type definitions, so explicitly naming Traverse is necessary
       .flatMap(Traverse[Traversable].traverse(_)(allMusicHelper.canonize))
-      .flatMap(_.filterM(link => allMusicHelper isValidLink link.link))
-      .listenError(
-        logger.error("WikipediaAlbumExternalLinksExpander failed to extract links", _))
+      .flatMap(_.filterM(allMusicHelper isValidLink _.link))
+      .listenError(logger.error("WikipediaAlbumExternalLinksExpander failed to extract links", _))
       .orElse(Nil)
 }
 
 private object WikipediaAlbumExternalLinksExpander {
-  import backend.module.CleanModule
-  import net.codingwell.scalaguice.InjectorExtensions._
-
-  import common.rich.RichFuture._
-
-  def forUrl(path: String): BaseLink[Album] = new BaseLink[Album](Url(path), Host.Wikipedia)
-  def main(args: Array[String]): Unit = {
-    val injector = Guice createInjector CleanModule
-    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    val $ = injector.instance[WikipediaAlbumExternalLinksExpander]
-    $.expand(forUrl("""https://en.wikipedia.org/wiki/Ghost_(Devin_Townsend_Project_album)""")).get.log()
-  }
-
   private val AlbumPrefixPattern = Pattern compile "^(https?://)?(www.)?allmusic.com/album/"
 }
