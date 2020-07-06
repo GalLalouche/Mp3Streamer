@@ -9,9 +9,10 @@ trait MusicFinder {self =>
   def extensions: Set[String]
 
   private def genreDirs: Seq[S#D] = subDirNames.sorted.map(dir.getDir(_).get)
+  def artistDirs: Seq[S#D] = genreDirs.view.flatMap(_.dirs).flatMap(_.dirs)
   def findArtistDir(name: String): Option[S#D] = {
     val normalizedName = name.toLowerCase
-    genreDirs.view.flatMap(_.dirs).flatMap(_.dirs).find(_.name.toLowerCase == normalizedName)
+    artistDirs.find(_.name.toLowerCase == normalizedName)
   }
   def albumDirs: Seq[S#D] = genreDirs
       .flatMap(_.deepDirs)

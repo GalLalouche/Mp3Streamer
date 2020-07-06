@@ -27,9 +27,9 @@ private class AlbumParser @Inject()(
 
   def apply(json: JsObject): Option[MbAlbumMetadata] = for {
     date <- parseDate(json)
-    albumType <- json.ostr(PrimaryType).flatMap(AlbumType.withNameOption)
+    albumType <- json.ostr("primary-type").flatMap(AlbumType.withNameOption)
     if ValidPrimaryTypes(albumType.entryName)
-    // Secondary types includes complications and other unwanted albums.
+    // Secondary types includes compilations and other unwanted albums.
     if json.array("secondary-types").value.isEmpty
   } yield MbAlbumMetadata(
     title = fixQuotes(json str "title"),
@@ -42,7 +42,6 @@ private class AlbumParser @Inject()(
 private object AlbumParser {
   private val ReleaseDate = "first-release-date"
   private val ValidPrimaryTypes = Set("Album", "EP", "Live")
-  private val PrimaryType = "primary-type"
   private def fixQuotes(s: String): String =
     s.replaceAll(StringFixer.SpecialQuotes, "\"").replaceAll(StringFixer.SpecialApostrophes, "'")
   private val DateFormatter =

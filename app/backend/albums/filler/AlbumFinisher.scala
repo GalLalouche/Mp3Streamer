@@ -26,7 +26,7 @@ import common.rich.RichT._
 @Singleton private class AlbumFinisher @Inject()(
     logger: Logger,
     albumReconStorage: AlbumReconStorage,
-    cache: ExistingAlbums,
+    cache: EagerExistingAlbums,
 ) {
   private implicit val ec: ExecutionContext = DaemonFixedPool.single(this.simpleName)
 

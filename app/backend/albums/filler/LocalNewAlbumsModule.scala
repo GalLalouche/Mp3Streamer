@@ -22,17 +22,24 @@ private class LocalNewAlbumsModule private(existingAlbumsModule: Module) extends
   }
 }
 private object LocalNewAlbumsModule extends Debug {
+  def lazyAlbums = new LocalNewAlbumsModule(new ScalaModule {
+    override def configure(): Unit = {
+      bind[ExistingAlbums].to[LazyExistingAlbums]
+    }
+  })
+
   def forSingleArtist(a: Artist) = new LocalNewAlbumsModule(new ScalaModule {
     @Provides
     @Singleton
-    private def existingAlbumsCache(mf: MusicFinder): ExistingAlbums = ExistingAlbums.singleArtist(a, mf)
+    private def existingAlbumsCache(mf: MusicFinder): EagerExistingAlbums =
+      EagerExistingAlbums.singleArtist(a, mf)
   })
   def default = new LocalNewAlbumsModule(new ScalaModule {
     @Provides
     @Singleton
-    private def existingAlbumsCache(implicit mf: MusicFinder, logger: Logger): ExistingAlbums =
+    private def existingAlbumsCache(implicit mf: MusicFinder, logger: Logger): EagerExistingAlbums =
       timed("Creating cache", LoggingLevel.Info) {
-        ExistingAlbums.from(mf.albumDirs, mf)
+        EagerExistingAlbums.from(mf.albumDirs, mf)
       }
   })
   def overridingStandalone(lnam: LocalNewAlbumsModule): Injector =

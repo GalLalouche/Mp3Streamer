@@ -37,7 +37,7 @@ private class ArtistReconFiller @Inject()(
   private def go(artist: Artist): Observable[ReconID] = for {
     reconId <- RichObservable.from(reconciler(artist))
     reconAlbums <- Observable.from(reconciler.getAlbumsMetadata(reconId))
-    if ArtistReconFiller.intersects(ea.map(artist), reconAlbums)
+    if ArtistReconFiller.intersects(ea.albums(artist), reconAlbums)
   } yield reconId
   private def newRecons: Observable[(Artist, ReconID)] = {
     def hasNoRecon(a: Artist): Future[Boolean] = storage.exists(a).negated
@@ -57,7 +57,7 @@ private object ArtistReconFiller {
   }
 
   def main(args: Array[String]): Unit = {
-    val injector = LocalNewAlbumsModule.overridingStandalone(LocalNewAlbumsModule.default)
+    val injector = LocalNewAlbumsModule.overridingStandalone(LocalNewAlbumsModule.lazyAlbums)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     injector.instance[ArtistReconFiller].go().get
   }
