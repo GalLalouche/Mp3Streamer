@@ -9,6 +9,7 @@ import com.google.inject.Guice
 import javax.inject.Inject
 import mains.cover.DownloadCover._
 import mains.cover.image.ImageFinder
+import mains.BrowserUtils
 import models.{AlbumFactory, MusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions._
 
@@ -56,8 +57,8 @@ private[mains] class DownloadCover @Inject()(
     } yield selection match {
       case Selected(img) => fileMover(img)
       case OpenBrowser =>
+        BrowserUtils.pointBrowserTo(Url(searchUrl))
         // String interpolation is acting funky for some reason (will fail at runtime for unicode).
-        Process("""C:\Users\Gal\AppData\Local\Google\Chrome\Application\chrome.exe """ + searchUrl.quote).!!
         throw new CoverException.UserOpenedBrowser
       case Cancelled => throw new CoverException.UserClosedGUI
     }
