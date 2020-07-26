@@ -62,6 +62,7 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   }
   "stupid apostrophe" in {
     verifyFix("I’m a stupid apostrophe", "I'm a Stupid Apostrophe")
+    verifyFix("Don�t", "Don't")
   }
   "dashes" in {
     verifyFix("A−B-C–D-E—F", "A-B-C-D-E-F")
