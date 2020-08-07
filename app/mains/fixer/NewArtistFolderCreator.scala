@@ -19,7 +19,7 @@ import common.rich.RichT._
 * view.
 */
 private object NewArtistFolderCreator {
-  def apply(artistName: String): Future[Directory] = {
+  def selectGenreDir(): Future[Directory] = {
     val promise = Promise[Directory]()
 
     val frame = new Frame {
@@ -40,7 +40,7 @@ private object NewArtistFolderCreator {
           contents += new Label(d.name)
         }.onMouseClick {() =>
           frame.dispose()
-          promise.success(d addSubDir artistName)
+          promise.success(d)
         },
         new Label(""),
       )

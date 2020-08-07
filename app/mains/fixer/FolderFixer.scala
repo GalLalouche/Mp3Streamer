@@ -54,7 +54,7 @@ private class FolderFixer @Inject()(
       folderImage: Future[Directory => Unit],
       fixedDirectory: Future[FixedDirectory],
   ): Future[Directory] = for {
-    destinationParent <- destination |||| NewArtistFolderCreator(artist)
+    destinationParent <- destination |||| NewArtistFolderCreator.selectGenreDir().map(_ addSubDir artist)
     folderImageMover <- folderImage
     fixed <- fixedDirectory
   } yield {
