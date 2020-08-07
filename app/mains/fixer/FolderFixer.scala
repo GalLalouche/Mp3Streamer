@@ -22,7 +22,6 @@ import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.ToMoreMonadErrorOps._
 
 import common.io.{InternetTalker, IODirectory}
-import common.rich.primitives.RichString._
 import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.path.Directory
@@ -30,23 +29,12 @@ import common.rich.path.Directory
 private class FolderFixer @Inject()(
     fixLabels: FixLabels,
     mf: IOMusicFinder,
+    artistFinder: ArtistFinder,
     it: InternetTalker,
     foobarGain: FoobarGain,
     downloader: DownloadCover,
 ) {
   private implicit val iec: ExecutionContext = it
-
-  private def findArtistFolder(artist: String): Option[Directory] = {
-    // See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
-    val canonicalArtistFolderName = StringFixer(artist).toLowerCase
-        // A windows folder name cannot end in '.'.
-        .removeAll("""\.*$""")
-        // A windows folder name cannot contain '<', '>', ':', '"', '/', '\', '\', '|', '?', '*'.
-        .removeAll("""[<>:"/\\|?*]""")
-
-    println(s"finding matching folder for artist <$canonicalArtistFolderName>")
-    mf.findArtistDir(canonicalArtistFolderName).map(_.dir)
-  }
 
   private def moveDirectory(
       artist: String,
@@ -82,7 +70,7 @@ private class FolderFixer @Inject()(
 
   private def run(folder: Directory): Unit = {
     val artist = mf.getSongsInDir(IODirectory(folder)).head.artistName
-    val destination = OptionT(Future(findArtistFolder(artist)))
+    val destination = OptionT(Future(artistFinder(artist)))
     val folderImage = downloadCover(folder)
     println("fixing directory")
     val fixedDirectory = Future(fixLabels.fix(folder.cloneDir()))
