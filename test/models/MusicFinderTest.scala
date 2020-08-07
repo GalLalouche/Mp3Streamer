@@ -10,8 +10,9 @@ import common.test.AuxSpecs
 class MusicFinderTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val root = new MemoryRoot
   private val mf = new FakeMusicFinder(root) {
-    protected override def subDirNames = Vector("a", "b", "c")
-    subDirNames.foreach(root.addSubDir)
+    protected override def genresWithSubGenres = Vector("a", "b", "c")
+    protected override def flatGenres = Vector("d")
+    (genresWithSubGenres ++ flatGenres).foreach(root.addSubDir)
     override val extensions = Set("mp3", "flac")
   }
 
@@ -37,9 +38,37 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
         verifyIsEmpty()
       }
     }
+
     "Find song" in {
       val f = root.addSubDir("a").addSubDir("b").addFile("foo.mp3")
       mf.getSongFiles.single shouldReturn f
+    }
+
+    "Lists" - {
+      val a = root.getDir("a").get
+      val b = root.getDir("b").get
+      val c = root.getDir("c").get
+      val d = root.getDir("d").get
+      "Artists in flat and subgenres" in {
+        val artistInSubGenre = a.addSubDir("a'").addSubDir("a''")
+        b.addSubDir("b'") // Folder is assumed to be a subgenre and therefore should not be listed.
+        val artistInFlatGenre = d.addSubDir("d'")
+
+        mf.artistDirs shouldMultiSetEqual Vector(artistInSubGenre, artistInFlatGenre)
+      }
+      "albums in flat and subgenres" in {
+        val artistWithSong = a.addSubDir("a'").addSubDir("a''").addSubDir("a'''")
+        a.addSubDir("a!").addSubDir("a''").addSubDir("a'''") // Album without songs
+        artistWithSong.addFile("song.mp3")
+        val subGenreWithSong = b.addSubDir("b'").addSubDir("b''")
+        b.addSubDir("b!").addSubDir("b''") // Artist without songs
+        subGenreWithSong.addFile("song.mp3")
+        val flatArtistWithSong = d.addSubDir("d'").addSubDir("d''")
+        flatArtistWithSong.addFile("song.mp3")
+        d.addSubDir("d'").addSubDir("d''") // Flat artist without songs
+
+        mf.albumDirs shouldMultiSetEqual Vector(artistWithSong, subGenreWithSong, flatArtistWithSong)
+      }
     }
   }
 }

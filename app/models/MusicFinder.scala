@@ -5,11 +5,18 @@ import common.io.{DirectoryRef, FileRef, RefSystem}
 trait MusicFinder {self =>
   type S <: RefSystem {type S = self.S}
   def dir: S#D
-  protected def subDirNames: Seq[String]
   def extensions: Set[String]
 
-  private def genreDirs: Seq[S#D] = subDirNames.sorted.map(dir.getDir(_).get)
-  def artistDirs: Seq[S#D] = genreDirs.view.flatMap(_.dirs).flatMap(_.dirs)
+  /** Dirs with an extra level of sub-genre nesting, e.g., metal which has death and black metal inside it. */
+  protected def genresWithSubGenres: Seq[String]
+  /** Dirs which host artists/albums at the top level, e.g., musicals. */
+  protected def flatGenres: Seq[String]
+  private def getDir(name: String) = dir.getDir(name).get
+  private def genreDirs: Seq[S#D] = (genresWithSubGenres ++ flatGenres).sorted.map(getDir)
+  def artistDirs: Seq[S#D] = {
+    def getDirs(xs: Seq[String]): Seq[S#D] = xs.view.map(getDir).flatMap(_.dirs)
+    getDirs(genresWithSubGenres).flatMap(_.dirs) ++ getDirs(flatGenres)
+  }
   def findArtistDir(name: String): Option[S#D] = {
     val normalizedName = name.toLowerCase
     artistDirs.find(_.name.toLowerCase == normalizedName)
@@ -22,6 +29,5 @@ trait MusicFinder {self =>
   def getSongFilesInDir(d: DirectoryRef): Seq[S#F] =
     d.asInstanceOf[S#D].files.filter(f => extensions.contains(f.extension))
   def parseSong(f: FileRef): Song {type F = S#F}
-  def getSongsInDir(d: DirectoryRef): Seq[Song {type F = S#F}] =
-    getSongFilesInDir(d) map parseSong
+  def getSongsInDir(d: DirectoryRef): Seq[Song {type F = S#F}] = getSongFilesInDir(d) map parseSong
 }

@@ -15,7 +15,7 @@ private class LocalNewAlbumsModule private(existingAlbumsModule: Module) extends
     install(LoggingModules.ConsoleWithFiltering)
     install(new IOMusicFinderModule(
       new IOMusicFinder {
-        override val subDirNames = Vector("Rock", "Metal")
+        override val flatGenres = Nil
       }
     ))
     install(existingAlbumsModule)

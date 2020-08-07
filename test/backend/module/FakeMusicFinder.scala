@@ -9,8 +9,9 @@ import common.io.{FileRef, MemoryDir, MemorySystem}
 class FakeMusicFinder(val dir: MemoryDir) extends MusicFinder {
   override type S = MemorySystem
   override val extensions = Set("mp3")
-  protected override def subDirNames: Seq[String] = Vector("music")
-  private val dirToAddSongsTo = dir addSubDir subDirNames.head
+  override protected def genresWithSubGenres: Seq[String] = Vector("music")
+  override protected def flatGenres: Seq[String] = Nil
+  private val dirToAddSongsTo = dir addSubDir genresWithSubGenres.head
   private val pathToSongs = mutable.HashMap[String, MemorySong]()
 
   /**
