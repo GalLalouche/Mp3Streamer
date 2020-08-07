@@ -1,11 +1,12 @@
 package mains
 
+import java.awt.{Image, RenderingHints}
 import java.awt.event.{MouseEvent, MouseListener}
 import java.awt.image.BufferedImage
-import java.awt.{Image, RenderingHints}
+
 import javax.swing.{ImageIcon, JLabel}
 
-import scala.swing.Component
+import scala.swing.{Component, Font, Label}
 
 private object SwingUtils {
   implicit class RichComponent(private val $: Component) extends AnyVal {
@@ -35,5 +36,12 @@ private object SwingUtils {
   }
   implicit class RichImageIcon(private val $: ImageIcon) extends AnyVal {
     def toComponent: Component = Component wrap new JLabel($)
+  }
+  implicit class RichLabel(val $: Label) extends AnyVal {
+    def setFontSize(size: Int): $.type = {
+      val existingFont = $.font
+      $.font = new Font(existingFont.getName, existingFont.getStyle, size)
+      $
+    }
   }
 }

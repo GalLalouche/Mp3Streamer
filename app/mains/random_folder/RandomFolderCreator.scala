@@ -30,9 +30,9 @@ private class RandomFolderCreator @Inject()(
   private implicit val iec: ExecutionContext = ec
   private lazy val songFiles = mf.getSongFiles.map(_.file)
 
-  def createPlaylistFile(outputDir: Directory): File = {
+  private def createPlaylistFile(outputDir: Directory, name: String): File = {
     val files = outputDir.files
-    val playlistFile = outputDir.addFile("random.m3u")
+    val playlistFile = outputDir.addFile(s"$name.m3u")
     files.map(_.name).foreach(playlistFile.appendLine)
     playlistFile
   }
@@ -60,7 +60,7 @@ private class RandomFolderCreator @Inject()(
         audioFile.commit()
       } catch {
         // Because—I wanna say Windows?—is such a piece of crap, if the folder is open while process runs,
-        // committing the ID3 tag can sometimes fail.
+        // committing the ID3 tag canndom.kk sometimes fail.
         case e@(_: CannotWriteException | _: UnableToRenameFileException) => e.printStackTrace()
       }
     newFile.renameTo(new File(outputDir.dir, f"$index%02d.${f.extension}"))
@@ -69,20 +69,30 @@ private class RandomFolderCreator @Inject()(
     case e: Exception => println("\rFailed @ " + f); e.printStackTrace(); throw e
   }
 
-  private def copy(songs: Traversable[File], outputDir: Directory): Unit = {
+  private def copy(songs: Traversable[File], outputDir: Directory, playlistName: String): Unit = {
     for (pb <- managed(new ProgressBar("Copying songs", songs.size)))
       songs.toVector.shuffle.zipWithIndex.foreach((copyFileToOutputDir(outputDir, pb) _).tupled)
-    createPlaylistFile(outputDir)
+    createPlaylistFile(outputDir, playlistName)
   }
 
-  private def dumpAll(filter: FileFilter, numberOfSongsToCreate: Int) = {
+  private def dumpAll(
+      filter: FileFilter, numberOfSongsToCreate: Int, outputFolder: String, playlistName: String): Unit = {
     val songs = createSongSet(numberOfSongsToCreate, filter)
-    copy(songs, Directory.makeDir("D:/RandomSongsOutput").clear())
+    copy(songs, Directory.makeDir("D:/").addSubDir(outputFolder).clear(), playlistName)
   }
-  def dumpAll(n: Int): Unit = dumpAll(FileFilter.AllowEverything, numberOfSongsToCreate = n)
-  def dumpRunning(n: Int): Unit = dumpAll(runningFilter, numberOfSongsToCreate = n)
+  def dumpAll(n: Int): Unit = dumpAll(
+    FileFilter.AllowEverything,
+    numberOfSongsToCreate = n,
+    outputFolder = "RandomSongsOutput",
+    playlistName = "random",
+  )
+  def dumpRunning(n: Int): Unit = dumpAll(
+    runningFilter, numberOfSongsToCreate = n, outputFolder = "Unfiltered Run Songs", playlistName = "running")
   def copyFilteredSongs(): Unit = {
-    val songs = Directory("D:/RandomSongsOutput").files.toSet
-    copy(songs, Directory.makeDir("D:/Filtered Run Songs").clear())
+    // Delete m3u song because it messes up the copy
+    val dir = Directory("D:/Unfiltered Run Songs")
+    dir.files.filter(_.extension == "m3u").foreach(_.delete())
+    val songs = dir.files.toSet
+    copy(songs, Directory.makeDir("D:/Filtered Run Songs").clear(), "running")
   }
 }
