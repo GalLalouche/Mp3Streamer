@@ -1,4 +1,4 @@
-package mains
+package mains.random_folder
 
 import java.io.File
 
@@ -17,6 +17,7 @@ import scala.concurrent.ExecutionContext
 import scala.util.Random
 
 import common.rich.collections.RichSeq._
+import common.rich.RichT._
 import common.rich.path.Directory
 import common.rich.path.RichFile.{richFile, _}
 
@@ -24,6 +25,7 @@ import common.rich.path.RichFile.{richFile, _}
 private class RandomFolderCreator @Inject()(
     ec: ExecutionContext,
     mf: IOMusicFinder,
+    runningFilter: FileFilter,
 ) {
   private implicit val iec: ExecutionContext = ec
   private lazy val songFiles = mf.getSongFiles.map(_.file)
@@ -36,10 +38,16 @@ private class RandomFolderCreator @Inject()(
   }
 
   private val random = new Random
-  @tailrec
-  private def createSongSet(numberOfSongsToCreate: Int, existing: Set[File] = Set()): Set[File] =
-    if (existing.size == numberOfSongsToCreate) existing
-    else createSongSet(numberOfSongsToCreate, existing + songFiles(random nextInt songFiles.length))
+  private def createSongSet(numberOfSongsToCreate: Int, filter: FileFilter): Set[File] = {
+    @tailrec def go(existing: Set[File]): Set[File] =
+      if (existing.size == numberOfSongsToCreate)
+        existing
+      else {
+        val nextSong = songFiles(random nextInt songFiles.length)
+        go(existing.mapIf(filter.isAllowed(nextSong)).to(_ + nextSong))
+      }
+    go(Set())
+  }
 
   private def copyFileToOutputDir(outputDir: Directory, pb: ProgressBar)(f: File, index: Int): Unit = try {
     val newFile = new File(outputDir.dir, f.name)
@@ -67,10 +75,12 @@ private class RandomFolderCreator @Inject()(
     createPlaylistFile(outputDir)
   }
 
-  def dumpAll(): Unit = {
-    val songs = createSongSet(numberOfSongsToCreate = 300)
+  private def dumpAll(filter: FileFilter, numberOfSongsToCreate: Int) = {
+    val songs = createSongSet(numberOfSongsToCreate, filter)
     copy(songs, Directory.makeDir("D:/RandomSongsOutput").clear())
   }
+  def dumpAll(n: Int): Unit = dumpAll(FileFilter.AllowEverything, numberOfSongsToCreate = n)
+  def dumpRunning(n: Int): Unit = dumpAll(runningFilter, numberOfSongsToCreate = n)
   def copyFilteredSongs(): Unit = {
     val songs = Directory("D:/RandomSongsOutput").files.toSet
     copy(songs, Directory.makeDir("D:/Filtered Run Songs").clear())
