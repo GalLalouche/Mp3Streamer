@@ -8,7 +8,7 @@ import javax.swing.{ImageIcon, JLabel}
 import scala.swing.Component
 
 private object SwingUtils {
-  implicit class RichComponent($: Component) {
+  implicit class RichComponent(private val $: Component) extends AnyVal {
     // Because reactions is BS and doesn't work.
     def onMouseClick(f: () => Any): Component = {
       $.peer.addMouseListener(new MouseListener {
@@ -21,19 +21,19 @@ private object SwingUtils {
       $
     }
   }
-  implicit class RichImage(image: Image) {
+  implicit class RichImage(private val $: Image) extends AnyVal {
     def toSquareImageIcon(side: Int): ImageIcon = toImageIcon(side, side)
     def toImageIcon(height: Int, width: Int): ImageIcon = {
       val bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
       val graphics = bufferedImage.createGraphics
       graphics.setRenderingHint(
         RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
-      graphics.drawImage(image, 0, 0, width, height, null)
+      graphics.drawImage($, 0, 0, width, height, null)
       graphics.dispose()
       new ImageIcon(bufferedImage)
     }
   }
-  implicit class RichImageIcon($: ImageIcon) {
+  implicit class RichImageIcon(private val $: ImageIcon) extends AnyVal {
     def toComponent: Component = Component wrap new JLabel($)
   }
 }
