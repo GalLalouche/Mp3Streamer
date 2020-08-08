@@ -3,7 +3,7 @@ __*
 *.log
 *.sh
 *.tmp
-*GitIgnore.*
+*GitIgnore*
 *QuickMain*
 .cache*
 .history
