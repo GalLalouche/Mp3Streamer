@@ -35,7 +35,7 @@ private class AlbumParser @Inject()(
     title = fixQuotes(json str "title"),
     releaseDate = date,
     albumType = albumType,
-    reconId = ReconID(json str "id"),
+    reconId = ReconID.validateOrThrow(json str "id"),
   )
 }
 

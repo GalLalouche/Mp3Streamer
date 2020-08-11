@@ -29,5 +29,6 @@ private[backend] class ReleaseGroupToReleases @Inject()(
 }
 
 private object ReleaseGroupToReleases {
-  private def parse(js: JsObject): Iterable[ReconID] = js.objects("releases").map(_ str "id").map(ReconID)
+  private def parse(js: JsObject): Iterable[ReconID] =
+    js.objects("releases").map(_ str "id").map(ReconID.validateOrThrow)
 }

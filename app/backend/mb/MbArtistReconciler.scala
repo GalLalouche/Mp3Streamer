@@ -24,7 +24,7 @@ private[backend] class MbArtistReconciler @Inject()(
         .filterWithMessage(_.nonEmpty, s"Found no artists for <$a>")
         .map(_.maxBy(_ int "score"))
         .filterWithMessage(_.int("score") == 100, "could not find a 100 match")
-        .map(_ ostr "id" map ReconID)
+        .map(_ ostr "id" map ReconID.validateOrThrow)
   }
 
   def getAlbumsMetadata(artistKey: ReconID): Future[Seq[MbAlbumMetadata]] =

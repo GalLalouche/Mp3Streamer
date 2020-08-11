@@ -31,5 +31,5 @@ private class MbAlbumReconciler @Inject()(
       .filter(_ has "first-release-date")
       .filter(_ ostr "primary-type" exists Set("Album", "EP"))
       .find(js => scorer(album(js, a.artist), a) >= 0.9)
-      .map(_ str "id" mapTo ReconID)
+      .map(_ str "id" mapTo ReconID.validateOrThrow)
 }

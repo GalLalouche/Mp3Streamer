@@ -42,7 +42,7 @@ private class ExternalFormatter @Inject()(
     external.delete(song) >> getLinks(song)
   }
   def updateRecon(path: String, json: JsValue): Future[JsValue] = {
-    def getReconId(s: String) = json ostr s map ReconID
+    def getReconId(s: String) = json ostr s map ReconID.validateOrThrow
     val song: Song = urlPathUtils parseSong path
     val updatedRecon = UpdatedRecon.fromOptionals(getReconId("artist"), getReconId("album"))
     external.updateRecon(song)(updatedRecon) >> getLinks(song)

@@ -20,7 +20,7 @@ sealed abstract class SlickReconStorage[R <: Reconcilable](ec: ExecutionContext,
   import profile.api._
 
   protected implicit val reconIdColumn: JdbcType[ReconID] =
-    MappedColumnType.base[ReconID, String](_.id, ReconID)
+    MappedColumnType.base[ReconID, String](_.id, ReconID.apply)
   override protected type Id = String
   override protected implicit def btt: BaseTypedType[String] = ScalaBaseType.stringType
   override def isIgnored(k: R): Future[IgnoredReconResult] = load(k).map(_.isIgnored)
