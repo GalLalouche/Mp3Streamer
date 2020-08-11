@@ -1,7 +1,7 @@
 package backend.albums.filler
 
-import backend.mb.{MbAlbumMetadata, MbArtistReconciler}
-import backend.recon.{Album, Artist, ArtistReconStorage, ReconID, StringReconScorer}
+import backend.mb.MbArtistReconciler
+import backend.recon.{Artist, ArtistReconStorage, ReconID}
 import backend.recon.StoredReconResult.HasReconResult
 import javax.inject.Inject
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -16,7 +16,6 @@ import common.rich.func.MoreObservableInstances._
 import common.rich.func.ToMoreFunctorOps._
 
 import common.concurrency.SimpleActor
-import common.rich.primitives.RichBoolean._
 import common.rich.RichFuture._
 import common.rich.RichObservable
 import common.rich.RichObservable._
@@ -25,6 +24,7 @@ private class ArtistReconFiller @Inject()(
     ea: ExistingAlbums,
     reconciler: MbArtistReconciler,
     storage: ArtistReconStorage,
+    verifier: ArtistReconVerifier,
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
@@ -34,11 +34,8 @@ private class ArtistReconFiller @Inject()(
     storage.store(a, HasReconResult(r, isIgnored = false))
   })
 
-  private def go(artist: Artist): Observable[ReconID] = for {
-    reconId <- RichObservable.from(reconciler(artist))
-    reconAlbums <- Observable.from(reconciler.getAlbumsMetadata(reconId))
-    if ArtistReconFiller.intersects(ea.albums(artist), reconAlbums)
-  } yield reconId
+  private def go(artist: Artist): Observable[ReconID] =
+    RichObservable.from(reconciler(artist)).filterFuture(verifier(artist, _))
   private def newRecons: Observable[(Artist, ReconID)] = {
     def hasNoRecon(a: Artist): Future[Boolean] = storage.exists(a).negated
     Observable.from(ea.artists).filterFuture(hasNoRecon).mproduct(go)
@@ -48,14 +45,6 @@ private class ArtistReconFiller @Inject()(
 }
 
 private object ArtistReconFiller {
-  private def intersects(album: Set[Album], reconAlbums: Seq[MbAlbumMetadata]): Boolean = {
-    val albumTitles = album.map(_.title)
-    val $ = reconAlbums.view.map(_.title).exists(t => albumTitles.map(StringReconScorer(_, t)).max > 0.9)
-    if ($.isFalse)
-      println(s"Could not reconcile ${album.head.artist}")
-    $
-  }
-
   def main(args: Array[String]): Unit = {
     val injector = LocalNewAlbumsModule.overridingStandalone(LocalNewAlbumsModule.lazyAlbums)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
