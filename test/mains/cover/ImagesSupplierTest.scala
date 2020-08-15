@@ -1,6 +1,7 @@
 package mains.cover
 
 import backend.Url
+import com.fasterxml.jackson.databind.ser.std.AsArraySerializerBase
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -11,9 +12,9 @@ import common.rich.func.BetterFutureInstances._
 
 import common.MockerWithId
 import common.rich.primitives.RichBoolean._
-import common.test.AuxSpecs
+import common.test.{AsyncAuxSpecs, AuxSpecs}
 
-class ImagesSupplierTest extends AsyncFreeSpec with OneInstancePerTest with AuxSpecs {
+class ImagesSupplierTest extends AsyncFreeSpec with OneInstancePerTest with AsyncAuxSpecs {
   private val mockerWithId = new MockerWithId
   private def downloadImage(is: ImageSource): Future[FolderImage] =
     Future successful mockerWithId[FolderImage](is match {
@@ -37,9 +38,10 @@ class ImagesSupplierTest extends AsyncFreeSpec with OneInstancePerTest with AuxS
     val $ = ImagesSupplier(urls, downloadImage)
     "Should fetch when needed" in {
       urls.remaining shouldReturn 2
-      $.next().map(_ shouldReturn mockerWithId("foo")) >|
-          urls.remaining.shouldReturn(1) >>
-          $.next().map(_ shouldReturn mockerWithId("bar"))
+      // Not replaced with shouldEventuallyReturn due to bad type inferrence.
+      $.next().map(_ shouldReturn mockerWithId("foo"))
+          .>|(urls.remaining.shouldReturn(1))
+          .>>($.next().map(_ shouldReturn mockerWithId("bar")))
     }
     "Should throw an exception when out of nexts" in {
       $.next()

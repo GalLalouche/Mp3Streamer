@@ -10,7 +10,7 @@ import common.test.AsyncAuxSpecs
 
 class SimpleTypedActorImplTest extends AsyncFreeSpec with OneInstancePerTest with AsyncAuxSpecs {
   "basic test" in {
-    (SimpleTypedActor[String, Int]("MyName", _.length) ! "Foobar").map(_ shouldReturn 6)
+    (SimpleTypedActor[String, Int]("MyName", _.length) ! "Foobar") shouldEventuallyReturn 6
   }
   "process requests in FIFO" in {
     val sb = new StringBuilder

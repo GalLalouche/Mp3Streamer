@@ -17,9 +17,9 @@ import common.rich.func.BetterFutureInstances._
 
 import common.io.{DirectoryRef, MemoryRoot}
 import common.rich.RichObservable._
-import common.test.AuxSpecs
+import common.test.AsyncAuxSpecs
 
-class IndexerTest extends AsyncFreeSpec with AuxSpecs with OneInstancePerTest {
+class IndexerTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
   private val searchState = mock[SearchState]
   when(searchState.update()).thenReturn(Future.successful(()))
   private val songSelectorState = mock[SongSelectorState]
@@ -53,6 +53,6 @@ class IndexerTest extends AsyncFreeSpec with AuxSpecs with OneInstancePerTest {
   "quickRefresh" in {
     when(metadataCacher.quickRefresh()).thenReturn(cacheResult)
     verifyCacheUpdates($.quickRefresh()) >>
-        subject.take(2).toFuture[Vector].map(_ shouldReturn Vector(dir1, dir2))
+        (subject.take(2).toFuture[Vector] shouldEventuallyReturn Vector(dir1, dir2))
   }
 }

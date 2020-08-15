@@ -10,8 +10,9 @@ import org.scalatest.AsyncFreeSpec
 
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
+import common.test.AsyncAuxSpecs
 
-class WikipediaAlbumExternalLinksExpanderTest extends AsyncFreeSpec with DocumentSpecs {
+class WikipediaAlbumExternalLinksExpanderTest extends AsyncFreeSpec with DocumentSpecs with AsyncAuxSpecs {
   private val config: TestModuleConfiguration =
     TestModuleConfiguration().copy(_urlToBytesMapper = PartialFunction(getBytes))
 
@@ -32,6 +33,6 @@ class WikipediaAlbumExternalLinksExpanderTest extends AsyncFreeSpec with Documen
     val $ = this.config.copy(_urlToResponseMapper =
         FakeWSResponse(status = HttpURLConnection.HTTP_INTERNAL_ERROR).partialConst)
         .injector.instance[WikipediaAlbumExternalLinksExpander]
-    $.expand(BaseLink(Url("allmusic_rlink.html"), Host.Wikipedia)).map(_ shouldReturn Nil)
+    $.expand(BaseLink(Url("allmusic_rlink.html"), Host.Wikipedia)) shouldEventuallyReturn Nil
   }
 }

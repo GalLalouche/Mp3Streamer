@@ -10,9 +10,9 @@ import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
 import scala.concurrent.Future
 
-import common.test.AuxSpecs
+import common.test.AsyncAuxSpecs
 
-class CompositeHtmlRetrieverTest extends AsyncFreeSpec with AuxSpecs with OneInstancePerTest {
+class CompositeHtmlRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
   private val injector = TestModuleConfiguration().injector
   private class FakeLyricsRetriever(
       songsToFind: Song, urlToMatch: Url, instrumentalText: String) extends HtmlRetriever {
@@ -55,20 +55,20 @@ class CompositeHtmlRetrieverTest extends AsyncFreeSpec with AuxSpecs with OneIns
   }
   "find" - {
     "when one of the URLs match, shouldn't check all the subsequent URLs" in {
-      $(song2).map(_ shouldReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar")))
       r3.numberOfTimesInvoked shouldReturn 0
+      $(song2) shouldEventuallyReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar"))
     }
     "when none of the URLs match" in {
-      $(unfoundSong).map(_ shouldReturn RetrievedLyricsResult.NoLyrics)
+      $(unfoundSong) shouldEventuallyReturn RetrievedLyricsResult.NoLyrics
     }
   }
   "parse" - {
     "when one of the URLs match it doesn't try to the others" in {
-      $.parse(Url("bar"), song2).map(_ shouldReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar")))
       r3.numberOfTimesInvoked shouldReturn 0
+      $.parse(Url("bar"), song2) shouldEventuallyReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar"))
     }
     "when none of the URLs match" in {
-      $(unfoundSong).map(_ shouldReturn RetrievedLyricsResult.NoLyrics)
+      $(unfoundSong) shouldEventuallyReturn RetrievedLyricsResult.NoLyrics
     }
   }
 }

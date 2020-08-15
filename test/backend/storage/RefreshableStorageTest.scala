@@ -35,25 +35,26 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
   "apply" - {
     "no previous value should insert new value in" in {
       freshnessStorage.load("foobar").shouldEventuallyReturnNone() >> checkAll(
-        $("foobar").map(_ shouldReturn "raboof1"),
-        freshnessStorage.load("foobar").mapValue(_ shouldReturn "raboof1"),
+        $("foobar") shouldEventuallyReturn "raboof1",
+        freshnessStorage.load("foobar") valueShouldEventuallyReturn "raboof1",
       )
     }
     "existing value is fresh should return existing value" in {
       freshnessStorage.store("foobar", "bazqux") >> checkAll(
-        $("foobar").map(_ shouldReturn "bazqux"),
-        freshnessStorage.load("foobar").mapValue(_ shouldReturn "bazqux"),
+        $("foobar") shouldEventuallyReturn "bazqux",
+        freshnessStorage.load("foobar") valueShouldEventuallyReturn "bazqux",
       )
     }
     "existing value is stale should refresh" in {
       freshnessStorage.store("foobar", "bazqux") >| clock.advance(100) >> checkAll(
-        $("foobar").map(_ shouldReturn "raboof1"),
-        freshnessStorage.load("foobar").mapValue(_ shouldReturn "raboof1"),
-        $("foobar").map(_ shouldReturn "raboof1"),
+        $("foobar") shouldEventuallyReturn "raboof1",
+        freshnessStorage.load("foobar") valueShouldEventuallyReturn "raboof1",
+        $("foobar") shouldEventuallyReturn "raboof1",
       )
     }
     "existing value has no datetime" in {
-      freshnessStorage.storeWithoutTimestamp("foobar", "bazqux") >> $("foobar").map(_ shouldReturn "bazqux")
+      freshnessStorage.storeWithoutTimestamp("foobar", "bazqux") >>
+          $("foobar").shouldEventuallyReturn("bazqux")
     }
     "reuse existing value on failure" - {
       "previous value exists" in {
@@ -67,9 +68,9 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
           dataFreshness <- freshnessStorage.freshness("foo").run
           _ = clock advance 100
           a <- checkAll(
-            $.needsRefresh("foo").map(_ shouldReturn true),
-            $.apply("foo").map(_ shouldReturn "bar"),
-            freshnessStorage.freshness("foo").run.map(_ shouldReturn dataFreshness),
+            $.needsRefresh("foo") shouldEventuallyReturn true,
+            $.apply("foo") shouldEventuallyReturn "bar",
+            freshnessStorage.freshness("foo").run shouldEventuallyReturn dataFreshness,
           )
         } yield a
       }
@@ -80,7 +81,7 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
           Duration ofMillis 50,
           c.injector.instance[Clock],
         )
-        $("foo").checkFailure(_ shouldReturn exception)
+        $("foo") failureShouldEventuallyReturn exception
       }
     }
   }

@@ -18,10 +18,10 @@ import common.rich.func.BetterFutureInstances._
 
 import common.rich.path.RichFile._
 import common.storage.Storage
-import common.test.{AuxSpecs, BeforeAndAfterEachAsync}
+import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
 import common.MutablePartialFunction
 
-class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterEachAsync with AuxSpecs with MockitoSugar {
+class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterEachAsync with AsyncAuxSpecs with MockitoSugar {
   // Modified by some tests
   private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]
   private val injector = TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).injector
@@ -37,7 +37,7 @@ class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterEachAsync wit
 
   "get" in {
     injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar")) >>
-        $.get(encodedSong).map(_ shouldReturn "bar<br><br>Source: foo")
+        $.get(encodedSong) shouldEventuallyReturn "bar<br><br>Source: foo"
   }
 
   "push" - {
@@ -60,20 +60,19 @@ class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterEachAsync wit
         cache,
         injector.instance[UrlPathUtils],
       )
-          .push(encodedSong, Url("bar"))
-          .map(_ shouldReturn "Oopsy &lt;daisy&gt;")
+          .push(encodedSong, Url("bar")) shouldEventuallyReturn "Oopsy &lt;daisy&gt;"
     }
   }
 
   "setInstrumentalSong" in {
-    $.setInstrumentalSong(encodedSong).map(_ shouldReturn Htmls.InstrumentalSongHtml) >>
-        getLyricsForSong.map(_ shouldReturn Htmls.InstrumentalSongHtml)
+    $.setInstrumentalSong(encodedSong).shouldEventuallyReturn(Htmls.InstrumentalSongHtml) >>
+        getLyricsForSong.shouldEventuallyReturn(Htmls.InstrumentalSongHtml)
   }
 
   "setInstrumentalArtist" in {
     // Make all HTML retrievers fail
     urlToResponseMapper const FakeWSResponse(status = Status.NOT_FOUND)
-    $.setInstrumentalArtist(encodedSong).map(_ shouldReturn Htmls.InstrumentalArtistHtml) >>
-        getLyricsForSong.map(_ shouldReturn Htmls.InstrumentalArtistHtml)
+    $.setInstrumentalArtist(encodedSong).shouldEventuallyReturn(Htmls.InstrumentalArtistHtml) >>
+        getLyricsForSong.shouldEventuallyReturn(Htmls.InstrumentalArtistHtml)
   }
 }

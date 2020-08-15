@@ -18,12 +18,11 @@ class InstrumentalArtistTest extends AsyncFreeSpec with StorageSetup {
 
   "exists" in {
     val song = factory.song(artistName = "foo")
-    storage.store("foo").>>($(song))
-        .map(_ shouldReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("Default for artist")))
+    storage.store("foo")
+        .>>($(song)) shouldEventuallyReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("Default for artist"))
   }
   "doesn't exist" in {
     val song = factory.song(artistName = "foo")
-    storage.store("bar").>>($(song))
-        .map(_ shouldReturn RetrievedLyricsResult.NoLyrics)
+    storage.store("bar").>>($(song)) shouldEventuallyReturn RetrievedLyricsResult.NoLyrics
   }
 }

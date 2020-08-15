@@ -8,9 +8,9 @@ import org.jsoup.nodes.Document
 import org.scalatest.AsyncFreeSpec
 import play.api.http.Status
 
-import common.test.AuxSpecs
+import common.test.AsyncAuxSpecs
 
-class SingleHostParsingHelperTest extends AsyncFreeSpec with AuxSpecs {
+class SingleHostParsingHelperTest extends AsyncFreeSpec with AsyncAuxSpecs {
   "404 returns NoLyrics" in {
     val injector = TestModuleConfiguration(_urlToResponseMapper = {
       case _ => FakeWSResponse(status = Status.NOT_FOUND)
@@ -20,6 +20,6 @@ class SingleHostParsingHelperTest extends AsyncFreeSpec with AuxSpecs {
       override def source: String = ???
       override def apply(d: Document, s: Song): LyricParseResult = ???
     })(Url("foobar"), new FakeModelFactory().song())
-    result.map(_ shouldReturn RetrievedLyricsResult.NoLyrics)
+    result shouldEventuallyReturn RetrievedLyricsResult.NoLyrics
   }
 }

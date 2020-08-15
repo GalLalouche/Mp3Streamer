@@ -12,8 +12,9 @@ import org.scalatest.AsyncFreeSpec
 import common.io.WSAliases._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
+import common.test.AsyncAuxSpecs
 
-class AllMusicHelperTest extends AsyncFreeSpec with DocumentSpecs {
+class AllMusicHelperTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentSpecs {
   private val config = TestModuleConfiguration()
   private def withDocument(s: String) = config.copy(_urlToBytesMapper = getBytes(s).partialConst)
   private def create(c: TestModuleConfiguration) = c.injector.instance[AllMusicHelper]
@@ -55,10 +56,10 @@ class AllMusicHelperTest extends AsyncFreeSpec with DocumentSpecs {
       val helperPointsToEmpty = create(withDocument("allmusic_no_rating.html"))
       val url = Url("http://foobar")
       "yes" in {
-        helperPointsToValid.isValidLink(url) map (_ shouldReturn true)
+        helperPointsToValid.isValidLink(url) shouldEventuallyReturn true
       }
       "no" in {
-        helperPointsToEmpty.isValidLink(url).map(_ shouldReturn false)
+        helperPointsToEmpty.isValidLink(url) shouldEventuallyReturn false
       }
     }
   }

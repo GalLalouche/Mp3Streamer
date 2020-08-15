@@ -4,9 +4,9 @@ import models.{FakeModelFactory, Song}
 import org.scalatest.AsyncFreeSpec
 
 import common.io.{MemoryDir, MemoryRoot}
-import common.test.AuxSpecs
+import common.test.AsyncAuxSpecs
 
-class DefaultClassicalInstrumentalTest extends AsyncFreeSpec with AuxSpecs {
+class DefaultClassicalInstrumentalTest extends AsyncFreeSpec with AsyncAuxSpecs {
   protected val factory = new FakeModelFactory
   private val $ = DefaultClassicalInstrumental
   private def songWithPath(path: String): Song = {
@@ -26,6 +26,6 @@ class DefaultClassicalInstrumentalTest extends AsyncFreeSpec with AuxSpecs {
   "Non classical file" in {
     val nonClassicalSong = songWithPath(
       """D:/Media/Music/Rock/Pop/My Lame Band/01 - My crappy pop song.mp3""")
-    $(nonClassicalSong).map(_ shouldReturn RetrievedLyricsResult.NoLyrics)
+    $(nonClassicalSong) shouldEventuallyReturn RetrievedLyricsResult.NoLyrics
   }
 }
