@@ -28,13 +28,18 @@ private object LocalNewAlbumsModule extends Debug {
     }
   })
 
-  def forSingleArtist(a: Artist) = new LocalNewAlbumsModule(new ScalaModule {
+  private abstract class EagerBinder extends ScalaModule {
+    override def configure(): Unit = {
+      bind[ExistingAlbums].to[EagerExistingAlbums]
+    }
+  }
+  def forSingleArtist(a: Artist) = new LocalNewAlbumsModule(new EagerBinder {
     @Provides
     @Singleton
     private def existingAlbumsCache(mf: MusicFinder): EagerExistingAlbums =
       EagerExistingAlbums.singleArtist(a, mf)
   })
-  def default = new LocalNewAlbumsModule(new ScalaModule {
+  def default = new LocalNewAlbumsModule(new EagerBinder {
     @Provides
     @Singleton
     private def existingAlbumsCache(implicit mf: MusicFinder, logger: Logger): EagerExistingAlbums =
