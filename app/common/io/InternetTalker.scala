@@ -28,11 +28,14 @@ trait InternetTalker extends ExecutionContext {
     $ consumeTry client.close().const
   }
 
+  // TODO: handle code duplication.
   final def asBrowser[T](url: Url, f: Retriever[WSRequest, T]): Future[T] =
     useWs(_.url(url.address).addHttpHeaders("user-agent" -> InternetTalker.AgentUrl) |> f)
   final def downloadDocument(url: Url, decodeUtf: Boolean = false): Future[Document] =
     asBrowser(url, _.document(decodeUtf))
   final def get(url: Url): Future[WSResponse] = useWs(_.url(url.address).get())
+  final def getAsBrowser(url: Url): Future[WSResponse] =
+    useWs(_.url(url.address).addHttpHeaders("user-agent" -> InternetTalker.AgentUrl).get())
 }
 
 object InternetTalker {

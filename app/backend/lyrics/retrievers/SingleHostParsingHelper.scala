@@ -21,7 +21,7 @@ import common.rich.primitives.RichString._
 private class SingleHostParsingHelper @Inject()(it: InternetTalker) {
   private implicit val iec: ExecutionContext = it
 
-  def apply(p: SingleHostParser)(url: Url, s: Song): Future[RetrievedLyricsResult] = it.get(url)
+  def apply(p: SingleHostParser)(url: Url, s: Song): Future[RetrievedLyricsResult] = it.getAsBrowser(url)
       .map(response =>
         if (response.status == Status.NOT_FOUND)
           RetrievedLyricsResult.NoLyrics
