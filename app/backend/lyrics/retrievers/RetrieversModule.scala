@@ -11,7 +11,8 @@ private[lyrics] object RetrieversModule extends ScalaModule {
   @Provides @CompositePassiveParser private def provideCPP(
       bandcampParser: BandcampParser,
       shironetParser: ShironetParser,
-  ): PassiveParser = PassiveParser.composite(bandcampParser, shironetParser)
+      musixMatchParser: MusixMatchParser,
+  ): PassiveParser = PassiveParser.composite(bandcampParser, shironetParser, musixMatchParser)
   @Provides @CompositeAlbumParser private def provideCAP(
       ec: ExecutionContext,
       bandcampParser: BandcampAlbumRetriever,
