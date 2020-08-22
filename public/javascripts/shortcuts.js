@@ -10,6 +10,9 @@ $(function() {
         else
           return
     }
+    // Global shortcuts to control the player.
+    if (e.ctrlKey) // Don't trigger on e.g., ctrl-c
+      return
     const letter = String.fromCharCode(e.which);
     switch (letter) {
       case 'Z':
