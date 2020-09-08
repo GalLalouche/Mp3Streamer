@@ -14,3 +14,8 @@ trait ReconStorage[R <: Reconcilable] extends Storage[R, StoredReconResult] {
     case HasReconResult(_, isIgnored) => HasReconResult(reconId, isIgnored)
   }, default = StoredReconResult.unignored(reconId))
 }
+
+trait ArtistReconStorage extends ReconStorage[Artist]
+trait AlbumReconStorage extends ReconStorage[Album] {
+  def deleteAllRecons(a: Artist): Future[Traversable[(String, Option[ReconID], Boolean)]]
+}

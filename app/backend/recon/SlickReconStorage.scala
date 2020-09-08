@@ -14,7 +14,7 @@ import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFoldableOps._
 
 // TODO replace with composition
-sealed abstract class SlickReconStorage[R <: Reconcilable](ec: ExecutionContext, dbP: DbProvider)
+private sealed abstract class SlickReconStorage[R <: Reconcilable](ec: ExecutionContext, dbP: DbProvider)
     extends SlickStorageTemplateFromConf[R, StoredReconResult](ec, dbP) with ReconStorage[R] {
   private implicit val iec: ExecutionContext = ec
   import profile.api._
@@ -30,10 +30,10 @@ sealed abstract class SlickReconStorage[R <: Reconcilable](ec: ExecutionContext,
 }
 
 @Singleton
-class ArtistReconStorage @Inject()(
+private class SlickArtistReconStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider
-) extends SlickReconStorage[Artist](ec, dbP) {
+) extends SlickReconStorage[Artist](ec, dbP) with ArtistReconStorage {
   import profile.api._
 
   override protected type Entity = (String, Option[ReconID], Boolean)
@@ -55,10 +55,10 @@ class ArtistReconStorage @Inject()(
 }
 
 @Singleton
-class AlbumReconStorage @Inject()(
+private class SlickAlbumReconStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider
-) extends SlickReconStorage[Album](ec, dbP) {
+) extends SlickReconStorage[Album](ec, dbP) with AlbumReconStorage {
   private implicit val iec: ExecutionContext = ec
   import profile.api._
 
@@ -85,7 +85,8 @@ class AlbumReconStorage @Inject()(
   override protected def extractValue(e: Entity) = e._3.mapHeadOrElse(HasReconResult(_, e._4), NoRecon)
 
   /** Delete all recons for albums for that artist */
-  def deleteAllRecons(a: Artist): Future[Traversable[(String, Option[ReconID], Boolean)]] = {
+  // TODO Cascade.
+  override def deleteAllRecons(a: Artist): Future[Traversable[(String, Option[ReconID], Boolean)]] = {
     val artistRows = tableQuery.filter(_.artist === a.normalize)
     val existingRows = db.run(artistRows
         .map(e => (e.albumArtist, e.reconId, e.isIgnored))

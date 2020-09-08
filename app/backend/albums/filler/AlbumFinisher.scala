@@ -2,7 +2,7 @@ package backend.albums.filler
 
 import backend.logging.Logger
 import backend.mb.MbAlbumMetadata
-import backend.recon.{Album, AlbumReconStorage, Artist, IgnoredReconResult, StoredReconResult}
+import backend.recon.{Album, AlbumReconStorage, Artist, IgnoredReconResult, SlickAlbumReconStorage, StoredReconResult}
 import com.google.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}

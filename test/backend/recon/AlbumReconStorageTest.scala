@@ -14,7 +14,7 @@ import common.rich.func.BetterFutureInstances._
 class AlbumReconStorageTest extends AsyncFreeSpec with StorageSetup {
   override protected val config = new TestModuleConfiguration
   private implicit val ec: ExecutionContext = config.injector.instance[ExecutionContext]
-  override protected def storage = config.injector.instance[AlbumReconStorage]
+  override protected def storage: AlbumReconStorage = config.injector.instance[SlickAlbumReconStorage]
 
   "deleteAllRecons" - {
     "No previous data" in {

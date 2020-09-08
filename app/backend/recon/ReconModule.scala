@@ -7,6 +7,10 @@ import net.codingwell.scalaguice.ScalaModule
 import scala.concurrent.ExecutionContext
 
 object ReconModule extends ScalaModule {
+  override def configure(): Unit = {
+    bind[ArtistReconStorage].to[SlickArtistReconStorage]
+    bind[AlbumReconStorage].to[SlickAlbumReconStorage]
+  }
   @Provides private def artistReconcilerCacher(
       artistReconStorage: ArtistReconStorage,
       mbArtistReconciler: MbArtistReconciler,

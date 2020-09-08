@@ -8,9 +8,10 @@ import org.scalatest.AsyncFreeSpec
 import scalaz.syntax.bind.ToBindOps
 import common.rich.func.BetterFutureInstances._
 
-class InstrumentalArtistStorageTest extends AsyncFreeSpec with StorageSetup {
+class SlickInstrumentalArtistStorageTest extends AsyncFreeSpec with StorageSetup {
   override protected val config = TestModuleConfiguration()
-  override protected def storage = config.injector.instance[InstrumentalArtistStorage]
+  override protected def storage: InstrumentalArtistStorage =
+    config.injector.instance[SlickInstrumentalArtistStorage]
   private val artistName = "foo"
 
   "store and load" in {

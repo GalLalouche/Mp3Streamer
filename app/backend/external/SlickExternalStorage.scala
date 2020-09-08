@@ -6,7 +6,7 @@ import backend.RichTime._
 import backend.Url
 import backend.recon.{Album, Artist, Reconcilable}
 import backend.storage.{AlwaysFresh, DatedFreshness, DbProvider, Freshness, SlickStorageTemplateFromConf}
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
 
@@ -22,7 +22,7 @@ import common.rich.RichT._
 import common.storage.{ColumnMappers, StringSerializable}
 
 // TODO replace with composition
-private[external] abstract class SlickExternalStorage[R <: Reconcilable](
+private abstract class SlickExternalStorage[R <: Reconcilable](
     ec: ExecutionContext,
     dbP: DbProvider,
 ) extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Freshness)](ec, dbP)
@@ -70,10 +70,11 @@ private[external] abstract class SlickExternalStorage[R <: Reconcilable](
   }
 }
 
-private[backend] class ArtistExternalStorage @Inject()(
+@Singleton
+private class SlickArtistExternalStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider,
-) extends SlickExternalStorage[Artist](ec, dbP) {
+) extends SlickExternalStorage[Artist](ec, dbP) with ArtistExternalStorage {
   private implicit val iec: ExecutionContext = ec
   import profile.api._
 
@@ -92,10 +93,11 @@ private[backend] class ArtistExternalStorage @Inject()(
   override protected def extractValue(e: Entity) = e._2 -> toFreshness(e._3)
 }
 
-private[backend] class AlbumExternalStorage @Inject()(
+@Singleton
+private class SlickAlbumExternalStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider,
-) extends SlickExternalStorage[Album](ec, dbP) {
+) extends SlickExternalStorage[Album](ec, dbP) with AlbumExternalStorage {
   private implicit val iec: ExecutionContext = ec
   import profile.api._
 
@@ -115,6 +117,7 @@ private[backend] class AlbumExternalStorage @Inject()(
   override protected def toId(et: EntityTable) = et.albumArtist
   override protected def extractValue(e: Entity) = e._3 -> toFreshness(e._4)
 
+  // TODO CASCADE
   def deleteAllLinks(a: Artist): Future[Traversable[(String, MarkedLinks[Album], Freshness)]] = {
     val artistRows = tableQuery.filter(_.artist === a.normalize)
     val existingRows = db.run(artistRows

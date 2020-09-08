@@ -12,6 +12,9 @@ object ExternalModule extends ScalaModule {
     install(ExpansionsModule)
     install(ReconsModule)
     install(MarkModule)
+
+    bind[ArtistExternalStorage].to[SlickArtistExternalStorage]
+    bind[AlbumExternalStorage].to[SlickAlbumExternalStorage]
   }
 
   @Provides private def artistLinkExtractor(helper: MbHtmlLinkExtractorHelper): ExternalLinkProvider[Artist] =
@@ -25,6 +28,6 @@ object ExternalModule extends ScalaModule {
       override def apply(v1: ReconID) = aux(v1)
     }
 
-  @Provides private def artistReconStorage($: ArtistExternalStorage): ExternalStorage[Artist] = $
-  @Provides private def albumReconStorage($: AlbumExternalStorage): ExternalStorage[Album] = $
+  @Provides private def artistReconStorage($: SlickArtistExternalStorage): ExternalStorage[Artist] = $
+  @Provides private def albumReconStorage($: SlickAlbumExternalStorage): ExternalStorage[Album] = $
 }

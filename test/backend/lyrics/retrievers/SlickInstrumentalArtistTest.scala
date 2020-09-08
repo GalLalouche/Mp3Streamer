@@ -10,7 +10,7 @@ import org.scalatest.AsyncFreeSpec
 import scalaz.syntax.bind.ToBindOps
 import common.rich.func.BetterFutureInstances._
 
-class InstrumentalArtistTest extends AsyncFreeSpec with StorageSetup {
+class SlickInstrumentalArtistTest extends AsyncFreeSpec with StorageSetup {
   override protected val config = TestModuleConfiguration()
   override protected lazy val storage = config.injector.instance[InstrumentalArtistStorage]
   private val factory = new FakeModelFactory

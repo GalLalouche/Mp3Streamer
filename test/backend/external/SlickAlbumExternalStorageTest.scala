@@ -12,9 +12,9 @@ import org.scalatest.AsyncFreeSpec
 import scalaz.syntax.bind.ToBindOps
 import common.rich.func.BetterFutureInstances._
 
-class AlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
+class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
   override protected val config: TestModuleConfiguration = new TestModuleConfiguration
-  override protected val storage = config.injector.instance[AlbumExternalStorage]
+  override protected val storage: AlbumExternalStorage = config.injector.instance[SlickAlbumExternalStorage]
 
   private val album: Album = Album("the spam album", 2000, Artist("foo and the bar band"))
   private val link1 = MarkedLink[Album](
