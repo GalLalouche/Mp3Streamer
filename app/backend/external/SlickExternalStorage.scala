@@ -74,13 +74,14 @@ private[backend] class ArtistExternalStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider,
 ) extends SlickExternalStorage[Artist](ec, dbP) {
+  private implicit val iec: ExecutionContext = ec
   import profile.api._
 
   override protected type Entity = (String, MarkedLinks[Artist], Option[LocalDateTime])
-  protected class Rows(tag: Tag) extends Table[Entity](tag, "ARTIST_LINKS") {
-    def name = column[String]("KEY", O.PrimaryKey)
-    def encodedLinks = column[MarkedLinks[Artist]]("LINKS_STRING")
-    def timestamp = column[Option[LocalDateTime]]("TIMESTAMP")
+  protected class Rows(tag: Tag) extends Table[Entity](tag, "artist_link") {
+    def name = column[String]("name", O.PrimaryKey)
+    def encodedLinks = column[MarkedLinks[Artist]]("encoded_links")
+    def timestamp = column[Option[LocalDateTime]]("timestamp")
     def * = (name, encodedLinks, timestamp)
   }
   override protected type EntityTable = Rows
@@ -99,25 +100,25 @@ private[backend] class AlbumExternalStorage @Inject()(
   import profile.api._
 
   override protected type Entity = (String, String, MarkedLinks[Album], Option[LocalDateTime])
-  protected class Rows(tag: Tag) extends Table[Entity](tag, "ALBUM_LINKS") {
-    def album = column[String]("ALBUM", O.PrimaryKey)
-    def artist = column[String]("ARTIST")
-    def encodedLinks = column[MarkedLinks[Album]]("LINKS_STRING")
-    def timestamp = column[Option[LocalDateTime]]("TIMESTAMP")
-    def artist_index = index("artist_index", artist)
-    def * = (album, artist, encodedLinks, timestamp)
+  protected class Rows(tag: Tag) extends Table[Entity](tag, "album_link") {
+    def albumArtist = column[String]("album_artist", O.PrimaryKey)
+    def artist = column[String]("artist")
+    def encodedLinks = column[MarkedLinks[Album]]("encoded_links")
+    def timestamp = column[Option[LocalDateTime]]("timestamp")
+    def artist_index = index("external_album_artist_index", artist)
+    def * = (albumArtist, artist, encodedLinks, timestamp)
   }
   override protected type EntityTable = Rows
   override protected val tableQuery = TableQuery[EntityTable]
   override protected def toEntity(k: Album, v: (MarkedLinks[Album], Freshness)) =
     (k.normalize, k.artist.normalize, v._1, v._2.localDateTime)
-  override protected def toId(et: EntityTable) = et.album
+  override protected def toId(et: EntityTable) = et.albumArtist
   override protected def extractValue(e: Entity) = e._3 -> toFreshness(e._4)
 
   def deleteAllLinks(a: Artist): Future[Traversable[(String, MarkedLinks[Album], Freshness)]] = {
     val artistRows = tableQuery.filter(_.artist === a.normalize)
     val existingRows = db.run(artistRows
-        .map(e => (e.album, e.encodedLinks, e.timestamp))
+        .map(e => (e.albumArtist, e.encodedLinks, e.timestamp))
         .result
         .map(_.map(e => (e._1, e._2, toFreshness(e._3)))))
     existingRows `<*ByName` db.run(artistRows.delete)

@@ -37,10 +37,10 @@ class ArtistReconStorage @Inject()(
   import profile.api._
 
   override protected type Entity = (String, Option[ReconID], Boolean)
-  protected class Rows(tag: Tag) extends Table[Entity](tag, "ARTISTS") {
-    def name = column[String]("KEY", O.PrimaryKey)
-    def reconId = column[Option[ReconID]]("RECON_ID")
-    def isIgnored = column[Boolean]("IS_IGNORED", O.Default(false))
+  protected class Rows(tag: Tag) extends Table[Entity](tag, "artist") {
+    def name = column[String]("name", O.PrimaryKey)
+    def reconId = column[Option[ReconID]]("recon_id")
+    def isIgnored = column[Boolean]("is_ignored", O.Default(false))
     def * = (name, reconId, isIgnored)
   }
   override protected type EntityTable = Rows
@@ -63,13 +63,13 @@ class AlbumReconStorage @Inject()(
   import profile.api._
 
   override protected type Entity = (String, String, Option[ReconID], Boolean)
-  protected class Rows(tag: Tag) extends Table[Entity](tag, "ALBUMS") {
-    def album = column[String]("ALBUM", O.PrimaryKey)
-    def artist = column[String]("ARTIST")
-    def reconId = column[Option[ReconID]]("RECON_ID")
-    def isIgnored = column[Boolean]("IS_IGNORED", O.Default(false))
-    def artistIndex = index("ARTIST_INDEX", artist)
-    def * = (album, artist, reconId, isIgnored)
+  protected class Rows(tag: Tag) extends Table[Entity](tag, "album") {
+    def albumArtist = column[String]("album_artist", O.PrimaryKey)
+    def artist = column[String]("artist")
+    def reconId = column[Option[ReconID]]("recon_id")
+    def isIgnored = column[Boolean]("is_ignored", O.Default(false))
+    def artistIndex = index("album_recon_artist_index", artist)
+    def * = (albumArtist, artist, reconId, isIgnored)
   }
   override protected type EntityTable = Rows
   override protected val tableQuery = TableQuery[EntityTable]
@@ -81,14 +81,14 @@ class AlbumReconStorage @Inject()(
       case HasReconResult(reconId, isIgnored) => (albumKey, artistKey, Some(reconId), isIgnored)
     }
   }
-  override protected def toId(et: EntityTable) = et.album
+  override protected def toId(et: EntityTable) = et.albumArtist
   override protected def extractValue(e: Entity) = e._3.mapHeadOrElse(HasReconResult(_, e._4), NoRecon)
 
   /** Delete all recons for albums for that artist */
   def deleteAllRecons(a: Artist): Future[Traversable[(String, Option[ReconID], Boolean)]] = {
     val artistRows = tableQuery.filter(_.artist === a.normalize)
     val existingRows = db.run(artistRows
-        .map(e => (e.album, e.reconId, e.isIgnored))
+        .map(e => (e.albumArtist, e.reconId, e.isIgnored))
         .result
         .map(_.map(e => (e._1, e._2, e._3))))
     existingRows `<*ByName` db.run(artistRows.delete)

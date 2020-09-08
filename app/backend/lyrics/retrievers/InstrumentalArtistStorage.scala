@@ -16,15 +16,15 @@ private[lyrics] class InstrumentalArtistStorage @Inject()(
   override protected type Id = String
   override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
   override protected type Entity = String
-  protected class ArtistTable(tag: Tag) extends Table[Entity](tag, "INSTRUMENTAL_ARTISTS") {
-    def artistName = column[String]("ARTIST_NAME", O.PrimaryKey)
-    def * = artistName
+  protected class ArtistTable(tag: Tag) extends Table[Entity](tag, "instrumental_artist") {
+    def name = column[String]("name", O.PrimaryKey)
+    def * = name
   }
   override protected type EntityTable = ArtistTable
   override protected val tableQuery = TableQuery[EntityTable]
   override protected def toEntity(k: String, v: Unit) = extractId(k)
   override protected def extractId(k: String) = k.toLowerCase
-  override protected def toId(et: ArtistTable) = et.artistName
+  override protected def toId(et: ArtistTable) = et.name
   override protected def extractValue(e: String): Unit = ()
 
   def store(artistName: String): Future[Unit] = store(artistName: String, ())

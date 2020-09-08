@@ -21,10 +21,10 @@ class LyricsStorage @Inject()(
   override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
   override protected type Entity = (String, String, Option[String])
   // instrumental songs have NULL in lyrics
-  protected class LyricsTable(tag: Tag) extends Table[Entity](tag, "LYRICS") {
-    def song = column[String]("SONG", O.PrimaryKey)
-    def source = column[String]("SOURCE")
-    def lyrics = column[Option[String]]("LYRICS")
+  protected class LyricsTable(tag: Tag) extends Table[Entity](tag, "lyrics") {
+    def song = column[String]("song", O.PrimaryKey)
+    def source = column[String]("source")
+    def lyrics = column[Option[String]]("lyrics")
     def * = (song, source, lyrics)
   }
   override protected type EntityTable = LyricsTable
