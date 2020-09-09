@@ -3,6 +3,7 @@ package backend.lyrics
 import backend.lyrics.retrievers.{InstrumentalArtistStorage, RetrievedLyricsResult}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.Url
+import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
 import controllers.UrlPathUtils
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -30,8 +31,13 @@ class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterEachAsync wit
   private val encodedSong: String = injector.instance[UrlPathUtils] encodePath song
 
   private def setup(s: Storage[_, _]) = s.utils.clearOrCreateTable()
-  override def beforeEach(): Future[_] =
-    setup(injector.instance[InstrumentalArtistStorage]) >> setup(injector.instance[LyricsStorage])
+  override def beforeEach(): Future[_] = {
+    val artistStorage = injector.instance[ArtistReconStorage]
+    artistStorage.utils.clearOrCreateTable() >>
+        artistStorage.store(Artist(song.artistName), StoredReconResult.NoRecon) >>
+        setup(injector.instance[InstrumentalArtistStorage]) >>
+        setup(injector.instance[LyricsStorage])
+  }
 
   private def getLyricsForSong: Future[String] = $.get(encodedSong)
 

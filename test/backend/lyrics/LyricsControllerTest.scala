@@ -4,6 +4,7 @@ import backend.lyrics.retrievers.InstrumentalArtistStorage
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.Url
 import backend.external.DocumentSpecs
+import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
 import controllers.ControllerSpec
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpec}
 import org.scalatest.mockito.MockitoSugar
@@ -26,9 +27,13 @@ class LyricsControllerTest extends FreeSpec with MockitoSugar with ControllerSpe
       .overrides(TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).module)
       .build
 
+  private val inj = app.injector
   override protected def beforeAll(): Unit = {
-    (app.injector.instanceOf[LyricsStorage].utils.createTable() >>
-        app.injector.instanceOf[InstrumentalArtistStorage].utils.createTable()).get
+    val artistStorage = inj.instanceOf[ArtistReconStorage]
+    (artistStorage.utils.clearOrCreateTable() >>
+        artistStorage.store(Artist(song.artistName), StoredReconResult.NoRecon) >>
+        inj.instanceOf[LyricsStorage].utils.createTable() >>
+        inj.instanceOf[InstrumentalArtistStorage].utils.createTable()).get
   }
 
   before {
@@ -36,19 +41,19 @@ class LyricsControllerTest extends FreeSpec with MockitoSugar with ControllerSpe
   }
 
   after {
-    (app.injector.instanceOf[LyricsStorage].utils.clearTable() >>
-        app.injector.instanceOf[InstrumentalArtistStorage].utils.clearTable()).get
+    (inj.instanceOf[LyricsStorage].utils.clearTable() >>
+        inj.instanceOf[InstrumentalArtistStorage].utils.clearTable()).get
   }
 
   private def getLyricsForSong: String = get("lyrics/" + encodedSong).getString
 
   "get" in {
-    app.injector.instanceOf[LyricsStorage].store(song, HtmlLyrics("foo", "bar")).get
+    inj.instanceOf[LyricsStorage].store(song, HtmlLyrics("foo", "bar")).get
     get("lyrics/" + encodedSong).getString shouldReturn "bar<br><br>Source: foo"
   }
 
   "push" in {
-    app.injector.instanceOf[LyricsStorage].store(song, HtmlLyrics("foo", "bar")).get
+    inj.instanceOf[LyricsStorage].store(song, HtmlLyrics("foo", "bar")).get
     urlToResponseMapper += {
       case Url("http://lyrics.wikia.com/wiki/Foobar") =>
         FakeWSResponse(bytes = getBytes("/backend/lyrics/retrievers/lyrics_wikia_lyrics.html"))

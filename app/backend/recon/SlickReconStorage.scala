@@ -14,7 +14,7 @@ import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFoldableOps._
 
 // TODO replace with composition
-private sealed abstract class SlickReconStorage[R <: Reconcilable](ec: ExecutionContext, dbP: DbProvider)
+private[backend] sealed abstract class SlickReconStorage[R <: Reconcilable](ec: ExecutionContext, dbP: DbProvider)
     extends SlickStorageTemplateFromConf[R, StoredReconResult](ec, dbP) with ReconStorage[R] {
   private implicit val iec: ExecutionContext = ec
   import profile.api._
@@ -30,13 +30,13 @@ private sealed abstract class SlickReconStorage[R <: Reconcilable](ec: Execution
 }
 
 @Singleton
-private class SlickArtistReconStorage @Inject()(
+private[backend] class SlickArtistReconStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider
 ) extends SlickReconStorage[Artist](ec, dbP) with ArtistReconStorage {
   import profile.api._
 
-  override protected type Entity = (String, Option[ReconID], Boolean)
+  override type Entity = (String, Option[ReconID], Boolean)
   protected class Rows(tag: Tag) extends Table[Entity](tag, "artist") {
     def name = column[String]("name", O.PrimaryKey)
     def reconId = column[Option[ReconID]]("recon_id")
@@ -44,7 +44,7 @@ private class SlickArtistReconStorage @Inject()(
     def * = (name, reconId, isIgnored)
   }
   override protected type EntityTable = Rows
-  override protected val tableQuery = TableQuery[EntityTable]
+  override val tableQuery = TableQuery[EntityTable]
   override protected def toEntity(a: Artist, v: StoredReconResult) = v match {
     case NoRecon => (a.normalize, None, true)
     case StoredReconResult.HasReconResult(reconId, isIgnored) => (a.normalize, Some(reconId), isIgnored)
