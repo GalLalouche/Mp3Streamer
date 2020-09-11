@@ -18,7 +18,7 @@ import common.storage.Storage
   * value does not need to be updated.
   */
 class ComposedFreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshness)], clock: Clock)
-    (implicit ec: ExecutionContext) extends FreshnessStorage[Key, Value] {
+    (implicit ec: ExecutionContext) extends FreshnessStorage[Key, Value] with Storage[Key, Value] {
   private def now(v: Value): (Value, Freshness) = v -> DatedFreshness(clock.instant.toLocalDateTime)
   private def toValue[A](v: FutureOption[(Value, A)]): FutureOption[Value] = v.map(_._1)
   override def freshness(k: Key): FutureOption[Freshness] = storage.load(k).map(_._2)
