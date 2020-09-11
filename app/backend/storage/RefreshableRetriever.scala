@@ -14,7 +14,7 @@ import common.rich.func.ToMoreMonadErrorOps._
 
 import common.rich.RichT._
 
-class RefreshableStorage[Key, Value](
+class RefreshableRetriever[Key, Value](
     freshnessStorage: FreshnessStorage[Key, Value],
     onlineRetriever: Retriever[Key, Value],
     maxAge: Duration,

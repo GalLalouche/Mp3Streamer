@@ -8,7 +8,7 @@ import backend.external.expansions.ExternalLinkExpander
 import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.LinkRetrievers
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
-import backend.storage.{ComposedFreshnessStorage, RefreshableStorage}
+import backend.storage.{ComposedFreshnessStorage, RefreshableRetriever}
 import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +32,7 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject()(
 
   def apply(
       standaloneReconcilers: LinkRetrievers[R],
-  ): Retriever[R, TimestampedLinks[R]] = new RefreshableStorage[R, MarkedLinks[R]](
+  ): Retriever[R, TimestampedLinks[R]] = new RefreshableRetriever[R, MarkedLinks[R]](
     freshnessStorage = new ComposedFreshnessStorage(storage, clock),
     onlineRetriever = new ExternalPipe[R](
       r => reconciler(r).mapEitherMessage({
@@ -51,7 +51,7 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject()(
 
 private object ExternalPipeWrapper {
   private class TimeStamper[R <: Reconcilable](
-      storage: RefreshableStorage[R, MarkedLinks[R]])(
+      storage: RefreshableRetriever[R, MarkedLinks[R]])(
       implicit ec: ExecutionContext)
       extends Retriever[R, TimestampedLinks[R]] {
     override def apply(r: R): Future[TimestampedLinks[R]] =

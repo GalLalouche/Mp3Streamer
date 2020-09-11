@@ -23,7 +23,7 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
   private var i = 0
   private val freshnessStorage = new ComposedFreshnessStorage[String, String](
     new MemoryBackedStorage, c.injector.instance[Clock])
-  private val $ = new RefreshableStorage[String, String](
+  private val $ = new RefreshableRetriever[String, String](
     freshnessStorage,
     e => {
       i += 1
@@ -58,7 +58,7 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
     }
     "reuse existing value on failure" - {
       "previous value exists" in {
-        val $ = new RefreshableStorage[String, String](freshnessStorage,
+        val $ = new RefreshableRetriever[String, String](freshnessStorage,
           Future.failed(new RuntimeException()).const,
           Duration ofMillis 50,
           c.injector.instance[Clock],
@@ -76,7 +76,7 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
       }
       "previous does not exist, returns the original failure" in {
         val exception = new RuntimeException("failure")
-        val $ = new RefreshableStorage[String, String](freshnessStorage,
+        val $ = new RefreshableRetriever[String, String](freshnessStorage,
           Future.failed(exception).const,
           Duration ofMillis 50,
           c.injector.instance[Clock],
