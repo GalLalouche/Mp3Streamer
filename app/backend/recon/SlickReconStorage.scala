@@ -30,7 +30,7 @@ private[backend] class SlickArtistReconStorage @Inject()(
     with ArtistReconStorage with ReconStorage[Artist] {
   private implicit val iec: ExecutionContext = ec
   private val aux = new SlickReconStorageAux(profile)
-  import aux._
+  import aux.reconIdColumn
 
   override protected implicit def btt: BaseTypedType[String] = aux.btt
   override def isIgnored(k: Artist): Future[IgnoredReconResult] = aux.isIgnored(load(k))
@@ -68,7 +68,7 @@ private[backend] class SlickAlbumReconStorage @Inject()(
   import profile.api._
 
   private val aux = new SlickReconStorageAux(profile)
-  import aux._
+  import aux.reconIdColumn
 
   override def isIgnored(k: Album): Future[IgnoredReconResult] = aux.isIgnored(load(k))
   protected override type Entity = (String, String, Option[ReconID], Boolean)

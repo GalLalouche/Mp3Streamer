@@ -15,11 +15,11 @@ import common.rich.func.BetterFutureInstances._
 import common.FakeClock
 import common.test.AsyncAuxSpecs
 
-class FreshnessStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
+class ComposedFreshnessStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
   private val c = TestModuleConfiguration()
   private val clock: FakeClock = c.injector.instance[FakeClock]
 
-  private val $ = new FreshnessStorage[Int, Int](new MemoryBackedStorage, c.injector.instance[Clock])
+  private val $ = new ComposedFreshnessStorage[Int, Int](new MemoryBackedStorage, c.injector.instance[Clock])
 
   "store and load" - {
     "Can load stored data" in {

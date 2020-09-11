@@ -21,7 +21,7 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
   private val c = new TestModuleConfiguration
   private val clock = c.injector.instance[FakeClock]
   private var i = 0
-  private val freshnessStorage = new FreshnessStorage[String, String](
+  private val freshnessStorage = new ComposedFreshnessStorage[String, String](
     new MemoryBackedStorage, c.injector.instance[Clock])
   private val $ = new RefreshableStorage[String, String](
     freshnessStorage,
