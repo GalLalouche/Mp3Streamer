@@ -2,7 +2,7 @@ package backend.lyrics.retrievers
 
 import backend.module.StandaloneModule
 import backend.recon.{AlbumReconStorage, ReconID, SlickArtistReconStorage}
-import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
+import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Guice
 import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
@@ -16,7 +16,7 @@ private class SlickInstrumentalArtistStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider,
     protected val artistStorage: SlickArtistReconStorage
-) extends SlickStorageTemplateFromConf[String, Unit](ec, dbP) with InstrumentalArtistStorage {
+) extends SlickSingleKeyColumnStorageTemplateFromConf[String, Unit](ec, dbP) with InstrumentalArtistStorage {
   import profile.api._
 
   override protected type Id = String

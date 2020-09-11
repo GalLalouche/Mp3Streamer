@@ -49,7 +49,6 @@ private class MbExternalLinksProvider @Inject()(
       // If artist recon was updated, all existing release updates should be deleted
       val artist = song.artist
       artistExternalStorage.delete(artist).run >>
-          albumReconStorage.deleteAllRecons(artist) >>
           albumExternalStorage.deleteAllLinks(artist) >>
           artistReconStorage.update(artist, reconId).run
     case UpdatedRecon.Album(reconId) =>

@@ -1,6 +1,6 @@
 package backend.lyrics
 
-import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
+import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
 import javax.inject.{Inject, Singleton}
 import models.Song
 import slick.ast.{BaseTypedType, ScalaBaseType}
@@ -14,7 +14,7 @@ import common.rich.func.ToMoreFoldableOps._
 private class SlickLyricsStorage @Inject()(
     ec: ExecutionContext,
     protected val dbP: DbProvider,
-) extends SlickStorageTemplateFromConf[Song, Lyrics](ec, dbP) with LyricsStorage {
+) extends SlickSingleKeyColumnStorageTemplateFromConf[Song, Lyrics](ec, dbP) with LyricsStorage {
   import profile.api._
 
   override protected type Profile = dbP.profile.type

@@ -8,6 +8,7 @@ import scala.concurrent.Future
 import common.storage.Storage
 
 trait ReconStorage[R <: Reconcilable] extends Storage[R, StoredReconResult] {
+  // TODO move to a different table
   def isIgnored(k: R): Future[IgnoredReconResult]
   def update(key: R, reconId: ReconID): FutureOption[StoredReconResult] = mapStore(key, {
     case NoRecon => StoredReconResult.unignored(reconId)
@@ -16,6 +17,4 @@ trait ReconStorage[R <: Reconcilable] extends Storage[R, StoredReconResult] {
 }
 
 trait ArtistReconStorage extends ReconStorage[Artist]
-trait AlbumReconStorage extends ReconStorage[Album] {
-  def deleteAllRecons(a: Artist): Future[Traversable[(String, Option[ReconID], Boolean)]]
-}
+trait AlbumReconStorage extends ReconStorage[Album]

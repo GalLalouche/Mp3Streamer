@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import backend.RichTime._
 import backend.Url
 import backend.recon.{Album, Artist, Reconcilable}
-import backend.storage.{AlwaysFresh, DatedFreshness, DbProvider, Freshness, SlickStorageTemplateFromConf}
+import backend.storage.{AlwaysFresh, DatedFreshness, DbProvider, Freshness, SlickSingleKeyColumnStorageTemplateFromConf}
 import javax.inject.{Inject, Singleton}
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
@@ -25,7 +25,7 @@ import common.storage.{ColumnMappers, StringSerializable}
 private abstract class SlickExternalStorage[R <: Reconcilable](
     ec: ExecutionContext,
     dbP: DbProvider,
-) extends SlickStorageTemplateFromConf[R, (MarkedLinks[R], Freshness)](ec, dbP)
+) extends SlickSingleKeyColumnStorageTemplateFromConf[R, (MarkedLinks[R], Freshness)](ec, dbP)
     with ExternalStorage[R] {
   private case class InvalidEntry(entry: String) extends Exception
   private implicit val iec: ExecutionContext = ec

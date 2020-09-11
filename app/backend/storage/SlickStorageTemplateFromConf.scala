@@ -1,8 +1,8 @@
 package backend.storage
 
-import common.storage.SlickStorageTemplate
-
 import scala.concurrent.ExecutionContext
+
+import common.storage.{SlickSingleKeyColumnStorageTemplate, SlickStorageTemplate}
 
 abstract class SlickStorageTemplateFromConf[Key, Value](ec: ExecutionContext, dbP: DbProvider)
     extends SlickStorageTemplate[Key, Value]()(ec) {
