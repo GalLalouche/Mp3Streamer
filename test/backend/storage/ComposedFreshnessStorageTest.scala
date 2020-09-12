@@ -13,6 +13,7 @@ import scalaz.syntax.functor.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
 
 import common.FakeClock
+import common.storage.StoreMode
 import common.test.AsyncAuxSpecs
 
 class ComposedFreshnessStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
@@ -44,7 +45,7 @@ class ComposedFreshnessStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with
   "mapStore updates timestamp" in {
     $.store(1, 2) >| clock.advance(1) >> checkAll(
       $.freshness(1).mapValue(_.localDateTime.value shouldReturn 0.toLocalDateTime),
-      $.mapStore(1, _ * 2, ???).mapValue(_ shouldReturn 2),
+      $.mapStore(StoreMode.Update, 1, _ * 2, ???).mapValue(_ shouldReturn 2),
       $.load(1).mapValue(_ shouldReturn 4),
       $.freshness(1).mapValue(_.localDateTime.value shouldReturn 1.toLocalDateTime),
     )

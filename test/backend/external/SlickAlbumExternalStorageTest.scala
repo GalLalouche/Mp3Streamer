@@ -28,18 +28,18 @@ class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
 
   "Can load what is stored" in {
     val value = Vector(link1, link2, link3) -> DatedFreshness(LocalDateTime.now)
-    storage.store(album, value) >> storage.load(album).mapValue(_ shouldReturn value)
+    storage.store(album, value) >> storage.load(album).valueShouldEventuallyReturn(value)
   }
   "No problem with an empty list" in {
     storage.store(album, Nil -> AlwaysFresh) >>
-        storage.load(album).mapValue(_ shouldReturn (Nil -> AlwaysFresh))
+        storage.load(album).valueShouldEventuallyReturn(Nil -> AlwaysFresh)
   }
-  "Can force store" in {
+  "Can update" in {
     val link = MarkedLink[Album](
       Url("www.foobar.com/foo/bar.html"), Host("foobar", Url("www.foobar.com")), LinkMark.New)
     storage.store(album, Nil -> AlwaysFresh) >>
-        storage.forceStore(album, Vector(link) -> DatedFreshness(LocalDateTime.now))
-            .mapValue(_ shouldReturn (Nil -> AlwaysFresh))
+        storage.update(album, Vector(link) -> DatedFreshness(LocalDateTime.now))
+            .valueShouldEventuallyReturn(Nil -> AlwaysFresh)
   }
   "Delete all links by artist" in {
     val value1 = Vector(link1) -> AlwaysFresh
@@ -57,7 +57,7 @@ class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
     val link5 = MarkedLink[Album](
       Url("www.bazqux.com/baz/quxlt&;.html"), Host("annoying", Url("annoying.com")), LinkMark.New)
     val value = Vector(link1, link2, link3, link4, link5) -> DatedFreshness(LocalDateTime.now)
-    storage.store(album, value) >> storage.load(album).mapValue(_ shouldReturn value)
+    storage.store(album, value) >> storage.load(album).valueShouldEventuallyReturn(value)
   }
   "canonicalizes host on extraction" in {
     val nonStandardWikipediaLink = MarkedLink[Album](
@@ -65,6 +65,6 @@ class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
     val standardWikipediaLink = MarkedLink[Album](
       Url("en.wikipedia.org/foo/bar.html"), Host.Wikipedia, LinkMark.New)
     storage.store(album, Vector(nonStandardWikipediaLink) -> AlwaysFresh) >>
-        storage.load(album).mapValue(_ shouldReturn Vector(standardWikipediaLink) -> AlwaysFresh)
+        storage.load(album).valueShouldEventuallyReturn(Vector(standardWikipediaLink) -> AlwaysFresh)
   }
 }

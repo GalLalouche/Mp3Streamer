@@ -34,7 +34,7 @@ private class NewAlbums @Inject()(
     reconStorage.load(r).get.map {
       case NoRecon => throw new AssertionError()
       case recon@HasReconResult(_, _) =>
-        reconStorage.forceStore(r, recon.ignored)
+        reconStorage.update(r, recon.ignored)
     }.void
   }
 

@@ -44,7 +44,7 @@ private class LyricsCache @Inject()(
   def find(s: Song): Future[Lyrics] = cache(s)
   def parse(url: Url, s: Song): Future[RetrievedLyricsResult] = {
     def aux(parser: PassiveParser): Future[RetrievedLyricsResult] = parser.parse(url, s).listen {
-      case RetrievedLyricsResult.RetrievedLyrics(l) => cache.forceStore(s, l)
+      case RetrievedLyricsResult.RetrievedLyrics(l) => cache.replace(s, l)
       case _ => ()
     }
     def check(pp: PassiveParser): Option[PassiveParser] = pp.optFilter(_.doesUrlMatchHost(url))
@@ -55,7 +55,7 @@ private class LyricsCache @Inject()(
 
   def setInstrumentalSong(s: Song): Future[Instrumental] = {
     val instrumental = Instrumental("Manual override")
-    cache.forceStore(s, instrumental).run >| instrumental
+    cache.replace(s, instrumental).run >| instrumental
   }
   def setInstrumentalArtist(s: Song): Future[Instrumental] = defaultArtistInstrumental add s
 }

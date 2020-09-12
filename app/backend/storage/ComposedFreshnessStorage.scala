@@ -11,7 +11,7 @@ import common.rich.func.BetterFutureInstances._
 
 import common.rich.RichT._
 import common.rich.RichTuple._
-import common.storage.Storage
+import common.storage.{Storage, StoreMode}
 
 /**
   * Keeps a timestamp for every value. If the timestamp does not exist (but the value does), it means that the
@@ -28,10 +28,11 @@ class ComposedFreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshne
     storage storeMultiple kvs.map(_ modifySecond now)
   override def load(k: Key) = storage.load(k) |> toValue
   override def exists(k: Key) = storage.exists(k)
-  override def forceStore(k: Key, v: Value) = storage.forceStore(k, v |> now) |> toValue
+  override def update(k: Key, v: Value) = storage.update(k, v |> now) |> toValue
+  override def replace(k: Key, v: Value) = storage.replace(k, v |> now) |> toValue
   // Also updates the timestamp to now
-  override def mapStore(k: Key, f: Value => Value, default: => Value) =
-    storage.mapStore(k, e => now(f(e._1)), default |> now) |> toValue
+  override def mapStore(mode: StoreMode, k: Key, f: Value => Value, default: => Value) =
+    storage.mapStore(mode, k, e => now(f(e._1)), default |> now) |> toValue
   override def delete(k: Key) = storage.delete(k).map(_._1)
   override def utils = storage.utils
 }

@@ -27,7 +27,7 @@ class RefreshableRetriever[Key, Value](
     case DatedFreshness(dt) => age(dt) > maxAge
   } | true
 
-  private def refresh(k: Key): Future[Value] = onlineRetriever(k) >>! (freshnessStorage.forceStore(k, _).run)
+  private def refresh(k: Key): Future[Value] = onlineRetriever(k) >>! (freshnessStorage.update(k, _).run)
   override def apply(k: Key): Future[Value] = needsRefresh(k).flatMap {isOld =>
     lazy val oldData = freshnessStorage.load(k).get
     if (isOld) refresh(k) handleButKeepOriginal oldData.const else oldData

@@ -9,7 +9,7 @@ import common.rich.func.RichOptionT._
 import common.rich.func.ToMoreFunctorOps._
 import common.rich.func.ToMoreMonadErrorOps._
 
-import common.storage.Storage
+import common.storage.{Storage, StoreMode}
 
 /**
  * Tries to first retrieve information from a local repository.
@@ -25,10 +25,12 @@ class OnlineRetrieverCacher[Key, Value](
       ))
   // delegate all methods to localStorage
   // Use explicit type for implicit inference
-  override def forceStore(k: Key, v: Value) = localStorage.forceStore(k, v)
+  override def update(k: Key, v: Value) = localStorage.update(k, v)
+  override def replace(k: Key, v: Value) = localStorage.replace(k, v)
   override def store(k: Key, v: Value) = localStorage.store(k, v)
   override def storeMultiple(kvs: Seq[(Key, Value)]) = localStorage.storeMultiple(kvs)
-  override def mapStore(k: Key, f: Value => Value, default: => Value) = localStorage.mapStore(k, f, default)
+  override def mapStore(mode: StoreMode, k: Key, f: Value => Value, default: => Value) =
+    localStorage.mapStore(mode, k, f, default)
   override def load(k: Key) = localStorage.load(k)
   override def exists(k: Key) = localStorage.exists(k)
   override def delete(k: Key) = localStorage.delete(k)

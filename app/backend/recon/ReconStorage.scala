@@ -5,12 +5,12 @@ import backend.FutureOption
 
 import scala.concurrent.Future
 
-import common.storage.Storage
+import common.storage.{Storage, StoreMode}
 
 trait ReconStorage[R <: Reconcilable] extends Storage[R, StoredReconResult] {
   // TODO move to a different table
   def isIgnored(k: R): Future[IgnoredReconResult]
-  def update(key: R, reconId: ReconID): FutureOption[StoredReconResult] = mapStore(key, {
+  def update(key: R, reconId: ReconID): FutureOption[StoredReconResult] = mapStore(StoreMode.Update, key, {
     case NoRecon => StoredReconResult.unignored(reconId)
     case HasReconResult(_, isIgnored) => HasReconResult(reconId, isIgnored)
   }, default = StoredReconResult.unignored(reconId))
