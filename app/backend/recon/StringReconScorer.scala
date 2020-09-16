@@ -13,7 +13,7 @@ object StringReconScorer extends ((String, String) => Double) {
     if (sameAndNonEmpty(canonS1, canonS2)) 1 else 0
   }
 
-  private val badWords = Set("and")
+  private val badWords = Set("and", "ep")
   private def canonize(s: String): String =
     s.toLowerCase.split(' ').filterNot(badWords).mkString(" ").filter(_.isLetterOrDigit).keepAscii
 
