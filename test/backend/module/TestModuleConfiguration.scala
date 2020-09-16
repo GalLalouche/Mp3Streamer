@@ -8,6 +8,7 @@ import com.google.inject.{Guice, Module, Provides}
 import com.google.inject.util.Modules
 import net.codingwell.scalaguice.ScalaModule
 import slick.jdbc.{H2Profile, JdbcProfile}
+import slick.util.AsyncExecutor
 
 import scala.concurrent.ExecutionContext
 
@@ -47,8 +48,11 @@ case class TestModuleConfiguration(
       bind[DbProvider] toInstance new DbProvider {
         override lazy val profile: JdbcProfile = H2Profile
         override lazy val db: profile.backend.DatabaseDef = {
+          val dbId = System.identityHashCode(this) + UUID.randomUUID().toString
           profile.api.Database.forURL(
-            s"jdbc:h2:mem:test${System.identityHashCode(this) + UUID.randomUUID().toString};DB_CLOSE_DELAY=-1")
+            url = s"jdbc:h2:mem:test$dbId;DB_CLOSE_DELAY=-1",
+            executor = AsyncExecutor.default("Testing", 20),
+          )
         }
       }
     }

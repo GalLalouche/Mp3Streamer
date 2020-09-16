@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-iteratees" % playIterateesVersion,
   "com.typesafe.play" %% "play-iteratees-reactive-streams" % playIterateesVersion,
   "com.typesafe.play" %% "play-ws-standalone-json" % playWsStandaloneVersion,
-  "com.typesafe.slick" %% "slick" % "3.2.1",
+  "com.typesafe.slick" %% "slick" % "3.3.3",
   "commons-validator" % "commons-validator" % "1.6",
   "io.reactivex" %% "rxscala" % "0.26.4",
   "me.tongfei" % "progressbar" % "0.7.1",
@@ -63,7 +63,7 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test",
   "org.scalaz" %% "scalaz-concurrent" % scalazVersion,
   "org.scalaz" %% "scalaz-core" % scalazVersion,
-  "org.xerial" % "sqlite-jdbc" % "3.7.2",
+  "org.xerial" % "sqlite-jdbc" % "3.32.3.2",
 )
 
 scalacOptions += "-Ypartial-unification"

@@ -10,6 +10,7 @@ import models.IOMusicFinderModule
 import net.codingwell.scalaguice.ScalaModule
 import org.sqlite.SQLiteConfig
 import slick.jdbc.{JdbcProfile, SQLiteProfile}
+import slick.util.AsyncExecutor
 
 import scala.concurrent.ExecutionContext
 
@@ -23,14 +24,19 @@ object RealModule extends ScalaModule with ModuleUtils {
     bind[DbProvider] toInstance new DbProvider {
       private val props = new SQLiteConfig()
           .<|(_.enforceForeignKeys(true))
+          .<|(_.setBusyTimeout(10000))
           .toProperties
+          .<|(_.put("maxConnection", 4.asInstanceOf[AnyRef]))
+
       override lazy val profile: JdbcProfile = SQLiteProfile
-      override lazy val db: profile.backend.DatabaseDef =
-        profile.api.Database.forURL(
-          "jdbc:sqlite:d:/media/streamer/data/MBRecon.sqlite",
-          driver = "org.sqlite.JDBC",
-          prop = props,
-        )
+      override lazy val db: profile.backend.DatabaseDef = profile.api.Database.forURL(
+        url = "jdbc:sqlite:d:/media/streamer/data/MBRecon.sqlite",
+        prop = props,
+        driver = "org.sqlite.JDBC",
+        // Scumbag Slick. Sets the defautl to something that it can later warn about. You might expect for
+        // default() and default(defaultValuesUsedInTheGoddamnDefault) to be the same, but you'd be wrong.
+        executor = AsyncExecutor.default("Slick SQLite", 20),
+      )
     }
 
     requireBinding[Logger]
