@@ -33,6 +33,6 @@ import common.rich.RichT._
   def apply(artist: Artist) = (for {
     recon <- getReconId(artist)
     _ = logger.debug(s"Fetching new albums for <$artist>")
-    albums <- mbDataFetcher.!(artist, recon).liftSome
+    albums <- mbDataFetcher(artist, recon).liftSome
   } yield albums) | Nil
 }

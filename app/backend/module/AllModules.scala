@@ -1,5 +1,6 @@
 package backend.module
 
+import backend.albums.NewAlbumModule
 import backend.external.ExternalModule
 import backend.lyrics.LyricsModule
 import backend.mb.MbModule
@@ -12,6 +13,7 @@ import songs.SongsModule
 
 object AllModules extends ScalaModule {
   override def configure(): Unit = {
+    install(NewAlbumModule)
     install(ExternalModule)
     install(MbModule)
     install(RecentModule)

@@ -44,6 +44,7 @@ private[backend] class SlickArtistReconStorage @Inject()(
   protected class Rows(tag: Tag) extends Table[Entity](tag, "artist") {
     def name = column[String]("name", O.PrimaryKey)
     def reconId = column[Option[ReconID]]("recon_id")
+    // TODO remove isIgnored
     def isIgnored = column[Boolean]("is_ignored", O.Default(false))
     def * = (name, reconId, isIgnored)
   }
@@ -82,6 +83,7 @@ private[backend] class SlickAlbumReconStorage @Inject()(
       onDelete = ForeignKeyAction.Cascade,
     )
     def reconId = column[Option[ReconID]]("recon_id")
+    // TODO remove isIgnored
     def isIgnored = column[Boolean]("is_ignored", O.Default(false))
     def * = (album, artist, reconId, isIgnored)
   }

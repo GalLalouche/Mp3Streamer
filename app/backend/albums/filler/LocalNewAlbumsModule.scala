@@ -1,5 +1,6 @@
 package backend.albums.filler
 
+import backend.albums.filler.storage.FillerStorageModule
 import backend.logging.{Logger, LoggingLevel, LoggingModules}
 import backend.module.StandaloneModule
 import backend.recon.Artist
@@ -19,6 +20,7 @@ private class LocalNewAlbumsModule private(existingAlbumsModule: Module) extends
       }
     ))
     install(existingAlbumsModule)
+    install(FillerStorageModule)
   }
 }
 private object LocalNewAlbumsModule extends Debug {
@@ -33,11 +35,11 @@ private object LocalNewAlbumsModule extends Debug {
       bind[ExistingAlbums].to[EagerExistingAlbums]
     }
   }
-  def forSingleArtist(a: Artist) = new LocalNewAlbumsModule(new EagerBinder {
+  def forSingleArtist(artistName: String) = new LocalNewAlbumsModule(new EagerBinder {
     @Provides
     @Singleton
     private def existingAlbumsCache(mf: MusicFinder): EagerExistingAlbums =
-      EagerExistingAlbums.singleArtist(a, mf)
+      EagerExistingAlbums.singleArtist(Artist(artistName), mf)
   })
   def default = new LocalNewAlbumsModule(new EagerBinder {
     @Provides

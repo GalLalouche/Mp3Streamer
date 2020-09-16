@@ -7,18 +7,18 @@ import javax.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.concurrency.{DaemonFixedPool, SimpleTypedActor}
+import common.concurrency.DaemonFixedPool
 import common.rich.RichT._
 
 @Singleton private class MbDataFetcher @Inject()(
     logger: Logger,
     meta: MbArtistReconciler,
-    finisher: AlbumFinisher,
-) extends SimpleTypedActor[(Artist, ReconID), Seq[NewAlbumRecon]] {
+    ea: EagerExistingAlbums,
+) extends {
   private val ec: ExecutionContext = DaemonFixedPool(this.simpleName, 10)
-  override def !(m: => (Artist, ReconID)): Future[Seq[NewAlbumRecon]] = {
-    val (artist, recon) = m
+  def apply(artist: Artist, reconID: ReconID): Future[Seq[NewAlbumRecon]] = {
     logger.verbose(s"Performing fetch for artist <$artist>")
-    meta.getAlbumsMetadata(recon).flatMap(finisher(artist, _))(ec)
+    meta.getAlbumsMetadata(reconID)
+        .map(ea.removeExistingAlbums(artist, _))(ec)
   }
 }
