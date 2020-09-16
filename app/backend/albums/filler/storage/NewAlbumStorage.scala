@@ -6,11 +6,13 @@ import backend.recon.{Artist, ReconID}
 
 import scala.concurrent.Future
 
+import scalaz.ListT
+
 import common.storage.Storage
 
 // TODO Non-Keyed storage, or multi-valued storage
 private trait NewAlbumStorage extends Storage[ReconID, StoredNewAlbum] {
-  def all: Future[Map[Artist, Seq[NewAlbum]]]
+  def all: ListT[Future, (Artist, Seq[NewAlbum])]
   def unremoveAll(a: Artist): Future[Unit]
   def storeNew(albums: Seq[NewAlbumRecon]): Future[Int]
 

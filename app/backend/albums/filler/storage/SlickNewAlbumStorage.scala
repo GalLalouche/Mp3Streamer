@@ -13,6 +13,7 @@ import slick.ast.BaseTypedType
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import scalaz.ListT
 import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreSeqInstances._
@@ -83,12 +84,14 @@ private class SlickNewAlbumStorage @Inject()(
   }
   override protected type EntityTable = Rows
   override protected val tableQuery = TableQuery[EntityTable]
-  override def all = db
+  override def all = ListT(db
       .run(tableQuery.filter(e => !(e.isRemoved || e.isIgnored)).result)
       .map(_.map(extractValue(_).na)
           .groupBy(_.artist)
           .mapValues(_.sortBy(_.year))
+          .toList
       )
+  )
   override def unremoveAll(a: Artist) = db.run(tableQuery
       .filter(e => e.artist === a.normalize && e.isRemoved && !e.isIgnored)
       .map(_.isRemoved)

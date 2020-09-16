@@ -5,10 +5,12 @@ import backend.recon.{Artist, ReconID}
 
 import scala.concurrent.Future
 
+import scalaz.ListT
+
 private[albums] trait FilledStorage {
   type AlbumReconID = ReconID
   type ArtistReconID = ReconID
-  def all: Future[Map[Artist, Seq[NewAlbum]]]
+  def all: ListT[Future, (Artist, Seq[NewAlbum])]
 
   // Remove vs. Ignore: remove is only temporary (usually until the next mega fetch), ignore is forever.
   // Reasons to remove: you're not going do anything with the artist/album this time.

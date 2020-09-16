@@ -15,9 +15,9 @@ $(function() {
     })
   }
 
-  function addArtist(artistName, albums) {
+  function addArtist(artistName, genre, albums) {
     const albumsElem = elem("ol")
-    elem("li", artistName + " ")
+    elem("li", `${artistName} (${genre}) `)
         .append(button("Ignore", "ignore-artist"))
         .append(button("Remove", "remove-artist"))
         .append(createHideButton())
@@ -37,7 +37,7 @@ $(function() {
   }
 
   $.get("albums/", function(e) {
-    Object.keys(e).sort().forEach(artistName => addArtist(artistName, e[artistName]))
+    e.custom_sort_by(e => e.name).forEach(o => addArtist(o.name, o.genre, o.albums))
   })
 
   // buttons

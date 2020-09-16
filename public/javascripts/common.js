@@ -169,6 +169,21 @@ $.fn.custom_tooltip = function(text) {
 Array.prototype.custom_last = function() {
   return this[this.length - 1]
 }
+Array.prototype.custom_sort_by = function(f) {
+  return this
+      .map(e => [e, f(e)])
+      .sort((a, b) => {
+        const fa = a[1]
+        const fb = b[1]
+        if (fa === fb)
+          return 0
+        if (fa < fb)
+          return -1
+        else
+          return 1
+      })
+      .map(e => e[0])
+}
 
 function assert(condition, message) {
   if (condition)

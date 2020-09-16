@@ -41,6 +41,7 @@ private object CachedNewAlbumStorageImpl {
       injector
           .instance[CachedNewAlbumStorage]
           .all
+          .run
           .get
     )
   }
