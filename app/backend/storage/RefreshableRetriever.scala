@@ -1,10 +1,10 @@
 package backend.storage
 
-import java.time.{Clock, Duration, LocalDateTime, ZoneId}
+import java.time.{Clock, Duration}
 
 import backend.Retriever
+import backend.RichTime.RichLocalDateTime
 
-import scala.Ordering.Implicits._
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.syntax.bind.ToBindOps
@@ -20,11 +20,9 @@ class RefreshableRetriever[Key, Value](
     maxAge: Duration,
     clock: Clock,
 )(implicit ec: ExecutionContext) extends Retriever[Key, Value] {
-  private def age(dt: LocalDateTime): Duration =
-    Duration.between(dt, clock.instant.atZone(ZoneId.systemDefault))
   def needsRefresh(k: Key): Future[Boolean] = freshnessStorage.freshness(k).map {
     case AlwaysFresh => false
-    case DatedFreshness(dt) => age(dt) > maxAge
+    case DatedFreshness(dt) => dt.isOlderThan(maxAge, clock)
   } | true
 
   private def refresh(k: Key): Future[Value] = onlineRetriever(k) >>! (freshnessStorage.update(k, _).run)
