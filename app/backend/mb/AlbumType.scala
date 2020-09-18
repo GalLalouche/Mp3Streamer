@@ -10,4 +10,5 @@ private[backend] object AlbumType extends Enum[AlbumType] {
   case object Album extends AlbumType
   case object Live extends AlbumType
   case object Compilation extends AlbumType
+  case object Single extends AlbumType
 }

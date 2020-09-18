@@ -1,0 +1,414 @@
+{
+  "release-count": 8,
+  "release-offset": 0,
+  "releases": [
+    {
+      "asin": "B009OWJI9O",
+      "status": "Official",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "disambiguation": "",
+      "release-group": {
+        "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "title": "Olden Tales & Deathly Trails",
+        "secondary-types": [],
+        "secondary-type-ids": [],
+        "primary-type": "Album",
+        "disambiguation": "",
+        "first-release-date": "2012-09-21",
+        "id": "f3098f4d-7a46-46a9-85cf-c3e69d1398ea"
+      },
+      "country": "XW",
+      "barcode": null,
+      "cover-art-archive": {
+        "count": 1,
+        "artwork": true,
+        "front": true,
+        "darkened": false,
+        "back": false
+      },
+      "id": "3874d043-5030-4682-9968-40ed1f48e520",
+      "quality": "normal",
+      "date": "2012-09-21",
+      "release-events": [
+        {
+          "area": {
+            "type-id": null,
+            "id": "525d4e18-3d00-31b9-a58b-a146a916de8f",
+            "iso-3166-1-codes": [
+              "XW"
+            ],
+            "sort-name": "[Worldwide]",
+            "disambiguation": "",
+            "type": null,
+            "name": "[Worldwide]"
+          },
+          "date": "2012-09-21"
+        }
+      ],
+      "packaging": "None",
+      "title": "Olden Tales & Deathly Trails",
+      "text-representation": {
+        "script": "Latn",
+        "language": "eng"
+      },
+      "packaging-id": "119eba76-b343-3e02-a292-f0f00644bb9b"
+    },
+    {
+      "country": "XE",
+      "release-group": {
+        "primary-type": "Album",
+        "disambiguation": "",
+        "first-release-date": "2019-11-01",
+        "id": "82b1bdf5-6b64-4580-82d2-32f2a9af5321",
+        "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "secondary-type-ids": [],
+        "title": "Veil of Imagination",
+        "secondary-types": []
+      },
+      "barcode": "194397637823",
+      "cover-art-archive": {
+        "artwork": false,
+        "count": 0,
+        "front": false,
+        "darkened": false,
+        "back": false
+      },
+      "asin": null,
+      "status": "Official",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "disambiguation": "",
+      "packaging": "Digipak",
+      "title": "Veil Of Imagination",
+      "text-representation": {
+        "script": "Latn",
+        "language": "eng"
+      },
+      "packaging-id": "8f931351-d2e2-310f-afc6-37b89ddba246",
+      "id": "3a5d2819-459d-4add-a7ff-1b01072ff84a",
+      "date": "2020-07-17",
+      "quality": "normal",
+      "release-events": [
+        {
+          "date": "2020-07-17",
+          "area": {
+            "type-id": null,
+            "id": "89a675c2-3e37-3518-b83c-418bad59a85a",
+            "disambiguation": "",
+            "iso-3166-1-codes": [
+              "XE"
+            ],
+            "sort-name": "Europe",
+            "type": null,
+            "name": "Europe"
+          }
+        }
+      ]
+    },
+    {
+      "text-representation": {
+        "script": "Latn",
+        "language": "eng"
+      },
+      "packaging-id": "ec27701a-4a22-37f4-bfac-6616e0f9750a",
+      "packaging": "Jewel Case",
+      "title": "Olden Tales & Deathly Trails",
+      "release-events": [
+        {
+          "area": {
+            "disambiguation": "",
+            "iso-3166-1-codes": [
+              "XW"
+            ],
+            "sort-name": "[Worldwide]",
+            "name": "[Worldwide]",
+            "type": null,
+            "type-id": null,
+            "id": "525d4e18-3d00-31b9-a58b-a146a916de8f"
+          },
+          "date": "2012-09-21"
+        }
+      ],
+      "id": "49b59646-a4d7-4c0f-8291-87f462ad3607",
+      "date": "2012-09-21",
+      "quality": "normal",
+      "barcode": "700261367071",
+      "cover-art-archive": {
+        "artwork": true,
+        "count": 11,
+        "back": true,
+        "darkened": false,
+        "front": true
+      },
+      "release-group": {
+        "secondary-type-ids": [],
+        "title": "Olden Tales & Deathly Trails",
+        "secondary-types": [],
+        "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "id": "f3098f4d-7a46-46a9-85cf-c3e69d1398ea",
+        "first-release-date": "2012-09-21",
+        "primary-type": "Album",
+        "disambiguation": ""
+      },
+      "country": "XW",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "status": "Official",
+      "disambiguation": "",
+      "asin": null
+    },
+    {
+      "quality": "normal",
+      "date": "2015-04-07",
+      "id": "4aeedbf0-364d-4e53-a723-82f9b5729392",
+      "release-events": [
+        {
+          "area": {
+            "type-id": null,
+            "id": "525d4e18-3d00-31b9-a58b-a146a916de8f",
+            "iso-3166-1-codes": [
+              "XW"
+            ],
+            "disambiguation": "",
+            "sort-name": "[Worldwide]",
+            "name": "[Worldwide]",
+            "type": null
+          },
+          "date": "2015-04-07"
+        }
+      ],
+      "title": "Sleep at the Edge of the Earth",
+      "packaging": "Digipak",
+      "packaging-id": "8f931351-d2e2-310f-afc6-37b89ddba246",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "asin": null,
+      "disambiguation": "",
+      "status": "Official",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "country": "XW",
+      "release-group": {
+        "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "secondary-types": [],
+        "title": "Sleep at the Edge of the Earth",
+        "secondary-type-ids": [],
+        "primary-type": "Album",
+        "first-release-date": "2015-04-07",
+        "disambiguation": "",
+        "id": "afe8a3e0-96bc-4a63-8be1-3e133ad4f702"
+      },
+      "cover-art-archive": {
+        "count": 1,
+        "artwork": true,
+        "back": false,
+        "front": true,
+        "darkened": false
+      },
+      "barcode": "700261420745"
+    },
+    {
+      "cover-art-archive": {
+        "artwork": false,
+        "count": 0,
+        "front": false,
+        "darkened": false,
+        "back": false
+      },
+      "barcode": "700261477978",
+      "country": "XW",
+      "release-group": {
+        "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "title": "Veil of Imagination",
+        "secondary-types": [],
+        "secondary-type-ids": [],
+        "first-release-date": "2019-11-01",
+        "disambiguation": "",
+        "primary-type": "Album",
+        "id": "82b1bdf5-6b64-4580-82d2-32f2a9af5321"
+      },
+      "disambiguation": "",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "status": "Official",
+      "asin": null,
+      "packaging-id": "8f931351-d2e2-310f-afc6-37b89ddba246",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "title": "Veil of Imagination",
+      "packaging": "Digipak",
+      "release-events": [
+        {
+          "date": "2019-11-01",
+          "area": {
+            "disambiguation": "",
+            "iso-3166-1-codes": [
+              "XW"
+            ],
+            "sort-name": "[Worldwide]",
+            "name": "[Worldwide]",
+            "type": null,
+            "type-id": null,
+            "id": "525d4e18-3d00-31b9-a58b-a146a916de8f"
+          }
+        }
+      ],
+      "date": "2019-11-01",
+      "quality": "normal",
+      "id": "6d9773ef-a491-4719-b7cd-894c86c88c0a"
+    },
+    {
+      "barcode": "859734234904",
+      "cover-art-archive": {
+        "back": false,
+        "front": true,
+        "darkened": false,
+        "count": 1,
+        "artwork": true
+      },
+      "country": "XW",
+      "release-group": {
+        "title": "Veil of Imagination",
+        "secondary-types": [],
+        "secondary-type-ids": [],
+        "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "id": "82b1bdf5-6b64-4580-82d2-32f2a9af5321",
+        "primary-type": "Album",
+        "disambiguation": "",
+        "first-release-date": "2019-11-01"
+      },
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "status": "Official",
+      "disambiguation": "",
+      "asin": null,
+      "text-representation": {
+        "script": "Latn",
+        "language": "eng"
+      },
+      "packaging-id": "119eba76-b343-3e02-a292-f0f00644bb9b",
+      "packaging": "None",
+      "title": "Veil of Imagination",
+      "release-events": [
+        {
+          "date": "2019-11-01",
+          "area": {
+            "type-id": null,
+            "id": "525d4e18-3d00-31b9-a58b-a146a916de8f",
+            "iso-3166-1-codes": [
+              "XW"
+            ],
+            "sort-name": "[Worldwide]",
+            "disambiguation": "",
+            "type": null,
+            "name": "[Worldwide]"
+          }
+        }
+      ],
+      "id": "76f5ddf3-e463-40ed-94b7-0f294d4652fe",
+      "quality": "normal",
+      "date": "2019-11-01"
+    },
+    {
+      "packaging": "None",
+      "title": "Sleep at the Edge of the Earth",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "packaging-id": "119eba76-b343-3e02-a292-f0f00644bb9b",
+      "id": "b3009590-3ec3-4027-8c8b-8771d24b6f9a",
+      "date": "2015-04-07",
+      "quality": "normal",
+      "release-events": [
+        {
+          "area": {
+            "type-id": null,
+            "id": "525d4e18-3d00-31b9-a58b-a146a916de8f",
+            "iso-3166-1-codes": [
+              "XW"
+            ],
+            "sort-name": "[Worldwide]",
+            "disambiguation": "",
+            "name": "[Worldwide]",
+            "type": null
+          },
+          "date": "2015-04-07"
+        }
+      ],
+      "country": "XW",
+      "release-group": {
+        "primary-type": "Album",
+        "disambiguation": "",
+        "first-release-date": "2015-04-07",
+        "id": "afe8a3e0-96bc-4a63-8be1-3e133ad4f702",
+        "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "secondary-type-ids": [],
+        "title": "Sleep at the Edge of the Earth",
+        "secondary-types": []
+      },
+      "barcode": null,
+      "cover-art-archive": {
+        "artwork": true,
+        "count": 1,
+        "darkened": false,
+        "front": true,
+        "back": false
+      },
+      "asin": "B00VS5L6JK",
+      "status": "Official",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "disambiguation": ""
+    },
+    {
+      "packaging": "None",
+      "title": "Far From Where Dreams Unfurl",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "packaging-id": "119eba76-b343-3e02-a292-f0f00644bb9b",
+      "id": "b80ca863-1a4f-4944-bd81-f64ab63e3952",
+      "date": "2019-10-08",
+      "quality": "normal",
+      "release-events": [
+        {
+          "date": "2019-10-08",
+          "area": {
+            "type-id": null,
+            "id": "525d4e18-3d00-31b9-a58b-a146a916de8f",
+            "iso-3166-1-codes": [
+              "XW"
+            ],
+            "disambiguation": "",
+            "sort-name": "[Worldwide]",
+            "name": "[Worldwide]",
+            "type": null
+          }
+        }
+      ],
+      "release-group": {
+        "secondary-type-ids": [],
+        "title": "Far From Where Dreams Unfurl",
+        "secondary-types": [],
+        "primary-type-id": "d6038452-8ee0-3f68-affc-2de9a1ede0b9",
+        "id": "161f1a8f-479f-4b40-8057-ba9f3ac3b74c",
+        "disambiguation": "",
+        "primary-type": "Single",
+        "first-release-date": "2019-10-08"
+      },
+      "country": "XW",
+      "barcode": "859735087318",
+      "cover-art-archive": {
+        "artwork": true,
+        "count": 1,
+        "back": false,
+        "front": true,
+        "darkened": false
+      },
+      "asin": null,
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "status": "Official",
+      "disambiguation": ""
+    }
+  ]
+}

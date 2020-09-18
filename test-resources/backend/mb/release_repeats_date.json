@@ -1,0 +1,108 @@
+{
+  "release-offset": 0,
+  "releases": [
+    {
+      "id": "0e5420aa-c9ce-45d5-8f58-1951c8a626db",
+      "quality": "normal",
+      "asin": null,
+      "release-group": {
+        "title": "Out",
+        "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "id": "7ef02c74-773f-3a22-beed-b227a86e7e34",
+        "secondary-types": [],
+        "secondary-type-ids": [],
+        "primary-type": "Album",
+        "disambiguation": "",
+        "first-release-date": "2006-08"
+      },
+      "packaging-id": null,
+      "title": "Out",
+      "cover-art-archive": {
+        "back": false,
+        "count": 0,
+        "darkened": false,
+        "artwork": false,
+        "front": false
+      },
+      "disambiguation": "",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "status": "Official",
+      "date": "2006-08",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "packaging": null,
+      "barcode": null,
+      "release-events": [
+        {
+          "date": "2006-08",
+          "area": {
+            "iso-3166-1-codes": [
+              "PL"
+            ],
+            "id": "dd7f80c8-f017-3d01-8608-2a8c9c32b954",
+            "sort-name": "Poland",
+            "type": null,
+            "type-id": null,
+            "name": "Poland",
+            "disambiguation": ""
+          }
+        }
+      ],
+      "country": "PL"
+    },
+    {
+      "title": "Out",
+      "packaging-id": "8f931351-d2e2-310f-afc6-37b89ddba246",
+      "release-group": {
+        "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "title": "Out",
+        "primary-type": "Album",
+        "secondary-type-ids": [],
+        "first-release-date": "2009",
+        "disambiguation": "",
+        "secondary-types": [],
+        "id": "6c0f6386-2a85-4510-8e20-116fd5db502a"
+      },
+      "quality": "normal",
+      "id": "41f1e81c-f811-41a1-a870-98cf9f18fd14",
+      "asin": null,
+      "barcode": "5903427872531",
+      "country": "PL",
+      "release-events": [
+        {
+          "date": "2009",
+          "area": {
+            "iso-3166-1-codes": [
+              "PL"
+            ],
+            "sort-name": "Poland",
+            "id": "dd7f80c8-f017-3d01-8608-2a8c9c32b954",
+            "type-id": null,
+            "type": null,
+            "name": "Poland",
+            "disambiguation": ""
+          }
+        }
+      ],
+      "text-representation": {
+        "script": "Latn",
+        "language": "mul"
+      },
+      "packaging": "Digipak",
+      "status": "Official",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "date": "2009",
+      "disambiguation": "",
+      "cover-art-archive": {
+        "back": false,
+        "artwork": true,
+        "count": 1,
+        "darkened": false,
+        "front": true
+      }
+    }
+  ],
+  "release-count": 2
+}

@@ -10,8 +10,11 @@ import mains.fixer.StringFixer
 import play.api.libs.json.{JsObject, JsValue}
 
 import common.json.RichJson._
+import common.rich.RichTime.OrderingLocalDate
+import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
 import common.CompositeDateFormat
+import common.rich.RichT.richT
 
 private class AlbumParser @Inject()(
     logger: Logger // TODO replace logging with ADT Result type
@@ -29,7 +32,7 @@ private class AlbumParser @Inject()(
     date <- parseDate(json)
     albumType <- json.ostr("primary-type").flatMap(AlbumType.withNameOption)
     if ValidPrimaryTypes(albumType.entryName)
-    // Secondary types includes compilations and other unwanted albums.
+    // Secondary types includes compilations, demos, and other unwanted albums.
     if json.array("secondary-types").value.isEmpty
   } yield MbAlbumMetadata(
     title = fixQuotes(json str "title"),
@@ -37,6 +40,14 @@ private class AlbumParser @Inject()(
     albumType = albumType,
     reconId = ReconID.validateOrThrow(json str "id"),
   )
+
+  def releaseToReleaseGroups(js: JsValue): Seq[MbAlbumMetadata] = js.array("releases")
+      .value
+      .flatMap(_ / ("release-group") |> apply)
+      .groupBy(_.toTuple(_.title, _.albumType))
+      .values
+      .map(extractSingleRelease)
+      .toVector
 }
 
 private object AlbumParser {
@@ -46,4 +57,25 @@ private object AlbumParser {
     s.replaceAll(StringFixer.SpecialQuotes, "\"").replaceAll(StringFixer.SpecialApostrophes, "'")
   private val DateFormatter =
     CompositeDateFormat[LocalDate]("yyyy-MM-dd").orElse[YearMonth]("yyyy-MM").orElse[Year]("yyyy")
+  private def extractSingleRelease(releases: Iterable[MbAlbumMetadata]): MbAlbumMetadata = {
+    val byDate = releases.groupBy(_.releaseDate)
+    if (byDate.size > 1) // If there are multiple dates, apply the same algorithm to the first one.
+      return extractSingleRelease(byDate.minBy(_._1)._2)
+    assert(releases.nonEmpty)
+    if (releases.size == 1)
+      return releases.head
+    val freqs = releases.map(_.reconId).frequencies
+    if (freqs.size == 1)
+      return releases.head
+    assert(freqs.size > 1)
+    val (reconCandidate, max) = freqs.maxBy(_._2)
+    val secondMax = freqs.filter(_._1 != reconCandidate).values.max
+    if (max <= secondMax) {
+      throw new IllegalArgumentException("Could not find a most popular repeat among repeats for json:" + releases)
+    }
+    assert(releases.hasSameValues(_.title))
+    assert(releases.hasSameValues(_.albumType))
+    require(releases.hasSameValues(_.releaseDate))
+    releases.find(_.reconId == reconCandidate).get
+  }
 }

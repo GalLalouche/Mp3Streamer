@@ -1,0 +1,159 @@
+{
+  "releases": [
+    {
+      "disambiguation": "",
+      "status": null,
+      "status-id": null,
+      "asin": null,
+      "cover-art-archive": {
+        "count": 0,
+        "artwork": false,
+        "front": false,
+        "darkened": false,
+        "back": false
+      },
+      "barcode": "819873017912",
+      "release-group": {
+        "secondary-types": [],
+        "title": "Triumphant Hearts",
+        "secondary-type-ids": [],
+        "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "id": "8204196c-d7df-463c-88a6-8ecb7b2caf85",
+        "primary-type": "Album",
+        "first-release-date": "2018-12-07",
+        "disambiguation": ""
+      },
+      "country": "XE",
+      "release-events": [
+        {
+          "area": {
+            "id": "89a675c2-3e37-3518-b83c-418bad59a85a",
+            "type-id": null,
+            "name": "Europe",
+            "type": null,
+            "disambiguation": "",
+            "iso-3166-1-codes": [
+              "XE"
+            ],
+            "sort-name": "Europe"
+          },
+          "date": "2018-12-07"
+        }
+      ],
+      "date": "2018-12-07",
+      "quality": "normal",
+      "id": "7e083f2c-2637-4553-8280-3498c261191c",
+      "packaging-id": null,
+      "text-representation": {
+        "script": null,
+        "language": null
+      },
+      "title": "Triumphant Hearts",
+      "packaging": null
+    },
+    {
+      "barcode": "",
+      "cover-art-archive": {
+        "artwork": false,
+        "count": 0,
+        "darkened": false,
+        "front": false,
+        "back": false
+      },
+      "country": "XW",
+      "release-group": {
+        "id": "900e1bfb-beb2-4a36-b5ab-c8af11fc1dc4",
+        "first-release-date": "2018-12-07",
+        "primary-type": "Album",
+        "disambiguation": "",
+        "secondary-types": [],
+        "title": "Triumphant Hearts",
+        "secondary-type-ids": [],
+        "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc"
+      },
+      "status": "Official",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "disambiguation": "",
+      "asin": null,
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "packaging-id": "119eba76-b343-3e02-a292-f0f00644bb9b",
+      "packaging": "None",
+      "title": "Triumphant Hearts",
+      "release-events": [
+        {
+          "date": "2018-12-07",
+          "area": {
+            "disambiguation": "",
+            "iso-3166-1-codes": [
+              "XW"
+            ],
+            "sort-name": "[Worldwide]",
+            "name": "[Worldwide]",
+            "type": null,
+            "type-id": null,
+            "id": "525d4e18-3d00-31b9-a58b-a146a916de8f"
+          }
+        }
+      ],
+      "id": "aaf73914-e460-47cb-b934-edf84dc87a2c",
+      "quality": "normal",
+      "date": "2018-12-07"
+    },
+    {
+      "title": "Triumphant Hearts",
+      "packaging": null,
+      "packaging-id": null,
+      "text-representation": {
+        "script": "Latn",
+        "language": "eng"
+      },
+      "date": "2018-12-07",
+      "quality": "normal",
+      "id": "ce669555-3a9e-4f82-8665-a4cef767f902",
+      "release-events": [
+        {
+          "area": {
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "type-id": null,
+            "name": "United States",
+            "type": null,
+            "iso-3166-1-codes": [
+              "US"
+            ],
+            "sort-name": "United States",
+            "disambiguation": ""
+          },
+          "date": "2018-12-07"
+        }
+      ],
+      "release-group": {
+        "secondary-type-ids": [],
+        "title": "Triumphant Hearts",
+        "secondary-types": [],
+        "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "id": "900e1bfb-beb2-4a36-b5ab-c8af11fc1dc4",
+        "disambiguation": "",
+        "primary-type": "Album",
+        "first-release-date": "2018-12-07"
+      },
+      "country": "US",
+      "cover-art-archive": {
+        "count": 1,
+        "artwork": true,
+        "back": false,
+        "front": true,
+        "darkened": false
+      },
+      "barcode": null,
+      "asin": null,
+      "disambiguation": "",
+      "status": "Official",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe"
+    }
+  ],
+  "release-offset": 0,
+  "release-count": 3
+}

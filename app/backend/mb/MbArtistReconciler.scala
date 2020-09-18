@@ -10,7 +10,6 @@ import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 
 import common.json.RichJson._
-import common.rich.RichTime.OrderingLocalDate
 
 private[backend] class MbArtistReconciler @Inject()(
     ec: ExecutionContext,
@@ -28,9 +27,7 @@ private[backend] class MbArtistReconciler @Inject()(
   }
 
   def getAlbumsMetadata(artistKey: ReconID): Future[Seq[MbAlbumMetadata]] =
-    downloader("release-group", "artist" -> artistKey.id, "limit" -> "100")
-        .map(_.objects("release-groups")
-            .flatMap(parser.apply)
-            .sortBy(_.releaseDate)
-        )
+  // Starting from releases actually filters out all the "Sampler/Promo" crap.
+    downloader("release", "artist" -> artistKey.id, "limit" -> "10000", "inc" -> "release-groups")
+        .map(parser.releaseToReleaseGroups)
 }
