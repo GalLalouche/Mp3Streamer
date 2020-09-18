@@ -1,7 +1,9 @@
 package backend.albums.filler.storage
 
-import backend.albums.NewAlbum
+import java.time.LocalDate
+
 import backend.albums.filler.NewAlbumRecon
+import backend.albums.NewAlbum
 import backend.mb.AlbumType
 import backend.module.StandaloneModule
 import backend.recon.{Artist, ReconID}
@@ -14,17 +16,17 @@ import slick.ast.BaseTypedType
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.ListT
-import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
+import scalaz.std.vector.vectorInstance
+import scalaz.syntax.bind.ToBindOps
+import scalaz.syntax.functor.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
-import common.rich.func.MoreSeqInstances._
-import common.rich.func.MoreTraverseInstances._
 import common.rich.func.ToMoreApplicativeOps.toLazyApplicativeUnitOps
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.ToTraverseMonadPlusOps._
 
 import common.rich.RichFuture.richFuture
 import common.rich.RichT._
-import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rich.RichTime.OrderingLocalDate
 
 // There's a bit of data/code duplication between this and SlickAlbumReconStorage, but the former is used only
 // for already processed albums, and this one is for new albums.
@@ -34,41 +36,40 @@ private class SlickNewAlbumStorage @Inject()(
     // Allows for easier cascade.
     protected val artistStorage: SlickLastFetchTimeStorage,
 ) extends SlickSingleKeyColumnStorageTemplateFromConf[ReconID, StoredNewAlbum](ec, dbP) with NewAlbumStorage {
-  private implicit val iec: ExecutionContext = ec;
+  private implicit val iec: ExecutionContext = ec
   import profile.api._
 
   override type Id = ReconID
   override protected implicit def btt: BaseTypedType[ReconID] =
     MappedColumnType.base[ReconID, String](_.id, ReconID.apply)
-  override protected def toEntity(k: ReconID, v: StoredNewAlbum) = {
+  override protected def toEntity(k: ReconID, v: StoredNewAlbum): Entity = {
     val na = v.na
-    (k, na.title.toLowerCase, na.albumType.toString, na.year, na.artist.normalize, v.isRemoved, v.isIgnored)
+    (k, na.title.toLowerCase, na.albumType.toString, na.date, na.artist.normalize, v.isRemoved, v.isIgnored)
   }
   override protected def extractId(k: ReconID) = k
-  override protected def extractValue(e: Entity) =
-    StoredNewAlbum(
-      NewAlbum(
-        title = e._2,
-        year = e._4,
-        artist = Artist(e._5),
-        albumType = AlbumType.withName(e._3),
-      ),
-      isRemoved = e._6,
-      isIgnored = e._7,
-    )
+  override protected def extractValue(e: Entity) = StoredNewAlbum(
+    NewAlbum(
+      title = e._2,
+      date = e._4,
+      artist = Artist(e._5),
+      albumType = AlbumType.withName(e._3),
+    ),
+    isRemoved = e._6,
+    isIgnored = e._7,
+  )
   override protected def toId(et: Rows) = et.reconId
   private type AlbumTitle = String
   private type AlbumType = String
-  private type Year = Int
   private type ArtistName = String
   private type IsRemoved = Boolean
   private type IsIgnored = Boolean
-  override protected type Entity = (ReconID, AlbumTitle, AlbumType, Year, ArtistName, IsRemoved, IsIgnored)
+  override protected type Entity =
+    (ReconID, AlbumTitle, AlbumType, LocalDate, ArtistName, IsRemoved, IsIgnored)
   protected class Rows(tag: Tag) extends Table[Entity](tag, "new_album") {
     def reconId = column[ReconID]("recon_id")
     def album = column[AlbumTitle]("album")
     def albumType = column[AlbumType]("type")
-    def year = column[Year]("year")
+    def year = column[LocalDate]("epoch_day")
     def artist = column[ArtistName]("artist")
     def pk = primaryKey("album_artist", (album, artist))
     def artist_fk = foreignKey("artist_fk", artist, artistStorage.tableQuery)(
@@ -86,9 +87,9 @@ private class SlickNewAlbumStorage @Inject()(
   override protected val tableQuery = TableQuery[EntityTable]
   override def all = ListT(db
       .run(tableQuery.filter(e => !(e.isRemoved || e.isIgnored)).result)
-      .map(_.map(extractValue(_).na)
-          .groupBy(_.artist)
-          .mapValues(_.sortBy(_.year))
+      .map(_.map(extractValue)
+          .groupBy(_.na.artist)
+          .mapValues(_.sortBy(_.na.date).map(_.na))
           .toList
       )
   )
@@ -97,17 +98,28 @@ private class SlickNewAlbumStorage @Inject()(
       .map(_.isRemoved)
       .update(false)
   ).void
-  private def toPartialEntity(a: NewAlbumRecon): (ReconID, AlbumTitle, AlbumType, Year, ArtistName) = {
+  private def toPartialEntity(a: NewAlbumRecon): (ReconID, AlbumTitle, AlbumType, LocalDate, ArtistName) = {
     val na = a.newAlbum
-    (a.reconId, na.title.toLowerCase, na.albumType.toString, na.year, na.artist.normalize)
+    (a.reconId, na.title.toLowerCase, na.albumType.toString, na.date, na.artist.normalize)
   }
   override def storeNew(albums: Seq[NewAlbumRecon]): Future[Int] = {
-    if (!albums.map(_.toTuple(_.newAlbum.artist, _.newAlbum.title)).allUnique) {
-      println(albums.toString)
-      throw new AssertionError(albums.toString)
-    }
+    val withoutDups = albums
+        .groupBy(_.toTuple(_.newAlbum.artist, _.newAlbum.title))
+        .mapValues {e =>
+          val v = e.toVector
+          if (v.size > 1) {
+            val albums = v.filter(_.newAlbum.albumType == AlbumType.Album)
+            if (albums.size == 1)
+              e.head
+            else
+              throw new AssertionError(s"Could not extract a single album out of <$v>")
+          } else
+            v.head
+        }
+        .values
+        .toVector
     for {
-      newAlbums <- albums.filterM(e => exists(e.reconId).negated)
+      newAlbums <- withoutDups.filterM(e => exists(e.reconId).negated)
       result = newAlbums.size
       _ <- db.run(tableQuery
           .map(_.toTuple(_.reconId, _.album, _.albumType, _.year, _.artist))

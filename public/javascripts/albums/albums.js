@@ -15,6 +15,18 @@ $(function() {
     })
   }
 
+  function toIsoDate(date) {
+    let month = '' + (date.getMonth() + 1)
+    let day = '' + date.getDate()
+    const year = date.getFullYear()
+
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
+
+    return [year, month, day].join('-');
+  }
   function addArtist(artistName, albums) {
     const albumsElem = elem("ol")
     const artistElem = elem("li", `${artistName} `)
@@ -25,7 +37,7 @@ $(function() {
         .data("artistName", artistName)
 
     for (const album of albums)
-      elem("li", `[${album.albumType}] ${album.title} (${album.year}) `)
+      elem("li", `[${album.albumType}] ${album.title} (${toIsoDate(new Date(album.date))}) `)
           .data({"artistName": artistName, "year": album.year, "title": album.title})
           .appendTo(albumsElem)
           .append(button("Ignore", "ignore-album"))

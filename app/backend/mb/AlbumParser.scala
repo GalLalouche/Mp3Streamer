@@ -59,7 +59,9 @@ private object AlbumParser {
     CompositeDateFormat[LocalDate]("yyyy-MM-dd").orElse[YearMonth]("yyyy-MM").orElse[Year]("yyyy")
   private def extractSingleRelease(releases: Iterable[MbAlbumMetadata]): MbAlbumMetadata = {
     val byDate = releases.groupBy(_.releaseDate)
-    if (byDate.size > 1) // If there are multiple dates, apply the same algorithm to the first one.
+    if (byDate.size > 1)
+    // If there are multiple dates, choose the first one.
+    // Note that there may be multiple releases with the same date though.
       return extractSingleRelease(byDate.minBy(_._1)._2)
     assert(releases.nonEmpty)
     if (releases.size == 1)
@@ -68,11 +70,7 @@ private object AlbumParser {
     if (freqs.size == 1)
       return releases.head
     assert(freqs.size > 1)
-    val (reconCandidate, max) = freqs.maxBy(_._2)
-    val secondMax = freqs.filter(_._1 != reconCandidate).values.max
-    if (max <= secondMax) {
-      throw new IllegalArgumentException("Could not find a most popular repeat among repeats for json:" + releases)
-    }
+    val reconCandidate = freqs.maxBy(_._2)._1
     assert(releases.hasSameValues(_.title))
     assert(releases.hasSameValues(_.albumType))
     require(releases.hasSameValues(_.releaseDate))

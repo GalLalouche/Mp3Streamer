@@ -1,5 +1,7 @@
 package backend.albums.filler
 
+import java.time.Clock
+
 import backend.albums.filler.storage.FillerStorageModule
 import backend.logging.{Logger, LoggingLevel, LoggingModules}
 import backend.module.StandaloneModule
@@ -10,7 +12,6 @@ import models.{IOMusicFinderModule, MusicFinder}
 import net.codingwell.scalaguice.ScalaModule
 
 import common.Debug
-import common.io.DirectoryRef
 
 // TODO too many modifiers = poor cohesion
 private[albums] object LocalNewAlbumsModule extends Debug {
@@ -26,17 +27,15 @@ private[albums] object LocalNewAlbumsModule extends Debug {
     }
   }
   private[filler] def forSingleArtist(artistName: String): Module = new EagerBinder {
-    @Provides
-    @Singleton
-    private def existingAlbumsCache(mf: MusicFinder): EagerExistingAlbums =
-      EagerExistingAlbums.singleArtist(Artist(artistName), mf)
+    @Provides @Singleton private def existingAlbumsCache(
+        mf: MusicFinder, clock: Clock): EagerExistingAlbums =
+      EagerExistingAlbums.singleArtist(Artist(artistName), mf, clock)
   }
   def default: Module = new EagerBinder {
-    @Provides
-    @Singleton
-    private def existingAlbumsCache(implicit mf: MusicFinder, logger: Logger): EagerExistingAlbums = {
+    @Provides @Singleton private def existingAlbumsCache(
+        implicit mf: MusicFinder, logger: Logger, clock: Clock): EagerExistingAlbums = {
       timed("Creating cache", LoggingLevel.Info) {
-        EagerExistingAlbums.from(ExistingAlbums.albumDirectories(mf), mf)
+        EagerExistingAlbums.from(ExistingAlbums.albumDirectories(mf), mf, clock)
       }
     }
   }

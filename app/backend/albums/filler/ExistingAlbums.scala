@@ -6,6 +6,7 @@ import models.MusicFinder
 
 import common.io.DirectoryRef
 import common.rich.RichT._
+import common.rich.primitives.RichOption.richOption
 
 private trait ExistingAlbums {
   def artists: Iterable[Artist]
@@ -22,15 +23,15 @@ private object ExistingAlbums {
     Artist(dirName optionOrKeep invalidDirectoryNames.get)
   def toAlbum(mf: MusicFinder)(dir: DirectoryRef): Album =
     if (dir.name.take(4).forall(_.isDigit)) {
-      val split = dir.name.split(" ", 2).ensuring(_.length == 2)
+      val split = dir.name.split(" ", 2).ensuring(_.length == 2, s"Bad name for <$dir>")
       Album(
         title = split(1),
         // Some albums are prefixed with 1969A.
         year = split(0).ensuring(s => s.length == 4 || s.length == 5).take(4).toInt,
         artist = dirNameToArtist(dir.parent.name),
       )
-    } else
-      mf.parseSong(mf.getSongFilesInDir(dir).head).release // Single album artist.
+    } else // Single album artist.
+      mf.parseSong(mf.getSongFilesInDir(dir).headOption.getOrThrow(s"Problem with $dir")).release
 
   private val IgnoredFolders = Vector("Classical", "Musicals")
   def artistDirectories(mf: MusicFinder): Seq[mf.S#D] = {
