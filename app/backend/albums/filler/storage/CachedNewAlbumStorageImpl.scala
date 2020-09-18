@@ -1,6 +1,6 @@
 package backend.albums.filler.storage
 
-import backend.albums.filler.NewAlbumRecon
+import backend.albums.filler.{EagerExistingAlbums, NewAlbumRecon}
 import backend.module.StandaloneModule
 import backend.recon.Artist
 import com.google.inject.Guice
@@ -18,9 +18,12 @@ private class CachedNewAlbumStorageImpl @Inject()(
     lastFetchTime: LastFetchTime,
     newAlbumStorage: NewAlbumStorage,
     ec: ExecutionContext,
+    ea: EagerExistingAlbums,
 ) extends CachedNewAlbumStorage {
   private implicit val iec: ExecutionContext = ec
-  override def all = newAlbumStorage.all
+  override def all = newAlbumStorage.all.map {
+    case (artist, albums) => artist -> ea.removeExistingAlbums(artist, albums)
+  }
   override def freshness(a: Artist) = lastFetchTime.freshness(a)
   override def unremoveAll(a: Artist) = newAlbumStorage.unremoveAll(a)
   override def storeNew(albums: Seq[NewAlbumRecon], artists: Set[Artist]) =

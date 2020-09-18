@@ -21,9 +21,11 @@ trait MusicFinder {self =>
     val normalizedName = name.toLowerCase
     artistDirs.find(_.name.toLowerCase == normalizedName)
   }
-  def albumDirs: Seq[S#D] = genreDirs
+  def albumDirs: Seq[S#D] = albumDirs(genreDirs)
+  def albumDirs(startingFrom: Seq[S#D]): Seq[S#D] = startingFrom
       .flatMap(_.deepDirs)
       .toVector
+      // Because some albums have, e.g., cover subdirectories
       .filter(_.files.exists(f => extensions.contains(f.extension)))
   def getSongFiles: Seq[S#F] = albumDirs.par.flatMap(getSongFilesInDir).seq
   def getSongFilesInDir(d: DirectoryRef): Seq[S#F] =

@@ -1,7 +1,6 @@
 package backend.albums.filler
 
 import backend.albums.NewAlbum
-import backend.mb.MbAlbumMetadata
 import backend.recon.{Album, Artist, StringReconScorer}
 import models.MusicFinder
 
@@ -13,13 +12,11 @@ private class EagerExistingAlbums private(override val albums: Map[Artist, Set[A
     extends ExistingAlbums {
   override def artists: Iterable[Artist] = albums.keys
 
-  def removeExistingAlbums(artist: Artist, allAlbums: Seq[MbAlbumMetadata]): Seq[NewAlbumRecon] = for {
-    album <- allAlbums
-    // TODO this should use the album's ReconID.
-    if album.isReleased && albums(artist.normalized)
-        .map(_.title)
-        .fornone(StringReconScorer(_, album.title) > 0.95)
-  } yield NewAlbumRecon(NewAlbum.from(artist, album), album.reconId)
+  def removeExistingAlbums(artist: Artist, allAlbums: Seq[NewAlbum]): Seq[NewAlbum] = {
+    // TODO is released
+    val albumTitles = albums(artist.normalized).map(_.title)
+    allAlbums.filter(a => albumTitles.fornone(StringReconScorer(_, a.title) > 0.95))
+  }
 }
 
 private object EagerExistingAlbums {

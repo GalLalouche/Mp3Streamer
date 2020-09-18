@@ -31,4 +31,19 @@ private object ExistingAlbums {
       )
     } else
       mf.parseSong(mf.getSongFilesInDir(dir).head).release // Single album artist.
+
+  private val IgnoredFolders = Vector("Classical", "Musicals")
+  def artistDirectories(mf: MusicFinder): Seq[mf.S#D] = {
+    val prefixLength = {
+      val $ = mf.dir.path
+      $.length + (if ($.endsWith("\\") || $.endsWith("/")) 0 else 1)
+    }
+    def ignore(dir: DirectoryRef): Boolean = {
+      val genrePrefix = dir.path.drop(prefixLength)
+      IgnoredFolders.exists(genrePrefix.startsWith)
+    }
+    mf.artistDirs.filterNot(ignore)
+  }
+  def albumDirectories(mf: MusicFinder): Seq[DirectoryRef] =
+    mf.albumDirs(artistDirectories(mf))
 }

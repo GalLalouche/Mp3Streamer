@@ -1,6 +1,8 @@
 package backend.albums.filler
 
+import backend.albums.NewAlbum
 import backend.logging.Logger
+import backend.mb.{MbAlbumMetadata, MbArtistReconciler}
 import backend.recon.{Artist, ReconcilerCacher, ReconID}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import com.google.inject.{Inject, Singleton}
@@ -17,7 +19,7 @@ import common.rich.RichT._
 
 @Singleton private class NewAlbumFetcher @Inject()(
     logger: Logger,
-    mbDataFetcher: MbDataFetcher,
+    meta: MbArtistReconciler,
     reconciler: ReconcilerCacher[Artist],
 ) {
   private implicit val ec: ExecutionContext = DaemonFixedPool(this.simpleName, 10)
@@ -30,9 +32,15 @@ import common.rich.RichT._
     None
   }, Some.apply)
   ) |> OptionT.apply
-  def apply(artist: Artist) = (for {
+
+  def apply(artist: Artist): Future[Seq[NewAlbumRecon]] = (for {
     recon <- getReconId(artist)
     _ = logger.debug(s"Fetching new albums for <$artist>")
-    albums <- mbDataFetcher(artist, recon).liftSome
-  } yield albums) | Nil
+    albums <- meta.getAlbumsMetadata(recon).liftSome
+  } yield albums.map(NewAlbumFetcher.toReconned(artist))) | Nil
+}
+
+private object NewAlbumFetcher {
+  private def toReconned(artist: Artist)(meta: MbAlbumMetadata): NewAlbumRecon =
+    NewAlbumRecon(NewAlbum.from(artist, meta), meta.reconId)
 }
