@@ -1,6 +1,6 @@
 $(function() {
-  const div = $("#albums")
-  const artists = $("<ol>").appendTo(div)
+  const topLevel = $("#albums")
+  const genreList = $("<ol>").appendTo(topLevel)
   const button = (text, clazz) => elem("button", text).addClass(clazz)
   const createHideButton = () => button("Hide", "hide")
 
@@ -15,17 +15,16 @@ $(function() {
     })
   }
 
-  function addArtist(artistName, genre, albums) {
+  function addArtist(artistName, albums) {
     const albumsElem = elem("ol")
-    elem("li", `${artistName} (${genre}) `)
+    const artistElem = elem("li", `${artistName} `)
         .append(button("Ignore", "ignore-artist"))
         .append(button("Remove", "remove-artist"))
         .append(createHideButton())
         .append(albumsElem)
         .data("artistName", artistName)
-        .appendTo(artists)
 
-    for (const album of albums) {
+    for (const album of albums)
       elem("li", `[${album.albumType}] ${album.title} (${album.year}) `)
           .data({"artistName": artistName, "year": album.year, "title": album.title})
           .appendTo(albumsElem)
@@ -33,18 +32,32 @@ $(function() {
           .append(button("Remove", "remove-album"))
           .append(createHideButton())
           .append(button("Google torrent", "google-torrent"))
-    }
+    return artistElem
+  }
+
+  function addGenre(genre, artists) {
+    const artistDiv = div()
+    artists.forEach(o => addArtist(o.name, o.albums).appendTo(artistDiv))
+    return genreList
+        .append($(`<h5>${genre}</h5>`))
+        .append(artistDiv)
   }
 
   $.get("albums/", function(e) {
-    e.custom_sort_by(e => e.name).forEach(o => addArtist(o.name, o.genre, o.albums))
+    const byGenre = map_values(e.custom_group_by(e => e.genre), e => e.custom_sort_by(e => e.name))
+    for (const [key, value] of Object.entries(byGenre).custom_sort_by(e => e[0]))
+      genreList.append(addGenre(key, value))
+    genreList.accordion({
+      collapsible: true,
+      heightStyle: "content",
+    })
   })
 
   // buttons
   const hideParent = parent => () => parent.hide()
 
   function onClick(classSelector, f) {
-    div.on("click", "." + classSelector, e => f($(e.target).closest("li")))
+    topLevel.on("click", "." + classSelector, e => f($(e.target).closest("li")))
   }
 
   onClick("hide", parent => parent.hide())

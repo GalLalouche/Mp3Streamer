@@ -184,6 +184,23 @@ Array.prototype.custom_sort_by = function(f) {
       })
       .map(e => e[0])
 }
+Array.prototype.custom_group_by = function(f) {
+  result = {}
+  this.forEach(e => {
+    const key = f(e)
+    if (result[key] === undefined)
+      result[key] = []
+    result[key].push(e)
+  })
+  return result
+}
+// Adding this is a prototype method to Object messes things up for some reason :\
+function map_values(o, f) {
+  result = {}
+  for (const [key, value] of Object.entries(o))
+    result[key] = f(value)
+  return result
+}
 
 function assert(condition, message) {
   if (condition)
