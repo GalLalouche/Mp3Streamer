@@ -1,8 +1,6 @@
 package backend.external
 
 import java.time.LocalDateTime
-
-import backend.RichTime._
 import backend.Url
 import backend.recon.{Album, Artist, Reconcilable}
 import backend.storage.{AlwaysFresh, DatedFreshness, DbProvider, Freshness, SlickSingleKeyColumnStorageTemplateFromConf}
@@ -31,8 +29,6 @@ private abstract class SlickExternalStorage[R <: Reconcilable](
   private implicit val iec: ExecutionContext = ec
   import profile.api._
 
-  protected implicit val localDateTimeColumn: JdbcType[LocalDateTime] =
-    MappedColumnType.base[LocalDateTime, Long](_.toMillis, _.toLocalDateTime)
   private implicit def markedLinkStringSerializable: StringSerializable[MarkedLink[R]] =
   // FIXME some URLs include ";". We solve this by using "-;-" in those rare cases, but one should find a less hacky hack.
     new StringSerializable[MarkedLink[R]] {

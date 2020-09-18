@@ -1,8 +1,6 @@
 package backend.albums.filler.storage
 
 import java.time.LocalDateTime
-
-import backend.RichTime._
 import backend.recon.{Artist, SlickArtistReconStorage}
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
 import javax.inject.Inject
@@ -23,8 +21,6 @@ private class SlickLastFetchTimeStorage @Inject()(
   override type Id = String
   override protected implicit def btt: BaseTypedType[String] = ScalaBaseType.stringType
   // TODO code duplication with SlickExternalStorage
-  protected implicit val localDateTimeColumn: JdbcType[LocalDateTime] =
-    MappedColumnType.base[LocalDateTime, Long](_.toMillis, _.toLocalDateTime)
   override protected def extractId(k: Artist) = k.normalize
   override type Entity = (String, Option[LocalDateTime])
   protected class Rows(tag: Tag) extends Table[Entity](tag, "artist_last_album_update") {

@@ -2,10 +2,11 @@ package common.io
 
 import java.time.LocalDateTime
 
-import backend.RichTime.OrderingLocalDateTime._
-import common.concurrency.Extra
-
+import scala.Ordering.Implicits._
 import scala.concurrent.Future
+
+import common.concurrency.Extra
+import common.rich.RichTime.OrderingLocalDateTime
 
 class FolderCleaner(dir: DirectoryRef) {
   private val extra = Extra(s"FolderCleaner for <$dir>", {

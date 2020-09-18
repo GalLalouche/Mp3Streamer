@@ -6,8 +6,6 @@ import backend.albums.filler.storage.CachedNewAlbumStorage
 import backend.logging.{FilteringLogger, Logger, LoggingLevel}
 import backend.recon.Artist
 import backend.storage.{AlwaysFresh, DatedFreshness}
-import backend.RichTime.RichLocalDateTime
-import backend.albums.filler.CacherFiller.MaxAge
 import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
@@ -21,6 +19,7 @@ import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.concurrency.SimpleTypedActor
 import common.rich.RichFuture.richFuture
+import common.rich.RichTime.RichLocalDateTime
 
 @Singleton private class CacherFiller @Inject()(
     storage: CachedNewAlbumStorage,
@@ -29,6 +28,7 @@ import common.rich.RichFuture.richFuture
     ec: ExecutionContext,
     logger: Logger,
 ) {
+  import CacherFiller.MaxAge
   private implicit val iec: ExecutionContext = ec
   // TODO code duplication with RefreshableRetriever
   private val finisher = SimpleTypedActor.async[(Seq[NewAlbumRecon], Set[Artist]), Int](

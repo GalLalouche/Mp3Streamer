@@ -2,8 +2,6 @@ package backend.search
 
 import java.time.LocalDateTime
 
-import backend.RichTime.OrderingLocalDateTime
-import backend.search.MetadataCacher._
 import models.{Album, AlbumFactory, Artist, MusicFinder, Song}
 import rx.lang.scala.Observable
 
@@ -20,6 +18,7 @@ import common.ds.IndexedSet
 import common.io.{DirectoryRef, JsonableSaver}
 import common.json.Jsonable
 import common.rich.RichT._
+import common.rich.RichTime._
 import common.rich.primitives.RichOption._
 
 /**
@@ -40,6 +39,8 @@ private class MetadataCacher(
     albumJsonable: Jsonable[Album],
     artistJsonable: Jsonable[Artist],
 ) {
+  import MetadataCacher._
+
   private implicit val iec: ExecutionContext = ec
 
   def cacheAll(): Observable[CacheUpdate] = update(CacheAll)

@@ -3,7 +3,7 @@ package backend.storage
 import java.time.{Clock, Duration}
 
 import backend.Retriever
-import backend.RichTime.RichLocalDateTime
+import common.rich.RichTime.RichLocalDateTime
 
 import scala.concurrent.{ExecutionContext, Future}
 

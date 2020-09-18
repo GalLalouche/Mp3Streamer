@@ -3,13 +3,13 @@ package backend.storage
 import java.time.Clock
 
 import backend.FutureOption
-import backend.RichTime._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.BetterFutureInstances._
 
 import common.rich.RichT._
+import common.rich.RichTime.RichInstant
 import common.rich.RichTuple._
 import common.storage.{Storage, StoreMode}
 

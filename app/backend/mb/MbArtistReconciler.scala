@@ -1,6 +1,5 @@
 package backend.mb
 
-import backend.RichTime.OrderingLocalDate
 import backend.recon.{Artist, Reconciler, ReconID}
 import javax.inject.Inject
 
@@ -11,6 +10,7 @@ import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 
 import common.json.RichJson._
+import common.rich.RichTime.OrderingLocalDate
 
 private[backend] class MbArtistReconciler @Inject()(
     ec: ExecutionContext,

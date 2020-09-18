@@ -1,11 +1,12 @@
 package backend.recent
 
-import backend.RichTime.OrderingLocalDateTime
 import javax.inject.Inject
 import models.{Album, AlbumFactory, MusicFinder}
 
 import common.rich.func.MoreSeqInstances._
 import common.rich.func.ToMoreFoldableOps._
+
+import common.rich.RichTime.OrderingLocalDateTime
 
 private class RecentAlbums @Inject()(mf: MusicFinder, albumFactory: AlbumFactory) {
   def apply(amount: Int): Seq[Album] = mf.albumDirs

@@ -2,7 +2,6 @@ package backend.storage
 
 import java.time.Clock
 
-import backend.RichTime._
 import backend.module.TestModuleConfiguration
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
@@ -13,6 +12,7 @@ import scalaz.syntax.functor.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
 
 import common.FakeClock
+import common.rich.RichTime.{RichInstant, RichLong}
 import common.storage.StoreMode
 import common.test.AsyncAuxSpecs
 
