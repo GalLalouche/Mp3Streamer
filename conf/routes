@@ -14,7 +14,7 @@ GET         /client/*file                            controllers.Application.sjs
 GET         /assets/*file                            controllers.MyAssets.asset(file)
 GET         /js/*file                                controllers.MyAssets.javascript(file)
 
-# SongController!
+# SongController! (Lazy, because fetching all the songs takes a while)
 GET         /data/randomSong                         controllers.SongController.randomSong
 GET         /data/randomSong/mp3                     controllers.SongController.randomMp3Song
 GET         /data/randomSong/flac                    controllers.SongController.randomFlacSong
@@ -58,13 +58,13 @@ POST        /playlist/state                          playlist.PlaylistController
 GET         /debug/slow_refresh                      backend.search.IndexController.cacheAll()
 GET         /debug/fast_refresh                      backend.search.IndexController.quickRefresh()
 
-# Albums
-GET         /new_albums/index.html                   backend.albums.AlbumsController.index
-GET         /new_albums/albums/                      backend.albums.AlbumsController.albums
-PUT         /new_albums/artist/remove/*artist        backend.albums.AlbumsController.removeArtist(artist)
-PUT         /new_albums/artist/ignore/*artist        backend.albums.AlbumsController.ignoreArtist(artist)
-PUT         /new_albums/album/remove                 backend.albums.AlbumsController.removeAlbum
-PUT         /new_albums/album/ignore                 backend.albums.AlbumsController.ignoreAlbum
+# Albums (Lazy, because ExistingAlbums takes a while to load)
+GET         /new_albums/index.html                   @backend.albums.AlbumsController.index
+GET         /new_albums/albums/                      @backend.albums.AlbumsController.albums
+PUT         /new_albums/artist/remove/*artist        @backend.albums.AlbumsController.removeArtist(artist)
+PUT         /new_albums/artist/ignore/*artist        @backend.albums.AlbumsController.ignoreArtist(artist)
+PUT         /new_albums/album/remove                 @backend.albums.AlbumsController.removeAlbum
+PUT         /new_albums/album/ignore                 @backend.albums.AlbumsController.ignoreAlbum
 
 # Recent
 GET         /recent/albums/                          backend.recent.RecentController.recent(amount: Int = 10)

@@ -4,13 +4,14 @@ import java.time.Clock
 
 import backend.albums.NewAlbum
 import backend.recon.{Album, Artist, StringReconScorer}
+import javax.inject.Singleton
 import models.MusicFinder
 
 import common.io.DirectoryRef
 import common.rich.collections.RichTraversableOnce._
 import common.rich.RichT._
 
-private class EagerExistingAlbums private(
+@Singleton private class EagerExistingAlbums private(
     override val albums: Map[Artist, Set[Album]],
     clock: Clock,
 ) extends ExistingAlbums {

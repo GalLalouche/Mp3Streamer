@@ -59,7 +59,7 @@ private class NewAlbumFiller @Inject()(
 private object NewAlbumFiller {
   import common.rich.func.NumericMonoids.SumNumeric
 
-  private val MaxAge = Duration.ofDays(30)
+  private val MaxAge = Duration.ofDays(1)
 
   def main(args: Array[String]): Unit = {
     val injector = LocalNewAlbumsModule.overridingStandalone(LocalNewAlbumsModule.default)
@@ -70,4 +70,3 @@ private object NewAlbumFiller {
     println(s"Added a total of <${artists.foldMapM(e.update).get}> new albums!")
   }
 }
-

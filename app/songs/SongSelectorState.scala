@@ -1,19 +1,14 @@
 package songs
 
-import com.google.inject.Provider
-import common.concurrency.Extra
-import javax.inject.{Inject, Singleton}
+import javax.inject.{Inject, Provider}
 import models.Song
 
 import scala.concurrent.Future
 
-@Singleton
-class SongSelectorState @Inject()(songSelectorProvider: Provider[SongSelector]) extends SongSelector {
-  private var state = songSelectorProvider.get()
-  private val extra = Extra("SongSelectorState", {
-    state = songSelectorProvider.get()
-  })
-  def update(): Future[Unit] = extra.!()
-  override def randomSong: Song = state.randomSong
-  override def followingSong(song: Song): Option[Song] = state.followingSong(song)
+// A stupid hack to make SongSelectorState lazy (since initializing all the songs takes a while) while
+// remaining transparent to clients.
+class SongSelectorState @Inject()(provider: Provider[EagerSongSelectorState]) extends SongSelector {
+  def update(): Future[Unit] = provider.get().update()
+  override def randomSong: Song = provider.get().randomSong
+  override def followingSong(song: Song): Option[Song] = provider.get().followingSong(song)
 }
