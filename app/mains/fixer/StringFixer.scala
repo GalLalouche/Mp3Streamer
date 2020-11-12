@@ -32,7 +32,7 @@ object StringFixer extends (String => String) {
   private val MixedCapsPattern = Pattern compile ".*[A-Z].*"
   private val DottedAcronymPattern = Pattern compile "(\\w\\.)+"
   val SpecialQuotes: Pattern = Pattern compile "[“”]"
-  val SpecialApostrophes: Pattern = Pattern compile "[‘’�]"
+  val SpecialApostrophes: Pattern = Pattern compile "[‘’�´]"
   private val SpecialDashes = Pattern compile "[—–-−]"
   private def fixWord(word: String, forceCapitalization: Boolean): String = asciiNormalize(
     if (forceCapitalization.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase
@@ -71,7 +71,8 @@ object StringFixer extends (String => String) {
   override def apply(s: String): String = {
     val trimmed = s.trim
     if (trimmed.hasHebrew)
-      trimmed.replaceAll(SpecialQuotes, "\"") |> normalizeDashesAndApostrophes // Keep '"' for Hebrew acronyms.
+      trimmed
+          .replaceAll(SpecialQuotes, "\"") |> normalizeDashesAndApostrophes // Keep '"' for Hebrew acronyms.
     else {
       val words = trimmed.splitWithDelimiters(Delimiters)
       // The first word is always capitalized (e.g., The Who), while the other words will only be
