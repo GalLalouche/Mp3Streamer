@@ -32,6 +32,7 @@ object StringFixer extends (String => String) {
   private val MixedCapsPattern = Pattern compile ".*[A-Z].*"
   private val DottedAcronymPattern = Pattern compile "(\\w\\.)+"
   val SpecialQuotes: Pattern = Pattern compile "[“”]"
+  val ConjuctiveN: Pattern = Pattern compile " '?[Nn]'"
   val SpecialApostrophes: Pattern = Pattern compile "[‘’�´]"
   private val SpecialDashes = Pattern compile "[—–-−]"
   private def fixWord(word: String, forceCapitalization: Boolean): String = asciiNormalize(
@@ -80,6 +81,7 @@ object StringFixer extends (String => String) {
       fixWord(words.head, forceCapitalization = true) + words.pairSliding.map {
         case (wordBefore, word) => fixWord(word, forceCapitalization = wordBefore.trim.matches(Delimiters))
       }.mkString("")
+          .replaceAll(ConjuctiveN, " n'")
     }
   }
 }

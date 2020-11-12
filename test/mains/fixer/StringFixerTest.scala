@@ -23,6 +23,14 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
     verifyFix("i foo", "I Foo")
     verifyFix("foo i", "Foo I")
   }
+  "Rock n' Roll" in {
+    Vector(
+      "rock 'N' roll",
+      "rock 'n' roll",
+      "Rock n' Roll",
+      "Rock N' Roll",
+    ) foreach (verifyFix(_, "Rock n' Roll"))
+  }
   "Mixed caps" in {
     Vector("FOO", "FoO", "fOo").foreach(e => verifyFix(e, e))
   }
