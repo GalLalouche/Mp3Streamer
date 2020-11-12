@@ -23,6 +23,7 @@ $(function() {
         gplayer.playCurrentSong()
         break;
       case 32: // Space key
+      case ' ':
       case 'K': // fucking youtube :\
       case 'C':
         gplayer.togglePause()
