@@ -12,7 +12,8 @@ class RecentController @Inject()(
 ) extends InjectedController {
   private val webSocket = webSocketFactory("Recent")
 
-  def recent(amount: Int) = converter.ok($.recent(amount))
+  def recent(amount: Int) = converter.ok($.all(amount))
+  def double(amount: Int) = converter.ok($.double(amount))
   def last = recent(1)
 
   $.register(webSocket)

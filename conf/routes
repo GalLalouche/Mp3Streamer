@@ -69,6 +69,8 @@ PUT         /new_albums/album/ignore                 @backend.albums.AlbumsContr
 # Recent
 GET         /recent/albums/                          backend.recent.RecentController.recent(amount: Int = 10)
 GET         /recent/albums/:amount                   backend.recent.RecentController.recent(amount: Int)
+GET         /recent/double/                          backend.recent.RecentController.double(amount: Int = 10)
+GET         /recent/double/:amount                   backend.recent.RecentController.double(amount: Int)
 GET         /recent/last                             backend.recent.RecentController.last
 GET         /ws/last_album                           backend.recent.RecentController.accept
 

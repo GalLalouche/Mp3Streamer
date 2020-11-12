@@ -21,8 +21,9 @@ private class RecentFormatter @Inject()(
 ) extends InjectedController {
   private implicit val iec: ExecutionContext = ec
 
-  def recent(amount: Int): Future[JsValue] = Future(recentAlbums(amount)).map(_.jsonify)
-  def last: Future[JsValue] = recent(1)
+  def all(amount: Int): Future[JsValue] = Future(recentAlbums.all(amount)).map(_.jsonify)
+  def double(amount: Int): Future[JsValue] = Future(recentAlbums.double(amount)).map(_.jsonify)
+  def last: Future[JsValue] = all(1)
 
   def register: WebSocketRefReader =
     Reader(ws => newAlbumObservable.doOnNext(ws broadcast _.jsonify.toString).subscribe())
