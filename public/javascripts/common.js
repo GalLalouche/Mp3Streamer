@@ -62,7 +62,7 @@ function appendBr(elementToAppendTo) {
 Number.prototype.timeFormat = function() {
   let hours = Math.floor(this / 3600)
   let minutes = Math.floor((this - (hours * 3600)) / 60)
-  let seconds = this - (hours * 3600) - (minutes * 60)
+  let seconds = Math.round(this - (hours * 3600) - (minutes * 60))
 
   hours = (0 < hours && hours < 10 ? "0" : "") + hours
   if (hours < 10) hours = "0" + hours
@@ -77,11 +77,11 @@ Number.prototype.timeFormat = function() {
 function copyTextToClipboard(text) {
   const textArea = document.createElement("textarea")
   textArea.style.position = 'fixed'
-  textArea.style.top = 0
-  textArea.style.left = 0
+  textArea.style.top = '0'
+  textArea.style.left = '0'
   textArea.style.width = '2em'
   textArea.style.height = '2em'
-  textArea.style.padding = 0
+  textArea.style.padding = '0'
   textArea.style.border = 'none'
   textArea.style.outline = 'none'
   textArea.style.boxShadow = 'none'
