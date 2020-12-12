@@ -3,11 +3,11 @@
   height: 100%;
 }
 .poster-buttons button {
-  height: 33%;
+  height: 24.5%;
   width: 100%;
 }
 .poster-buttons:nth-child(n+3) button {
-  height: 33%;
+  height: 24.5%;
   width: 100%;
 }
 #jp_poster_0 {

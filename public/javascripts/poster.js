@@ -10,12 +10,14 @@ $(() => {
               buttonAux("update_playlist", "Update playlist"),
               buttonAux("update_state", "Update state"),
               buttonAux("update_backup", "Update backup"),
+              buttonAux("update_clipboard", "Update clipboard"),
           ),
           td().append(poster),
           td({"class": "poster-buttons right-poster-buttons"}).append(
               buttonAux("load_playlist", "Load playlist"),
               buttonAux("load_state", "Load state"),
               buttonAux("load_backup", "Load backup"),
+              buttonAux("load_clipboard", "Load clipboard"),
           ),
       )
   )
