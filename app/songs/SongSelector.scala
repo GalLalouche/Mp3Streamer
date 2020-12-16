@@ -37,11 +37,11 @@ private class SongSelectorImpl[Sys <: RefSystem](
         .lift(song.track)
 }
 
-object SongSelector {
+private object SongSelector {
   import common.rich.RichFuture._
 
   /** A mutable-updateable wrapper of SongSelector */
-  private[songs] class SongSelectorProxy @Inject()(ec: ExecutionContext, mf: MusicFinder) extends SongSelector {
+  class SongSelectorProxy @Inject()(ec: ExecutionContext, mf: MusicFinder) extends SongSelector {
     private implicit val iec: ExecutionContext = ec
     def update(): Future[_] = {
       val $ = Future(new SongSelectorImpl(mf.getSongFiles.toVector)(mf))
