@@ -10,11 +10,12 @@ class RecentController @Inject()(
     converter: PlayActionConverter,
     webSocketFactory: PlayWebSocketRegistryFactory,
 ) extends InjectedController {
-  private val webSocket = webSocketFactory("Recent")
+  private val webSocket = webSocketFactory(RecentModule.WebSocketName)
 
   def recent(amount: Int) = converter.ok($.all(amount))
   def double(amount: Int) = converter.ok($.double(amount))
   def last = recent(1)
+  def debugLast() = converter.ok($.debugLast())
 
   $.register(webSocket)
   def accept(): WebSocket = webSocket.accept()
