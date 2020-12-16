@@ -2,6 +2,7 @@ $(function() {
   const last_albums = elem("ul")
       .appendTo($("#last_albums"))
       .css("list-style", "none")
+  const handledAlbums = new Set()
   const lastAlbums = () => last_albums.children("li")
   const ADD = "plus"
   const REMOVE = "times"
@@ -24,6 +25,10 @@ $(function() {
   }
   function onMessage(msg) {
     const album = JSON.parse(msg.data)
+    const albumKey = album.dir
+    if (handledAlbums.has(albumKey))
+      return
+    handledAlbums.add(albumKey)
     const listElement = elem(
         "li",
         `${icon(ADD)} ${icon(DOWNLOAD)} ${icon(REMOVE)} ${album.artistName}: ${album.title}`
