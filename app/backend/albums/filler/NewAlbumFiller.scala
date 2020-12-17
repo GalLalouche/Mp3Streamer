@@ -62,7 +62,7 @@ private object NewAlbumFiller {
   private val MaxAge = Duration.ofDays(1)
 
   def main(args: Array[String]): Unit = {
-    val injector = LocalNewAlbumsModule.overridingStandalone(LocalNewAlbumsModule.default)
+    val injector = ExistingAlbumsModules.overridingStandalone(ExistingAlbumsModules.default)
     injector.instance[FilteringLogger].setCurrentLevel(LoggingLevel.Debug)
     val e = injector.instance[NewAlbumFiller]
     val artists = injector.instance[ExistingAlbums].artists

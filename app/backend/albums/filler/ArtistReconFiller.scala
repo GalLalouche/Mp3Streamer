@@ -46,7 +46,7 @@ private class ArtistReconFiller @Inject()(
 
 private object ArtistReconFiller {
   def main(args: Array[String]): Unit = {
-    val injector = LocalNewAlbumsModule.overridingStandalone(LocalNewAlbumsModule.lazyAlbums)
+    val injector = ExistingAlbumsModules.overridingStandalone(ExistingAlbumsModules.lazyAlbums)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     injector.instance[ArtistReconFiller].go().get
   }
