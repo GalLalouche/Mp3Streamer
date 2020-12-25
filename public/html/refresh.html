@@ -6,18 +6,18 @@
   <script type="text/javascript" src="/assets/javascripts/ws/common.js"></script>
   <script type="text/javascript">
     $(function() {
-      const start = new Date();
+      const start = new Date().getTime();
       openConnection("refresh", function(msg, connection) {
         try {
           const json = JSON.parse(msg.data);
-          const percentage = Math.floor(100 * json.finished / json.total)
-          document.title = `${percentage}%`
+          const ratio = json.finished / json.total
+          document.title = `${(Math.floor(100 * ratio))}%`
           $("#status").text(msg.data);
-          const elapsed = new Date().getTime() / 1000 - start.getTime() / 1000
-          const timeRemaining = (100 - percentage) * (elapsed / percentage)
-          $("#elapsed").text(elapsed.timeFormat())
+          const elapsed = new Date().getTime() - start
+          const timeRemaining = ((1 - ratio) * (elapsed / ratio)) / 1000
+          $("#elapsed").text((elapsed / 1000).timeFormat())
           $("#remaining").text(timeRemaining.timeFormat())
-        } catch (err) {
+        } catch {
           document.title = msg.data
           if (msg.data === "Finished")
             connection.close()
