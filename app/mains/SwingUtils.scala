@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage
 
 import javax.swing.{ImageIcon, JLabel}
 
-import scala.swing.{Component, Font, Label}
+import scala.swing.{Component, Font, UIElement}
 
 private object SwingUtils {
   implicit class RichComponent(private val $: Component) extends AnyVal {
@@ -37,7 +37,7 @@ private object SwingUtils {
   implicit class RichImageIcon(private val $: ImageIcon) extends AnyVal {
     def toComponent: Component = Component wrap new JLabel($)
   }
-  implicit class RichLabel(val $: Label) extends AnyVal {
+  implicit class RichUIElement[A <: UIElement](val $: A) extends AnyVal {
     def setFontSize(size: Int): $.type = {
       val existingFont = $.font
       $.font = new Font(existingFont.getName, existingFont.getStyle, size)

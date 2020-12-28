@@ -1,5 +1,7 @@
 package mains.fixer
 
+import mains.fixer.new_artist.GenrePanel
+
 import scala.concurrent.{Future, Promise}
 import scala.swing.Frame
 import scala.swing.event.WindowClosing
@@ -21,14 +23,11 @@ import common.rich.path.Directory
 private object NewArtistFolderCreator {
   def selectGenreDir(): Future[Directory] = {
     def genre(dirName: String) = Directory("d:/media/music/" + dirName)
-    val panel = new GenrePanel(
-      maxRows = MaxRows, iconSideInPixels = IconSideInPixels, bigIconMultiplayer = BigIconMultiplayer)
-    Iterator("Rock", "Metal")
-        .map(genre(_).dirs)
-        .foreach(panel.addSubGenres)
-    Iterator("Jazz", "New Age", "Musicals")
-        .map(genre)
-        .foreach(panel.addBigSizeIcon)
+    val panel = GenrePanel(
+      maxRows = MaxRows, iconSideInPixels = IconSideInPixels, bigIconMultiplayer = BigIconMultiplayer,
+      subGenreDirs = Seq("Rock", "Metal").map(genre(_).dirs),
+      bigGenreDirs = Seq("Jazz", "New Age", "Musicals").map(genre),
+    )
 
     val $ = Promise[Directory]()
     val frame = new Frame {
