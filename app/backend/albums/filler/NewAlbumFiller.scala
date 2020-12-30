@@ -59,7 +59,8 @@ private class NewAlbumFiller @Inject()(
 private object NewAlbumFiller {
   import common.rich.func.NumericMonoids.SumNumeric
 
-  private val MaxAge = Duration.ofDays(1)
+  // TODO extract to a non-git managed config/runner.
+  private val MaxAge = Duration.ofDays(90)
 
   def main(args: Array[String]): Unit = {
     val injector = ExistingAlbumsModules.overridingStandalone(ExistingAlbumsModules.default)

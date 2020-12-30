@@ -3,6 +3,7 @@ package backend.albums.filler.storage
 import java.time.{Clock, LocalDateTime, ZoneOffset}
 
 import backend.albums.filler.storage.LastFetchTimeImpl.prependUnit
+import backend.logging.Logger
 import backend.module.StandaloneModule
 import backend.recon.Artist
 import backend.storage.{ComposedFreshnessStorage, DatedFreshness, Freshness}
@@ -15,6 +16,7 @@ import scala.concurrent.ExecutionContext
 import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreInvariantFunctorOps._
+import common.rich.func.ToMoreMonadErrorOps._
 import monocle.Iso
 
 import common.rich.RichFuture.richFuture
@@ -24,17 +26,22 @@ private class LastFetchTimeImpl @Inject()(
     storage: SlickLastFetchTimeStorage,
     clock: Clock,
     ec: ExecutionContext,
+    logger: Logger,
 ) extends LastFetchTime {
   private implicit val iec: ExecutionContext = ec
   private val xmapped: Storage[Artist, (Unit, Freshness)] =
     storage.asInstanceOf[Storage[Artist, Option[LocalDateTime]]].xmapmi(Freshness.iso ^<-> prependUnit)
   private val aux = new ComposedFreshnessStorage[Artist, Unit](xmapped, clock)
-  override def update(a: Artist) = aux.update(a, ()).run.void
+  override def update(a: Artist) =
+    aux.update(a, ()).run.void.listenError(logger.error(s"Failed to update artist <$a>", _))
   override def ignore(a: Artist) = aux.delete(a).run >> aux.storeWithoutTimestamp(a, ())
   override def freshness(a: Artist) = aux.freshness(a)
   override def reset(a: Artist) = {
     val time = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC)
-    storage.delete(a).run >> storage.store(a, Some(time)) >| DatedFreshness(time)
+    storage.delete(a).run
+        .>>(storage.store(a, Some(time)))
+        .>|(DatedFreshness(time))
+        .listenError(logger.error(s"Failed to reset artist <$a>", _))
   }
 }
 

@@ -27,14 +27,14 @@ private[albums] object ExistingAlbumsModules extends Debug {
   }
   private[filler] def forSingleArtist(artistName: String): Module = new EagerBinder {
     @Provides @Singleton private def existingAlbumsCache(
-        mf: MusicFinder, clock: Clock): EagerExistingAlbums =
-      EagerExistingAlbums.singleArtist(Artist(artistName), mf, clock)
+        mf: MusicFinder, clock: Clock, logger: Logger): EagerExistingAlbums =
+      EagerExistingAlbums.singleArtist(Artist(artistName), mf, clock, logger)
   }
   def default: Module = new EagerBinder {
     @Provides @Singleton private def existingAlbumsCache(
         implicit mf: MusicFinder, logger: Logger, clock: Clock): EagerExistingAlbums =
       timed("Creating cache", LoggingLevel.Info) {
-        EagerExistingAlbums.from(ExistingAlbums.albumDirectories(mf), mf, clock)
+        EagerExistingAlbums.from(ExistingAlbums.albumDirectories(mf), mf, clock, logger)
       }
   }
   private[filler] def overridingStandalone(m: Module): Injector =

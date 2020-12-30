@@ -4,6 +4,7 @@ import java.time.LocalDate
 
 import backend.albums.filler.NewAlbumRecon
 import backend.albums.NewAlbum
+import backend.logging.Logger
 import backend.mb.AlbumType
 import backend.module.StandaloneModule
 import backend.recon.{Artist, ReconID}
@@ -17,11 +18,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.ListT
 import scalaz.std.vector.vectorInstance
+import scalaz.syntax.apply.^
 import scalaz.syntax.bind.ToBindOps
 import scalaz.syntax.functor.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreApplicativeOps.toLazyApplicativeUnitOps
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
+import common.rich.func.ToMoreMonadErrorOps._
 import common.rich.func.ToTraverseMonadPlusOps._
 
 import common.rich.RichFuture.richFuture
@@ -35,6 +38,7 @@ private class SlickNewAlbumStorage @Inject()(
     dbP: DbProvider,
     // Allows for easier cascade.
     protected val artistStorage: SlickLastFetchTimeStorage,
+    logger: Logger,
 ) extends SlickSingleKeyColumnStorageTemplateFromConf[ReconID, StoredNewAlbum](ec, dbP) with NewAlbumStorage {
   private implicit val iec: ExecutionContext = ec
   import profile.api._
@@ -68,10 +72,11 @@ private class SlickNewAlbumStorage @Inject()(
   protected class Rows(tag: Tag) extends Table[Entity](tag, "new_album") {
     def reconId = column[ReconID]("recon_id")
     def album = column[AlbumTitle]("album")
+    // TODO why is this not an enum?
     def albumType = column[AlbumType]("type")
     def year = column[LocalDate]("epoch_day")
     def artist = column[ArtistName]("artist")
-    def pk = primaryKey("album_artist", (album, artist))
+    def pk = primaryKey("album_artist_type", (album, artist, albumType))
     def artist_fk = foreignKey("artist_fk", artist, artistStorage.tableQuery)(
       _.name,
       onUpdate = ForeignKeyAction.Cascade,
@@ -102,29 +107,48 @@ private class SlickNewAlbumStorage @Inject()(
     val na = a.newAlbum
     (a.reconId, na.title.toLowerCase, na.albumType.toString, na.date, na.artist.normalize)
   }
+  private def existsWithADifferentReconID(a: NewAlbumRecon): Future[Boolean] = db
+      // TODO there is some duplication here with the above in the definition of the primary key.
+      .run(
+        tableQuery.filter(e => {
+          val album = a.newAlbum
+          e.album === album.title.toLowerCase &&
+              e.artist === album.artist.normalize &&
+              e.albumType === album.albumType.entryName &&
+              e.reconId =!= a.reconId
+        }).exists.result)
+      .listen(e =>
+        if (e) logger.warn(s"<$a> already exists with a different ReconID... skipping")
+      )
+  private def isInvalid(e: NewAlbumRecon): Future[Boolean] =
+  // TODO RichBoolean.neither?
+    ^(exists(e.reconId), existsWithADifferentReconID(e))(_ || _)
   override def storeNew(albums: Seq[NewAlbumRecon]): Future[Int] = {
     val withoutDups = albums
         .groupBy(_.toTuple(_.newAlbum.artist, _.newAlbum.title))
-        .mapValues {e =>
-          val v = e.toVector
-          if (v.size > 1) {
-            val albums = v.filter(_.newAlbum.albumType == AlbumType.Album)
-            if (albums.size == 1)
-              e.head
-            else
-              throw new AssertionError(s"Could not extract a single album out of <$v>")
-          } else
-            v.head
+        .mapValues {
+          e =>
+            val v = e.toVector
+            if (v.size > 1) {
+              val albums = v.filter(_.newAlbum.albumType == AlbumType.Album)
+              if (albums.size == 1)
+                e.head
+              else
+                throw new AssertionError(s"Could not extract a single album out of <$v>")
+            } else
+              v.head
         }
         .values
         .toVector
     for {
-      newAlbums <- withoutDups.filterM(e => exists(e.reconId).negated)
+      newAlbums <- withoutDups.filterM(isInvalid(_).negated)
       result = newAlbums.size
       _ <- db.run(tableQuery
           .map(_.toTuple(_.reconId, _.album, _.albumType, _.year, _.artist))
           .++=(newAlbums.map(toPartialEntity).ensuring(_.nonEmpty))
-      ).whenMLazy(result > 0)
+      )
+          .whenMLazy(result > 0)
+          .listenError(logger.error(s"Failed to store albums: <${newAlbums mkString "\n"}>", _))
     } yield result
   }
   override def remove(artist: Artist) = db.run(tableQuery
