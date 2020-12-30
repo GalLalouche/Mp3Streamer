@@ -1,6 +1,7 @@
 package mains.fixer
 
 import mains.fixer.new_artist.GenrePanel
+import mains.BrowserUtils
 
 import scala.concurrent.{Future, Promise}
 import scala.swing.Frame
@@ -21,7 +22,11 @@ import common.rich.path.Directory
 * Prog           || Doom
 */
 private object NewArtistFolderCreator {
-  def selectGenreDir(): Future[Directory] = {
+  def selectGenreDirAndPopupBrowser(artistName: String): Future[Directory] = {
+    BrowserUtils.searchFor(artistName + " rym")
+    selectGenreDir(artistName)
+  }
+  def selectGenreDir(artistName: String): Future[Directory] = {
     def genre(dirName: String) = Directory("d:/media/music/" + dirName)
     val panel = GenrePanel(
       maxRows = MaxRows, iconSideInPixels = IconSideInPixels, bigIconMultiplayer = BigIconMultiplayer,
@@ -35,6 +40,7 @@ private object NewArtistFolderCreator {
     }
     frame.contents = panel
     frame.open()
+    frame.title = "Select genre for " + artistName
     panel.clicks.first.subscribe {d =>
       $.success(d)
       frame.dispose()
