@@ -20,6 +20,7 @@ import common.rich.collections.RichSeq._
 import common.rich.RichT._
 import common.rich.path.Directory
 import common.rich.path.RichFile.{richFile, _}
+import common.rich.primitives.RichInt.Rich
 
 /** Selects n random songs and dumps them in a folder on D:\ */
 private class RandomFolderCreator @Inject()(
@@ -49,7 +50,7 @@ private class RandomFolderCreator @Inject()(
     go(Set())
   }
 
-  private def copyFileToOutputDir(outputDir: Directory, pb: ProgressBar)(f: File, index: Int): Unit = try {
+  private def copyFileToOutputDir(outputDir: Directory, pb: ProgressBar, padLength: Int)(f: File, index: Int): Unit = try {
     val newFile = new File(outputDir.dir, f.name)
     FileUtils.copyFile(f, newFile)
     val audioFile = AudioFileIO.read(newFile)
@@ -60,18 +61,20 @@ private class RandomFolderCreator @Inject()(
         audioFile.commit()
       } catch {
         // Because—I wanna say Windows?—is such a piece of crap, if the folder is open while process runs,
-        // committing the ID3 tag canndom.kk sometimes fail.
+        // committing the ID3 tag can sometimes fail.
         case e@(_: CannotWriteException | _: UnableToRenameFileException) => e.printStackTrace()
       }
-    newFile.renameTo(new File(outputDir.dir, f"$index%02d.${f.extension}"))
+    newFile.renameTo(new File(outputDir.dir, f"${index padLeftZeros padLength}.${f.extension}"))
     pb.step()
   } catch {
     case e: Exception => println("\rFailed @ " + f); e.printStackTrace(); throw e
   }
 
   private def copy(songs: Traversable[File], outputDir: Directory, playlistName: String): Unit = {
-    for (pb <- managed(new ProgressBar("Copying songs", songs.size)))
-      songs.toVector.shuffle.zipWithIndex.foreach((copyFileToOutputDir(outputDir, pb) _).tupled)
+    val shuffledSongs = songs.toVector.shuffle
+    val padLength = shuffledSongs.size.toString.length
+    for (pb <- managed(new ProgressBar("Copying songs", shuffledSongs.size)))
+      shuffledSongs.zipWithIndex.foreach((copyFileToOutputDir(outputDir, pb, padLength) _).tupled)
     createPlaylistFile(outputDir, playlistName)
   }
 
