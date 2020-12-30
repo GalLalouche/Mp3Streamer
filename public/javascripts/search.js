@@ -144,6 +144,19 @@ $(function() {
     }
     $.get("search/" + text, e => setResults(e, searchTime))
   }
+  // When Enter is pressed and there is a *single* search result in the active tab, click it.
+  searchBox.on("keydown", function(e) {
+    if (e.keyCode !== ENTER_CODE)
+      return
+    const activeTab = "[role=tabpanel]:not([style*='display: none'])"
+    const items = results.find(`${activeTab} ul li`)
+    if (items.length !== 1)
+      return
+    // Click the first icon on the item list.
+    items.first().find("i").first().click()
+    clearResults();
+  });
+
 
   results.tabs()
   clearResults()

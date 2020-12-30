@@ -131,6 +131,7 @@ function isValidUrl(urlString) {
   return _URL_PATTERN.test(urlString)
 }
 
+const ENTER_CODE = 13
 /**
  * Disables or enables a button if the textbox contains valid text. Also binds "ENTER" key press to clicking the button.
  * @param textBox Jquery textbox(es) to bind a keyup event to; when modified, its text will be validated
@@ -148,7 +149,6 @@ function validateBoxAndButton(textBox, button, validationFunction, buttonFunctio
     buttonFunction()
   }
 
-  const ENTER_CODE = 13
   button.click(() => runIfEnabled())
   button.prop('disabled', true)
   textBox.keyup(function(event) {
