@@ -1,4 +1,4 @@
-package backend.search
+package backend.search.cache
 
 import java.time.LocalDateTime
 
@@ -29,7 +29,7 @@ import common.rich.primitives.RichOption._
  * indexing on its own! Since building the actual index from the parsed ID3 metadata is extremely fast, only
  * the ID3 metadata needs to be parsed and cached.
  */
-private class MetadataCacher(
+private[search] class MetadataCacher(
     saver: JsonableSaver,
     ec: ExecutionContext,
     mf: MusicFinder,
@@ -105,7 +105,7 @@ private class MetadataCacher(
     }
 }
 
-private object MetadataCacher {
+private[search] object MetadataCacher {
   private implicit object ArtistSemigroup extends Semigroup[Artist] {
     override def append(f1: Artist, f2: => Artist): Artist = f1 merge f2
   }
@@ -117,8 +117,6 @@ private object MetadataCacher {
     $.foldLeft(AllInfo(Vector(), List(), emptyArtistSet)) {
       (agg, t) => AllInfo(agg.songs ++ t.songs, t.album :: agg.albums, agg.artists + t.artist)
     }
-
-  case class CacheUpdate(currentIndex: Int, totalNumber: Int, dir: DirectoryRef)
 
   private trait Updater {
     def targets: GenSeq[DirectoryRef]

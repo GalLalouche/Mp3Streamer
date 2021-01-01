@@ -1,7 +1,7 @@
 package backend.search
 
 import backend.recent.NewDir
-import backend.search.MetadataCacher.CacheUpdate
+import backend.search.cache.{CacheUpdate, MetadataCacher}
 import javax.inject.Inject
 import rx.lang.scala.{Observable, Observer}
 import songs.SongSelectorState

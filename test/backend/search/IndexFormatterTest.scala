@@ -1,7 +1,7 @@
 package backend.search
 
 import backend.module.TestModuleConfiguration
-import backend.search.MetadataCacher.CacheUpdate
+import backend.search.cache.CacheUpdate
 import controllers.websockets.WebSocketRef
 import controllers.websockets.WebSocketRef.AsyncWebSocketRefReader
 import net.codingwell.scalaguice.InjectorExtensions._

@@ -1,10 +1,9 @@
-package backend.search
+package backend.search.cache
 
 import java.util.concurrent.{LinkedBlockingQueue, TimeUnit}
 
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
-import backend.search.MetadataCacher.CacheUpdate
-import backend.search.MetadataCacherTest._
+import backend.search.cache.MetadataCacherTest._
 import models._
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, OneInstancePerTest}

@@ -1,6 +1,6 @@
 package backend.search
 
-import backend.search.MetadataCacher.CacheUpdate
+import backend.search.cache.CacheUpdate
 import controllers.websockets.WebSocketRef.AsyncWebSocketRefReader
 import javax.inject.Inject
 import play.api.libs.json.Json

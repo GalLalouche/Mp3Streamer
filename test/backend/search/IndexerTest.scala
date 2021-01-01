@@ -1,7 +1,7 @@
 package backend.search
 
 import backend.module.TestModuleConfiguration
-import backend.search.MetadataCacher.CacheUpdate
+import backend.search.cache.{CacheUpdate, MetadataCacher}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.mockito.Mockito.{verify, when}
 import org.scalatest.{Assertion, AsyncFreeSpec, OneInstancePerTest, Succeeded}

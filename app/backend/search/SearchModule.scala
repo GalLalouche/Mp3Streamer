@@ -1,6 +1,7 @@
 package backend.search
 
 import backend.logging.Logger
+import backend.search.cache.MetadataCacher
 import com.google.inject.Provides
 import javax.inject.Singleton
 import models.{AlbumFactory, MusicFinder}
