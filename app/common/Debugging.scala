@@ -3,11 +3,6 @@ package common
 import backend.logging.{Logger, LoggingLevel}
 
 object Debugging {
-  def timed[T](task: String, logLevel: LoggingLevel = LoggingLevel.Verbose)(f: => T)(implicit l: Logger): T = {
-    val start = System.currentTimeMillis
-    l.log(s"starts $task", logLevel)
-    val $ = f
-    l.log(s"$task took ${System.currentTimeMillis - start} ms", logLevel)
-    $
-  }
+  def timed[T](task: String, logLevel: LoggingLevel = LoggingLevel.Verbose)(f: => T)(implicit l: Logger): T =
+    new TimedLogger(l).apply(task, logLevel)(f)
 }

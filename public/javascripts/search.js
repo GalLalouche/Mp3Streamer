@@ -93,18 +93,7 @@ $(function() {
 
   function scan() {
     LastAlbum.reopenLastAlbumWebsocketIfNeeded()
-    $.get("debug/fast_refresh", function() {
-      openConnection("refresh", function(msg, connection) {
-        try {
-          $.toast("Found new directory: " + JSON.parse(msg.data).currentDir)
-        } catch (ignored) {
-          if (msg.data.includes("Finished")) {
-            connection.close()
-            search()
-          }
-        }
-      })
-    })
+    $.get("index/index")
   }
 
   const getData = e => $(e).closest("li").data()

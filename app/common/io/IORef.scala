@@ -59,6 +59,9 @@ case class IOFile(file: File) extends IOPath(file) with FileRef {
     Files.readAttributes(file.toPath, classOf[BasicFileAttributes]).lastAccessTime().toInstant,
     ZoneId.systemDefault())
 }
+object IOFile {
+  def apply(str: String): IOFile = apply(new File(str))
+}
 
 case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
   lazy val dir: Directory = Directory(file)
@@ -68,9 +71,9 @@ case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {
   override def getDir(name: String) =
     optionalFile(name).filter(_.isDirectory).map(e => new IODirectory(new Directory(e)))
   override def addSubDir(name: String) = new IODirectory(dir addSubDir name)
-  override def getFile(name: String) = optionalFile(name).map(IOFile)
+  override def getFile(name: String) = optionalFile(name).map(IOFile.apply)
   override def dirs = dir.dirs.map(new IODirectory(_))
-  override def files = dir.files.map(IOFile)
+  override def files = dir.files.map(IOFile.apply)
   override def lastModified: LocalDateTime = dir.dir |> FileUtils.lastModified
   override def hasParent = file.getParentFile != null
 }

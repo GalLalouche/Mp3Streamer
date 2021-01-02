@@ -1,29 +1,36 @@
 package backend.search
 
 import backend.recent.NewDir
-import backend.search.cache.{CacheUpdate, MetadataCacher}
+import backend.search.cache.SongCacheUpdater
 import javax.inject.Inject
-import rx.lang.scala.{Observable, Observer}
+import rx.lang.scala.Observer
 import songs.SongSelectorState
 
+import scala.concurrent.{ExecutionContext, Future}
+
 import common.io.DirectoryRef
+import common.rich.RichObservable.richObservable
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 /**
-* Wraps [[MetadataCacher]] so it updates [[SearchState] and [[SongSearchState]] at the end, as well as update
-* the recent directories observer on quick refreshes.
+* Wraps [[SongCacheUpdater]] so it updates [[SearchState] and [[SongSearchState]] at the end, as well as
+* update the recent directories observer.
 */
 private class Indexer @Inject()(
     searchState: SearchState,
     songSelectorState: SongSelectorState,
-    metadataCacher: MetadataCacher,
+    songCacheUpdater: SongCacheUpdater,
     @NewDir newDirObserver: Observer[DirectoryRef],
+    ec: ExecutionContext,
 ) {
-  def cacheAll(): Observable[CacheUpdate] = updateOnCompletion(metadataCacher.cacheAll())
-  def quickRefresh(): Observable[CacheUpdate] =
-    updateOnCompletion(metadataCacher.quickRefresh().doOnNext(newDirObserver onNext _.dir))
-
-  private def updateOnCompletion(o: Observable[CacheUpdate]): Observable[CacheUpdate] = o.doOnCompleted {
-    songSelectorState.update()
-    searchState.update()
-  }
+  private implicit val iec: ExecutionContext = ec
+  def index(): Future[_] =
+    songCacheUpdater.go()
+        .groupByBuffer(_.song.albumName)
+        .doOnNext(newDirObserver onNext _._2.mapSingle(_.file.parent))
+        .doOnCompleted {
+          songSelectorState.update()
+          searchState.update()
+        }
+        .toFuture[Vector]
 }

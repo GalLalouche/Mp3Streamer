@@ -17,6 +17,7 @@ object RichJson {
     def /(s: String): JsObject = value(s).as[JsObject]
     def str(s: String): String = value(s).as[String]
     def int(s: String): Int = value(s).as[Int]
+    def long(s: String): Long = value(s).as[Long]
     def double(s: String): Double = value(s).as[Double]
     def ostr(s: String): Option[String] = $.\(s).asOpt[String]
     def array(s: String): JsArray = value(s).as[JsArray]

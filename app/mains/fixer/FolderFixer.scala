@@ -59,7 +59,7 @@ private class FolderFixer @Inject()(
 
   private def updateServer(): Future[Unit] = {
     println("Updating remote server if running...")
-    it.get(Url("http://localhost:9000/debug/fast_refresh"))
+    it.get(Url("http://localhost:9000/debug/smart_refresh"))
         .>|(println("Updated!"))
         .collectHandle {
           case e: ConnectException =>

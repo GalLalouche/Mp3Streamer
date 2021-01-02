@@ -10,6 +10,9 @@ trait ToJsonableOps {
   implicit class jsonifySingle[T]($: T)(implicit ev: JsonWriteable[T]) {
     def jsonify: JsValue = ev jsonify $
   }
+  implicit class jsonifyArray[T]($: Seq[T])(implicit ev: JsonWriteable[T]) {
+    def jsonifyArray: JsArray = JsArray($.map(_.jsonify))
+  }
   implicit class parseJsValue($: JsValue) {
     def parse[T](implicit ev: JsonReadable[T]): T = ev.parse($)
   }
