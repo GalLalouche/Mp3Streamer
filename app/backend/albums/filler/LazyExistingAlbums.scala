@@ -5,12 +5,12 @@ import backend.recon.{Album, Artist}
 import javax.inject.{Inject, Singleton}
 import models.MusicFinder
 
-import common.Debug
+import common.Debugging
 import common.rich.primitives.RichOption.richOption
 
 @Singleton private class LazyExistingAlbums @Inject()(implicit mf: MusicFinder, logger: Logger)
-    extends ExistingAlbums with Debug {
-  override def artists: Iterable[Artist] = timed("Fetching artists (lazy)", LoggingLevel.Info) {
+    extends ExistingAlbums {
+  override def artists: Iterable[Artist] = Debugging.timed("Fetching artists (lazy)", LoggingLevel.Info) {
     ExistingAlbums.artistDirectories(mf)
         .flatMap {artistDir =>
           val dirs = artistDir.dirs

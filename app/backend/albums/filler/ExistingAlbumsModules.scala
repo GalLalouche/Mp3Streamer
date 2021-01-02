@@ -11,9 +11,9 @@ import com.google.inject.util.Modules
 import models.{IOMusicFinderModule, MusicFinder}
 import net.codingwell.scalaguice.ScalaModule
 
-import common.Debug
+import common.Debugging
 
-private[albums] object ExistingAlbumsModules extends Debug {
+private[albums] object ExistingAlbumsModules {
   private[filler] def lazyAlbums: Module = new ScalaModule {
     override def configure(): Unit = {
       bind[ExistingAlbums].to[LazyExistingAlbums]
@@ -33,7 +33,7 @@ private[albums] object ExistingAlbumsModules extends Debug {
   def default: Module = new EagerBinder {
     @Provides @Singleton private def existingAlbumsCache(
         implicit mf: MusicFinder, logger: Logger, clock: Clock): EagerExistingAlbums =
-      timed("Creating cache", LoggingLevel.Info) {
+      Debugging.timed("Creating cache", LoggingLevel.Info) {
         EagerExistingAlbums.from(ExistingAlbums.albumDirectories(mf), mf, clock, logger)
       }
   }

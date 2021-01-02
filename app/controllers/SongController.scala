@@ -4,13 +4,11 @@ import controllers.SongFormatter.ShouldEncodeMp3Reader
 import javax.inject.Inject
 import play.api.mvc._
 
-import common.Debug
-
 /** Handles fetch requests of JSON information. */
 class SongController @Inject()(
     $: SongFormatter,
     converter: PlayActionConverter,
-) extends InjectedController with Debug {
+) extends InjectedController {
   private def run(r: ShouldEncodeMp3Reader): Action[AnyContent] =
     converter.parse(PlayControllerUtils.shouldEncodeMp3)(r.run)
 
