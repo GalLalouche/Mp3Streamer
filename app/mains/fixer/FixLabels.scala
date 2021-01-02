@@ -58,7 +58,7 @@ private class FixLabels @Inject()(mf: IOMusicFinder) {
     val hasNonTrivialDiscNumber =
       musicFiles.map(AudioFileIO.read).hasSameValues(_.getTag.getFirst(FieldKey.DISC_NO)).isFalse
 
-    musicFiles.foreach(fixFile(_, hasNonTrivialDiscNumber))
+    musicFiles.foreach(fixFile(_, fixDiscNumber = hasNonTrivialDiscNumber))
     musicFiles.foreach(f => f renameTo new File(f.parent, newFileName(f)))
 
     val expectedName = {

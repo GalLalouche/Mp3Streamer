@@ -28,6 +28,9 @@ private object FixLabelsUtils {
   private def properTrackString(track: Int): String = track padLeftZeros 2
   @VisibleForTesting
   def getFixedTag(f: File, fixDiscNumber: Boolean): Tag = getFixedTag(f, fixDiscNumber, AudioFileIO read f)
+
+  private val BonusTrackSuffixes = Vector("bonus", "bonus track").map("(" + _ + ")")
+  // If fixDiscNumber is false, it will be removed, unless the title indicates it is a bonus track.
   def getFixedTag(f: File, fixDiscNumber: Boolean, audioFile: AudioFile): Tag = {
     val song = SongTagParser(f, audioFile)
     val $ = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
@@ -50,6 +53,14 @@ private object FixLabelsUtils {
         // Replace 1/2 with 1
         .map(_.mapIf(_.matches(NumberFollowedBySlash)).to(_.takeWhile(_.isDigit)))
         .foreach($.setField(FieldKey.DISC_NO, _))
+
+    val lowerCasedTitle = $.getFirst(FieldKey.TITLE).toLowerCase
+    if (BonusTrackSuffixes.exists(lowerCasedTitle.endsWith)) {
+      val titleWithoutLastParens = lowerCasedTitle.dropAfterLast('(').dropRight(2)
+      set(FieldKey.TITLE, titleWithoutLastParens)
+      $.setField(FieldKey.DISC_NO, "Bonus")
+    }
+
     // Performance year should only exist if it was manually added, i.e., we can assume the user added other
     // classical tags. Otherwise, we can assume they're BS and delete them (by not copying them from the
     // original tag).

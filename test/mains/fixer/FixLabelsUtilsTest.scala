@@ -16,9 +16,8 @@ class FixLabelsUtilsTest extends FreeSpec with AuxSpecs {
 
   "fixTag" - {
     "mp3" - {
-      val song = getSongFile("song.mp3")
       "basic info" - {
-        val fixedTag = $.getFixedTag(song, fixDiscNumber = false)
+        val fixedTag = $.getFixedTag(getSongFile("song.mp3"), fixDiscNumber = false)
         "correct fixes" in {
           val getTag = getTagValue(fixedTag) _
           getTag(FieldKey.TITLE) shouldReturn "Hidden Track"
@@ -30,13 +29,18 @@ class FixLabelsUtilsTest extends FreeSpec with AuxSpecs {
         "No extra attributes" in {
           fixedTag.getFields.asScala.size shouldReturn 5
         }
+        "Bonus track suffix is added to disc number" in {
+          val tag = $.getFixedTag(getSongFile("songWithBonusTrackName.mp3"), fixDiscNumber = false)
+          getTagValue(tag)(FieldKey.DISC_NO) shouldReturn "Bonus"
+          getTagValue(tag)(FieldKey.TITLE) shouldReturn "Hidden Track"
+        }
       }
       "When asked to fix discNumber" - {
-        "String number" in {
+        "String is unmodified" in {
           val fixedTag = $.getFixedTag(getSongFile("songWithMoreInfo.mp3"), fixDiscNumber = true)
           getTagValue(fixedTag)(FieldKey.DISC_NO) shouldReturn "Foobar"
         }
-        "Partial number" in {
+        "Partial number is truncated" in {
           val fixedTag = $.getFixedTag(getSongFile("flacWithMoreInfo.flac"), fixDiscNumber = true)
           getTagValue(fixedTag)(FieldKey.DISC_NO) shouldReturn "1"
         }
