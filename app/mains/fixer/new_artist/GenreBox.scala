@@ -26,7 +26,10 @@ private class GenreBox(
 
   private val originalBackground = this.background
   def reset(): Unit = this.background = originalBackground
-  def enableIfFuzzyMatch(s: String): Unit =
-    this.background = if (isFuzzyMatch(s)) Color.WHITE else Color.BLACK
+  def enableIfFuzzyMatch(s: String): Boolean = {
+    val $ = isFuzzyMatch(s)
+    this.background = if ($) Color.WHITE else Color.BLACK
+    $
+  }
   def isFuzzyMatch(s: String): Boolean = FuzzyMatch(s, label.text)
 }

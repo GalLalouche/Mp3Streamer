@@ -1,6 +1,6 @@
 package mains.fixer.new_artist
 
-import java.awt.Insets
+import java.awt.{Color, Insets}
 
 import mains.SwingUtils._
 import mains.fixer.new_artist.GenrePanel.UpdatingColumns
@@ -54,8 +54,25 @@ private[fixer] class GenrePanel private(maxRows: Int, iconSideInPixels: Int, big
     ))
   }
   private def boxes = contents.collect {case b: GenreBox => b}
-  private def applyFilter(s: String): Unit =
-    boxes.foreach(b => if (s.isEmpty) b.reset() else b.enableIfFuzzyMatch(s))
+  private val defaultBackground = this.background
+  private def applyFilter(s: String): Unit = {
+    val totalMatches = boxes.count(b =>
+      if (s.isEmpty) {
+        b.reset()
+        false
+      }
+      else {
+        b.enableIfFuzzyMatch(s)
+      })
+    this.background =
+        if (s.isEmpty)
+          defaultBackground
+        else totalMatches match {
+          case 0 => Color.RED
+          case 1 => Color.GREEN
+          case _ => Color.ORANGE
+        }
+  }
   private def trySelect(s: String): Unit = boxes.filter(_.isFuzzyMatch(s)).toList match {
     case h :: Nil => clickSubject.onNext(h.directory)
     case _ => ()
