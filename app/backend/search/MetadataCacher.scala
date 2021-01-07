@@ -48,7 +48,7 @@ private class MetadataCacher(
 
   private object CacheAll extends Updater {
     override def targets = mf.albumDirs
-    override def apply[A: Manifest : Jsonable](xs: Iterable[A]): Unit = saver save xs
+    override def apply[A: Manifest : Jsonable](xs: Iterable[A]): Unit = saver saveArray xs
     override def apply(artists: IndexedSet[Artist]): Unit = apply(artists.toSeq)
   }
 

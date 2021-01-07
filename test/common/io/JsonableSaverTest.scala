@@ -31,24 +31,24 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val p1 = Person(1, "name1")
   private val p2 = Person(2, "name2")
   private val p3 = Person(3, "name3")
-  "save" - {
+  "saveArray" - {
     "can later load" in {
-      $ save Vector(p1)
+      $ saveArray Vector(p1)
       $.loadArray.head shouldReturn p1
     }
     "overwrites previous save" in {
-      $ save Vector(p1)
-      $ save Vector(p2)
+      $ saveArray Vector(p1)
+      $ saveArray Vector(p2)
       $.loadArray.head shouldReturn p2
     }
-    "object" - {
-      "exists" in {
-        $ save p1
-        $.loadObject shouldReturn p1
-      }
-      "no previous file exists" in {
-        a[FileNotFoundException] should be thrownBy $.loadObject
-      }
+  }
+  "saveObject" - {
+    "exists" in {
+      $ saveObject p1
+      $.loadObject shouldReturn p1
+    }
+    "no previous file exists" in {
+      a[FileNotFoundException] should be thrownBy $.loadObject
     }
   }
   "load" - {
@@ -61,17 +61,17 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
     }
     "in order saved" in {
       val persons: Seq[Person] = Vector(p1, p2, p3)
-      $ save persons
+      $ saveArray persons
       $.loadArray shouldReturn persons
     }
-    "Classes that save as arrays can be loaded as objects" in {
+    "Classes containing arrays can be loaded as objects" in {
       case class Persons(ps: Seq[Person])
       implicit val JsonablePersons: Jsonable[Persons] = new Jsonable[Persons] {
         override def jsonify(ps: Persons): JsValue = ps.ps.jsonify
         override def parse(json: JsValue): Persons = Persons(json.parse[Seq[Person]])
       }
       val persons = Persons(Vector(p1, p2, p3))
-      $ save persons
+      $ saveObject persons
       $.loadObject[Persons] shouldReturn persons
     }
   }
@@ -81,7 +81,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
       $.loadArray.head shouldReturn p1
     }
     "doesn't overwrite data" in {
-      $ save Vector(p1, p2)
+      $ saveArray Vector(p1, p2)
       $.update[Person](_ ++ Vector(p3))
       $.loadArray shouldReturn Vector(p1, p2, p3)
     }
@@ -93,7 +93,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
     "Time after change" in {
       def toMillis(ldt: LocalDateTime): Long = ldt.toEpochSecond(ZoneOffset.UTC)
       val now = LocalDateTime.now |> toMillis
-      $ save p1
+      $ saveObject p1
       val lastUpdateTime = $.lastUpdateTime[Person].get |> toMillis
       Math.abs(now - lastUpdateTime) < 10 shouldReturn true
     }
@@ -102,7 +102,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
     val $ = new JsonableSaver(c.injector.instance[DirectoryRef, RootDirectory]) {
       override protected def jsonFileName[T: Manifest] = "foobars.json"
     }
-    $ save p1
+    $ saveObject p1
     val files = root.deepFiles
     files.toVector.map(_.name) shouldReturn Vector("foobars.json")
     $.loadObject shouldReturn p1

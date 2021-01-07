@@ -28,11 +28,11 @@ class JsonableSaver @Inject()(@RootDirectory rootDirectory: DirectoryRef) {
    * Saves in the same order that was traversed, so load will return in the same order as well.
    */
   // TODO replace TraversableOnce with a Non-Empty list?
-  def save[T: Jsonable : Manifest](data: TraversableOnce[T]): Unit = {
+  def saveArray[T: Jsonable : Manifest](data: TraversableOnce[T]): Unit = {
     require(data.nonEmpty, s"Can't save empty data of type <$manifest>")
     save(data.toSeq.jsonify)
   }
-  def save[T: Jsonable : Manifest](obj: T): Unit = save(obj.jsonify)
+  def saveObject[T: Jsonable : Manifest](obj: T): Unit = save(obj.jsonify)
 
   /**
    * Similar to save, but doesn't overwrite the data
@@ -42,9 +42,8 @@ class JsonableSaver @Inject()(@RootDirectory rootDirectory: DirectoryRef) {
    *                     and new data isn't enough.
    */
   //TODO this could perhaps be handled by a type class that would know its saving constraints?
-  def update[T: Jsonable : Manifest](dataAppender: Seq[T] => TraversableOnce[T]): Unit = {
-    save(dataAppender(loadArray))
-  }
+  def update[T: Jsonable : Manifest](dataAppender: Seq[T] => TraversableOnce[T]): Unit =
+    saveArray(dataAppender(loadArray))
 
   private def load[T: Manifest]: Option[JsValue] =
     workingDir getFile jsonFileName map (_.readAll |> Json.parse)

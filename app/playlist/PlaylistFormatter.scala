@@ -24,7 +24,7 @@ private class PlaylistFormatter @Inject()(
     _.parse[Seq[String]] map urlPathUtils.parseSong mapTo PlaylistQueue.apply
   def setQueue(json: JsValue): Unit = {
     val queue = json.parse[PlaylistQueue]
-    saver save queue
+    saver saveObject queue
   }
 
   def getState: JsValue = saver.loadObject[PlaylistState].jsonify
@@ -35,6 +35,6 @@ private class PlaylistFormatter @Inject()(
     val currentIndex: Int = json int "currentIndex"
     PlaylistState(songs, currentIndex, duration.toInt.seconds)
   }
-  def setState(json: JsValue): Unit = saver save json.parse[PlaylistState]
+  def setState(json: JsValue): Unit = saver saveObject json.parse[PlaylistState]
 }
 
