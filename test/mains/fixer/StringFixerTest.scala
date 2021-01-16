@@ -49,6 +49,7 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   "Sentence" in {
     verifyFix("i am a rock", "I am a Rock")
     verifyFix("a rock am i", "A Rock am I")
+    verifyFix("Rock 'Em like a rock", "Rock 'em Like a Rock")
   }
   "Is sorted" in {
     $.lowerCaseWords.sorted shouldReturn $.lowerCaseWords
