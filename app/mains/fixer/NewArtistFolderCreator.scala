@@ -23,7 +23,7 @@ import common.rich.path.Directory
 */
 private object NewArtistFolderCreator {
   def selectGenreDirAndPopupBrowser(artistName: String): Future[Directory] = {
-    BrowserUtils.searchFor(artistName + " rym")
+    BrowserUtils.searchForLucky(artistName + " rateyourmusic")
     selectGenreDir(artistName)
   }
   def selectGenreDir(artistName: String): Future[Directory] = {
