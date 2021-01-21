@@ -41,10 +41,10 @@ private[fixer] class GenrePanel private(maxRows: Int, iconSideInPixels: Int, big
           )
         ).>>(State.modify[Int](_ + bigIconMultiplayer))
 
-  private def addFilter: UpdatingColumns[Unit] = State.get.map {usedUpColumns =>
+  private def addFilter(): UpdatingColumns[Unit] = State.get.map {usedUpColumns =>
     val filter = new GenreFilter
-    filter.text.subscribe(applyFilter _)
-    filter.select.subscribe(trySelect _)
+    filter.textChanges.subscribe(_ => applyFilter(filter.text))
+    filter.choice.subscribe(_ => tryChoose(filter.text))
 
     add(filter, constraints(
       gridX = maxRows - 1,
@@ -73,7 +73,7 @@ private[fixer] class GenrePanel private(maxRows: Int, iconSideInPixels: Int, big
           case _ => Color.ORANGE
         }
   }
-  private def trySelect(s: String): Unit = boxes.filter(_.isFuzzyMatch(s)).toList match {
+  private def tryChoose(s: String): Unit = boxes.filter(_.isFuzzyMatch(s)).toList match {
     case h :: Nil => clickSubject.onNext(h.directory)
     case _ => ()
   }
@@ -115,7 +115,7 @@ object GenrePanel {
       maxRows = maxRows, iconSideInPixels = iconSideInPixels, bigIconMultiplayer = bigIconMultiplayer)
     subGenreDirs.traverse($.addSubGenres)
         .>>(bigGenreDirs.traverse($.addBigSizeIcon))
-        .>>($.addFilter)
+        .>>($.addFilter())
         .>|($)
         .eval(0)
   }
