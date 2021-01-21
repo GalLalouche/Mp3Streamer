@@ -13,6 +13,8 @@ private class GenreFilter extends Panel {
   def textChanges: Observable[Unit] = textSubject
   private val chooseSubject = Subject[Unit]()
   def choice: Observable[Unit] = chooseSubject
+  private val selectSubject = Subject[Direction]()
+  def select: Observable[Direction] = selectSubject
 
   private val tf = new TextField(10).setFontSize(20).<|(_.requestFocus())
   def text: String = tf.text
@@ -20,7 +22,12 @@ private class GenreFilter extends Panel {
     case _: ValueChanged => textSubject.onNext(())
   }
   tf.keys.reactions += {
-    case KeyReleased(_, key, _, _) if key == Key.Enter => chooseSubject.onNext(())
+    case KeyReleased(_, key, _, _) => key match {
+      case Key.Enter => chooseSubject.onNext(())
+      case Key.Up => selectSubject.onNext(Direction.Previous)
+      case Key.Down => selectSubject.onNext(Direction.Next)
+      case _ => ()
+    }
   }
   _contents += tf
 }

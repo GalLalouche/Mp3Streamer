@@ -13,8 +13,13 @@ import scalaz.Scalaz.{ToBindOps, ToFunctorOps, ToTraverseOps}
 import scalaz.State
 import common.rich.func.MoreTraverseInstances._
 
+import common.rich.collections.RichSeq._
 import common.rich.path.Directory
 import common.rich.primitives.RichInt.Rich
+import common.rich.RichTuple.richSameTuple2
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rich.RichT.lazyT
+import common.rich.primitives.RichBoolean.richBoolean
 
 // Yeah, inheritance is bad, but this is how Scala Swing rolls :\
 private[fixer] class GenrePanel private(maxRows: Int, iconSideInPixels: Int, bigIconMultiplayer: Int)
@@ -41,10 +46,12 @@ private[fixer] class GenrePanel private(maxRows: Int, iconSideInPixels: Int, big
           )
         ).>>(State.modify[Int](_ + bigIconMultiplayer))
 
+  // TODO add this in a less hacky way, since it gets messed up when the box styles change.
   private def addFilter(): UpdatingColumns[Unit] = State.get.map {usedUpColumns =>
     val filter = new GenreFilter
     filter.textChanges.subscribe(_ => applyFilter(filter.text))
     filter.choice.subscribe(_ => tryChoose(filter.text))
+    filter.select.subscribe(updateSelection(filter.text)(_))
 
     add(filter, constraints(
       gridX = maxRows - 1,
@@ -56,14 +63,18 @@ private[fixer] class GenrePanel private(maxRows: Int, iconSideInPixels: Int, big
   private def boxes = contents.collect {case b: GenreBox => b}
   private val defaultBackground = this.background
   private def applyFilter(s: String): Unit = {
-    val totalMatches = boxes.count(b =>
+    val totalMatches = boxes.zipWithIndex.count {case (b, i) =>
       if (s.isEmpty) {
         b.reset()
         false
-      }
-      else {
+      } else {
+        if (b.isFuzzyMatch(s).isFalse && i == currentSelection) {
+          currentSelection = -1
+          b.clearSelection()
+        }
         b.enableIfFuzzyMatch(s)
-      })
+      }
+    }
     this.background =
         if (s.isEmpty)
           defaultBackground
@@ -75,7 +86,33 @@ private[fixer] class GenrePanel private(maxRows: Int, iconSideInPixels: Int, big
   }
   private def tryChoose(s: String): Unit = boxes.filter(_.isFuzzyMatch(s)).toList match {
     case h :: Nil => clickSubject.onNext(h.directory)
+    case _ if currentSelection != -1 => clickSubject.onNext(boxes(currentSelection).directory)
     case _ => ()
+  }
+  private var currentSelection = -1
+  private def updateSelection(s: String)(d: Direction): Unit = {
+    def select(newIndex: Int): Unit = {
+      currentSelection = newIndex
+      boxes.zipWithIndex.foreach {
+        case (b, i) => if (i == currentSelection) b.select() else b.clearSelection()
+      }
+    }
+    def firstSelection(): Unit = boxes.zipWithIndex
+        .find(_._1.isFuzzyMatch(s))
+        .map(_._2)
+        .foreach(select)
+    def update(): Unit = {
+      def nextSelection(i: (Int, Int)): Option[Int] = d match {
+        case Direction.Previous => i._1.onlyIf(i._2 == currentSelection)
+        case Direction.Next => i._2.onlyIf(i._1 == currentSelection)
+      }
+      boxes.zipWithIndex.filter(_._1.isFuzzyMatch(s))
+          .pairSliding
+          .map(_.map(_._2))
+          .mapFirst(nextSelection)
+          .foreach(select)
+    }
+    if (currentSelection == -1) firstSelection() else update()
   }
 
   private def genreBox(

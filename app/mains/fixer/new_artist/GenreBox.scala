@@ -1,6 +1,6 @@
 package mains.fixer.new_artist
 
-import java.awt.Color
+import java.awt.{Color, Font}
 import java.io.File
 
 import javax.imageio.ImageIO
@@ -25,11 +25,16 @@ private class GenreBox(
   contents += label
 
   private val originalBackground = this.background
-  def reset(): Unit = this.background = originalBackground
+  def reset(): Unit = {
+    this.background = originalBackground
+  }
   def enableIfFuzzyMatch(s: String): Boolean = {
     val $ = isFuzzyMatch(s)
     this.background = if ($) Color.WHITE else Color.BLACK
     $
   }
   def isFuzzyMatch(s: String): Boolean = FuzzyMatch(s, label.text)
+  private val originalFont = label.font
+  def clearSelection(): Unit = label.font = originalFont
+  def select(): Unit = label.font = originalFont.deriveFont(Font.ITALIC | Font.BOLD)
 }
