@@ -22,6 +22,9 @@ private class RecentFormatter @Inject()(
     @NewDir newAlbumObservable: Observable[Album],
     webSocketFactory: PlayWebSocketRegistryFactory,
 ) extends InjectedController {
+  def sinceDays(d: Int): Future[JsValue] = Future(recentAlbums.sinceDays(d)).map(_.jsonify)
+  def sinceMonths(m: Int): Future[JsValue] = Future(recentAlbums.sinceMonths(m)).map(_.jsonify)
+
   private implicit val iec: ExecutionContext = ec
 
   def all(amount: Int): Future[JsValue] = Future(recentAlbums.all(amount)).map(_.jsonify)
