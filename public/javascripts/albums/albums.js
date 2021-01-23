@@ -1,5 +1,14 @@
 $(function() {
   const topLevel = $("#albums")
+  topLevel.append($("<input type='button' value='Show all' id='show-all'/>"))
+  const allAccordions = () => $(".ui-accordion-content")
+  $("#show-all").click(function() {
+    allAccordions().show();
+  })
+  topLevel.append($("<input type='button' value='Hide all' id='hide-all'/>"))
+  $("#hide-all").click(function() {
+    allAccordions().hide();
+  })
   const genreList = $("<ol>").appendTo(topLevel)
   const button = (text, clazz) => elem("button", text).addClass(clazz)
   const createHideButton = () => button("Hide", "hide")
