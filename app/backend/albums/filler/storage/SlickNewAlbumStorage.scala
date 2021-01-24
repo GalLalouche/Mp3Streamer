@@ -7,7 +7,7 @@ import backend.albums.NewAlbum
 import backend.logging.Logger
 import backend.mb.AlbumType
 import backend.module.StandaloneModule
-import backend.recon.{Artist, ReconID}
+import backend.recon.{Artist, ReconID, SlickArtistReconStorage}
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Guice
 import javax.inject.Inject
@@ -37,7 +37,8 @@ private class SlickNewAlbumStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider,
     // Allows for easier cascade.
-    protected val artistStorage: SlickLastFetchTimeStorage,
+    protected val lastFetchTime: SlickLastFetchTimeStorage,
+    protected val artistStorage: SlickArtistReconStorage,
     logger: Logger,
 ) extends SlickSingleKeyColumnStorageTemplateFromConf[ReconID, StoredNewAlbum](ec, dbP) with NewAlbumStorage {
   private implicit val iec: ExecutionContext = ec
@@ -77,7 +78,7 @@ private class SlickNewAlbumStorage @Inject()(
     def year = column[LocalDate]("epoch_day")
     def artist = column[ArtistName]("artist")
     def pk = primaryKey("album_artist_type", (album, artist, albumType))
-    def artist_fk = foreignKey("artist_fk", artist, artistStorage.tableQuery)(
+    def artist_fk = foreignKey("artist_fk", artist, lastFetchTime.tableQuery)(
       _.name,
       onUpdate = ForeignKeyAction.Cascade,
       onDelete = ForeignKeyAction.Cascade,
@@ -91,8 +92,12 @@ private class SlickNewAlbumStorage @Inject()(
   override protected type EntityTable = Rows
   override protected val tableQuery = TableQuery[EntityTable]
   override def all = ListT(db
-      .run(tableQuery.filter(e => !(e.isRemoved || e.isIgnored)).result)
-      .map(_.map(extractValue)
+      .run(tableQuery.join(artistStorage.tableQuery).on(_.artist === _.name)
+          .filterNot(e => e._2.isIgnored || e._1.isRemoved || e._1.isIgnored)
+          .result
+      )
+      .map(_
+          .map(_._1 |> extractValue)
           .groupBy(_.na.artist)
           .mapValues(_.sortBy(_.na.date).map(_.na))
           .toList
