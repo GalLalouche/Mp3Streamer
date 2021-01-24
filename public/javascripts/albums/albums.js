@@ -1,15 +1,55 @@
 $(function() {
   const topLevel = $("#albums")
-  topLevel.append($("<input type='button' value='Show all' id='show-all'/>"))
+  function topLevelButton(value, action) {
+    $(`<input type='button' value='${value}'/>`)
+        .click(action)
+        .appendTo(topLevel)
+  }
   const allAccordions = () => $(".ui-accordion-content")
-  $("#show-all").click(function() {
+  topLevelButton("Show all", function() {
     allAccordions().show();
   })
-  topLevel.append($("<input type='button' value='Hide all' id='hide-all'/>"))
-  $("#hide-all").click(function() {
+  topLevelButton("Hide all", function() {
     allAccordions().hide();
   })
-  const genreList = $("<ol>").appendTo(topLevel)
+  topLevelButton("Sort by genre", function() {
+    sortByGenre()
+  })
+  let albums = null
+  topLevelButton("Sort by year", function() {
+    const albumsByYear = albums.flatMap(x => {
+      const albums = x.albums
+      albums.forEach(a => {
+        a.artistName = x.name
+        a.genre = x.genre
+        a.name = x.genre
+      })
+      return albums
+    }).custom_group_by(e => new Date(e.date).getFullYear())
+    const andThenByGenre = map_values(albumsByYear, e => e.custom_group_by(e => e.genre))
+    const result = Object.entries(andThenByGenre).custom_sort_by(e => -e[0])
+        .flatMap(e => {
+          const [key, value] = e
+          const asArray = Object.entries(value).map(e => {
+            const [genre, albums] = e
+            return ({name: genre, albums: albums})
+          })
+          return addTopLevelElement(key, asArray)
+        })
+
+    makeAccordion(result)
+  })
+
+  function makeAccordion(array) {
+    topLevel.children("ol").remove()
+    const topList = $("<ol>").appendTo(topLevel)
+    for (const e of array)
+      topList.append(e)
+    topList.accordion({
+      collapsible: true,
+      heightStyle: "content",
+    })
+  }
   const button = (text, clazz) => elem("button", text).addClass(clazz)
   const createHideButton = () => button("Hide", "hide")
 
@@ -36,47 +76,60 @@ $(function() {
 
     return [year, month, day].join('-');
   }
-  function addArtist(artistName, albums) {
+  function addEntry(entryName, albums, isYearEntry) {
     const albumsElem = elem("ol")
-    const artistElem = elem("li", `${artistName} `)
-        .append(button("Ignore", "ignore-artist"))
-        .append(button("Remove", "remove-artist"))
-        .append(createHideButton())
-        .append(albumsElem)
-        .data("artistName", artistName)
+    const entryElem = elem("li", `${entryName} `)
+    if (isYearEntry.isFalse())
+      entryElem
+          .append(button("Ignore", "ignore-artist"))
+          .append(button("Remove", "remove-artist"))
+          .append(createHideButton())
 
-    for (const album of albums)
-      elem("li", `[${album.albumType}] ${album.title} (${toIsoDate(new Date(album.date))}) `)
-          .data({"artistName": artistName, "year": album.year, "title": album.title})
+    entryElem
+        .append(albumsElem)
+
+    for (const album of albums) {
+      const value = isYearEntry
+          ? `[${album.albumType}] ${album.artistName} - ${album.title} (${toIsoDate(new Date(album.date))}) `
+          : `[${album.albumType}] ${album.title} (${toIsoDate(new Date(album.date))}) `
+      elem("li", value)
+          .data({
+            "artistName": isYearEntry ? album.artistName : entryName,
+            "year": album.year,
+            "title": album.title
+          })
           .appendTo(albumsElem)
           .append(button("Ignore", "ignore-album"))
           .append(button("Remove", "remove-album"))
           .append(createHideButton())
           .append(button("Google torrent", "google-torrent"))
-    return artistElem
+    }
+    return entryElem
   }
 
-  function addGenre(genre, artists) {
-    const artistDiv = div()
-    artists.forEach(o => addArtist(o.name, o.albums).appendTo(artistDiv))
-    return genreList
-        .append($(`<h5>${genre}</h5>`))
-        .append(artistDiv)
+  const yearRe = /\d{4}/
+  function addTopLevelElement(key, entries) {
+    const elementDiv = div()
+    const isYearEntry = yearRe.test(key)
+    entries.forEach(o => addEntry(o.name, o.albums, isYearEntry).appendTo(elementDiv))
+    return [$(`<h5>${key}</h5>`), elementDiv]
   }
 
+  function sortByGenre() {
+    const byGenre = map_values(albums.custom_group_by(e => e.genre), e => e.custom_sort_by(e => e.name))
+    const result = Object.entries(byGenre).custom_sort_by(e => e[0])
+        .flatMap(e => {
+          const [key, value] = e
+          return addTopLevelElement(key, value)
+        })
+    makeAccordion(result)
+  }
   $.get("albums/", function(e) {
-    const byGenre = map_values(e.custom_group_by(e => e.genre), e => e.custom_sort_by(e => e.name))
-    for (const [key, value] of Object.entries(byGenre).custom_sort_by(e => e[0]))
-      genreList.append(addGenre(key, value))
-    genreList.accordion({
-      collapsible: true,
-      heightStyle: "content",
-    })
+    albums = e
+    sortByGenre()
   })
 
-  // buttons
   const hideParent = parent => () => parent.hide()
-
   function onClick(classSelector, f) {
     topLevel.on("click", "." + classSelector, e => f($(e.target).closest("li")))
   }
