@@ -3,10 +3,9 @@ package mains.fixer
 import java.net.ConnectException
 
 import backend.{FutureOption, Url}
-import backend.module.StandaloneModule
 import com.google.inject.Guice
 import javax.inject.Inject
-import mains.IOUtils
+import mains.{IOUtils, MainsModule}
 import mains.cover.{CoverException, DownloadCover}
 import models.IOMusicFinder
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -86,5 +85,5 @@ private class FolderFixer @Inject()(
 
 private object FolderFixer {
   def main(args: Array[String]): Unit =
-    Guice.createInjector(StandaloneModule).instance[FolderFixer].run(Directory(args(0)))
+    Guice.createInjector(MainsModule).instance[FolderFixer].run(Directory(args(0)))
 }

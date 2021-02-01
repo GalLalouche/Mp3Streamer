@@ -18,7 +18,7 @@ private object ImagesSupplier {
   def apply(urls: Iterator[ImageSource], imageDownloader: FolderImageDownloader): ImagesSupplier =
     new SimpleImagesSupplier(urls, imageDownloader)
 
-  private class ImagesSupplierWithCache(urls: Iterator[ImageSource], downloader: FolderImageDownloader,
+  private class ImagesSupplierWithCache(urls: Iterator[Future[ImageSource]], downloader: FolderImageDownloader,
       cacheSize: Int, timeoutInMillis: Int)
       (implicit ec: ExecutionContext) extends ImagesSupplier {
     private val cache = new LinkedBlockingQueue[Future[FolderImage]](cacheSize)
@@ -31,10 +31,13 @@ private object ImagesSupplier {
     }
     def fillCache(): Unit = ec.execute(() =>
       while (urls.hasNext && cache.size < cacheSize)
-        cache.put(downloader(urls.next()))
+        cache.put(urls.next().flatMap(downloader.apply))
     )
   }
   def withCache(urls: Iterator[ImageSource], downloader: FolderImageDownloader, cacheSize: Int,
+      timeoutInMillis: Int = 5000)(implicit ec: ExecutionContext): ImagesSupplier =
+    new ImagesSupplierWithCache(urls.map(Future.successful), downloader, cacheSize, timeoutInMillis) <| (_.fillCache())
+  def withCacheAsync(urls: Iterator[Future[ImageSource]], downloader: FolderImageDownloader, cacheSize: Int,
       timeoutInMillis: Int = 5000)(implicit ec: ExecutionContext): ImagesSupplier =
     new ImagesSupplierWithCache(urls, downloader, cacheSize, timeoutInMillis) <| (_.fillCache())
 }
