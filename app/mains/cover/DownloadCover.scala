@@ -11,9 +11,11 @@ import mains.cover.image.ImageAPISearch
 import models.{AlbumFactory, MusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions._
 
-import scala.collection.AbstractIterator
 import scala.concurrent.{ExecutionContext, Future}
 
+import common.rich.func.BetterFutureInstances._
+
+import common.concurrency.{FutureIterant, Iterant}
 import common.io.{IODirectory, IOFile}
 import common.rich.path.{Directory, RichFileUtils, TempDirectory}
 import common.rich.path.RichFile.richFile
@@ -38,16 +40,15 @@ private[mains] class DownloadCover @Inject()(
   def apply(albumDir: Directory): Future[Directory => Unit] = {
     val album = mf.getSongsInDir(IODirectory(albumDir)).head.album
     val searchUrl = {
+      // TODO URIBuilder
       val query = URLEncoder.encode(s"${album.artistName} ${album.title}", "UTF-8")
       // tbm=isch => image search; tbs=iar:s => search for square images
       s"https://www.google.com/search?tbm=isch&q=$query"
     }
     val urls = imageFinder(s"${album.artistName} ${album.title}")
-    for {
-      locals <- LocalImageFetcher(IODirectory(albumDir))
-      selection <- selectImage(locals.map(Future.successful).iterator ++ urls)
-    } yield selection match {
-      case Selected(img) => fileMover(img)
+    val locals = LocalImageFetcher(IODirectory(albumDir))
+    selectImage(locals ++ urls).map {
+      case Selected(img) => fileMover(img) _
       case OpenBrowser =>
         BrowserUtils.pointBrowserTo(Url(searchUrl))
         // String interpolation is acting funky for some reason (will fail at runtime for unicode).
@@ -56,20 +57,10 @@ private[mains] class DownloadCover @Inject()(
     }
   }
 
-  // TODO move to somewhere common
-  private def filter[A](i: Iterator[Future[A]])(p: A => Boolean): Iterator[Future[A]] =
-    new AbstractIterator[Future[A]] {
-      override def hasNext = i.hasNext // Eh :\
-      override def next() = i.next().flatMap(a => if (p(a)) Future.successful(a) else next())
-    }
-
-  private def selectImage(imageURLs: Iterator[Future[ImageSource]]): Future[ImageChoice] =
-    ImageSelectionPanel(
-      ImagesSupplier.withCacheAsync(
-        urls = filter(imageURLs)(i => i.isSquare && i.width >= 500),
-        downloader = imageDownloader.withOutput(IODirectory(DownloadCover.tempFolder)),
-        cacheSize = 12,
-      )
+  private def selectImage(imageURLs: FutureIterant[ImageSource]): Future[ImageChoice] =
+    ImageSelectionPanel.select(
+      Iterant.prefetching(imageURLs.filter(i => i.isSquare && i.width >= 500), 12)
+          .flatMapF(imageDownloader.withOutput(IODirectory(DownloadCover.tempFolder)))
     )
 }
 

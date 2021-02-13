@@ -6,7 +6,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 
 /** It's a single threaded future factory, basically. */
-trait SimpleTypedActor[Msg, Result] {
+trait SimpleTypedActor[Msg, +Result] {
   def !(m: => Msg): Future[Result]
 }
 

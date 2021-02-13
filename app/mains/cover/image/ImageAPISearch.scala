@@ -1,9 +1,9 @@
 package mains.cover.image
 
-import mains.cover.UrlSource
+import mains.cover.ImageSource
 
-import scala.concurrent.Future
+import common.concurrency.FutureIterant
 
 private[cover] trait ImageAPISearch {
-  def apply(terms: String): Iterator[Future[UrlSource]]
+  def apply(terms: String): FutureIterant[ImageSource]
 }

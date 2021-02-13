@@ -21,7 +21,7 @@ private class RateLimitedActorAsyncImpl[Msg, Result](
     logger.verbose(s"<$index>: <$now>")
     val l = lastRun.getAndSet(now)
     val sleepTime = l - now + rateLimit.toMillis
-    if (sleepTime > 0) {
+    if (sleepTime >= 0) {
       logger.verbose(s"<$i>: Now: <$now>, last run time: <$l>, sleeping for <$sleepTime>")
       Thread.sleep(sleepTime)
     }
