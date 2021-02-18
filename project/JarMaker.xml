@@ -11,11 +11,13 @@
   <target name="make-jar" depends="sbt-compile">
     <jar destfile="d:/Mp3Mains.jar" filesetmanifest="mergewithoutmain">
       <manifest>
-        <!--List was generated using "sbt show compile:dependency-classpath" and vim macros-->
+        <!-- Generated using get_attributes.py -->
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/aopalliance/aopalliance/jars/aopalliance-1.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/ch.qos.logback/logback-classic/jars/logback-classic-1.2.3.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/ch.qos.logback/logback-core/jars/logback-core-1.2.3.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.beachape/enumeratum-macros_2.12/jars/enumeratum-macros_2.12-1.5.9.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.beachape/enumeratum_2.12/jars/enumeratum_2.12-1.5.13.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.chuusai/shapeless_2.12/bundles/shapeless_2.12-2.3.3.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.fasterxml.jackson.core/jackson-annotations/bundles/jackson-annotations-2.8.10.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.fasterxml.jackson.core/jackson-core/bundles/jackson-core-2.8.10.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.fasterxml.jackson.core/jackson-databind/bundles/jackson-databind-2.8.10.jar" />
@@ -25,9 +27,9 @@
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.github.julien-truffaut/monocle-macro_2.12/jars/monocle-macro_2.12-1.5.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.github.mpilquist/simulacrum_2.12/jars/simulacrum_2.12-0.10.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.google.code.findbugs/jsr305/jars/jsr305-1.3.9.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.google.errorprone/error_prone_annotations/jars/error_prone_annotations-2.0.18.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.google.guava/guava/bundles/guava-22.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.google.inject.extensions/guice-assistedinject/jars/guice-assistedinject-4.1.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.google.errorprone/error_prone_annotations/jars/error_prone_annotations-2.1.3.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.google.guava/guava/bundles/guava-23.6-android.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.google.inject.extensions/guice-assistedinject/jars/guice-assistedinject-4.2.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.google.inject/guice/jars/guice-4.2.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.google.j2objc/j2objc-annotations/jars/j2objc-annotations-1.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.h2database/h2/jars/h2-1.4.196.jar" />
@@ -59,41 +61,56 @@
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.typesafe.play/shaded-oauth/jars/shaded-oauth-1.1.2.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.typesafe.play/twirl-api_2.12/jars/twirl-api_2.12-1.3.12.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.typesafe.slick/slick_2.12/bundles/slick_2.12-3.3.3.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.typesafe/config/bundles/config-1.3.1.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.typesafe/config/bundles/config-1.3.2.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/com.typesafe/ssl-config-core_2.12/bundles/ssl-config-core_2.12-0.2.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/commons-beanutils/commons-beanutils/jars/commons-beanutils-1.9.2.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/commons-codec/commons-codec/jars/commons-codec-1.10.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/commons-collections/commons-collections/jars/commons-collections-3.2.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/commons-digester/commons-digester/jars/commons-digester-1.8.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/commons-io/commons-io/jars/commons-io-1.3.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/commons-logging/commons-logging/jars/commons-logging-1.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/commons-validator/commons-validator/jars/commons-validator-1.6.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/io.jsonwebtoken/jjwt/jars/jjwt-0.7.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/io.lemonlabs/scala-uri_2.12/jars/scala-uri_2.12-3.0.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/io.reactivex/rxjava/jars/rxjava-1.2.2.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/io.reactivex/rxscala_2.12/jars/rxscala_2.12-0.26.4.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/javax.inject/javax.inject/jars/javax.inject-1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/javax.transaction/jta/jars/jta-1.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/joda-time/joda-time/jars/joda-time-2.9.9.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/me.tongfei/progressbar/jars/progressbar-0.7.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/net.codingwell/scala-guice_2.12/jars/scala-guice_2.12-4.2.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.apache.commons/commons-lang3/jars/commons-lang3-3.6.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.checkerframework/checker-compat-qual/jars/checker-compat-qual-2.0.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.codehaus.mojo/animal-sniffer-annotations/jars/animal-sniffer-annotations-1.14.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.jline/jline/jars/jline-3.7.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.joda/joda-convert/jars/joda-convert-1.7.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.jsoup/jsoup/jars/jsoup-1.12.1.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.reactivestreams/reactive-streams/jars/reactive-streams-1.0.1.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.parboiled/parboiled_2.12/bundles/parboiled_2.12-2.2.1.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.reactivestreams/reactive-streams/jars/reactive-streams-1.0.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang.modules/scala-collection-compat_2.12/bundles/scala-collection-compat_2.12-2.0.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang.modules/scala-java8-compat_2.12/bundles/scala-java8-compat_2.12-0.8.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang.modules/scala-parser-combinators_2.12/bundles/scala-parser-combinators_2.12-1.0.6.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang.modules/scala-swing_2.12/bundles/scala-swing_2.12-2.0.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang.modules/scala-xml_2.12/bundles/scala-xml_2.12-1.0.6.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang/scala-compiler/jars/scala-compiler-2.12.10.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.12.10.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.12.10.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-stm/scala-stm_2.12/jars/scala-stm_2.12-0.8.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalactic/scalactic_2.12/bundles/scalactic_2.12-3.0.4.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalamacros/paradise_2.12.3/jars/paradise_2.12.3-2.1.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalamacros/paradise_2.12.10/jars/paradise_2.12.10-2.1.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalatest/scalatest_2.12/bundles/scalatest_2.12-3.0.4.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalaz/scalaz-core_2.12/bundles/scalaz-core_2.12-7.2.15.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalaz/scalaz-concurrent_2.12/bundles/scalaz-concurrent_2.12-7.2.15.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalaz/scalaz-core_2.12/bundles/scalaz-core_2.12-7.2.18.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalaz/scalaz-effect_2.12/bundles/scalaz-effect_2.12-7.2.15.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.7.25.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.slf4j/jul-to-slf4j/jars/jul-to-slf4j-1.7.25.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.slf4j/slf4j-api/jars/slf4j-api-1.7.25.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.typelevel/cats-core_2.12/jars/cats-core_2.12-2.2.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.typelevel/cats-kernel_2.12/jars/cats-kernel_2.12-2.2.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.typelevel/macro-compat_2.12/jars/macro-compat_2.12-1.1.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.xerial/sqlite-jdbc/jars/sqlite-jdbc-3.32.3.2.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/local/org.me/scalacommon_2.12/1.0/jars/scalacommon_2.12.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.m2/repository/my/net/jthink/jaudiotagger/2.2.9-SNAPSHOT/jaudiotagger-2.2.9-SNAPSHOT.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.sbt/boot/scala-2.12.3/lib/scala-compiler.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.sbt/boot/scala-2.12.3/lib/scala-library.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.sbt/boot/scala-2.12.3/lib/scala-reflect.jar" />
       </manifest>
       <fileset dir="C:/dev/web/Mp3Streamer/target/scala-2.12/classes">
         <include name="common/"/>

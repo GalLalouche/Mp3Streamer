@@ -8,6 +8,7 @@ import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 
+// TODO replace with io.lemonlabs.uri.Url
 case class Url(address: String) {
   require(address.isWhitespaceOrEmpty.isFalse, "empty address")
   def host: Url = {

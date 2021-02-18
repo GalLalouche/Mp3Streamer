@@ -48,6 +48,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-ws-standalone-json" % playWsStandaloneVersion,
   "com.typesafe.slick" %% "slick" % "3.3.3",
   "commons-validator" % "commons-validator" % "1.6",
+  "io.lemonlabs" %% "scala-uri" % "3.0.0",
   "io.reactivex" %% "rxscala" % "0.26.4",
   "me.tongfei" % "progressbar" % "0.7.1",
   "my.net.jthink" % "jaudiotagger" % "2.2.9-SNAPSHOT",

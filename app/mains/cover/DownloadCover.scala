@@ -1,9 +1,7 @@
 package mains.cover
 
-import java.net.URLEncoder
-
-import backend.Url
 import com.google.inject.Guice
+import io.lemonlabs.uri.Url
 import javax.inject.Inject
 import mains.{BrowserUtils, MainsModule}
 import mains.cover.DownloadCover._
@@ -30,7 +28,6 @@ private[mains] class DownloadCover @Inject()(
   import albumFactory._
 
   private implicit val iec: ExecutionContext = ec
-
   /**
    * Downloads a new image for the album.
    *
@@ -39,18 +36,17 @@ private[mains] class DownloadCover @Inject()(
    */
   def apply(albumDir: Directory): Future[Directory => Unit] = {
     val album = mf.getSongsInDir(IODirectory(albumDir)).head.album
-    val searchUrl = {
-      // TODO URIBuilder
-      val query = URLEncoder.encode(s"${album.artistName} ${album.title}", "UTF-8")
-      // tbm=isch => image search; tbs=iar:s => search for square images
-      s"https://www.google.com/search?tbm=isch&q=$query"
-    }
+    val searchUrl = Url.parse("https://www.google.com/search").withQueryString(
+      SearchType -> ImageSearch,
+      ImageType -> Square,
+      "q" -> s"${album.artistName} ${album.title}"
+    ).toStringPunycode
     val urls = imageFinder(s"${album.artistName} ${album.title}")
     val locals = LocalImageFetcher(IODirectory(albumDir))
     selectImage(locals ++ urls).map {
       case Selected(img) => fileMover(img) _
       case OpenBrowser =>
-        BrowserUtils.pointBrowserTo(Url(searchUrl))
+        BrowserUtils.pointBrowserTo(backend.Url(searchUrl))
         // String interpolation is acting funky for some reason (will fail at runtime for unicode).
         throw new CoverException.UserOpenedBrowser
       case Cancelled => throw new CoverException.UserClosedGUI
@@ -66,6 +62,11 @@ private[mains] class DownloadCover @Inject()(
 
 private object DownloadCover {
   private lazy val tempFolder: Directory = TempDirectory.apply()
+
+  private val SearchType = "tbm"
+  private val ImageSearch = "isch"
+  private val ImageType = "tbs"
+  private val Square = "iar:s"
 
   private def fileMover(f: FolderImage)(outputDirectory: Directory): Unit = {
     val file = f.file.asInstanceOf[IOFile].file
