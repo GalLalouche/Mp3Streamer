@@ -1,7 +1,7 @@
 package mains.cover
 
-import backend.Url
 import backend.module.TestModuleConfiguration
+import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.AsyncFreeSpec
 
@@ -15,7 +15,7 @@ class ImageDownloaderTest extends AsyncFreeSpec with AuxSpecs {
   private val $ = injector.instance[ImageDownloader].withOutput(tempDir)
 
   "Remote" in {
-    $(UrlSource(Url("http://foobar"), 500, 500)).map {fi =>
+    $(UrlSource(Url.parse("http://foobar"), 500, 500)).map {fi =>
       fi.file.bytes shouldReturn "foobar".getBytes
       fi.file.parent shouldBe tempDir
       fi.isLocal shouldReturn false

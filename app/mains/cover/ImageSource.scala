@@ -2,7 +2,7 @@ package mains.cover
 
 import java.awt.image.BufferedImage
 
-import backend.Url
+import io.lemonlabs.uri.Url
 import javax.imageio.ImageIO
 
 import common.io.{FileRef, IOFile}

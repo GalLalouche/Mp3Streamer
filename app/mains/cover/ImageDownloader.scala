@@ -2,7 +2,7 @@ package mains.cover
 
 import java.awt.Image
 
-import backend.Retriever
+import backend.{Retriever, Url}
 import javax.inject.Inject
 import mains.SwingUtils._
 
@@ -29,7 +29,7 @@ private class ImageDownloader @Inject()(it: InternetTalker) {
 
   private implicit val iec: ExecutionContext = it
   def withOutput(outputDirectory: DirectoryRef): Retriever[ImageSource, FolderImage] = {
-    case UrlSource(url, width, height) => it.asBrowser(url, _.bytes).map {bytes =>
+    case UrlSource(url, width, height) => it.asBrowser(Url.from(url), _.bytes).map {bytes =>
       val file = outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
       folderImage(file, local = false, w = width, h = height, ImageSource.toImage(file))
     }
