@@ -46,7 +46,7 @@ private class AllMusicAlbumFinder @Inject()(
           .map(_._1.selectFirst("td.title a")
               .href
               .mapIf(_.startsWith("http").isFalse).to("http://www.allmusic.com" + _)
-              .mapTo(Url)
+              .mapTo(Url.apply)
           )
           .filterM(allMusicHelper.isValidLink)
     }

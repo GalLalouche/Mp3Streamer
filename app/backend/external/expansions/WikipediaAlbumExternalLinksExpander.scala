@@ -55,7 +55,7 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
       .map(_.href)
       .flatMap(extractSemiCanonicalAllMusicLink)
       .mapTo(preferCanonical)
-      .map(Url)
+      .map(Url.apply)
       .mapTo(_.singleOpt)
 
   @VisibleForTesting

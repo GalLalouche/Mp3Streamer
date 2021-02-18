@@ -28,7 +28,7 @@ private class MetalArchivesAlbumsFinder @Inject()(sameHostExpanderHelper: SameHo
       d.selectIterator(".display.discog tr td a")
           .find(_.text.toLowerCase == a.title.toLowerCase)
           .map(_.href)
-          .map(Url)
+          .map(Url.apply)
           .hoistId
   }
 

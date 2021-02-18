@@ -50,7 +50,7 @@ private class AllMusicHelper @Inject()(
               e => s"Expected response code HTTP_MOVED_PERM (${HttpURLConnection.HTTP_MOVED_PERM}), " +
                   s"but was ${e.statusText} (${e.status})")
             .map(_.header("location").get)
-            .map(Url)
+            .map(Url.apply)
             .flatMap(followRedirect(currentTry + 1))
     followRedirect(0)(link.link).map(BaseLink[R](_, link.host))
   }

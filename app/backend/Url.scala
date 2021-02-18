@@ -1,5 +1,6 @@
 package backend
 
+import io.lemonlabs.uri
 import org.apache.commons.validator.routines.UrlValidator
 
 import scala.annotation.tailrec
@@ -8,7 +9,7 @@ import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 
-// TODO replace with io.lemonlabs.uri.Url
+@deprecated("Use io.lemonlabs.uri.Url")
 case class Url(address: String) {
   require(address.isWhitespaceOrEmpty.isFalse, "empty address")
   def host: Url = {
@@ -26,4 +27,9 @@ case class Url(address: String) {
   @tailrec final def +/(s: String): Url =
     if (s.head == '/') +/(s.tail) else Url(address + s.mapIf(address.last != '/').to('/' + _))
   def isValid: Boolean = UrlValidator.getInstance().isValid(address)
+}
+
+@deprecated("Use io.lemonlabs.uri.Url")
+object Url {
+  def from(url: uri.Url): Url = new Url(url.toStringPunycode)
 }

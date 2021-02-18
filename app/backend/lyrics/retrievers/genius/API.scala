@@ -29,7 +29,7 @@ private class API @Inject()(
             .map(Json parse _.body)
             .map(_.as[JsObject])
             .flatMap(parse(song, _))
-            .map(Url)
+            .map(Url.apply)
         )
   }
 }
