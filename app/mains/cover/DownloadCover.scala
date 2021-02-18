@@ -40,13 +40,13 @@ private[mains] class DownloadCover @Inject()(
       SearchType -> ImageSearch,
       ImageType -> Square,
       "q" -> s"${album.artistName} ${album.title}"
-    ).toStringPunycode
+    )
     val urls = imageFinder(s"${album.artistName} ${album.title}")
     val locals = LocalImageFetcher(IODirectory(albumDir))
     selectImage(locals ++ urls).map {
       case Selected(img) => fileMover(img) _
       case OpenBrowser =>
-        BrowserUtils.pointBrowserTo(backend.Url(searchUrl))
+        BrowserUtils.pointBrowserTo(searchUrl)
         // String interpolation is acting funky for some reason (will fail at runtime for unicode).
         throw new CoverException.UserOpenedBrowser
       case Cancelled => throw new CoverException.UserClosedGUI
