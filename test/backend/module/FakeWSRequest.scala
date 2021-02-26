@@ -38,7 +38,7 @@ private case class FakeWSRequest private(
   override def addQueryStringParameters(parameters: (String, String)*) = ???
   override def withFollowRedirects(follow: Boolean) =
     this.copy(followRedirects = Some(follow))
-  override def withRequestTimeout(timeout: Duration) = ???
+  override def withRequestTimeout(timeout: Duration) = this
   override def withRequestFilter(filter: WSRequestFilter) = ???
   override def withVirtualHost(vh: String) = ???
   override def withProxyServer(proxyServer: WSProxyServer) = ???

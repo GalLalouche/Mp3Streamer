@@ -17,6 +17,11 @@ abstract class Iterant[F[_] : Monad, A] {
     }
   }
   def step: OptionT[F, (A, Iterant[F, A])]
+  def map[B](f: A => B): Iterant[F, B] = new Iterant[F, B] {
+    override def step = Iterant.this.step.map {case (head, tail) =>
+      f(head) -> tail.map(f)
+    }
+  }
   def flatMapF[B](f: A => F[B]): Iterant[F, B] = new Iterant[F, B] {
     override def step = Iterant.this.step.flatMapF {case (head, tail) =>
       f(head).map(_ -> tail.flatMapF(f))

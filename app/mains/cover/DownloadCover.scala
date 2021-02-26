@@ -17,6 +17,7 @@ import common.concurrency.{FutureIterant, Iterant}
 import common.io.{IODirectory, IOFile}
 import common.rich.path.{Directory, RichFileUtils, TempDirectory}
 import common.rich.path.RichFile.richFile
+import common.rich.RichFuture.richFuture
 
 private[mains] class DownloadCover @Inject()(
     ec: ExecutionContext,
@@ -56,7 +57,11 @@ private[mains] class DownloadCover @Inject()(
   private def selectImage(imageURLs: FutureIterant[ImageSource]): Future[ImageChoice] =
     ImageSelectionPanel.select(
       Iterant.prefetching(imageURLs.filter(i => i.isSquare && i.width >= 500), 12)
-          .flatMapF(imageDownloader.withOutput(IODirectory(DownloadCover.tempFolder)))
+          .flatMapF(
+            // TODO filterSuccessful in rich whatever.
+            imageDownloader.withOutput(IODirectory(DownloadCover.tempFolder))(_).toTry.map(_.toOption))
+          .filter(_.isDefined)
+          .map(_.get)
     )
 }
 

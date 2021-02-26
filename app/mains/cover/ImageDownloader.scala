@@ -29,10 +29,12 @@ private class ImageDownloader @Inject()(it: InternetTalker) {
 
   private implicit val iec: ExecutionContext = it
   def withOutput(outputDirectory: DirectoryRef): Retriever[ImageSource, FolderImage] = {
-    case UrlSource(url, width, height) => it.asBrowser(Url.from(url), _.bytes).map {bytes =>
-      val file = outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
-      folderImage(file, local = false, w = width, h = height, ImageSource.toImage(file))
-    }
+    case UrlSource(url, width, height) => it
+        .asBrowser(Url.from(url), _.bytes, timeoutInSeconds = 5)
+        .map {bytes =>
+          val file = outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
+          folderImage(file, local = false, w = width, h = height, ImageSource.toImage(file))
+        }
     case l: LocalSource =>
       Future successful folderImage(l.file, local = true, l.width, l.height, l.image)
   }
