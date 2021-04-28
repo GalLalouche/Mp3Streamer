@@ -103,6 +103,7 @@ $(function() {
           .append(button("Remove", "remove-album"))
           .append(createHideButton())
           .append(button("Google torrent", "google-torrent"))
+          .append(button("Copy to clipboard", "copy-to-clipboard"))
     }
     return entryElem
   }
@@ -139,9 +140,12 @@ $(function() {
   onClick("remove-artist", parent => putArtist("remove", parent.data("artistName"), hideParent(parent)))
   onClick("ignore-album", parent => putJson("album/ignore", parent.data(), hideParent(parent)))
   onClick("remove-album", parent => putJson("album/remove", parent.data(), hideParent(parent)))
-
   onClick("google-torrent", parent => {
     const data = parent.data()
     window.open(`https://rutracker.net/forum/tracker.php?nm=${data.artistName} ${data.title}`)
+  })
+  onClick("copy-to-clipboard", parent => {
+    const data = parent.data()
+    copyTextToClipboard(`${data.artistName} ${data.title}`)
   })
 })
