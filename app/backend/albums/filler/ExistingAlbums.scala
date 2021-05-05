@@ -11,6 +11,7 @@ import common.rich.primitives.RichOption.richOption
 private trait ExistingAlbums {
   def artists: Iterable[Artist]
   def albums: Artist => Set[Album]
+  def allAlbums: Iterable[Album] = artists.flatMap(albums)
 }
 
 private object ExistingAlbums {

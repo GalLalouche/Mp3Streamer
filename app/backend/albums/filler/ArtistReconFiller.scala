@@ -2,23 +2,12 @@ package backend.albums.filler
 
 import backend.mb.MbArtistReconciler
 import backend.recon.{Artist, ArtistReconStorage, ReconID}
-import backend.recon.StoredReconResult.HasReconResult
 import javax.inject.Inject
 import net.codingwell.scalaguice.InjectorExtensions._
-import rx.lang.scala.Observable
-import rx.lang.scala.schedulers.ImmediateScheduler
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.syntax.bind.ToBindOps
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.MoreObservableInstances._
-import common.rich.func.ToMoreFunctorOps._
-
-import common.concurrency.SimpleActor
 import common.rich.RichFuture._
-import common.rich.RichObservable
-import common.rich.RichObservable._
 
 private class ArtistReconFiller @Inject()(
     ea: ExistingAlbums,
@@ -27,21 +16,15 @@ private class ArtistReconFiller @Inject()(
     verifier: ArtistReconVerifier,
     ec: ExecutionContext,
 ) {
-  private implicit val iec: ExecutionContext = ec
-
-  private val storer = SimpleActor.async[(Artist, ReconID)]("storer", {case (a, r) =>
-    println(s"Storing <${a.name}>: https://musicbrainz.org/artist/${r.id}")
-    storage.store(a, HasReconResult(r, isIgnored = false))
-  })
-
-  private def go(artist: Artist): Observable[ReconID] =
-    RichObservable.from(reconciler(artist)).filterFuture(verifier(artist, _))
-  private def newRecons: Observable[(Artist, ReconID)] = {
-    def hasNoRecon(a: Artist): Future[Boolean] = storage.exists(a).negated
-    Observable.from(ea.artists).filterFuture(hasNoRecon).mproduct(go)
+  private object Aux extends ReconFillerAux[Artist] {
+    override def name = "artist"
+    override def prettyPrint(r: Artist) = r.name
+    override def verify(r: Artist, id: ReconID) = verifier(r, id)
   }
 
-  def go(): Future[_] = newRecons.observeOn(ImmediateScheduler()).doOnEach(storer ! _).toFuture
+  private val aux = new ReconFiller[Artist](reconciler, storage, Aux)(ec)
+
+  def go(): Future[_] = aux.go(ea.artists)
 }
 
 private object ArtistReconFiller {

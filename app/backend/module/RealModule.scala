@@ -35,7 +35,13 @@ object RealModule extends ScalaModule with ModuleUtils {
         driver = "org.sqlite.JDBC",
         // Scumbag Slick. Sets the defautl to something that it can later warn about. You might expect for
         // default() and default(defaultValuesUsedInTheGoddamnDefault) to be the same, but you'd be wrong.
-        executor = AsyncExecutor.default("Slick SQLite", 20),
+        executor = AsyncExecutor.apply(
+          name = "Slick SQLite",
+          maxConnections = 20,
+          minThreads = 20,
+          maxThreads = 20,
+          queueSize = 5000,
+        ),
       )
     }
 
