@@ -24,7 +24,7 @@ private object SongGroupsUpdater {
     val injector = Guice createInjector StandaloneModule
     val sg = injector.instance[SongGroups]
     def append(g: SongGroup): Unit = (g :: sg.load.toList).toSet |> sg.save
-    val group: SongGroup = trackNumbers("""D:\Media\Music\Rock\Punk\Pistolita\2010 The Paper Boy""", 1, 2)
+    val group: SongGroup = trackNumbers("""G:\Media\Music\Rock\Punk\Pistolita\2010 The Paper Boy""", 1, 2)
     append(group)
     println("Done")
   }

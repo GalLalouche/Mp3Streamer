@@ -91,7 +91,7 @@ class Actions(NamedTuple):
 
   @staticmethod
   def build(artist: str, target_genre: str) -> Actions:
-    sub_genre_dirs = list(_flatmap(_list_dirs, _list_dirs(r'D:\Media\Music')))
+    sub_genre_dirs = list(_flatmap(_list_dirs, _list_dirs(r'G:\Media\Music')))
     current_artist_path = _find(
       _flatmap(_list_dirs, sub_genre_dirs),
       _check_dir_name(artist))

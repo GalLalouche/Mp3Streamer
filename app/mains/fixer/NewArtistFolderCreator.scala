@@ -27,7 +27,8 @@ private object NewArtistFolderCreator {
     selectGenreDir(artistName)
   }
   def selectGenreDir(artistName: String): Future[Directory] = {
-    def genre(dirName: String) = Directory("d:/media/music/" + dirName)
+    // TODO this should use IOMusicFinder
+    def genre(dirName: String) = Directory("g:/media/music/" + dirName)
     val panel = GenrePanel(
       maxRows = MaxRows, iconSideInPixels = IconSideInPixels, bigIconMultiplayer = BigIconMultiplayer,
       subGenreDirs = Seq("Rock", "Metal").map(genre(_).dirs),

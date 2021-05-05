@@ -5,7 +5,7 @@ import common.io.{FileRef, IODirectory, IOFile, IOSystem}
 /** Can be extended to override its values in tests */
 class IOMusicFinder extends MusicFinder {
   override final type S = IOSystem
-  override val dir = IODirectory("d:/media/music")
+  override val dir = IODirectory("G:/media/music")
   override protected def genresWithSubGenres: Seq[String] = Vector("Rock", "Metal")
   override protected def flatGenres: Seq[String] = Vector("New Age", "Jazz", "Musicals", "Classical")
 
