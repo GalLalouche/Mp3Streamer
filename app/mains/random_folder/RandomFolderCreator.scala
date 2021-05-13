@@ -2,6 +2,7 @@ package mains.random_folder
 
 import java.io.File
 
+import com.google.inject.assistedinject.Assisted
 import javax.inject.Inject
 import me.tongfei.progressbar.ProgressBar
 import models.{IOMusicFinder, IOSong, Poster}
@@ -27,9 +28,11 @@ private class RandomFolderCreator @Inject()(
     ec: ExecutionContext,
     mf: IOMusicFinder,
     runningFilter: FileFilter,
+    @Assisted seed: Long,
 ) {
   private implicit val iec: ExecutionContext = ec
   private lazy val songFiles = mf.getSongFiles.map(_.file)
+  private val random = new Random(seed)
 
   private def createPlaylistFile(outputDir: Directory, name: String): File = {
     val files = outputDir.files
@@ -38,7 +41,6 @@ private class RandomFolderCreator @Inject()(
     playlistFile
   }
 
-  private val random = new Random
   private def createSongSet(numberOfSongsToCreate: Int, filter: FileFilter): Set[File] = {
     @tailrec def go(existing: Set[File]): Set[File] =
       if (existing.size == numberOfSongsToCreate)
