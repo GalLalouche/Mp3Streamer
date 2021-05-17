@@ -38,8 +38,7 @@ class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
 
       val result = MusicBrainzAlbumExtender.extend(album, links)
 
-      val preseededEdit = "edit-album.url.0.text=all.music&edit-album.url.0.link_type_id=284" +
-          "&edit-album.url.1.text=wiki.pedia&edit-album.url.1.link_type_id=89"
+      val preseededEdit = "edit-album.url.0.text=all.music&edit-album.url.0.link_type_id=284"
       result shouldReturn Seq[LinkExtension[Album]](
         LinkExtension("edit", Url("music.brainz/edit?" + preseededEdit)),
       )

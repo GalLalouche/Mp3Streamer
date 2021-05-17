@@ -21,9 +21,11 @@ private abstract sealed class MusicBrainzExtender[R <: Reconcilable: Manifest] e
       }
       val preseed = otherLinks
           .filter(_.isNew).toSeq
+          .filterNot(_.host == Host.Wikipedia) // Musicbrainz uses Wikidata, not Wikipedia
           .zipWithIndex
           .map(e => preseededEdit(e._1, e._2))
           .mkString("&")
+      // TODO this should use a URL builder
       val editUrl = "edit" + (if (preseed.isEmpty) "" else "?" + preseed)
       append(linkToModify, "edit" -> editUrl)
           .mapIf(extendGoogleSearch)
