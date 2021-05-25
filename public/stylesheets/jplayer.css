@@ -144,3 +144,8 @@ div.jp-interface {
 #jp_container_1 {
   margin-top: 3px;
 }
+
+ul.external-links {
+  margin: 0;
+  padding-left: 1em;
+}

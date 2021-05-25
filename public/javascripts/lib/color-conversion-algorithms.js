@@ -87,3 +87,7 @@ function makeLighter(rgbArr, alpha) {
 }
 
 const rgb2String = rgbArr => `rgb(${rgbArr.join(", ")})`
+const string2rgb = rgbStr => rgbStr.substring(4, rgbStr.length - 1)
+    .replace(/ /g, '')
+    .split(',')
+    .map(x => parseInt(x))

@@ -3,6 +3,8 @@ $(function() {
   const externalDivParent = $("#external")
   const externalDiv = div().appendTo(externalDivParent)
 
+  let currentPosterRgb = []
+
   const artistReconBox =
       $("<input class='external-recon-id' placeholder='Artist ID' type='text'/>").appendTo(externalDivParent)
   appendBr(externalDivParent)
@@ -40,6 +42,9 @@ $(function() {
     }
   }
 
+  function setLinkColor(e) {
+    e.css("background-image", `linear-gradient(to top left, ${(rgb2String(makeLighter(currentPosterRgb, 0.5)))}, ${rgb2String(currentPosterRgb)})`)
+  }
   // Yey, currying!
   const showLinks = debugLink => {
     externalDiv.html("Fetching links...")
@@ -51,7 +56,7 @@ $(function() {
         const isValid = externalLinksForEntity.timestamp
         const timestampOrError = `${entityName} (${isValid ?
             externalLinksForEntity.timestamp : href(debugLink, externalLinksForEntity.error)})`
-        const ul = elem("ul", timestampOrError)
+        const ul = elem('ul', {'class': 'external-links'})
         if (isValid) {
           $.each(externalLinksForEntity, (linkName, link) => {
             if (linkName === "timestamp")
@@ -62,10 +67,14 @@ $(function() {
             ul.append($(`<li style=${imageIcon}>${links}</li>`))
           })
         }
-        externalDiv.append(ul)
+        const fieldset = $("<fieldset>")
+        fieldset.append($(`<legend>${timestampOrError}</legend>`))
+            .append(ul)
+            .appendTo(externalDiv)
+        setLinkColor(fieldset)
       })
-      // TODO this shouldn't really be created every time
     }
+    // TODO this shouldn't really be created every time
   }
 
   External.show = function(song) {
@@ -87,6 +96,10 @@ $(function() {
   refreshButton.click(() => {
     const songPath = gplaylist.currentPlayingSong().file
     $.get(remotePath + "refresh/" + songPath, showLinks(remotePath + songPath))
+  })
+  Poster.rgbListeners.push(rgb => {
+    currentPosterRgb = rgb
+    externalDiv.find("fieldset").each(e => setLinkColor(e))
   })
 })
 External = {}
