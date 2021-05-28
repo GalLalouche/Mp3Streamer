@@ -8,7 +8,7 @@ import controllers.UrlPathUtils
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.mockito.Mockito.when
-import org.scalatest.AsyncFreeSpec
+import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 import org.scalatest.mockito.MockitoSugar
 import play.api.http.Status
 
@@ -22,7 +22,9 @@ import common.storage.Storage
 import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
 import common.MutablePartialFunction
 
-class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterEachAsync with AsyncAuxSpecs with MockitoSugar {
+class LyricsFormatterTest
+    extends AsyncFreeSpec with BeforeAndAfterEachAsync with AsyncAuxSpecs
+    with MockitoSugar with OneInstancePerTest {
   // Modified by some tests
   private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]
   private val injector = TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).injector
@@ -49,13 +51,13 @@ class LyricsFormatterTest extends AsyncFreeSpec with BeforeAndAfterEachAsync wit
   "push" - {
     "success" in {
       urlToResponseMapper += {
-        case Url("http://lyrics.wikia.com/wiki/Foobar") =>
-          FakeWSResponse(bytes = getResourceFile("/backend/lyrics/retrievers/lyrics_wikia_lyrics.html").bytes)
+        case Url("https://www.azlyrics.com/lyrics/Foobar") =>
+          FakeWSResponse(bytes = getResourceFile("/backend/lyrics/retrievers/az_lyrics.html").bytes)
       }
       injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar")) >>
-          $.push(encodedSong, Url("http://lyrics.wikia.com/wiki/Foobar"))
-              .map(_ should startWith("Daddy's flown across the ocean")) >>
-          getLyricsForSong.map(_ should startWith("Daddy's flown across the ocean"))
+          $.push(encodedSong, Url("https://www.azlyrics.com/lyrics/Foobar"))
+              .map(_ should startWith("Ascending in sectarian rapture")) >>
+          getLyricsForSong.map(_ should startWith("Ascending in sectarian rapture"))
     }
     "failure returns the actual error" in {
       val cache = mock[LyricsCache]

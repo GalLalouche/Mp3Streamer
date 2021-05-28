@@ -17,6 +17,7 @@ import common.rich.func.BetterFutureInstances._
 
 import common.rich.RichFuture._
 import common.MutablePartialFunction
+import common.rich.path.RichFile.richFile
 
 @Slow
 class LyricsControllerTest extends FreeSpec with MockitoSugar with ControllerSpec with DocumentSpecs
@@ -55,12 +56,12 @@ class LyricsControllerTest extends FreeSpec with MockitoSugar with ControllerSpe
   "push" in {
     inj.instanceOf[LyricsStorage].store(song, HtmlLyrics("foo", "bar")).get
     urlToResponseMapper += {
-      case Url("http://lyrics.wikia.com/wiki/Foobar") =>
-        FakeWSResponse(bytes = getBytes("/backend/lyrics/retrievers/lyrics_wikia_lyrics.html"))
+      case Url("https://www.azlyrics.com/lyrics/Foobar") =>
+        FakeWSResponse(bytes = getResourceFile("/backend/lyrics/retrievers/az_lyrics.html").bytes)
     }
-    post("lyrics/push/" + encodedSong, "http://lyrics.wikia.com/wiki/Foobar")
-        .getString should startWith("Daddy's flown across the ocean")
-    getLyricsForSong should startWith("Daddy's flown across the ocean")
+    post("lyrics/push/" + encodedSong, "https://www.azlyrics.com/lyrics/Foobar")
+        .getString should startWith("Ascending in sectarian rapture")
+    getLyricsForSong should startWith("Ascending in sectarian rapture")
   }
 
   "setInstrumentalSong" in {

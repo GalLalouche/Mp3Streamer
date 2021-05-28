@@ -13,12 +13,10 @@ private[lyrics] class CompositeHtmlRetriever(
   @Inject() def this(
       ec: ExecutionContext,
       logger: Logger,
-      lyricsWikiaRetriever: LyricsWikiaRetriever,
       geniusLyricsRetriever: GeniusLyricsRetriever,
       azLyricsRetriever: AzLyricsRetriever,
       darkLyricsRetriever: DarkLyricsRetriever,
   ) = this(ec, logger, Vector(
-    lyricsWikiaRetriever,
     geniusLyricsRetriever,
     azLyricsRetriever,
     darkLyricsRetriever,
