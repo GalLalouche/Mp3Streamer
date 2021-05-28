@@ -20,7 +20,7 @@ private case class ParsedId3(
   def files: Seq[File] = songId3s.map(_.file)
 }
 
-// Individual tags should never be keep since there's no point to it: just keep the existing value.
+// Individual tags should never be Keep since there's no point to it: just keep the existing value.
 private case class IndividualId3(
     file: File,
     title: String,

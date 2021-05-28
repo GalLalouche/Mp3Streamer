@@ -1,12 +1,14 @@
-package mains.vimtag
+package mains.vimtag.lines
 
 import java.io.File
 
+import mains.vimtag.{Change, Empty, Keep, Parser}
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
 
-class ParserTest extends FreeSpec with AuxSpecs {
+class LinesParserTest extends FreeSpec with AuxSpecs {
+  private val $ = new Parser(LinesParser)
   "apply" - {
     "Missing mandatory field throws" in {
       val lines = Vector(
@@ -30,7 +32,7 @@ class ParserTest extends FreeSpec with AuxSpecs {
         "TRACK: 9",
         "DISC_NO:",
       )
-      val e = intercept[NoSuchElementException] {Parser(lines)}
+      val e = intercept[NoSuchElementException] {$(lines)}
       e.getMessage shouldReturn "key not found: ARTIST"
     }
     "Missing mandatory field in file throws" in {
@@ -55,7 +57,7 @@ class ParserTest extends FreeSpec with AuxSpecs {
         "TRACK: 9",
         "DISC_NO:",
       )
-      val e = intercept[NoSuchElementException] {Parser(lines)}
+      val e = intercept[NoSuchElementException] {$(lines)}
       e.getMessage shouldReturn "key not found for File2: TITLE"
     }
     "happy path" in {
@@ -82,19 +84,19 @@ class ParserTest extends FreeSpec with AuxSpecs {
         "DISC_NO:",
       )
 
-      val $ = Parser(lines)
+      val res = $(lines)
 
-      $.artist shouldReturn Change("Evgeny Kissin")
-      $.album shouldReturn Change("Prokofiev - Piano Concerto No. 2 & 3 (Kissin, Ashkenazy)")
-      $.year shouldReturn Keep
+      res.artist shouldReturn Change("Evgeny Kissin")
+      res.album shouldReturn Change("Prokofiev - Piano Concerto No. 2 & 3 (Kissin, Ashkenazy)")
+      res.year shouldReturn Keep
 
-      $.composer shouldReturn Change("Prokofiev")
-      $.opus shouldReturn Empty
-      $.conductor shouldReturn Keep
-      $.orchestra shouldReturn Change("Philharmonia Orchestra")
-      $.performanceYear shouldReturn Change(2009)
+      res.composer shouldReturn Change("Prokofiev")
+      res.opus shouldReturn Empty
+      res.conductor shouldReturn Keep
+      res.orchestra shouldReturn Change("Philharmonia Orchestra")
+      res.performanceYear shouldReturn Change(2009)
 
-      val songs = $.songId3s
+      val songs = res.songId3s
       val song1 = songs(0)
       song1.file shouldReturn new File("File1")
       song1.title shouldReturn "Piano Concerto No.3 in C Major, Op.26 - I. Andante - Allegro"

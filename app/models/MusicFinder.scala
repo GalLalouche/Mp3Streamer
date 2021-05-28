@@ -32,4 +32,5 @@ trait MusicFinder {self =>
     d.asInstanceOf[S#D].files.filter(f => extensions.contains(f.extension))
   def parseSong(f: FileRef): Song {type F = S#F}
   def getSongsInDir(d: DirectoryRef): Seq[Song {type F = S#F}] = getSongFilesInDir(d) map parseSong
+  def getOptionalSongsInDir(d: DirectoryRef): Seq[OptionalSong]
 }

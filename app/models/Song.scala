@@ -22,6 +22,20 @@ trait Song {
   def orchestra: Option[String]
   def opus: Option[String] // Needs to be a string to support BWV, Kochel number, etc.
   def performanceYear: Option[Int]
+  def toOptionalSong: OptionalSong = OptionalSong(
+    file = file.path,
+    title = Some(title),
+    artistName = Some(artistName),
+    albumName = Some(albumName),
+    track = Some(track),
+    year = Some(year),
+    discNumber = discNumber,
+    composer = composer,
+    conductor = conductor,
+    orchestra = orchestra,
+    opus = opus,
+    performanceYear = performanceYear,
+  )
 }
 
 // TODO remove code duplication? hmm...

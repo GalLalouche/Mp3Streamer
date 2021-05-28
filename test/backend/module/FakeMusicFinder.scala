@@ -4,7 +4,8 @@ import models.{MemorySong, MusicFinder}
 
 import scala.collection.mutable
 
-import common.io.{FileRef, MemoryDir, MemorySystem}
+import common.io.{DirectoryRef, FileRef, MemoryDir, MemoryFile, MemorySystem}
+import common.rich.RichT._
 
 class FakeMusicFinder(val dir: MemoryDir) extends MusicFinder {
   override type S = MemorySystem
@@ -14,15 +15,19 @@ class FakeMusicFinder(val dir: MemoryDir) extends MusicFinder {
   private val dirToAddSongsTo = dir addSubDir genresWithSubGenres.head
   private val pathToSongs = mutable.HashMap[String, MemorySong]()
 
+  private def copy(s: MemorySong, newFile: MemoryFile) =
+    s.copy(file = newFile).<|(pathToSongs += newFile.path -> _)
+
   /**
   * Adds a song under root / songs / $artist_name / $album_time / $file_name.
   * Ensures the song's file matches the music finder directory structure.
   */
-  def copySong(s: MemorySong): MemorySong = {
-    val newFile = dirToAddSongsTo addSubDir s.artistName addSubDir s.albumName addFile s.file.name
-    val $ = s.copy(file = newFile)
-    pathToSongs += newFile.path -> $
-    $
-  }
+  def copySong(s: MemorySong): MemorySong =
+    copy(s, dirToAddSongsTo addSubDir s.artistName addSubDir s.albumName addFile s.file.name)
+  /** Adds a song under the requested directory name. */
+  def copySong(dirName: String, s: MemorySong): MemorySong =
+    copy(s, dirToAddSongsTo.addSubDir(dirName).addFile(s.file.name))
   override def parseSong(f: FileRef): MemorySong = pathToSongs(f.path)
+  override def getOptionalSongsInDir(d: DirectoryRef) =
+    d.files.map(_.path).map(pathToSongs).map(_.toOptionalSong)
 }

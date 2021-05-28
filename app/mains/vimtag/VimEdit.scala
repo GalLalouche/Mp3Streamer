@@ -2,27 +2,45 @@ package mains.vimtag
 
 import java.io.File
 
-import common.rich.path.RichFile._
 import javax.inject.Inject
+import mains.vimtag.Initializer.InitialLines
+import mains.vimtag.TableVimEdit.{ExecutionCommand, NormalCommand}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process._
 
-private class VimEdit @Inject()(implicit ec: ExecutionContext) {
-  private val VimLocation = """"C:\Program Files (x86)\Vim\vim74\gvim.exe""""
-  private val FormattedCommands = Vector(
-    "winpos 0 0", // Start in the corner
-    "set lines=1000", // Max height
-    "set columns=210", // About half a screen's width
-  ).map(command => s"""-c ":$command"""").mkString(" ", " ", "")
+import common.rich.path.RichFile._
 
-  def apply(initialLines: Seq[String]): (File, Future[Seq[String]]) = {
+private class VimEdit @Inject()(cp: CommandsProvider, ec: ExecutionContext) {
+  private val VimLocation = """"C:\Program Files (x86)\Vim\vim74\gvim.exe""""
+  private implicit val iec: ExecutionContext = ec
+
+  def apply(initialLines: InitialLines): (File, Future[Seq[String]]) = {
     val temp = File.createTempFile("vimedit", "")
-    temp.write(initialLines mkString "\n")
-    temp -> inFile(temp)
+    temp.write(initialLines.lines mkString "\n")
+    temp -> inFile(temp, initialLines.startingEditLine)
   }
-  def inFile(file: File): Future[Seq[String]] = Future {
-    Vector(VimLocation + FormattedCommands, file.path).!!
-    file.lines.filterNot(_ startsWith "#").toVector
+  private def inFile(file: File, startingEditLine: Int): Future[Seq[String]] = Future {
+    val commands = Vector(
+      ExecutionCommand("winpos 0 0"), // Start in the corner
+      ExecutionCommand("set lines=1000"), // Max height
+      ExecutionCommand(s"set columns=${cp.width}"), // Screen's width
+
+    ) ++ cp.get ++ Vector(NormalCommand(s"${startingEditLine}G"))
+    val formattedCommands = commands.map(_.asCommandString).mkString(" ", " ", "")
+    Vector(VimLocation + formattedCommands, file.path).!!
+    file.lines.toVector
+  }
+}
+
+private object TableVimEdit {
+  sealed trait Command {
+    def asCommandString: String
+  }
+  case class NormalCommand(s: String) extends Command {
+    override def asCommandString = s""""+norm $s""""
+  }
+  case class ExecutionCommand(s: String) extends Command {
+    override def asCommandString = s"""-c :"$s""""
   }
 }
