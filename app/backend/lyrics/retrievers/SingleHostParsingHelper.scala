@@ -3,6 +3,7 @@ package backend.lyrics.retrievers
 import java.util.regex.Pattern
 
 import backend.Url
+import backend.logging.Logger
 import backend.lyrics.{HtmlLyrics, Instrumental}
 import backend.lyrics.retrievers.SingleHostParsingHelper._
 import javax.inject.Inject
@@ -18,14 +19,17 @@ import common.io.InternetTalker
 import common.io.RichWSResponse._
 import common.rich.primitives.RichString._
 
-private class SingleHostParsingHelper @Inject()(it: InternetTalker) {
+private class SingleHostParsingHelper @Inject()(it: InternetTalker, logger: Logger) {
   private implicit val iec: ExecutionContext = it
 
   def apply(p: SingleHostParser)(url: Url, s: Song): Future[RetrievedLyricsResult] = it.getAsBrowser(url)
       .map(response =>
         if (response.status == Status.NOT_FOUND)
           RetrievedLyricsResult.NoLyrics
-        else p(response.document, s) match {
+        else if (response.status >= 300) {
+          logger.warn(s"Got error code <${response.status}> for <$url>")
+          RetrievedLyricsResult.NoLyrics
+        } else p(response.document, s) match {
           case LyricParseResult.Instrumental => RetrievedLyricsResult.RetrievedLyrics(Instrumental(p.source))
           case LyricParseResult.Lyrics(l) => RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(p.source, l))
           case LyricParseResult.NoLyrics => RetrievedLyricsResult.NoLyrics
