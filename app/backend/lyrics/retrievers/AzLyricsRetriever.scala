@@ -31,7 +31,7 @@ private object AzLyricsRetriever {
   private[retrievers] val parser: SingleHostParser = new SingleHostParser {
     // AZ lyrics don't support instrumental :\
     override def apply(d: Document, s: Song): LyricParseResult = LyricParseResult.Lyrics(
-      d.selectSingle(".main-page .text-center div:not([class])")
+      d.selectSingle(".main-page .text-center div:not([class]):not([id])")
           .wholeText.trim.|>(HtmlLyricsUtils.addBreakLines)
     )
     override val source = "AZLyrics"
