@@ -2,7 +2,8 @@ package decoders
 
 import java.util.regex.Pattern
 
-import javax.inject.Inject
+import backend.logging.Logger
+import javax.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -15,15 +16,17 @@ import common.rich.primitives.RichString._
 import common.rich.RichT._
 
 /** Encodes audio files files to mp3. Also handles caching. */
+@Singleton // Needed for unique actor
 class Mp3Encoder @Inject()(
     @RootDirectory rootDirectory: DirectoryRef,
     encoder: Encoder,
     ec: ExecutionContext,
+    logger: Logger,
 ) extends SimpleTypedActor[FileRef, FileRef] {
   private implicit val iec: ExecutionContext = ec
   private val outputDir = rootDirectory addSubDir "musicOutput"
   private val cleaner = new FolderCleaner(outputDir)
-  private val actor = SimpleTypedActor.unique("Mp3Encoder", encodeFileIfNeeded)
+  private val actor = SimpleTypedActor.unique("Mp3Encoder", encodeFileIfNeeded, logger)
 
   private def encodeFileIfNeeded(f: FileRef) = f.mapIf(_.extension.toLowerCase != "mp3").to(encode(_))
 

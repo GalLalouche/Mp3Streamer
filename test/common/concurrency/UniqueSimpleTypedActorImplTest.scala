@@ -2,6 +2,7 @@ package common.concurrency
 
 import java.util.concurrent.Semaphore
 
+import backend.logging.Logger
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import scala.concurrent._
@@ -17,7 +18,7 @@ class UniqueSimpleTypedActorImplTest extends FreeSpec with OneInstancePerTest wi
     val $ = SimpleTypedActor.unique[String, Unit]("MyName", m => {
       semaphore.acquire()
       sb.append(m)
-    })
+    }, Logger.Empty)
     val f = $ ! "foo"
     val g = $ ! "foo"
     f should be theSameInstanceAs g
