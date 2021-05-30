@@ -4,7 +4,7 @@ import java.util.regex.Pattern
 
 import backend.Url
 import backend.logging.Logger
-import backend.lyrics.{HtmlLyrics, Instrumental}
+import backend.lyrics.{HtmlLyrics, Instrumental, LyricsUrl}
 import backend.lyrics.retrievers.SingleHostParsingHelper._
 import javax.inject.Inject
 import models.Song
@@ -30,13 +30,15 @@ private class SingleHostParsingHelper @Inject()(it: InternetTalker, logger: Logg
           logger.warn(s"Got error code <${response.status}> for <$url>")
           RetrievedLyricsResult.NoLyrics
         } else p(response.document, s) match {
-          case LyricParseResult.Instrumental => RetrievedLyricsResult.RetrievedLyrics(Instrumental(p.source))
-          case LyricParseResult.Lyrics(l) => RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(p.source, l))
+          case LyricParseResult.Instrumental =>
+            RetrievedLyricsResult.RetrievedLyrics(Instrumental(p.source, LyricsUrl.oldUrl(url)))
+          case LyricParseResult.Lyrics(l) =>
+            RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(p.source, l, LyricsUrl.oldUrl(url)))
           case LyricParseResult.NoLyrics => RetrievedLyricsResult.NoLyrics
           case LyricParseResult.Error(e) => RetrievedLyricsResult.Error(e)
         })
       .filterWithMessage({
-        case RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(_, h)) => h doesNotMatch EmptyHtmlRegex
+        case RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(_, h, url)) => h doesNotMatch EmptyHtmlRegex
         case _ => true
       }, s"Lyrics in $url were empty")
 }

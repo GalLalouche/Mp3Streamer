@@ -27,6 +27,7 @@ case class Url(address: String) {
   @tailrec final def +/(s: String): Url =
     if (s.head == '/') +/(s.tail) else Url(address + s.mapIf(address.last != '/').to('/' + _))
   def isValid: Boolean = UrlValidator.getInstance().isValid(address)
+  def toLemonLabs: io.lemonlabs.uri.Url = io.lemonlabs.uri.Url.parse(address)
 }
 
 @deprecated("Use io.lemonlabs.uri.Url")

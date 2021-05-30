@@ -2,6 +2,7 @@ package backend.lyrics.retrievers
 
 import backend.StorageSetup
 import backend.lyrics.Instrumental
+import backend.lyrics.LyricsUrl.DefaultEmpty
 import backend.module.TestModuleConfiguration
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
 import models.FakeModelFactory
@@ -31,7 +32,7 @@ class SlickInstrumentalArtistTest extends AsyncFreeSpec with StorageSetup {
   "exists" in {
     val song = factory.song(artistName = existingArtist)
     storage.store(existingArtist)
-        .>>($(song)) shouldEventuallyReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("Default for artist"))
+        .>>($(song)) shouldEventuallyReturn RetrievedLyricsResult.RetrievedLyrics(Instrumental("Default for artist", DefaultEmpty))
   }
   "doesn't exist" in {
     val song = factory.song(artistName = existingArtist)

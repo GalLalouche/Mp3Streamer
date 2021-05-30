@@ -3,6 +3,7 @@ package backend.lyrics
 import backend.Url
 import backend.logging.Logger
 import backend.lyrics.retrievers.{RetrievedLyricsResult, _}
+import backend.lyrics.LyricsUrl.ManualEmpty
 import backend.storage.OnlineRetrieverCacher
 import javax.inject.Inject
 import models.Song
@@ -54,7 +55,7 @@ private class LyricsCache @Inject()(
   }
 
   def setInstrumentalSong(s: Song): Future[Instrumental] = {
-    val instrumental = Instrumental("Manual override")
+    val instrumental = Instrumental("Manual override", ManualEmpty)
     cache.replace(s, instrumental).run >| instrumental
   }
   def setInstrumentalArtist(s: Song): Future[Instrumental] = defaultArtistInstrumental add s

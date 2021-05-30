@@ -3,6 +3,7 @@ package backend.lyrics
 import backend.lyrics.retrievers.{InstrumentalArtistStorage, RetrievedLyricsResult}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.Url
+import backend.lyrics.LyricsUrl.OldData
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
 import controllers.UrlPathUtils
 import models.{IOSong, Song}
@@ -24,7 +25,7 @@ import common.MutablePartialFunction
 
 class LyricsFormatterTest
     extends AsyncFreeSpec with BeforeAndAfterEachAsync with AsyncAuxSpecs
-    with MockitoSugar with OneInstancePerTest {
+        with MockitoSugar with OneInstancePerTest {
   // Modified by some tests
   private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]
   private val injector = TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).injector
@@ -43,9 +44,21 @@ class LyricsFormatterTest
 
   private def getLyricsForSong: Future[String] = $.get(encodedSong)
 
-  "get" in {
-    injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar")) >>
-        $.get(encodedSong) shouldEventuallyReturn "bar<br><br>Source: foo"
+  "get" - {
+    "With URL" in {
+      injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar", LyricsUrl.oldUrl(Url("http://bazz.com")))) >>
+          $.get(encodedSong) shouldEventuallyReturn """bar<br><br>Source: <a href="http://bazz.com">foo</a>"""
+    }
+    def testCaseObject(lu: LyricsUrl): Unit =
+      ("With " + lu.toString) in {
+        injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar", lu)) >>
+            $.get(encodedSong) shouldEventuallyReturn "bar<br><br>Source: foo"
+      }
+    def isUrl: LyricsUrl => Boolean = {
+      case LyricsUrl.Url(_) => true
+      case _ => false
+    }
+    LyricsUrl.values.filterNot(isUrl).foreach(testCaseObject)
   }
 
   "push" - {
@@ -54,7 +67,10 @@ class LyricsFormatterTest
         case Url("https://www.azlyrics.com/lyrics/Foobar") =>
           FakeWSResponse(bytes = getResourceFile("/backend/lyrics/retrievers/az_lyrics.html").bytes)
       }
-      injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar")) >>
+      injector.instance[LyricsStorage]
+          .store(
+            song,
+            HtmlLyrics("foo", "bar", LyricsUrl.oldUrl(Url("https://www.azlyrics.com/lyrics/Foobar")))) >>
           $.push(encodedSong, Url("https://www.azlyrics.com/lyrics/Foobar"))
               .map(_ should startWith("Ascending in sectarian rapture")) >>
           getLyricsForSong.map(_ should startWith("Ascending in sectarian rapture"))

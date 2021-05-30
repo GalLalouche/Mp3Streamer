@@ -49,12 +49,12 @@ class LyricsControllerTest extends FreeSpec with MockitoSugar with ControllerSpe
   private def getLyricsForSong: String = get("lyrics/" + encodedSong).getString
 
   "get" in {
-    inj.instanceOf[LyricsStorage].store(song, HtmlLyrics("foo", "bar")).get
-    get("lyrics/" + encodedSong).getString shouldReturn "bar<br><br>Source: foo"
+    inj.instanceOf[LyricsStorage].store(song, HtmlLyrics("foo", "bar", LyricsUrl.oldUrl(Url("http://foo.com")))).get
+    get("lyrics/" + encodedSong).getString shouldReturn """bar<br><br>Source: <a href="http://foo.com">foo</a>"""
   }
 
   "push" in {
-    inj.instanceOf[LyricsStorage].store(song, HtmlLyrics("foo", "bar")).get
+    inj.instanceOf[LyricsStorage].store(song, HtmlLyrics("foo", "bar", LyricsUrl.oldUrl(Url("http://foo.com")))).get
     urlToResponseMapper += {
       case Url("https://www.azlyrics.com/lyrics/Foobar") =>
         FakeWSResponse(bytes = getResourceFile("/backend/lyrics/retrievers/az_lyrics.html").bytes)
