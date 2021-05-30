@@ -76,19 +76,20 @@ $(function() {
   let scrollBaseline = 0
   let timeBaseline = 0
 
+  const scrollableElement = lyricBox
   function scrollLyrics() {
     // Don't start scrolling right at the beginning of the song if there is no baseline set
     const heightBaseline = scrollBaseline || (lyricsContent.height() / -1.75)
     const timePercentage = (gplayer.percentageOfSongPlayed() - timeBaseline) / 100.0
     autoScroll = true
-    lyricBox.scrollTop(lyricBox.prop('scrollHeight') * timePercentage + heightBaseline)
+    scrollableElement.scrollTop(scrollableElement.prop('scrollHeight') * timePercentage + heightBaseline)
   }
 
   setInterval(scrollLyrics, 100)
 
-  lyricsContent.scroll(function() { // When the user scrolls manually, reset the baselines
+  scrollableElement.scroll(function() { // When the user scrolls manually, reset the baselines
     if (!autoScroll) {
-      scrollBaseline = lyricsContent.scrollTop()
+      scrollBaseline = scrollableElement.scrollTop()
       timeBaseline = scrollBaseline && gplayer.percentageOfSongPlayed()
     }
     autoScroll = false
