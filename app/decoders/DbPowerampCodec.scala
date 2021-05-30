@@ -13,7 +13,7 @@ import common.rich.path.RichFile._
 
 private class DbPowerampCodec @Inject()(implicit logger: Logger) extends Encoder {
   // Do this less hackishly
-  private val converterFile = new File("D:/Media/Tools/dBpoweramp/CoreConverter.exe")
+  private val converterFile = new File("G:/Media/Tools/dBpoweramp/CoreConverter.exe")
   private def quote(o: Any): String = s""""$o""""
 
   override def encode(srcFile: FileRef, dstFile: FileRef, dstType: CodecType): Unit = dstType match {
