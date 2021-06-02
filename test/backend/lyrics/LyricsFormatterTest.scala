@@ -46,8 +46,9 @@ class LyricsFormatterTest
 
   "get" - {
     "With URL" in {
+      val expected = """bar<br><br>Source: <a href="http://bazz.com" target="_blank">foo</a>"""
       injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar", LyricsUrl.oldUrl(Url("http://bazz.com")))) >>
-          $.get(encodedSong) shouldEventuallyReturn """bar<br><br>Source: <a href="http://bazz.com">foo</a>"""
+          $.get(encodedSong) shouldEventuallyReturn expected
     }
     def testCaseObject(lu: LyricsUrl): Unit =
       ("With " + lu.toString) in {

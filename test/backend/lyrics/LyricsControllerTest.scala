@@ -50,7 +50,8 @@ class LyricsControllerTest extends FreeSpec with MockitoSugar with ControllerSpe
 
   "get" in {
     inj.instanceOf[LyricsStorage].store(song, HtmlLyrics("foo", "bar", LyricsUrl.oldUrl(Url("http://foo.com")))).get
-    get("lyrics/" + encodedSong).getString shouldReturn """bar<br><br>Source: <a href="http://foo.com">foo</a>"""
+    get("lyrics/" + encodedSong)
+        .getString shouldReturn """bar<br><br>Source: <a href="http://foo.com" target="_blank">foo</a>"""
   }
 
   "push" in {
