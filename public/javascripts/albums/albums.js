@@ -54,6 +54,7 @@ $(function() {
   const createHideButton = () => button("Hide", "hide")
 
   function putArtist(actionType, text, success) {
+    assert(text, "No artist data extracted")
     $.ajax({
       url: `artist/${actionType}/${text}`,
       data: text,
@@ -62,6 +63,11 @@ $(function() {
       dataType: "text",
       success: success
     })
+  }
+
+  function putAlbum(actionType, text, success) {
+    assert(text, "No album data extracted")
+    putJson(actionType, text, success)
   }
 
   function toIsoDate(date) {
@@ -84,6 +90,7 @@ $(function() {
           .append(button("Ignore", "ignore-artist"))
           .append(button("Remove", "remove-artist"))
           .append(createHideButton())
+          .data("artistName", entryName)
 
     entryElem
         .append(albumsElem)
@@ -138,8 +145,8 @@ $(function() {
   onClick("hide", parent => parent.hide())
   onClick("ignore-artist", parent => putArtist("ignore", parent.data("artistName"), hideParent(parent)))
   onClick("remove-artist", parent => putArtist("remove", parent.data("artistName"), hideParent(parent)))
-  onClick("ignore-album", parent => putJson("album/ignore", parent.data(), hideParent(parent)))
-  onClick("remove-album", parent => putJson("album/remove", parent.data(), hideParent(parent)))
+  onClick("ignore-album", parent => putAlbum("album/ignore", parent.data(), hideParent(parent)))
+  onClick("remove-album", parent => putAlbum("album/remove", parent.data(), hideParent(parent)))
   onClick("google-torrent", parent => {
     const data = parent.data()
     window.open(`https://rutracker.net/forum/tracker.php?nm=${data.artistName} ${data.title}`)
