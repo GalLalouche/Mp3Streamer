@@ -16,6 +16,7 @@ abstract class Iterant[F[_] : Monad, A] {
       if (p(head)) OptionT.some(head -> tail.filter(p)) else tail.filter(p).step
     }
   }
+  def oMap[B](f: A => Option[B]): Iterant[F, B] = map(f).filter(_.isDefined).map(_.get)
   def step: OptionT[F, (A, Iterant[F, A])]
   def map[B](f: A => B): Iterant[F, B] = new Iterant[F, B] {
     override def step = Iterant.this.step.map {case (head, tail) =>

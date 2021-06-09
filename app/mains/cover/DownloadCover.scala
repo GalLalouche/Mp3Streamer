@@ -1,5 +1,6 @@
 package mains.cover
 
+import backend.logging.Logger
 import com.google.inject.Guice
 import io.lemonlabs.uri.Url
 import javax.inject.Inject
@@ -25,6 +26,7 @@ private[mains] class DownloadCover @Inject()(
     albumFactory: AlbumFactory,
     imageFinder: ImageAPISearch,
     imageDownloader: ImageDownloader,
+    imageSelector: ImageSelector,
 ) {
   import albumFactory._
 
@@ -54,15 +56,16 @@ private[mains] class DownloadCover @Inject()(
     }
   }
 
-  private def selectImage(imageURLs: FutureIterant[ImageSource]): Future[ImageChoice] =
-    ImageSelectionPanel.select(
+  private def selectImage(imageURLs: FutureIterant[ImageSource]): Future[ImageChoice] = {
+    val sourceToImage = imageDownloader.withOutput(IODirectory(DownloadCover.tempFolder))
+    imageSelector.select(
       Iterant.prefetching(imageURLs.filter(i => i.isSquare && i.width >= 500), 12)
           .flatMapF(
             // TODO filterSuccessful in rich whatever.
-            imageDownloader.withOutput(IODirectory(DownloadCover.tempFolder))(_).toTry.map(_.toOption))
+            sourceToImage(_).toTry.map(_.toOption))
           .filter(_.isDefined)
-          .map(_.get)
-    )
+          .map(_.get))
+  }
 }
 
 private object DownloadCover {

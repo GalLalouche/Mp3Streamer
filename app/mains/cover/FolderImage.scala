@@ -20,4 +20,5 @@ private trait FolderImage {
     new File(to, "folder.jpg").toPath,
     StandardCopyOption.REPLACE_EXISTING,
   )
+  override def toString = s"FolderImage(file: $file, isLocal: $isLocal, width: $width, height: $height)"
 }

@@ -3,6 +3,8 @@ package mains.cover
 import java.awt.Image
 
 import backend.{Retriever, Url}
+import common.rich.func.BetterFutureInstances._
+import backend.logging.Logger
 import javax.inject.Inject
 import mains.SwingUtils._
 
@@ -10,6 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import common.io.{DirectoryRef, FileRef, InternetTalker}
 import common.io.RichWSRequest._
+import common.rich.func.ToMoreMonadErrorOps._
 
 private object ImageDownloader {
   def folderImage(f: FileRef, local: Boolean, w: => Int, h: => Int, image: => Image): FolderImage =
@@ -24,7 +27,7 @@ private object ImageDownloader {
 }
 
 /** Downloads images and saves them to a directory; local image sources will be noop-ed. */
-private class ImageDownloader @Inject()(it: InternetTalker) {
+private class ImageDownloader @Inject()(it: InternetTalker, logger: Logger) {
   import ImageDownloader._
 
   private implicit val iec: ExecutionContext = it
@@ -34,7 +37,7 @@ private class ImageDownloader @Inject()(it: InternetTalker) {
         .map {bytes =>
           val file = outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
           folderImage(file, local = false, w = width, h = height, ImageSource.toImage(file))
-        }
+        }.listenError(e => logger.error(s"Error downloading file <$url>", e))
     case l: LocalSource =>
       Future successful folderImage(l.file, local = true, l.width, l.height, l.image)
   }

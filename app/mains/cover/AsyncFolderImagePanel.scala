@@ -2,11 +2,15 @@ package mains.cover
 
 import java.awt.{Color, Font}
 
+import backend.logging.Logger
+import com.google.inject.assistedinject.Assisted
+import javax.inject.Inject
 import javax.swing.{BorderFactory, JLabel, SpringLayout, SwingConstants}
 import mains.SwingUtils._
 
 import scala.concurrent.ExecutionContext
 import scala.swing.{Button, Component, Dimension, GridPanel, TextArea}
+import scala.util.{Failure, Success, Try}
 
 import scalaz.std.string.stringInstance
 import common.rich.func.BetterFutureInstances._
@@ -18,15 +22,26 @@ import common.rich.RichFuture.richFuture
 import common.rich.RichT._
 
 /** Eventually publishes an ImageChoice event. */
-private class AsyncFolderImagePanel(
-    images: FutureIterant[FolderImage], rows: Int, cols: Int)(implicit ec: ExecutionContext)
-    extends GridPanel(rows0 = rows, cols0 = cols) {
+private class AsyncFolderImagePanel @Inject()(
+    logger: Logger,
+    ec: ExecutionContext,
+    @Assisted images: FutureIterant[FolderImage],
+    @Assisted("rows") rows: Int,
+    @Assisted("cols") cols: Int,
+) extends GridPanel(rows0 = rows, cols0 = cols) {
+  private implicit val iec: ExecutionContext = ec
   import AsyncFolderImagePanel._
 
-  private var current = images
+  private var current = images.oMap(image => createImagePanel(image) match {
+    case Failure(e) =>
+      logger.warn(s"Error converting <$image> to BufferImage", e)
+      None
+    case Success(value) => Some(value)
+  })
 
-  private def createImagePanel(fi: FolderImage): Component = Component.wrap(createImageLabel(fi))
-      .onMouseClick(() => AsyncFolderImagePanel.this.publish(Selected(fi)))
+  private def createImagePanel(fi: FolderImage): Try[Component] =
+    createImageLabel(fi)
+        .map(Component.wrap(_).onMouseClick(() => AsyncFolderImagePanel.this.publish(Selected(fi))))
 
   def refresh(): Unit = {
     contents.clear()
@@ -41,7 +56,7 @@ private class AsyncFolderImagePanel(
       val (image, next) = current.step.get.get
       current = next
       contents.synchronized {
-        contents.update(currentIndex, createImagePanel(image))
+        contents.update(currentIndex, image)
         revalidate()
         contents.foreach(_.revalidate())
       }
@@ -68,7 +83,7 @@ private object AsyncFolderImagePanel {
     new TextLabelProps(SwingConstants.BOTTOM, SwingConstants.LEFT, Color.BLUE),
   )
 
-  private def createImageLabel(fi: FolderImage): JLabel = {
+  private def createImageLabel(fi: FolderImage): Try[JLabel] = Try {
     val fileSize = s"${fi.file.size / 1024}KB"
     val text = s"${fi.width}x${fi.height} $fileSize${" LOCAL".monoidFilter(fi.isLocal)}"
     new JLabel(fi.toIcon(Width, Height))
