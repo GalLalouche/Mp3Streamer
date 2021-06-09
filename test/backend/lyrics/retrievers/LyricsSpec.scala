@@ -39,6 +39,6 @@ private object LyricsSpec {
     e => BePropertyMatchResult(e == LyricParseResult.Instrumental, "instrumental")
   protected[retrievers] val retrievedInstrumental: BePropertyMatcher[RetrievedLyricsResult] =
     e => BePropertyMatchResult(cond(e) {
-      case RetrievedLyricsResult.RetrievedLyrics(Instrumental(_)) => true
+      case RetrievedLyricsResult.RetrievedLyrics(Instrumental(_, _)) => true
     }, "instrumental")
 }

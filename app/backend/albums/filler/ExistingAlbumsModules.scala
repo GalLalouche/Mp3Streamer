@@ -4,7 +4,7 @@ import java.time.Clock
 
 import backend.albums.filler.storage.FillerStorageModule
 import backend.logging.{Logger, LoggingLevel, LoggingModules}
-import backend.module.StandaloneModule
+import backend.module.{CleanModule, StandaloneModule}
 import backend.recon.Artist
 import com.google.inject.{Guice, Injector, Module, Provides, Singleton}
 import com.google.inject.util.Modules
@@ -37,13 +37,17 @@ private[albums] object ExistingAlbumsModules {
         EagerExistingAlbums.from(ExistingAlbums.albumDirectories(mf), mf, clock, logger)
       }
   }
-  private[filler] def overridingStandalone(m: Module): Injector =
-    Guice.createInjector(Modules `override` StandaloneModule `with` new ScalaModule {
+  private def overriding(overridenModule: Module)(existingAlbumsModule: Module): Injector = {
+    Guice.createInjector(Modules `override` overridenModule `with` new ScalaModule {
       override def configure(): Unit = {
-        install(m)
+        install(existingAlbumsModule)
         install(LoggingModules.ConsoleWithFiltering)
         install(IOMusicFinderModule)
         install(FillerStorageModule)
       }
     })
+  }
+  private[filler] def overridingStandalone: Module => Injector = overriding(StandaloneModule)
+  // For debugging
+  private[filler] def overridingClean: Module => Injector = overriding(CleanModule)
 }

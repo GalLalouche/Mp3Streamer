@@ -9,9 +9,7 @@ private object FolderCreatorModule extends ScalaModule {
   override def configure(): Unit = {
     install(StandaloneModule)
     // TODO add to scala guice.
-    install(new FactoryModuleBuilder()
-        .implement(classOf[RandomFolderCreator], classOf[RandomFolderCreator])
-        .build(classOf[RandomFolderCreatorFactory])
+    install(new FactoryModuleBuilder().build(classOf[RandomFolderCreatorFactory])
     )
   }
   @Provides private def fileFilter(sde: SongDataExtractor): FileFilter =

@@ -18,7 +18,7 @@ import common.json.RichJson._
 import common.json.ToJsonableOps._
 
 private class SearchFormatter @Inject()(state: SearchState, urlPathUtils: UrlPathUtils) {
-  implicit val albumJsonableWithExtraInfo: OJsonable[Album] =
+  private implicit val albumJsonableWithExtraInfo: OJsonable[Album] =
     JsonableOverrider.oJsonify[Album]((a, original) => original
         .append("discNumbers" -> discNumbers(a))
         .append("composer" -> a.composer)
@@ -36,7 +36,6 @@ private class SearchFormatter @Inject()(state: SearchState, urlPathUtils: UrlPat
 }
 
 private object SearchFormatter {
-
   // If not all songs have a disc number, returns None (i.e., ignores albums with bonus disc only).
   private def discNumbers(a: Album): Option[Seq[String]] =
     a.songs.traverse(s => s.discNumber.map(_ -> s.track))
