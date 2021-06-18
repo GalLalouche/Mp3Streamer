@@ -4,7 +4,7 @@ import java.io.File
 
 import javax.inject.Inject
 import mains.vimtag.Initializer.InitialLines
-import mains.vimtag.TableVimEdit.{ExecutionCommand, NormalCommand}
+import mains.vimtag.VimEdit._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process._
@@ -15,10 +15,10 @@ private class VimEdit @Inject()(cp: CommandsProvider, ec: ExecutionContext) {
   private val VimLocation = """"C:\Program Files (x86)\Vim\vim74\gvim.exe""""
   private implicit val iec: ExecutionContext = ec
 
-  def apply(initialLines: InitialLines): (File, Future[Seq[String]]) = {
+  def apply(initialLines: InitialLines): (File, Future[Seq[String]], Map[String, InitialValues]) = {
     val temp = File.createTempFile("vimedit", "")
     temp.write(initialLines.lines mkString "\n")
-    temp -> inFile(temp, initialLines.startingEditLine)
+    (temp, inFile(temp, initialLines.startingEditLine), initialLines.initialValues)
   }
   private def inFile(file: File, startingEditLine: Int): Future[Seq[String]] = Future {
     val commands = Vector(
@@ -33,7 +33,7 @@ private class VimEdit @Inject()(cp: CommandsProvider, ec: ExecutionContext) {
   }
 }
 
-private object TableVimEdit {
+private object VimEdit {
   sealed trait Command {
     def asCommandString: String
   }

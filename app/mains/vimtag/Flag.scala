@@ -2,11 +2,11 @@ package mains.vimtag
 
 import java.util.regex.Pattern
 
-import common.rich.primitives.RichString._
 import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.immutable
 
+import common.rich.primitives.RichString._
 import common.rich.RichT._
 
 private sealed case class Flag(

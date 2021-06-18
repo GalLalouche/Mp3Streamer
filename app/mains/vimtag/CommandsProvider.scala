@@ -1,6 +1,6 @@
 package mains.vimtag
 
-import mains.vimtag.TableVimEdit.Command
+import mains.vimtag.VimEdit.Command
 
 private trait CommandsProvider {
   def width: Int

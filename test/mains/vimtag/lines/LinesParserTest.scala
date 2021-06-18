@@ -2,7 +2,7 @@ package mains.vimtag.lines
 
 import java.io.File
 
-import mains.vimtag.{Change, Empty, Keep, Parser}
+import mains.vimtag.{Change, Common, Empty, Keep, Parser}
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
@@ -32,7 +32,7 @@ class LinesParserTest extends FreeSpec with AuxSpecs {
         "TRACK: 9",
         "DISC_NO:",
       )
-      val e = intercept[NoSuchElementException] {$(lines)}
+      val e = intercept[NoSuchElementException] {$(Common.dummyInitialValuesMap)(lines)}
       e.getMessage shouldReturn "key not found: ARTIST"
     }
     "Missing mandatory field in file throws" in {
@@ -57,7 +57,7 @@ class LinesParserTest extends FreeSpec with AuxSpecs {
         "TRACK: 9",
         "DISC_NO:",
       )
-      val e = intercept[NoSuchElementException] {$(lines)}
+      val e = intercept[NoSuchElementException] {$(Common.dummyInitialValuesMap)(lines)}
       e.getMessage shouldReturn "key not found for File2: TITLE"
     }
     "happy path" in {
@@ -66,9 +66,9 @@ class LinesParserTest extends FreeSpec with AuxSpecs {
         "ALBUM: Prokofiev - Piano Concerto No. 2 & 3 (Kissin, Ashkenazy)",
         "YEAR: <KEEP>",
         "COMPOSER: Prokofiev",
-        "OPUS:",
+        "OPUS: <COMMON>",
         "CONDUCTOR: <KEEP>",
-        "ORCHESTRA: Philharmonia Orchestra",
+        "ORCHESTRA: ",
         "PERFORMANCEYEAR: 2009",
         "FILE: File1",
         "TITLE: Piano Concerto No.3 in C Major, Op.26 - I. Andante - Allegro",
@@ -84,16 +84,16 @@ class LinesParserTest extends FreeSpec with AuxSpecs {
         "DISC_NO:",
       )
 
-      val res = $(lines)
+      val res = $(Common.dummyWithOpus)(lines)
 
       res.artist shouldReturn Change("Evgeny Kissin")
       res.album shouldReturn Change("Prokofiev - Piano Concerto No. 2 & 3 (Kissin, Ashkenazy)")
       res.year shouldReturn Keep
 
       res.composer shouldReturn Change("Prokofiev")
-      res.opus shouldReturn Empty
+      res.opus shouldReturn Change("Op. 14")
       res.conductor shouldReturn Keep
-      res.orchestra shouldReturn Change("Philharmonia Orchestra")
+      res.orchestra shouldReturn Empty
       res.performanceYear shouldReturn Change(2009)
 
       val songs = res.songId3s

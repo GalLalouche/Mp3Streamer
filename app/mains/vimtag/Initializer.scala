@@ -16,20 +16,11 @@ private class Initializer @Inject()(mf: MusicFinder, aux: IndividualInitializer)
     private lazy val songs = (dir +: dir.deepDirs)
         .flatMap(mf.getOptionalSongsInDir)
         .sortBy(_.file)
-    private def headOrKeep(set: Set[Any]): String = set.toList match {
-      case Nil => ""
-      case x :: Nil => x.toString
-      case _ => Tags.Keep
-    }
-    private def headOrKeepOrEmpty(set: Set[Any]): String = set.toList match {
-      case Nil => Tags.ExplicitEmpty
-      case x :: Nil => x.toString
-      case _ => Tags.Keep
-    }
-    private def globalNamedTag(tagName: String, extractor: OptionalSong => Option[Any]): String =
-      s"${tagName.toUpperCase}: ${headOrKeep(songs.flatMap(extractor(_)).toSet)}"
-    private def requiredNamedTag(tagName: String, extractor: OptionalSong => Option[Any]): String =
-      s"${tagName.toUpperCase}: ${headOrKeepOrEmpty(songs.flatMap(extractor(_)).toSet)}"
+        .toVector
+    private def globalNamedTag[A](tagName: String, extractor: OptionalSong => Option[A]) =
+      OptionalField(tagName.toUpperCase, songs.flatMap(extractor(_)))
+    private def requiredNamedTag[A](tagName: String, extractor: OptionalSong => Option[A]) =
+      RequiredField(tagName.toUpperCase, songs.flatMap(extractor(_)))
     def artist = requiredNamedTag(Tags.Artist, _.artistName)
     def album = requiredNamedTag(Tags.Album, _.albumName)
     def year = requiredNamedTag(Tags.Year, _.year)
@@ -59,29 +50,47 @@ private class Initializer @Inject()(mf: MusicFinder, aux: IndividualInitializer)
       "# ----------------------------",
     )
     val globalTags = Vector(
-      "# Global ID3 tags; tags with more than single value are preset to " + Tags.Keep,
+      s"# Global ID3 tags; tags with more than single value are preset to ${Tags.Keep}. Special <TAGS> are case insensitive.",
+      s"# You can Use ${Tags.Common} use the most common value; counts appear above the ${Tags.Keep} as comments",
       "# First are the global and mandatory ID3 properties",
-      $.artist,
-      $.album,
-      $.year,
+      $.artist.lines,
+      $.album.lines,
+      $.year.lines,
       "# Classical tags",
-      $.composer,
-      $.opus,
-      $.conductor,
-      $.orchestra,
-      $.performanceYear,
-    ) ++ Flag.defaultInstructions ++ Vector(
+      $.composer.lines,
+      $.opus.lines,
+      $.conductor.lines,
+      $.orchestra.lines,
+      $.performanceYear.lines,
+      Flag.defaultInstructions,
       "# Individual tags",
       "# Individual tracks are pre-ordered by track number",
       "# FILE isn't actually a tag but is used later on in the process (so don't delete or modify it!)",
-    )
+    ) |> Initializer.flatten
     val individualTags: Seq[String] = $.files.zip($.titles).flatZip($.tracks).flatZip($.discNumbers)
         .map(Function.tupled(IndividualInitializer.IndividualTags)(_)) |> aux.apply
 
     val lines = instructions ++ globalTags ++ individualTags
-    InitialLines(lines, startingEditLine = lines.indexWhere(_.startsWith("#").isFalse) + 1)
+    InitialLines(
+      lines,
+      startingEditLine = lines.indexWhere(_.startsWith("#").isFalse) + 1,
+      initialValues = InitialValues.from(
+        $.artist,
+        $.album,
+        $.year,
+        $.composer,
+        $.opus,
+        $.conductor,
+        $.orchestra,
+        $.performanceYear,
+      ))
   }
 }
 private object Initializer {
-  case class InitialLines(lines: Seq[String], startingEditLine: Int)
+  private def flatten(xs: Seq[Any]): Seq[String] = xs.flatMap {
+    case xs: Seq[_] => xs.map(_.toString)
+    case s: String => Vector(s)
+  }
+
+  case class InitialLines(lines: Seq[String], startingEditLine: Int, initialValues: Map[String, InitialValues])
 }

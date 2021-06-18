@@ -25,7 +25,7 @@ private object TableParser extends IndividualParser {
       discNumber.optFilter(_.nonEmpty) match {
         case None => State.get
         case Some(v) if v.endsWith(" ->") => State.put(Option(v.dropRight(3))) >> State.get
-        case Some(v) => State.put[CurrentDiscNumber](None) >| Some(v)
+        case Some(v) => State.put[CurrentDiscNumber](None) >| Option(v)
       }
     def throwOnEmpty(tag: String, s: String) =
       s.ifNot(_.nonEmpty).thenThrow(new NoSuchElementException(s"key not found for $file: $tag"))

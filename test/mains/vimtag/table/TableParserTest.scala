@@ -2,7 +2,7 @@ package mains.vimtag.table
 
 import java.io.File
 
-import mains.vimtag.{Change, Empty, Keep, Parser}
+import mains.vimtag.{Change, Common, Empty, Keep, Parser}
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
@@ -42,7 +42,7 @@ class TableParserTest extends FreeSpec with AuxSpecs {
         "| 3       | Piano Concerto No.3 in C Major, Op.26 - III. Allegro, ma non troppo |             | File3 |",
         "|---------+---------------------------------------------------------------------+-------------+-------|",
       )
-      val e = intercept[NoSuchElementException] {$(lines)}
+      val e = intercept[NoSuchElementException] {$(Common.dummyInitialValuesMap)(lines)}
       e.getMessage shouldReturn "key not found: ARTIST"
     }
     "Empty mandatory cell throws" in {
@@ -78,7 +78,7 @@ class TableParserTest extends FreeSpec with AuxSpecs {
         "| 3       | Piano Concerto No.3 in C Major, Op.26 - III. Allegro, ma non troppo |             | File3 |",
         "|---------+---------------------------------------------------------------------+-------------+-------|",
       )
-      val e = intercept[NoSuchElementException] {$(lines)}
+      val e = intercept[NoSuchElementException] {$(Common.dummyInitialValuesMap)(lines)}
       e.getMessage shouldReturn "key not found for File2: TITLE"
     }
     "happy path" in {
@@ -100,7 +100,7 @@ class TableParserTest extends FreeSpec with AuxSpecs {
         "|---------+---------------------------------------------------------------------+-------------+-------|",
       )
 
-      val res = $(lines)
+      val res = $(Common.dummyInitialValuesMap)(lines)
 
       res.artist shouldReturn Change("Evgeny Kissin")
       res.album shouldReturn Change("Prokofiev - Piano Concerto No. 2 & 3 (Kissin, Ashkenazy)")
@@ -137,7 +137,7 @@ class TableParserTest extends FreeSpec with AuxSpecs {
         "ALBUM: Symphonie Fantastique",
         "YEAR: 1830",
         "COMPOSER: Berlioz",
-        "OPUS: Op. 14",
+        "OPUS: <COMMON>",
         "CONDUCTOR:",
         "ORCHESTRA: Berliner Philharmoniker",
         "PERFORMANCEYEAR:",
@@ -152,7 +152,7 @@ class TableParserTest extends FreeSpec with AuxSpecs {
         "---------+---------------------------------+-------------+--------|",
       )
 
-      val res = $(lines)
+      val res = $(Common.dummyWithOpus)(lines)
 
       res.artist shouldReturn Change("Karajan")
       res.album shouldReturn Change("Symphonie Fantastique")

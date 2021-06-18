@@ -36,7 +36,8 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
     val parser = new Parser(ip)
     val initializer = new Initializer(mf, ii)
 
-    val res = parser(initializer.apply(s1.file.parent).lines)
+    val initial = initializer.apply(s1.file.parent)
+    val res = parser(initial.initialValues)(initial.lines)
 
     res.artist shouldReturn Change("Evgeny Kissin")
     res.album shouldReturn Change("Prokofiev - Piano Concerto No. 2 & 3 (Kissin, Ashkenazy)")

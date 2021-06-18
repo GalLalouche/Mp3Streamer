@@ -15,9 +15,10 @@ private trait RequiredTag[+A] extends ParsedTag[A] {
   override def map[B](f: A => B): RequiredTag[B]
 }
 private object RequiredTag {
-  def apply(s: String): RequiredTag[String] = s match {
+  def parser(iv: InitialValues): String => RequiredTag[String] = s => s.toUpperCase match {
     case Tags.Keep => Keep
     case Tags.ExplicitEmpty => ExplicitEmpty
+    case Tags.Common => Change(iv.mostCommon)
     case _ => Change(s)
   }
 }

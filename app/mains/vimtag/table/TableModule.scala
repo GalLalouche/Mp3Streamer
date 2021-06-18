@@ -1,6 +1,6 @@
 package mains.vimtag.table
 
-import mains.vimtag.{CommandsProvider, IndividualInitializer, IndividualParser, Parser}
+import mains.vimtag.{CommandsProvider, IndividualInitializer, IndividualParser}
 import net.codingwell.scalaguice.ScalaModule
 
 private[vimtag] object TableModule extends ScalaModule {

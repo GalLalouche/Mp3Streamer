@@ -1,7 +1,7 @@
 package mains.vimtag.table
 
 import mains.vimtag.CommandsProvider
-import mains.vimtag.TableVimEdit.{ExecutionCommand, NormalCommand}
+import mains.vimtag.VimEdit.{ExecutionCommand, NormalCommand}
 
 private object TableCommandsProvider extends CommandsProvider {
   override def width = 240
