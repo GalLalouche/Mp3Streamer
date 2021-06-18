@@ -20,8 +20,7 @@ object Main {
     val injector = Guice.createInjector(StandaloneModule, TableModule)
     val vimEdit = injector.instance[VimEdit]
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    val default = """E:\Incoming\Bittorrent\Completed\Music\Beethoven Complete Symphonies - Karajan [SACD 6CD FLAC]\CD1 1&2"""
-    val dir = IODirectory(if (args.isEmpty) default else args(0))
+    val dir = IODirectory(args.ensuring(_.length == 1).head)
     val (file, lines) = vimEdit(injector.instance[Initializer].apply(dir))
     try {
       lines
