@@ -2,6 +2,7 @@ package mains.vimtag
 
 import java.util.logging.{Level, Logger}
 
+import mains.vimtag.Flag.RemoveFeat
 import models.RichTag._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.flac.FlacTag
@@ -13,12 +14,14 @@ import common.rich.collections.RichTraversableOnce._
 import common.rich.path.RichFile._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichInt._
+import common.rich.RichT.richT
 
 private object Fixer {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
 
   def apply(dir: DirectoryRef, parsedId3: ParsedId3): Unit = {
     val startFrom1 = parsedId3.flags(Flag.ResetTrackNumbers)
+    val removeFeat = parsedId3.flags(Flag.RemoveFeat)
     val keepDiscNumber = parsedId3.flags(Flag.NoUniformDiscNo) &&
         parsedId3.songId3s.hasSameValues(_.discNumber).isFalse
     for ((individual, index) <- parsedId3.songId3s.zipWithIndex) {
@@ -40,7 +43,7 @@ private object Fixer {
         setOption(FieldKey.ORCHESTRA, _.orchestra)
 
         setOption(FieldKey.PERFORMANCE_YEAR, _.performanceYear)
-        $.setField(FieldKey.TITLE, individual.title)
+        $.setField(FieldKey.TITLE, individual.title mapIf removeFeat to RemoveFeat.removeFeat)
         $.setField(FieldKey.TRACK, (if (startFrom1) index + 1 else individual.track) padLeftZeros 2)
         if (keepDiscNumber)
           $.setOption(FieldKey.DISC_NO, individual.discNumber)

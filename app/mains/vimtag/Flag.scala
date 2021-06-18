@@ -1,5 +1,8 @@
 package mains.vimtag
 
+import java.util.regex.Pattern
+
+import common.rich.primitives.RichString._
 import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.immutable
@@ -23,6 +26,15 @@ private object Flag extends Enum[Flag] {
     onByDefault = true,
     comment = "Removes DISC_NO if all its values are identical",
   )
+  object RemoveFeat extends Flag(
+    flag = "<REMOVE_FEAT>",
+    onByDefault = true,
+    comment = "Removes (Feat. X) from title",
+  ) {
+    private val parens = Pattern.compile(""" +\(Feat.* .*\)""", Pattern.CASE_INSENSITIVE)
+    private val noParens = Pattern.compile(""" Feat.* .*""", Pattern.CASE_INSENSITIVE)
+    def removeFeat: String => String = _ removeAll parens removeAll noParens
+  }
 
   def defaultInstructions: Seq[String] = values.filter(_.onByDefault)
       .flatMap(f => Vector("# " + f.comment, f.flag))
