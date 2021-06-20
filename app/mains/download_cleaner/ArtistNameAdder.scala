@@ -1,13 +1,13 @@
-package mains
+package mains.download_cleaner
 
-import java.nio.file.Files
 import java.nio.file.attribute.FileTime
+import java.nio.file.Files
 
 import models.{IOMusicFinder, IOSong}
 
 import common.io.IODirectory
-import common.rich.RichT._
 import common.rich.path.RichFileUtils
+import common.rich.RichT._
 
 private object ArtistNameAdder {
   def main(args: Array[String]): Unit = {
