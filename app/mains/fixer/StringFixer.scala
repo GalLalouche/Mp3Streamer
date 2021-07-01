@@ -33,17 +33,18 @@ object StringFixer extends (String => String) {
   private val DottedAcronymPattern = Pattern compile "(\\w\\.)+"
   val SpecialQuotes: Pattern = Pattern compile "[“”]"
   val ConjuctiveN: Pattern = Pattern compile " '?[Nn]'"
-  val Vs: Pattern = Pattern.compile (""" vs\.? """, Pattern.CASE_INSENSITIVE)
+  val Vs: Pattern = Pattern.compile(""" vs\.? """, Pattern.CASE_INSENSITIVE)
   val SpecialApostrophes: Pattern = Pattern compile "[‘’�´]"
   private val SpecialDashes = Pattern compile "[—–-−]"
-  private def fixWord(word: String, forceCapitalization: Boolean): String = asciiNormalize(
+  private def fixWord(unnormalizedWord: String, forceCapitalization: Boolean): String = {
+    val word = asciiNormalize(unnormalizedWord)
     if (forceCapitalization.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase
     else if (word matches MixedCapsPattern) word // mixed caps
     else if (word.head.isDigit) word.toLowerCase // 1st, 2nd, etc.
     else if (word matches RomanPattern) word.toUpperCase // roman numbers, also handles pronoun "I"
     else if (word matches DottedAcronymPattern) word.toUpperCase // A.B.C. pattern
     else pascalCaseWord(word)
-  )
+  }
 
   private val Delimiters = Pattern compile """[ ()\-:/"&]+"""
 
