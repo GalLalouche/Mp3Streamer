@@ -12,10 +12,13 @@ import common.rich.primitives.RichBoolean._
 // TODO some day might use MusicFinder
 private class SongDataExtractor @Inject()(mf: MusicFinder) {
   private def go(artistDir: Directory, album: String) = {
-    val artistName = artistDir.name
     val genreDir = artistDir.parent
-    val genreName = genreDir.name
-    SongData(genre = genreName.toLowerCase, artist = artistName.toLowerCase, album = album.toLowerCase)
+    SongData(
+      majorGenre = genreDir.parent.name.toLowerCase,
+      genre = genreDir.name.toLowerCase,
+      artist = artistDir.name.toLowerCase,
+      album = album.toLowerCase,
+    )
   }
   def apply(f: File): SongData = {
     val albumDir = f.parent

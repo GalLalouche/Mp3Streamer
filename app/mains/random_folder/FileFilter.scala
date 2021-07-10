@@ -2,6 +2,7 @@ package mains.random_folder
 
 import java.io.File
 
+import javax.inject.Inject
 import play.api.libs.json.Json
 
 import common.json.RichJson._
@@ -12,6 +13,9 @@ private trait FileFilter {
 }
 
 private object FileFilter {
+  class SansMetal @Inject()(sde: SongDataExtractor) extends FileFilter {
+    override def isAllowed(f: File): Boolean = sde(f).majorGenre != "metal"
+  }
   object AllowEverything extends FileFilter {
     override def isAllowed(f: File): Boolean = true
   }

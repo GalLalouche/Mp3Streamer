@@ -27,7 +27,7 @@ import common.rich.primitives.RichInt.Rich
 private class RandomFolderCreator @Inject()(
     ec: ExecutionContext,
     mf: IOMusicFinder,
-    runningFilter: FileFilter,
+    playlistFilter: FileFilter,
     @Assisted seed: Long,
 ) {
   private implicit val iec: ExecutionContext = ec
@@ -92,13 +92,15 @@ private class RandomFolderCreator @Inject()(
     outputFolder = "RandomSongsOutput",
     playlistName = "random",
   )
-  def dumpRunning(n: Int): Unit = dumpAll(
-    runningFilter, numberOfSongsToCreate = n, outputFolder = "Unfiltered Run Songs", playlistName = "running")
+
+  private val FilteredSongsDirName = "Filtered Songs"
+  def dumpFiltered(n: Int): Unit = dumpAll(
+    playlistFilter, numberOfSongsToCreate = n, outputFolder = FilteredSongsDirName, playlistName = "running")
   def copyFilteredSongs(): Unit = {
-    // Delete m3u song because it messes up the copy
-    val dir = Directory("D:/Unfiltered Run Songs")
+    val dir = Directory("D:/" + FilteredSongsDirName)
+    // The m3u file messes up the copy.
     dir.files.filter(_.extension == "m3u").foreach(_.delete())
     val songs = dir.files.toSet
-    copy(songs, Directory.makeDir("D:/Filtered Run Songs").clear(), "running")
+    copy(songs, Directory.makeDir("D:/Processed Filtered Songs").clear(), "running")
   }
 }
