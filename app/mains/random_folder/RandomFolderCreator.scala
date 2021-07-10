@@ -78,6 +78,7 @@ private class RandomFolderCreator @Inject()(
     for (pb <- managed(new ProgressBar("Copying songs", shuffledSongs.size)))
       shuffledSongs.zipWithIndex.foreach((copyFileToOutputDir(outputDir, pb, padLength) _).tupled)
     createPlaylistFile(outputDir, playlistName)
+    outputDir.addFile("random_seed.txt").write(seed.toString)
   }
 
   private def dumpAll(
