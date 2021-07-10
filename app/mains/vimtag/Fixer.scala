@@ -2,7 +2,7 @@ package mains.vimtag
 
 import java.util.logging.{Level, Logger}
 
-import mains.fixer.FixLabelsUtils
+import mains.fixer.{FixLabelsUtils, FolderFixer}
 import mains.vimtag.Flag.RemoveFeat
 import models.RichTag._
 import models.SongTagParser
@@ -28,6 +28,7 @@ private object Fixer {
     val keepDiscNumber = parsedId3.flags(Flag.NoUniformDiscNo) &&
         parsedId3.songId3s.hasSameValues(_.discNumber).isFalse
     val renameFiles = parsedId3.flags(Flag.RenameFiles)
+    val fixFolder = parsedId3.flags(Flag.FixFolder)
     for ((individual, index) <- parsedId3.songId3s.zipWithIndex) {
       val file = dir.asInstanceOf[IODirectory].getFile(individual.relativeFileName).get.file
       val audioFile = AudioFileIO read file
@@ -61,8 +62,11 @@ private object Fixer {
       AudioFileIO delete audioFile
       audioFile setTag newTag
       audioFile.commit()
-      if (renameFiles)
+      if (fixFolder.isFalse && renameFiles) // FixFolder renames files anyway
         RichFileUtils.rename(file, FixLabelsUtils.newFileName(SongTagParser.apply(file), file.extension))
+    }
+    if (fixFolder) {
+      FolderFixer.main(Array(dir.path))
     }
   }
 }

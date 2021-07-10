@@ -84,7 +84,7 @@ private class FolderFixer @Inject()(
   }
 }
 
-private object FolderFixer {
+private[mains] object FolderFixer {
   def main(args: Array[String]): Unit =
     Guice.createInjector(MainsModule).instance[FolderFixer].run(Directory(args(0)))
 }

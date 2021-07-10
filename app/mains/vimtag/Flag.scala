@@ -8,6 +8,7 @@ import scala.collection.immutable
 
 import common.rich.primitives.RichString._
 import common.rich.RichT._
+import common.rich.primitives.RichBoolean._
 
 private sealed case class Flag(
     onByDefault: Boolean,
@@ -39,6 +40,11 @@ private object Flag extends Enum[Flag] {
     flag = "<RENAME_FILES>",
     onByDefault = true,
     comment = "Renames the files based on track and title",
+  )
+  object FixFolder extends Flag(
+    flag = "<FIX_FOLDER>",
+    onByDefault = true,
+    comment = s"Runs FolderFixer after successfully changing the ID3 tags; supersedes ${RenameFiles.flag}",
   )
 
   def defaultInstructions: Seq[String] = values
