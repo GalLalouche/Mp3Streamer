@@ -1,6 +1,5 @@
 package mains.vimtag.table
 
-import java.io.File
 import java.util.regex.Pattern
 
 import mains.vimtag.{IndividualId3, IndividualParser}
@@ -30,7 +29,7 @@ private object TableParser extends IndividualParser {
     def throwOnEmpty(tag: String, s: String) =
       s.ifNot(_.nonEmpty).thenThrow(new NoSuchElementException(s"key not found for $file: $tag"))
     updateDiscNumber.map(IndividualId3(
-      new File(throwOnEmpty("FILE", file)),
+      throwOnEmpty("FILE", file),
       throwOnEmpty("TITLE", title),
       trackNumber.toInt,
       _

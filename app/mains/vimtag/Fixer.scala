@@ -9,7 +9,7 @@ import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
 import org.jaudiotagger.tag.FieldKey
 
-import common.io.DirectoryRef
+import common.io.{DirectoryRef, IODirectory}
 import common.rich.collections.RichTraversableOnce._
 import common.rich.path.RichFile._
 import common.rich.primitives.RichBoolean._
@@ -25,7 +25,7 @@ private object Fixer {
     val keepDiscNumber = parsedId3.flags(Flag.NoUniformDiscNo) &&
         parsedId3.songId3s.hasSameValues(_.discNumber).isFalse
     for ((individual, index) <- parsedId3.songId3s.zipWithIndex) {
-      val file = individual.file
+      val file = dir.asInstanceOf[IODirectory].getFile(individual.relativeFileName).get.file
       val audioFile = AudioFileIO read file
       val existingTag = audioFile.getTag
       val newTag = {

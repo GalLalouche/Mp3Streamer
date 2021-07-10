@@ -114,19 +114,19 @@ class TableParserTest extends FreeSpec with AuxSpecs {
 
       val songs = res.songId3s
       val song1 = songs(0)
-      song1.file shouldReturn new File("File1")
+      song1.relativeFileName shouldReturn "File1"
       song1.title shouldReturn "Piano Concerto No.3 in C Major, Op.26 - I. Andante - Allegro"
       song1.track shouldReturn 5
       song1.discNumber shouldReturn None
 
       val song2 = songs(1)
-      song2.file shouldReturn new File("File2")
+      song2.relativeFileName shouldReturn "File2"
       song2.title shouldReturn "Piano Concerto No.3 in C Major, Op.26 - II. Tema & Variation"
       song2.track shouldReturn 6
       song2.discNumber.get shouldReturn "Foobar"
 
       val song3 = songs(2)
-      song3.file shouldReturn new File("File4")
+      song3.relativeFileName shouldReturn "File4"
       song3.title shouldReturn "Piano Concerto No.3 in C Major, Op.26 - III. Allegro, ma non troppo"
       song3.track shouldReturn 9
       song3.discNumber shouldReturn None
@@ -166,31 +166,31 @@ class TableParserTest extends FreeSpec with AuxSpecs {
 
       val songs = res.songId3s
       val song1 = songs(0)
-      song1.file shouldReturn new File("File1")
+      song1.relativeFileName shouldReturn "File1"
       song1.title shouldReturn "I Reveries and Passions"
       song1.track shouldReturn 1
       song1.discNumber shouldReturn None
 
       val song2 = songs(1)
-      song2.file shouldReturn new File("File2")
+      song2.relativeFileName shouldReturn "File2"
       song2.title shouldReturn "II A Ball"
       song2.track shouldReturn 2
       song2.discNumber.get shouldReturn "Foobar"
 
       val song3 = songs(2)
-      song3.file shouldReturn new File("File3")
+      song3.relativeFileName shouldReturn "File3"
       song3.title shouldReturn "III In the Country"
       song3.track shouldReturn 3
       song3.discNumber.get shouldReturn "Foobar"
 
       val song4 = songs(3)
-      song4.file shouldReturn new File("File4")
+      song4.relativeFileName shouldReturn "File4"
       song4.title shouldReturn "IV March to the Scaffold"
       song4.track shouldReturn 4
       song4.discNumber.get shouldReturn "Moo"
 
       val song5 = songs(4)
-      song5.file shouldReturn new File("File5")
+      song5.relativeFileName shouldReturn "File5"
       song5.title shouldReturn "V Dream of the Witches' Sabbath"
       song5.track shouldReturn 5
       song5.discNumber shouldReturn None

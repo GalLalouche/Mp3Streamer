@@ -1,7 +1,5 @@
 package mains.vimtag
 
-import java.io.File
-
 private case class ParsedId3(
     artist: ParsedTag[String],
     album: ParsedTag[String],
@@ -17,12 +15,12 @@ private case class ParsedId3(
 
     songId3s: Seq[IndividualId3],
 ) {
-  def files: Seq[File] = songId3s.map(_.file)
+  def files: Seq[String] = songId3s.map(_.relativeFileName)
 }
 
 // Individual tags should never be Keep since there's no point to it: just keep the existing value.
 private case class IndividualId3(
-    file: File,
+    relativeFileName: String,
     title: String,
     track: Int,
     discNumber: Option[String],

@@ -1,5 +1,7 @@
 package mains.vimtag
 
+import java.io.File
+
 import javax.inject.Inject
 import mains.vimtag.Initializer.InitialLines
 import models.{MusicFinder, OptionalSong}
@@ -32,7 +34,7 @@ private class Initializer @Inject()(mf: MusicFinder, aux: IndividualInitializer)
     def performanceYear = globalNamedTag(Tags.PerformanceYear, _.performanceYear)
 
     private def sequence[A](f: OptionalSong => String): Seq[String] = songs.map(f(_))
-    def files: Seq[String] = sequence(_.file)
+    def files: Seq[String] = sequence(s => new File(s.file).getName)
     def titles: Seq[String] = sequence(_.title.getOrElse(""))
     def tracks: Seq[Int] = songs.zipWithIndex
         .map(_.modifySecond(_ + 1))

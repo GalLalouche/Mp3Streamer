@@ -98,19 +98,19 @@ class LinesParserTest extends FreeSpec with AuxSpecs {
 
       val songs = res.songId3s
       val song1 = songs(0)
-      song1.file shouldReturn new File("File1")
+      song1.relativeFileName shouldReturn "File1"
       song1.title shouldReturn "Piano Concerto No.3 in C Major, Op.26 - I. Andante - Allegro"
       song1.track shouldReturn 5
       song1.discNumber shouldReturn None
 
       val song2 = songs(1)
-      song2.file shouldReturn new File("File2")
+      song2.relativeFileName shouldReturn "File2"
       song2.title shouldReturn "Piano Concerto No.3 in C Major, Op.26 - II. Tema & Variation"
       song2.track shouldReturn 6
       song2.discNumber.get shouldReturn "Foobar"
 
       val song3 = songs(2)
-      song3.file shouldReturn new File("File4")
+      song3.relativeFileName shouldReturn "File4"
       song3.title shouldReturn "Piano Concerto No.3 in C Major, Op.26 - III. Allegro, ma non troppo"
       song3.track shouldReturn 9
       song3.discNumber shouldReturn None

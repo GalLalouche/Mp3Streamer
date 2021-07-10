@@ -52,19 +52,19 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
     val songs = res.songId3s
     songs should have size(3)
     val song1 = songs(0)
-    song1.file shouldReturn new File(s1.file.path)
+    song1.relativeFileName shouldReturn s1.file.name
     song1.title shouldReturn "Piano Concerto No.3 in C Major, Op.26 - I. Andante - Allegro"
     song1.track shouldReturn 5
     song1.discNumber shouldReturn None
 
     val song2 = songs(1)
-    song2.file shouldReturn new File(s2.file.path)
+    song2.relativeFileName shouldReturn s2.file.name
     song2.title shouldReturn "Piano Concerto No.3 in C Major, Op.26 - II. Tema & Variation"
     song2.track shouldReturn 6
     song2.discNumber.get shouldReturn "Foobar"
 
     val song3 = songs(2)
-    song3.file shouldReturn new File(s3.file.path)
+    song3.relativeFileName shouldReturn s3.file.name
     song3.title shouldReturn "Piano Concerto No.3 in C Major, Op.26 - III. Allegro, ma non troppo"
     song3.track shouldReturn 9
     song3.discNumber shouldReturn None
