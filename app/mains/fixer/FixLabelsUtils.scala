@@ -18,7 +18,7 @@ import common.rich.path.RichFile.richFile
 import common.rich.primitives.RichInt._
 import common.rich.primitives.RichString.richString
 
-private object FixLabelsUtils {
+private[mains] object FixLabelsUtils {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
 
   private val NumberFollowedBySlash = Pattern compile """\d+[/\\].*"""

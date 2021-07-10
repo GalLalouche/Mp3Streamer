@@ -2,8 +2,10 @@ package mains.vimtag
 
 import java.util.logging.{Level, Logger}
 
+import mains.fixer.FixLabelsUtils
 import mains.vimtag.Flag.RemoveFeat
 import models.RichTag._
+import models.SongTagParser
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
@@ -15,6 +17,7 @@ import common.rich.path.RichFile._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichInt._
 import common.rich.RichT.richT
+import common.rich.path.RichFileUtils
 
 private object Fixer {
   Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
@@ -24,6 +27,7 @@ private object Fixer {
     val removeFeat = parsedId3.flags(Flag.RemoveFeat)
     val keepDiscNumber = parsedId3.flags(Flag.NoUniformDiscNo) &&
         parsedId3.songId3s.hasSameValues(_.discNumber).isFalse
+    val renameFiles = parsedId3.flags(Flag.RenameFiles)
     for ((individual, index) <- parsedId3.songId3s.zipWithIndex) {
       val file = dir.asInstanceOf[IODirectory].getFile(individual.relativeFileName).get.file
       val audioFile = AudioFileIO read file
@@ -57,6 +61,8 @@ private object Fixer {
       AudioFileIO delete audioFile
       audioFile setTag newTag
       audioFile.commit()
+      if (renameFiles)
+        RichFileUtils.rename(file, FixLabelsUtils.newFileName(SongTagParser.apply(file), file.extension))
     }
   }
 }

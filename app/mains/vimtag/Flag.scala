@@ -35,9 +35,14 @@ private object Flag extends Enum[Flag] {
     private val noParens = Pattern.compile(""" Feat.* .*""", Pattern.CASE_INSENSITIVE)
     def removeFeat: String => String = _ removeAll parens removeAll noParens
   }
+  object RenameFiles extends Flag(
+    flag = "<RENAME_FILES>",
+    onByDefault = true,
+    comment = "Renames the files based on track and title",
+  )
 
-  def defaultInstructions: Seq[String] = values.filter(_.onByDefault)
-      .flatMap(f => Vector("# " + f.comment, f.flag))
+  def defaultInstructions: Seq[String] = values
+      .flatMap(f => Vector("# " + f.comment, f.flag.mapIf(f.onByDefault.isFalse).to("# " + _)))
       .mapIf(_.nonEmpty).to("# Flags look like this <FLAG>. Deleting a flag disables it." +: _)
 
   def parse(s: String): Option[Flag] = values.find(_.flag == s)
