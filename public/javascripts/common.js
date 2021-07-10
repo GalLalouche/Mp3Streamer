@@ -195,6 +195,17 @@ Array.prototype.custom_group_by = function(f) {
   })
   return result
 }
+Array.prototype.custom_max = function() {
+  let max = null
+  for (const e of this) {
+    if (max === null) {
+      max = e
+    } else {
+      max = max > e ? max : e
+    }
+  }
+  return max
+}
 // Adding this is a prototype method to Object messes things up for some reason :\
 function map_values(o, f) {
   let result = {}
@@ -209,4 +220,9 @@ function assert(condition, message) {
   if (not(message))
     return assert(condition, "Assertion failed")
   throw typeof Error === "undefined" ? message : new Error(message)
+}
+class AssertionError extends Error {
+  constructor(message) {
+    super(message || "AssertionError")
+  }
 }
