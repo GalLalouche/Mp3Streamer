@@ -57,7 +57,7 @@ object StringFixer extends (String => String) {
       .++('A'.to('z').map(_ :-> (_.toString)))
   private def normalizeDashesAndApostrophes(s: String) =
     s.replaceAll(SpecialApostrophes, "'").replaceAll(SpecialDashes, "-")
-  private def asciiNormalize(s: String): String = try {
+  def asciiNormalize(s: String): String = try {
     if (s.isWhitespaceOrEmpty)
       return s
     val withoutSpecialCharacters =

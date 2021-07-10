@@ -19,8 +19,9 @@ class StringReconScorerTest extends FreeSpec with AuxSpecs {
   "An empty string has a low recon score" - {
     verifyLowReconScore("", "   ")
   }
-  "ascii" - {
+  "ascii is normalized" - {
     verifyHighReconScore("Verisäkeet", "Verisakeet")
+    verifyHighReconScore("Mære", "Maere")
   }
   "ignores non-letters or digits" - {
     verifyHighReconScore("f,o.o-b=a&r", "foo bar")

@@ -1,7 +1,10 @@
 package backend.recon
 
+import mains.fixer.StringFixer
+
 import common.rich.RichTuple._
 import common.LanguageString._
+import common.rich.RichT._
 
 /**
 * A placeholder for a class that might some day in the future actually measure the similarity between two
@@ -14,8 +17,13 @@ object StringReconScorer extends ((String, String) => Double) {
   }
 
   private val badWords = Set("and", "ep")
-  private def canonize(s: String): String =
-    s.toLowerCase.split(' ').filterNot(badWords).mkString(" ").filter(_.isLetterOrDigit).keepAscii
+  private def canonize(s: String): String = s
+      .toLowerCase
+      .split(' ')
+      .filterNot(badWords)
+      .mkString(" ")
+      .filter(_.isLetterOrDigit)
+      .tryOrKeep(StringFixer.asciiNormalize)
 
   private def filterHebrew(s: String): String = s.split(" ").filter(_.hasHebrew).mkString(" ")
   private def sameAndNonEmpty(s1: String, s2: String) = {
