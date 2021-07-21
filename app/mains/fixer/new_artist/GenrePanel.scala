@@ -27,7 +27,9 @@ private[fixer] class GenrePanel private(maxRows: Int, iconSideInPixels: Int, big
   private val clickSubject = Subject[Directory]()
   def clicks: Observable[Directory] = clickSubject
 
-  private def addSubGenres(dirs: Seq[Directory]): UpdatingColumns[Unit] = dirs.zipWithIndex
+  private def addSubGenres(dirs: Seq[Directory]): UpdatingColumns[Unit] = dirs
+      .sortBy(_.name)
+      .zipWithIndex
       .traverse {case (dir, index) =>
         dynamicConstraint(relativeGenreIndex = index, width = 1, height = 1).map(
           add(
