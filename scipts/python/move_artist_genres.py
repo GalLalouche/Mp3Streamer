@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import glob
 import os
 import shutil
 import subprocess
@@ -58,9 +59,13 @@ class Actions(NamedTuple):
       raise Exception(f"{self.artist} is already in {self.target_genre}")
     return self
 
-  def move_files(self) -> None:
+  # Returns the number of moved files
+  def move_files(self) -> int:
     print(f"moving files from {self.src} to {self.dst}")
+    count = sum(1 for _ in glob.iglob(self.src + '/**/*', recursive=True))
+    print(f"Moving {count} files in total")
     shutil.move(self.src, os.path.join(self.dst, ''))
+    return count
 
   def remove_files_from_foobar(self) -> None:
     print("Removing files from Foobar2000 playlist")
@@ -72,11 +77,11 @@ class Actions(NamedTuple):
     _escape_and_wait()
     pyautogui.hotkey('delete')
 
-  def add_moved_files_to_foobar(self) -> None:
+  def add_moved_files_to_foobar(self, file_count: int) -> None:
     src = os.path.join(self.dst, self.artist)
     print(f"Adding files from {src} to Foobar2000")
     subprocess.Popen(f'"{_FOOBAR_PATH}" /add "{src}"', shell=True)
-    sleep(2.5)  # (Hopefully) enough time to process the files
+    sleep(0.05 * file_count)  # (Hopefully) enough time to process the files
 
   @staticmethod
   def sort_all() -> None:
@@ -109,8 +114,8 @@ class Actions(NamedTuple):
 def main(artist: str, target_genre: str):
   actions = Actions.build(artist=artist, target_genre=target_genre)
   actions.remove_files_from_foobar()
-  actions.move_files()
-  actions.add_moved_files_to_foobar()
+  count = actions.move_files()
+  actions.add_moved_files_to_foobar(count)
   actions.sort_all()
 
 
