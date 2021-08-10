@@ -23,7 +23,7 @@ private object TableParser extends IndividualParser {
     lazy val updateDiscNumber: State[CurrentDiscNumber, CurrentDiscNumber] =
       discNumber.optFilter(_.nonEmpty) match {
         case None => State.get
-        case Some(v) if v.endsWith(" ->") => State.put(Option(v.dropRight(3))) >> State.get
+        case Some(v) if v.endsWith("->") => State.put(Option(v.dropRight(2))) >> State.get
         case Some(v) => State.put[CurrentDiscNumber](None) >| Option(v)
       }
     def throwOnEmpty(tag: String, s: String) =

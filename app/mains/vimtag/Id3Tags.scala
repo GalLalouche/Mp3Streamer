@@ -27,3 +27,17 @@ private case class IndividualId3(
 ) {
   require(track > 0)
 }
+
+private object IndividualId3 {
+  def apply(
+      relativeFileName: String,
+      title: String,
+      track: Int,
+      discNumber: Option[String],
+  ): IndividualId3 = new IndividualId3(
+    relativeFileName = relativeFileName.trim,
+    title = title.trim,
+    track = track,
+    discNumber = discNumber.map(_.trim),
+  )
+}
