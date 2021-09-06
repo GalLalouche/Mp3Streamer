@@ -21,8 +21,8 @@ object StringFixer extends (String => String) {
     "at", "be", "but", "by", "can", "can't", "cannot", "did", "didn't", "do", "doesn't", "don't", "for",
     "from", "get", "got", "gotten", "had", "has", "have", "her", "his", "in", "into", "is", "isn't", "it",
     "it's", "its", "may", "me", "mine", "my", "not", "of", "on", "or", "our", "ours", "ov", "shall", "should",
-    "so", "than", "that", "the", "their", "theirs", "them", "then", "there", "these", "this", "those",
-    "through", "to", "too", "up", "upon", "van", "von", "was", "wasn't", "were", "weren't", "will", "with",
+    "so", "than", "that", "the", "their", "theirs", "them", "then", "there", "these", "thine", "this", "those",
+    "through", "thy", "to", "too", "up", "upon", "van", "von", "was", "wasn't", "were", "weren't", "will", "with",
     "without", "won't", "would", "wouldn't", "your")
   private val lowerCaseSet = lowerCaseWords.toSet
 
