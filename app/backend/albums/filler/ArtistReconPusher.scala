@@ -6,7 +6,12 @@ import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
+
 import common.rich.RichFuture._
+import common.rich.func.ToMoreMonadErrorOps._
+import common.rich.func.BetterFutureInstances._
+import common.rich.func.ToMoreApplicativeOps._
 
 // Easier (and safer!) than opening SQLiteBrowser!
 private class ArtistReconPusher @Inject()(
@@ -20,12 +25,12 @@ private class ArtistReconPusher @Inject()(
       artistName: String, musicBrainzId: String, isIgnored: Boolean, validateAlbums: Boolean): Unit = {
     val artist = Artist(artistName)
     val reconID = ReconID.validateOrThrow(musicBrainzId)
-    (for {
-      isValid <- if (validateAlbums) verifier(artist, reconID) else Future.successful(true)
-      if isValid
-      _ <- storage.store(artist, HasReconResult(reconID, isIgnored))
-      _ = println("Done!")
-    } yield ()).get
+    val isValid = if (validateAlbums) verifier(artist, reconID) else Future.successful(true)
+    isValid
+        .filterWithMessage(identity, s"Could not validate <$artistName> with ID <$musicBrainzId>")
+        .>>(storage.store(artist, HasReconResult(reconID, isIgnored)))
+        .>|(println("done"))
+        .get
   }
 
   def withValidation(artistName: String, reconId: String, isIgnored: Boolean): Unit =

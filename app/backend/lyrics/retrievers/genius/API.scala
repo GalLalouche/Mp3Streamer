@@ -1,6 +1,7 @@
 package backend.lyrics.retrievers.genius
 
 import backend.{FutureOption, Url}
+import backend.logging.Logger
 import backend.lyrics.retrievers.genius.API._
 import backend.recon.StringReconScorer
 import com.google.common.annotations.VisibleForTesting
@@ -18,6 +19,7 @@ import common.rich.RichT._
 
 private class API @Inject()(
     @AccessToken accessToken: String,
+    logger: Logger,
     it: InternetTalker,
 ) {
   private implicit val ec: ExecutionContext = it
@@ -25,11 +27,12 @@ private class API @Inject()(
   def getLyricUrl(song: Song): FutureOption[Url] = OptionT {
     val query = split(song.artistName) ++ split(song.title) mkString "+"
     it.get(Url(s"https://api.genius.com/search?access_token=$accessToken&q=$query"))
-        .map(_.optFilter(_.status == Status.OK)
-            .map(Json parse _.body)
-            .map(_.as[JsObject])
-            .flatMap(parse(song, _))
-            .map(Url.apply)
+        .map(e =>
+          if (e.status != Status.OK) {
+            logger.info(s"Got status code <${e.status}> from genius\nMessage body\n: ${e.body}")
+            None
+          } else
+            Json.parse(e.body).as[JsObject].|>(parse(song, _).map(Url.apply))
         )
   }
 }
