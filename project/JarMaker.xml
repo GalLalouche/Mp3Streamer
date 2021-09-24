@@ -92,12 +92,12 @@
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang.modules/scala-parser-combinators_2.12/bundles/scala-parser-combinators_2.12-1.0.6.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang.modules/scala-swing_2.12/bundles/scala-swing_2.12-2.0.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang.modules/scala-xml_2.12/bundles/scala-xml_2.12-1.0.6.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang/scala-compiler/jars/scala-compiler-2.12.10.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.12.10.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.12.10.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang/scala-compiler/jars/scala-compiler-2.12.15.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.12.15.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.12.15.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scala-stm/scala-stm_2.12/jars/scala-stm_2.12-0.8.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalactic/scalactic_2.12/bundles/scalactic_2.12-3.0.4.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalamacros/paradise_2.12.10/jars/paradise_2.12.10-2.1.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalamacros/paradise_2.12.10/jars/paradise_2.12.15-2.1.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalatest/scalatest_2.12/bundles/scalatest_2.12-3.0.4.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalaz/scalaz-concurrent_2.12/bundles/scalaz-concurrent_2.12-7.2.15.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/cache/org.scalaz/scalaz-core_2.12/bundles/scalaz-core_2.12-7.2.18.jar" />

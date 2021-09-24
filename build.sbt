@@ -3,23 +3,23 @@ version := "1.0-SNAPSHOT"
 
 resourceDirectory in Test := baseDirectory.value / "test-resources"
 resourceDirectory in Compile := baseDirectory.value / "conf"
-val scalaVersionStr = "2.12.10"
+val scalaVersionStr = "2.12.15"
 scalaVersion := scalaVersionStr
 version := "1.0-SNAPSHOT"
 routesGenerator := InjectedRoutesGenerator
 
 val playWsStandaloneVersion = "1.1.2"
 
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
 addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.2.4")
 sources in (Compile, doc) := Seq.empty
 publishArtifact in (Compile, packageDoc) := false
 
-// Add your own project settings her
 resolvers ++= Seq(
-  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
-  "Maven Repository" at "http://repo1.maven.org/maven2/",
-  "Apache Snapshot Repository" at "http://repository.apache.org/snapshots/",
+  "Typesafe Ivy Repository" at "https://repo.typesafe.com/typesafe/ivy-releases/",
+  "Typesafe Maven Repository" at "https://repo.typesafe.com/typesafe/maven-releases/",
+  "Maven Repository" at "https://repo1.maven.org/maven2/",
+  "Apache Snapshot Repository" at "https://repository.apache.org/snapshots/",
   Resolver.file("Local ivy repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns),
   Resolver.mavenLocal,
 )
@@ -59,7 +59,7 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-all" % "1.9.5" % "test",
   "org.scala-lang.modules" %% "scala-swing" % "2.0.0",
   "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
-  "org.scalamacros" % ("paradise_" + scalaVersionStr) % "2.1.0", // For some reason, it uses the full binary version
+  "org.scalamacros" % ("paradise_" + scalaVersionStr) % "2.1.1", // For some reason, it uses the full binary version
   "org.scalatest" %% "scalatest" % "3.0.4",
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test",
   "org.scalaz" %% "scalaz-concurrent" % scalazVersion,
