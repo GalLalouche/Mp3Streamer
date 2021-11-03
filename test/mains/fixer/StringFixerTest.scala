@@ -8,14 +8,15 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   private val $ = StringFixer
 
   private def verifyFix(original: String, fix: String): Unit = $(original) shouldReturn fix
+  private def verifyEmptyFix(original: String): Unit = verifyFix(original, original)
 
   "Ordered numerals" in {
-    verifyFix("1st", "1st")
-    verifyFix("2nd", "2nd")
-    verifyFix("3rd", "3rd")
-    verifyFix("4th", "4th")
-    verifyFix("27th", "27th")
-    verifyFix("101st", "101st")
+    verifyEmptyFix("1st")
+    verifyEmptyFix("2nd")
+    verifyEmptyFix("3rd")
+    verifyEmptyFix("4th")
+    verifyEmptyFix("27th")
+    verifyEmptyFix("101st")
   }
   "I and a" in {
     verifyFix("a foo", "A Foo")
@@ -89,7 +90,7 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   }
 
   "Only minimal changes are done to Hebrew" in {
-    verifyFix("אהבת נעוריי", "אהבת נעוריי")
+    verifyEmptyFix("אהבת נעוריי")
     verifyFix("אביב גדג’", "אביב גדג'")
     verifyFix("שב”ק", "שב\"ק")
     verifyFix("  אהבת נעוריי ", "אהבת נעוריי")
@@ -98,5 +99,9 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   "colons and other delimiters" in {
     verifyFix("The band: The Album & The movie", "The Band: The Album & The Movie")
     verifyFix("The band (the album)", "The Band (The Album)")
+  }
+
+  "Can handle °" in {
+    verifyFix("100°", "100 Degrees")
   }
 }

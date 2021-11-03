@@ -54,7 +54,7 @@ object StringFixer extends (String => String) {
   managed(Source.fromInputStream(getClass.getResourceAsStream("ascii.txt"), "UTF-8"))
       .map(_.getLines().map(_.splitParse(":", _.toSeq.single, identity)).toMap)
       .tried.get
-      .++('A'.to('z').map(_ :-> (_.toString)))
+      .++(('0'.to('9') ++ 'A'.to('z')).map(_ :-> (_.toString)))
   private def normalizeDashesAndApostrophes(s: String) =
     s.replaceAll(SpecialApostrophes, "'").replaceAll(SpecialDashes, "-")
   def asciiNormalize(s: String): String = try {
