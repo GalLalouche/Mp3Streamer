@@ -4,6 +4,7 @@ import java.time.{Clock, Duration}
 
 import backend.albums.filler.storage.CachedNewAlbumStorage
 import backend.logging.Logger
+import backend.mb.AlbumType
 import backend.recon.Artist
 import backend.storage.{AlwaysFresh, DatedFreshness}
 import javax.inject.{Inject, Singleton}
@@ -22,6 +23,7 @@ import common.rich.RichTime.RichLocalDateTime
 private class NewAlbumFiller @Inject()(
     storage: CachedNewAlbumStorage,
     fetcher: NewAlbumFetcher,
+    ea: EagerExistingAlbums,
     clock: Clock,
     ec: ExecutionContext,
     logger: Logger,
@@ -30,25 +32,37 @@ private class NewAlbumFiller @Inject()(
   // TODO code duplication with RefreshableRetriever
   private val finisher = SimpleTypedActor.async[(Seq[NewAlbumRecon], Set[Artist]), Int](
     "CacherFiller finisher", Function.tupled(storage.storeNew))
-  def update(maxAge: Duration)(a: Artist): Future[Int] = storage.freshness(a)
-      .getOrElseF {
-        logger.verbose(s"Storing new artist <$a>")
-        storage.reset(a)
-      }
-      .flatMap {
-        case AlwaysFresh =>
-          logger.verbose(s"Ignoring <$a>")
-          Future.successful(0)
-        case DatedFreshness(dt) =>
-          val age = dt.age(clock)
-          val info = s"<$a> because it is <${age.toDays}> days old (from <${dt.toLocalDate}>)"
-          if (age > maxAge) {
-            logger.debug(s"Fetching new data for $info")
-            storage.unremoveAll(a) >> fetcher(a).flatMap(finisher.!(_, Set(a)))
-          } else {
-            logger.verbose(s"Skipping $info")
-            Future.successful(0)
-          }
-      }
-      .listen(stored => if (stored > 0) logger.debug(s"Stored <$stored> new albums."))
+  private def ignore(reason: String) = {
+    logger.verbose(reason)
+    Future.successful(0)
+  }
+  def update(maxAge: Duration, maxCachedAlbums: Int)(a: Artist): Future[Int] = {
+    storage.apply(a)
+        .map(albums => ea.removeExistingAndUnreleasedAlbums(a, albums)
+            .count(_.albumType == AlbumType.Album) > maxCachedAlbums
+        )
+        .ifM(
+          ifTrue = ignore(s"Ignoring <$a> because it has too many undownloaded albums"),
+          ifFalse =
+            storage.freshness(a)
+                .getOrElseF {
+                  logger.verbose(s"Storing new artist <$a>")
+                  storage.reset(a)
+                }
+                .flatMap {
+                  case AlwaysFresh => ignore(s"Ignoring <$a> due to configuration")
+                  case DatedFreshness(dt) =>
+                    val age = dt.age(clock)
+                    val info = s"<$a> because it is <${age.toDays}> days old (from <${dt.toLocalDate}>)"
+                    if (age > maxAge) {
+                      logger.debug(s"Fetching new data for $info")
+                      storage.unremoveAll(a) >> fetcher(a).flatMap(finisher.!(_, Set(a)))
+                    } else {
+                      logger.verbose(s"Skipping $info")
+                      Future.successful(0)
+                    }
+                }
+                .listen(stored => if (stored > 0) logger.debug(s"Stored <$stored> new albums.")),
+        )
+  }
 }

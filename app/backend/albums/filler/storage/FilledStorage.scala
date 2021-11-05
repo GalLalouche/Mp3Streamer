@@ -11,6 +11,7 @@ private[albums] trait FilledStorage {
   type AlbumReconID = ReconID
   type ArtistReconID = ReconID
   def all: ListT[Future, (Artist, Seq[NewAlbum])]
+  def apply(a: Artist): Future[Seq[NewAlbum]]
 
   // Remove vs. Ignore: remove is only temporary (usually until the next mega fetch), ignore is forever.
   // Reasons to remove: you're not going do anything with the artist/album this time.

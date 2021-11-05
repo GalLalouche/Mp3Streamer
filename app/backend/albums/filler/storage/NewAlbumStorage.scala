@@ -12,7 +12,13 @@ import common.storage.Storage
 
 // TODO Non-Keyed storage, or multi-valued storage
 private trait NewAlbumStorage extends Storage[ReconID, StoredNewAlbum] {
+  /** Takes care of all the filterings (ignored artists, albums, etc.) */
   def all: ListT[Future, (Artist, Seq[NewAlbum])]
+  /**
+  * Takes care of all the filterings related to albums(removed, ignored, etc.),
+  * but ignored artists will still be returned
+  */
+  def apply(a: Artist): Future[Seq[NewAlbum]]
   def unremoveAll(a: Artist): Future[Unit]
   def storeNew(albums: Seq[NewAlbumRecon]): Future[Int]
 

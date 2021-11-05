@@ -93,16 +93,25 @@ private class SlickNewAlbumStorage @Inject()(
   override protected val tableQuery = TableQuery[EntityTable]
   override def all = ListT(db
       .run(tableQuery.join(artistStorage.tableQuery).on(_.artist === _.name)
-          .filterNot(e => e._2.isIgnored || e._1.isRemoved || e._1.isIgnored)
+          .filterNot(e => e._2.isIgnored || shouldRemoveAlbum(e._1))
           .result
       )
       .map(_
           .map(_._1 |> extractValue)
           .groupBy(_.na.artist)
-          .mapValues(_.sortBy(_.na.date).map(_.na))
+          .mapValues(toNewAlbums)
           .toList
       )
   )
+  private def shouldRemoveAlbum(e: Rows): Rep[Boolean] = e.isRemoved || e.isIgnored
+  private def toNewAlbums(albums: Seq[StoredNewAlbum]): Seq[NewAlbum] = albums.sortBy(_.na.date).map(_.na)
+  override def apply(a: Artist) = db
+      .run(tableQuery
+          .filter(_.artist === a.name)
+          .filter(shouldRemoveAlbum)
+          .result
+      )
+      .map(_.map(extractValue) |> toNewAlbums)
   override def unremoveAll(a: Artist) = db.run(tableQuery
       .filter(e => e.artist === a.normalize && e.isRemoved && !e.isIgnored)
       .map(_.isRemoved)
