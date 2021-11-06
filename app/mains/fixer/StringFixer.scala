@@ -35,7 +35,7 @@ object StringFixer extends (String => String) {
   val ConjuctiveN: Pattern = Pattern compile " '?[Nn]'"
   val Vs: Pattern = Pattern.compile(""" vs\.? """, Pattern.CASE_INSENSITIVE)
   val SpecialApostrophes: Pattern = Pattern compile "[‘’�´]"
-  private val SpecialDashes = Pattern compile "[—–-−]"
+  private val SpecialDashes = Pattern compile "[—–-−‐]"
   private def fixWord(unnormalizedWord: String, forceCapitalization: Boolean): String = {
     val word = asciiNormalize(unnormalizedWord)
     if (forceCapitalization.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase
@@ -54,7 +54,7 @@ object StringFixer extends (String => String) {
   managed(Source.fromInputStream(getClass.getResourceAsStream("ascii.txt"), "UTF-8"))
       .map(_.getLines().map(_.splitParse(":", _.toSeq.single, identity)).toMap)
       .tried.get
-      .++(('0'.to('9') ++ 'A'.to('z')).map(_ :-> (_.toString)))
+      .++(33.to(126).map(_.toChar :-> (_.toString)))
   private def normalizeDashesAndApostrophes(s: String) =
     s.replaceAll(SpecialApostrophes, "'").replaceAll(SpecialDashes, "-")
   def asciiNormalize(s: String): String = try {

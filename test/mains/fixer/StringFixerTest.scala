@@ -86,7 +86,8 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
     verifyFix("I Don’t love you, Like I Loved you, whenever", "I don't Love You, Like I Loved You, Whenever")
   }
   "dashes" in {
-    verifyFix("A−B-C–D-E—F", "A-B-C-D-E-F")
+    // All of these dashes are different! Freaking unicode.
+    verifyFix("A−B-C–D-E—F‐G-H", "A-B-C-D-E-F-G-H")
   }
 
   "Only minimal changes are done to Hebrew" in {
