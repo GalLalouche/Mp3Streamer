@@ -1,8 +1,8 @@
 name := "Mp3Streamer"
 version := "1.0-SNAPSHOT"
 
-resourceDirectory in Test := baseDirectory.value / "test-resources"
-resourceDirectory in Compile := baseDirectory.value / "conf"
+Test/resourceDirectory := baseDirectory.value / "test-resources"
+Compile/resourceDirectory := baseDirectory.value / "conf"
 val scalaVersionStr = "2.12.15"
 scalaVersion := scalaVersionStr
 version := "1.0-SNAPSHOT"
@@ -12,8 +12,8 @@ val playWsStandaloneVersion = "1.1.2"
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
 addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.2.4")
-sources in (Compile, doc) := Seq.empty
-publishArtifact in (Compile, packageDoc) := false
+Compile/doc/sources := Seq.empty
+Compile/packageDoc/publishArtifact := false
 
 resolvers ++= Seq(
   "Typesafe Ivy Repository" at "https://repo.typesafe.com/typesafe/ivy-releases/",
