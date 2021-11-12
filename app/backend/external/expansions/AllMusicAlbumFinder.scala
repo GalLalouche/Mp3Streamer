@@ -2,8 +2,7 @@ package backend.external.expansions
 
 import backend.{FutureOption, Url}
 import backend.external.Host
-import backend.recon.Album
-import backend.recon.ReconScorers.AlbumReconScorer
+import backend.recon.{Album, AlbumReconScorer}
 import javax.inject.Inject
 import org.jsoup.nodes.Document
 
@@ -24,6 +23,7 @@ private class AllMusicAlbumFinder @Inject()(
     allMusicHelper: AllMusicHelper,
     sameHostExpanderHelper: SameHostExpanderHelper,
     ec: ExecutionContext,
+    albumReconScorer: AlbumReconScorer,
 ) extends SameHostExpander {
   private implicit val iec: ExecutionContext = ec
 
@@ -34,7 +34,7 @@ private class AllMusicAlbumFinder @Inject()(
 
     override def modifyUrl(u: Url, a: Album) = u +/ "discography"
     override def findAlbum(d: Document, album: Album): FutureOption[Url] = OptionT {
-      def score(other: Album): Double = AlbumReconScorer(album, other)
+      def score(other: Album): Double = albumReconScorer(album, other)
       d.selectIterator(".discography table tbody tr")
           .tryMap(albumRow => albumRow ->
               Album(

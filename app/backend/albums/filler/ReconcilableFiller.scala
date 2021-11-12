@@ -1,6 +1,6 @@
 package backend.albums.filler
 
-import backend.logging.{Logger, LoggingLevel}
+import backend.logging.{FilteringLogger, Logger, LoggingLevel}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 import scala.concurrent.ExecutionContext
@@ -13,6 +13,7 @@ private object ReconcilableFiller {
     val injector = ExistingAlbumsModules.overridingStandalone(ExistingAlbumsModules.default)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     implicit val logger: Logger = injector.instance[Logger]
+    logger.asInstanceOf[FilteringLogger].setCurrentLevel(LoggingLevel.Debug)
     Debugging.timed("Filling artist recons", LoggingLevel.Info) {
       injector.instance[ArtistReconFiller].go().get
     }

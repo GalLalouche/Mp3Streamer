@@ -11,17 +11,16 @@ import common.rich.primitives.RichBoolean._
 private class ArtistReconVerifier @Inject()(
     ea: ExistingAlbums,
     reconciler: MbArtistReconciler,
-    ec: ExecutionContext
+    ec: ExecutionContext,
+    stringReconScorer: StringReconScorer,
 ) {
   private implicit val iec: ExecutionContext = ec
   def apply(artist: Artist, id: ReconID): Future[Boolean] = reconciler.getAlbumsMetadata(id)
-      .map(ArtistReconVerifier.intersects(ea.albums(artist)))
-}
+      .map(intersects(ea.albums(artist)))
 
-private object ArtistReconVerifier {
   private def intersects(album: Set[Album])(reconAlbums: Seq[MbAlbumMetadata]): Boolean = {
     val albumTitles = album.map(_.title)
-    val $ = reconAlbums.view.map(_.title).exists(t => albumTitles.map(StringReconScorer(_, t)).max > 0.9)
+    val $ = reconAlbums.view.map(_.title).exists(t => albumTitles.map(stringReconScorer(_, t)).max > 0.9)
     if ($.isFalse)
       println(s"Could not reconcile ${album.head.artist}")
     $

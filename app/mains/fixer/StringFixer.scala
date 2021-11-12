@@ -2,7 +2,9 @@ package mains.fixer
 
 import java.util.regex.Pattern
 
+import backend.logging.{ConsoleLogger, Logger}
 import com.google.common.annotations.VisibleForTesting
+import javax.inject.Inject
 import org.apache.commons.lang3.StringUtils
 import resource._
 
@@ -15,48 +17,9 @@ import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 import common.LanguageString._
 
-object StringFixer extends (String => String) {
-  @VisibleForTesting
-  private[fixer] val lowerCaseWords = Vector("'em", "a", "ain't", "all", "am", "an", "and", "are", "aren't", "as",
-    "at", "be", "but", "by", "can", "can't", "cannot", "did", "didn't", "do", "doesn't", "don't", "for",
-    "from", "get", "got", "gotten", "had", "has", "have", "her", "his", "in", "into", "is", "isn't", "it",
-    "it's", "its", "may", "me", "mine", "my", "not", "of", "on", "or", "our", "ours", "ov", "shall", "should",
-    "so", "than", "that", "the", "their", "theirs", "them", "then", "there", "these", "thine", "this", "those",
-    "through", "thy", "to", "too", "up", "upon", "van", "von", "was", "wasn't", "were", "weren't", "will", "with",
-    "without", "won't", "would", "wouldn't", "your")
-  private val lowerCaseSet = lowerCaseWords.toSet
+class StringFixer @Inject()(logger: Logger) extends (String => String) {
+  import StringFixer._
 
-  private def pascalCaseWord(w: String): String = w.toLowerCase.capitalize
-
-  private val RomanPattern = Pattern compile "[IVXMLivxml]+"
-  private val MixedCapsPattern = Pattern compile ".*[A-Z].*"
-  private val DottedAcronymPattern = Pattern compile "(\\w\\.)+"
-  val SpecialQuotes: Pattern = Pattern compile "[“”]"
-  val ConjuctiveN: Pattern = Pattern compile " '?[Nn]'"
-  val Vs: Pattern = Pattern.compile(""" vs\.? """, Pattern.CASE_INSENSITIVE)
-  val SpecialApostrophes: Pattern = Pattern compile "[‘’�´]"
-  private val SpecialDashes = Pattern compile "[—–-−‐]"
-  private def fixWord(unnormalizedWord: String, forceCapitalization: Boolean): String = {
-    val word = asciiNormalize(unnormalizedWord)
-    if (forceCapitalization.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase
-    else if (word matches MixedCapsPattern) word // mixed caps
-    else if (word.head.isDigit) word.toLowerCase // 1st, 2nd, etc.
-    else if (word matches RomanPattern) word.toUpperCase // roman numbers, also handles pronoun "I"
-    else if (word matches DottedAcronymPattern) word.toUpperCase // A.B.C. pattern
-    else pascalCaseWord(word)
-  }
-
-  private val Delimiters = Pattern compile """[ ()\-:/"&]+"""
-
-  // Modified from https://stackoverflow.com/a/29364083/736508
-  // TODO RichFile should really start using UTF-8 by default
-  private val toAscii: Map[Char, String] =
-  managed(Source.fromInputStream(getClass.getResourceAsStream("ascii.txt"), "UTF-8"))
-      .map(_.getLines().map(_.splitParse(":", _.toSeq.single, identity)).toMap)
-      .tried.get
-      .++(33.to(126).map(_.toChar :-> (_.toString)))
-  private def normalizeDashesAndApostrophes(s: String) =
-    s.replaceAll(SpecialApostrophes, "'").replaceAll(SpecialDashes, "-")
   def asciiNormalize(s: String): String = try {
     if (s.isWhitespaceOrEmpty)
       return s
@@ -67,7 +30,7 @@ object StringFixer extends (String => String) {
         .to(asciiNormalize(withoutSpecialCharacters.flatMap(toAscii.apply)))
   } catch {
     case e: Exception =>
-      println(s"Could not asciify <$s>")
+      logger.verbose(s"Could not asciify <$s>")
       throw e
   }
 
@@ -87,4 +50,49 @@ object StringFixer extends (String => String) {
           .replaceAll(Vs, " vs. ")
     }
   }
+
+  private def fixWord(unnormalizedWord: String, forceCapitalization: Boolean): String = {
+    val word = asciiNormalize(unnormalizedWord)
+    if (forceCapitalization.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase
+    else if (word matches MixedCapsPattern) word // mixed caps
+    else if (word.head.isDigit) word.toLowerCase // 1st, 2nd, etc.
+    else if (word matches RomanPattern) word.toUpperCase // roman numbers, also handles pronoun "I"
+    else if (word matches DottedAcronymPattern) word.toUpperCase // A.B.C. pattern
+    else pascalCaseWord(word)
+  }
+}
+
+object StringFixer extends StringFixer(ConsoleLogger) {
+  @VisibleForTesting
+  private[fixer] val lowerCaseWords = Vector("'em", "a", "ain't", "all", "am", "an", "and", "are", "aren't", "as",
+    "at", "be", "but", "by", "can", "can't", "cannot", "did", "didn't", "do", "doesn't", "don't", "for",
+    "from", "get", "got", "gotten", "had", "has", "have", "her", "his", "in", "into", "is", "isn't", "it",
+    "it's", "its", "may", "me", "mine", "my", "not", "of", "on", "or", "our", "ours", "ov", "shall", "should",
+    "so", "than", "that", "the", "their", "theirs", "them", "then", "there", "these", "thine", "this", "those",
+    "through", "thy", "to", "too", "up", "upon", "van", "von", "was", "wasn't", "were", "weren't", "will", "with",
+    "without", "won't", "would", "wouldn't", "your")
+  private val lowerCaseSet = lowerCaseWords.toSet
+
+  private def pascalCaseWord(w: String): String = w.toLowerCase.capitalize
+
+  private val RomanPattern = Pattern compile "[IVXMLivxml]+"
+  private val MixedCapsPattern = Pattern compile ".*[A-Z].*"
+  private val DottedAcronymPattern = Pattern compile "(\\w\\.)+"
+  private val ConjuctiveN: Pattern = Pattern compile " '?[Nn]'"
+  private val Vs: Pattern = Pattern.compile(""" vs\.? """, Pattern.CASE_INSENSITIVE)
+  val SpecialQuotes: Pattern = Pattern compile "[“”]"
+  val SpecialApostrophes: Pattern = Pattern compile "[‘’�´]"
+  private val SpecialDashes = Pattern compile "[—–-−‐]"
+
+  private val Delimiters = Pattern compile """[ ()\-:/"&]+"""
+
+  // Modified from https://stackoverflow.com/a/29364083/736508
+  // TODO RichFile should really start using UTF-8 by default
+  private val toAscii: Map[Char, String] =
+  managed(Source.fromInputStream(getClass.getResourceAsStream("ascii.txt"), "UTF-8"))
+      .map(_.getLines().map(_.splitParse(":", _.toSeq.single, identity)).toMap)
+      .tried.get
+      .++(33.to(126).map(_.toChar :-> (_.toString)))
+  private def normalizeDashesAndApostrophes(s: String) =
+    s.replaceAll(SpecialApostrophes, "'").replaceAll(SpecialDashes, "-")
 }

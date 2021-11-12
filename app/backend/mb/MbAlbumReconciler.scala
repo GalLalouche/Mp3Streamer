@@ -1,7 +1,7 @@
 package backend.mb
 
 import backend.OptionRetriever
-import backend.recon.{Album, Artist, Reconciler, ReconID, ReconScorers}
+import backend.recon.{Album, AlbumReconScorer, Artist, Reconciler, ReconID}
 import javax.inject.Inject
 import play.api.libs.json.{JsObject, JsValue}
 
@@ -17,9 +17,10 @@ private class MbAlbumReconciler @Inject()(
     ec: ExecutionContext,
     downloader: JsonDownloader,
     artistReconciler: OptionRetriever[Artist, ReconID],
+    albumReconScorer: AlbumReconScorer,
 ) extends Reconciler[Album] {
   private implicit val iec: ExecutionContext = ec
-  private val scorer = ReconScorers.AlbumReconScorer
+  private val scorer = albumReconScorer
 
   override def apply(a: Album) = artistReconciler(a.artist)
       .flatMapF(artistId => downloader("release-group/", "limit" -> "100", "artist" -> artistId.id))

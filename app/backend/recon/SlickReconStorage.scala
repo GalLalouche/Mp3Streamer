@@ -88,7 +88,7 @@ private[backend] class SlickAlbumReconStorage @Inject()(
     def * = (album, artist, reconId, isIgnored)
   }
   protected override type EntityTable = Rows
-  protected override val tableQuery = TableQuery[EntityTable]
+  override val tableQuery = TableQuery[EntityTable]
   protected override def toEntity(a: Album, v: StoredReconResult) = {
     val albumKey = a.normalize
     val artistKey = a.artist.normalize
