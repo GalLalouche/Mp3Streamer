@@ -12,7 +12,7 @@ import common.rich.RichTuple.richTuple2
 import common.rich.collections.RichSeq._
 import common.rich.primitives.RichBoolean.richBoolean
 
-/** Sets up the initial lines. */
+/** Sets up the initial lines and writes usage instructions. */
 private class Initializer @Inject()(mf: MusicFinder, aux: IndividualInitializer) {
   private class Extractor(dir: DirectoryRef) {
     private lazy val songs = (dir +: dir.deepDirs)
@@ -53,12 +53,12 @@ private class Initializer @Inject()(mf: MusicFinder, aux: IndividualInitializer)
     )
     val globalTags = Vector(
       s"# Global ID3 tags; tags with more than single value are preset to ${Tags.Keep}. Special <TAGS> are case insensitive.",
-      s"# You can Use ${Tags.Common} use the most common value; counts appear above the ${Tags.Keep} as comments",
+      s"# ${Tags.Common} uses the most common value; counts appear above the ${Tags.Keep} as comments",
       "# First are the global and mandatory ID3 properties",
       $.artist.lines,
       $.album.lines,
       $.year.lines,
-      "# Classical tags",
+      s"# Classical tags. Ignored if ${$.performanceYear.key} is ${Tags.ExplicitEmpty}",
       $.composer.lines,
       $.opus.lines,
       $.conductor.lines,

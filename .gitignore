@@ -25,3 +25,4 @@ projectFilesBackup
 target
 tmp
 tokens.properties
+node_modules

@@ -4,9 +4,11 @@ import play.api.libs.json._
 
 import scala.annotation.implicitNotFound
 
+import scalaz.std.option.optionInstance
+import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
 import monocle.Iso
 
-import RichJson._
+import common.json.RichJson._
 import common.json.ToJsonableOps._
 
 /** Saner names for play's JSON trait, and less optionality. */
@@ -26,7 +28,7 @@ object Jsonable {
     override def parse(json: JsValue): Seq[A] = json.as[JsArray].value.map(_.parse[A])
   }
   implicit def optionJsonable[A: Jsonable]: Jsonable[Option[A]] = new Jsonable[Option[A]] {
-    override def jsonify(o: Option[A]): JsValue = if (o.isDefined) o.get.jsonify else JsNull
+    override def jsonify(o: Option[A]): JsValue = o.mapHeadOrElse(_.jsonify, JsNull)
     override def parse(json: JsValue): Option[A] = json match {
       case JsNull => None
       case _ => Some(json.parse[A])
@@ -45,4 +47,3 @@ object Jsonable {
     override def jsonify(a: A): JsValue = aToB.get(a).jsonify
   }
 }
-

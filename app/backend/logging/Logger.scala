@@ -12,10 +12,10 @@ trait Logger {
   def info(what: String): Unit = log(what, LoggingLevel.Info)
   def warn(what: String): Unit = log(what, LoggingLevel.Warn)
   def warn(what: String, e: Throwable): Unit =
-    warn(what + "\n" + RichString.fromPrintStream(e.printStackTrace))
+    warn(s"$what\n${RichString.fromPrintStream(e.printStackTrace)}")
   def error(what: String): Unit = log(what, LoggingLevel.Error)
   def error(what: String, e: Throwable): Unit =
-    error(what + "\n" + RichString.fromPrintStream(e.printStackTrace))
+    error(s"$what\n${RichString.fromPrintStream(e.printStackTrace)}")
 }
 
 object Logger {

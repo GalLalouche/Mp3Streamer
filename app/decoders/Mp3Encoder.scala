@@ -45,7 +45,7 @@ class Mp3Encoder @Inject()(
    * The file will only be created if its matching output doesn't already exist.
    *
    * @return The (possibly new) mp3 file created; The file will be created in the outputDir, and will
-   *         be the absolute path of the file (with no space) with an "mp3" extension.
+   *         be the absolute path of the file (with no spaces) with an "mp3" extension.
    */
   override def !(m: => FileRef): Future[FileRef] = actor.!(m) <* cleaner.clean()
 }
