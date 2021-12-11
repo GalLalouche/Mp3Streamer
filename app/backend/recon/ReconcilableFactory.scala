@@ -8,7 +8,8 @@ import common.io.DirectoryRef
 import common.rich.RichT._
 import common.rich.primitives.RichOption.richOption
 
-class ReconcilableFactory @Inject()(mf: MusicFinder) {
+class ReconcilableFactory @Inject()(val mf: MusicFinder) {
+  type S = mf.S
   private val invalidDirectoryNames: Map[String, String] = Map(
     // Some artists have invalid directory characters in their name, so their directory won't match
     // the artist name. As a stupid hack, just aggregate them below.
@@ -29,9 +30,9 @@ class ReconcilableFactory @Inject()(mf: MusicFinder) {
       mf.parseSong(mf.getSongFilesInDir(dir).headOption.getOrThrow(s"Problem with $dir")).release
 
   private val IgnoredFolders = Vector("Classical", "Musicals")
-  def artistDirectories: Seq[DirectoryRef] = {
+  def artistDirectories: Seq[S#D] = {
     val prefixLength = {
-      val $ = mf.dir.path
+      val $ = mf.baseDir.path
       $.length + (if ($.endsWith("\\") || $.endsWith("/")) 0 else 1)
     }
     def ignore(dir: DirectoryRef): Boolean = {
@@ -40,6 +41,5 @@ class ReconcilableFactory @Inject()(mf: MusicFinder) {
     }
     mf.artistDirs.filterNot(ignore)
   }
-  def albumDirectories: Seq[DirectoryRef] =
-    mf.albumDirs(artistDirectories.asInstanceOf[Seq[this.mf.S#D]])
+  def albumDirectories: Seq[S#D] = mf.albumDirs(artistDirectories)
 }

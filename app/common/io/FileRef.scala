@@ -73,4 +73,10 @@ trait DirectoryRef extends PathRef {self =>
     Stream.iterate(Option(parent))(p => if (p.get.hasParent) Some(p.get.parent.asInstanceOf[S#D]) else None)
         .takeWhile(_.isDefined)
         .map(_.get)
+  /** Returns all directories between this and dir. Throws if dir is not a parent of this. */
+  def relativize(dir: S#D): Seq[S#D] = {
+    val ps = parents.span(_ != dir)
+    require(ps._2.nonEmpty,  s"<$dir> is not a parent of <$this>")
+    ps._1.toList
+  }
 }

@@ -7,12 +7,12 @@ import scala.collection.mutable
 import common.io.{DirectoryRef, FileRef, MemoryDir, MemoryFile, MemorySystem}
 import common.rich.RichT._
 
-class FakeMusicFinder(val dir: MemoryDir) extends MusicFinder {
+class FakeMusicFinder(val baseDir: MemoryDir) extends MusicFinder {
   override type S = MemorySystem
   override val extensions = Set("mp3")
   override protected def genresWithSubGenres: Seq[String] = Vector("music")
   override protected def flatGenres: Seq[String] = Nil
-  private val dirToAddSongsTo = dir addSubDir genresWithSubGenres.head
+  private val dirToAddSongsTo = baseDir addSubDir genresWithSubGenres.head
   private val pathToSongs = mutable.HashMap[String, MemorySong]()
 
   private def copy(s: MemorySong, newFile: MemoryFile) =

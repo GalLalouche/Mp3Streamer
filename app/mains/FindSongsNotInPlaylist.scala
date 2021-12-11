@@ -22,7 +22,7 @@ object FindSongsNotInPlaylist {
   private val UtfBytemarkPrefix = 65279
   private def normalizePath(s: String) = s.toLowerCase.simpleReplace("""\""", "/")
   def main(args: Array[String]): Unit = {
-    val file = musicFiles.dir.addFile("playlist.m3u8").file
+    val file = musicFiles.baseDir.addFile("playlist.m3u8").file
     if (Duration.ofMillis(System.currentTimeMillis() - file.lastModified()).toHours > 1)
       throw new IllegalStateException("Please update the playlist file.")
     val playlistSongs = file // UTF-8 helps deal with Hebrew songs
@@ -31,7 +31,7 @@ object FindSongsNotInPlaylist {
         // removes UTF-BOM at least until I fix it in ScalaCommon
         .mapIf(_.head.head.toInt == UtfBytemarkPrefix).to(e => e.tail :+ e.head.drop(1))
         .mapIf(_.head == "#").to(_.tail) // Newer version of Foobar2000 decided to add # to file header :\
-        .map(s"${musicFiles.dir.path}/".+)
+        .map(s"${musicFiles.baseDir.path}/".+)
         .map(normalizePath)
         .toSet
     println(s"playlist songs |${playlistSongs.size}|")
