@@ -3,7 +3,7 @@ package backend.albums.filler
 import java.time.Clock
 
 import backend.logging.Logger
-import backend.recon.{Artist, StringReconScorer}
+import backend.recon.{Artist, ReconcilableFactory, StringReconScorer}
 import javax.inject.Inject
 import models.MusicFinder
 
@@ -15,10 +15,11 @@ private class EagerExistingAlbumsFactory @Inject()(
     clock: Clock,
     logger: Logger,
     stringReconScorer: StringReconScorer,
+    reconcilableFactory: ReconcilableFactory,
 ) {
   def from(albums: Seq[DirectoryRef]) = new EagerExistingAlbums(
     albums
-        .map(ExistingAlbums.toAlbum(mf))
+        .map(reconcilableFactory.toAlbum)
         .groupBy(_.artist.normalized)
         .mapValues(_.toSet)
         .view.force,

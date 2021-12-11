@@ -3,7 +3,7 @@ package backend.albums.filler
 import backend.albums.filler.storage.FillerStorageModule
 import backend.logging.{LoggingLevel, LoggingModules}
 import backend.module.{CleanModule, StandaloneModule}
-import backend.recon.Artist
+import backend.recon.{Artist, ReconcilableFactory}
 import com.google.inject.{Guice, Injector, Module, Provides, Singleton}
 import com.google.inject.util.Modules
 import models.{IOMusicFinderModule, MusicFinder}
@@ -29,9 +29,13 @@ private[albums] object ExistingAlbumsModules {
   }
   def default: Module = new EagerBinder {
     @Provides @Singleton private def existingAlbumsCache(
-        implicit factory: EagerExistingAlbumsFactory, mf: MusicFinder, timed: TimedLogger): EagerExistingAlbums =
+        implicit factory: EagerExistingAlbumsFactory,
+        mf: MusicFinder,
+        timed: TimedLogger,
+        reconcilableFactory: ReconcilableFactory,
+    ): EagerExistingAlbums =
       timed("Creating cache", LoggingLevel.Info) {
-        factory.from(ExistingAlbums.albumDirectories(mf))
+        factory.from(reconcilableFactory.albumDirectories)
       }
   }
   private def overriding(overridenModule: Module)(existingAlbumsModule: Module): Injector = {
