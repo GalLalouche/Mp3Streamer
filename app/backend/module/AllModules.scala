@@ -6,19 +6,22 @@ import backend.lyrics.LyricsModule
 import backend.mb.MbModule
 import backend.recent.RecentModule
 import backend.recon.ReconModule
+import backend.scorer.ScorerModule
 import controllers.ControllerModule
 import net.codingwell.scalaguice.ScalaModule
 import songs.SongsModule
 
 object AllModules extends ScalaModule {
   override def configure(): Unit = {
-    install(NewAlbumModule)
     install(ExternalModule)
+    install(LyricsModule)
     install(MbModule)
+    install(NewAlbumModule)
     install(RecentModule)
     install(ReconModule)
+    install(ScorerModule)
     install(SongsModule)
+
     install(ControllerModule)
-    install(LyricsModule)
   }
 }
