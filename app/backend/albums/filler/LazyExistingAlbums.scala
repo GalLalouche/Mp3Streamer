@@ -30,6 +30,6 @@ import common.TimedLogger
   }
   override def albums: Artist => Set[Album] = artist => mf.findArtistDir(artist.name).get
       .dirs
-      .map(reconcilableFactory.toAlbum)
+      .map(reconcilableFactory.toAlbum(_).get)
       .toSet
 }

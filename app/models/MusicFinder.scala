@@ -27,10 +27,11 @@ trait MusicFinder {self =>
   }
   def albumDirs: Seq[S#D] = albumDirs(genreDirs)
   def albumDirs(startingFrom: Seq[S#D]): Seq[S#D] = startingFrom
+      .view
       .flatMap(_.deepDirs)
-      .toVector
       // Because some albums have, e.g., cover subdirectories
       .filter(_.files.exists(f => extensions.contains(f.extension)))
+      .toVector
   def getSongFiles: Seq[S#F] = albumDirs.par.flatMap(getSongFilesInDir).seq
   def getSongFilesInDir(d: DirectoryRef): Seq[S#F] =
     d.asInstanceOf[S#D].files.filter(f => extensions.contains(f.extension))

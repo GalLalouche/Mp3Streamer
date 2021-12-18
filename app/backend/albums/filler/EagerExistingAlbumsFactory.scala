@@ -19,7 +19,7 @@ private class EagerExistingAlbumsFactory @Inject()(
 ) {
   def from(albums: Seq[DirectoryRef]) = new EagerExistingAlbums(
     albums
-        .map(reconcilableFactory.toAlbum)
+        .map(reconcilableFactory.toAlbum(_).get)
         .groupBy(_.artist.normalized)
         .mapValues(_.toSet)
         .view.force,

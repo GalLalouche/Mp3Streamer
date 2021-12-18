@@ -29,14 +29,12 @@ private[albums] object ExistingAlbumsModules {
   }
   def default: Module = new EagerBinder {
     @Provides @Singleton private def existingAlbumsCache(
-        implicit factory: EagerExistingAlbumsFactory,
-        mf: MusicFinder,
+        factory: EagerExistingAlbumsFactory,
         timed: TimedLogger,
         reconcilableFactory: ReconcilableFactory,
-    ): EagerExistingAlbums =
-      timed("Creating cache", LoggingLevel.Info) {
-        factory.from(reconcilableFactory.albumDirectories)
-      }
+    ): EagerExistingAlbums = timed("Creating cache", LoggingLevel.Info) {
+      factory.from(reconcilableFactory.albumDirectories)
+    }
   }
   private def overriding(overridenModule: Module)(existingAlbumsModule: Module): Injector = {
     Guice.createInjector(Modules `override` overridenModule `with` new ScalaModule {

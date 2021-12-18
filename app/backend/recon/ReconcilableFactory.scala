@@ -4,6 +4,8 @@ import backend.recon.Reconcilable.SongExtractor
 import javax.inject.Inject
 import models.MusicFinder
 
+import scala.util.{Failure, Success, Try}
+
 import common.io.DirectoryRef
 import common.rich.RichT._
 import common.rich.primitives.RichOption.richOption
@@ -17,17 +19,23 @@ class ReconcilableFactory @Inject()(val mf: MusicFinder) {
   )
   def dirNameToArtist(dirName: String): Artist =
     Artist(dirName optionOrKeep invalidDirectoryNames.get)
-  def toAlbum(dir: DirectoryRef): Album =
-    if (dir.name.take(4).forall(_.isDigit)) {
-      val split = dir.name.split(" ", 2).ensuring(_.length == 2, s"Bad name for <$dir>")
-      Album(
-        title = split(1),
-        // Some albums are prefixed with 1969A.
-        year = split(0).ensuring(s => s.length == 4 || s.length == 5).take(4).toInt,
-        artist = dirNameToArtist(dir.parent.name),
-      )
-    } else // Single album artist.
-      mf.parseSong(mf.getSongFilesInDir(dir).headOption.getOrThrow(s"Problem with $dir")).release
+  // This is Try so the error could be reserved.
+  def toAlbum(dir: DirectoryRef): Try[Album] =
+    if (dir.name.take(4).exists(_.isDigit)) {
+      dir.name.split(" ", 2) match {
+        case Array(yearStr, title) => Success(Album(
+          title = title,
+          // Some album years are suffixed with an ordering, e.g., 1969A.
+          year = yearStr.ensuring(
+            s => s.length == 4 || s.length == 5,
+            s"<$yearStr> has weird format for <$dir>",
+          ).take(4).toInt,
+          artist = dirNameToArtist(dir.parent.name),
+        ))
+        case _ => Failure(new IllegalArgumentException(s"Bad name for <$dir>"))
+      }
+    } else
+      Success(mf.parseSong(mf.getSongFilesInDir(dir).headOption.getOrThrow(s"Problem with $dir")).release)
 
   private val IgnoredFolders = Vector("Classical", "Musicals")
   def artistDirectories: Seq[S#D] = {
