@@ -1,16 +1,16 @@
 package backend.albums.filler
 
-import backend.logging.{Logger, LoggingLevel}
+import backend.logging.LoggingLevel
 import backend.recon.{Album, Artist}
 import javax.inject.{Inject, Singleton}
 import models.MusicFinder
 
-import common.Debugging
 import common.rich.primitives.RichOption.richOption
+import common.TimedLogger
 
-@Singleton private class LazyExistingAlbums @Inject()(implicit mf: MusicFinder, logger: Logger)
+@Singleton private class LazyExistingAlbums @Inject()(mf: MusicFinder, timed: TimedLogger)
     extends ExistingAlbums {
-  override def artists: Iterable[Artist] = Debugging.timed("Fetching artists (lazy)", LoggingLevel.Info) {
+  override def artists: Iterable[Artist] = timed("Fetching artists (lazy)", LoggingLevel.Info) {
     ExistingAlbums.artistDirectories(mf)
         .flatMap {artistDir =>
           val dirs = artistDir.dirs

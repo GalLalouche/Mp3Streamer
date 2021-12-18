@@ -2,16 +2,15 @@ package decoders
 
 import java.io.{File, IOException}
 
-import backend.logging.Logger
 import javax.inject.Inject
 
 import scala.sys.process.{Process, ProcessLogger}
 
-import common.Debugging
 import common.io.{FileRef, IOFile}
 import common.rich.path.RichFile._
+import common.TimedLogger
 
-private class DbPowerampCodec @Inject()(implicit logger: Logger) extends Encoder {
+private class DbPowerampCodec @Inject()(timed: TimedLogger) extends Encoder {
   // Do this less hackishly
   private val converterFile = new File("G:/Media/Tools/dBpoweramp/CoreConverter.exe")
   private def quote(o: Any): String = s""""$o""""
@@ -24,7 +23,7 @@ private class DbPowerampCodec @Inject()(implicit logger: Logger) extends Encoder
         "-convert_to=" + quote("mp3 (lame)"),
         "-V 2",
         "-b 320")
-      Debugging.timed(s"Encoding $srcFile to $dstType") {
+      timed(s"Encoding $srcFile to $dstType") {
         if (Process(args) !< devNull != 0)
           throw new IOException("DbPowerAmp failed to convert file")
       }

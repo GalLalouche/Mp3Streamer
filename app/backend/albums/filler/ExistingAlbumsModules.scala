@@ -1,9 +1,7 @@
 package backend.albums.filler
 
-import java.time.Clock
-
 import backend.albums.filler.storage.FillerStorageModule
-import backend.logging.{Logger, LoggingLevel, LoggingModules}
+import backend.logging.{LoggingLevel, LoggingModules}
 import backend.module.{CleanModule, StandaloneModule}
 import backend.recon.Artist
 import com.google.inject.{Guice, Injector, Module, Provides, Singleton}
@@ -11,7 +9,7 @@ import com.google.inject.util.Modules
 import models.{IOMusicFinderModule, MusicFinder}
 import net.codingwell.scalaguice.ScalaModule
 
-import common.Debugging
+import common.TimedLogger
 
 private[albums] object ExistingAlbumsModules {
   private[filler] def lazyAlbums: Module = new ScalaModule {
@@ -31,8 +29,8 @@ private[albums] object ExistingAlbumsModules {
   }
   def default: Module = new EagerBinder {
     @Provides @Singleton private def existingAlbumsCache(
-        implicit factory: EagerExistingAlbumsFactory, mf: MusicFinder, logger: Logger): EagerExistingAlbums =
-      Debugging.timed("Creating cache", LoggingLevel.Info) {
+        implicit factory: EagerExistingAlbumsFactory, mf: MusicFinder, timed: TimedLogger): EagerExistingAlbums =
+      timed("Creating cache", LoggingLevel.Info) {
         factory.from(ExistingAlbums.albumDirectories(mf))
       }
   }
