@@ -26,6 +26,8 @@ class ComposedFreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshne
   override def store(k: Key, v: Value) = storage.store(k, v |> now)
   override def storeMultiple(kvs: Seq[(Key, Value)]) =
     storage storeMultiple kvs.map(_ modifySecond now)
+  override def overwriteMultipleVoid(kvs: Seq[(Key, Value)]) =
+    storage overwriteMultipleVoid kvs.map(_ modifySecond now)
   override def load(k: Key) = storage.load(k) |> toValue
   override def exists(k: Key) = storage.exists(k)
   override def update(k: Key, v: Value) = storage.update(k, v |> now) |> toValue

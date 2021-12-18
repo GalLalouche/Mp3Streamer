@@ -30,5 +30,7 @@ class MemoryBackedStorage[Key, Value] extends Storage[Key, Value] {
     if (kvs.map(_._1).exists(map.contains))
       Future failed new IllegalArgumentException("Found repeat keys")
     else
+      overwriteMultipleVoid(kvs)
+  override def overwriteMultipleVoid(kvs: Seq[(Key, Value)]) =
       Future.successful(map ++= kvs)
 }
