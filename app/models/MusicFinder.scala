@@ -43,7 +43,10 @@ trait MusicFinder {self =>
   def genre(dir: S#D): Genre = {
     require(dir.path startsWith this.baseDir.path, s"<$dir> is not a subdirectory of <${this.baseDir}>")
     val withoutRootPrefix = dir.path.drop(this.baseDir.path.length + 1)
-    val parentsFromBaseDir = dir.relativize(this.baseDir).ensuring(_.nonEmpty).reverse
+    val relativeDir = dir.relativize(this.baseDir)
+    if (relativeDir.isEmpty)
+      return Genre.Flat(dir.name.ensuring(_ == "Musicals")) // Single album musicals, e.g., Grease
+    val parentsFromBaseDir = relativeDir.reverse
     val topDirName = parentsFromBaseDir.head.name
     if (flatGenres contains topDirName)
       Genre.Flat(topDirName)
@@ -58,6 +61,7 @@ trait MusicFinder {self =>
 }
 
 object MusicFinder {
+  @deprecated("Use EnumGenre")
   sealed trait Genre extends Ordered[Genre] {
     import Genre._
 
@@ -70,6 +74,7 @@ object MusicFinder {
         implicitly[Ordering[(String, String)]].compare((t2, s1), (t1, s2))
     }
   }
+  @deprecated("Use EnumGenre")
   object Genre {
     case class Flat(name: String) extends Genre // e.g., Musicals
     case class Nested(top: String, sub: String) extends Genre // e.g., Metal/Black Metal

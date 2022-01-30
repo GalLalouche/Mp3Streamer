@@ -3,19 +3,18 @@ package mains.random_folder
 import java.io.File
 
 import javax.inject.Inject
-import models.MusicFinder
+import models.{EnumGenre, IOMusicFinder}
 
+import common.io.IODirectory
 import common.rich.path.Directory
 import common.rich.path.RichFile._
 import common.rich.primitives.RichBoolean._
+import common.rich.RichT.richT
 
-// TODO some day might use MusicFinder
-private class SongDataExtractor @Inject()(mf: MusicFinder) {
+private class SongDataExtractor @Inject()(mf: IOMusicFinder) {
   private def go(artistDir: Directory, album: String) = {
-    val genreDir = artistDir.parent
     SongData(
-      majorGenre = genreDir.parent.name.toLowerCase,
-      genre = genreDir.name.toLowerCase,
+      genre = mf.genre(IODirectory(artistDir)) |> EnumGenre.from,
       artist = artistDir.name.toLowerCase,
       album = album.toLowerCase,
     )

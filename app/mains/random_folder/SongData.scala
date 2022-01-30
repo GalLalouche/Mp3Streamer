@@ -1,3 +1,5 @@
 package mains.random_folder
 
-private case class SongData(majorGenre: String, genre: String, artist: String, album: String)
+import models.EnumGenre
+
+private case class SongData(genre: EnumGenre, artist: String, album: String)

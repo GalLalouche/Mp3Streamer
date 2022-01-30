@@ -7,6 +7,7 @@ import models.MusicFinder
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.TimedLogger
 
+@deprecated("Using the built-in method in MusicFinder")
 @Singleton private class GenreFinder @Inject()(mf: MusicFinder, timed: TimedLogger) {
   private lazy val artistDirs = timed("Fetching artistDirs") {
     mf.artistDirs
