@@ -3,8 +3,11 @@ package mains.random_folder
 import java.io.File
 
 import javax.inject.Inject
+import models.{EnumGenre, IOMusicFinder}
+import models.EnumGenre.{Classical, Metal, NewAge}
 import play.api.libs.json.Json
 
+import common.io.IODirectory
 import common.json.RichJson._
 import common.rich.primitives.RichBoolean._
 
@@ -13,8 +16,19 @@ private trait FileFilter {
 }
 
 private object FileFilter {
-  class SansMetal @Inject()(sde: SongDataExtractor) extends FileFilter {
-    override def isAllowed(f: File): Boolean = sde(f).majorGenre != "metal"
+  private def removeGenres(mf: IOMusicFinder, f: File)(g: PartialFunction[EnumGenre, Boolean]): Boolean =
+    // TODO RichPartialFunction.getOrElse
+    g.lift(EnumGenre.from(mf.genre(IODirectory(f.getParent)))) getOrElse true
+  class SansMetal @Inject()(mf: IOMusicFinder) extends FileFilter {
+    override def isAllowed(f: File): Boolean = removeGenres(mf, f) {
+      case Metal(_) => false
+    }
+  }
+  class PartyDude @Inject()(mf: IOMusicFinder) extends FileFilter {
+    override def isAllowed(f: File): Boolean = removeGenres(mf, f) {
+      case Metal(_) => false
+      case Classical | NewAge => false
+    }
   }
   object AllowEverything extends FileFilter {
     override def isAllowed(f: File): Boolean = true
@@ -44,7 +58,8 @@ private object FileFilter {
       if (forbiddenArtists(data.artist))
         return false
 
-      forbiddenGenres(data.genre).isFalse
+      // TODO RichSet.doesNotContain
+      forbiddenGenres.contains(data.genre.name).isFalse
     }
   }
   def fromConfig(sde: SongDataExtractor): FileFilter = {
