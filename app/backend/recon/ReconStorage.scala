@@ -2,12 +2,15 @@ package backend.recon
 
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.FutureOption
+import backend.storage.CachableStorage
 
 import scala.concurrent.Future
 
-import common.storage.{Storage, StoreMode}
+import common.storage.{StorageTemplate, StoreMode}
 
-trait ReconStorage[R <: Reconcilable] extends Storage[R, StoredReconResult] {
+trait ReconStorage[R <: Reconcilable]
+    extends StorageTemplate[R, StoredReconResult]
+        with CachableStorage[R, StoredReconResult] {
   // TODO move to a different table
   def isIgnored(k: R): Future[IgnoredReconResult]
   def update(key: R, reconId: ReconID): FutureOption[StoredReconResult] = mapStore(StoreMode.Update, key, {
