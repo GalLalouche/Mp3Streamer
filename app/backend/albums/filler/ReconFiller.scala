@@ -20,9 +20,10 @@ private class ReconFiller[R <: Reconcilable](
     reconciler: Reconciler[R],
     storage: ReconStorage[R],
     aux: ReconFillerAux[R],
+    logger: Logger,
 )(implicit ec: ExecutionContext) {
   private val storer = SimpleActor.async[(R, ReconID)]("storer", {case (r, recondID) =>
-    println(s"Storing <${aux.prettyPrint(r)}>: https://musicbrainz.org/${aux.name}/${recondID.id}")
+    logger.info(s"Storing <${aux.prettyPrint(r)}>: https://musicbrainz.org/${aux.musicBrainzPath}/${recondID.id}")
     storage.store(r, HasReconResult(recondID, isIgnored = false))
   })
 
