@@ -1,5 +1,6 @@
 package backend.albums.filler
 
+import backend.logging.Logger
 import backend.mb.{MbAlbumMetadata, MbArtistReconciler}
 import backend.recon.{Album, Artist, ReconID, StringReconScorer}
 import javax.inject.Inject
@@ -13,6 +14,7 @@ private class ArtistReconVerifier @Inject()(
     reconciler: MbArtistReconciler,
     ec: ExecutionContext,
     stringReconScorer: StringReconScorer,
+    logger: Logger,
 ) {
   private implicit val iec: ExecutionContext = ec
   def apply(artist: Artist, id: ReconID): Future[Boolean] = reconciler.getAlbumsMetadata(id)
@@ -22,7 +24,7 @@ private class ArtistReconVerifier @Inject()(
     val albumTitles = album.map(_.title)
     val $ = reconAlbums.view.map(_.title).exists(t => albumTitles.map(stringReconScorer(_, t)).max > 0.9)
     if ($.isFalse)
-      println(s"Could not reconcile ${album.head.artist}")
+      logger.debug(s"Could not verify artist recon <${album.head.artist}>")
     $
   }
 }

@@ -1,6 +1,7 @@
 package backend.mb
 
 import backend.OptionRetriever
+import backend.logging.Logger
 import backend.recon.{Album, AlbumReconScorer, Artist, Reconciler, ReconID}
 import javax.inject.Inject
 import play.api.libs.json.{JsObject, JsValue}
@@ -18,6 +19,7 @@ private class MbAlbumReconciler @Inject()(
     downloader: JsonDownloader,
     artistReconciler: OptionRetriever[Artist, ReconID],
     albumReconScorer: AlbumReconScorer,
+    logger: Logger,
 ) extends Reconciler[Album] {
   private implicit val iec: ExecutionContext = ec
   private val scorer = albumReconScorer
@@ -33,4 +35,8 @@ private class MbAlbumReconciler @Inject()(
       .filter(_ ostr "primary-type" exists Set("Album", "EP"))
       .find(js => scorer(album(js, a.artist), a) >= 0.9)
       .map(_ str "id" mapTo ReconID.validateOrThrow)
+      .<| {
+        case None => logger.debug(s"Could not reconcile album: <$a>")
+        case _ => ()
+      }
 }
