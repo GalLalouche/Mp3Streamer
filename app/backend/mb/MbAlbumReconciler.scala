@@ -3,16 +3,20 @@ package backend.mb
 import backend.OptionRetriever
 import backend.logging.Logger
 import backend.recon.{Album, AlbumReconScorer, Artist, Reconciler, ReconID}
+
+import scalaz.syntax.foldable.ToFoldableOps
 import javax.inject.Inject
 import play.api.libs.json.{JsObject, JsValue}
 
 import scala.concurrent.ExecutionContext
 
+import scalaz.Scalaz.{doubleInstance, ToFunctorOps}
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
 
 import common.json.RichJson._
 import common.rich.RichT._
+import common.rich.func.MoreSeqInstances._
 
 private class MbAlbumReconciler @Inject()(
     ec: ExecutionContext,
@@ -33,7 +37,11 @@ private class MbAlbumReconciler @Inject()(
   private def parse(js: JsValue, a: Album): Option[ReconID] = js.objects("release-groups")
       .filter(_ has "first-release-date")
       .filter(_ ostr "primary-type" exists Set("Album", "EP"))
-      .find(js => scorer(album(js, a.artist), a) >= 0.9)
+      // TODO topByFilter?
+      .fproduct(js => scorer(album(js, a.artist), a))
+      .filter(_._2 >= 0.85)
+      .maximumBy(_._2)
+      .map(_._1)
       .map(_ str "id" mapTo ReconID.validateOrThrow)
       .<| {
         case None => logger.debug(s"Could not reconcile album: <$a>")
