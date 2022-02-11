@@ -4,7 +4,7 @@ import java.time.{LocalDate, Year, YearMonth}
 
 import backend.logging.Logger
 import backend.mb.AlbumParser._
-import backend.recon.ReconID
+import backend.recon.{Artist, ReconID}
 import javax.inject.Inject
 import mains.fixer.StringFixer
 import play.api.libs.json.{JsObject, JsValue}
@@ -40,6 +40,15 @@ private class AlbumParser @Inject()(
     albumType = albumType,
     reconId = ReconID.validateOrThrow(json str "id"),
   )
+
+  def artistCredits(json: JsObject): Seq[(Artist, ReconID)] = json
+      .objects("artist-credit")
+      .map(_
+          ./("artist")
+          .toTuple(
+            _.str("name") |> Artist.apply,
+            _.str("id") |> ReconID.validateOrThrow,
+          ))
 
   def releaseToReleaseGroups(js: JsValue): Seq[MbAlbumMetadata] = js.array("releases")
       .value

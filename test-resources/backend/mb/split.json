@@ -1,0 +1,36 @@
+{
+  "secondary-type-ids": [],
+  "primary-type": "EP",
+  "title": "A Grey Sigh in a Flower Husk",
+  "primary-type-id": "6d0c5bf6-7a33-3420-a519-44fc63eedebf",
+  "disambiguation": "",
+  "secondary-types": [],
+  "id": "b967e8ca-fef8-3063-b7c4-6e820b243fac",
+  "first-release-date": "2007-06-26",
+  "artist-credit": [
+    {
+      "joinphrase": " / ",
+      "name": "Baroness",
+      "artist": {
+        "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+        "name": "Baroness",
+        "sort-name": "Baroness",
+        "type": "Group",
+        "id": "eeb41a1e-4326-4d04-8c47-0f564ceecd68",
+        "disambiguation": ""
+      }
+    },
+    {
+      "joinphrase": "",
+      "name": "Unpersons",
+      "artist": {
+        "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+        "name": "Unpersons",
+        "sort-name": "Unpersons",
+        "type": "Group",
+        "id": "8b43a9eb-4f63-4425-bef1-cf2b068c00c9",
+        "disambiguation": ""
+      }
+    }
+  ]
+}

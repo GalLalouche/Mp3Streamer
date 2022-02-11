@@ -3,7 +3,7 @@ package backend.mb
 import java.time.LocalDate
 
 import backend.logging.Logger
-import backend.recon.ReconID
+import backend.recon.{Artist, ReconID}
 import org.scalatest.FreeSpec
 import org.scalatest.Inside._
 import org.scalatest.OptionValues._
@@ -85,5 +85,14 @@ class AlbumParserTest extends FreeSpec with AuxSpecs {
         MbAlbumMetadata("Out", LocalDate.of(2006, 8, 1), AlbumType.Album, ReconID("7ef02c74-773f-3a22-beed-b227a86e7e34")),
       )
     }
+  }
+
+  "artistCredits" in {
+    $.artistCredits(
+      Json.parse(getClass.getResourceAsStream("split.json")).asInstanceOf[JsObject]
+    ).shouldContainExactly(
+      Artist("Baroness") -> ReconID("eeb41a1e-4326-4d04-8c47-0f564ceecd68"),
+      Artist("Unpersons") -> ReconID("8b43a9eb-4f63-4425-bef1-cf2b068c00c9"),
+    )
   }
 }
