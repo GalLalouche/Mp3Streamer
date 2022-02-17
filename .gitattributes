@@ -1,0 +1,3 @@
+test-resources/** -linguist-detectable
+*jplayer* linguist-vendored
+public/stylesheets/font-awesome*/** linguist-vendored
