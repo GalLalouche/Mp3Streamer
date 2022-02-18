@@ -8,7 +8,9 @@ import play.api.libs.json.{JsArray, Json, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import scalaz.std.option.optionInstance
 import common.rich.func.BetterFutureInstances._
+import common.rich.func.ToMoreFoldableOps._
 
 import common.json.RichJson._
 import common.json.ToJsonableOps._
@@ -23,8 +25,7 @@ private class AlbumsFormatter @Inject()(
 
   def albums: Future[JsValue] = $.all
       .map {case (artist, newAlbums) => Json.obj(
-        // Funky type inference due to implicit defs.
-        "genre" -> genreFinder(artist).getOrElse[String]("N/A"),
+        "genre" -> genreFinder(artist).mapHeadOrElse(_.name, "N/A"),
         "name" -> StringFixer(artist.name), // Name is stored normalized.
         "albums" -> newAlbums.map(NewAlbum.title.modify(_ tryOrKeep StringFixer.apply)).jsonify,
       )
