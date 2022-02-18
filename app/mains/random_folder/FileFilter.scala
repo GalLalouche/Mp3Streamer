@@ -3,8 +3,8 @@ package mains.random_folder
 import java.io.File
 
 import javax.inject.Inject
-import models.{EnumGenre, IOMusicFinder}
-import models.EnumGenre.{Classical, Metal, NewAge}
+import models.{Genre, GenreFinder}
+import models.Genre.{Classical, Metal, NewAge}
 import play.api.libs.json.Json
 
 import common.io.IODirectory
@@ -16,16 +16,16 @@ private trait FileFilter {
 }
 
 private object FileFilter {
-  private def removeGenres(mf: IOMusicFinder, f: File)(g: PartialFunction[EnumGenre, Boolean]): Boolean =
-    // TODO RichPartialFunction.getOrElse
-    g.lift(EnumGenre.from(mf.genre(IODirectory(f.getParent)))) getOrElse true
-  class SansMetal @Inject()(mf: IOMusicFinder) extends FileFilter {
-    override def isAllowed(f: File): Boolean = removeGenres(mf, f) {
+  private def removeGenres(genreFinder: GenreFinder, f: File)(g: PartialFunction[Genre, Boolean]): Boolean =
+  // TODO RichPartialFunction.getOrElse
+    g.lift(genreFinder(IODirectory(f.getParent))) getOrElse true
+  class SansMetal @Inject()(genreFinder: GenreFinder) extends FileFilter {
+    override def isAllowed(f: File): Boolean = removeGenres(genreFinder, f) {
       case Metal(_) => false
     }
   }
-  class PartyDude @Inject()(mf: IOMusicFinder) extends FileFilter {
-    override def isAllowed(f: File): Boolean = removeGenres(mf, f) {
+  class PartyDude @Inject()(genreFinder: GenreFinder) extends FileFilter {
+    override def isAllowed(f: File): Boolean = removeGenres(genreFinder, f) {
       case Metal(_) => false
       case Classical | NewAge => false
     }

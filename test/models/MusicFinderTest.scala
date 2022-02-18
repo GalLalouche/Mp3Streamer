@@ -1,7 +1,6 @@
 package models
 
 import backend.module.FakeMusicFinder
-import models.MusicFinder.Genre
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import common.io.MemoryRoot
@@ -12,7 +11,7 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val root = new MemoryRoot
   private val mf = new FakeMusicFinder(root) {
     protected override def genresWithSubGenres = Vector("a", "b", "c")
-    protected override def flatGenres = Vector("d")
+    override def flatGenres = Vector("d")
     (genresWithSubGenres ++ flatGenres).foreach(root.addSubDir)
     override val extensions = Set("mp3", "flac")
   }
@@ -70,21 +69,6 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
       d.addSubDir("d'").addSubDir("d''") // Flat artist without songs
 
       mf.albumDirs shouldMultiSetEqual Vector(artistWithSong, subGenreWithSong, flatArtistWithSong)
-    }
-  }
-
-  "genre" - {
-    val a = root.getDir("a").get
-    val b = root.getDir("b").get
-    root.getDir("c").get
-    val d = root.getDir("d").get
-    "flat genre" in {
-      val d2 = d.addSubDir("d2")
-      mf.genre(d2) shouldReturn Genre.Flat("d")
-    }
-    "nested genre" in {
-      val c = a.addSubDir("b").addSubDir("c")
-      mf.genre(c) shouldReturn Genre.Nested("a", "b")
     }
   }
 }

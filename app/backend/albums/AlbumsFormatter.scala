@@ -4,6 +4,7 @@ import backend.albums.filler.storage.FilledStorage
 import backend.recon.Artist
 import javax.inject.Inject
 import mains.fixer.StringFixer
+import models.GenreFinder
 import play.api.libs.json.{JsArray, Json, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -25,7 +26,7 @@ private class AlbumsFormatter @Inject()(
 
   def albums: Future[JsValue] = $.all
       .map {case (artist, newAlbums) => Json.obj(
-        "genre" -> genreFinder(artist).mapHeadOrElse(_.name, "N/A"),
+        "genre" -> genreFinder.forArtist(artist).mapHeadOrElse(_.name, "N/A"),
         "name" -> StringFixer(artist.name), // Name is stored normalized.
         "albums" -> newAlbums.map(NewAlbum.title.modify(_ tryOrKeep StringFixer.apply)).jsonify,
       )
