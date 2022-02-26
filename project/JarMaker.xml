@@ -123,6 +123,7 @@
         <include name="mains/"/>
         <include name="songs/"/>
         <include name="loggers/"/>
+        <include name="*.xml"/>
         <exclude name="**/*Test*/**"/>
       </fileset>
     </jar>
