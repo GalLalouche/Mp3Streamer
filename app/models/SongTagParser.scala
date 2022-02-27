@@ -35,7 +35,7 @@ object SongTagParser {
       .map(_.group(1).toInt)
       .orElse(extractYearFromName(file.parent.name))
   @VisibleForTesting private[models] def extractYearFromName(s: String): Option[Int] =
-    findYear(s).singleOpt.map(_.toInt)
+    findYear(s).toSet.singleOpt.map(_.toInt)
   def apply(file: File): IOSong = {
     validateRealFile(file)
     apply(file, AudioFileIO read file)
