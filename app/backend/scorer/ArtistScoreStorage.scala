@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.ListT
 
-private class ArtistScoreStorage @Inject()(
+class ArtistScoreStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider,
     protected val artistStorage: SlickArtistReconStorage,
@@ -35,7 +35,7 @@ private class ArtistScoreStorage @Inject()(
     def * = (artist, score)
   }
   override protected type EntityTable = Rows
-  override protected val tableQuery = TableQuery[EntityTable]
+  override val tableQuery = TableQuery[EntityTable]
   override type Id = Artist
   override protected def btt: BaseTypedType[Artist] = ArtistMapper
   override protected def extractId(k: Artist) = k

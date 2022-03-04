@@ -1,0 +1,21 @@
+.default, .okay {
+  font-weight: 400;
+}
+.crappy, .meh, .classic {
+  font-weight: 100;
+  font-size: medium;
+}
+.good, .great {
+  font-weight: 700;
+}
+.great {
+  text-decoration: underline;
+}
+.amazing {
+  font-weight: 900;
+  font-size: larger;
+  text-decoration: underline;
+}
+.button {
+  margin-left: 10px;
+}

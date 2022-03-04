@@ -8,6 +8,7 @@ import backend.logging.Logger
 import backend.mb.AlbumType
 import backend.module.StandaloneModule
 import backend.recon.{Artist, ReconID, SlickArtistReconStorage}
+import backend.scorer.{ArtistScoreStorage, JdbcMappers, ModelScore}
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Guice
 import javax.inject.Inject
@@ -26,10 +27,14 @@ import common.rich.func.ToMoreApplicativeOps.toLazyApplicativeUnitOps
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.ToMoreMonadErrorOps._
 import common.rich.func.ToTraverseMonadPlusOps._
+import common.rich.func.TuplePLenses
 
 import common.rich.RichFuture.richFuture
-import common.rich.RichT._
+import common.rich.RichT.richT
 import common.rich.RichTime.OrderingLocalDate
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rich.primitives.RichBoolean.richBoolean
+import common.rich.RichTuple.RightTuple
 
 // There's a bit of data/code duplication between this and SlickAlbumReconStorage, but the former is used only
 // for already processed albums, and this one is for new albums.
@@ -39,6 +44,7 @@ private class SlickNewAlbumStorage @Inject()(
     // Allows for easier cascade.
     protected val lastFetchTime: SlickLastFetchTimeStorage,
     protected val artistStorage: SlickArtistReconStorage,
+    protected val artistScoreStorage: ArtistScoreStorage,
     logger: Logger,
 ) extends SlickSingleKeyColumnStorageTemplateFromConf[ReconID, StoredNewAlbum](ec, dbP) with NewAlbumStorage {
   private implicit val iec: ExecutionContext = ec
@@ -47,6 +53,9 @@ private class SlickNewAlbumStorage @Inject()(
   override type Id = ReconID
   override protected implicit def btt: BaseTypedType[ReconID] =
     MappedColumnType.base[ReconID, String](_.id, ReconID.apply)
+  private val mappers = new JdbcMappers()
+  import mappers.ArtistMapper
+
   override protected def toEntity(k: ReconID, v: StoredNewAlbum): Entity = {
     val na = v.na
     (k, na.title.toLowerCase, na.albumType.toString, na.date, na.artist.normalize, v.isRemoved, v.isIgnored)
@@ -92,19 +101,31 @@ private class SlickNewAlbumStorage @Inject()(
   override protected type EntityTable = Rows
   override protected val tableQuery = TableQuery[EntityTable]
   override def all = ListT(db
-      .run(tableQuery.join(artistStorage.tableQuery).on(_.artist === _.name)
-          .filterNot(e => e._2.isIgnored || shouldRemoveAlbum(e._1))
+      .run(tableQuery
+          .join(artistStorage.tableQuery).on(_.artist === _.name)
+          .filterNot(e => e._1.isIgnored || shouldRemoveAlbum(e._1))
+          .map(_._1)
+          // TODO remove (or rename) mapTo from RichT, nothing actually uses that over |>.
+          .join(artistScoreStorage.tableQuery).on((x, y) => anyToShapedValue(x.artist).mapTo[Artist] === y.artist)
           .result
       )
       .map(_
-          .map(_._1 |> extractValue)
-          .groupBy(_.na.artist)
-          .mapValues(toNewAlbums)
+          .view
+          .map(TuplePLenses.tuple2First.modify(extractValue))
+          .map(TuplePLenses.tuple2Second.modify(_._2))
+          .groupBy(_._1.na.artist)
+          .mapValues(_.map(_.swap) |> toNewAlbums)
+          .map(_.flatten)
           .toList
       )
   )
   private def shouldRemoveAlbum(e: Rows): Rep[Boolean] = e.isRemoved || e.isIgnored
-  private def toNewAlbums(albums: Seq[StoredNewAlbum]): Seq[NewAlbum] = albums.sortBy(_.na.date).map(_.na)
+  private def toNewAlbums(zipped: Seq[(ModelScore, StoredNewAlbum)]): (ModelScore, Seq[NewAlbum]) = {
+    val (scores, albums) = zipped.unzip
+    (scores.toSet.single, toNewAlbums(albums))
+  }
+  private def toNewAlbums(albums: Seq[StoredNewAlbum])(implicit dummy: DummyImplicit): Seq[NewAlbum] =
+    albums.sortBy(_.na.date).map(_.na)
   override def apply(a: Artist) = db
       .run(tableQuery
           .filter(_.artist === a.name)
@@ -134,9 +155,8 @@ private class SlickNewAlbumStorage @Inject()(
       .listen(e =>
         if (e) logger.warn(s"<$a> already exists with a different ReconID... skipping")
       )
-  private def isInvalid(e: NewAlbumRecon): Future[Boolean] =
-  // TODO RichBoolean.neither?
-    ^(exists(e.reconId), existsWithADifferentReconID(e))(_ || _)
+  private def isValid(e: NewAlbumRecon): Future[Boolean] =
+    ^(exists(e.reconId), existsWithADifferentReconID(e))(_ neither _)
   override def storeNew(albums: Seq[NewAlbumRecon]): Future[Int] = {
     val withoutDups = albums
         .groupBy(_.toTuple(_.newAlbum.artist, _.newAlbum.title))
@@ -155,7 +175,7 @@ private class SlickNewAlbumStorage @Inject()(
         .values
         .toVector
     for {
-      newAlbums <- withoutDups.filterM(isInvalid(_).negated)
+      newAlbums <- withoutDups.filterM(isValid)
       result = newAlbums.size
       _ <- db.run(tableQuery
           .map(_.toTuple(_.reconId, _.album, _.albumType, _.year, _.artist))

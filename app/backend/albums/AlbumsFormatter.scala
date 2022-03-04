@@ -25,9 +25,10 @@ private class AlbumsFormatter @Inject()(
   private implicit val iec: ExecutionContext = ec
 
   def albums: Future[JsValue] = $.all
-      .map {case (artist, newAlbums) => Json.obj(
+      .map {case (artist, modelScore, newAlbums) => Json.obj(
         "genre" -> genreFinder.forArtist(artist).mapHeadOrElse(_.name, "N/A"),
         "name" -> StringFixer(artist.name), // Name is stored normalized.
+        "artistScore" -> modelScore.entryName,
         "albums" -> newAlbums.map(NewAlbum.title.modify(_ tryOrKeep StringFixer.apply)).jsonify,
       )
       }.run

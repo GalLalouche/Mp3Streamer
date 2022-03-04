@@ -22,8 +22,8 @@ private class CachedNewAlbumStorageImpl @Inject()(
 ) extends CachedNewAlbumStorage {
   private implicit val iec: ExecutionContext = ec
   override def all = newAlbumStorage.all.map {
-    case (artist, albums) => artist -> ea.removeExistingAndUnreleasedAlbums(artist, albums)
-  }.filter(_._2.nonEmpty)
+    case (artist, score, albums) => (artist, score, ea.removeExistingAndUnreleasedAlbums(artist, albums))
+  }.filter(_._3.nonEmpty)
   override def apply(a: Artist) = newAlbumStorage.apply(a)
   override def freshness(a: Artist) = lastFetchTime.freshness(a)
   override def unremoveAll(a: Artist) = newAlbumStorage.unremoveAll(a)

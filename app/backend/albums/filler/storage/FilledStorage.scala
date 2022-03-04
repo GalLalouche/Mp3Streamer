@@ -2,6 +2,7 @@ package backend.albums.filler.storage
 
 import backend.albums.NewAlbum
 import backend.recon.{Artist, ReconID}
+import backend.scorer.ModelScore
 
 import scala.concurrent.Future
 
@@ -10,7 +11,7 @@ import scalaz.ListT
 private[albums] trait FilledStorage {
   type AlbumReconID = ReconID
   type ArtistReconID = ReconID
-  def all: ListT[Future, (Artist, Seq[NewAlbum])]
+  def all: ListT[Future, (Artist, ModelScore, Seq[NewAlbum])]
   def apply(a: Artist): Future[Seq[NewAlbum]]
 
   // Remove vs. Ignore: remove is only temporary (usually until the next mega fetch), ignore is forever.

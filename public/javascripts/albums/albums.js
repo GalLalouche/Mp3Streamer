@@ -1,3 +1,14 @@
+/*
+  There are 3 ways of sorting:
+  1. Sorting by genre - secondary sort by artist name, tertiary by year
+  2. Sorting by year - secondary sort by genre, tertiary by artist
+  3. Sorting by missing album count - secondary sort by artist
+ */
+// TODO sort by artist score, either secondary or teriary
+// TODO surely there is a better way to do this, e.g., using sortable accordion
+// That would mean a smarter way of presenting stuff.
+// Why the hell is this even in the client?! This can be a plain old scalafx gui, and be much nicer to work with.
+// https://github.com/GalLalouche/Mp3Streamer/issues/88
 $(function() {
   /** Setup **/
   const topLevel = $("#albums")
@@ -35,6 +46,7 @@ $(function() {
       const albums = x.albums
       albums.forEach(a => {
         a.artistName = x.name
+        a.artistScore = x.artistScore
         a.genre = x.genre
         a.name = x.genre
       })
@@ -93,22 +105,27 @@ $(function() {
       const mkEntryElem = () => {
         switch (topSorting) {
           case TopSorting.BY_YEAR:
+            return elem("li", entryName + " ")
           case TopSorting.BY_GENRE:
-            return elem("li", `${entryName} `)
+            return entryName.wrap("<li> </li>").parent()
           case TopSorting.BY_MISSING_ALBUMS:
-            return elem("li", `${entryName} (${genre}) `)
+            return entryName.wrap("<li> </li>").parent()
+            // return elem("li", `${entryName} (${genre}) `)
           default:
             throw new AssertionError()
         }
       }
       const entryElem = mkEntryElem()
+      // The entry name can be a span (formatted score), so this sanitizes it back to a regular artist name.
+      // Damn, this almost feels like a real language!
+      const sanitizedArtistName = () => entryName.data?.()?.["artistName"] ?? entryName
       switch (topSorting) {
         case TopSorting.BY_YEAR:
           entryElem
               .append(button("Ignore", "ignore-artist"))
               .append(button("Remove", "remove-artist"))
               .append(createHideButton())
-              .data("artistName", entryName)
+              .data("artistName", sanitizedArtistName())
           break
         case TopSorting.BY_GENRE:
           break
@@ -133,8 +150,11 @@ $(function() {
         function value() {
           switch (topSorting) {
             case TopSorting.BY_YEAR:
-              return `[${album.albumType}] ${album.artistName} - ${album.title} (${toIsoDate(new Date(album.date))}) `
-            case TopSorting.BY_GENRE:
+              return $("<span/>")
+                  .append(span(`[${album.albumType}] `))
+                  .append(artistScoreSpan(album.artistName, album.artistScore))
+                  .append(span(` - ${album.title} (${toIsoDate(new Date(album.date))}) `))
+            case TopSorting.BY_GENRE: // fallthrough
             case TopSorting.BY_MISSING_ALBUMS:
               return `[${album.albumType}] ${album.title} (${toIsoDate(new Date(album.date))}) `
             default:
@@ -147,12 +167,13 @@ $(function() {
               return album.artistName
             case TopSorting.BY_GENRE:
             case TopSorting.BY_MISSING_ALBUMS:
-              return entryName
+              return sanitizedArtistName()
             default:
               throw new AssertionError()
           }
         }
-        elem("li", value())
+        $("<li/>")
+            .append(value())
             .data({
               "artistName": artistName(),
               "year": album.year,
@@ -170,7 +191,8 @@ $(function() {
     const elementDiv = div()
     for (let i = 0; i < entries.length; i++) {
       const o = entries[i]
-      addEntry(o.name, o.albums, o.genre).appendTo(elementDiv)
+      const name = o.artistScore ? artistScoreSpan(o.name, o.artistScore) : o.name
+      addEntry(name, o.albums, o.genre).appendTo(elementDiv)
     }
     return [$(`<h5>${key}</h5>`), elementDiv]
   }
@@ -199,6 +221,10 @@ $(function() {
   const hideParent = parent => () => parent.hide()
   function onClick(classSelector, f) {
     topLevel.on("click", "." + classSelector, e => f($(e.target).closest("li")))
+  }
+
+  function artistScoreSpan(artistName, score) {
+    return span(`${artistName} (${score})`).addClass(score.toLowerCase()).data("artistName", artistName)
   }
 
   onClick("hide", parent => parent.hide())

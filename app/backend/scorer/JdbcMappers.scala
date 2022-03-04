@@ -6,7 +6,7 @@ import slick.jdbc.JdbcProfile
 
 import common.storage.ColumnMappers
 
-private class JdbcMappers(implicit d: JdbcProfile) {
+class JdbcMappers(implicit d: JdbcProfile) {
   import d.api._
 
   // TODO extract this elsewhere, maybe to Artist?
