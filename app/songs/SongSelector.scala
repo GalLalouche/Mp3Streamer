@@ -29,10 +29,10 @@ private class SongSelectorImpl[Sys <: RefSystem](
     songs: IndexedSeq[Sys#F])(musicFinder: MusicFinder {type S = Sys})
     extends SongSelector {
   private val random = new Random()
-  def randomSong: Song = random.nextInt(songs.length) mapTo songs.apply mapTo musicFinder.parseSong
+  def randomSong: Song = random.nextInt(songs.length) |> songs.apply |> musicFinder.parseSong
   def followingSong(song: Song): Option[Song] =
     song.file.parent
-        .mapTo(musicFinder.getSongsInDir)
+        .|>(musicFinder.getSongsInDir)
         .sortBy(_.track)
         .lift(song.track)
 }

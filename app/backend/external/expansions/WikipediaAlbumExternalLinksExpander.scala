@@ -54,9 +54,9 @@ private class WikipediaAlbumExternalLinksExpander @Inject()(
       .selectIterator("a")
       .map(_.href)
       .flatMap(extractSemiCanonicalAllMusicLink)
-      .mapTo(preferCanonical)
+      .|>(preferCanonical)
       .map(Url.apply)
-      .mapTo(_.singleOpt)
+      .|>(_.singleOpt)
 
   @VisibleForTesting
   def parseDocument(d: Document): BaseLinks[Album] =

@@ -46,7 +46,7 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject()(
     ),
     maxAge = Duration ofDays 28,
     clock = clock,
-  ).mapTo(new ExternalPipeWrapper.TimeStamper(_))
+  ).|>(new ExternalPipeWrapper.TimeStamper(_))
 }
 
 private object ExternalPipeWrapper {

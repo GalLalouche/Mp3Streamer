@@ -42,7 +42,7 @@ private class MbAlbumReconciler @Inject()(
       .filter(_._2 >= 0.85)
       .maximumBy(_._2)
       .map(_._1)
-      .map(_ str "id" mapTo ReconID.validateOrThrow)
+      .map(_ str "id" thrush  ReconID.validateOrThrow)
       .<| {
         case None => logger.debug(s"Could not reconcile album: <$a>")
         case _ => ()

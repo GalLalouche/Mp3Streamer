@@ -21,7 +21,7 @@ private class PlaylistFormatter @Inject()(
 
   def getQueue: JsValue = saver.loadObject[PlaylistQueue].songs.jsonify
   private implicit val parseQueue: JsonReadable[PlaylistQueue] =
-    _.parse[Seq[String]] map urlPathUtils.parseSong mapTo PlaylistQueue.apply
+    _.parse[Seq[String]] map urlPathUtils.parseSong thrush PlaylistQueue.apply
   def setQueue(json: JsValue): Unit = {
     val queue = json.parse[PlaylistQueue]
     saver saveObject queue
