@@ -11,6 +11,6 @@
 	</root>
 	<statusListener class="ch.qos.logback.core.status.NopStatusListener" />
 	<logger name="play.core.server.netty.NettyModelConversion" level="ERROR"/>
-	<logger name="scala.slick" level="WARN" />
+	<logger name="slick" level="warn" />
 	<logger name="ch.qos.logback.classic.joran" level="ERROR" />
 </configuration>
