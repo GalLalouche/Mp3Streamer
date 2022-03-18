@@ -15,7 +15,10 @@ class ReconcilableFactory @Inject()(val mf: MusicFinder) {
   private val invalidDirectoryNames: Map[String, String] = Map(
     // Some artists have invalid directory characters in their name, so their directory won't match
     // the artist name. As a stupid hack, just aggregate them below.
+    // Surely a coincidence they all start with A o_O
     "ArchMatheos" -> "Arch / Matheos",
+    "AndersonStolt" -> "Anderson/Stolt",
+    "ACDC" -> "AC/DC",
   )
   def dirNameToArtist(dirName: String): Artist =
     Artist(dirName optionOrKeep invalidDirectoryNames.get)
