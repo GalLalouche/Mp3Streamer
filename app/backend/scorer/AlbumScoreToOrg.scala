@@ -3,7 +3,7 @@ package backend.scorer
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import backend.scorer.AlbumScoreToOrg._
 import javax.inject.Inject
-import models.{Genre, GenreFinder}
+import models.{GenreFinder, Genre}
 
 import scala.concurrent.ExecutionContext
 
@@ -14,6 +14,7 @@ import common.rich.RichT._
 * Creates an .org file for faster updating of artists and albums.
 * See [[ScoreParser]] for the parser of the output file.
 */
+// TODO Use OrgModeWriter
 private class AlbumScoreToOrg @Inject()(
     scorer: CachedModelScorer,
     reconcilableFactory: ReconcilableFactory,
@@ -27,7 +28,7 @@ private class AlbumScoreToOrg @Inject()(
       case Scope.ArtistsOnly =>
         val score = scorer(artist) getOrElse ModelScore.Default
         if (update filterScore score)
-          Vector(scoreString(2, "ARTIST ; " ++ artist.name, score))
+          Vector(scoreString(2, OrgScoreFormatter.artist(artist, score)))
         else
           Nil
       case Scope.ArtistsAndAlbums =>
@@ -36,10 +37,10 @@ private class AlbumScoreToOrg @Inject()(
             .toVector
             .sortBy(_.year)
             .map(e => (s"${e.year} ${e.title}", scorer(e) getOrElse ModelScore.Default))
-        scoreString(2, artist.name, artistScore) ::
+        scoreString(2, OrgScoreFormatter.artist(artist, artistScore)) ::
             albumScores.view
                 .filter(update filterScore _._2)
-                .map(e => scoreString(3, e._1, e._2))
+                .map(e => scoreString(3, ???))
                 .toList
     }
 
@@ -77,6 +78,6 @@ private object AlbumScoreToOrg {
     case object All extends Update
   }
 
-  private def scoreString(depth: Int, name: String, score: ModelScore): String =
-    s"${"*" * depth} $name === $score"
+  private def scoreString(depth: Int, string: String): String =
+    s"${"*" * depth} $string"
 }
