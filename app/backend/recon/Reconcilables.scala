@@ -14,6 +14,7 @@ case class Artist(name: String) extends Reconcilable {
 case class Album(title: String, year: Int, artist: Artist) extends Reconcilable {
   def artistName: String = artist.name
   override def normalize: String = s"${artist.normalize} - ${title.toLowerCase}"
+  def normalized: Album = copy(title = title.toLowerCase, artist = artist.normalized)
 }
 case class Track(title: String, album: Album) extends Reconcilable {
   def artistName: String = album.artist.name

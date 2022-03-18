@@ -1,6 +1,6 @@
 package backend.scorer
 
-import backend.recon.{Album, Artist, SlickAlbumReconStorage}
+import backend.recon.{Album, Artist, SlickArtistReconStorage}
 import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
 import javax.inject.Inject
 
@@ -11,7 +11,7 @@ import scalaz.ListT
 private class AlbumScoreStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider,
-    protected val albumStorage: SlickAlbumReconStorage,
+    protected val artistStorage: SlickArtistReconStorage,
 ) extends SlickStorageTemplateFromConf[Album, ModelScore](ec, dbP)
     with StorageScorer[Album] {
   import profile.api._
@@ -28,12 +28,8 @@ private class AlbumScoreStorage @Inject()(
     def title = column[AlbumTitle]("title")
     def score = column[ModelScore]("score")
     def pk = primaryKey("pk", (artist, title))
-    def album_fk =
-      foreignKey("album_fk", (artist, title), albumStorage.tableQuery)(
-        e => (e.artist.mapTo[Artist], e.album),
-        onUpdate = ForeignKeyAction.Cascade,
-        onDelete = ForeignKeyAction.Cascade,
-      )
+    def artist_fk =
+      foreignKey("artist_fk", artist, artistStorage.tableQuery)(_.name.mapTo[Artist])
     def * = (artist, title, score)
   }
   override protected type EntityTable = Rows
