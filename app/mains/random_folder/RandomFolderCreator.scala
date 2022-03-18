@@ -5,6 +5,7 @@ import java.io.File
 import backend.scorer.{CachedModelScorer, ModelScore}
 import com.google.inject.assistedinject.Assisted
 import javax.inject.Inject
+import mains.random_folder.RandomFolderCreator.requiredProbability
 import me.tongfei.progressbar.ProgressBar
 import models.{IOMusicFinder, IOSong, Poster}
 import org.apache.commons.io.FileUtils
@@ -43,14 +44,35 @@ private class RandomFolderCreator @Inject()(
 
   private val probabilities: Map[ModelScore, Double] = {
     val sum = songFileRefs.length
-    val unnormalized = songFileRefs
+    val frequencies: Map[ModelScore, Int] = songFileRefs
         .map(scorer(_) getOrElse ModelScore.Default)
         .frequencies
-        .map {case (score, count) =>
-          score -> RandomFolderCreator.requiredProbability(score) / (count.toDouble / sum)
-        }
+    val unnormalized = frequencies.map {case (score, count) =>
+      score -> requiredProbability(score) / (count.toDouble / sum)
+    }
     val unnormalizedSum = unnormalized.values.sum
-    unnormalized.mapValues(_ / unnormalizedSum)
+    val $ = unnormalized.mapValues(_ / unnormalizedSum)
+    def baseProbability(score: ModelScore) = frequencies(score) / songFiles.size.toDouble
+    def debugMessage(score: ModelScore): Unit =
+      println(s"Base probability for <$score> was <${baseProbability(score)}>, " +
+          s"required is ${requiredProbability(score)}")
+    def assertReducedProbability(score: ModelScore): Unit = {
+      debugMessage(score)
+      assert(baseProbability(score) > requiredProbability(score))
+    }
+    def assertIncreasedProbability(score: ModelScore): Unit = {
+      debugMessage(score)
+      assert(baseProbability(score) < requiredProbability(score))
+    }
+
+    assertReducedProbability(ModelScore.Crappy)
+    assertReducedProbability(ModelScore.Meh)
+    // Okay has no inherent bias, though it'll probably be lower to accommodate the good scores.
+    debugMessage(ModelScore.Okay)
+    assertIncreasedProbability(ModelScore.Good)
+    assertIncreasedProbability(ModelScore.Great)
+    assertIncreasedProbability(ModelScore.Amazing)
+    $
   }
   private def createPlaylistFile(outputDir: Directory, name: String): File = {
     val files = outputDir.files
@@ -142,7 +164,7 @@ private class RandomFolderCreator @Inject()(
 private object RandomFolderCreator {
   def requiredProbability: ModelScore => Double = {
     case ModelScore.Default => requiredProbability(ModelScore.Okay)
-    case ModelScore.Crappy => 0.01
+    case ModelScore.Crappy => 0
     case ModelScore.Meh => 0.02
     case ModelScore.Okay => 0.3
     case ModelScore.Good => 0.4
