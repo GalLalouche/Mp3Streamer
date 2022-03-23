@@ -1,13 +1,16 @@
 package backend.scorer
 
-import backend.recon.{Artist, SlickArtistReconStorage}
+import backend.recon.{Album, Artist, SlickArtistReconStorage}
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
+
+import common.rich.func.BetterFutureInstances._
 import javax.inject.Inject
 import slick.ast.BaseTypedType
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.ListT
+import scalaz.Scalaz.ToFunctorOps
 
 class ArtistScoreStorage @Inject()(
     ec: ExecutionContext,
@@ -44,4 +47,5 @@ class ArtistScoreStorage @Inject()(
   override protected def extractValue(e: (Artist, ModelScore)) = e._2
   override def apply(a: Artist) = load(a)
   def loadAll: ListT[Future, (Artist, ModelScore)] = ListT(db.run(tableQuery.result).map(_.toList))
+  override def updateScore(a: Artist, score: ModelScore) = replace(a, score).run.void
 }

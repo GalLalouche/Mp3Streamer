@@ -7,6 +7,8 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.ListT
+import scalaz.Scalaz.ToFunctorOps
+import common.rich.func.BetterFutureInstances._
 
 private class AlbumScoreStorage @Inject()(
     ec: ExecutionContext,
@@ -42,4 +44,5 @@ private class AlbumScoreStorage @Inject()(
   override def apply(a: Album) = load(a)
   def loadAll: ListT[Future, (Artist, AlbumTitle, ModelScore)] =
     ListT(db.run(tableQuery.result).map(_.toList))
+  override def updateScore(a: Album, score: ModelScore) = replace(a, score).run.void
 }

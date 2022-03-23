@@ -6,5 +6,5 @@ import scala.concurrent.Future
 
 trait StorageScorer[A] {
   def apply(a: A): FutureOption[ModelScore]
-  def store(a: A, score: ModelScore): Future[Unit]
+  def updateScore(a: A, score: ModelScore): Future[Unit]
 }

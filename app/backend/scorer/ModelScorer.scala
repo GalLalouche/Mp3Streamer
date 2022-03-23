@@ -9,8 +9,8 @@ import scala.concurrent.Future
 private trait ModelScorer {
   def apply(s: Song): Future[SongScore]
   def updateSongScore(song: Song, score: ModelScore): Future[Unit]
-  def updateAlbumScore(album: Album, score: ModelScore): Future[Unit]
-  def updateArtistScore(artist: Artist, score: ModelScore): Future[Unit]
+  def updateAlbumScore(song: Song, score: ModelScore): Future[Unit]
+  def updateArtistScore(song: Song, score: ModelScore): Future[Unit]
 }
 
 private object ModelScorer {

@@ -1,9 +1,9 @@
 package backend.scorer
 
-import backend.recon.Reconcilable._
 import backend.scorer.ModelScorer.SongScore
 import controllers.UrlPathUtils
 import javax.inject.Inject
+import models.Song
 import play.api.libs.json.{Json, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -25,7 +25,6 @@ private object ScorerFormatter {
   }
 }
 
-// TODO integration test
 /** Fetches and updates scores for songs, albums, and artists. */
 private class ScorerFormatter @Inject()(
     modelScorer: ModelScorer,
@@ -37,19 +36,14 @@ private class ScorerFormatter @Inject()(
   private implicit val iec: ExecutionContext = ec
   def getScore(filePath: String): Future[JsValue] =
     modelScorer(urlPathUtils.parseSong(filePath)).map(_.jsonify)
+  private def update(f: (Song, ModelScore) => Future[Unit], filePath: String, score: String) = f(
+    urlPathUtils.parseSong(filePath),
+    ModelScore.withNameInsensitive(score),
+  )
   def updateSongScore(filePath: String, score: String): Future[Unit] =
-    modelScorer.updateSongScore(
-      urlPathUtils.parseSong(filePath),
-      ModelScore.withNameInsensitive(score),
-    )
+    update(modelScorer.updateSongScore, filePath, score)
   def updateAlbumScore(filePath: String, score: String): Future[Unit] =
-    modelScorer.updateAlbumScore(
-      urlPathUtils.parseSong(filePath).release,
-      ModelScore.withNameInsensitive(score),
-    )
+    update(modelScorer.updateAlbumScore, filePath, score)
   def updateArtistScore(filePath: String, score: String): Future[Unit] =
-    modelScorer.updateArtistScore(
-      urlPathUtils.parseSong(filePath).artist,
-      ModelScore.withNameInsensitive(score),
-    )
+    update(modelScorer.updateArtistScore, filePath, score)
 }

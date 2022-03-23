@@ -1,6 +1,8 @@
 package backend.scorer
 
-import backend.recon.{Artist, SlickAlbumReconStorage}
+import backend.recon.{Artist, SlickAlbumReconStorage, SlickArtistReconStorage}
+
+import common.rich.func.BetterFutureInstances._
 import backend.recon.Reconcilable.SongExtractor
 import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
 import javax.inject.Inject
@@ -9,11 +11,12 @@ import models.Song
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.ListT
+import scalaz.Scalaz.ToFunctorOps
 
 private class SongScoreStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider,
-    protected val songStorage: SlickAlbumReconStorage,
+    protected val artistStorage: SlickArtistReconStorage,
 ) extends SlickStorageTemplateFromConf[Song, ModelScore](ec, dbP)
     with StorageScorer[Song] {
   import profile.api._
@@ -32,12 +35,10 @@ private class SongScoreStorage @Inject()(
     def song = column[SongTitle]("song")
     def score = column[ModelScore]("score")
     def pk = primaryKey(dbP.constraintMangler("pk"), (artist, album, song))
-    def song_fk =
-      foreignKey("album_fk", (artist, album), songStorage.tableQuery)(
-        e => (e.artist.mapTo[Artist], e.album),
-        onUpdate = ForeignKeyAction.Cascade,
-        onDelete = ForeignKeyAction.Cascade,
-      )
+    def artist_fk =
+      foreignKey(
+        dbP.constraintMangler("artist_fk"), artist, artistStorage.tableQuery)(
+        _.name.mapTo[Artist])
     def * = (artist, album, song, score)
   }
   override protected type EntityTable = Rows
@@ -49,4 +50,5 @@ private class SongScoreStorage @Inject()(
   override def apply(a: Song) = load(a)
   def loadAll: ListT[Future, (Artist, AlbumTitle, SongTitle, ModelScore)] =
     ListT(db.run(tableQuery.result).map(_.toList))
+  override def updateScore(a: Song, score: ModelScore) = replace(a, score).run.void
 }
