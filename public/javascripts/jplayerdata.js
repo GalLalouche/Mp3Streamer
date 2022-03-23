@@ -22,17 +22,18 @@ $(function() {
   // On play event hook
   // TODO don't call if the same song?
   $(playlist.cssSelector.jPlayer).data("jPlayer").onPlay = function() {
-    const currentlyPlayingSong = playlist.currentPlayingSong()
-    const songInfo = `${currentlyPlayingSong.artistName} - ${currentlyPlayingSong.title}`
+    const currentPlayingSong = playlist.currentPlayingSong()
+    const songInfo = `${currentPlayingSong.artistName} - ${currentPlayingSong.title}`
     $(".jp-currently-playing").html(songInfo)
     document.title = songInfo
     $('#favicon').remove()
 
     $('head').append(`<link href="${$("img.poster")[0].src}" id="favicon" rel="shortcut icon">`)
 
-    Lyrics.show(currentlyPlayingSong)
-    External.show(currentlyPlayingSong)
-    Volume.setPeak(currentlyPlayingSong)
+    Lyrics.show(currentPlayingSong)
+    External.show(currentPlayingSong)
+    Volume.setPeak(currentPlayingSong)
+    Score.show(currentPlayingSong)
   }
   $("#jquery_jplayer_1").addClass("poster")
   $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()

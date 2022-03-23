@@ -14,7 +14,6 @@ import scalaz.std.vector.vectorInstance
 import scalaz.Scalaz.{ToBindOps, ToTraverseOpsUnapply}
 import common.rich.func.BetterFutureInstances._
 
-import common.concurrency.ThreadlessContext
 import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
 
 @Slow
@@ -40,13 +39,20 @@ class ScorerFormatterTest extends AsyncFreeSpec with AsyncAuxSpecs
 
   private val path = song.file.path
   "getScores" - {
+    // FIXME
+    "First test always passes for some reason?!" in Future(Succeeded)
+    "Empty object on no score" in {
+      $.getScore(path) shouldEventuallyReturn Json.obj()
+    }
     "based on song" in {
       artists.store(artist, StoredReconResult.NoRecon) >>
           songScores.store(song, ModelScore.Crappy) >>
-          Future.successful(Succeeded) >>
           $.getScore(path) shouldEventuallyReturn Json.obj(
         "score" -> "Crappy",
-        "source" -> "Song"
+        "source" -> "Song",
+        "song" -> "Crappy",
+        "album" -> "Default",
+        "artist" -> "Default",
       )
     }
     "based on album" in {
@@ -54,7 +60,10 @@ class ScorerFormatterTest extends AsyncFreeSpec with AsyncAuxSpecs
           albumScores.store(album, ModelScore.Meh) >>
           $.getScore(path) shouldEventuallyReturn Json.obj(
         "score" -> "Meh",
-        "source" -> "Album"
+        "source" -> "Album",
+        "song" -> "Default",
+        "album" -> "Meh",
+        "artist" -> "Default",
       )
     }
     "based on artist" in {
@@ -62,12 +71,10 @@ class ScorerFormatterTest extends AsyncFreeSpec with AsyncAuxSpecs
           artistScores.store(artist, ModelScore.Okay) >>
           $.getScore(path) shouldEventuallyReturn Json.obj(
         "score" -> "Okay",
-        "source" -> "Artist"
-      )
-    }
-    "returns default on no match" in {
-      $.getScore(path) shouldEventuallyReturn Json.obj(
-        "score" -> "Default",
+        "source" -> "Artist",
+        "song" -> "Default",
+        "album" -> "Default",
+        "artist" -> "Okay",
       )
     }
   }
@@ -79,6 +86,9 @@ class ScorerFormatterTest extends AsyncFreeSpec with AsyncAuxSpecs
           $.getScore(path) shouldEventuallyReturn Json.obj(
         "score" -> "Okay",
         "source" -> "Song",
+        "song" -> "Okay",
+        "album" -> "Default",
+        "artist" -> "Default",
       )
     }
     "for song overrides" in {
@@ -88,6 +98,9 @@ class ScorerFormatterTest extends AsyncFreeSpec with AsyncAuxSpecs
           $.getScore(path) shouldEventuallyReturn Json.obj(
         "score" -> "Good",
         "source" -> "Song",
+        "song" -> "Good",
+        "album" -> "Default",
+        "artist" -> "Default",
       )
     }
     "for album new" in {
@@ -96,6 +109,9 @@ class ScorerFormatterTest extends AsyncFreeSpec with AsyncAuxSpecs
           $.getScore(path) shouldEventuallyReturn Json.obj(
         "score" -> "Amazing",
         "source" -> "Album",
+        "song" -> "Default",
+        "album" -> "Amazing",
+        "artist" -> "Default",
       )
     }
     "for album overrides" in {
@@ -105,6 +121,9 @@ class ScorerFormatterTest extends AsyncFreeSpec with AsyncAuxSpecs
           $.getScore(path) shouldEventuallyReturn Json.obj(
         "score" -> "Amazing",
         "source" -> "Album",
+        "song" -> "Default",
+        "album" -> "Amazing",
+        "artist" -> "Default",
       )
     }
     "for artist new" in {
@@ -113,6 +132,9 @@ class ScorerFormatterTest extends AsyncFreeSpec with AsyncAuxSpecs
           $.getScore(path) shouldEventuallyReturn Json.obj(
         "score" -> "Great",
         "source" -> "Artist",
+        "song" -> "Default",
+        "album" -> "Default",
+        "artist" -> "Great",
       )
     }
     "for artist overrides" in {
@@ -122,6 +144,9 @@ class ScorerFormatterTest extends AsyncFreeSpec with AsyncAuxSpecs
           $.getScore(path) shouldEventuallyReturn Json.obj(
         "score" -> "Good",
         "source" -> "Artist",
+        "song" -> "Default",
+        "album" -> "Default",
+        "artist" -> "Good",
       )
     }
   }

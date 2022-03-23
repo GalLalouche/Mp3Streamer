@@ -25,6 +25,7 @@
 <script type="text/javascript" src="assets/javascripts/lib/color-thief.js"></script>
 <script type="text/javascript" src="assets/javascripts/lib/vibrant.js"></script>
 <script type="text/javascript" src="assets/javascripts/poster.js"></script>
+<script type="text/javascript" src="assets/javascripts/score.js"></script>
 <link href="assets/stylesheets/jplayer.blue.monday.css" rel="stylesheet" type="text/css"/>
 <link href="assets/stylesheets/jplayer.css" rel="stylesheet" type="text/css"/>
 <link href="assets/stylesheets/search.css" rel="stylesheet" type="text/css"/>
@@ -50,8 +51,14 @@
     </div>
   </div>
   <div id="lyrics"></div>
-  <div style="height: 200px" id="last_albums"></div>
-  <div style="height: 400px" id="external"></div>
+  <div id="field-set-group">
+    <fieldset id="score"></fieldset>
+    <fieldset id="external-artist"></fieldset>
+    <fieldset id="external-album"></fieldset>
+  </div>
+  <!--  <div style="height: 200px" id="last_albums"></div>-->
+  <!--  <div style="height: 200px" id="score"></div>-->
+  <!--  <div style="height: 400px" id="external"></div>-->
   <div id="jquery_jplayer_1" class="jp-jplayer"></div>
   <div id="jp_container_1" class="jp-video jp-video-270p">
     <div class="jp-type-playlist">

@@ -14,12 +14,13 @@ import common.json.ToJsonableOps._
 private object ScorerFormatter {
   private implicit object SongScoreJsonable extends JsonWriteable[SongScore] {
     override def jsonify(a: SongScore) = a match {
-      case SongScore.Default => Json.obj(
-        "score" -> ModelScore.Default.entryName,
-      )
-      case SongScore.Scored(score, source) => Json.obj(
+      case SongScore.Default => Json.obj()
+      case SongScore.Scored(score, source, song, album, artist) => Json.obj(
         "score" -> score.entryName,
         "source" -> source.toString,
+        "song" -> song.toString,
+        "album" -> album.toString,
+        "artist" -> artist.toString,
       )
     }
   }

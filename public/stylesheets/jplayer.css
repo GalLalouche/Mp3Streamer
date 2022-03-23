@@ -63,6 +63,13 @@ span.jp-playlist-item {
   overflow: hidden;
 }
 
+#field-set-group {
+  position: absolute;
+  left: 800px;
+  top: 300px;
+  float: right;
+  width: 300px;
+}
 #last_albums {
   position: absolute;
   top: 400px;
@@ -76,11 +83,11 @@ span.jp-playlist-item {
   overflow: hidden;
 }
 
-#external {
-  position: absolute;
-  left: 800px;
-  top: 500px;
+#score select {
   float: right;
+}
+#score > div {
+  overflow: hidden;
 }
 
 #lyrics {

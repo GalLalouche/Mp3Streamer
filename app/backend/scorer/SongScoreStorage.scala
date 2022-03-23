@@ -1,8 +1,6 @@
 package backend.scorer
 
-import backend.recon.{Artist, SlickAlbumReconStorage, SlickArtistReconStorage}
-
-import common.rich.func.BetterFutureInstances._
+import backend.recon.{Artist, SlickArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
 import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
 import javax.inject.Inject
@@ -12,6 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.ListT
 import scalaz.Scalaz.ToFunctorOps
+import common.rich.func.BetterFutureInstances._
 
 private class SongScoreStorage @Inject()(
     ec: ExecutionContext,
@@ -43,10 +42,11 @@ private class SongScoreStorage @Inject()(
   }
   override protected type EntityTable = Rows
   override protected val tableQuery = TableQuery[EntityTable]
-  override protected def toEntity(k: Song, v: ModelScore) = (k.artist, k.albumName, k.title, v)
+  override protected def toEntity(k: Song, v: ModelScore) =
+    (k.artist.normalized, k.albumName.toLowerCase, k.title.toLowerCase, v)
   override protected def extractValue(e: (Artist, AlbumTitle, SongTitle, ModelScore)) = e._4
   override protected def keyFilter(k: Song)(e: Rows) =
-    e.artist === k.artist && e.song === k.title && e.album === k.albumName
+    e.artist === k.artist.normalized && e.song === k.title.toLowerCase && e.album === k.albumName.toLowerCase
   override def apply(a: Song) = load(a)
   def loadAll: ListT[Future, (Artist, AlbumTitle, SongTitle, ModelScore)] =
     ListT(db.run(tableQuery.result).map(_.toList))

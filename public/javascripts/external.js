@@ -67,7 +67,8 @@ $(function() {
             ul.append($(`<li style=${imageIcon}>${links}</li>`))
           })
         }
-        const fieldset = $("<fieldset>")
+        const fieldset = $(`#external-${entityName.split(" ")[0].toLowerCase()}`)
+        fieldset.empty()
         fieldset.append($(`<legend>${timestampOrError}</legend>`))
             .append(ul)
             .appendTo(externalDiv)
@@ -97,9 +98,12 @@ $(function() {
     const songPath = gplaylist.currentPlayingSong().file
     $.get(remotePath + "refresh/" + songPath, showLinks(remotePath + songPath))
   })
+  // TODO this is a hack to also handle #score.
   Poster.rgbListeners.push(rgb => {
     currentPosterRgb = rgb
-    externalDiv.find("fieldset").each(e => setLinkColor(e))
+    $("#field-set-group fieldset").each(function() {
+      setLinkColor($(this))
+    })
   })
 })
 External = {}

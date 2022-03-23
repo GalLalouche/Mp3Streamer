@@ -53,6 +53,7 @@ function elem(elementName, config, innerText) {
 const elemFactory = e => config => elem(e, config)
 const button = (config, text) => elem("button", config, text)
 const span = config => elem("span", config)
+const li = config => elem("li", config)
 const div = elemFactory('div')
 const img = src => elem('img').attr("src", src)
 const br = elemFactory('br')
