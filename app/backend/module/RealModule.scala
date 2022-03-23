@@ -43,6 +43,8 @@ object RealModule extends ScalaModule with ModuleUtils {
           queueSize = 5000,
         ),
       )
+      // SQLite doesn't seem to mind non-unique names.
+      override def constraintMangler(name: String) = name
     }
 
     requireBinding[Logger]

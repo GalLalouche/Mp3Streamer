@@ -31,7 +31,7 @@ private class SongScoreStorage @Inject()(
     def album = column[AlbumTitle]("album")
     def song = column[SongTitle]("song")
     def score = column[ModelScore]("score")
-    def pk = primaryKey("pk", (artist, album, song))
+    def pk = primaryKey(dbP.constraintMangler("pk"), (artist, album, song))
     def song_fk =
       foreignKey("album_fk", (artist, album), songStorage.tableQuery)(
         e => (e.artist.mapTo[Artist], e.album),

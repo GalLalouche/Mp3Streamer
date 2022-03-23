@@ -54,6 +54,7 @@ case class TestModuleConfiguration(
             executor = AsyncExecutor.default("Testing", 20),
           )
         }
+        override def constraintMangler(name: String) = s"${UUID.randomUUID()}_$name"
       }
     }
 

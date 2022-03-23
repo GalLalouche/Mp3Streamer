@@ -1,6 +1,7 @@
 package backend.module
 
 import java.time.Clock
+import java.util.UUID
 
 import backend.logging.LoggingModules
 import backend.storage.DbProvider
@@ -20,6 +21,7 @@ object NonPersistentModule extends ScalaModule {
       override lazy val profile: JdbcProfile = H2Profile
       override lazy val db: profile.backend.DatabaseDef =
         profile.api.Database.forURL("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
+      override def constraintMangler(name: String) = s"${UUID.randomUUID()}_$name"
     }
     bind[ExecutionContext] toInstance ExecutionContext.Implicits.global
 

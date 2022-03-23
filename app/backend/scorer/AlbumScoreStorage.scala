@@ -27,9 +27,11 @@ private class AlbumScoreStorage @Inject()(
     def artist = column[Artist]("artist")
     def title = column[AlbumTitle]("title")
     def score = column[ModelScore]("score")
-    def pk = primaryKey("pk", (artist, title))
+    def pk = primaryKey(dbP.constraintMangler("pk"), (artist, title))
     def artist_fk =
-      foreignKey("artist_fk", artist, artistStorage.tableQuery)(_.name.mapTo[Artist])
+      foreignKey(
+        dbP.constraintMangler("artist_fk"), artist, artistStorage.tableQuery)(
+        _.name.mapTo[Artist])
     def * = (artist, title, score)
   }
   override protected type EntityTable = Rows
