@@ -152,7 +152,11 @@ div.jp-interface {
   margin-top: 3px;
 }
 
-ul.external-links {
+.external-links {
   margin: 0;
   padding-left: 1em;
+  margin-bottom: 5px;
+}
+.external-recon-id {
+  margin-bottom: 1px;
 }

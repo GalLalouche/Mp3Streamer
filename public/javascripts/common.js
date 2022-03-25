@@ -40,6 +40,7 @@ function copyTextToClipboard(text) {
 
   textArea.select()
 
+  // TODO this is deprecated, but actually works right now so ¯\_(ツ)_/¯
   try {
     document.execCommand('copy')
   } catch (ignored) {

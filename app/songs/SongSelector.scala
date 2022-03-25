@@ -1,5 +1,7 @@
 package songs
 
+import backend.logging.Logger
+import backend.scorer.ScoreBasedProbability
 import javax.inject.Inject
 import models.{MusicFinder, Song}
 
@@ -26,10 +28,24 @@ trait SongSelector {
 }
 
 private class SongSelectorImpl[Sys <: RefSystem](
-    songs: IndexedSeq[Sys#F])(musicFinder: MusicFinder {type S = Sys})
+    songs: IndexedSeq[Sys#F])(
+    musicFinder: MusicFinder {type S = Sys},
+    scoreBasedProbability: ScoreBasedProbability,
+    logger: Logger,
+)
     extends SongSelector {
   private val random = new Random()
-  def randomSong: Song = random.nextInt(songs.length) |> songs.apply |> musicFinder.parseSong
+  @tailrec final def randomSong: Song = {
+    val song = musicFinder.parseSong(random.select(songs))
+    val percentage = scoreBasedProbability(song)
+    if (percentage.roll(random)) {
+      logger.debug(s"Chose song <$song> with probability ${percentage.inverse}")
+      song
+    } else {
+      logger.debug(s"Skipped song <$song> with probability ${1 - percentage.p}")
+      randomSong
+    }
+  }
   def followingSong(song: Song): Option[Song] =
     song.file.parent
         .|>(musicFinder.getSongsInDir)
@@ -41,10 +57,15 @@ private object SongSelector {
   import common.rich.RichFuture._
 
   /** A mutable-updateable wrapper of SongSelector */
-  class SongSelectorProxy @Inject()(ec: ExecutionContext, mf: MusicFinder) extends SongSelector {
+  class SongSelectorProxy @Inject()(
+      ec: ExecutionContext,
+      mf: MusicFinder,
+      scoreBasedProbability: ScoreBasedProbability,
+      logger: Logger,
+  ) extends SongSelector {
     private implicit val iec: ExecutionContext = ec
     def update(): Future[_] = {
-      val $ = Future(new SongSelectorImpl(mf.getSongFiles.toVector)(mf))
+      val $ = Future(new SongSelectorImpl(mf.getSongFiles.toVector)(mf, scoreBasedProbability, logger))
       if (songSelector == null)
         songSelector = $
       else // don't override until complete

@@ -1,18 +1,19 @@
 $(function() {
   const href = (target, name) => `<a target=_blank href="${target}">${name}</a>`
-  const externalDivParent = $("#external")
-  const externalDiv = div().appendTo(externalDivParent)
+  const externalDivs = $(".external")
 
   let currentPosterRgb = []
 
+  const externalArtist = $("#external-artist")
+  const externalAlbum = $("#external-album")
   const artistReconBox =
-      $("<input class='external-recon-id' placeholder='Artist ID' type='text'/>").appendTo(externalDivParent)
-  appendBr(externalDivParent)
+      $("<input class='external-recon-id' placeholder='Artist ID' type='text'/>").appendTo(externalArtist)
+  appendBr(externalArtist)
   const albumReconBox =
-      $("<input class='external-recon-id' placeholder='Album ID' type='text'/>").appendTo(externalDivParent)
-  appendBr(externalDivParent)
-  const updateReconButton = button("Update Recon").appendTo(externalDivParent)
-  const refreshButton = button("Refresh").appendTo(externalDivParent)
+      $("<input class='external-recon-id' placeholder='Album ID' type='text'/>").appendTo(externalAlbum)
+  appendBr(externalAlbum)
+  const updateReconButton = button("Update Recon").appendTo(externalDivs)
+  const refreshButton = button("Refresh").appendTo(externalDivs)
   const remotePath = "external/"
 
   function getExtensions(link) {
@@ -47,11 +48,13 @@ $(function() {
   }
   // Yey, currying!
   const showLinks = debugLink => {
-    externalDiv.html("Fetching links...")
+    externalDivs.children('ul').remove()
+    externalDivs.children('span').remove()
+    externalDivs.prepend(span("Fetching links..."))
     return externalLinks => {
       artistReconBox.val("")
       albumReconBox.val("")
-      externalDiv.html("")
+      externalDivs.children('span').remove()
       $.each(externalLinks, (entityName, externalLinksForEntity) => {
         const isValid = externalLinksForEntity.timestamp
         const timestampOrError = `${entityName} (${isValid ?
@@ -68,10 +71,9 @@ $(function() {
           })
         }
         const fieldset = $(`#external-${entityName.split(" ")[0].toLowerCase()}`)
-        fieldset.empty()
-        fieldset.append($(`<legend>${timestampOrError}</legend>`))
-            .append(ul)
-            .appendTo(externalDiv)
+        fieldset.prepend(ul)
+        fieldset.children('legend').remove()
+        fieldset.prepend($(`<legend>${timestampOrError}</legend>`))
         setLinkColor(fieldset)
       })
     }
@@ -82,7 +84,8 @@ $(function() {
     const externalUrl = remotePath + song.file
     $.get(externalUrl, showLinks(externalUrl))
         .fail(function() {
-          externalDiv.html("Error occurred while fetching links")
+          // FIXME nope
+          externalDivs.html("Error occurred while fetching links")
         })
   }
 
@@ -91,7 +94,7 @@ $(function() {
   const RECON_REGEX = new RegExp(`^(.*/)?${HEXA}{8}-(?:${HEXA}{4}-){3}${HEXA}{12}$`)
   // Update recon on pressing Enter
   validateBoxAndButton($(".external-recon-id"), updateReconButton, s => RECON_REGEX.test(s), updateRecon)
-  externalDiv.on("click", ".copy-to-clipboard", function() {
+  externalDivs.on("click", ".copy-to-clipboard", function() {
     copyTextToClipboard($(this).attr("url"))
   })
   refreshButton.click(() => {
