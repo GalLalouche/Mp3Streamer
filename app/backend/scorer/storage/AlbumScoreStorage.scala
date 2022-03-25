@@ -2,7 +2,7 @@ package backend.scorer.storage
 
 import backend.recon.{Album, Artist, SlickArtistReconStorage}
 import backend.scorer.ModelScore
-import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
+import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
 import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}

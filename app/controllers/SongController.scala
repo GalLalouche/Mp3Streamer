@@ -12,10 +12,10 @@ class SongController @Inject()(
   private def run(r: ShouldEncodeMp3Reader): Action[AnyContent] =
     converter.parse(PlayControllerUtils.shouldEncodeMp3)(r.run)
 
-  def randomSong = run($.randomSong)
+  def randomSong = run($.randomSong())
   // For debugging
-  def randomMp3Song = run($.randomMp3Song)
-  def randomFlacSong = run($.randomFlacSong)
+  def randomMp3Song = run($.randomMp3Song())
+  def randomFlacSong = run($.randomFlacSong())
 
   def album(path: String) = run($.album(path))
   def discNumber(path: String, requestedDiscNumber: String) = run($.discNumber(path, requestedDiscNumber))

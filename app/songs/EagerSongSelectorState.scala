@@ -15,6 +15,6 @@ private class EagerSongSelectorState @Inject()(songSelectorProvider: Provider[So
     state = songSelectorProvider.get()
   }
   def update(): Future[Unit] = extra.!()
-  override def randomSong: Song = state.randomSong
+  override def randomSong(): Song = state.randomSong()
   override def followingSong(song: Song): Option[Song] = state.followingSong(song)
 }

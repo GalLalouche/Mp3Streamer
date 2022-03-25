@@ -54,9 +54,9 @@ private class SongFormatter @Inject()(
   private implicit def encodableReader[E: Encodable]($: E): ShouldEncodeMp3Reader =
     implicitly[Encodable[E]].reader($)
 
-  def randomSong: ShouldEncodeMp3Reader = group(songSelectorState.randomSong)
-  def randomMp3Song: ShouldEncodeMp3Reader = group(songSelectorState.randomMp3Song)
-  def randomFlacSong: ShouldEncodeMp3Reader = group(songSelectorState.randomFlacSong)
+  def randomSong(): ShouldEncodeMp3Reader = group(songSelectorState.randomSong())
+  def randomMp3Song(): ShouldEncodeMp3Reader = group(songSelectorState.randomMp3Song())
+  def randomFlacSong(): ShouldEncodeMp3Reader = group(songSelectorState.randomFlacSong())
 
   private def songsInAlbum(path: String): Seq[Song] =
     urlPathUtils.parseFile(path) |> IODirectory.apply |> albumFactory.fromDir |> Album.songs.get

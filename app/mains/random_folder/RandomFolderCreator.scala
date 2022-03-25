@@ -25,6 +25,7 @@ import common.rich.path.Directory
 import common.rich.path.RichFile._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichInt._
+import common.rich.RichRandom.richRandom
 
 /** Selects n random songs and dumps them in a folder on D:\ */
 private class RandomFolderCreator @Inject()(
@@ -35,7 +36,7 @@ private class RandomFolderCreator @Inject()(
     @Assisted seed: Long,
 ) {
   private implicit val iec: ExecutionContext = ec
-  private val songFileRefs = mf.getSongFiles
+  private val songFileRefs = mf.getSongFiles.toIndexedSeq
   private val songFiles = songFileRefs.map(_.file)
   private val random = new Random(seed)
 
@@ -50,7 +51,7 @@ private class RandomFolderCreator @Inject()(
     @tailrec def go(existing: Set[File]): Set[File] = {
       if (existing.size == numberOfSongsToCreate)
         return existing
-      val nextFile = songFiles(random nextInt songFiles.length)
+      val nextFile = random.select(songFiles)
       if (filter.isAllowed(nextFile).isFalse || existing(nextFile))
         go(existing)
       else {

@@ -2,7 +2,7 @@ package backend.scorer.storage
 
 import backend.recon.{Artist, SlickArtistReconStorage}
 import backend.scorer.ModelScore
-import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
+import backend.storage.{DbProvider, JdbcMappers, SlickSingleKeyColumnStorageTemplateFromConf}
 import javax.inject.Inject
 import slick.ast.BaseTypedType
 

@@ -9,6 +9,6 @@ import scala.concurrent.Future
 // remaining transparent to clients.
 class SongSelectorState @Inject()(provider: Provider[EagerSongSelectorState]) extends SongSelector {
   def update(): Future[Unit] = provider.get().update()
-  override def randomSong: Song = provider.get().randomSong
+  override def randomSong(): Song = provider.get().randomSong()
   override def followingSong(song: Song): Option[Song] = provider.get().followingSong(song)
 }

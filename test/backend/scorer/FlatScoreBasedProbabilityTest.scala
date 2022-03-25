@@ -11,6 +11,9 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
 import common.io.FileRef
+import common.rich.collections.RichTraversableOnce._
+import common.rich.RichEnumeratum.richEnumeratum
+import common.rich.RichRandom.richRandom
 import common.rich.RichT.richT
 import common.test.AuxSpecs
 
@@ -31,16 +34,9 @@ class FlatScoreBasedProbabilityTest extends WordSpec with AuxSpecs with MockitoS
     ModelScore.values.foreach(score =>
       s"return correct probability for $score" in {
         val random = new Random
-        //  // TODO generalize, put in common
-        //  val builder: ImmutableBiMap.Builder[ModelScore, Song] = ImmutableBiMap.builder()
-        //  ModelScore.values.foreach(score => builder.put(score, mock[Song]))
-        //  builder.build()
-        //}
-        def randomScore =
-        // TODO scalacommon move to RichEnumertum
-          ModelScore.values(Random.nextInt(ModelScore.values.length)).optFilter(_ != ModelScore.Default)
+        def randomScore = ModelScore.random(random).optFilter(_ != ModelScore.Default)
         val modelFactory = new FakeModelFactory
-        val songs: Seq[Song] = Vector.fill(20000)(modelFactory.song())
+        val songs = Vector.fill(20000)(modelFactory.song())
         val songScores = songs.view.map(_.file: FileRef).map(_ -> randomScore).toMap
         object FakeModelScorer extends CachedModelScorer {
           override def apply(s: Song) = apply(s.file)
@@ -57,14 +53,12 @@ class FlatScoreBasedProbabilityTest extends WordSpec with AuxSpecs with MockitoS
         )
         val buffer = new ArrayBuffer[FileRef]()
         while (buffer.length < 1000) {
-          // TODO move to RichSeq
-          val nextSong: Song = songs(random.nextInt(allFiles.length))
+          val nextSong: Song = random.select(songs)
           if ($(nextSong).roll(random))
             buffer += nextSong.file
         }
         // TODO ModelScore.orDefault, or figure a way to stop this this, e.g., remove Default to begin with
-        // TODO generalize averageSatisfying?
-        (buffer.count(songScores(_).getOrElse(ModelScore.Default) == score).toDouble / buffer.length) shouldBe requiredProbability(score) +- 0.05
+        buffer.percentageSatisfying(songScores(_).getOrElse(ModelScore.Default) == score) shouldBe requiredProbability(score) +- 0.05
       })
   }
 }

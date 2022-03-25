@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext
 
 import scalaz.std.vector.vectorInstance
 import scalaz.syntax.traverse.ToTraverseOps
-import scalaz.Scalaz.{ToBindOpsUnapply, ToFunctorOpsUnapply}
+import scalaz.Scalaz.{ToBindOpsUnapply, ToFoldableOps, ToFunctorOpsUnapply}
 import scalaz.State
 
 import common.{OrgModeWriter, OrgModeWriterMonad}
@@ -35,7 +35,6 @@ private class ArtistMassScorer @Inject()(
     def goArtist(artist: Artist): OrgModeWriterMonad = {
       val score = scorer(artist) getOrElse ModelScore.Default
       if (update filterScore score) OrgModeWriterMonad.append(OrgScoreFormatter.artist(artist, score))
-      // TODO ScalaCommon Point.void
       else State.init[OrgModeWriter].void
     }
 
@@ -43,9 +42,7 @@ private class ArtistMassScorer @Inject()(
       OrgModeWriterMonad.append(g.name) >> artists
           .toVector
           .sortBy(_.name)
-          // TODO ScalaCommon traverse_
-          .traverse(goArtist(_) |> OrgModeWriterMonad.indent)
-          .void
+          .traverse_(goArtist(_) |> OrgModeWriterMonad.indent)
 
     reconcilableFactory.artistDirectories
         .groupBy(enumGenreFinder apply _.asInstanceOf[IODirectory])

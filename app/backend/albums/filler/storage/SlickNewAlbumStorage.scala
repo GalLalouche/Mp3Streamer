@@ -9,8 +9,8 @@ import backend.mb.AlbumType
 import backend.module.StandaloneModule
 import backend.recon.{Artist, ReconID, SlickArtistReconStorage}
 import backend.scorer.ModelScore
-import backend.scorer.storage.{ArtistScoreStorage, JdbcMappers}
-import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
+import backend.scorer.storage.ArtistScoreStorage
+import backend.storage.{DbProvider, JdbcMappers, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Guice
 import javax.inject.Inject
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
@@ -106,8 +106,7 @@ private class SlickNewAlbumStorage @Inject()(
           .join(artistStorage.tableQuery).on(_.artist === _.name)
           .filterNot(e => e._1.isIgnored || shouldRemoveAlbum(e._1))
           .map(_._1)
-          // TODO remove (or rename) mapTo from RichT, nothing actually uses that over |>.
-          .join(artistScoreStorage.tableQuery).on((x, y) => anyToShapedValue(x.artist).mapTo[Artist] === y.artist)
+          .join(artistScoreStorage.tableQuery).on(_.artist.mapTo[Artist] === _.artist)
           .result
       )
       .map(_

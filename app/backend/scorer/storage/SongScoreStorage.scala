@@ -3,7 +3,7 @@ package backend.scorer.storage
 import backend.recon.{Artist, SlickArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.ModelScore
-import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
+import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
 import javax.inject.Inject
 import models.Song
 

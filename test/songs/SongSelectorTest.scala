@@ -37,7 +37,7 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
 
         val $ = injector.instance[SongSelector]
 
-        songs should contain($.randomSong)
+        songs should contain($.randomSong())
       }
     }
   }

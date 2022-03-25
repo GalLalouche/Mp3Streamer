@@ -13,17 +13,18 @@ import scalaz.syntax.functor.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
 
 import common.io.RefSystem
+import common.rich.RichRandom.richRandom
 import common.rich.RichT._
 
 trait SongSelector {
-  def randomSong: Song
+  def randomSong(): Song
   @tailrec
   private def randomSongWithExtension(ext: String): Song = {
-    val $ = randomSong
+    val $ = randomSong()
     if ($.file.extension == ext) $ else randomSongWithExtension(ext)
   }
-  def randomMp3Song: Song = randomSongWithExtension("mp3")
-  def randomFlacSong: Song = randomSongWithExtension("flac")
+  def randomMp3Song(): Song = randomSongWithExtension("mp3")
+  def randomFlacSong(): Song = randomSongWithExtension("flac")
   def followingSong(song: Song): Option[Song]
 }
 
@@ -35,7 +36,7 @@ private class SongSelectorImpl[Sys <: RefSystem](
 )
     extends SongSelector {
   private val random = new Random()
-  @tailrec final def randomSong: Song = {
+  @tailrec final def randomSong(): Song = {
     val song = musicFinder.parseSong(random.select(songs))
     val percentage = scoreBasedProbability(song)
     if (percentage.roll(random)) {
@@ -43,7 +44,7 @@ private class SongSelectorImpl[Sys <: RefSystem](
       song
     } else {
       logger.debug(s"Skipped song <$song> with probability ${1 - percentage.p}")
-      randomSong
+      randomSong()
     }
   }
   def followingSong(song: Song): Option[Song] =
@@ -74,7 +75,7 @@ private object SongSelector {
     }
     private var songSelector: Future[SongSelector] = _
     private lazy val ss = songSelector.get
-    override def randomSong = ss.randomSong
+    override def randomSong() = ss.randomSong
     override def followingSong(song: Song) = ss followingSong song
   }
 }
