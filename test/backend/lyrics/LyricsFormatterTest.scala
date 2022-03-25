@@ -3,7 +3,6 @@ package backend.lyrics
 import backend.lyrics.retrievers.{InstrumentalArtistStorage, RetrievedLyricsResult}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.Url
-import backend.lyrics.LyricsUrl.OldData
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
 import controllers.UrlPathUtils
 import models.{IOSong, Song}
@@ -11,6 +10,7 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import org.mockito.Mockito.when
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 import org.scalatest.mockito.MockitoSugar
+import org.scalatest.tags.Slow
 import play.api.http.Status
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -23,6 +23,7 @@ import common.storage.Storage
 import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
 import common.MutablePartialFunction
 
+@Slow
 class LyricsFormatterTest
     extends AsyncFreeSpec with BeforeAndAfterEachAsync with AsyncAuxSpecs
         with MockitoSugar with OneInstancePerTest {
