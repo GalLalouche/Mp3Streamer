@@ -2,10 +2,9 @@ package mains.random_folder
 
 import java.io.File
 
-import backend.scorer.{CachedModelScorer, ModelScore}
+import backend.scorer.ScoreBasedProbability
 import com.google.inject.assistedinject.Assisted
 import javax.inject.Inject
-import mains.random_folder.RandomFolderCreator.requiredProbability
 import me.tongfei.progressbar.ProgressBar
 import models.{IOMusicFinder, IOSong, Poster}
 import org.apache.commons.io.FileUtils
@@ -22,19 +21,17 @@ import scala.util.Random
 import common.io.IOFile
 import common.rich.collections.RichSeq._
 import common.rich.RichT._
-import common.rich.collections.RichTraversableOnce._
 import common.rich.path.Directory
 import common.rich.path.RichFile._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichInt._
-import common.rich.RichRandom._
 
 /** Selects n random songs and dumps them in a folder on D:\ */
 private class RandomFolderCreator @Inject()(
     ec: ExecutionContext,
     mf: IOMusicFinder,
     playlistFilter: FileFilter,
-    scorer: CachedModelScorer,
+    scoreBasedProbability: ScoreBasedProbability,
     @Assisted seed: Long,
 ) {
   private implicit val iec: ExecutionContext = ec
@@ -42,38 +39,6 @@ private class RandomFolderCreator @Inject()(
   private val songFiles = songFileRefs.map(_.file)
   private val random = new Random(seed)
 
-  private val probabilities: Map[ModelScore, Double] = {
-    val sum = songFileRefs.length
-    val frequencies: Map[ModelScore, Int] = songFileRefs
-        .map(scorer(_) getOrElse ModelScore.Default)
-        .frequencies
-    val unnormalized = frequencies.map {case (score, count) =>
-      score -> requiredProbability(score) / (count.toDouble / sum)
-    }
-    val unnormalizedSum = unnormalized.values.sum
-    val $ = unnormalized.mapValues(_ / unnormalizedSum)
-    def baseProbability(score: ModelScore) = frequencies(score) / songFiles.size.toDouble
-    def debugMessage(score: ModelScore): Unit =
-      println(s"Base probability for <$score> was <${baseProbability(score)}>, " +
-          s"required is ${requiredProbability(score)}")
-    def assertReducedProbability(score: ModelScore): Unit = {
-      debugMessage(score)
-      assert(baseProbability(score) > requiredProbability(score))
-    }
-    def assertIncreasedProbability(score: ModelScore): Unit = {
-      debugMessage(score)
-      assert(baseProbability(score) < requiredProbability(score))
-    }
-
-    assertReducedProbability(ModelScore.Crappy)
-    assertReducedProbability(ModelScore.Meh)
-    // Okay has no inherent bias, though it'll probably be lower to accommodate the good scores.
-    debugMessage(ModelScore.Okay)
-    assertIncreasedProbability(ModelScore.Good)
-    assertIncreasedProbability(ModelScore.Great)
-    assertIncreasedProbability(ModelScore.Amazing)
-    $
-  }
   private def createPlaylistFile(outputDir: Directory, name: String): File = {
     val files = outputDir.files
     val playlistFile = outputDir.addFile(s"$name.m3u")
@@ -85,12 +50,12 @@ private class RandomFolderCreator @Inject()(
     @tailrec def go(existing: Set[File]): Set[File] = {
       if (existing.size == numberOfSongsToCreate)
         return existing
-      val nextSong = songFiles(random nextInt songFiles.length)
-      if (filter.isAllowed(nextSong).isFalse || existing(nextSong))
+      val nextFile = songFiles(random nextInt songFiles.length)
+      if (filter.isAllowed(nextFile).isFalse || existing(nextFile))
         go(existing)
       else {
-        val score = scorer(IOFile(nextSong)).getOrElse(ModelScore.Default)
-        val next = existing.mapIf(random.flipCoin(probabilities(score))).to(_ + nextSong)
+        val song = mf.parseSong(IOFile(nextFile))
+        val next = existing.mapIf(scoreBasedProbability(song).roll(random)).to(_ + nextFile)
         if (next.size > existing.size)
           pb.step()
         go(next)
@@ -158,18 +123,5 @@ private class RandomFolderCreator @Inject()(
     dir.files.filter(Set("m3u", "txt") contains _.extension).foreach(_.delete())
     val songs = dir.files.toSet
     copy(songs, Directory.makeDir(s"D:/$outputName").clear(), playlistName)
-  }
-}
-
-private object RandomFolderCreator {
-  def requiredProbability: ModelScore => Double = {
-    case ModelScore.Default => requiredProbability(ModelScore.Okay)
-    case ModelScore.Crappy => 0
-    case ModelScore.Meh => 0.02
-    case ModelScore.Okay => 0.3
-    case ModelScore.Good => 0.4
-    case ModelScore.Great => 0.23
-    case ModelScore.Amazing => 0.13
-    case ModelScore.Classic => 0.05
   }
 }
