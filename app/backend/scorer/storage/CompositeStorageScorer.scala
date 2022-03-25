@@ -1,17 +1,18 @@
-package backend.scorer
+package backend.scorer.storage
 
-import backend.recon.{Album, Artist, ReconcilableFactory}
+import backend.recon.{Album, Artist}
+import backend.recon.Reconcilable._
+import backend.scorer.{CompositeScorer, ModelScore, ModelScorer}
 import javax.inject.Inject
 import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
-import backend.recon.Reconcilable._
 import common.rich.func.BetterFutureInstances._
 
 /** Scores a song by trying multiple sources, from most specific score to least specific. */
-private class CompositeStorageScorer @Inject()(
+private[scorer] class CompositeStorageScorer @Inject()(
     songScorer: StorageScorer[Song],
     albumScorer: StorageScorer[Album],
     artistScorer: StorageScorer[Artist],

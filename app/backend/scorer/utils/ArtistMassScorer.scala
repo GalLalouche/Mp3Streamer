@@ -1,7 +1,8 @@
-package backend.scorer
+package backend.scorer.utils
 
 import backend.recon.{Artist, ReconcilableFactory}
-import backend.scorer.ArtistMassScorer._
+import backend.scorer.{CachedModelScorer, ModelScore}
+import backend.scorer.utils.ArtistMassScorer.Update
 import javax.inject.Inject
 import models.{Genre, GenreFinder}
 
@@ -69,7 +70,4 @@ private object ArtistMassScorer {
     case object DefaultOnly extends Update
     case object All extends Update
   }
-
-  private def scoreString(depth: Int, string: String): String =
-    s"${"*" * depth} $string"
 }

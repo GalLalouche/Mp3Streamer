@@ -1,4 +1,6 @@
-package backend.scorer
+package backend.scorer.utils
+
+import backend.scorer.ModelScore
 
 import scala.{util => su}
 import scala.util.parsing.combinator.RegexParsers

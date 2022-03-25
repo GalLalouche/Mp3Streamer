@@ -2,6 +2,7 @@ package backend.scorer
 
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, ArtistReconStorage, StoredReconResult}
+import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, SongScoreStorage}
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest, Succeeded}

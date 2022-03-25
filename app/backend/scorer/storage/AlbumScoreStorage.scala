@@ -1,6 +1,7 @@
-package backend.scorer
+package backend.scorer.storage
 
 import backend.recon.{Album, Artist, SlickArtistReconStorage}
+import backend.scorer.ModelScore
 import backend.storage.{DbProvider, SlickStorageTemplateFromConf}
 import javax.inject.Inject
 
@@ -10,7 +11,7 @@ import scalaz.ListT
 import scalaz.Scalaz.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
 
-private class AlbumScoreStorage @Inject()(
+private[scorer] class AlbumScoreStorage @Inject()(
     ec: ExecutionContext,
     dbP: DbProvider,
     protected val artistStorage: SlickArtistReconStorage,

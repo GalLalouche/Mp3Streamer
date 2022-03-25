@@ -8,7 +8,8 @@ import backend.logging.Logger
 import backend.mb.AlbumType
 import backend.module.StandaloneModule
 import backend.recon.{Artist, ReconID, SlickArtistReconStorage}
-import backend.scorer.{ArtistScoreStorage, JdbcMappers, ModelScore}
+import backend.scorer.ModelScore
+import backend.scorer.storage.{ArtistScoreStorage, JdbcMappers}
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Guice
 import javax.inject.Inject

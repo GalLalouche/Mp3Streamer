@@ -1,6 +1,7 @@
 package backend.scorer
 
 import backend.recon.{Album, Artist}
+import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, CompositeStorageScorer, SongScoreStorage, StorageScorer}
 import models.Song
 import net.codingwell.scalaguice.ScalaModule
 

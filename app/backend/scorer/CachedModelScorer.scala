@@ -1,6 +1,7 @@
 package backend.scorer
 
 import backend.recon.{Album, Artist, ReconcilableFactory}
+import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage}
 import javax.inject.Inject
 import models.Song
 
@@ -35,7 +36,7 @@ class CachedModelScorer @Inject()(
   private val tempSongScore: Any => OptionT[Id, ModelScore] = _ => OptionT.none
   private val aux = new CompositeScorer[Id](
     tempSongScore,
-    a => albumScores.get(a.artist, a.title.toLowerCase).hoistId,
+    a => albumScores.get((a.artist, a.title.toLowerCase)).hoistId,
     a => artistScores.get(a.normalized).hoistId,
   )
   def apply(a: Artist): Option[ModelScore] = artistScores.get(a.normalized)

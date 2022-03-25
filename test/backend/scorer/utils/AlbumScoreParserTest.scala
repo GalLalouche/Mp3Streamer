@@ -1,6 +1,7 @@
-package backend.scorer
+package backend.scorer.utils
 
 import backend.recon.{Album, Artist}
+import backend.scorer.ModelScore
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
