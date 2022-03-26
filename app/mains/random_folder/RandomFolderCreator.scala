@@ -91,7 +91,7 @@ private class RandomFolderCreator @Inject()(
     case e: Exception => println("\rFailed @ " + f); e.printStackTrace(); throw e
   }
 
-  private def copy(songs: Traversable[File], outputDir: Directory, playlistName: String): Unit = {
+  private def copy(songs: Traversable[File], outputDir: Directory, playlistName: String): Directory = {
     assert(outputDir.deepPaths.isEmpty)
     val shuffledSongs = songs.toVector.shuffle(random)
     val padLength = shuffledSongs.size.toString.length
@@ -99,6 +99,7 @@ private class RandomFolderCreator @Inject()(
       shuffledSongs.zipWithIndex.foreach(Function.tupled(copyFileToOutputDir(outputDir, pb, padLength)))
     createPlaylistFile(outputDir, playlistName)
     outputDir.addFile("random_seed.txt").write(seed.toString)
+    outputDir
   }
 
   private def dumpAll(
@@ -118,7 +119,7 @@ private class RandomFolderCreator @Inject()(
   private val FilteredSongsDirName = "Filtered Songs"
   def dumpFiltered(n: Int): Unit = dumpAll(
     playlistFilter, numberOfSongsToCreate = n, outputFolder = FilteredSongsDirName, playlistName = "running")
-  def copyFilteredSongs(outputName: String = "Processed Filtered Songs", playlistName: String): Unit = {
+  def copyFilteredSongs(outputName: String = "Processed Filtered Songs", playlistName: String): Directory = {
     val dir = Directory(s"D:/$FilteredSongsDirName")
     // The extra files mess up the copy.
     dir.files.filter(Set("m3u", "txt") contains _.extension).foreach(_.delete())
