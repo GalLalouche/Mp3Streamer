@@ -18,9 +18,9 @@ private object ScorerFormatter {
       case SongScore.Scored(score, source, song, album, artist) => Json.obj(
         "score" -> score.entryName,
         "source" -> source.toString,
-        "song" -> song.toString,
-        "album" -> album.toString,
-        "artist" -> artist.toString,
+        "song" -> song.orDefaultString,
+        "album" -> album.orDefaultString,
+        "artist" -> artist.orDefaultString,
       )
     }
   }

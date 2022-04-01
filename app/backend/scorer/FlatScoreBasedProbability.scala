@@ -13,6 +13,7 @@ import common.rich.primitives.RichDouble.richDouble
 // TODO SoftwareDesign could be an interesting guice question about passing configuration
 @Singleton private class FlatScoreBasedProbability private(
     map: ModelScore => Double,
+    defaultScore: Percentage,
     scorer: CachedModelScorer,
     songFiles: Seq[FileRef],
     logger: Logger,
@@ -21,7 +22,7 @@ import common.rich.primitives.RichDouble.richDouble
   private val probabilities: Map[ModelScore, Percentage] = {
     val sum = songFiles.length
     val frequencies: Map[ModelScore, Int] = songFiles
-        .map(scorer(_) getOrElse ModelScore.Default)
+        .flatMap(scorer(_))
         .frequencies
     val unnormalized = frequencies.map {case (score, count) =>
       score -> map(score) / (count.toDouble / sum)
@@ -53,18 +54,20 @@ import common.rich.primitives.RichDouble.richDouble
     }
     $
   }
-  def apply(s: Song): Percentage = probabilities(scorer(s).getOrElse(ModelScore.Default))
+  def apply(s: Song): Percentage = scorer(s).map(probabilities) getOrElse defaultScore
 }
 
 private object FlatScoreBasedProbability {
   def withAsserts(
       map: ModelScore => Double,
+      defaultScore: Percentage,
       scorer: CachedModelScorer,
       songFiles: Seq[FileRef],
       logger: Logger
   ) = new FlatScoreBasedProbability(
     map,
-    scorer: CachedModelScorer,
+    defaultScore,
+    scorer,
     songFiles,
     logger,
     withAsserts = true,
@@ -72,13 +75,15 @@ private object FlatScoreBasedProbability {
 
   private[scorer] def withoutAsserts(
       map: ModelScore => Double,
+      defaultScore: Percentage,
       scorer: CachedModelScorer,
       songFiles: Seq[FileRef],
       logger: Logger,
   ): FlatScoreBasedProbability = new FlatScoreBasedProbability(
-    map: ModelScore => Double,
-    scorer: CachedModelScorer,
-    songFiles: Seq[FileRef],
+    map,
+    defaultScore,
+    scorer,
+    songFiles,
     logger,
     withAsserts = false,
   )

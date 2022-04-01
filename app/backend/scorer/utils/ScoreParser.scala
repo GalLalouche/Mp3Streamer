@@ -29,7 +29,7 @@ private class ScoreParser @Inject()(
 ) {
   private implicit val iec: ExecutionContext = ec
 
-  private def parse(line: String): Option[(Either[Artist, Album], ModelScore)] = {
+  private def parse(line: String): Option[(Either[Artist, Album], Option[ModelScore])] = {
     val withoutPrefix = line.removeAll("^\\** ")
     // TODO use the parser here as well, using either or something.
     if ((withoutPrefix.startsWith("ARTIST") || withoutPrefix.startsWith("ALBUM")).isFalse)
@@ -40,7 +40,6 @@ private class ScoreParser @Inject()(
     else
       AlbumScoreParser(line).map(TuplePLenses.tuple2First.modify(Right.apply))
     $
-        .filter(_._2 != ModelScore.Default)
         .filter(e => !(e._1.fold(cachedModelScorer.apply(_), cachedModelScorer.apply(_)) contains e._2))
         .toOption
         .listen(e => logger.info(s"Storing <$e>"))
@@ -52,5 +51,6 @@ private class ScoreParser @Inject()(
     artists.traverse(Function.tupled(artistScoreStorage.replace)).run.void
   }
   def parseFile(file: FileRef): Future[Unit] = parseLines(file.lines)
-  def parseLines(lines: Seq[String]): Future[Unit] = store(lines.flatMap(parse))
+  def parseLines(lines: Seq[String]): Future[Unit] =
+    store(lines.flatMap(parse).flatMap(e => e._2.map(e._1 -> _)))
 }

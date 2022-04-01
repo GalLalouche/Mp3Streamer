@@ -6,7 +6,7 @@ import backend.scorer.ModelScore
 import scala.util.Try
 
 private object AlbumScoreParser {
-  private object Parser extends ParseUtils[(Album, ModelScore)] {
+  private object Parser extends ParseUtils[(Album, Option[ModelScore])] {
     private val prefix = """\**""".r
     private val header = "ALBUM ;"
     private val artist = ".* ;;;".r.map(_.dropRight(" ;;;".length)) ^^ Artist.apply
@@ -21,5 +21,5 @@ private object AlbumScoreParser {
       case artistName ~ titleYear ~ score => Album(titleYear._1, titleYear._2, artistName) -> score
     }
   }
-  def apply(line: String): Try[(Album, ModelScore)] = Parser.toTry(line)
+  def apply(line: String): Try[(Album, Option[ModelScore])] = Parser.toTry(line)
 }

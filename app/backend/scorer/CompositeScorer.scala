@@ -27,24 +27,23 @@ private class CompositeScorer[M[_] : Bind](
     songScore.map(
       Scored(_,
         Source.Song,
-        songScore.getOrElse(ModelScore.Default),
-        albumScore.getOrElse(ModelScore.Default),
-        artistScore.getOrElse(ModelScore.Default),
+        songScore,
+        albumScore,
+        artistScore,
       )).orElse(
       albumScore.map(
         Scored(_,
           Source.Album,
-          songScore.getOrElse(ModelScore.Default),
-          albumScore.getOrElse(ModelScore.Default),
-          artistScore.getOrElse(ModelScore.Default),
-
+          songScore,
+          albumScore,
+          artistScore,
         ))).orElse(
       artistScore.map(
         Scored(_,
           Source.Artist,
-          songScore.getOrElse(ModelScore.Default),
-          albumScore.getOrElse(ModelScore.Default),
-          artistScore.getOrElse(ModelScore.Default),
+          songScore,
+          albumScore,
+          artistScore,
         )
       )).getOrElse(SongScore.Default)
   }
