@@ -7,6 +7,7 @@ import models.Song
 import common.Percentage
 import common.io.FileRef
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rich.primitives.RichDouble.richDouble
 
 /** Returns a [[ModelScore]] based weight for the song to be chosen. */
 // TODO SoftwareDesign could be an interesting guice question about passing configuration
@@ -17,7 +18,7 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
     logger: Logger,
     withAsserts: Boolean,
 ) extends ScoreBasedProbability {
-  private val probabilities: Map[ModelScore, Double] = {
+  private val probabilities: Map[ModelScore, Percentage] = {
     val sum = songFiles.length
     val frequencies: Map[ModelScore, Int] = songFiles
         .map(scorer(_) getOrElse ModelScore.Default)
@@ -26,7 +27,8 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
       score -> map(score) / (count.toDouble / sum)
     }
     val unnormalizedSum = unnormalized.values.sum
-    val $ = unnormalized.mapValues(_ / unnormalizedSum)
+    val $ = unnormalized.mapValues(_ / unnormalizedSum).mapValues(Percentage.apply).view.force
+    assert($.values.view.map(_.p).sum isRoughly 1.0)
     def baseProbability(score: ModelScore) = frequencies(score) / songFiles.size.toDouble
     def debugMessage(score: ModelScore): Unit =
       logger.debug(s"Base probability for <$score> was <${baseProbability(score)}>, " +
