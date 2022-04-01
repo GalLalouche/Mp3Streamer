@@ -9,7 +9,8 @@ import common.rich.RichEnumeratum.richEnumeratum
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private trait ParseUtils[A] extends RegexParsers {
-  protected val score = ".*".r ^^ (ModelScore.withPrefixCaseInsensitive(_).single)
+  protected val score: Parser[Option[ModelScore]] =
+    ".*".r ^^ (ModelScore.withPrefixCaseInsensitive(_).singleOpt)
   protected def main: Parser[A]
   def toTry(s: String): su.Try[A] = parseAll(main, s) match {
     case Success(e, _) => su.Success(e)

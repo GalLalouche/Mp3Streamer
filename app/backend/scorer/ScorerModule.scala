@@ -23,7 +23,6 @@ object ScorerModule extends ScalaModule {
       logger: Logger,
   ) = {
     def requiredProbability: ModelScore => Double = {
-      case ModelScore.Default => requiredProbability(ModelScore.Okay)
       case ModelScore.Crappy => 0
       case ModelScore.Meh => 0.02
       case ModelScore.Okay => 0.3
@@ -32,8 +31,10 @@ object ScorerModule extends ScalaModule {
       case ModelScore.Amazing => 0.13
       case ModelScore.Classic => 0.05
     }
+    val defaultScore = requiredProbability(ModelScore.Okay)
     FlatScoreBasedProbability.withAsserts(
       requiredProbability,
+      defaultScore,
       scorer,
       mf.getSongFiles,
       logger: Logger,

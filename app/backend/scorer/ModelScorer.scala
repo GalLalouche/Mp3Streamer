@@ -26,11 +26,13 @@ private object ModelScorer {
     case class Scored(
         score: ModelScore,
         source: Source,
-        songScore: ModelScore,
-        albumScore: ModelScore,
-        artistScore: ModelScore,
+        songScore: Option[ModelScore],
+        albumScore: Option[ModelScore],
+        artistScore: Option[ModelScore],
     ) extends SongScore {
-      require(score != ModelScore.Default)
+      // TODO more ADTs!
+      // TODO SoftwareDesign Could be an interesting question
+      require (songScore.isDefined || albumScore.isDefined || artistScore.isDefined)
     }
   }
 

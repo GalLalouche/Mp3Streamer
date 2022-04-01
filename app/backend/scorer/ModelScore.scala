@@ -7,7 +7,6 @@ import scala.collection.immutable
 sealed trait ModelScore extends EnumEntry
 
 object ModelScore extends Enum[ModelScore] {
-  case object Default extends ModelScore
   case object Crappy extends ModelScore // Why is this even still in your playlist?
   case object Meh extends ModelScore
   case object Okay extends ModelScore
@@ -17,4 +16,7 @@ object ModelScore extends Enum[ModelScore] {
   case object Classic extends ModelScore // The Free Stairway to Bohemian Sultans
 
   override def values: immutable.IndexedSeq[ModelScore] = findValues
+  implicit class RichModelScore(private val $: Option[ModelScore]) extends AnyVal {
+    def orDefaultString: String = $.fold("Default")(_.toString)
+  }
 }

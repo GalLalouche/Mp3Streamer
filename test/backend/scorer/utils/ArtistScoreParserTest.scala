@@ -7,7 +7,8 @@ import org.scalatest.FreeSpec
 import common.test.AuxSpecs
 
 class ArtistScoreParserTest extends FreeSpec with AuxSpecs {
-  private val artistAndScore = Artist("Blind Guardian") -> ModelScore.Great
+  // FIXME Also test for empty
+  private val artistAndScore = Artist("Blind Guardian") -> Some(ModelScore.Great)
   "Parse artist" in {
     ArtistScoreParser("*** ARTIST ; Blind Guardian === Gr").get shouldReturn artistAndScore
   }

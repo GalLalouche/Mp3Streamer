@@ -33,7 +33,7 @@ private class ArtistMassScorer @Inject()(
 
   def go(update: Update): Seq[String] = {
     def goArtist(artist: Artist): OrgModeWriterMonad = {
-      val score = scorer(artist) getOrElse ModelScore.Default
+      val score = scorer(artist)
       if (update filterScore score) OrgModeWriterMonad.append(OrgScoreFormatter.artist(artist, score))
       else State.init[OrgModeWriter].void
     }
@@ -58,13 +58,13 @@ private class ArtistMassScorer @Inject()(
 
 private object ArtistMassScorer {
   sealed trait Update {
-    def filterScore(s: ModelScore): Boolean = this match {
-      case Update.DefaultOnly => s == ModelScore.Default
+    def filterScore(s: Option[ModelScore]): Boolean = this match {
+      case Update.NoScore => s.isEmpty
       case Update.All => true
     }
   }
   object Update {
-    case object DefaultOnly extends Update
+    case object NoScore extends Update
     case object All extends Update
   }
 }
