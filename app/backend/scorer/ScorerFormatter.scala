@@ -1,6 +1,6 @@
 package backend.scorer
 
-import backend.scorer.ModelScorer.SongScore
+import backend.scorer.FullInfoModelScorer.SongScore
 import controllers.UrlPathUtils
 import javax.inject.Inject
 import models.Song
@@ -28,7 +28,7 @@ private object ScorerFormatter {
 
 /** Fetches and updates scores for songs, albums, and artists. */
 private class ScorerFormatter @Inject()(
-    modelScorer: ModelScorer,
+    modelScorer: FullInfoModelScorer,
     urlPathUtils: UrlPathUtils,
     ec: ExecutionContext,
 ) {

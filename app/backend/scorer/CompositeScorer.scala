@@ -2,8 +2,8 @@ package backend.scorer
 
 import backend.recon.{Album, Artist}
 import backend.recon.Reconcilable.SongExtractor
-import backend.scorer.ModelScorer.{SongScore, Source}
-import backend.scorer.ModelScorer.SongScore.Scored
+import backend.scorer.FullInfoModelScorer.{SongScore, Source}
+import backend.scorer.FullInfoModelScorer.SongScore.Scored
 import models.Song
 
 import scala.language.higherKinds

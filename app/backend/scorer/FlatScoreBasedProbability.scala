@@ -33,7 +33,7 @@ import common.rich.primitives.RichDouble.richDouble
     def baseProbability(score: ModelScore) = frequencies(score) / songFiles.size.toDouble
     def debugMessage(score: ModelScore): Unit =
       logger.debug(s"Base probability for <$score> was <${baseProbability(score)}>, " +
-          s"required is ${map(score)}")
+          s"required is <${map(score)}>, normalized probability is <${$(score)}>")
     def assertReducedProbability(score: ModelScore): Unit = {
       debugMessage(score)
       assert(baseProbability(score) > map(score))
@@ -54,7 +54,8 @@ import common.rich.primitives.RichDouble.richDouble
     }
     $
   }
-  def apply(s: Song): Percentage = scorer(s).map(probabilities) getOrElse defaultScore
+  def apply(s: Song): Percentage = scorer(s).fold(defaultScore)(apply)
+  def apply(score: ModelScore): Percentage = probabilities(score)
 }
 
 private object FlatScoreBasedProbability {
