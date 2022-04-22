@@ -1,5 +1,7 @@
 $(function() {
-  const href = (target, name) => `<a target=_blank href="${target}">${name}</a>`
+  function href(target, name) {
+    return `<a target=_blank href="${target}">${name}</a>`
+  }
   const externalDivs = $(".external")
 
   let currentPosterRgb = []
@@ -47,14 +49,17 @@ $(function() {
     e.css("background-image", `linear-gradient(to top left, ${(rgb2String(makeLighter(currentPosterRgb, 0.5)))}, ${rgb2String(currentPosterRgb)})`)
   }
   // Yey, currying!
-  const showLinks = debugLink => {
-    externalDivs.children('ul').remove()
-    externalDivs.children('span').remove()
+  function showLinks(debugLink) {
+    function cleanUp() {
+      externalDivs.children('ul').remove()
+      externalDivs.children('span').remove()
+    }
+    cleanUp()
     externalDivs.prepend(span("Fetching links..."))
-    return externalLinks => {
+    function externalLinks() {
       artistReconBox.val("")
       albumReconBox.val("")
-      externalDivs.children('span').remove()
+      cleanUp()
       $.each(externalLinks, (entityName, externalLinksForEntity) => {
         const isValid = externalLinksForEntity.timestamp
         const timestampOrError = `${entityName} (${isValid ?
@@ -71,13 +76,14 @@ $(function() {
           })
         }
         const fieldset = $(`#external-${entityName.split(" ")[0].toLowerCase()}`)
+        // TODO this shouldn't really be created every time
         fieldset.prepend(ul)
         fieldset.children('legend').remove()
         fieldset.prepend($(`<legend>${timestampOrError}</legend>`))
         setLinkColor(fieldset)
       })
     }
-    // TODO this shouldn't really be created every time
+    return externalLinks
   }
 
   External.show = function(song) {

@@ -35,7 +35,6 @@ $(function() {
     Volume.setPeak(currentPlayingSong)
     Score.show(currentPlayingSong)
   }
-  $("#jquery_jplayer_1").addClass("poster")
   $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()
 
   function loadNextRandom(playNow) {
