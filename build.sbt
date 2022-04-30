@@ -35,6 +35,7 @@ libraryDependencies ++= Seq(
   "com.github.julien-truffaut" %% "monocle-core" % monocleVersion,
   "com.github.julien-truffaut" %% "monocle-macro" % monocleVersion,
   "com.github.mpilquist" %% "simulacrum" % "0.10.0",
+  "com.github.pathikrit" %% "better-files" % "3.9.1",
   "com.google.inject" % "guice" % guiceVersion,
   "com.google.inject.extensions" % "guice-assistedinject" % guiceVersion,
   "com.h2database" % "h2" % "1.4.196",
@@ -59,6 +60,7 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-all" % "1.9.5" % "test",
   "org.scala-lang.modules" %% "scala-swing" % "2.0.0",
   "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
+  "org.scalafx" %% "scalafx" % "17.0.1-R26",
   "org.scalamacros" % ("paradise_" + scalaVersionStr) % "2.1.1", // For some reason, it uses the full binary version
   "org.scalatest" %% "scalatest" % "3.0.4",
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test",

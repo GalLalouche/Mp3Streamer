@@ -16,7 +16,8 @@ object ModelScore extends Enum[ModelScore] {
   case object Classic extends ModelScore // The Free Stairway to Bohemian Sultans
 
   override def values: immutable.IndexedSeq[ModelScore] = findValues
+  val DefaultTitle = "Default"
   implicit class RichModelScore(private val $: Option[ModelScore]) extends AnyVal {
-    def orDefaultString: String = $.fold("Default")(_.toString)
+    def orDefaultString: String = $.fold(DefaultTitle)(_.toString)
   }
 }
