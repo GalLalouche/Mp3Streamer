@@ -106,13 +106,13 @@ private class SlickNewAlbumStorage @Inject()(
           .join(artistStorage.tableQuery).on(_.artist === _.name)
           .filterNot(e => e._1.isIgnored || shouldRemoveAlbum(e._1))
           .map(_._1)
-          .join(artistScoreStorage.tableQuery).on(_.artist.mapTo[Artist] === _.artist)
+          .joinLeft(artistScoreStorage.tableQuery).on(_.artist.mapTo[Artist] === _.artist)
           .result
       )
       .map(_
           .view
           .map(TuplePLenses.tuple2First.modify(extractValue))
-          .map(TuplePLenses.tuple2Second.modify(_._2))
+          .map(TuplePLenses.tuple2Second.modify(_.map(_._2)))
           .groupBy(_._1.na.artist)
           .mapValues(_.map(_.swap) |> toNewAlbums)
           .map(_.flatten)
@@ -120,7 +120,7 @@ private class SlickNewAlbumStorage @Inject()(
       )
   )
   private def shouldRemoveAlbum(e: Rows): Rep[Boolean] = e.isRemoved || e.isIgnored
-  private def toNewAlbums(zipped: Seq[(ModelScore, StoredNewAlbum)]): (ModelScore, Seq[NewAlbum]) = {
+  private def toNewAlbums(zipped: Seq[(Option[ModelScore], StoredNewAlbum)]): (Option[ModelScore], Seq[NewAlbum]) = {
     val (scores, albums) = zipped.unzip
     (scores.toSet.single, toNewAlbums(albums))
   }
