@@ -12,6 +12,7 @@ import scalaz.std.vector.vectorInstance
 import scalaz.syntax.traverse.ToTraverseOps
 import scalaz.Scalaz.{ToBindOpsUnapply, ToFoldableOps, ToFunctorOpsUnapply}
 import scalaz.State
+import common.rich.func.MoreIteratorInstances.IteratorMonadPlus
 
 import common.{OrgModeWriter, OrgModeWriterMonad}
 import common.io.IODirectory
@@ -32,17 +33,22 @@ private class ArtistMassScorer @Inject()(
   private implicit val iec: ExecutionContext = ec
 
   def go(update: Update): Seq[String] = {
-    def goArtist(artist: Artist): OrgModeWriterMonad = {
-      val score = scorer(artist)
-      if (update filterScore score) OrgModeWriterMonad.append(OrgScoreFormatter.artist(artist, score))
-      else State.init[OrgModeWriter].void
+    def goGenre(g: Genre, artists: Iterable[Artist]): OrgModeWriterMonad = {
+      val filteredArtists: Iterable[(Artist, Option[ModelScore])] = for {
+        artist <- artists
+        score = scorer(artist)
+        if update.filterScore(score)
+      } yield (artist, score)
+      if (filteredArtists.isEmpty) // Don't add genres without artists
+        State.init[OrgModeWriter].void
+      else
+        OrgModeWriterMonad.append(g.name) >> filteredArtists
+            .toVector
+            .sortBy(_._1.name)
+            .iterator
+            .map(Function.tupled(OrgScoreFormatter.artist))
+            .traverse_(OrgModeWriterMonad.append(_) |> OrgModeWriterMonad.indent)
     }
-
-    def goGenre(g: Genre, artists: Iterable[Artist]): OrgModeWriterMonad =
-      OrgModeWriterMonad.append(g.name) >> artists
-          .toVector
-          .sortBy(_.name)
-          .traverse_(goArtist(_) |> OrgModeWriterMonad.indent)
 
     reconcilableFactory.artistDirectories
         .groupBy(enumGenreFinder apply _.asInstanceOf[IODirectory])
