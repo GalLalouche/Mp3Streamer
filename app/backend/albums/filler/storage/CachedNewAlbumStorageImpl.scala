@@ -3,7 +3,7 @@ package backend.albums.filler.storage
 import backend.albums.filler.{EagerExistingAlbums, NewAlbumRecon}
 import backend.module.StandaloneModule
 import backend.recon.Artist
-import com.google.inject.Guice
+import com.google.inject.{Guice, Provider}
 import javax.inject.Inject
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
@@ -18,10 +18,12 @@ private class CachedNewAlbumStorageImpl @Inject()(
     lastFetchTime: LastFetchTime,
     newAlbumStorage: NewAlbumStorage,
     ec: ExecutionContext,
-    ea: EagerExistingAlbums,
+    eap: Provider[EagerExistingAlbums],
 ) extends CachedNewAlbumStorage {
+  private lazy val ea = eap.get
   private implicit val iec: ExecutionContext = ec
-  override def all = newAlbumStorage.all.map {
+  override def allRaw = newAlbumStorage.all
+  override def allFiltered = newAlbumStorage.all.map {
     case (artist, score, albums) => (artist, score, ea.removeExistingAndUnreleasedAlbums(artist, albums))
   }.filter(_._3.nonEmpty)
   override def apply(a: Artist) = newAlbumStorage.apply(a)
@@ -44,7 +46,7 @@ private object CachedNewAlbumStorageImpl {
     println(
       injector
           .instance[CachedNewAlbumStorage]
-          .all
+          .allFiltered
           .run
           .get
     )

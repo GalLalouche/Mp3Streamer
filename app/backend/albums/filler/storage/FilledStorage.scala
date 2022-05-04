@@ -11,7 +11,9 @@ import scalaz.ListT
 private[albums] trait FilledStorage {
   type AlbumReconID = ReconID
   type ArtistReconID = ReconID
-  def all: ListT[Future, (Artist, Option[ModelScore], Seq[NewAlbum])]
+  /** Does not perform any filtering, i.e., will also return deleted artists and existing albums. */
+  def allRaw: ListT[Future, (Artist, Option[ModelScore], Seq[NewAlbum])]
+  def allFiltered: ListT[Future, (Artist, Option[ModelScore], Seq[NewAlbum])]
   def apply(a: Artist): Future[Seq[NewAlbum]]
 
   // Remove vs. Ignore: remove is only temporary (usually until the next mega fetch), ignore is forever.

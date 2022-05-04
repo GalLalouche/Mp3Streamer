@@ -1,11 +1,11 @@
 package backend.albums.filler
 
-import java.time.Clock
-
 import backend.albums.NewAlbum
 import backend.logging.Logger
 import backend.recon.{Album, Artist, StringReconScorer}
 import javax.inject.Singleton
+
+import java.time.Clock
 
 import common.rich.collections.RichTraversableOnce._
 
@@ -26,8 +26,8 @@ import common.rich.collections.RichTraversableOnce._
           .filter(a => albumTitles.fornone(stringReconScorer(_, a.title) > 0.95))
           .filter(_.isReleased(clock))
     } catch {
-      case e: NoSuchElementException =>
-        logger.warn(s"Could not find artist <$artist>", e)
+      case _: NoSuchElementException =>
+        logger.verbose(s"Could not find artist <$artist>")
         Nil
     }
   }

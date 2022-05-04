@@ -4,6 +4,8 @@ import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.immutable
 
+import common.Orderings
+
 sealed trait ModelScore extends EnumEntry
 
 object ModelScore extends Enum[ModelScore] {
@@ -19,4 +21,13 @@ object ModelScore extends Enum[ModelScore] {
   implicit class RichModelScore(private val $: Option[ModelScore]) extends AnyVal {
     def orDefaultString: String = $.fold(DefaultTitle)(_.toString)
   }
+  def optionOrdering: Ordering[Option[ModelScore]] = Orderings.fromSeqCheck(Vector(
+    Some(Amazing),
+    Some(Good),
+    Some(Great),
+    Some(Okay),
+    None,
+    Some(Meh),
+    Some(Crappy),
+  ))
 }

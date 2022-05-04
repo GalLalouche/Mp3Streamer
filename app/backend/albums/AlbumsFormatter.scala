@@ -21,7 +21,7 @@ private class AlbumsFormatter @Inject()(
 ) {
   private implicit val iec: ExecutionContext = ec
 
-  def albums: Future[JsValue] = $.albums
+  def albums: Future[JsValue] = $.albumsFiltered
       .map {case AlbumsModel.ArtistAlbums(artist, modelScore, newAlbums, genre) => Json.obj(
         "genre" -> genre.mapHeadOrElse(_.name, "N/A"),
         "name" -> StringFixer(artist.name), // Name is stored normalized.
