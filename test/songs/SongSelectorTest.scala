@@ -3,7 +3,6 @@ package songs
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import backend.recon.{Album, Artist}
 import backend.scorer.{CachedModelScorer, ModelScore, ScoreBasedProbability}
-import com.google.inject.util.Modules
 import com.google.inject.Guice
 import models.{FakeModelFactory, MemorySong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -12,6 +11,7 @@ import org.scalacheck.Arbitrary._
 import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
+import common.guice.RichModule.richModule
 import common.io.FileRef
 import common.test.AuxSpecs
 
@@ -23,7 +23,7 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
   import factory.arbSong
 
   private def createInjector = Guice.createInjector(
-    Modules.`override`(TestModuleConfiguration().module).`with`(new ScalaModule {
+    TestModuleConfiguration().module overrideWith new ScalaModule {
       override def configure(): Unit = {
         bind[ScoreBasedProbability].toInstance(new ScoreBasedProbability {
           override def apply(s: Song) = 0.5
@@ -36,7 +36,7 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
           override def apply(f: FileRef) = ???
         })
       }
-    })
+    }
   )
   "returns a random song" in {
     forAll {ss: Vector[MemorySong] =>

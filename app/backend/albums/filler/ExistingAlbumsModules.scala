@@ -5,11 +5,11 @@ import backend.logging.{LoggingLevel, LoggingModules}
 import backend.module.{CleanModule, StandaloneModule}
 import backend.recon.{Artist, ReconcilableFactory}
 import com.google.inject.{Guice, Injector, Module, Provides, Singleton}
-import com.google.inject.util.Modules
-import models.{IOMusicFinderModule, MusicFinder}
+import models.IOMusicFinderModule
 import net.codingwell.scalaguice.ScalaModule
 
 import common.TimedLogger
+import common.guice.RichModule.richModule
 
 private[albums] object ExistingAlbumsModules {
   private[filler] def lazyAlbums: Module = new ScalaModule {
@@ -37,7 +37,7 @@ private[albums] object ExistingAlbumsModules {
     }
   }
   private def overriding(overridenModule: Module)(existingAlbumsModule: Module): Injector = {
-    Guice.createInjector(Modules `override` overridenModule `with` new ScalaModule {
+    Guice.createInjector(overridenModule overrideWith new ScalaModule {
       override def configure(): Unit = {
         install(existingAlbumsModule)
         install(LoggingModules.ConsoleWithFiltering)

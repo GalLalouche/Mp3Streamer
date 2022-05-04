@@ -78,13 +78,13 @@ private[fixer] class GenrePanel private(maxRows: Int, iconSideInPixels: Int, big
       }
     }
     this.background =
-        if (s.isEmpty)
-          defaultBackground
-        else totalMatches match {
-          case 0 => Color.RED
-          case 1 => Color.GREEN
-          case _ => Color.ORANGE
-        }
+      if (s.isEmpty)
+        defaultBackground
+      else totalMatches match {
+        case 0 => Color.RED
+        case 1 => Color.GREEN
+        case _ => Color.ORANGE
+      }
   }
   private def tryChoose(s: String): Unit = boxes.filter(_.isFuzzyMatch(s)).toList match {
     case h :: Nil => clickSubject.onNext(h.directory)

@@ -1,7 +1,6 @@
 package backend.albums.filler
 
 import java.time.Clock
-import java.util.NoSuchElementException
 
 import backend.albums.NewAlbum
 import backend.logging.Logger
