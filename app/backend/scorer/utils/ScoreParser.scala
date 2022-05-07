@@ -40,7 +40,7 @@ private class ScoreParser @Inject()(
     else
       AlbumScoreParser(line).map(TuplePLenses.tuple2First.modify(Right.apply))
     $
-        .filter(e => !(e._1.fold(cachedModelScorer.apply(_), cachedModelScorer.apply(_)) contains e._2))
+        .filter(e => !(e._1.fold(cachedModelScorer.apply(_), cachedModelScorer.apply(_)) == e._2))
         .toOption
         .listen(e => logger.info(s"Storing <$e>"))
   }
