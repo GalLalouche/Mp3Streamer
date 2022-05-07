@@ -18,7 +18,8 @@ class Streamer @Inject()(
   ) {case (range, shouldEncode) => $(path, range, shouldEncode)}
 
   // for debugging; plays the song in the browser instead of downloading it
-  def playSong(s: String) = Action {
-    Ok(views.html.playSong("/stream/download/" + s))
-  }
+  // "Temporarily" (07/05/22) disabled, because IntelliJ and Play don't want to play nicely.
+  // def playSong(s: String) = Action {
+  //   //Ok(views.html.playSong("/stream/download/" + s))
+  // }
 }
