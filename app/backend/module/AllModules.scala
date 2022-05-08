@@ -11,7 +11,11 @@ import controllers.ControllerModule
 import net.codingwell.scalaguice.ScalaModule
 import songs.SongsModule
 
+import java.util.logging.LogManager
+
 object AllModules extends ScalaModule {
+  LogManager.getLogManager.readConfiguration(getClass.getResourceAsStream("/logging.properties"))
+
   override def configure(): Unit = {
     install(ExternalModule)
     install(LyricsModule)

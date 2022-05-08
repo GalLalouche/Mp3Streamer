@@ -124,6 +124,7 @@
         <include name="songs/"/>
         <include name="loggers/"/>
         <include name="*.xml"/>
+        <include name="*.properties"/>
         <exclude name="**/*Test*/**"/>
       </fileset>
     </jar>

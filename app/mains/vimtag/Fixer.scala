@@ -1,7 +1,5 @@
 package mains.vimtag
 
-import java.util.logging.{Level, Logger}
-
 import mains.fixer.{FixLabelsUtils, FolderFixer}
 import mains.vimtag.Flag.RemoveFeat
 import models.RichTag._
@@ -20,8 +18,6 @@ import common.rich.RichT.richT
 import common.rich.path.RichFileUtils
 
 private object Fixer {
-  Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
-
   def apply(dir: DirectoryRef, parsedId3: ParsedId3): Unit = {
     val startFrom1 = parsedId3.flags(Flag.ResetTrackNumbers)
     val removeFeat = parsedId3.flags(Flag.RemoveFeat)

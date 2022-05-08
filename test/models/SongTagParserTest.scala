@@ -1,7 +1,5 @@
 package models
 
-import java.util.logging.{Level, Logger}
-
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 import org.scalatest.FreeSpec
@@ -10,7 +8,6 @@ import common.rich.path.RichFile._
 import common.test.{AuxSpecs, DirectorySpecs}
 
 class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
-  Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
   private def getSong(location: String) = getResourceFile(location)
 
   "apply" - {

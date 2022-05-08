@@ -1,6 +1,6 @@
 package backend.module
 
-import backend.logging.{ConsoleLogger, FilteringLogger, Logger, LoggingModules}
+import backend.logging.LoggingModules
 import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext

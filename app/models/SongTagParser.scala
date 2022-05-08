@@ -1,12 +1,11 @@
 package models
 
-import java.io.File
-import java.util.logging.{Level, Logger}
-
 import com.google.common.annotations.VisibleForTesting
 import models.RichTag._
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
+
+import java.io.File
 
 import common.io.IOFile
 import common.rich.collections.RichTraversableOnce._
@@ -17,8 +16,6 @@ import common.rich.RichT._
 import common.rich.collections.RichIterator._
 
 object SongTagParser {
-  Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF)
-
   // FLAC tag supports proper custom tag fetching, but MP3 tags have to be parsed manually
   private def parseReplayGain(s: String): Double = s.split(' ').head.toDouble
 
