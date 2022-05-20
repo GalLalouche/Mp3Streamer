@@ -14,8 +14,14 @@ class ReconIDTest extends FreeSpec with AuxSpecs {
       ReconID.validate("0383dadf-2a4e4d10-a46a-e9e041da8eb3") shouldReturn None
     }
   }
-  "valid" in {
-    ReconID.validate("0383dadf-2a4e-4d10-a46a-e9e041da8eb3").value shouldReturn
-        ReconID("0383dadf-2a4e-4d10-a46a-e9e041da8eb3")
+  "valid" - {
+    "plain" in {
+      ReconID.validate("0383dadf-2a4e-4d10-a46a-e9e041da8eb3").value shouldReturn
+          ReconID("0383dadf-2a4e-4d10-a46a-e9e041da8eb3")
+    }
+    "With http" in {
+      ReconID.validate("https://musicbrainz.org/artist/70248960-cb53-4ea4-943a-edb18f7d336f")
+          .value shouldReturn ReconID("70248960-cb53-4ea4-943a-edb18f7d336f")
+    }
   }
 }
