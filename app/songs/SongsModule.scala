@@ -1,7 +1,6 @@
 package songs
 
 import backend.logging.Logger
-import backend.scorer.{CachedModelScorer, ScoreBasedProbability}
 import com.google.inject.Provides
 import models.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
@@ -23,19 +22,16 @@ object SongsModule extends ScalaModule with ModuleUtils {
 
   @Provides private def songSelect(
       ec: ExecutionContext,
-      mf: MusicFinder,
-      scoreBasedProbability: ScoreBasedProbability,
-      cachedModelScorer: CachedModelScorer,
-      logger: Logger
+      logger: Logger,
+      songSelectorProxy: SongSelectorProxy
   ): SongSelector = {
     implicit val iec: ExecutionContext = ec
     val start = System.currentTimeMillis()
-    val $ = new SongSelectorProxy(ec, mf, scoreBasedProbability, cachedModelScorer, logger)
-    // TODO TimedFuture?
+    // TODO TimedFuture? AsyncTimedLogger?
     logger.info("Song selector update starting")
-    $.update().>|(logger.info(s"SongSelector has finished updating (${
-      System.currentTimeMillis() - start
-    } ms)"))
-    $
+    songSelectorProxy
+        .update()
+        .>|(logger.info(s"SongSelector has finished updating (${System.currentTimeMillis() - start} ms)"))
+    songSelectorProxy
   }
 }

@@ -13,7 +13,7 @@ trait MusicFinder {self =>
   def flatGenres: Seq[String]
   private def getDir(name: String) = baseDir.getDir(name).get
   private def allGenres = genresWithSubGenres ++ flatGenres
-  private def genreDirs: Seq[S#D] = allGenres.sorted.map(getDir)
+  def genreDirs: Seq[S#D] = allGenres.sorted.map(getDir)
   def artistDirs: Seq[S#D] = {
     def getDirs(xs: Seq[String]): Seq[S#D] = xs.view.map(getDir).flatMap(_.dirs)
     getDirs(genresWithSubGenres).flatMap(_.dirs) ++ getDirs(flatGenres)

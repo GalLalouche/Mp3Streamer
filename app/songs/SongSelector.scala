@@ -1,7 +1,8 @@
 package songs
 
-import backend.logging.Logger
+import backend.logging.{Logger, LoggingLevel}
 import backend.scorer.{CachedModelScorer, ScoreBasedProbability}
+import com.google.inject.Provider
 import javax.inject.Inject
 import models.{MusicFinder, Song}
 
@@ -12,9 +13,11 @@ import scala.util.Random
 import scalaz.syntax.functor.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
 
-import common.io.RefSystem
+import common.io.{DirectoryRef, RefSystem}
+import common.rich.collections.RichSeq._
 import common.rich.RichRandom.richRandom
 import common.rich.RichT._
+import common.TimedLogger
 
 trait SongSelector {
   def randomSong(): Song
@@ -65,24 +68,34 @@ private object SongSelector {
   class SongSelectorProxy @Inject()(
       ec: ExecutionContext,
       mf: MusicFinder,
-      scoreBasedProbability: ScoreBasedProbability,
-      cachedModelScorer: CachedModelScorer,
+      scoreBasedProbability: Provider[ScoreBasedProbability],
+      cachedModelScorer: Provider[CachedModelScorer],
       logger: Logger,
+      timedLogger: TimedLogger,
   ) extends SongSelector {
     private implicit val iec: ExecutionContext = ec
+    private var songSelectorFuture: Future[SongSelector] = _
     def update(): Future[_] = {
       val $ = Future(new SongSelectorImpl(
         mf.getSongFiles.toVector)(
-        mf, scoreBasedProbability, cachedModelScorer, logger))
-      if (songSelector == null)
-        songSelector = $
-      else // don't override until complete
-        $.>|(songSelector = $)
+        mf, scoreBasedProbability.get(), cachedModelScorer.get(), logger))
+      if (songSelectorFuture == null) songSelectorFuture = $
+      else $.>|(songSelectorFuture = $) // Don't override until complete.
       $
     }
-    private var songSelector: Future[SongSelector] = _
-    private lazy val ss = songSelector.get
-    override def randomSong() = ss.randomSong()
+    private lazy val ss = songSelectorFuture.get
     override def followingSong(song: Song) = ss followingSong song
+    override def randomSong() = if (songSelectorFuture.isCompleted) ss.randomSong() else fastRandomSong()
+    // We sacrifice uniform distribution for lower latency while waiting for update to complete (since loading
+    // TBs of songs and scoring them takes a while apparently).
+    private def fastRandomSong(): Song = timedLogger.apply("fastRandomSong", LoggingLevel.Debug) {
+      @tailrec def go(dir: DirectoryRef): Song = {
+        if (dir.dirs.isEmpty)
+          mf.getSongsInDir(dir).sample(1).head
+        else
+          go(dir.dirs.sample(1).head)
+      }
+      go(mf.genreDirs.sample(1).head)
+    }
   }
 }
