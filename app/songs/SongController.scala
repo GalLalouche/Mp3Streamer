@@ -1,8 +1,9 @@
-package controllers
+package songs
 
-import controllers.SongFormatter.ShouldEncodeMp3Reader
+import controllers.{PlayActionConverter, PlayControllerUtils}
 import javax.inject.Inject
 import play.api.mvc._
+import songs.SongFormatter.ShouldEncodeMp3Reader
 
 /** Handles fetch requests of JSON information. */
 class SongController @Inject()(

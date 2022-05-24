@@ -1,4 +1,4 @@
-package songs
+package songs.selector
 
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import backend.recon.{Album, Artist}

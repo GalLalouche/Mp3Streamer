@@ -4,7 +4,7 @@ import backend.recent.NewDir
 import backend.search.cache.SongCacheUpdater
 import javax.inject.Inject
 import rx.lang.scala.Observer
-import songs.SongSelectorState
+import songs.selector.SongSelectorState
 
 import scala.concurrent.{ExecutionContext, Future}
 

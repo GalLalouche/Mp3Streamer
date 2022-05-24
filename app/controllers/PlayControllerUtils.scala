@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc.Request
 
-private object PlayControllerUtils {
+object PlayControllerUtils {
   def shouldEncodeMp3(request: Request[_]): Boolean =
     request.headers("User-Agent").contains("Chrome") || request.headers.get("Referer").exists(_ endsWith "mp3")
 }

@@ -1,4 +1,4 @@
-package songs
+package songs.selector
 
 import javax.inject.{Inject, Provider}
 import models.Song

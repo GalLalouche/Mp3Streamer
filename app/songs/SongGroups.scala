@@ -11,7 +11,7 @@ import common.json.Jsonable
 import common.json.ToJsonableOps._
 import common.rich.RichT._
 
-class SongGroups @Inject()(@RootDirectory rootDirectory: DirectoryRef) {
+private class SongGroups @Inject()(@RootDirectory rootDirectory: DirectoryRef) {
   private lazy val jsonFile = rootDirectory addFile "song_groups.json"
 
   def save(groups: Traversable[SongGroup])(implicit songJsonable: Jsonable[Song]): Unit = groups
@@ -23,7 +23,7 @@ class SongGroups @Inject()(@RootDirectory rootDirectory: DirectoryRef) {
       .toSet
 }
 
-object SongGroups {
+private object SongGroups {
   def fromGroups(groups: Traversable[SongGroup]): Map[Song, SongGroup] =
     groups.foldLeft(Map[Song, SongGroup]())((agg, group) => agg ++ group.songs.fproduct(group.const))
 }

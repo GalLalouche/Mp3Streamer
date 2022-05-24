@@ -1,11 +1,12 @@
-package controllers
+package songs
 
-import controllers.SongFormatter.ShouldEncodeMp3Reader
+import controllers.{ControllerSongJsonifier, UrlPathUtils}
 import decoders.Mp3Encoder
 import javax.inject.Inject
 import models._
 import play.api.libs.json.JsValue
-import songs.{SongGroup, SongGroups, SongSelectorState}
+import songs.SongFormatter.ShouldEncodeMp3Reader
+import songs.selector.SongSelectorState
 
 import scala.language.implicitConversions
 
