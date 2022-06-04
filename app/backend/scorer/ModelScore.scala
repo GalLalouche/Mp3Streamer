@@ -13,7 +13,6 @@ object ModelScore extends Enum[ModelScore] {
   case object Good extends ModelScore
   case object Great extends ModelScore
   case object Amazing extends ModelScore // Really, really good songs you haven't gotten sick of yet
-  case object Classic extends ModelScore // The Free Stairway to Bohemian Sultans
 
   override def values: immutable.IndexedSeq[ModelScore] = findValues
   val DefaultTitle = "Default"

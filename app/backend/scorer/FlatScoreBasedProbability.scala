@@ -1,6 +1,7 @@
 package backend.scorer
 
 import backend.logging.Logger
+import backend.scorer.FlatScoreBasedProbability.withoutAsserts
 import javax.inject.Singleton
 import models.Song
 
@@ -19,6 +20,10 @@ import common.rich.primitives.RichDouble.richDouble
     logger: Logger,
     withAsserts: Boolean,
 ) extends ScoreBasedProbability {
+  {
+    val totalSum: Double = ModelScore.values.map(map).sum
+    require(totalSum.isRoughly(1, 0.0000001), s"total sum was <$totalSum>, which is probably a bug")
+  }
   private val probabilities: Map[ModelScore, Percentage] = {
     val sum = songFiles.length
     val frequencies: Map[ModelScore, Int] = songFiles
@@ -36,22 +41,22 @@ import common.rich.primitives.RichDouble.richDouble
           s"required is <${map(score)}>, normalized probability is <${$(score)}>")
     def assertReducedProbability(score: ModelScore): Unit = {
       debugMessage(score)
-      assert(baseProbability(score) > map(score))
+      if (withAsserts)
+        assert(baseProbability(score) > map(score))
     }
     def assertIncreasedProbability(score: ModelScore): Unit = {
       debugMessage(score)
-      assert(baseProbability(score) < map(score))
+      if (withAsserts)
+        assert(baseProbability(score) < map(score))
     }
 
-    if (withAsserts) {
-      assertReducedProbability(ModelScore.Crappy)
-      assertReducedProbability(ModelScore.Meh)
-      // Okay has no inherent bias, though it'll probably be lower to accommodate the good scores.
-      debugMessage(ModelScore.Okay)
-      assertIncreasedProbability(ModelScore.Good)
-      assertIncreasedProbability(ModelScore.Great)
-      assertIncreasedProbability(ModelScore.Amazing)
-    }
+    assertReducedProbability(ModelScore.Crappy)
+    assertReducedProbability(ModelScore.Meh)
+    // Okay has no inherent bias, though it'll probably be lower to accommodate the good scores.
+    debugMessage(ModelScore.Okay)
+    assertIncreasedProbability(ModelScore.Good)
+    assertIncreasedProbability(ModelScore.Great)
+    assertIncreasedProbability(ModelScore.Amazing)
     $
   }
   def apply(s: Song): Percentage = scorer(s).fold(defaultScore)(apply)

@@ -30,7 +30,6 @@ object ScorerModule extends ScalaModule {
       case ModelScore.Good => 0.4
       case ModelScore.Great => 0.23
       case ModelScore.Amazing => 0.13
-      case ModelScore.Classic => 0.05
     }
     val defaultScore = requiredProbability(ModelScore.Okay)
     FlatScoreBasedProbability.withAsserts(

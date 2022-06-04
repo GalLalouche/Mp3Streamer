@@ -14,19 +14,17 @@ import common.io.FileRef
 import common.rich.collections.RichTraversableOnce._
 import common.rich.RichEnumeratum.richEnumeratum
 import common.rich.RichRandom.richRandom
-import common.rich.RichT.richT
 import common.test.AuxSpecs
 
 @Slow
 class FlatScoreBasedProbabilityTest extends WordSpec with AuxSpecs with MockitoSugar {
   private val requiredProbability: ModelScore => Double = {
-    case ModelScore.Crappy => 0.08
-    case ModelScore.Meh => 0.05
-    case ModelScore.Okay => 0.1
-    case ModelScore.Good => 0.15
-    case ModelScore.Great => 0.2
-    case ModelScore.Amazing => 0.25
-    case ModelScore.Classic => 0.17
+    case ModelScore.Crappy => 0.11
+    case ModelScore.Meh => 0.08
+    case ModelScore.Okay => 0.13
+    case ModelScore.Good => 0.18
+    case ModelScore.Great => 0.22
+    case ModelScore.Amazing => 0.28
   }
 
   "apply" should {
