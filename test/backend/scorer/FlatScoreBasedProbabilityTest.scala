@@ -1,6 +1,6 @@
 package backend.scorer
 
-import backend.logging.Logger
+import backend.logging.{ConsoleLogger, Logger}
 import backend.recon.{Album, Artist}
 import models.{FakeModelFactory, Song}
 import org.scalatest.WordSpec
