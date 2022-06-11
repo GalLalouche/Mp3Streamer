@@ -15,9 +15,12 @@ import common.rich.primitives.RichBoolean.richBoolean
 /** Sets up the initial lines and writes usage instructions. */
 private class Initializer @Inject()(mf: MusicFinder, aux: IndividualInitializer) {
   private class Extractor(dir: DirectoryRef) {
+    private lazy val songFiles = (dir +: dir.deepDirs).flatMap(mf.getOptionalSongsInDir)
+    private lazy val ordering: Ordering[OptionalSong] =
+      if (songFiles.forall(_.track.isDefined)) Ordering.by(_.track) else Ordering.by(_.file)
     private lazy val songs = (dir +: dir.deepDirs)
         .flatMap(mf.getOptionalSongsInDir)
-        .sortBy(_.file)
+        .sorted(ordering)
         .toVector
     private def globalNamedTag[A](tagName: String, extractor: OptionalSong => Option[A]) =
       OptionalField(tagName.toUpperCase, songs.flatMap(extractor(_)))

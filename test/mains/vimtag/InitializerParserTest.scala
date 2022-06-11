@@ -1,19 +1,17 @@
 package mains.vimtag
 
-import java.io.File
-
 import backend.module.FakeMusicFinder
 import models.FakeModelFactory
-import org.scalatest.FreeSpec
+import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import common.io.MemoryRoot
 import common.test.AuxSpecs
 
 abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualParser)
-    extends FreeSpec with AuxSpecs {
+    extends FreeSpec with AuxSpecs with OneInstancePerTest {
+  private val mf = new FakeMusicFinder(new MemoryRoot)
+  private val factory = new FakeModelFactory
   "A non-interactive initializer-parser couple returns the correct ID3" in {
-    val mf = new FakeMusicFinder(new MemoryRoot)
-    val factory = new FakeModelFactory
     def newSong(track: Int, title: String, year: Int, discNumber: Option[String], conductor: Option[String]) =
       mf.copySong("dir", factory.song(
         filePath = s"$track - $title",
@@ -50,7 +48,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
     res.performanceYear shouldReturn Change(2009)
 
     val songs = res.songId3s
-    songs should have size(3)
+    songs should have size 3
     val song1 = songs(0)
     song1.relativeFileName shouldReturn s1.file.name
     song1.title shouldReturn "Piano Concerto No.3 in C Major, Op.26 - I. Andante - Allegro"
@@ -68,5 +66,31 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
     song3.title shouldReturn "Piano Concerto No.3 in C Major, Op.26 - III. Allegro, ma non troppo"
     song3.track shouldReturn 9
     song3.discNumber shouldReturn None
+  }
+
+  "Ordering" in {
+    def newSong(track: Int, fileName: String) =
+      mf.copySong("dir", factory.song(
+        filePath = fileName,
+        year = 2000,
+        artistName = "Some artist",
+        albumName = "Some album",
+        track = track,
+        title = "whatever",
+      ))
+
+    val s3 = newSong(2, "c")
+    val s2 = newSong(1, "b")
+    val s1 = newSong(3, "a")
+
+    val parser = new Parser(ip)
+    val initializer = new Initializer(mf, ii)
+
+    val initial = initializer.apply(s1.file.parent)
+    val res = parser(initial.initialValues)(initial.lines)
+    val songs = res.songId3s
+    songs(0).track shouldReturn 1
+    songs(1).track shouldReturn 2
+    songs(2).track shouldReturn 3
   }
 }
