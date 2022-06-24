@@ -32,8 +32,9 @@ private class AllMusicHelper @Inject()(
   private val canonicalRe = s"$allmusicPrefix($canonicalLink)".r
 
   // TODO this should only be invoked once, from the external pipe
-  def isValidLink(u: Url): Future[Boolean] = it.downloadDocument(u)
-      .map(d => hasRating(d) && hasStaffReview(d))
+  def isValidLink(u: Url): Future[Boolean] =
+    it.downloadDocument(u)
+        .map(d => hasRating(d) && hasStaffReview(d))
   def isCanonical(link: String): Boolean = canonicalRe.findAllMatchIn(link).hasNext
 
   def canonize[R <: Reconcilable](link: BaseLink[R]): Future[BaseLink[R]] = {
@@ -59,7 +60,7 @@ private class AllMusicHelper @Inject()(
 private object AllMusicHelper {
   @VisibleForTesting
   def hasStaffReview(d: Document): Boolean =
-    d.find("div[itemprop=reviewBody]").exists(_.html.nonEmpty)
+    d.find(".review .text").exists(_.html.nonEmpty)
   @VisibleForTesting
   def hasRating(d: Document): Boolean =
     d.selectSingle(".allmusic-rating").hasClass("rating-allmusic-0").isFalse

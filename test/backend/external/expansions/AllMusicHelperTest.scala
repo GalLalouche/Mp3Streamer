@@ -34,32 +34,45 @@ class AllMusicHelperTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentS
     }
   }
 
+  private val validLink = "allmusic_helper_has_rating_has_staff_review.html"
+  private val ratingNoReview = "allmusic_helper_rating_but_no_staff_review.html"
+  private val noRatingNoReview = "allmusic_helper_no_rating_no_staff_review.html"
+  private val reviewNoRating = "allmusic_helper_staff_review_but_no_rating.html"
   "validity" - {
     "hasRating" - {
       "yes" in {
-        AllMusicHelper.hasRating(getDocument("allmusic_has_rating.html")) shouldReturn true
+        AllMusicHelper.hasRating(getDocument(validLink)) shouldReturn true
+        AllMusicHelper.hasRating(getDocument(ratingNoReview)) shouldReturn true
       }
       "no" in {
-        AllMusicHelper.hasRating(getDocument("allmusic_no_rating.html")) shouldReturn false
+        AllMusicHelper.hasRating(getDocument(noRatingNoReview)) shouldReturn false
+        AllMusicHelper.hasRating(getDocument(reviewNoRating)) shouldReturn false
       }
     }
     "hasStaffReview" - {
       "yes" in {
-        AllMusicHelper.hasStaffReview(getDocument("allmusic_has_rating.html")) shouldReturn true
+        AllMusicHelper.hasStaffReview(getDocument(validLink)) shouldReturn true
+        AllMusicHelper.hasStaffReview(getDocument(reviewNoRating)) shouldReturn true
       }
       "no" in {
-        AllMusicHelper.hasStaffReview(getDocument("allmusic_no_rating.html")) shouldReturn false
+        AllMusicHelper.hasStaffReview(getDocument(noRatingNoReview)) shouldReturn false
+        AllMusicHelper.hasStaffReview(getDocument(ratingNoReview)) shouldReturn false
       }
     }
     "isValid" - {
-      val helperPointsToValid = create(withDocument("allmusic_has_rating.html"))
-      val helperPointsToEmpty = create(withDocument("allmusic_no_rating.html"))
       val url = Url("http://foobar")
       "yes" in {
-        helperPointsToValid.isValidLink(url) shouldEventuallyReturn true
+        create(withDocument(validLink))
+            .isValidLink(url) shouldEventuallyReturn true
       }
-      "no" in {
-        helperPointsToEmpty.isValidLink(url) shouldEventuallyReturn false
+      "no" - {
+        Vector(
+          reviewNoRating,
+          ratingNoReview,
+          noRatingNoReview,
+        ).foreach(s => s in {
+          create(withDocument(s)).isValidLink(url) shouldEventuallyReturn false
+        })
       }
     }
   }
