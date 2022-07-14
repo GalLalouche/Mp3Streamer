@@ -1,11 +1,10 @@
 package mains.fixer.new_artist
 
-import java.awt.{Color, Insets}
-
 import mains.SwingUtils._
 import mains.fixer.new_artist.GenrePanel.UpdatingColumns
 import rx.lang.scala.{Observable, Subject}
 
+import java.awt.{Color, Insets}
 import scala.swing.{GridBagPanel, Orientation}
 import scala.swing.GridBagPanel.Anchor
 
@@ -49,8 +48,9 @@ private[fixer] class GenrePanel private(maxRows: Int, iconSideInPixels: Int, big
         ).>>(State.modify[Int](_ + bigIconMultiplayer))
 
   // TODO add this in a less hacky way, since it gets messed up when the box styles change.
+
+  private val filter = new GenreFilter
   private def addFilter(): UpdatingColumns[Unit] = State.get.map {usedUpColumns =>
-    val filter = new GenreFilter
     filter.textChanges.subscribe(_ => applyFilter(filter.text))
     filter.choice.subscribe(_ => tryChoose(filter.text))
     filter.select.subscribe(updateSelection(filter.text)(_))
@@ -94,9 +94,15 @@ private[fixer] class GenrePanel private(maxRows: Int, iconSideInPixels: Int, big
   private var currentSelection = -1
   private def updateSelection(s: String)(d: Direction): Unit = {
     def select(newIndex: Int): Unit = {
+      filter.undisplay()
       currentSelection = newIndex
       boxes.zipWithIndex.foreach {
-        case (b, i) => if (i == currentSelection) b.select() else b.clearSelection()
+        case (b, i) =>
+          if (i == currentSelection) {
+            filter.display(b.genreName)
+            b.select()
+          }
+          else b.clearSelection()
       }
     }
     def firstSelection(): Unit = boxes.zipWithIndex

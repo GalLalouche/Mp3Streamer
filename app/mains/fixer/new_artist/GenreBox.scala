@@ -1,11 +1,10 @@
 package mains.fixer.new_artist
 
-import java.awt.{Color, Font}
-import java.io.File
-
 import javax.imageio.ImageIO
 import mains.SwingUtils._
 
+import java.awt.{Color, Font}
+import java.io.File
 import scala.swing.{BoxPanel, Label, Orientation}
 
 import common.rich.RichT._
@@ -24,6 +23,7 @@ private class GenreBox(
   private val label = new Label(directory.name).joinOption(fontSize)(_ setFontSize _)
   contents += label
 
+  val genreName: String = label.text
   private val originalBackground = this.background
   def reset(): Unit = {
     this.background = originalBackground
