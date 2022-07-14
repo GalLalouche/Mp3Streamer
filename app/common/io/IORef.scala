@@ -24,7 +24,7 @@ trait IOSystem extends RefSystem {
 
 abstract class IOPath(f: File) extends PathRef {
   override type S = IOSystem
-  override def path = f.getAbsolutePath
+  override def path = f.getAbsolutePath.replace(File.separatorChar, '/')
   override def name = f.getName
   override def parent = IODirectory(f.getParent)
 }

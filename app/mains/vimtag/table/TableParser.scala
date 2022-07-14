@@ -1,8 +1,8 @@
 package mains.vimtag.table
 
-import java.util.regex.Pattern
-
 import mains.vimtag.{IndividualId3, IndividualParser}
+
+import java.util.regex.Pattern
 
 import scalaz.std.vector.vectorInstance
 import scalaz.State

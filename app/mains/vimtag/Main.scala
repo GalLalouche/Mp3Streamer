@@ -1,13 +1,12 @@
 package mains.vimtag
 
-import java.io.File
-
 import backend.module.StandaloneModule
 import com.google.inject.Guice
 import mains.vimtag.table.TableModule
 import mains.JavaMainUtils
 import net.codingwell.scalaguice.InjectorExtensions._
 
+import java.io.File
 import scala.concurrent.ExecutionContext
 import scala.io.StdIn
 

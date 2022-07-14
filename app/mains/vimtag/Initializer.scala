@@ -1,7 +1,5 @@
 package mains.vimtag
 
-import java.io.File
-
 import javax.inject.Inject
 import mains.vimtag.Initializer.InitialLines
 import models.{MusicFinder, OptionalSong}
@@ -15,13 +13,14 @@ import common.rich.primitives.RichBoolean.richBoolean
 /** Sets up the initial lines and writes usage instructions. */
 private class Initializer @Inject()(mf: MusicFinder, aux: IndividualInitializer) {
   private class Extractor(dir: DirectoryRef) {
-    private lazy val songFiles = (dir +: dir.deepDirs).flatMap(mf.getOptionalSongsInDir)
+    private lazy val songFiles = (dir +: dir.dirs).flatMap(mf.getOptionalSongsInDir)
     private lazy val ordering: Ordering[OptionalSong] =
-      if (songFiles.forall(_.track.isDefined)) Ordering.by(_.track) else Ordering.by(_.file)
-    private lazy val songs = (dir +: dir.deepDirs)
-        .flatMap(mf.getOptionalSongsInDir)
-        .sorted(ordering)
-        .toVector
+      if (songFiles.ensuring(_.nonEmpty).forall(_.track.isDefined))
+        Ordering.by(_.toTuple(_.directory, _.track))
+      else
+        Ordering.by(_.file)
+
+    private lazy val songs = songFiles.sorted(ordering).toVector
     private def globalNamedTag[A](tagName: String, extractor: OptionalSong => Option[A]) =
       OptionalField(tagName.toUpperCase, songs.flatMap(extractor(_)))
     private def requiredNamedTag[A](tagName: String, extractor: OptionalSong => Option[A]) =
@@ -36,8 +35,12 @@ private class Initializer @Inject()(mf: MusicFinder, aux: IndividualInitializer)
     def orchestra = globalNamedTag(Tags.Orchestra, _.orchestra)
     def performanceYear = globalNamedTag(Tags.PerformanceYear, _.performanceYear)
 
-    private def sequence[A](f: OptionalSong => String): Seq[String] = songs.map(f(_))
-    def files: Seq[String] = sequence(s => new File(s.file).getName)
+    private def sequence(f: OptionalSong => String): Seq[String] = songs.map(f(_))
+    private def relativize(s: String): String = s
+        .ensuring(_.startsWith(dir.path), s"Directory: <${dir.path}> is not a prefix to file <$s>")
+        .drop(dir.path.length)
+        .stripPrefix("/")
+    def files: Seq[String] = sequence(_.file |> relativize)
     def titles: Seq[String] = sequence(_.title.getOrElse(""))
     def tracks: Seq[Int] = songs.zipWithIndex
         .map(_.modifySecond(_ + 1))

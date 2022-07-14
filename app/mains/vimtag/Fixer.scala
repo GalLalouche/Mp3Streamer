@@ -19,6 +19,7 @@ import common.rich.path.RichFileUtils
 
 private object Fixer {
   def apply(dir: DirectoryRef, parsedId3: ParsedId3): Unit = {
+    val ioDir = dir.asInstanceOf[IODirectory]
     val startFrom1 = parsedId3.flags(Flag.ResetTrackNumbers)
     val removeFeat = parsedId3.flags(Flag.RemoveFeat)
     val keepDiscNumber = parsedId3.flags(Flag.NoUniformDiscNo) &&
@@ -26,7 +27,7 @@ private object Fixer {
     val renameFiles = parsedId3.flags(Flag.RenameFiles)
     val fixFolder = parsedId3.flags(Flag.FixFolder)
     for ((individual, index) <- parsedId3.songId3s.zipWithIndex) {
-      val file = dir.asInstanceOf[IODirectory].getFile(individual.relativeFileName).get.file
+      val file = ioDir.getFile(individual.relativeFileName).get.file
       val audioFile = AudioFileIO read file
       val existingTag = audioFile.getTag
       val newTag = {
@@ -60,9 +61,11 @@ private object Fixer {
       audioFile.commit()
       if (fixFolder.isFalse && renameFiles) // FixFolder renames files anyway
         RichFileUtils.rename(file, FixLabelsUtils.newFileName(SongTagParser.apply(file), file.extension))
+      if (file.parent != ioDir.dir)
+        RichFileUtils.move(file, ioDir.dir)
     }
-    if (fixFolder) {
+    ioDir.dir.dirs.filter(_.deepPaths.isEmpty).foreach(_.dir.delete())
+    if (fixFolder)
       FolderFixer.main(Array(dir.path))
-    }
   }
 }

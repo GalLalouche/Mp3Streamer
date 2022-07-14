@@ -7,8 +7,10 @@ import scalaz.syntax.bifunctor.ToBifunctorOps
 
 private class Parser @Inject()(aux: IndividualParser) {
   def apply(existingMappings: Map[String, InitialValues])(lines: Seq[String]): ParsedId3 = {
-    val (globals: Map[String, String], individuals: Seq[IndividualId3]) =
-      lines.filterNot(_ startsWith "#").span(aux.cutoff).bimap(aux.splitMap, aux.apply)
+    val (globals: Map[String, String], individuals: Seq[IndividualId3]) = lines
+        .filterNot(_ startsWith "#")
+        .span(aux.cutoff)
+        .bimap(aux.splitMap, aux.apply)
     def required(key: String): RequiredTag[String] = RequiredTag.parser(existingMappings(key))(globals(key))
     def optional(tag: String): ParsedTag[String] =
       globals.get(tag).filter(_.nonEmpty).map(RequiredTag.parser(existingMappings(tag))).getOrElse(Empty)

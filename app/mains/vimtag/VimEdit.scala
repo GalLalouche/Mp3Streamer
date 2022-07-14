@@ -1,11 +1,10 @@
 package mains.vimtag
 
-import java.io.File
-
 import javax.inject.Inject
 import mains.vimtag.Initializer.InitialLines
 import mains.vimtag.VimEdit._
 
+import java.io.File
 import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process._
 

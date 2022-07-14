@@ -79,18 +79,50 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
         title = "whatever",
       ))
 
-    val s3 = newSong(2, "c")
-    val s2 = newSong(1, "b")
-    val s1 = newSong(3, "a")
+    newSong(2, "c")
+    newSong(1, "b")
+    val dir = newSong(3, "a").file.parent
 
     val parser = new Parser(ip)
     val initializer = new Initializer(mf, ii)
 
-    val initial = initializer.apply(s1.file.parent)
+    val initial = initializer.apply(dir)
     val res = parser(initial.initialValues)(initial.lines)
     val songs = res.songId3s
     songs(0).track shouldReturn 1
     songs(1).track shouldReturn 2
     songs(2).track shouldReturn 3
+  }
+
+  "Multiple folders" in {
+    def newSong(track: Int, subName: String, fileName: String) =
+      mf.copySong(Vector("dir", subName), factory.song(
+        filePath = fileName,
+        year = 2000,
+        artistName = "Some artist",
+        albumName = "Some album",
+        track = track,
+        title = "whatever",
+      ))
+
+    newSong(1, "a", "a")
+    newSong(2, "a", "b")
+    newSong(1, "b", "c")
+    val dir = newSong(2, "b", "d").file.parent.parent
+
+    val parser = new Parser(ip)
+    val initializer = new Initializer(mf, ii)
+
+    val initial = initializer.apply(dir)
+    val res = parser(initial.initialValues)(initial.lines)
+    val songs = res.songId3s
+    songs(0).track shouldReturn 1
+    songs(0).relativeFileName shouldReturn "a/a"
+    songs(1).track shouldReturn 2
+    songs(1).relativeFileName shouldReturn "a/b"
+    songs(2).track shouldReturn 1
+    songs(2).relativeFileName shouldReturn "b/c"
+    songs(3).track shouldReturn 2
+    songs(3).relativeFileName shouldReturn "b/d"
   }
 }

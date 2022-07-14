@@ -22,11 +22,12 @@ class FakeMusicFinder(val baseDir: MemoryDir) extends MusicFinder {
   * Adds a song under root / songs / $artist_name / $album_time / $file_name.
   * Ensures the song's file matches the music finder directory structure.
   */
-  def copySong(s: MemorySong): MemorySong =
-    copy(s, dirToAddSongsTo addSubDir s.artistName addSubDir s.albumName addFile s.file.name)
+  def copySong(s: MemorySong): MemorySong = copySong(Vector(s.artistName, s.albumName), s)
+  /** Adds a song under the requested directory names. */
+  def copySong(dirName: String, s: MemorySong): MemorySong = copySong(Vector(dirName), s)
   /** Adds a song under the requested directory name. */
-  def copySong(dirName: String, s: MemorySong): MemorySong =
-    copy(s, dirToAddSongsTo.addSubDir(dirName).addFile(s.file.name))
+  def copySong(path: Seq[String], s: MemorySong): MemorySong =
+    copy(s, path.foldLeft(dirToAddSongsTo)(_ addSubDir _).addFile(s.file.name))
   override def parseSong(f: FileRef): MemorySong = pathToSongs(f.path)
   override def getOptionalSongsInDir(d: DirectoryRef) =
     d.files.map(_.path).map(pathToSongs).map(_.toOptionalSong)

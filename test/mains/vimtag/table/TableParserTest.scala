@@ -1,7 +1,5 @@
 package mains.vimtag.table
 
-import java.io.File
-
 import mains.vimtag.{Change, Common, Empty, Keep, Parser}
 import org.scalatest.FreeSpec
 

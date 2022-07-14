@@ -1,9 +1,8 @@
 package mains.vimtag
 
-import java.util.regex.Pattern
-
 import enumeratum.{Enum, EnumEntry}
 
+import java.util.regex.Pattern
 import scala.collection.immutable
 
 import common.rich.primitives.RichString._
