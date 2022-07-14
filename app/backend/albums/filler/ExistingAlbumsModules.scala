@@ -11,8 +11,8 @@ import net.codingwell.scalaguice.ScalaModule
 import common.TimedLogger
 import common.guice.RichModule.richModule
 
-private[albums] object ExistingAlbumsModules {
-  private[filler] def lazyAlbums: Module = new ScalaModule {
+object ExistingAlbumsModules {
+  def lazyAlbums: Module = new ScalaModule {
     override def configure(): Unit = {
       bind[ExistingAlbums].to[LazyExistingAlbums]
     }
@@ -23,7 +23,7 @@ private[albums] object ExistingAlbumsModules {
       bind[ExistingAlbums].to[EagerExistingAlbums]
     }
   }
-  private[filler] def forSingleArtist(artistName: String): Module = new EagerBinder {
+  def forSingleArtist(artistName: String): Module = new EagerBinder {
     @Provides @Singleton private def existingAlbumsCache(
         factory: EagerExistingAlbumsFactory): EagerExistingAlbums = factory.singleArtist(Artist(artistName))
   }

@@ -26,7 +26,6 @@ private class MbAlbumReconciler @Inject()(
     logger: Logger,
 ) extends Reconciler[Album] {
   private implicit val iec: ExecutionContext = ec
-  private val scorer = albumReconScorer
 
   override def apply(a: Album) = artistReconciler(a.artist)
       .flatMapF(artistId => downloader("release-group/", "limit" -> "100", "artist" -> artistId.id))
@@ -38,11 +37,11 @@ private class MbAlbumReconciler @Inject()(
       .filter(_ has "first-release-date")
       .filter(_ ostr "primary-type" exists Set("Album", "EP"))
       // TODO topByFilter?
-      .fproduct(js => scorer(album(js, a.artist), a))
+      .fproduct(js => albumReconScorer(album(js, a.artist), a))
       .filter(_._2 >= 0.85)
       .maximumBy(_._2)
       .map(_._1)
-      .map(_ str "id" thrush  ReconID.validateOrThrow)
+      .map(_ str "id" thrush ReconID.validateOrThrow)
       .<| {
         case None => logger.debug(s"Could not reconcile album: <$a>")
         case _ => ()

@@ -1,6 +1,10 @@
 package backend.scorer.utils.foobar
 
+import backend.albums.filler.ArtistReconPusher
 import backend.logging.Logger
+import backend.mb.MbArtistReconciler
+import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
+import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{FullInfoModelScorer, ModelScore}
 import backend.scorer.FullInfoModelScorer.{SongScore, Source}
 import javax.inject.Inject
@@ -16,6 +20,7 @@ import scalafx.scene.text.{Text, TextFlow}
 
 import scalaz.syntax.bind._
 import common.rich.func.BetterFutureInstances._
+import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.ToMoreMonadErrorOps.toMoreMonadErrorOps
 
 import common.rich.RichT.richT
@@ -25,6 +30,9 @@ import common.scalafx.Builders
 import common.scalafx.RichNode.richNode
 
 private class FoobarScorer @Inject()(
+    reconciler: MbArtistReconciler,
+    reconStorage: ArtistReconStorage,
+    pusher: ArtistReconPusher,
     scorer: FullInfoModelScorer,
     ec: ExecutionContext,
     logger: Logger,
@@ -65,8 +73,20 @@ private class FoobarScorer @Inject()(
     }
     $
   }
+  // TODO this whole logic need to be abstracted away :\
+  private def reconcileArtist(a: Artist): Future[_] = reconStorage
+      .exists(a)
+      .ifM(
+        Future.successful(Unit),
+        reconciler(a)
+            .listen(_ => logger.info(s"Reconciled <$a>"))
+            .flatMapF(r => pusher.withValidation(a.name, r.id, isIgnored = false))
+            .run
+            .void
+      )
   def update(nowPlayingSimpleOutput: File, onScoreChange: () => Any): Future[Pane] = for {
     song <- currentlyPlayingSong(nowPlayingSimpleOutput)
+    _ <- reconcileArtist(song.artist)
     score <- scorer(song)
   } yield {
     val nullableScore = makeNullableSongScore(score)
