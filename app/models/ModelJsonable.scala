@@ -1,12 +1,14 @@
 package models
 
-import java.io.File
-
 import play.api.libs.json.{JsObject, Json}
 
-import common.json.RichJson._
+import java.io.File
+import java.util.concurrent.TimeUnit
+import scala.concurrent.duration.Duration
+
 import common.io.{IODirectory, IOFile}
 import common.json.OJsonable
+import common.json.RichJson._
 import common.json.ToJsonableOps._
 
 object ModelJsonable {
@@ -19,7 +21,7 @@ object ModelJsonable {
         "track" -> s.track,
         "year" -> s.year,
         "bitrate" -> s.bitRate,
-        "duration" -> s.duration,
+        "duration" -> s.duration.toSeconds,
         "size" -> s.size,
         "discNumber" -> s.discNumber,
         "trackGain" -> s.trackGain,
@@ -34,10 +36,12 @@ object ModelJsonable {
       IOSong(file = IOFile(file), title = json str "title",
         artistName = json str "artistName", albumName = json str "albumName",
         track = json int "track", year = json int "year", bitRate = json str "bitrate",
-        duration = json int "duration", size = json int "size", discNumber = json ostr "discNumber",
-        trackGain = json.\("trackGain").asOpt[Double], composer = json.\("composer").asOpt[String],
-        conductor = json.\("conductor").asOpt[String], orchestra = json.\("orchestra").asOpt[String],
-        opus = json.\("opus").asOpt[String], performanceYear = json.\("performanceYear").asOpt[Int],
+        duration = Duration(json int "duration", TimeUnit.SECONDS), size = json int "size",
+        discNumber = json ostr "discNumber", trackGain = json.\("trackGain").asOpt[Double],
+
+        composer = json.\("composer").asOpt[String], conductor = json.\("conductor").asOpt[String],
+        orchestra = json.\("orchestra").asOpt[String], opus = json.\("opus").asOpt[String],
+        performanceYear = json.\("performanceYear").asOpt[Int],
       )
     }
   }

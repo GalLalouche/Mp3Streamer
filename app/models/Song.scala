@@ -1,6 +1,7 @@
 package models
 
 import java.io.File
+import scala.concurrent.duration.Duration
 
 import common.io.{FileRef, IOFile, MemoryFile}
 
@@ -13,15 +14,17 @@ trait Song {
   def track: Int
   def year: Int
   def bitRate: String
-  def duration: Int
+  def duration: Duration
   def size: Long
   def discNumber: Option[String]
   def trackGain: Option[Double]
+
   def composer: Option[String]
   def conductor: Option[String]
   def orchestra: Option[String]
   def opus: Option[String] // Needs to be a string to support BWV, Kochel number, etc.
   def performanceYear: Option[Int]
+
   def toOptionalSong: OptionalSong = OptionalSong(
     file = file.path,
     title = Some(title),
@@ -40,7 +43,7 @@ trait Song {
 
 // TODO remove code duplication? hmm...
 case class IOSong(file: IOFile, title: String, artistName: String, albumName: String,
-    track: Int, year: Int, bitRate: String, duration: Int, size: Long,
+    track: Int, year: Int, bitRate: String, duration: Duration, size: Long,
     discNumber: Option[String], trackGain: Option[Double], composer: Option[String],
     conductor: Option[String], orchestra: Option[String], opus: Option[String], performanceYear: Option[Int],
 ) extends Song {
@@ -51,7 +54,7 @@ object IOSong {
 }
 
 case class MemorySong(file: MemoryFile, title: String, artistName: String, albumName: String,
-    track: Int, year: Int, bitRate: String, duration: Int, size: Long,
+    track: Int, year: Int, bitRate: String, duration: Duration, size: Long,
     discNumber: Option[String], trackGain: Option[Double], composer: Option[String],
     conductor: Option[String], orchestra: Option[String], opus: Option[String], performanceYear: Option[Int],
 ) extends Song {

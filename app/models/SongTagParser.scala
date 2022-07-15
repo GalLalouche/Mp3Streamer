@@ -6,6 +6,8 @@ import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
 
 import java.io.File
+import java.util.concurrent.TimeUnit
+import scala.concurrent.duration.Duration
 
 import common.io.IOFile
 import common.rich.collections.RichTraversableOnce._
@@ -48,7 +50,7 @@ object SongTagParser {
       track = parseTrack(tag.getFirst(FieldKey.TRACK)),
       year = year,
       bitRate = header.getBitRate,
-      duration = header.getTrackLength,
+      duration = Duration(header.getTrackLength, TimeUnit.SECONDS),
       size = file.length,
       discNumber = tag.firstNonEmpty(FieldKey.DISC_NO),
       trackGain = tag.firstNonEmpty(FieldKey.REPLAYGAIN_TRACK_GAIN).map(parseReplayGain),

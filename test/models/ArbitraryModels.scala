@@ -1,9 +1,11 @@
 package models
 
 import java.io.File
-
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.arbitrary
+
+import java.util.concurrent.TimeUnit
+import scala.concurrent.duration.Duration
 
 import common.io.{IODirectory, IOFile}
 
@@ -28,8 +30,10 @@ object ArbitraryModels {
     performanceYear <- arbitrary[Option[Int]].map(_.map(_ % 3000))
   } yield {
     IOSong(IOFile(new File(filePath).getAbsoluteFile),
-      title, artistName, albumName, track, year, bitRate, duration, size, discNumber, trackGain,
-      composer, conductor, orchestra, opus, performanceYear)
+      title, artistName, albumName, track, year, bitRate,
+      Duration(duration, TimeUnit.SECONDS), size, discNumber, trackGain,
+      composer, conductor, orchestra, opus, performanceYear,
+    )
   }
   implicit lazy val arbAlbum: Gen[Album] = for {
     filePath <- arbitrary[String]

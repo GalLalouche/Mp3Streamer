@@ -4,6 +4,8 @@ import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 import org.scalatest.FreeSpec
 
+import scala.concurrent.duration.DurationInt
+
 import common.rich.path.RichFile._
 import common.test.{AuxSpecs, DirectorySpecs}
 
@@ -21,7 +23,7 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
           $.track shouldReturn 12
           $.year shouldReturn 2000
           $.bitRate shouldReturn "192"
-          $.duration shouldReturn 3
+          $.duration shouldReturn 3.seconds
           $.size shouldReturn 75522L
           $.discNumber shouldReturn None
           $.trackGain shouldReturn None

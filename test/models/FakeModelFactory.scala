@@ -1,9 +1,11 @@
 package models
 
-import java.util.UUID
-
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
+
+import java.util.UUID
+import java.util.concurrent.TimeUnit
+import scala.concurrent.duration.Duration
 
 import common.io.MemoryRoot
 
@@ -19,8 +21,10 @@ class FakeModelFactory {
       conductor: Option[String] = None, orchestra: Option[String] = None, opus: Option[String] = None,
       performanceYear: Option[Int] = None,
   ): MemorySong =
-    MemorySong(root.addFile(filePath), title, artistName, albumName, track, year, bitRate, duration, size,
-      discNumber, trackGain, composer, conductor, orchestra, opus, performanceYear)
+    MemorySong(root.addFile(filePath), title, artistName, albumName, track, year, bitRate,
+      Duration(duration, TimeUnit.SECONDS), size, discNumber, trackGain,
+      composer, conductor, orchestra, opus, performanceYear,
+    )
   def artist(name: String = "artist", albums: Seq[Album] = Nil): Artist = Artist(name, albums.toSet)
   implicit val arbSong: Arbitrary[MemorySong] = Arbitrary(for {
     title <- arbitrary[String]
