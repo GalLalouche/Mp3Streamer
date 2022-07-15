@@ -6,7 +6,7 @@ import javax.inject.Inject
 import models._
 import play.api.libs.json.JsValue
 import songs.SongFormatter.ShouldEncodeMp3Reader
-import songs.selector.SongSelectorState
+import songs.selector.{FollowingSong, SongSelectorState}
 
 import scala.language.implicitConversions
 
@@ -21,6 +21,7 @@ private class SongFormatter @Inject()(
     albumFactory: AlbumFactory,
     groups: SongGroups,
     songSelectorState: SongSelectorState,
+    followingSong: FollowingSong,
     encoder: Mp3Encoder,
     urlPathUtils: UrlPathUtils,
     songJsonifier: ControllerSongJsonifier,
@@ -66,8 +67,7 @@ private class SongFormatter @Inject()(
     songsInAlbum(path).filter(_.discNumber.contains(requestedDiscNumber)).ensuring(_.nonEmpty)
 
   def song(path: String): ShouldEncodeMp3Reader = group(urlPathUtils parseSong path)
-  def nextSong(path: String): ShouldEncodeMp3Reader =
-    songSelectorState.followingSong(urlPathUtils.parseSong(path)).get
+  def nextSong(path: String): ShouldEncodeMp3Reader = followingSong.next(urlPathUtils.parseSong(path)).get
 }
 
 object SongFormatter {

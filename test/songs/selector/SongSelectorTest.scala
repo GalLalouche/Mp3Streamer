@@ -51,16 +51,4 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
       }
     }
   }
-  "next song" in {
-    val injector = createInjector
-    val mf = injector.instance[FakeMusicFinder]
-    val song1 = mf.copySong(factory.song(albumName = "album", artistName = "artist", track = 1))
-    val song2 = mf.copySong(factory.song(albumName = "album", artistName = "artist", track = 2))
-
-    val $ = injector.instance[SongSelector]
-
-    val nextSong = $.followingSong(song1).get
-    nextSong shouldReturn song2
-    $ followingSong song2 shouldBe 'empty
-  }
 }

@@ -38,7 +38,6 @@ private class SongSelectorProxy @Inject()(
     $
   }
   private lazy val ss = songSelectorFuture.get
-  override def followingSong(song: Song) = ss followingSong song
   override def randomSong() = if (songSelectorFuture.isCompleted) ss.randomSong() else fastRandomSong()
   // We sacrifice uniform distribution for lower latency while waiting for update to complete (since loading
   // TBs of songs and scoring them takes a while apparently).

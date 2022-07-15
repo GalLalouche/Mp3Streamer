@@ -33,9 +33,4 @@ private class SongSelectorImpl[Sys <: RefSystem](
       randomSong()
     }
   }
-  def followingSong(song: Song): Option[Song] =
-    song.file.parent
-        .|>(musicFinder.getSongsInDir)
-        .sortBy(_.track)
-        .lift(song.track)
 }

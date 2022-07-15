@@ -13,5 +13,4 @@ trait SongSelector {
   }
   def randomMp3Song(): Song = randomSongWithExtension("mp3")
   def randomFlacSong(): Song = randomSongWithExtension("flac")
-  def followingSong(song: Song): Option[Song]
 }
