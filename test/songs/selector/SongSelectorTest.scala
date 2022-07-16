@@ -4,7 +4,7 @@ import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import backend.recon.{Album, Artist}
 import backend.scorer.{CachedModelScorer, ModelScore, ScoreBasedProbability}
 import com.google.inject.Guice
-import models.{FakeModelFactory, MemorySong, Song}
+import models.{FakeModelFactory, Genre, GenreFinder, MemorySong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import net.codingwell.scalaguice.ScalaModule
 import org.scalacheck.Arbitrary._
@@ -12,7 +12,7 @@ import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
 import common.guice.RichModule.richModule
-import common.io.FileRef
+import common.io.{DirectoryRef, FileRef}
 import common.test.AuxSpecs
 
 class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs with GeneratorDrivenPropertyChecks
@@ -25,6 +25,10 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
   private def createInjector = Guice.createInjector(
     TestModuleConfiguration().module overrideWith new ScalaModule {
       override def configure(): Unit = {
+        bind[GenreFinder].toInstance(new GenreFinder(null) {
+          override def forArtist(artist: Artist) = None
+          override def apply(dir: DirectoryRef) = ???
+        })
         bind[ScoreBasedProbability].toInstance(new ScoreBasedProbability {
           override def apply(s: Song) = 0.5
           override def apply(s: ModelScore) = 0.5

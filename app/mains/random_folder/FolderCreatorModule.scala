@@ -1,17 +1,24 @@
 package mains.random_folder
 
-import backend.module.StandaloneModule
 import com.google.inject.Provides
 import com.google.inject.assistedinject.FactoryModuleBuilder
 import net.codingwell.scalaguice.ScalaModule
+import songs.selector.SongSelector
 
-private object FolderCreatorModule extends ScalaModule {
+import java.io.File
+import scala.util.Random
+
+import common.Filter
+
+private class FolderCreatorModule(seed: Long = Random.nextLong()) extends ScalaModule {
   override def configure(): Unit = {
-    install(StandaloneModule)
-    // TODO add to scala guice.
-    install(new FactoryModuleBuilder().build(classOf[RandomFolderCreatorFactory])
-    )
+    bind[Long].annotatedWith[Seed].toInstance(seed)
+    // TODO ScalaCommon move to somewhere common
+    install(new FactoryModuleBuilder().build(classOf[RandomFolderCreatorFactory]))
   }
-  @Provides private def fileFilter(sde: SongDataExtractor): FileFilter =
-    FileFilter.fromConfig(sde)
+
+  private val random = new Random(seed)
+  @Provides private def fileFilter(sde: SongDataExtractor): Filter[File] = FileFilters.fromConfig(sde)
+  // TODO ScalaCommon move to somewhere common
+  @Provides private def provideRandom(): Random = new Random(random.nextLong())
 }

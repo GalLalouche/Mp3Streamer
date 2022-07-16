@@ -1,7 +1,6 @@
 package songs.selector
 
-import backend.logging.{Logger, LoggingLevel}
-import backend.scorer.{CachedModelScorer, ScoreBasedProbability}
+import backend.logging.LoggingLevel
 import com.google.inject.Provider
 import javax.inject.Inject
 import models.{MusicFinder, Song}
@@ -18,31 +17,30 @@ import common.rich.RichFuture._
 import common.rich.RichRandom.richRandom
 import common.TimedLogger
 
-/** A mutable-updateable wrapper of SongSelector */
+/** A mutable-updateable wrapper of SongSelector. */
 private class SongSelectorProxy @Inject()(
     ec: ExecutionContext,
     mf: MusicFinder,
-    scoreBasedProbability: Provider[ScoreBasedProbability],
-    cachedModelScorer: Provider[CachedModelScorer],
-    logger: Logger,
+    ssFactory: Provider[MultiStageSongSelectorFactory],
+    scoreBasedFilter: Provider[ScoreBasedFilter],
     timedLogger: TimedLogger,
+    random: Random,
 ) extends SongSelector {
   private implicit val iec: ExecutionContext = ec
   private var songSelectorFuture: Future[SongSelector] = _
+  // FIXME this should be called on score updates, can we do it only for updating scores? Perhaps another proxy?
   def update(): Future[_] = {
-    val $ = Future(new SongSelectorImpl(
-      mf.getSongFiles.toVector)(
-      mf, scoreBasedProbability.get(), cachedModelScorer.get(), logger))
+    val $ = Future(ssFactory.get.withSongs(mf.getSongFiles.toVector))
     if (songSelectorFuture == null) songSelectorFuture = $
     else $.>|(songSelectorFuture = $) // Don't override until complete.
     $
   }
   private lazy val ss = songSelectorFuture.get
   override def randomSong() = if (songSelectorFuture.isCompleted) ss.randomSong() else fastRandomSong()
+
   // We sacrifice uniform distribution for lower latency while waiting for update to complete (since loading
   // TBs of songs and scoring them takes a while apparently).
   private def fastRandomSong(): Song = timedLogger.apply("fastRandomSong", LoggingLevel.Debug) {
-    val random = Random
     @tailrec def go(dir: DirectoryRef): Song = {
       if (dir.dirs.isEmpty) {
         val songs = mf.getSongsInDir(dir).toVector
