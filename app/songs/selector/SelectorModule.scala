@@ -21,24 +21,10 @@ private[songs] object SelectorModule extends ScalaModule with ModuleUtils {
     requireBinding[ExecutionContext]
     requireBinding[MusicFinder]
     requireBinding[Logger]
+    bind[SongSelector].to[SongSelectorState]
   }
 
   @Provides private def lengthFilter(
       genreFinder: GenreFinder,
   ): LengthFilter = new LengthFilter(genreFinder = genreFinder, minLength = 2.minutes)
-
-  @Provides private def songSelector(
-      ec: ExecutionContext,
-      logger: Logger,
-      songSelectorProxy: SongSelectorProxy
-  ): SongSelector = {
-    implicit val iec: ExecutionContext = ec
-    val start = System.currentTimeMillis()
-    // TODO TimedFuture? AsyncTimedLogger?
-    logger.info("Song selector update starting")
-    songSelectorProxy
-        .update()
-        .>|(logger.info(s"SongSelector has finished updating (${System.currentTimeMillis() - start} ms)"))
-    songSelectorProxy
-  }
 }

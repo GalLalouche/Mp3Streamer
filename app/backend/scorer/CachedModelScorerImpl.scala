@@ -23,7 +23,7 @@ private class CachedModelScorerImpl @Inject()(
     albumScorer: AlbumScoreStorage,
     reconcilableFactory: ReconcilableFactory,
     ec: ExecutionContext,
-) extends CachedModelScorer  {
+) extends CachedModelScorer {
   private implicit val iec: ExecutionContext = ec
 
   private lazy val albumScores: Map[(Artist, String), ModelScore] =

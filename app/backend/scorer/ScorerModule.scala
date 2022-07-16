@@ -14,7 +14,7 @@ object ScorerModule extends ScalaModule {
     bind[StorageScorer[Song]].to[SongScoreStorage]
     bind[FullInfoModelScorer].to[CompositeStorageScorer]
     bind[ScoreBasedProbability].to[FlatScoreBasedProbability]
-    bind[CachedModelScorer].to[CachedModelScorerImpl]
+    bind[CachedModelScorer].to[CachedModelScorerState]
     bind[ModelScorer].to[ModelScorerImpl]
   }
   @Provides
