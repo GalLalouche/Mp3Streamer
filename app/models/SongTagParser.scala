@@ -8,6 +8,7 @@ import org.jaudiotagger.tag.{FieldKey, Tag}
 import java.io.File
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.Duration
+import scala.util.Try
 
 import common.io.IOFile
 import common.rich.collections.RichTraversableOnce._
@@ -19,7 +20,7 @@ import common.rich.collections.RichIterator._
 
 object SongTagParser {
   // FLAC tag supports proper custom tag fetching, but MP3 tags have to be parsed manually
-  private def parseReplayGain(s: String): Double = s.split(' ').head.toDouble
+  private def parseReplayGain(s: String): Try[Double] = Try(s.split(' ').head.toDouble)
 
   private def parseTrack(s: String): Int = s.takeWhile(_.isDigit).toInt // takeWhile handles "01/08" formats.
 
@@ -53,7 +54,7 @@ object SongTagParser {
       duration = Duration(header.getTrackLength, TimeUnit.SECONDS),
       size = file.length,
       discNumber = tag.firstNonEmpty(FieldKey.DISC_NO),
-      trackGain = tag.firstNonEmpty(FieldKey.REPLAYGAIN_TRACK_GAIN).map(parseReplayGain),
+      trackGain = tag.firstNonEmpty(FieldKey.REPLAYGAIN_TRACK_GAIN).flatMap(parseReplayGain(_).toOption),
       composer = tag.firstNonEmpty(FieldKey.COMPOSER),
       conductor = tag.firstNonEmpty(FieldKey.CONDUCTOR),
       orchestra = tag.firstNonEmpty(FieldKey.ORCHESTRA),
@@ -61,7 +62,7 @@ object SongTagParser {
       performanceYear = tag.firstNonEmpty(FieldKey.PERFORMANCE_YEAR).map(_.toInt),
     )
   }
-  def optionalSong(file: File): OptionalSong = {
+  private[models] def optionalSong(file: File): OptionalSong = {
     validateRealFile(file)
     val tag = AudioFileIO.read(file).getTag
     val year = extractYear(file, tag)
