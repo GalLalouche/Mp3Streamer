@@ -61,7 +61,7 @@ private object Fixer {
       audioFile.commit()
       if (fixFolder.isFalse && renameFiles) // FixFolder renames files anyway
         RichFileUtils.rename(file, FixLabelsUtils.newFileName(SongTagParser.apply(file), file.extension))
-      if (file.parent != ioDir.dir)
+      else if (file.parent != ioDir.dir)
         RichFileUtils.move(file, ioDir.dir)
     }
     ioDir.dir.dirs.filter(_.deepPaths.isEmpty).foreach(_.dir.delete())
