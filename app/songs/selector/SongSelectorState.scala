@@ -20,5 +20,6 @@ import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
     () => ssFactory.get().withSongs(mf.getSongFiles.toVector),
   )
   def update(): Future[Unit] = updater.update()
+  update()
   override def randomSong(): Song = updater.current.randomSong()
 }
