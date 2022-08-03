@@ -22,4 +22,5 @@ import common.io.FileRef
   override def apply(a: Album) = updatable.current.apply(a)
   override def apply(s: Song) = updatable.current.apply(s)
   override def apply(f: FileRef) = updatable.current.apply(f)
+  override def fullInfo(s: Song) = updatable.current.fullInfo(s)
 }

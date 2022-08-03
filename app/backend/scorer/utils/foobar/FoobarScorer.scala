@@ -3,10 +3,9 @@ package backend.scorer.utils.foobar
 import backend.albums.filler.ArtistReconPusher
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
-import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
+import backend.recon.{Artist, ArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
-import backend.scorer.{FullInfoModelScorer, ModelScore}
-import backend.scorer.FullInfoModelScorer.{SongScore, Source}
+import backend.scorer.{FullInfoModelScorer, FullInfoScore, ModelScore, ScoreSource}
 import javax.inject.Inject
 import models.{Song, SongTagParser}
 
@@ -43,7 +42,7 @@ private class FoobarScorer @Inject()(
   // Uses the "Now Playing Simple" plugin, which writes the currently playing song to a file.
   private def currentlyPlayingSong(nowPlayingSimpleOutput: File): Future[Song] =
     Future(SongTagParser(new File(nowPlayingSimpleOutput.readAll)))
-  private def makeScore(song: Song, source: Source, score: String, onScoreChange: () => Any): Node = {
+  private def makeScore(song: Song, source: ScoreSource, score: String, onScoreChange: () => Any): Node = {
     assert(comboValues.contains(score))
     val $ = new ComboBox[String](comboValues)
     $.value = score
@@ -52,15 +51,15 @@ private class FoobarScorer @Inject()(
       ModelScore.withNameOption(value) match {
         case Some(newScore) =>
           val songSummary = source match {
-            case Source.Artist => song.artistName
-            case Source.Album => s"${song.artistName} - ${song.albumName}"
-            case Source.Song => s"${song.artistName} - ${song.title}"
+            case ScoreSource.Artist => song.artistName
+            case ScoreSource.Album => s"${song.artistName} - ${song.albumName}"
+            case ScoreSource.Song => s"${song.artistName} - ${song.title}"
           }
           println(s"Updating <$source> score for <$songSummary> to <$newScore>")
           (source match {
-            case Source.Artist => scorer.updateArtistScore(song, newScore)
-            case Source.Album => scorer.updateAlbumScore(song, newScore)
-            case Source.Song => scorer.updateSongScore(song, newScore)
+            case ScoreSource.Artist => scorer.updateArtistScore(song, newScore)
+            case ScoreSource.Album => scorer.updateAlbumScore(song, newScore)
+            case ScoreSource.Song => scorer.updateSongScore(song, newScore)
           }).toTry
               .listenError(logger.error("Failed to update score", _))
               .>|(onScoreChange())
@@ -94,9 +93,9 @@ private class FoobarScorer @Inject()(
       hgap = 10
       vgap = 2
       Vector(
-        (Source.Song, song.title, nullableScore.songScore),
-        (Source.Album, song.albumName, nullableScore.albumScore),
-        (Source.Artist, song.artistName, nullableScore.artistScore),
+        (ScoreSource.Song, song.title, nullableScore.songScore),
+        (ScoreSource.Album, song.albumName, nullableScore.albumScore),
+        (ScoreSource.Artist, song.artistName, nullableScore.artistScore),
       ).zipWithIndex.foreach {case ((source, title, score), i) => addRow(
         i,
         new Label(s"$source: "),
@@ -125,15 +124,15 @@ private object FoobarScorer {
       albumScore: String,
       artistScore: String,
   )
-  private def makeNullableSongScore(score: SongScore) = score match {
-    case SongScore.Default => NullableSongScore(
+  private def makeNullableSongScore(score: FullInfoScore) = score match {
+    case FullInfoScore.Default => NullableSongScore(
       score = ModelScore.DefaultTitle,
       source = "N/A",
       songScore = ModelScore.DefaultTitle,
       albumScore = ModelScore.DefaultTitle,
       artistScore = ModelScore.DefaultTitle,
     )
-    case SongScore.Scored(score, source, songScore, albumScore, artistScore) => NullableSongScore(
+    case FullInfoScore.Scored(score, source, songScore, albumScore, artistScore) => NullableSongScore(
       score = score.toString,
       source = source.toString,
       songScore = songScore.orDefaultString,

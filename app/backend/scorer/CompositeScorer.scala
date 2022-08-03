@@ -2,8 +2,7 @@ package backend.scorer
 
 import backend.recon.{Album, Artist}
 import backend.recon.Reconcilable.SongExtractor
-import backend.scorer.FullInfoModelScorer.{SongScore, Source}
-import backend.scorer.FullInfoModelScorer.SongScore.Scored
+import backend.scorer.FullInfoScore.Scored
 import models.Song
 
 import scala.language.higherKinds
@@ -19,32 +18,32 @@ private class CompositeScorer[M[_] : Bind](
     albumScorer: Album => OptionT[M, ModelScore],
     artistScorer: Artist => OptionT[M, ModelScore],
 ) {
-  def apply(s: Song): M[SongScore] = for {
+  def apply(s: Song): M[FullInfoScore] = for {
     songScore <- songScorer(s).run
     albumScore <- albumScorer(s.release).run
     artistScore <- artistScorer(s.artist).run
   } yield {
     songScore.map(
       Scored(_,
-        Source.Song,
+        ScoreSource.Song,
         songScore,
         albumScore,
         artistScore,
       )).orElse(
       albumScore.map(
         Scored(_,
-          Source.Album,
+          ScoreSource.Album,
           songScore,
           albumScore,
           artistScore,
         ))).orElse(
       artistScore.map(
         Scored(_,
-          Source.Artist,
+          ScoreSource.Artist,
           songScore,
           albumScore,
           artistScore,
         )
-      )).getOrElse(SongScore.Default)
+      )).getOrElse(FullInfoScore.Default)
   }
 }

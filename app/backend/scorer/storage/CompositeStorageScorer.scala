@@ -2,7 +2,7 @@ package backend.scorer.storage
 
 import backend.recon.{Album, Artist}
 import backend.recon.Reconcilable._
-import backend.scorer.{CachedModelScorerState, CompositeScorer, FullInfoModelScorer, ModelScore}
+import backend.scorer.{CachedModelScorerState, CompositeScorer, FullInfoModelScorer, FullInfoScore, ModelScore}
 import javax.inject.Inject
 import models.Song
 
@@ -26,7 +26,7 @@ private[scorer] class CompositeStorageScorer @Inject()(
     albumScorer.apply,
     artistScorer.apply,
   )
-  override def apply(s: Song): Future[FullInfoModelScorer.SongScore] = aux(s)
+  override def apply(s: Song): Future[FullInfoScore] = aux(s)
   override def updateSongScore(song: Song, score: ModelScore) = {
     songScorer.updateScore(song, score) >> cachedModelScorerState.update()
   }

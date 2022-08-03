@@ -40,11 +40,13 @@ private class CachedModelScorerImpl @Inject()(
   )
   override def apply(a: Artist): Option[ModelScore] = artistScores.get(a.normalized)
   override def apply(a: Album): Option[ModelScore] = albumScores.get((a.artist, a.title.toLowerCase))
-  override def apply(s: Song): Option[ModelScore] = aux(s).toModelScore
+  override def apply(s: Song): Option[ModelScore] = fullInfo(s).toModelScore
   // FIXME skipping song scores for now
   override def apply(f: FileRef): Option[ModelScore] =
     reconcilableFactory.toAlbum(f.parent).toOption.flatMap {album =>
       albumScores.get(album.artist.normalized -> album.title.toLowerCase)
           .orElse(artistScores.get(album.artist.normalized))
     }
+
+  override def fullInfo(s: Song) = aux(s)
 }

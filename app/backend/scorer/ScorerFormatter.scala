@@ -1,6 +1,5 @@
 package backend.scorer
 
-import backend.scorer.FullInfoModelScorer.SongScore
 import controllers.UrlPathUtils
 import javax.inject.Inject
 import models.Song
@@ -12,10 +11,10 @@ import common.json.JsonWriteable
 import common.json.ToJsonableOps._
 
 private object ScorerFormatter {
-  private implicit object SongScoreJsonable extends JsonWriteable[SongScore] {
-    override def jsonify(a: SongScore) = a match {
-      case SongScore.Default => Json.obj()
-      case SongScore.Scored(score, source, song, album, artist) => Json.obj(
+  private implicit object SongScoreJsonable extends JsonWriteable[FullInfoScore] {
+    override def jsonify(a: FullInfoScore) = a match {
+      case FullInfoScore.Default => Json.obj()
+      case FullInfoScore.Scored(score, source, song, album, artist) => Json.obj(
         "score" -> score.entryName,
         "source" -> source.toString,
         "song" -> song.orDefaultString,

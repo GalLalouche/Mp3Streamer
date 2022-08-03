@@ -12,4 +12,5 @@ trait CachedModelScorer {
   def apply(a: Album): Option[ModelScore]
   def apply(s: Song): Option[ModelScore]
   def apply(f: FileRef): Option[ModelScore]
+  def fullInfo(s: Song): FullInfoScore
 }

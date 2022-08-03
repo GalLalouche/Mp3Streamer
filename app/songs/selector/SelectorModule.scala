@@ -1,6 +1,7 @@
 package songs.selector
 
 import backend.logging.Logger
+import backend.scorer.CachedModelScorer
 import com.google.inject.Provides
 import mains.random_folder.{FileFilters, SongDataExtractor}
 import models.{GenreFinder, MusicFinder}
@@ -26,5 +27,6 @@ private[songs] object SelectorModule extends ScalaModule with ModuleUtils {
 
   @Provides private def lengthFilter(
       genreFinder: GenreFinder,
-  ): LengthFilter = new LengthFilter(genreFinder = genreFinder, minLength = 2.minutes)
+      cachedModelScorer: CachedModelScorer,
+  ): LengthFilter = new LengthFilter(genreFinder = genreFinder, cachedModelScorer, minLength = 2.minutes)
 }

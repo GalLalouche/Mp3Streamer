@@ -38,6 +38,7 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
           override def apply(a: Album) = ???
           override def apply(s: Song) = Some(ModelScore.Okay)
           override def apply(f: FileRef) = ???
+          override def fullInfo(s: Song) = ???
         })
       }
     }
