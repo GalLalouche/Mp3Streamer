@@ -1,7 +1,5 @@
 package mains.fixer
 
-import java.net.ConnectException
-
 import backend.{FutureOption, Url}
 import com.google.inject.Guice
 import javax.inject.Inject
@@ -10,6 +8,7 @@ import mains.cover.{CoverException, DownloadCover}
 import models.IOMusicFinder
 import net.codingwell.scalaguice.InjectorExtensions._
 
+import java.net.ConnectException
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.syntax.bind.ToBindOpsUnapply
@@ -86,5 +85,5 @@ private class FolderFixer @Inject()(
 
 private[mains] object FolderFixer {
   def main(args: Array[String]): Unit =
-    Guice.createInjector(MainsModule).instance[FolderFixer].run(Directory(args(0)))
+    Guice.createInjector(MainsModule).instance[FolderFixer].run(Directory(IOUtils.decodeFile(args(0))))
 }

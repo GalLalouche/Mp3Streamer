@@ -4,7 +4,7 @@ import backend.logging.Logger
 import com.google.inject.Guice
 import io.lemonlabs.uri.Url
 import javax.inject.Inject
-import mains.{BrowserUtils, MainsModule}
+import mains.{BrowserUtils, IOUtils, MainsModule}
 import mains.cover.DownloadCover._
 import mains.cover.image.ImageAPISearch
 import models.{AlbumFactory, MusicFinder}
@@ -97,7 +97,7 @@ private object DownloadCover {
 
     import common.rich.RichFuture._
     val injector = Guice.createInjector(MainsModule)
-    val folder = Directory(args mkString " ")
+    val folder = Directory(IOUtils.decodeFile(args mkString " "))
     println("Downloading cover image for " + folder.path)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     injector.instance[DownloadCover].apply(folder).collectHandle {

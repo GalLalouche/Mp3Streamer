@@ -2,8 +2,8 @@ package mains.vimtag
 
 import backend.module.StandaloneModule
 import com.google.inject.Guice
+import mains.{IOUtils, JavaMainUtils}
 import mains.vimtag.table.TableModule
-import mains.JavaMainUtils
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import java.io.File
@@ -12,6 +12,7 @@ import scala.io.StdIn
 
 import common.io.IODirectory
 import common.rich.RichFuture._
+import common.rich.collections.RichTraversableOnce._
 
 object Main {
   private case class ExceptionAfterFileCreated(f: File, e: Exception) extends Exception(e)
@@ -21,7 +22,7 @@ object Main {
     val injector = Guice.createInjector(StandaloneModule, TableModule)
     val vimEdit = injector.instance[VimEdit]
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    val dir = IODirectory(args.ensuring(_.length == 1).head)
+    val dir = IODirectory(IOUtils.decodeFile(args.view.single))
     val (file, lines, initialValues) = vimEdit(injector.instance[Initializer].apply(dir))
     try {
       lines

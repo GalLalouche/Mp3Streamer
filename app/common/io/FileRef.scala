@@ -64,6 +64,7 @@ trait DirectoryRef extends PathRef {self =>
   def getDir(name: String): Option[S#D]
   def dirs: Seq[S#D]
   def files: Seq[S#F]
+  def paths: Seq[S#P] = dirs.++(files).asInstanceOf[Seq[S#P]]
   def deepDirs: Seq[S#D] = dirs ++ dirs.flatMap(_.deepDirs).asInstanceOf[Seq[S#D]]
   def deepFiles: Seq[S#F] = files ++ dirs.flatMap(_.deepFiles).asInstanceOf[Seq[S#F]]
   def lastModified: LocalDateTime
@@ -76,7 +77,7 @@ trait DirectoryRef extends PathRef {self =>
   /** Returns all directories between this and dir. Throws if dir is not a parent of this. */
   def relativize(dir: S#D): Seq[S#D] = {
     val ps = parents.span(_ != dir)
-    require(ps._2.nonEmpty,  s"<$dir> is not a parent of <$this>")
+    require(ps._2.nonEmpty, s"<$dir> is not a parent of <$this>")
     ps._1.toList
   }
 }
