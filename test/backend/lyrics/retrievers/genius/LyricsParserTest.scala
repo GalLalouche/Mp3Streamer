@@ -6,12 +6,12 @@ import org.scalatest.FreeSpec
 class LyricsParserTest extends FreeSpec with LyricsSpec {
   override private[retrievers] def parser: SingleHostParser = LyricsParser
   "fromHtml" - {
-    "has lyrics" in {verifyLyrics("lyrics1")}
-    "has lyrics2" in {verifyLyrics("lyrics2")}
+    "lyrics" in {verifyLyrics("lyrics1")}
+    "lyrics2" in {verifyLyrics("lyrics2")}
+    "2022" in {verifyLyrics("2022")}
+    "spacing" in {verifyLyrics("spacing")}
+    "italics" in {verifyLyrics("italics")}
     "Ignores parenthesis comments" in {verifyLyrics("parens")}
-    "instrumental" - {
-      "[instrumental]" in {verifyInstrumental("instrumental1")}
-      "no brackets" in {verifyInstrumental("instrumental2")}
-    }
+    "instrumental" in {verifyInstrumental("instrumental")}
   }
 }
