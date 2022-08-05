@@ -12,10 +12,7 @@ import common.io.FileRef
     provider: Provider[CachedModelScorerImpl],
     factory: UpdatableProxyFactory,
 ) extends CachedModelScorer {
-  private val updatable: UpdatableProxy[CachedModelScorer] = factory(
-    provider.get,
-    provider.get,
-  )
+  private val updatable: UpdatableProxy[CachedModelScorer] = factory.initialize(provider.get)
   def update() = updatable.update()
 
   override def apply(a: Artist) = updatable.current.apply(a)

@@ -1,22 +1,17 @@
 package backend.search
 
-import backend.logging.Logger
 import com.google.inject.Singleton
 import javax.inject.Inject
 import models.{Album, Artist, Song}
 
 import scala.concurrent.Future
 
-import common.concurrency.Extra
+import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
 
 @Singleton
-private class SearchState @Inject()(factory: CompositeIndexFactory, logger: Logger) {
-  private var index: CompositeIndex = factory.create()
-  private val updater = Extra("SearchState") {
-    index = factory.create()
-    logger info "Search state has been updated"
-  }
-  def update(): Future[Unit] = updater.!()
+private class SearchState @Inject()(index: CompositeIndexFactory, proxyFactory: UpdatableProxyFactory) {
+  private val updater: UpdatableProxy[CompositeIndex] = proxyFactory.initialize(() => index.create())
+  def update(): Future[Unit] = updater.update()
 
-  def search(terms: Seq[String]): (Seq[Song], Seq[Album], Seq[Artist]) = index search terms
+  def search(terms: Seq[String]): (Seq[Song], Seq[Album], Seq[Artist]) = updater.current search terms
 }

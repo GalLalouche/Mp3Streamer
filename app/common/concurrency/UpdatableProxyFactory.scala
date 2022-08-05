@@ -14,4 +14,11 @@ class UpdatableProxyFactory @Inject()(timedLogger: TimedLogger) {
     manifest.runtimeClass.getSimpleName,
     timedLogger,
   )
+
+  def initialize[A: Manifest](updateSelf: () => A): UpdatableProxy[A] = new UpdatableProxy[A](
+    updateSelf(),
+    updateSelf,
+    manifest.runtimeClass.getSimpleName,
+    timedLogger,
+  )
 }
