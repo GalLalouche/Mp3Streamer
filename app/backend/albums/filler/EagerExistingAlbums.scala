@@ -17,9 +17,8 @@ import common.rich.collections.RichTraversableOnce._
 ) extends ExistingAlbums {
   override def artists: Iterable[Artist] = albums.keys
 
-  def removeExistingAndUnreleasedAlbums(
-      artist: Artist, allAlbums: Seq[NewAlbum]
-  ): Seq[NewAlbum] = {
+  // TODO why does this require eager?
+  def removeExistingAndUnreleasedAlbums(artist: Artist, allAlbums: Seq[NewAlbum]): Seq[NewAlbum] = {
     try {
       val albumTitles = albums(artist.normalized).map(_.title)
       allAlbums

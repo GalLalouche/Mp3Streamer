@@ -20,7 +20,7 @@ import common.concurrency.SimpleTypedActor
 import common.rich.RichTime.RichLocalDateTime
 
 @Singleton
-private class NewAlbumFiller @Inject()(
+private[albums] class NewAlbumFiller @Inject() private(
     storage: CachedNewAlbumStorage,
     fetcher: NewAlbumFetcher,
     ea: EagerExistingAlbums,

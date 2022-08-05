@@ -8,6 +8,7 @@ import play.api.mvc.InjectedController
 class AlbumsController @Inject()($: AlbumsFormatter, converter: PlayActionConverter, decoder: UrlDecodeUtils)
     extends InjectedController {
   def albums = converter.ok($.albums)
+  def forArtist(artistName: String) = converter.ok($.forArtist(decoder.decode(artistName)))
 
   def removeArtist(artist: String) = converter.noContent($.removeArtist(decoder.decode(artist)))
   def ignoreArtist(artist: String) = converter.noContent($.ignoreArtist(decoder.decode(artist)))

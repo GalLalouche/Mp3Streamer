@@ -60,6 +60,7 @@ GET         /index/index                             backend.search.IndexControl
 # Albums (Lazy, because ExistingAlbums takes a while to load)
 GET         /new_albums/index.html                   @backend.albums.AlbumsController.index
 GET         /new_albums/albums/                      @backend.albums.AlbumsController.albums
+GET         /new_albums/albums/*artist               @backend.albums.AlbumsController.forArtist(artist)
 PUT         /new_albums/artist/remove/*artist        @backend.albums.AlbumsController.removeArtist(artist)
 PUT         /new_albums/artist/ignore/*artist        @backend.albums.AlbumsController.ignoreArtist(artist)
 PUT         /new_albums/album/remove                 @backend.albums.AlbumsController.removeAlbum
