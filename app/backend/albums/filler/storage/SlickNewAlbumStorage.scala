@@ -129,7 +129,7 @@ private class SlickNewAlbumStorage @Inject()(
   override def apply(a: Artist) = db
       .run(tableQuery
           .filter(_.artist === a.name)
-          .filter(shouldRemoveAlbum)
+          .filterNot(shouldRemoveAlbum)
           .result
       )
       .map(_.map(extractValue) |> toNewAlbums)

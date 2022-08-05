@@ -37,10 +37,8 @@ private class NewAlbumFiller @Inject()(
     Future.successful(0)
   }
   def update(maxAge: Duration, maxCachedAlbums: Int)(a: Artist): Future[Int] = {
-    storage.apply(a)
-        .map(albums => ea.removeExistingAndUnreleasedAlbums(a, albums)
-            .count(_.albumType == AlbumType.Album) > maxCachedAlbums
-        )
+    storage.forArtist(a)
+        .map(_.count(_.albumType == AlbumType.Album) > maxCachedAlbums)
         .ifM(
           ifTrue = ignore(s"Ignoring <$a> because it has too many undownloaded albums"),
           ifFalse =

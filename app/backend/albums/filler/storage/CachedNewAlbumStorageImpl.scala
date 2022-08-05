@@ -24,7 +24,7 @@ private class CachedNewAlbumStorageImpl @Inject()(
   override def all = newAlbumStorage.all.map {
     case (artist, score, albums) => (artist, score, ea.removeExistingAndUnreleasedAlbums(artist, albums))
   }.filter(_._3.nonEmpty)
-  override def apply(a: Artist) = newAlbumStorage.apply(a)
+  override def forArtist(a: Artist) = newAlbumStorage.apply(a).map(ea.removeExistingAndUnreleasedAlbums(a, _))
   override def freshness(a: Artist) = lastFetchTime.freshness(a)
   override def unremoveAll(a: Artist) = newAlbumStorage.unremoveAll(a)
   override def storeNew(albums: Seq[NewAlbumRecon], artists: Set[Artist]) =
