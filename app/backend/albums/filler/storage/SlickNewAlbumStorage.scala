@@ -1,9 +1,7 @@
 package backend.albums.filler.storage
 
-import java.time.LocalDate
-
 import backend.albums.filler.NewAlbumRecon
-import backend.albums.NewAlbum
+import backend.albums.{ArtistNewAlbums, NewAlbum}
 import backend.logging.Logger
 import backend.mb.AlbumType
 import backend.module.StandaloneModule
@@ -16,6 +14,7 @@ import javax.inject.Inject
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import slick.ast.BaseTypedType
 
+import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.ListT
@@ -116,6 +115,7 @@ private class SlickNewAlbumStorage @Inject()(
           .groupBy(_._1.na.artist)
           .mapValues(_.map(_.swap) |> toNewAlbums)
           .map(_.flatten)
+          .map(Function.tupled(ArtistNewAlbums.apply))
           .toList
       )
   )

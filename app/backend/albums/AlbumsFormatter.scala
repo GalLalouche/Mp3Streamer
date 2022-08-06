@@ -28,8 +28,8 @@ private class AlbumsFormatter @Inject()(
 
   private def fixTitles: Seq[NewAlbum] => Seq[NewAlbum] =
     _.&|->>(Traversal.fromTraverse).^|->(NewAlbum.title).modify(_ tryOrKeep stringFixer.apply)
-  private implicit object ArtistAlbumsJsonable extends JsonWriteable[AlbumsModel.ArtistAlbums] {
-    override def jsonify(a: AlbumsModel.ArtistAlbums) = Json.obj(
+  private implicit object ArtistAlbumsJsonable extends JsonWriteable[AlbumsModel.ModelResult] {
+    override def jsonify(a: AlbumsModel.ModelResult) = Json.obj(
       "genre" -> a.genre.mapHeadOrElse(_.name, "N/A"),
       "name" -> StringFixer(a.artist.name), // Name is stored normalized.
       "artistScore" -> a.artistScore.orDefaultString,

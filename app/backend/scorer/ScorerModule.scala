@@ -17,19 +17,19 @@ object ScorerModule extends ScalaModule {
     bind[CachedModelScorer].to[CachedModelScorerState]
     bind[ModelScorer].to[ModelScorerImpl]
   }
-  @Provides
-  private def provideScoreBasedProbability(
+
+  @Provides private def provideScoreBasedProbability(
       scorer: CachedModelScorer,
       mf: MusicFinder,
       logger: Logger,
-  ) = {
+  ): FlatScoreBasedProbability = {
     def requiredProbability: ModelScore => Double = {
       case ModelScore.Crappy => 0
       case ModelScore.Meh => 0.02
-      case ModelScore.Okay => 0.3
-      case ModelScore.Good => 0.4
-      case ModelScore.Great => 0.23
-      case ModelScore.Amazing => 0.13
+      case ModelScore.Okay => 0.20
+      case ModelScore.Good => 0.35
+      case ModelScore.Great => 0.25
+      case ModelScore.Amazing => 0.18
     }
     val defaultScore = requiredProbability(ModelScore.Okay)
     FlatScoreBasedProbability.withAsserts(

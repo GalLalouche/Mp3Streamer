@@ -1,7 +1,7 @@
 package backend.albums
 
 import backend.albums.filler.storage.FilledStorage
-import backend.albums.AlbumsModel.ArtistAlbums
+import backend.albums.AlbumsModel.ModelResult
 import backend.albums.filler.NewAlbumFiller
 import backend.recon.Artist
 import backend.scorer.ModelScore
@@ -26,8 +26,8 @@ private class AlbumsModel @Inject()(
 ) {
   private implicit val iec: ExecutionContext = ec
 
-  def albums: ListT[Future, ArtistAlbums] =
-    storage.all.map(e => e :+ genreFinder.forArtist(e._1) |> Function.tupled(ArtistAlbums.apply))
+  def albums: ListT[Future, ModelResult] =
+    storage.all.map(e => e :+ genreFinder.forArtist(e.artist) |> Function.tupled(ModelResult.apply))
   def forArtist(artistName: String): Future[Seq[NewAlbum]] = {
     val artist = Artist(artistName).normalized
     filler.update(Duration.ofDays(90), 10)(artist) >> storage.forArtist(artist)
@@ -40,7 +40,7 @@ private class AlbumsModel @Inject()(
 }
 
 private object AlbumsModel {
-  case class ArtistAlbums(
+  case class ModelResult(
       artist: Artist,
       artistScore: Option[ModelScore],
       albums: Seq[NewAlbum],
