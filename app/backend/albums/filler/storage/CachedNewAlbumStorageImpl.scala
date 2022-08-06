@@ -1,6 +1,6 @@
 package backend.albums.filler.storage
 
-import backend.albums.filler.{EagerExistingAlbums, NewAlbumRecon}
+import backend.albums.filler.{FilterExistingAlbums, NewAlbumRecon}
 import backend.module.StandaloneModule
 import backend.recon.Artist
 import com.google.inject.Guice
@@ -18,13 +18,13 @@ private class CachedNewAlbumStorageImpl @Inject()(
     lastFetchTime: LastFetchTime,
     newAlbumStorage: NewAlbumStorage,
     ec: ExecutionContext,
-    ea: EagerExistingAlbums,
+    filterExistingAlbums: FilterExistingAlbums,
 ) extends CachedNewAlbumStorage {
   private implicit val iec: ExecutionContext = ec
   override def all = newAlbumStorage.all.map {
-    case (artist, score, albums) => (artist, score, ea.removeExistingAndUnreleasedAlbums(artist, albums))
+    case (artist, score, albums) => (artist, score, filterExistingAlbums(artist, albums))
   }.filter(_._3.nonEmpty)
-  override def forArtist(a: Artist) = newAlbumStorage.apply(a).map(ea.removeExistingAndUnreleasedAlbums(a, _))
+  override def forArtist(a: Artist) = newAlbumStorage.apply(a).map(filterExistingAlbums(a, _))
   override def freshness(a: Artist) = lastFetchTime.freshness(a)
   override def unremoveAll(a: Artist) = newAlbumStorage.unremoveAll(a)
   override def storeNew(albums: Seq[NewAlbumRecon], artists: Set[Artist]) =
