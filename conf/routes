@@ -8,7 +8,7 @@ GET         /mute                                    controllers.Application.ind
 GET         /mp3                                     controllers.Application.index()
 GET         /sjs                                     controllers.Application.sjs()
 GET         /client/*file                            controllers.Application.sjsClient(file)
-
+# To debug a particular song, use addSong html parameter, e.g., mute?addSong=pathToSong
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                            controllers.MyAssets.asset(file)
