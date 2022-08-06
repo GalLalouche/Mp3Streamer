@@ -30,10 +30,12 @@ $(function() {
 
     $('head').append(`<link href="${$("img.poster")[0].src}" id="favicon" rel="shortcut icon">`)
 
+    // TODO use plain old observers here
     Lyrics.show(currentPlayingSong)
     External.show(currentPlayingSong)
     Volume.setPeak(currentPlayingSong)
     Score.show(currentPlayingSong)
+    NewAlbumInfo.show(currentPlayingSong)
   }
   $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()
 

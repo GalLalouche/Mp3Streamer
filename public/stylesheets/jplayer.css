@@ -160,3 +160,7 @@ div.jp-interface {
 .external-recon-id {
   margin-bottom: 1px;
 }
+#new-albums ul {
+  margin: 0;
+  padding: 1em;
+}

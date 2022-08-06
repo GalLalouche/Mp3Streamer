@@ -107,7 +107,7 @@ $(function() {
     const songPath = gplaylist.currentPlayingSong().file
     $.get(remotePath + "refresh/" + songPath, showLinks(remotePath + songPath))
   })
-  // TODO this is a hack to also handle #score.
+  // TODO this is a hack to also handle all other fieldsets, probably shouldn't be in this file...
   Poster.rgbListeners.push(rgb => {
     currentPosterRgb = rgb
     $("#field-set-group fieldset").each(function() {
