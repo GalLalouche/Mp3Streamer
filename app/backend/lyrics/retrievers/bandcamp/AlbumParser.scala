@@ -11,9 +11,9 @@ import common.RichJsoup._
 
 private[retrievers] object AlbumParser extends SingleHostParser {
   override def source = Utils.Source
-  override def apply(d: Document, s: Song): LyricParseResult = d.selectSingleOpt("#lyrics_row_" + s.track)
-      .mapHeadOrElse(
-        Utils.elementToLyrics,
-        LyricParseResult.Error(new NoSuchElementException(s"Could not find song with track <${s.track}>")),
-      )
+  override def apply(d: Document, s: Song): LyricParseResult =
+    d.selectSingleOpt("#lyrics_row_" + s.track).mapHeadOrElse(
+      Utils.elementToLyrics,
+      LyricParseResult.NoLyrics,
+    )
 }
