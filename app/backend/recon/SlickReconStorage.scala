@@ -26,6 +26,7 @@ private class SlickReconStorageAux(profile: JdbcProfile)(implicit ec: ExecutionC
   def toStoredReconResult(reconId: Option[ReconID], isIgnored: Boolean): StoredReconResult =
     reconId.mapHeadOrElse(HasReconResult(_, isIgnored), NoRecon)
 }
+
 @Singleton
 private[backend] class SlickArtistReconStorage @Inject()(
     ec: ExecutionContext,

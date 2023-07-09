@@ -7,7 +7,7 @@ import models.MusicFinder
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
-import common.io.DirectoryRef
+import common.io.{DirectoryRef, FileRef}
 import common.json.ToJsonableOps.jsonifyString
 import common.rich.RichT._
 import common.rich.primitives.RichOption.richOption
@@ -41,6 +41,8 @@ class ReconcilableFactory @Inject()(val mf: MusicFinder) {
     } else
       Success(mf.parseSong(mf.getSongFilesInDir(dir).headOption.getOrThrow(s"Problem with $dir")).release)
 
+  def songTitle(f: FileRef): Try[String] =
+    ReconcilableFactory.capture(f.name).toTry(new Exception(s"$f has invalid file name"))
   private val IgnoredFolders = Vector("Classical", "Musicals")
   def artistDirectories: Seq[S#D] = {
     val prefixLength = {
@@ -54,4 +56,17 @@ class ReconcilableFactory @Inject()(val mf: MusicFinder) {
     mf.artistDirs.filterNot(ignore)
   }
   def albumDirectories: Seq[S#D] = mf.albumDirs(artistDirectories)
+}
+
+private object ReconcilableFactory {
+  private val DashRegex = """\d+ - (.*)\.[^.]+""".r
+  private val DotRegex = """\d+\. (.*)\.[^.]+""".r
+
+  // TODO: Move to ScalaCommon (Composite Regex)
+  private val compositeGroupMatch = Vector(DashRegex, DotRegex)
+  private def capture(s: String): Option[String] =
+  // TODO Move findFirst (a => Option(b))
+    compositeGroupMatch
+        .collectFirst(Function.unlift(_.findAllIn(s).optFilter(_.matchData.nonEmpty)))
+        .map(_.group(1))
 }
