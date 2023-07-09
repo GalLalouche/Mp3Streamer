@@ -67,7 +67,7 @@ private class FoobarScorer @Inject()(
           assert(value == ModelScore.DefaultTitle)
           println(s"Skipping <$value> score")
           if (value != score) // reset score to old value.
-            $.setValue(score)
+            $.value = score
       }
     }
     $
