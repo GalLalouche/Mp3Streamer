@@ -16,6 +16,7 @@ import slick.ast.BaseTypedType
 
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent
 
 import scalaz.ListT
 import scalaz.std.vector.vectorInstance
@@ -191,12 +192,16 @@ private class SlickNewAlbumStorage @Inject()(
       .update(true)
   ).void
 
-  private def updateAlbum(f: EntityTable => Rep[Boolean])(artist: Artist, albumName: String): Future[Unit] =
-    db.run(tableQuery
-        .filter(e => e.artist === artist.normalize && e.album === albumName.toLowerCase)
-        .map(f)
-        .update(true)
-    ).void
+  private def updateAlbum(f: EntityTable => Rep[Boolean])(artist: Artist, albumName: String): Future[Unit] = {
+    val filter = tableQuery.filter(e => e.artist === artist.normalize && e.album === albumName.toLowerCase)
+    for {
+      albumExists <- db.run(filter.exists.result)
+      _ <- Future
+          .failed(new IllegalArgumentException(s"Could not find album <${artist.name} - $albumName>"))
+          .whenMLazy(albumExists.isFalse)
+      _ <- db.run(filter.map(f).update(true))
+    } yield ()
+  }
   override def remove(artist: Artist, albumName: String) = updateAlbum(_.isRemoved)(artist, albumName)
   override def ignore(artist: Artist, albumName: String) =
     remove(artist, albumName) >> updateAlbum(_.isIgnored)(artist, albumName)
