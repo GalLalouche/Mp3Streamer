@@ -19,6 +19,8 @@ import common.json.RichJson._
 import common.json.ToJsonableOps._
 import common.rich.RichT._
 
+// FIXME This module returns StringFixed titles, but then we try to remove/ignore those entities, the name
+//  doesn't match the name in the database. A simple solution could be to use the original recon ID for that.
 private class AlbumsFormatter @Inject()(
     ec: ExecutionContext,
     $: AlbumsModel,
@@ -50,6 +52,6 @@ private class AlbumsFormatter @Inject()(
   }
   def ignoreAlbum(json: JsValue): Future[_] = {
     val (artist, album) = extractAlbum(json)
-    $.removeAlbum(artist, album)
+    $.ignoreAlbum(artist, album)
   }
 }
