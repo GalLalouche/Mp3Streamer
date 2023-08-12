@@ -21,10 +21,9 @@ private class LengthFilter(
     case _ => true
   }
 
-  // If a specific song has been explicitly marked as Good, it overrides the length requirements.
+  // If a specific song has been explicitly scored, it overrides the length requirements.
   private def songScoreIsGood(song: Song): Boolean = scorer.fullInfo(song) match {
     case FullInfoScore.Default => false
-    case FullInfoScore.Scored(_, source, songScore, _, _) =>
-      source == ScoreSource.Song && songScore.get >= ModelScore.Good
+    case FullInfoScore.Scored(_, source, _, _, _) => source == ScoreSource.Song
   }
 }
