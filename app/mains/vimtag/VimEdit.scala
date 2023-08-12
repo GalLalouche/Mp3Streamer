@@ -11,7 +11,7 @@ import scala.sys.process._
 import common.rich.path.RichFile._
 
 private class VimEdit @Inject()(cp: CommandsProvider, ec: ExecutionContext) {
-  private val VimLocation = """"C:\Program Files (x86)\Vim\vim74\gvim.exe""""
+  private val VimLocation = """"C:\Program Files\Neovim\bin\nvim-qt.exe""""
   private implicit val iec: ExecutionContext = ec
 
   def apply(initialLines: InitialLines): (File, Future[Seq[String]], Map[String, InitialValues]) = {
@@ -20,12 +20,7 @@ private class VimEdit @Inject()(cp: CommandsProvider, ec: ExecutionContext) {
     (temp, inFile(temp, initialLines.startingEditLine), initialLines.initialValues)
   }
   private def inFile(file: File, startingEditLine: Int): Future[Seq[String]] = Future {
-    val commands = Vector(
-      ExecutionCommand("winpos 0 0"), // Start in the corner
-      ExecutionCommand("set lines=1000"), // Max height
-      ExecutionCommand(s"set columns=${cp.width}"), // Screen's width
-
-    ) ++ cp.get ++ Vector(NormalCommand(s"${startingEditLine}G"))
+    val commands = cp.get ++ Vector(NormalCommand(s"${startingEditLine}G"))
     val formattedCommands = commands.map(_.asCommandString).mkString(" ", " ", "")
     Vector(VimLocation + formattedCommands, file.path).!!
     file.lines.toVector
@@ -40,6 +35,6 @@ private object VimEdit {
     override def asCommandString = s""""+norm $s""""
   }
   case class ExecutionCommand(s: String) extends Command {
-    override def asCommandString = s"""-c :"$s""""
+    override def asCommandString = s"""+":$s""""
   }
 }

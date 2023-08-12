@@ -22,6 +22,6 @@ private class FoobarGain @Inject()(mf: IOMusicFinder) {
 }
 
 private object FoobarGain {
-  private val FoobarPath = """C:\Program Files (x86)\foobar2000\foobar2000.exe"""
+  private val FoobarPath = """J:\Program Files (x86)\foobar2000\foobar2000.exe"""
   private val ReplayGainCommand = """/context_command:"ReplayGain/Scan per-file track gain""""
 }
