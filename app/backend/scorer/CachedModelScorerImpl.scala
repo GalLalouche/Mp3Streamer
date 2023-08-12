@@ -5,7 +5,7 @@ import backend.recon.{Album, Artist, ReconcilableFactory}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, SongScoreStorage}
 import javax.inject.Inject
-import models.Song
+import models.{AlbumFactory, MusicFinder, Song}
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
@@ -26,6 +26,7 @@ private class CachedModelScorerImpl @Inject()(
     albumScorer: AlbumScoreStorage,
     songScorer: SongScoreStorage,
     reconcilableFactory: ReconcilableFactory,
+    mf: MusicFinder,
     ec: ExecutionContext,
     logger: Logger,
 ) extends CachedModelScorer {
@@ -49,16 +50,18 @@ private class CachedModelScorerImpl @Inject()(
   override def apply(a: Album): Option[ModelScore] = albumScores.get((a.artist.normalized, a.title.toLowerCase))
   override def apply(s: Song): Option[ModelScore] = fullInfo(s).toModelScore
 
-  override def apply(f: FileRef): Option[ModelScore] = for {
-    album <- reconcilableFactory.toAlbum(f.parent) |> toOption(f, "album")
-    songTitle <- reconcilableFactory.songTitle(f) |> toOption(f, "song")
-    albumTitle = album.title.toLowerCase
-    artist = album.artist.normalized
-    result <-
-        songScores.get((artist, albumTitle, songTitle))
-            .orElse(albumScores.get((artist, albumTitle)))
-            .orElse(artistScores.get(artist))
-  } yield result
+  override def apply(f: FileRef): Option[ModelScore] = {
+    lazy val id3Song = mf.parseSong(f)
+    val songTitle =
+      reconcilableFactory.songTitle(f).|>(toOption(f, "song")).getOrElse(id3Song.title)
+    val album: Album =
+      reconcilableFactory.toAlbum(f.parent).|>(toOption(f, "album")).getOrElse(id3Song.release)
+    val albumTitle = album.title
+    val artist = album.artist.normalized
+    songScores.get((artist, albumTitle, songTitle))
+        .orElse(albumScores.get((artist, albumTitle)))
+        .orElse(artistScores.get(artist))
+  }
 
   override def fullInfo(s: Song) = aux(s)
 
