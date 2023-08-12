@@ -4,10 +4,12 @@ import backend.logging.LoggingModules
 import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext
+import scala.util.Random
 
-object StandaloneModule extends ScalaModule {
+class StandaloneModule(random: Random) extends ScalaModule {
   override def configure(): Unit = {
     bind[ExecutionContext] toInstance ExecutionContext.Implicits.global
+    bind[Random].toInstance(random)
 
     install(RealInternetTalkerModule.daemonic)
     install(RealModule)
@@ -15,3 +17,4 @@ object StandaloneModule extends ScalaModule {
     install(LoggingModules.ConsoleWithFiltering)
   }
 }
+object StandaloneModule extends StandaloneModule(Random)
