@@ -1,11 +1,11 @@
 package mains.fixer
 
 import java.util.regex.Pattern
-
 import backend.logging.{ConsoleLogger, Logger}
 import com.google.common.annotations.VisibleForTesting
 import javax.inject.Inject
 import org.apache.commons.lang3.StringUtils
+import org.apache.tika.langdetect.optimaize.OptimaizeLangDetector
 import resource._
 
 import scala.io.Source
@@ -30,8 +30,19 @@ class StringFixer @Inject()(logger: Logger) extends (String => String) {
         .to(asciiNormalize(withoutSpecialCharacters.flatMap(toAscii.apply)))
   } catch {
     case e: Exception =>
-      logger.verbose(s"Could not asciify <$s>")
-      throw e
+      val lang = detector.detect(s)
+      if (isCheckedLanguage(lang.getLanguage))
+        throw e
+      else {
+        logger.verbose(s"Could not asciify <$s>")
+        s
+      }
+  }
+  // TODO reuse this for Hebrew check as well?
+  private lazy val detector = new OptimaizeLangDetector().loadModels()
+  private def isCheckedLanguage(lang: String) = {
+    // Japanese and Chinese. Life is too short to start asciing those.
+    lang == "ja" || lang.startsWith("ch")
   }
 
   override def apply(s: String): String = {
