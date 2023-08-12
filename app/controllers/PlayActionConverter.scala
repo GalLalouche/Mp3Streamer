@@ -2,6 +2,7 @@ package controllers
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
+import backend.logging.Logger
 import javax.inject.Inject
 import play.api.http.{HttpEntity, Writeable}
 import play.api.libs.iteratee.streams.IterateeStreams
@@ -12,12 +13,21 @@ import play.api.mvc.{Action, AnyContent, InjectedController, Request, Result}
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.syntax.functor.ToFunctorOps
+import scalaz.Scalaz.ToIdOps
 import common.rich.func.BetterFutureInstances._
+import common.rich.func.ToMoreMonadErrorOps._
 
 /** Converts common play-agnostic return values, usually from formatter helpers, to play Actions. */
-class PlayActionConverter @Inject()(ec: ExecutionContext, assets: Assets) extends InjectedController {
+class PlayActionConverter @Inject()(
+    ec: ExecutionContext,
+    assets: Assets,
+) extends InjectedController {
   private implicit val iec: ExecutionContext = ec
-  def ok[C: Writeable](f: Future[C]): Action[AnyContent] = Action.async(f.map(Ok(_)))
+  def ok[C: Writeable](f: Future[C]): Action[AnyContent] =
+    Action.async(f.map(Ok(_)).|>(handleFutureFailure))
+
+  private def handleFutureFailure(f: Future[Result]): Future[Result] =
+    f.listenError(_.printStackTrace()).handleErrorFlat(InternalServerError apply _.getMessage)
   def ok[C: Writeable](c: C): Action[AnyContent] = Action(Ok(c))
 
   def noContent(f: Future[Any]): Action[AnyContent] = Action.async(f >| NoContent)
@@ -46,9 +56,13 @@ class PlayActionConverter @Inject()(ec: ExecutionContext, assets: Assets) extend
   trait Actionable[A] {
     def apply(f: Request[AnyContent] => A): Action[AnyContent]
   }
-  object Actionable {
+  private object Actionable {
     implicit def syncEv[A: Resultable]: Actionable[A] = f => Action(f(_).result)
-    implicit def asyncEv[A: Resultable]: Actionable[Future[A]] = f => Action.async(f(_).map(_.result))
+    implicit def asyncEv[A: Resultable]: Actionable[Future[A]] = f => Action.async(
+      f(_)
+          .map(_.result)
+          .|>(handleFutureFailure)
+    )
   }
 
   class _Parser[A] private[PlayActionConverter](parse: Request[AnyContent] => A) {
