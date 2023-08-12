@@ -27,14 +27,14 @@ import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichInt._
 import common.Filter
 
+// TODO clean up all E:/Temp and use an environment variable
 /** Selects n random songs and dumps them in a folder on D:\ */
 private class RandomFolderCreator @Inject()(
-    ec: ExecutionContext,
-    random: Random,
     @Seed seed: Long,
     @Assisted songSelector: MultiStageSongSelector[IOSystem],
 ) {
-  private implicit val iec: ExecutionContext = ec
+  val random = new Random(seed)
+  private val tempDirectoryName = System.getProperty("java.io.tmpdir")
 
   private def createPlaylistFile(outputDir: Directory, name: String): File = {
     val files = outputDir.files
@@ -97,7 +97,7 @@ private class RandomFolderCreator @Inject()(
     val songs = managed(new ProgressBar("Choosing songs", numberOfSongsToCreate))
         .acquireAndGet(createSongSet(numberOfSongsToCreate))
     assert(songs.size == numberOfSongsToCreate)
-    copy(songs, Directory.makeDir("D:/").addSubDir(outputFolder).clear(), playlistName)
+    copy(songs, Directory.makeDir(tempDirectoryName).addSubDir(outputFolder).clear(), playlistName)
   }
   def dumpAll(n: Int): Unit = dumpAll(
     numberOfSongsToCreate = n,
@@ -111,10 +111,10 @@ private class RandomFolderCreator @Inject()(
     numberOfSongsToCreate = n, outputFolder = FilteredSongsDirName, playlistName = "running")
 
   def copyFilteredSongs(outputName: String = "Processed Filtered Songs", playlistName: String): Directory = {
-    val dir = Directory(s"D:/$FilteredSongsDirName")
+    val dir = Directory.makeDir(s"$tempDirectoryName/$FilteredSongsDirName")
     // The extra files mess up the copy.
     dir.files.filter(Set("m3u", "txt") contains _.extension).foreach(_.delete())
     val songs = dir.files.toSet
-    copy(songs, Directory.makeDir(s"D:/$outputName").clear(), playlistName)
+    copy(songs, Directory.makeDir(s"$tempDirectoryName/Temp/$outputName").clear(), playlistName)
   }
 }
