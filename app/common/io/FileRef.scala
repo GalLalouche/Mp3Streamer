@@ -40,10 +40,11 @@ trait FileRef extends PathRef {
   }
   def inputStream: InputStream
 
-  final def extension: String = {
+  final lazy val extension: String = {
     val i = name.lastIndexOf('.')
     if (i == -1) "" else name.substring(i + 1).toLowerCase
   }
+  final lazy val nameWithoutExtension: String = name.dropRight(extension.length)
 
   def lastModified: LocalDateTime
   def creationTime: LocalDateTime
