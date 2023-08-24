@@ -160,7 +160,23 @@ div.jp-interface {
 .external-recon-id {
   margin-bottom: 1px;
 }
+
+#new-albums {
+  width: 400px;
+}
 #new-albums ul {
   margin: 0;
-  padding: 1em;
+}
+
+.jp-mute,
+.jp-unmute {
+    left: 0;
+}
+.jp-volume-max {
+    left: 134px;
+}
+.jp-volume-bar {
+  top: 17px;
+  left: 22px;
+  width: 105px;
 }
