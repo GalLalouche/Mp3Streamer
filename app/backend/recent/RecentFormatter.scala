@@ -14,6 +14,7 @@ import scalaz.Reader
 
 import common.json.ToJsonableOps._
 import common.rich.RichT._
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class RecentFormatter @Inject()(
     ec: ExecutionContext,
@@ -38,7 +39,7 @@ private class RecentFormatter @Inject()(
 
   def all(amount: Int): Future[JsValue] = Future(recentAlbums.all(amount)).map(_.jsonify)
   def double(amount: Int): Future[JsValue] = Future(recentAlbums.double(amount)).map(_.jsonify)
-  def last: Future[JsValue] = all(1)
+  def last: Future[JsValue] = Future(recentAlbums.all(1).single.jsonify)
 
   def debugLast(): JsValue =
     recentAlbums.all(1).head.jsonify.<|(webSocketFactory(RecentModule.WebSocketName) broadcast _.toString)

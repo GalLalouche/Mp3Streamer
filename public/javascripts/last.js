@@ -1,68 +1,39 @@
-$(function() {
-  const last_albums = elem("ul")
-      .appendTo($("#last_albums"))
-      .css("list-style", "none")
-  const handledAlbums = new Set()
-  const lastAlbums = () => last_albums.children("li")
+/**
+ * A very simple module, showing the most recent album, so it can be easily added to the playlist.
+ */
+$(function () {
+  const last_album = $("#last_album")
   const ADD = "plus"
-  const REMOVE = "times"
-  const DOWNLOAD = "download"
-  const clear_all = $(`<i class='fa fa-${REMOVE}'></i><br>`)
-      .appendTo(last_albums)
-      .custom_tooltip("Clear all new albums")
-      .click(function() {
-        lastAlbums().remove()
-        updateClearAll()
-      })
-      .css({
-        "float": "right",
-        "display": "none",
-        "font-size": "20px",
-      })
 
-  function updateClearAll() {
-    clear_all.css("display", lastAlbums().length === 0 ? "none" : "")
+  function write(value) {
+    last_album.empty().append(value)
   }
-  function onMessage(msg) {
-    const album = JSON.parse(msg.data)
-    const albumKey = album.dir
-    if (handledAlbums.has(albumKey))
-      return
-    handledAlbums.add(albumKey)
-    const listElement = elem(
-        "li",
-        `${icon(ADD)} ${icon(DOWNLOAD)} ${icon(REMOVE)} ${album.artistName}: ${album.title}`
-    ).addClass("last-album")
-    function remove() {
-      listElement.remove()
-      updateClearAll()
-    }
-    listElement.find(".fa-" + ADD).click(function() {
-      remove()
-      $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
-    })
-    listElement.find(".fa-" + REMOVE).click(function() {
-      remove()
-    })
-    listElement.find(".fa-" + DOWNLOAD).click(function(e) {
-      e.preventDefault() // Needed for Chrome so it doesn't follow the link.
-      window.location.href = "download/" + album.dir
-      remove()
-    })
-    last_albums.append(listElement)
-    if (listElement.custom_overflown())
-      listElement.custom_tooltip(`${album.artistName}: ${album.year} ${album.title}`)
-    updateClearAll()
+
+  function updateAlbum(album) {
+    const albumText = `${album.artistName}: ${album.year} ${album.title}`
+    console.log(`Updating last album: '${albumText}'`)
+    const albumElement = elem(
+        "span",
+        `${icon(ADD)} ${album.artistName}: ${album.title}`
+    )
+    write(albumElement)
+    albumElement.find(".fa-" + ADD).click(() =>
+        $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
+    )
+    if (albumElement.custom_overflown())
+      albumElement.custom_tooltip(albumText)
   }
 
   let last_album_websocket = undefined
 
   function openLastAlbumConnection() {
-    last_album_websocket = openConnection("last_album", onMessage)
+    last_album_websocket = openConnection("last_album", msg => updateAlbum(JSON.parse(msg.data)))
   }
-  openLastAlbumConnection()
 
-  LastAlbum.reopenLastAlbumWebsocketIfNeeded = function() {
+  openLastAlbumConnection()
+  write(span("Fetching last album..."))
+
+  LastAlbum.reopenLastAlbumWebsocketIfNeeded = function () {
     if (last_album_websocket.readyState === last_album_websocket.CLOSED)
       openLastAlbumConnection()
   }

@@ -1,12 +1,12 @@
 package backend.search
 
-import backend.recent.NewDir
+import backend.recent.{NewDir, RecentController}
 import backend.search.cache.SongCacheUpdater
 import javax.inject.Inject
 import rx.lang.scala.Observer
 import songs.selector.SongSelectorState
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 import common.io.DirectoryRef
 import common.rich.RichObservable.richObservable
@@ -21,10 +21,9 @@ private class Indexer @Inject()(
     searchState: SearchState,
     songSelectorState: SongSelectorState,
     songCacheUpdater: SongCacheUpdater,
+    recentController: RecentController,
     @NewDir newDirObserver: Observer[DirectoryRef],
-    ec: ExecutionContext,
 ) {
-  private implicit val iec: ExecutionContext = ec
   def index(): Future[_] =
     songCacheUpdater.go()
         .groupByBuffer(_.song.toTuple(_.artistName, _.albumName))
@@ -32,6 +31,7 @@ private class Indexer @Inject()(
         .doOnCompleted {
           songSelectorState.update()
           searchState.update()
+          recentController.update()
         }
         .toFuture[Vector]
 }

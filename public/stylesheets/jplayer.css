@@ -47,12 +47,17 @@ span.jp-playlist-item {
   left: 1320px;
   float: left;
 }
-
-#search {
+#last_album {
   position: absolute;
   left: 800px;
   float: right;
   margin-top: 5px;
+}
+#search {
+  position: absolute;
+  left: 800px;
+  float: right;
+  margin-top: 30px;
 }
 #search-results {
   width: 400px
@@ -69,18 +74,6 @@ span.jp-playlist-item {
   top: 300px;
   float: right;
   width: 300px;
-}
-#last_albums {
-  position: absolute;
-  top: 400px;
-  left: 800px;
-  float: right;
-}
-.last-album {
-  width: 300px;
-  white-space: nowrap;
-  text-overflow:ellipsis;
-  overflow: hidden;
 }
 
 #score select {

@@ -34,75 +34,74 @@
 <link href="assets/javascripts/jquery-ui/jquery-ui.css" rel="stylesheet"/>
 <link href="assets/stylesheets/font-awesome-4.5.0/css/font-awesome.css" rel="stylesheet"/>
 <link href="assets/javascripts/toast/jquery.toast.min.css" rel="stylesheet"/>
-<head>
-  <title>My MP3 Site</title>
-</head>
+<head><title>My MP3 Site</title></head>
 <body>
-  <div id="search">
-    <input id="searchbox" type="text"/>
-    <div id="search-results" time="0">
-      <ol>
-        <li><a href="#album-results"><span>Albums</span></a></li>
-        <li><a href="#song-results"><span>Songs</span></a></li>
-        <li><a href="#artist-results"><span>Artists</span></a></li>
-      </ol>
-      <div id="song-results">Songs</div>
-      <div id="album-results">Albums</div>
-      <div id="artist-results">Artists</div>
-    </div>
+<div style="height: 25px" id="last_album"></div>
+<div id="search">
+  <input id="searchbox" type="text"/>
+  <div id="search-results" time="0">
+    <ol>
+      <li><a href="#album-results"><span>Albums</span></a></li>
+      <li><a href="#song-results"><span>Songs</span></a></li>
+      <li><a href="#artist-results"><span>Artists</span></a></li>
+    </ol>
+    <div id="song-results">Songs</div>
+    <div id="album-results">Albums</div>
+    <div id="artist-results">Artists</div>
   </div>
-  <div id="lyrics"></div>
-  <div id="field-set-group">
-    <fieldset id="score"></fieldset>
-    <fieldset id="external-artist" class="external"></fieldset>
-    <fieldset id="external-album" class="external"></fieldset>
-    <fieldset id="new-albums"></fieldset>
-  </div>
-  <!--  <div style="height: 200px" id="last_albums"></div>-->
-  <!--  <div style="height: 200px" id="score"></div>-->
-  <!--  <div style="height: 400px" id="external"></div>-->
-  <div id="jquery_jplayer_1" class="jp-jplayer"></div>
-  <div id="jp_container_1" class="jp-video jp-video-270p">
-    <div class="jp-type-playlist">
-      <div class="jp-gui">
-        <div class="jp-video-play">
-          <a href="javascript:" class="jp-video-play-icon" tabindex="1">play</a>
+</div>
+<div id="lyrics"></div>
+<div id="field-set-group">
+  <fieldset id="score"></fieldset>
+  <fieldset id="external-artist" class="external"></fieldset>
+  <fieldset id="external-album" class="external"></fieldset>
+  <fieldset id="new-albums"></fieldset>
+</div>
+<div id="jquery_jplayer_1" class="jp-jplayer"></div>
+<div id="jp_container_1" class="jp-video jp-video-270p">
+  <div class="jp-type-playlist">
+    <div class="jp-gui">
+      <div class="jp-video-play">
+        <a href="javascript:" class="jp-video-play-icon" tabindex="1">play</a>
+      </div>
+      <div class="jp-interface">
+        <div class="jp-progress">
+          <div class="jp-seek-bar">
+            <div class="jp-play-bar"></div>
+          </div>
         </div>
-        <div class="jp-interface">
-          <div class="jp-progress">
-            <div class="jp-seek-bar">
-              <div class="jp-play-bar"></div>
-            </div>
-          </div>
-          <div class="jp-current-time"></div>
-          <div class="jp-currently-playing">...</div>
-          <div class="jp-duration"></div>
-          <br/>
-          <div class="jp-title">
-            <ul/>
-          </div>
-          <div class="jp-controls-holder">
-            <ul class="jp-controls">
-              <li><a href="javascript:" class="jp-previous jp-button" tabindex="1">previous</a></li>
-              <li><a href="javascript:" class="jp-play jp-button" tabindex="1">play</a></li>
-              <li><a href="javascript:" class="jp-pause jp-button" tabindex="1">pause</a></li>
-              <li><a href="javascript:" class="jp-next jp-button" tabindex="1">next</a></li>
-              <li><a href="javascript:" class="jp-stop jp-button" tabindex="1">stop</a></li>
-              <li><a href="javascript:" class="jp-mute" tabindex="1" title="mute">mute</a></li>
-              <li><a href="javascript:" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>
-              <li><a href="javascript:" class="jp-volume-max" tabindex="1" title="max volume">max volume</a>
-              </li>
-            </ul>
-            <div class="jp-volume-bar">
-              <div class="jp-volume-bar-value"></div>
-            </div>
+        <div class="jp-current-time"></div>
+        <div class="jp-currently-playing">...</div>
+        <div class="jp-duration"></div>
+        <br/>
+        <div class="jp-title">
+          <ul/>
+        </div>
+        <div class="jp-controls-holder">
+          <ul class="jp-controls">
+            <li><a href="javascript:" class="jp-previous jp-button" tabindex="1">previous</a></li>
+            <li><a href="javascript:" class="jp-play jp-button" tabindex="1">play</a></li>
+            <li><a href="javascript:" class="jp-pause jp-button" tabindex="1">pause</a></li>
+            <li><a href="javascript:" class="jp-next jp-button" tabindex="1">next</a></li>
+            <li><a href="javascript:" class="jp-stop jp-button" tabindex="1">stop</a></li>
+            <li><a href="javascript:" class="jp-mute jp-volume" tabindex="1" title="mute">mute</a>
+            </li>
+            <li><a href="javascript:" class="jp-unmute jp-volume" tabindex="1"
+                   title="unmute">unmute</a></li>
+            <li><a href="javascript:" class="jp-volume-max jp-volume" tabindex="1"
+                   title="max volume">max volume</a>
+            </li>
+          </ul>
+          <div class="jp-volume-bar jp-volume">
+            <div class="jp-volume-bar-value"></div>
           </div>
         </div>
       </div>
-      <div class="jp-playlist">
-        <ul/>
-      </div>
+    </div>
+    <div class="jp-playlist">
+      <ul/>
     </div>
   </div>
+</div>
 </body>
 </html>
