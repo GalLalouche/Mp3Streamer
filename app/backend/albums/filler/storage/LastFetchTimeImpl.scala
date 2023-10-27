@@ -35,6 +35,7 @@ private class LastFetchTimeImpl @Inject()(
   override def update(a: Artist) =
     aux.update(a, ()).run.void.listenError(logger.error(s"Failed to update artist <$a>", _))
   override def ignore(a: Artist) = aux.delete(a).run >> aux.storeWithoutTimestamp(a, ())
+  override def unignore(a: Artist) = aux.delete(a).run >> reset(a)
   override def freshness(a: Artist) = aux.freshness(a)
   override def reset(a: Artist) = {
     val time = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC)

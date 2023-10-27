@@ -12,6 +12,7 @@ class AlbumsController @Inject()($: AlbumsFormatter, converter: PlayActionConver
 
   def removeArtist(artist: String) = converter.noContent($.removeArtist(decoder.decode(artist)))
   def ignoreArtist(artist: String) = converter.noContent($.ignoreArtist(decoder.decode(artist)))
+  def unignoreArtist(artist: String) = converter.noContent($.unignoreArtist(decoder.decode(artist)))
 
   def removeAlbum() = converter.parseJson($.removeAlbum)
   def ignoreAlbum() = converter.parseJson($.ignoreAlbum)

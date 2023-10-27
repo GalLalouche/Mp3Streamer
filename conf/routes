@@ -63,6 +63,7 @@ GET         /new_albums/albums/                      @backend.albums.AlbumsContr
 GET         /new_albums/albums/*artist               @backend.albums.AlbumsController.forArtist(artist)
 PUT         /new_albums/artist/remove/*artist        @backend.albums.AlbumsController.removeArtist(artist)
 PUT         /new_albums/artist/ignore/*artist        @backend.albums.AlbumsController.ignoreArtist(artist)
+PUT         /new_albums/artist/unignore/*artist      @backend.albums.AlbumsController.unignoreArtist(artist)
 PUT         /new_albums/album/remove                 @backend.albums.AlbumsController.removeAlbum
 PUT         /new_albums/album/ignore                 @backend.albums.AlbumsController.ignoreAlbum
 

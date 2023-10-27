@@ -7,8 +7,9 @@ object IgnoredReconResult {
   case object NotIgnored extends IgnoredReconResult
   case object Missing extends IgnoredReconResult
 
-  def from(o: Option[Boolean]): IgnoredReconResult = o match {
+  type IsIgnored = Boolean
+  def from(o: Option[IsIgnored]): IgnoredReconResult = o match {
     case None => Missing
-    case Some(b) => if (b) Ignored else NotIgnored
+    case Some(b: IsIgnored) => if (b) Ignored else NotIgnored
   }
 }

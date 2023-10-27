@@ -1,7 +1,8 @@
 $(function() {
   const fieldSet = $("#new-albums")
+
   function confirm(title, action) {
-    let dialog = $(`<div title="Really ignore ${title}?">Are you sure?</div>`)
+    let dialog = $(`<div title="Really ${title}?">Are you sure?</div>`)
     dialog.dialog({
       resizable: false,
       height: "auto",
@@ -13,14 +14,15 @@ $(function() {
           $(this).dialog("close")
         },
         Cancel: function() {
-          $(this).dialog("close");
+          $(this).dialog("close")
         }
       }
     })
   }
+
   function ignoreAlbum(artist, album, elementToRemove) {
     confirm(
-        `${artist} - ${album}`,
+        `ignore ${artist} - ${album}`,
         () => putJson(
             '/new_albums/album/ignore',
             {artistName: artist, title: album},
@@ -28,19 +30,19 @@ $(function() {
         )
     )
   }
+
   function ignoreArtist(song) {
     confirm(
-        song.artistName,
+        "ignore " + song.artistName,
         () => $.put(
             '/new_albums/artist/ignore/' + song.artistName,
             () => NewAlbumInfo.show(song)
         ),
     )
   }
+
   NewAlbumInfo.show = function(song) {
-    fieldSet.empty()
-    fieldSet.append(elem("legend", `Fetching new albums for artist...`))
-    $.get("new_albums/albums/" + song.artistName, function(albums) {
+    function showAlbums(albums) {
       fieldSet.empty()
       if (albums.length === 0) {
         fieldSet.hide()
@@ -69,6 +71,23 @@ $(function() {
         ul.append(li)
       })
       fieldSet.append(ul)
+    }
+
+    fieldSet.empty()
+    fieldSet.append(elem("legend", `Fetching new albums for artist...`))
+    $.get("new_albums/albums/" + song.artistName, function(albums) {
+      fieldSet.empty()
+      if (albums !== "IGNORED") {
+        showAlbums(albums)
+        return
+      }
+      fieldSet.show()
+      const b = button("Unignore Artist")
+      b.on("click", () => confirm(
+          `unignore '${song.artistName}'?`,
+          () => $.put('/new_albums/artist/unignore/' + song.artistName, result => showAlbums(result)))
+      )
+      fieldSet.append(b)
     })
   }
 })

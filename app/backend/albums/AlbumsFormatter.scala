@@ -3,7 +3,7 @@ package backend.albums
 import backend.recon.Artist
 import javax.inject.Inject
 import mains.fixer.StringFixer
-import play.api.libs.json.{JsArray, Json, JsValue}
+import play.api.libs.json.{JsArray, Json, JsString, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,9 +40,13 @@ private class AlbumsFormatter @Inject()(
   }
   def albums: Future[JsValue] = $.albums.map(_.jsonify).run.map(JsArray.apply)
 
-  def forArtist(artistName: String): Future[JsValue] = $.forArtist(artistName).map(fixTitles(_).jsonify)
+  def forArtist(artistName: String): Future[JsValue] = $.forArtist(artistName).map {
+    case AlbumsModel.NonIgnoredArtist(albums) => fixTitles(albums).jsonify
+    case AlbumsModel.IgnoredArtist => JsString("IGNORED")
+  }
   def removeArtist(artistName: String): Future[_] = $.removeArtist(artistName)
   def ignoreArtist(artistName: String): Future[_] = $.ignoreArtist(artistName)
+  def unignoreArtist(artistName: String): Future[Seq[NewAlbum]] = $.unignoreArtist(artistName)
 
   private def extractAlbum(json: JsValue): (Artist, String) =
     Artist(json str "artistName") -> json.str("title")

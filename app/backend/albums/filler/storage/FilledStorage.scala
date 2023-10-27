@@ -1,7 +1,8 @@
 package backend.albums.filler.storage
 
 import backend.albums.{ArtistNewAlbums, NewAlbum}
-import backend.recon.Artist
+import backend.albums.AlbumsModel.NonIgnoredArtist
+import backend.recon.{Artist, IgnoredReconResult}
 
 import scala.concurrent.Future
 
@@ -10,6 +11,7 @@ import scalaz.ListT
 private[albums] trait FilledStorage {
   def all: ListT[Future, ArtistNewAlbums]
   def forArtist(a: Artist): Future[Seq[NewAlbum]]
+  def newArtist(artist: Artist): Future[Unit]
 
   // Remove vs. Ignore: remove is only temporary (usually until the next mega fetch), ignore is forever.
   // Reasons to remove: you're not going do anything with the artist/album this time.
@@ -19,6 +21,8 @@ private[albums] trait FilledStorage {
 
   def remove(artist: Artist): Future[Unit]
   def ignore(artist: Artist): Future[Unit]
+  def isIgnored(artist: Artist): Future[IgnoredReconResult]
+  def unignore(artist: Artist): Future[Unit]
   def remove(artist: Artist, albumName: String): Future[Unit]
   def ignore(artist: Artist, albumName: String): Future[Unit]
 }
