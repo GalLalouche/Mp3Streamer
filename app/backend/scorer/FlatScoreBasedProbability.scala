@@ -47,7 +47,7 @@ import common.rich.primitives.RichDouble.richDouble
     def assertIncreasedProbability(score: ModelScore): Unit = {
       debugMessage(score)
       if (withAsserts)
-        assert(baseProbability(score) < map(score))
+        assert(baseProbability(score) < map(score), s"${baseProbability(score)} >= ${map(score)}")
     }
 
     assertReducedProbability(ModelScore.Crappy)

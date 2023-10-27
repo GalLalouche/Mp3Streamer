@@ -26,8 +26,8 @@ object ScorerModule extends ScalaModule {
     def requiredProbability: ModelScore => Double = {
       case ModelScore.Crappy => 0
       case ModelScore.Meh => 0.02
-      case ModelScore.Okay => 0.20
-      case ModelScore.Good => 0.35
+      case ModelScore.Okay => 0.18
+      case ModelScore.Good => 0.37
       case ModelScore.Great => 0.25
       case ModelScore.Amazing => 0.18
     }
