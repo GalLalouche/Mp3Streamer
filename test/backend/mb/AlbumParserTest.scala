@@ -14,7 +14,7 @@ import common.test.AuxSpecs
 class AlbumParserTest extends FreeSpec with AuxSpecs {
   private val $ = new AlbumParser(Logger.Empty)
   private def parse(s: String): Option[MbAlbumMetadata] =
-    $(Json.parse(s.stripMargin).as[JsObject])
+    $.parseReleaseGroup(Json.parse(s.stripMargin).as[JsObject])
   "valid input" in {
     val result = parse(
       """{
@@ -65,6 +65,17 @@ class AlbumParserTest extends FreeSpec with AuxSpecs {
         |"first-release-date": "2011-??-12",
         |"title": "London or Paris, Berlin or Southend On Sea"
         |}""") shouldReturn None
+  }
+
+  "releaseGroup parsing" in {
+    $.releaseGroups(Json.parse(getClass.getResourceAsStream("release-group.json"))).shouldContainExactly(
+      MbAlbumMetadata("O", LocalDate.of(2002, 7, 22), AlbumType.Album, ReconID("d7e69fd9-59ac-3093-8b72-60b77a91b298")),
+      MbAlbumMetadata("9", LocalDate.of(2006, 11, 6), AlbumType.Album, ReconID("0d673e32-4f95-348f-af28-3abc1353bff3")),
+      MbAlbumMetadata("My Favourite Faded Fantasy", LocalDate.of(2014, 10, 31), AlbumType.Album, ReconID("72ea557d-b39d-4e06-bb17-e3bda5802d4b")),
+      MbAlbumMetadata("Live From the Union Chapel", LocalDate.of(2003, 7, 1), AlbumType.Live, ReconID("076a1fb6-c1da-38dc-8bc0-1b7f4c2256f7")),
+      MbAlbumMetadata("2004 Live at Outremont Theatre, Montreal", LocalDate.of(2004, 1, 1), AlbumType.Live, ReconID("0b2d6869-bc7b-4b8a-bc04-03d73f279831")),
+      MbAlbumMetadata("Live at Fingerprints: Warts and All", LocalDate.of(2007, 10, 23), AlbumType.EP, ReconID("bd7b0573-0b62-3026-afdc-e5f2e12cfe61")),
+    )
   }
 
   "releaseToReleaseGroups" - {

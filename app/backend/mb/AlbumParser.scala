@@ -28,18 +28,23 @@ private class AlbumParser @Inject()(
     $
   }
 
-  def apply(json: JsObject): Option[MbAlbumMetadata] = for {
+  def parseReleaseGroup(json: JsObject): Option[MbAlbumMetadata] = for {
     date <- parseDate(json)
     albumType <- json.ostr("primary-type").flatMap(AlbumType.withNameOption)
     if ValidPrimaryTypes(albumType.entryName)
-    // Secondary types includes compilations, demos, and other unwanted albums.
-    if json.array("secondary-types").value.isEmpty
-  } yield MbAlbumMetadata(
-    title = fixQuotes(json str "title"),
-    releaseDate = date,
-    albumType = albumType,
-    reconId = ReconID.validateOrThrow(json str "id"),
-  )
+    // Secondary types includes compilations, demos, and other unwanted albums. But sometimes they
+    // contain live information instead of it being embedded in the album type...
+    secondaryTypes = json.array("secondary-types").value.map(_.as[String].toLowerCase)
+    if secondaryTypes.fornone(_ != "live")
+  } yield {
+    assert(secondaryTypes.singleOpt.forall(_ == "live"))
+    MbAlbumMetadata(
+      title = fixQuotes(json str "title"),
+      releaseDate = date,
+      albumType = if (secondaryTypes.nonEmpty) AlbumType.Live else albumType,
+      reconId = ReconID.validateOrThrow(json str "id"),
+    )
+  }
 
   def artistCredits(json: JsObject): Seq[(Artist, ReconID)] = json
       .objects("artist-credit")
@@ -50,13 +55,17 @@ private class AlbumParser @Inject()(
             _.str("id") |> ReconID.validateOrThrow,
           ))
 
+  // This is no longer used, but I'm keeping it in case I might need in the future.
   def releaseToReleaseGroups(js: JsValue): Seq[MbAlbumMetadata] = js.array("releases")
       .value
-      .flatMap(_ / ("release-group") |> apply)
+      .flatMap(_ / ("release-group") |> parseReleaseGroup)
       .groupBy(_.toTuple(_.title, _.albumType))
       .values
       .map(extractSingleRelease)
       .toVector
+
+  def releaseGroups(js: JsValue): Seq[MbAlbumMetadata] =
+    js.objects("release-groups").flatMap(parseReleaseGroup)
 }
 
 private object AlbumParser {

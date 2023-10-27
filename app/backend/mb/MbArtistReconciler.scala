@@ -27,7 +27,5 @@ private[backend] class MbArtistReconciler @Inject()(
   }
 
   def getAlbumsMetadata(artistKey: ReconID): Future[Seq[MbAlbumMetadata]] =
-  // Starting from releases actually filters out all the "Sampler/Promo" crap.
-    downloader("release", "artist" -> artistKey.id, "limit" -> "10000", "inc" -> "release-groups")
-        .map(parser.releaseToReleaseGroups)
+    downloader("release-group", "artist" -> artistKey.id).map(parser.releaseGroups)
 }
