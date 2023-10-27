@@ -126,7 +126,7 @@ private class SlickNewAlbumStorage @Inject()(
     (scores.toSet.single, toNewAlbums(albums))
   }
   private def toNewAlbums(albums: Seq[StoredNewAlbum])(implicit dummy: DummyImplicit): Seq[NewAlbum] =
-    albums.sortBy(_.na.date).map(_.na)
+    albums.sortBy(_.na.date).reverse.map(_.na)
   override def apply(a: Artist) = db
       .run(tableQuery
           .filter(_.artist === a.name)
