@@ -3,6 +3,7 @@ package backend.albums.filler
 import java.time.{Clock, Duration}
 
 import backend.albums.filler.storage.CachedNewAlbumStorage
+import backend.albums.AddedAlbumCount
 import backend.logging.Logger
 import backend.mb.AlbumType
 import backend.recon.Artist
@@ -30,13 +31,13 @@ private[albums] class NewAlbumFiller @Inject() private(
 ) {
   private implicit val iec: ExecutionContext = ec
   // TODO code duplication with RefreshableRetriever
-  private val finisher = SimpleTypedActor.async[(Seq[NewAlbumRecon], Set[Artist]), Int](
+  private val finisher = SimpleTypedActor.async[(Seq[NewAlbumRecon], Set[Artist]), AddedAlbumCount](
     "CacherFiller finisher", Function.tupled(storage.storeNew))
   private def ignore(reason: String) = {
     logger.verbose(reason)
-    Future.successful(0)
+    Future.successful(0: AddedAlbumCount)
   }
-  def update(maxAge: Duration, maxCachedAlbums: Int)(a: Artist): Future[Int] = {
+  def update(maxAge: Duration, maxCachedAlbums: Int)(a: Artist): Future[AddedAlbumCount] = {
     storage.forArtist(a)
         .map(_.count(_.albumType == AlbumType.Album) > maxCachedAlbums)
         .ifM(
@@ -57,7 +58,7 @@ private[albums] class NewAlbumFiller @Inject() private(
                       storage.unremoveAll(a) >> fetcher(a).flatMap(finisher.!(_, Set(a)))
                     } else {
                       logger.verbose(s"Skipping $info")
-                      Future.successful(0)
+                      Future.successful(0: AddedAlbumCount)
                     }
                 }
                 .listen(stored => if (stored > 0) logger.debug(s"Stored <$stored> new albums.")),

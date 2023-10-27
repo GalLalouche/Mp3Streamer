@@ -1,7 +1,9 @@
 package backend.albums.filler.storage
 
+import java.time.LocalDate
+
+import backend.albums.{AddedAlbumCount, ArtistNewAlbums, NewAlbum}
 import backend.albums.filler.NewAlbumRecon
-import backend.albums.{ArtistNewAlbums, NewAlbum}
 import backend.logging.Logger
 import backend.mb.AlbumType
 import backend.module.StandaloneModule
@@ -14,9 +16,7 @@ import javax.inject.Inject
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import slick.ast.BaseTypedType
 
-import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent
 
 import scalaz.ListT
 import scalaz.std.vector.vectorInstance
@@ -158,7 +158,7 @@ private class SlickNewAlbumStorage @Inject()(
       )
   private def isValid(e: NewAlbumRecon): Future[Boolean] =
     ^(exists(e.reconId), existsWithADifferentReconID(e))(_ neither _)
-  override def storeNew(albums: Seq[NewAlbumRecon]): Future[Int] = {
+  override def storeNew(albums: Seq[NewAlbumRecon]): Future[AddedAlbumCount] = {
     val withoutDups = albums
         .groupBy(_.toTuple(_.newAlbum.artist, _.newAlbum.title))
         .mapValues {
@@ -178,10 +178,11 @@ private class SlickNewAlbumStorage @Inject()(
     for {
       newAlbums <- withoutDups.filterM(isValid)
       result = newAlbums.size
-      _ <- db.run(tableQuery
-          .map(_.toTuple(_.reconId, _.album, _.albumType, _.year, _.artist))
-          .++=(newAlbums.map(toPartialEntity).ensuring(_.nonEmpty))
-      )
+      _ <- db.run(
+            tableQuery
+                .map(_.toTuple(_.reconId, _.album, _.albumType, _.year, _.artist))
+                .++=(newAlbums.map(toPartialEntity).ensuring(_.nonEmpty))
+          )
           .whenMLazy(result > 0)
           .listenError(logger.error(s"Failed to store albums: <${newAlbums mkString "\n"}>", _))
     } yield result

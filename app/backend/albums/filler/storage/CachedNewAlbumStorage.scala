@@ -1,6 +1,7 @@
 package backend.albums.filler.storage
 
 import backend.albums.filler.NewAlbumRecon
+import backend.albums.AddedAlbumCount
 import backend.recon.Artist
 import backend.storage.Freshness
 
@@ -20,5 +21,5 @@ private[filler] trait CachedNewAlbumStorage extends FilledStorage {
    *                a given artist no new albums will be found, but we still want to update the artist
    *                last fetch time for those cases.
    */
-  def storeNew(albums: Seq[NewAlbumRecon], artists: Set[Artist]): Future[Int]
+  def storeNew(albums: Seq[NewAlbumRecon], artists: Set[Artist]): Future[AddedAlbumCount]
 }
