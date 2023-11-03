@@ -1,11 +1,11 @@
 package backend.albums.filler
 
-import backend.recon.{Artist, ReconcilableFactory}
 import javax.inject.Inject
-import models.MusicFinder
 
+import backend.recon.{Artist, ReconcilableFactory}
 import common.io.DirectoryRef
 import common.rich.RichT._
+import models.MusicFinder
 
 private class EagerExistingAlbumsFactory @Inject() (
     mf: MusicFinder,

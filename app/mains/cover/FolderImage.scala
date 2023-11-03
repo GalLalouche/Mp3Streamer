@@ -2,7 +2,6 @@ package mains.cover
 
 import java.io.File
 import java.nio.file.{Files, StandardCopyOption}
-
 import javax.swing.ImageIcon
 
 import common.io.{FileRef, IOFile}

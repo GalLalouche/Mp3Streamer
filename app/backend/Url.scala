@@ -1,13 +1,12 @@
 package backend
 
-import io.lemonlabs.uri
-import org.apache.commons.validator.routines.UrlValidator
-
 import scala.annotation.tailrec
 
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 import common.rich.RichT._
+import io.lemonlabs.uri
+import org.apache.commons.validator.routines.UrlValidator
 
 @deprecated("Use io.lemonlabs.uri.Url")
 case class Url(address: String) {

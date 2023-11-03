@@ -1,21 +1,19 @@
 package backend.albums.filler
 
-import backend.logging.Logger
-import backend.recon.{Reconcilable, Reconciler, ReconID, ReconStorage}
-import backend.recon.StoredReconResult.HasReconResult
-import rx.lang.scala.schedulers.ImmediateScheduler
-import rx.lang.scala.Observable
-
 import scala.concurrent.{ExecutionContext, Future}
-
 import scalaz.syntax.bind.ToBindOps
-import common.rich.func.MoreObservableInstances._
 
+import backend.logging.Logger
+import backend.recon.{ReconID, ReconStorage, Reconcilable, Reconciler}
+import backend.recon.StoredReconResult.HasReconResult
 import common.concurrency.SimpleActor
+import common.rich.func.MoreObservableInstances._
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.RichFuture._
 import common.rich.RichObservable
 import common.rich.RichObservable._
+import rx.lang.scala.schedulers.ImmediateScheduler
+import rx.lang.scala.Observable
 
 private class ReconFiller[R <: Reconcilable](
     reconciler: Reconciler[R],

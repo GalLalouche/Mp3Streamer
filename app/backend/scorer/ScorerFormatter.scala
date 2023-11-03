@@ -1,14 +1,13 @@
 package backend.scorer
 
-import controllers.UrlPathUtils
 import javax.inject.Inject
-import models.Song
-import play.api.libs.json.{Json, JsValue}
-
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.json.JsonWriteable
 import common.json.ToJsonableOps._
+import controllers.UrlPathUtils
+import models.Song
+import play.api.libs.json.{JsValue, Json}
 
 private object ScorerFormatter {
   private implicit object SongScoreJsonable extends JsonWriteable[FullInfoScore] {

@@ -1,8 +1,9 @@
 package backend.scorer
 
+import javax.inject.Inject
+
 import backend.logging.Logger
 import controllers.{PlayActionConverter, UrlDecodeUtils}
-import javax.inject.Inject
 import play.api.mvc.InjectedController
 
 class ScorerController @Inject() (

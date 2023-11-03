@@ -1,9 +1,9 @@
 package common.concurrency
 
-import backend.logging.Logger
-
 import scala.concurrent.duration.Duration
 import scala.concurrent.Future
+
+import backend.logging.Logger
 
 /** It's a single threaded future factory, basically. */
 trait SimpleTypedActor[Msg, +Result] {

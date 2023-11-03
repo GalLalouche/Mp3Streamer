@@ -1,23 +1,21 @@
 package backend.external
 
-import backend.external.expansions.ExternalLinkExpander
-import backend.external.mark.ExternalLinkMarker
-import backend.external.recons.LinkRetrievers
-import backend.recon.{Reconcilable, ReconID}
-import backend.Retriever
-
 import scala.concurrent.{ExecutionContext, Future}
-
 import scalaz.std.option.optionInstance
 import scalaz.syntax.bind.ToBindOps
 import scalaz.syntax.traverse.ToTraverseOps
+
+import backend.external.expansions.ExternalLinkExpander
+import backend.external.mark.ExternalLinkMarker
+import backend.external.recons.LinkRetrievers
+import backend.recon.{ReconID, Reconcilable}
+import backend.Retriever
+import common.rich.collections.RichSet._
+import common.rich.collections.RichTraversableOnce._
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreTraversableInstances._
 import common.rich.func.MoreTraverseInstances._
 import common.rich.func.ToMoreFoldableOps._
-
-import common.rich.collections.RichSet._
-import common.rich.collections.RichTraversableOnce._
 import common.rich.RichTuple._
 
 /**

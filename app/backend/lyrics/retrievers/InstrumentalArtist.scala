@@ -1,13 +1,12 @@
 package backend.lyrics.retrievers
 
-import backend.lyrics.Instrumental
 import javax.inject.Inject
-import models.Song
-
 import scala.concurrent.{ExecutionContext, Future}
-
 import scalaz.syntax.functor.ToFunctorOps
+
+import backend.lyrics.Instrumental
 import common.rich.func.BetterFutureInstances._
+import models.Song
 
 private[lyrics] class InstrumentalArtist @Inject() (
     ec: ExecutionContext,

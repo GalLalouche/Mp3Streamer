@@ -1,11 +1,11 @@
 package backend.recon
 
 import javax.inject.Inject
-import mains.fixer.StringFixer
 
 import common.rich.RichT._
 import common.rich.RichTuple._
 import common.LanguageString._
+import mains.fixer.StringFixer
 
 /**
  * A placeholder for a class that might some day in the future actually measure the similarity

@@ -1,13 +1,13 @@
 package backend.scorer
 
-import backend.logging.Logger
 import javax.inject.Singleton
-import models.Song
 
+import backend.logging.Logger
 import common.io.FileRef
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichDouble.richDouble
 import common.Percentage
+import models.Song
 
 /** Returns a [[ModelScore]] based weight for the song to be chosen. */
 // TODO SoftwareDesign could be an interesting guice question about passing configuration

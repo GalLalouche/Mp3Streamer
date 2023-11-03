@@ -1,11 +1,10 @@
 package songs.selector
 
 import javax.inject.{Inject, Provider, Singleton}
-import models.{MusicFinder, Song}
-
 import scala.concurrent.Future
 
 import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
+import models.{MusicFinder, Song}
 
 // A stupid hack to make SongSelectorState lazy (since initializing all the songs takes a while) while
 // remaining transparent to clients.

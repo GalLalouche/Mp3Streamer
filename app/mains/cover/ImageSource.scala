@@ -1,11 +1,10 @@
 package mains.cover
 
 import java.awt.image.BufferedImage
-
-import io.lemonlabs.uri.Url
 import javax.imageio.ImageIO
 
 import common.io.{FileRef, IOFile}
+import io.lemonlabs.uri.Url
 
 private sealed trait ImageSource {
   def width: Int

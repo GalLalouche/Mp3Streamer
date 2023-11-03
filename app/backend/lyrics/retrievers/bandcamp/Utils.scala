@@ -4,10 +4,9 @@ import java.util.regex.Pattern
 
 import backend.lyrics.retrievers.{HtmlLyricsUtils, LyricParseResult}
 import backend.Url
-import org.jsoup.nodes.Element
-
 import common.rich.primitives.RichString._
 import common.rich.RichT._
+import org.jsoup.nodes.Element
 
 private object Utils {
   val Source = "Bandcamp"

@@ -1,15 +1,14 @@
 package songs.selector
 
-import backend.logging.LoggingLevel
 import javax.inject.Inject
-import models.{MusicFinder, Song}
-
 import scala.annotation.tailrec
 import scala.util.Random
 
+import backend.logging.LoggingLevel
 import common.io.DirectoryRef
 import common.rich.RichRandom.richRandom
 import common.TimedLogger
+import models.{MusicFinder, Song}
 
 /**
  * Sacrifices uniform distribution for lower latency while waiting for update to complete (since

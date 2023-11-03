@@ -1,11 +1,10 @@
 package backend.albums.filler.storage
 
+import scala.concurrent.Future
+import scalaz.ListT
+
 import backend.albums.{ArtistNewAlbums, NewAlbum}
 import backend.recon.{Artist, IgnoredReconResult}
-
-import scala.concurrent.Future
-
-import scalaz.ListT
 
 private[albums] trait FilledStorage {
   def all: ListT[Future, ArtistNewAlbums]

@@ -1,23 +1,21 @@
 package backend.external.expansions
 
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
+import scalaz.std.option.optionInstance
+import scalaz.OptionT
+
 import backend.{FutureOption, Url}
 import backend.external.Host
 import backend.recon.{Album, AlbumReconScorer}
-import javax.inject.Inject
-import org.jsoup.nodes.Document
-
-import scala.concurrent.ExecutionContext
-
-import scalaz.std.option.optionInstance
-import scalaz.OptionT
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreIteratorInstances._
 import common.rich.func.ToMoreMonadPlusOps._
 import common.rich.func.ToTraverseMonadPlusOps._
-
 import common.rich.primitives.RichBoolean._
 import common.rich.RichT._
 import common.RichJsoup._
+import org.jsoup.nodes.Document
 
 private class AllMusicAlbumFinder @Inject() (
     allMusicHelper: AllMusicHelper,

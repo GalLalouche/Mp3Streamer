@@ -2,24 +2,20 @@ from __future__ import annotations
 
 import glob
 import os
+import pyautogui
 import shutil
 import subprocess
-from typing import NamedTuple, Iterable, Optional, Callable, T
-
-import pyautogui
 from itertools import chain
 from time import sleep
+from typing import NamedTuple, Iterable, Optional, Callable, T
 
 _FOOBAR_PATH = r'C:\Program Files (x86)\foobar2000\foobar2000.exe'
-
 
 def _list_dirs(path: str) -> Iterable[str]:
   return map(lambda x: os.path.join(path, x), next(os.walk(path))[1])
 
-
 def _flatmap(f: Callable[[T], Iterable[T]], items: Iterable[T]) -> Iterable[T]:
   return chain.from_iterable(map(f, items))
-
 
 def _find(items: Iterable[T], pred: Callable[[T], bool]) -> Optional[T]:
   for i in items:
@@ -27,20 +23,16 @@ def _find(items: Iterable[T], pred: Callable[[T], bool]) -> Optional[T]:
       return i
   return None
 
-
 def _check_dir_name(dir_name_to_match: str) -> Callable[[str], bool]:
   normalized = dir_name_to_match.lower()
   return lambda dir_name_to_check: os.path.basename(dir_name_to_check).lower() == normalized
-
 
 def _hotkey_and_wait(*hotkeys: str, time: float = 0.5) -> None:
   pyautogui.hotkey(*hotkeys)
   sleep(time)
 
-
 def _escape_and_wait() -> None:
   _hotkey_and_wait('escape')
-
 
 class Actions(NamedTuple):
   artist: str
@@ -110,14 +102,12 @@ class Actions(NamedTuple):
       dst=target_path,
     ).validate()
 
-
 def main(artist: str, target_genre: str):
   actions = Actions.build(artist=artist, target_genre=target_genre)
   actions.remove_files_from_foobar()
   count = actions.move_files()
   actions.add_moved_files_to_foobar(count)
   actions.sort_all()
-
 
 if __name__ == '__main__':
   import sys

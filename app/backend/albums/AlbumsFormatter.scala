@@ -1,23 +1,22 @@
 package backend.albums
 
-import backend.recon.Artist
-import javax.inject.Inject
-import mains.fixer.StringFixer
-import play.api.libs.json.{JsArray, Json, JsString, JsValue}
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.std.option.optionInstance
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.MoreTraverseInstances._
-import common.rich.func.ToMoreFoldableOps._
 import monocle.Monocle.toApplyTraversalOps
 import monocle.Traversal
 
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.std.option.optionInstance
+
+import backend.recon.Artist
 import common.json.JsonWriteable
 import common.json.RichJson._
 import common.json.ToJsonableOps._
+import common.rich.func.BetterFutureInstances._
+import common.rich.func.MoreTraverseInstances._
+import common.rich.func.ToMoreFoldableOps._
 import common.rich.RichT._
+import mains.fixer.StringFixer
+import play.api.libs.json.{JsArray, JsString, JsValue, Json}
 
 // FIXME This module returns StringFixed titles, but then we try to remove/ignore those entities, the name
 //  doesn't match the name in the database. A simple solution could be to use the original recon ID for that.

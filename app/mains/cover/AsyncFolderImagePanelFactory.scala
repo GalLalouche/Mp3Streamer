@@ -1,7 +1,6 @@
 package mains.cover
 
 import com.google.inject.assistedinject.Assisted
-
 import common.concurrency.FutureIterant
 
 private trait AsyncFolderImagePanelFactory {

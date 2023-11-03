@@ -1,15 +1,12 @@
 package common.concurrency
 
 import java.util
-
-import backend.logging.Logger
-
 import scala.concurrent.{ExecutionContext, Future}
 
+import backend.logging.Logger
+import common.rich.collections.RichMap._
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFunctorOps._
-
-import common.rich.collections.RichMap._
 import common.rich.RichT._
 
 private class UniqueSimpleTypedActorImpl[Msg, Result](

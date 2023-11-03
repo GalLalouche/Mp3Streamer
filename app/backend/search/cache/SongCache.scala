@@ -23,11 +23,13 @@ private case class SongCache private (private val songsByFile: Map[FileRef, Time
 
 private object SongCache {
   def apply(xs: Seq[TimestampedSong]): SongCache = new SongCache(xs.mapBy(_.file))
+
   def fromSongJsonFile(jsonableSaver: JsonableSaver)(implicit ev: Jsonable[Song]): SongCache = {
     val time = jsonableSaver.lastUpdateTime[Song].getOrThrow("Could not find any song JSON file")
     val songs = jsonableSaver.loadArray[Song]
     SongCache(songs.map(TimestampedSong(time, _)))
   }
+
   implicit def jsonableEv(implicit ev: Jsonable[Song]): Jsonable[SongCache] =
     new Jsonable[SongCache] {
       override def jsonify(e: SongCache): JsValue = e.songsByFile.values.toVector.jsonifyArray

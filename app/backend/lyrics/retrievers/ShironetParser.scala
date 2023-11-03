@@ -1,12 +1,12 @@
 package backend.lyrics.retrievers
 
-import com.google.common.annotations.VisibleForTesting
 import javax.inject.Inject
-import models.Song
-import org.jsoup.nodes.Document
 
+import com.google.common.annotations.VisibleForTesting
 import common.rich.RichT._
 import common.RichJsoup._
+import models.Song
+import org.jsoup.nodes.Document
 
 private class ShironetParser @Inject() (helper: SingleHostParsingHelper) extends PassiveParser {
   override def doesUrlMatchHost = _.address contains "shironet.mako.co.il"

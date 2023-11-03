@@ -1,13 +1,13 @@
 package backend.external.expansions
 
+import javax.inject.Inject
+
 import backend.external.{BaseLink, Host}
 import backend.recon.Reconcilable
 import backend.Url
 import com.google.common.annotations.VisibleForTesting
-import javax.inject.Inject
-import org.jsoup.nodes.Document
-
 import common.RichJsoup._
+import org.jsoup.nodes.Document
 
 private class WikidataEnglishOrHebrewExtenderFactory @Inject() (
     helper: ExternalLinkExpanderHelper,

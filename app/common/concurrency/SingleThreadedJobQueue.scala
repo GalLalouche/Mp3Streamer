@@ -1,7 +1,6 @@
 package common.concurrency
 
 import java.util.concurrent.{Callable, Executors}
-
 import scala.concurrent.ExecutionContext
 
 private class SingleThreadedJobQueue(queueName: String) {

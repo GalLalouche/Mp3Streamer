@@ -1,12 +1,11 @@
 package common.io
 
-import org.jsoup.nodes.Document
-import org.jsoup.Jsoup
-
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.io.WSAliases._
 import common.rich.RichT._
+import org.jsoup.nodes.Document
+import org.jsoup.Jsoup
 
 object RichWSRequest {
   implicit class richWSResponse($ : WSRequest)(implicit ec: ExecutionContext) {

@@ -1,8 +1,8 @@
 package songs.selector
 
-import models.Song
-
 import scala.annotation.tailrec
+
+import models.Song
 
 trait SongSelector {
   def randomSong(): Song

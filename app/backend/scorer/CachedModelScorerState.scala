@@ -1,12 +1,12 @@
 package backend.scorer
 
+import javax.inject.{Inject, Singleton}
+
 import backend.recon.{Album, Artist}
 import com.google.inject.Provider
-import javax.inject.{Inject, Singleton}
-import models.Song
-
 import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
 import common.io.FileRef
+import models.Song
 
 @Singleton private class CachedModelScorerState @Inject() (
     provider: Provider[CachedModelScorerImpl],

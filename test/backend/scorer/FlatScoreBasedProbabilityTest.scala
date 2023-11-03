@@ -7,7 +7,7 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatest.tags.Slow
 import org.scalatest.WordSpec
 
-import backend.logging.{ConsoleLogger, Logger}
+import backend.logging.Logger
 import backend.recon.{Album, Artist}
 import common.io.FileRef
 import common.rich.collections.RichTraversableOnce._

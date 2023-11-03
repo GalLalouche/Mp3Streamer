@@ -1,17 +1,14 @@
 package decoders
 
 import java.util.regex.Pattern
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.syntax.apply.ToApplyOps
 
 import backend.logging.Logger
-import javax.inject.{Inject, Singleton}
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.syntax.apply.ToApplyOps
-import common.rich.func.BetterFutureInstances._
-
 import common.concurrency.SimpleTypedActor
 import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
+import common.rich.func.BetterFutureInstances._
 import common.rich.primitives.RichString._
 import common.rich.RichT._
 

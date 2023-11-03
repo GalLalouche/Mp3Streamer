@@ -1,13 +1,12 @@
 package backend.external.extensions
 
+import javax.inject.Inject
+import scalaz.std.option.optionInstance
+
 import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
-import javax.inject.Inject
-
-import scalaz.std.option.optionInstance
-import common.rich.func.ToMoreFoldableOps._
-
 import common.rich.collections.RichTraversableOnce._
+import common.rich.func.ToMoreFoldableOps._
 
 private[external] class CompositeExtender @Inject() (
     allMusicArtistExtender: AllMusicArtistExtender,

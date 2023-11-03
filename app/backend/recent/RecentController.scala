@@ -1,11 +1,11 @@
 package backend.recent
 
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
+
 import controllers.websockets.PlayWebSocketRegistryFactory
 import controllers.PlayActionConverter
-import javax.inject.Inject
 import play.api.mvc.{InjectedController, WebSocket}
-
-import scala.concurrent.ExecutionContext
 
 class RecentController @Inject() (
     $ : RecentFormatter,

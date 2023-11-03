@@ -1,23 +1,20 @@
 package backend.external.recons
 
 import java.net.HttpURLConnection
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.syntax.bind.ToBindOps
+import scalaz.OptionT
 
 import backend.{FutureOption, Url}
 import backend.external.{BaseLink, Host}
 import backend.recon.Artist
 import com.google.common.annotations.VisibleForTesting
-import javax.inject.Inject
-import org.jsoup.Jsoup
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.syntax.bind.ToBindOps
-import scalaz.OptionT
-import common.rich.func.BetterFutureInstances._
-
 import common.io.InternetTalker
 import common.io.WSAliases._
+import common.rich.func.BetterFutureInstances._
 import common.RichJsoup._
+import org.jsoup.Jsoup
 
 private class LastFmLinkRetriever @VisibleForTesting private[recons] (
     it: InternetTalker,

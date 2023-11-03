@@ -1,12 +1,11 @@
 package backend.albums.filler
 
 import java.time.Clock
+import javax.inject.Inject
 
 import backend.albums.NewAlbum
 import backend.logging.Logger
 import backend.recon.{Artist, StringReconScorer}
-import javax.inject.Inject
-
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class FilterExistingAlbums @Inject() (

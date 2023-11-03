@@ -2,10 +2,10 @@ package common.concurrency
 
 import scala.concurrent.ExecutionContext
 import scala.language.higherKinds
-
 import scalaz.{Monad, OptionT, StreamT}
 import scalaz.syntax.functor.ToFunctorOps
 import scalaz.syntax.monad._
+
 import common.rich.func.{RichOptionT, RichStreamT, TuplePLenses}
 import common.rich.func.BetterFutureInstances._
 

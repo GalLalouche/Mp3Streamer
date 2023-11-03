@@ -3,7 +3,6 @@ package backend.external.extensions
 import backend.external.{ExtendedLinks, Host, LinkMark}
 import backend.recon.Reconcilable
 import backend.Url
-
 import common.rich.RichT._
 
 private[external] object SearchExtension {

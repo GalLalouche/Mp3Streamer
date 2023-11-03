@@ -1,8 +1,9 @@
 package backend.external.extensions
 
+import javax.inject.Inject
+
 import backend.external.{Host, MarkedLink}
 import backend.recon.Artist
-import javax.inject.Inject
 
 private class LastFmArtistExtender @Inject() (helper: StaticExtenderHelper)
     extends LinkExtender[Artist] {

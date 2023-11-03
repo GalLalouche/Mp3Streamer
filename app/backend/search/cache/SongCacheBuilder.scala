@@ -1,19 +1,17 @@
 package backend.search.cache
 
 import java.time.Clock
-
-import backend.logging.LoggingLevel
 import javax.inject.Inject
-import models.MusicFinder
-import rx.lang.scala.Observable
-
 import scala.concurrent.ExecutionContext
 
+import backend.logging.LoggingLevel
 import common.concurrency.report.ReportObservable
 import common.concurrency.report.ReportObservable.ReportObservable
 import common.io.FileRef
 import common.rich.RichTime.RichClock
 import common.TimedLogger
+import models.MusicFinder
+import rx.lang.scala.Observable
 
 private class SongCacheBuilder @Inject() (
     mf: MusicFinder,

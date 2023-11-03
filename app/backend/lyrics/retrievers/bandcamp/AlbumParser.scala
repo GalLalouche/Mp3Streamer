@@ -1,13 +1,12 @@
 package backend.lyrics.retrievers.bandcamp
 
+import scalaz.std.option.optionInstance
+
 import backend.lyrics.retrievers.{LyricParseResult, SingleHostParser}
+import common.rich.func.ToMoreFoldableOps._
+import common.RichJsoup._
 import models.Song
 import org.jsoup.nodes.Document
-
-import scalaz.std.option.optionInstance
-import common.rich.func.ToMoreFoldableOps._
-
-import common.RichJsoup._
 
 private[retrievers] object AlbumParser extends SingleHostParser {
   override def source = Utils.Source

@@ -1,9 +1,9 @@
 package backend.scorer.utils
 
+import scala.util.Try
+
 import backend.recon.Artist
 import backend.scorer.ModelScore
-
-import scala.util.Try
 
 private object ArtistScoreParser {
   private object Parser extends ParseUtils[(Artist, Option[ModelScore])] {

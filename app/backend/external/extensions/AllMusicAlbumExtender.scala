@@ -1,8 +1,9 @@
 package backend.external.extensions
 
+import javax.inject.Inject
+
 import backend.external.{Host, MarkedLink}
 import backend.recon.Album
-import javax.inject.Inject
 
 private class AllMusicAlbumExtender @Inject() (helper: StaticExtenderHelper)
     extends LinkExtender[Album] {

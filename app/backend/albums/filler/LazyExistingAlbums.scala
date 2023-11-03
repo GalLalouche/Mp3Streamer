@@ -1,12 +1,12 @@
 package backend.albums.filler
 
+import javax.inject.{Inject, Singleton}
+
 import backend.logging.LoggingLevel
 import backend.recon.{Album, Artist, ReconcilableFactory}
-import javax.inject.{Inject, Singleton}
-import models.MusicFinder
-
 import common.rich.primitives.RichOption.richOption
 import common.TimedLogger
+import models.MusicFinder
 
 @Singleton private class LazyExistingAlbums @Inject() (
     reconcilableFactory: ReconcilableFactory,

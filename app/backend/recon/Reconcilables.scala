@@ -1,8 +1,8 @@
 package backend.recon
 
-import models.Song
-
 import monocle.macros.Lenses
+
+import models.Song
 
 sealed trait Reconcilable {
   def normalize: String

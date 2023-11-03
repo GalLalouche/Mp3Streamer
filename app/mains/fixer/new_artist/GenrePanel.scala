@@ -1,25 +1,22 @@
 package mains.fixer.new_artist
 
 import java.awt.{Color, Insets}
-
-import mains.fixer.new_artist.GenrePanel.UpdatingColumns
-import mains.SwingUtils._
-import rx.lang.scala.{Observable, Subject}
-
 import scala.swing.{GridBagPanel, Orientation}
 import scala.swing.GridBagPanel.Anchor
-
 import scalaz.Scalaz.{ToBindOps, ToFunctorOps, ToTraverseOps}
 import scalaz.State
-import common.rich.func.MoreTraverseInstances._
 
 import common.rich.collections.RichSeq._
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rich.func.MoreTraverseInstances._
 import common.rich.path.Directory
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichInt.Rich
 import common.rich.RichT.lazyT
 import common.rich.RichTuple.richSameTuple2
+import mains.fixer.new_artist.GenrePanel.UpdatingColumns
+import mains.SwingUtils._
+import rx.lang.scala.{Observable, Subject}
 
 // Yeah, inheritance is bad, but this is how Scala Swing rolls :\
 private[fixer] class GenrePanel private (

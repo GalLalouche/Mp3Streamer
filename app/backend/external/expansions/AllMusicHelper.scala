@@ -2,6 +2,8 @@ package backend.external.expansions
 
 import java.net.HttpURLConnection
 import java.util.regex.Pattern
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 import backend.external.expansions.AllMusicHelper._
 import backend.external.BaseLink
@@ -9,18 +11,13 @@ import backend.logging.Logger
 import backend.recon.Reconcilable
 import backend.Url
 import com.google.common.annotations.VisibleForTesting
-import javax.inject.Inject
-import org.jsoup.nodes.Document
-
-import scala.concurrent.{ExecutionContext, Future}
-
+import common.io.InternetTalker
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
-
-import common.io.InternetTalker
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 import common.RichJsoup._
+import org.jsoup.nodes.Document
 
 private class AllMusicHelper @Inject() (
     it: InternetTalker,

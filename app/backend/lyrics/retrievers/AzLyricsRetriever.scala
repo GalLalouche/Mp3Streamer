@@ -1,12 +1,12 @@
 package backend.lyrics.retrievers
 
-import com.google.common.annotations.VisibleForTesting
 import javax.inject.Inject
-import models.Song
-import org.jsoup.nodes.Document
 
+import com.google.common.annotations.VisibleForTesting
 import common.rich.RichT._
 import common.RichJsoup._
+import models.Song
+import org.jsoup.nodes.Document
 
 private class AzLyricsRetriever @Inject() (singleHostHelper: SingleHostParsingHelper)
     extends HtmlRetriever {

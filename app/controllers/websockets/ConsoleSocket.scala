@@ -1,7 +1,8 @@
 package controllers.websockets
 
-import backend.logging.StringOutputLogger
 import javax.inject.Inject
+
+import backend.logging.StringOutputLogger
 import play.api.mvc.{InjectedController, WebSocket}
 
 /** Sends console messages to the listeners. */

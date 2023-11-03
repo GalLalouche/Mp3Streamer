@@ -2,7 +2,6 @@ package common
 
 import java.time.{LocalDate, LocalDateTime, Year, YearMonth}
 import java.time.format.DateTimeFormatter
-
 import scala.util.Try
 
 import common.rich.collections.RichTraversableOnce._

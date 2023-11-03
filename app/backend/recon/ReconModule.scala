@@ -1,10 +1,10 @@
 package backend.recon
 
+import scala.concurrent.ExecutionContext
+
 import backend.mb.MbArtistReconciler
 import com.google.inject.Provides
 import net.codingwell.scalaguice.ScalaModule
-
-import scala.concurrent.ExecutionContext
 
 object ReconModule extends ScalaModule {
   override def configure(): Unit = {

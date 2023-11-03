@@ -1,8 +1,8 @@
 package backend.scorer
 
-import models.Song
-
 import scala.concurrent.Future
+
+import models.Song
 
 private trait FullInfoModelScorer {
   def apply(s: Song): Future[FullInfoScore]

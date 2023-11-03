@@ -1,10 +1,9 @@
 package backend.recon
 
-import backend.storage.OnlineRetrieverCacher
-
 import scala.concurrent.ExecutionContext
-
 import scalaz.std.scalaFuture._
+
+import backend.storage.OnlineRetrieverCacher
 
 class ReconcilerCacher[Key <: Reconcilable](repo: ReconStorage[Key], online: Reconciler[Key])(
     implicit ec: ExecutionContext,

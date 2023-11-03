@@ -1,7 +1,6 @@
 package common.io
 
 import java.time.LocalDateTime
-
 import scala.concurrent.Future
 import scala.Ordering.Implicits._
 

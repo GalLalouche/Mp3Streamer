@@ -1,13 +1,12 @@
 package mains.cover.image
 
 import javax.inject.Inject
-import mains.cover.image.ImageAPIFetcher.ResultsPerQuery
-import play.api.libs.json.JsObject
-
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.io.InternetTalker
 import common.io.RichWSResponse._
+import mains.cover.image.ImageAPIFetcher.ResultsPerQuery
+import play.api.libs.json.JsObject
 
 private[cover] class ImageAPIFetcher @Inject() (
     @ApiKey apiKey: String,

@@ -1,13 +1,12 @@
 package mains.fixer
 
-import mains.fixer.new_artist.GenrePanel
-import mains.BrowserUtils
-
 import scala.concurrent.{Future, Promise}
 import scala.swing.event.WindowClosing
 import scala.swing.Frame
 
 import common.rich.path.Directory
+import mains.fixer.new_artist.GenrePanel
+import mains.BrowserUtils
 
 /**
  * Creates a new artist folder by asking the user which subgenre to place the artist in using a

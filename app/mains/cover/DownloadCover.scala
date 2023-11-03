@@ -1,23 +1,21 @@
 package mains.cover
 
-import com.google.inject.Guice
-import io.lemonlabs.uri.Url
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+
+import com.google.inject.Guice
+import common.concurrency.{FutureIterant, Iterant}
+import common.io.{IODirectory, IOFile}
+import common.rich.func.BetterFutureInstances._
+import common.rich.path.{Directory, RichFileUtils, TempDirectory}
+import common.rich.path.RichFile.richFile
+import common.rich.RichFuture.richFuture
+import io.lemonlabs.uri.Url
 import mains.{BrowserUtils, IOUtils, MainsModule}
 import mains.cover.image.ImageAPISearch
 import mains.cover.DownloadCover._
 import models.{AlbumFactory, MusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions._
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import common.rich.func.BetterFutureInstances._
-
-import common.concurrency.{FutureIterant, Iterant}
-import common.io.{IODirectory, IOFile}
-import common.rich.path.{Directory, RichFileUtils, TempDirectory}
-import common.rich.path.RichFile.richFile
-import common.rich.RichFuture.richFuture
 
 private[mains] class DownloadCover @Inject() (
     ec: ExecutionContext,

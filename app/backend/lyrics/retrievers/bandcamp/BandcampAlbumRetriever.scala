@@ -1,11 +1,10 @@
 package backend.lyrics.retrievers.bandcamp
 
-import backend.lyrics.retrievers.{HtmlRetriever, SingleHostParsingHelper}
-import backend.lyrics.retrievers.RetrievedLyricsResult.NoLyrics
 import javax.inject.Inject
-
 import scala.concurrent.ExecutionContext
 
+import backend.lyrics.retrievers.{HtmlRetriever, SingleHostParsingHelper}
+import backend.lyrics.retrievers.RetrievedLyricsResult.NoLyrics
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 

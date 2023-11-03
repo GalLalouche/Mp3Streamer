@@ -1,8 +1,8 @@
 package backend.albums.filler
 
-import backend.recon.ReconID
-
 import scala.concurrent.Future
+
+import backend.recon.ReconID
 
 trait ReconFillerAux[R] {
   def musicBrainzPath: String

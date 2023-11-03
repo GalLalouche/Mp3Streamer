@@ -1,10 +1,9 @@
 package models
 
-import org.jaudiotagger.tag.{FieldKey, Tag}
-
 import scala.collection.JavaConverters._
 
 import common.rich.RichT._
+import org.jaudiotagger.tag.{FieldKey, Tag}
 
 object RichTag {
   private val customPattern = """Description="([^"]+)"; Text="([^"]+)"; """.r

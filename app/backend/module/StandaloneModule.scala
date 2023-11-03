@@ -1,10 +1,10 @@
 package backend.module
 
-import backend.logging.LoggingModules
-import net.codingwell.scalaguice.ScalaModule
-
 import scala.concurrent.ExecutionContext
 import scala.util.Random
+
+import backend.logging.LoggingModules
+import net.codingwell.scalaguice.ScalaModule
 
 class StandaloneModule(random: Random) extends ScalaModule {
   override def configure(): Unit = {

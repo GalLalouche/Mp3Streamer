@@ -1,8 +1,9 @@
 package backend.lyrics
 
+import javax.inject.Inject
+
 import backend.Url
 import controllers.PlayActionConverter
-import javax.inject.Inject
 import play.api.mvc.InjectedController
 
 class LyricsController @Inject() ($ : LyricsFormatter, converter: PlayActionConverter)

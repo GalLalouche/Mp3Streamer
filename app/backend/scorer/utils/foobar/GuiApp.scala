@@ -1,6 +1,10 @@
 package backend.scorer.utils.foobar
 
 import java.io.File
+import javafx.stage.WindowEvent
+import scala.concurrent.ExecutionContext
+import scalafx.application.{JFXApp3, Platform}
+import scalafx.scene.Scene
 
 import backend.albums.filler.ExistingAlbumsModules
 import backend.logging.{FilteringLogger, LoggingLevel}
@@ -8,15 +12,9 @@ import backend.module.StandaloneModule
 import better.files
 import better.files.FileMonitor
 import com.google.inject.Guice
-import javafx.stage.WindowEvent
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import scalafx.application.{JFXApp3, Platform}
-import scalafx.scene.Scene
-
-import scala.concurrent.ExecutionContext
-
 import common.guice.RichModule.richModule
 import common.rich.RichFuture.richFuture
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 /** Runs a small GUI for scoring the currently playing Foobar song. */
 private object GuiApp extends JFXApp3 {

@@ -3,10 +3,10 @@ package controllers
 import java.io.File
 import java.net.{URLDecoder, URLEncoder}
 
-import common.io.{FileRef, IOFile, PathRef}
+import common.io.{IOFile, PathRef}
 import common.rich.primitives.RichString._
 import common.rich.RichT._
-import models.{IOSong, Song}
+import models.IOSong
 
 private object PlayUrlPathUtils extends UrlPathUtils {
   private val Encoding = "UTF-8"

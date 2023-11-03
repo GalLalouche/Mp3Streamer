@@ -1,7 +1,6 @@
 package mains.splitter
 
 import java.io.File
-
 import scala.language.postfixOps
 import scala.sys.process.Process
 

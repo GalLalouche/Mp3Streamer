@@ -1,5 +1,4 @@
 import scala.concurrent.Future
-
 import scalaz.OptionT
 
 package object backend {

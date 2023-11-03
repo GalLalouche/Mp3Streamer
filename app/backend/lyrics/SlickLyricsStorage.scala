@@ -1,18 +1,16 @@
 package backend.lyrics
 
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
+import scalaz.std.option.optionInstance
+
 import backend.lyrics.LyricsUrl.{DefaultEmpty, ManualEmpty, OldData, Url}
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
-import javax.inject.{Inject, Singleton}
+import common.rich.func.ToMoreFoldableOps._
+import common.rich.RichT._
 import models.Song
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
-
-import scala.concurrent.ExecutionContext
-
-import scalaz.std.option.optionInstance
-import common.rich.func.ToMoreFoldableOps._
-
-import common.rich.RichT._
 
 @Singleton
 private class SlickLyricsStorage @Inject() (

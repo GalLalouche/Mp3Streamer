@@ -1,15 +1,14 @@
 package backend.external.expansions
 
+import javax.inject.Inject
+
 import backend.{FutureOption, Url}
 import backend.external.Host
 import backend.recon.Album
-import javax.inject.Inject
-import org.jsoup.nodes.Document
-
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadTransOps._
-
 import common.RichJsoup._
+import org.jsoup.nodes.Document
 
 private class MetalArchivesAlbumsFinder @Inject() (sameHostExpanderHelper: SameHostExpanderHelper)
     extends SameHostExpander {

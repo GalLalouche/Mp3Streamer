@@ -1,19 +1,17 @@
 package mains.vimtag
 
 import java.io.File
-
-import backend.module.StandaloneModule
-import com.google.inject.Guice
-import mains.{IOUtils, JavaMainUtils}
-import mains.vimtag.table.TableModule
-import net.codingwell.scalaguice.InjectorExtensions._
-
 import scala.concurrent.ExecutionContext
 import scala.io.StdIn
 
+import backend.module.StandaloneModule
+import com.google.inject.Guice
 import common.io.IODirectory
 import common.rich.collections.RichTraversableOnce._
 import common.rich.RichFuture._
+import mains.{IOUtils, JavaMainUtils}
+import mains.vimtag.table.TableModule
+import net.codingwell.scalaguice.InjectorExtensions._
 
 object Main {
   private case class ExceptionAfterFileCreated(f: File, e: Exception) extends Exception(e)

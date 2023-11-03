@@ -1,12 +1,11 @@
 package backend.mb
 
-import backend.recon.{Album, Reconciler, ReconID}
 import javax.inject.Inject
-import play.api.libs.json.JsObject
-
 import scala.concurrent.{ExecutionContext, Future}
 
+import backend.recon.{Album, ReconID, Reconciler}
 import common.json.RichJson._
+import play.api.libs.json.JsObject
 
 /**
  * A release group is an proper album, whereas a release is a specific version of said album. A

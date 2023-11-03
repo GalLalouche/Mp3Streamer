@@ -5,11 +5,10 @@ import backend.logging.{LoggingLevel, LoggingModules}
 import backend.module.{CleanModule, StandaloneModule}
 import backend.recon.{Artist, ReconcilableFactory}
 import com.google.inject.{Guice, Injector, Module, Provides, Singleton}
-import models.IOMusicFinderModule
-import net.codingwell.scalaguice.ScalaModule
-
 import common.guice.RichModule.richModule
 import common.TimedLogger
+import models.IOMusicFinderModule
+import net.codingwell.scalaguice.ScalaModule
 
 object ExistingAlbumsModules {
   def lazyAlbums: Module = new ScalaModule {

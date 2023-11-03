@@ -1,19 +1,18 @@
 package songs.selector
 
-import backend.logging.LoggingLevel
-import models.{MusicFinder, Song}
-import songs.selector.MultiStageSongSelector.fileFilterSetter
+import monocle.Monocle.toApplySetterOps
+import monocle.Setter
 
 import scala.annotation.tailrec
 import scala.util.Random
 
-import monocle.Monocle.toApplySetterOps
-import monocle.Setter
-
+import backend.logging.LoggingLevel
 import common.{Filter, TimedLogger}
 import common.io.RefSystem
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.RichRandom.richRandom
+import models.{MusicFinder, Song}
+import songs.selector.MultiStageSongSelector.fileFilterSetter
 
 /**
  * Can filter both files and songs. Filtering at the file level is much faster since it doesn't

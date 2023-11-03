@@ -1,13 +1,12 @@
 package backend.albums.filler.storage
 
 import java.time.LocalDateTime
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 import backend.recon.{Artist, SlickArtistReconStorage}
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
-import javax.inject.Inject
 import slick.ast.{BaseTypedType, ScalaBaseType}
-
-import scala.concurrent.ExecutionContext
 
 // TODO Unit RefreshableStorage
 private class SlickLastFetchTimeStorage @Inject() (

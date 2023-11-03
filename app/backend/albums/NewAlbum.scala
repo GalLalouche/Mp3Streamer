@@ -1,21 +1,19 @@
 package backend.albums
 
+import monocle.macros.Lenses
+
 import java.time.{Clock, LocalDate}
 import java.time.format.DateTimeFormatter
+import scala.Ordering.Implicits._
 
 import backend.mb.{AlbumType, MbAlbumMetadata}
 import backend.recon.{Album, Artist}
-import mains.fixer.StringFixer
-import play.api.libs.json.{Json, JsValue}
-
-import scala.Ordering.Implicits._
-
-import monocle.macros.Lenses
-
 import common.json.Jsonable
 import common.json.RichJson._
 import common.rich.primitives.RichBoolean._
 import common.rich.RichTime.{OrderingLocalDate, RichClock}
+import mains.fixer.StringFixer
+import play.api.libs.json.{JsValue, Json}
 
 @Lenses
 private case class NewAlbum(title: String, date: LocalDate, artist: Artist, albumType: AlbumType) {

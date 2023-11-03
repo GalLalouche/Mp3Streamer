@@ -1,7 +1,6 @@
 package backend.logging
 
 import java.time.LocalDateTime
-
 import scala.concurrent.ExecutionContext
 
 import common.io.DirectoryRef

@@ -1,11 +1,10 @@
 package backend.external.extensions
 
+import scalaz.syntax.functor.ToFunctorOpsUnapply
+
 import backend.external.{Host, MarkedLink, MarkedLinks}
 import backend.recon.Reconcilable
-
-import scalaz.syntax.functor.ToFunctorOpsUnapply
 import common.rich.func.MoreSeqInstances._
-
 import common.rich.RichTuple._
 
 /**

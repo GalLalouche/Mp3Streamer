@@ -3,7 +3,7 @@ package backend.module
 import scala.concurrent.ExecutionContext
 
 import com.google.inject.util.Modules
-import common.concurrency.{DaemonFixedPool, SingleThreadedJobQueue}
+import common.concurrency.DaemonFixedPool
 import net.codingwell.scalaguice.ScalaModule
 
 class ModuleTest extends ConfigurationModuleTestSpec {

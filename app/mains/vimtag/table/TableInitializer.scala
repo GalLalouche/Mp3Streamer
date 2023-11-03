@@ -1,9 +1,8 @@
 package mains.vimtag.table
 
+import common.rich.RichT._
 import mains.vimtag.IndividualInitializer
 import mains.vimtag.IndividualInitializer.IndividualTags
-
-import common.rich.RichT._
 
 private object TableInitializer extends IndividualInitializer {
   override def apply(tags: Seq[IndividualInitializer.IndividualTags]): Seq[String] = {

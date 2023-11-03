@@ -1,20 +1,18 @@
 package backend.albums.filler
 
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.{-\/, \/-, OptionT}
+
 import backend.albums.NewAlbum
 import backend.logging.Logger
 import backend.mb.{MbAlbumMetadata, MbArtistReconciler}
-import backend.recon.{Artist, ReconcilerCacher, ReconID}
+import backend.recon.{Artist, ReconID, ReconcilerCacher}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import com.google.inject.{Inject, Singleton}
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.{-\/, \/-, OptionT}
+import common.concurrency.DaemonFixedPool
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
 import common.rich.func.ToMoreMonadErrorOps._
-
-import common.concurrency.DaemonFixedPool
 import common.rich.RichT._
 
 @Singleton private class NewAlbumFetcher @Inject() (

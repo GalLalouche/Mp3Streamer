@@ -2,15 +2,13 @@ package models
 
 import java.io.File
 import java.util.concurrent.TimeUnit
-
-import play.api.libs.json.{JsObject, Json}
-
 import scala.concurrent.duration.Duration
 
 import common.io.{IODirectory, IOFile}
 import common.json.OJsonable
 import common.json.RichJson._
 import common.json.ToJsonableOps._
+import play.api.libs.json.{JsObject, Json}
 
 object ModelJsonable {
   implicit object SongJsonifier extends OJsonable[Song] {

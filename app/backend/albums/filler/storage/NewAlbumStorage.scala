@@ -1,13 +1,11 @@
 package backend.albums.filler.storage
 
+import scala.concurrent.Future
+import scalaz.ListT
+
 import backend.albums.{AddedAlbumCount, ArtistNewAlbums, NewAlbum}
 import backend.albums.filler.NewAlbumRecon
 import backend.recon.{Artist, ReconID}
-
-import scala.concurrent.Future
-
-import scalaz.ListT
-
 import common.storage.Storage
 
 // TODO Non-Keyed storage, or multi-valued storage

@@ -1,15 +1,14 @@
 package common.json
 
-import play.api.libs.json._
+import monocle.Iso
 
 import scala.annotation.implicitNotFound
-
 import scalaz.std.option.optionInstance
-import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
-import monocle.Iso
 
 import common.json.RichJson._
 import common.json.ToJsonableOps._
+import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
+import play.api.libs.json._
 
 /** Saner names for play's JSON trait, and less optionality. */
 @implicitNotFound("Could not prove that ${A} is Jsonable.")

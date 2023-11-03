@@ -1,7 +1,8 @@
 package playlist
 
-import controllers.PlayActionConverter
 import javax.inject.Inject
+
+import controllers.PlayActionConverter
 import play.api.libs.json.JsValue
 import play.api.mvc.InjectedController
 

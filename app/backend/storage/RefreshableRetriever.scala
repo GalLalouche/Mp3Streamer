@@ -1,16 +1,13 @@
 package backend.storage
 
 import java.time.{Clock, Duration}
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.syntax.bind.ToBindOps
 
 import backend.Retriever
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.syntax.bind.ToBindOps
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
 import common.rich.func.ToMoreMonadErrorOps._
-
 import common.rich.RichT._
 import common.rich.RichTime.RichLocalDateTime
 

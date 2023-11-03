@@ -3,9 +3,7 @@ package mains
 import java.awt.{Image, RenderingHints}
 import java.awt.event.{MouseEvent, MouseListener}
 import java.awt.image.BufferedImage
-
 import javax.swing.{ImageIcon, JLabel}
-
 import scala.swing.{Component, Font, UIElement}
 
 private object SwingUtils {

@@ -1,9 +1,7 @@
 package decoders
 
 import java.io.{File, IOException}
-
 import javax.inject.Inject
-
 import scala.sys.process.{Process, ProcessLogger}
 
 import common.io.{FileRef, IOFile}

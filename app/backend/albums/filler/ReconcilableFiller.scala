@@ -1,12 +1,11 @@
 package backend.albums.filler
 
-import backend.logging.{FilteringLogger, LoggingLevel}
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-
 import scala.concurrent.ExecutionContext
 
+import backend.logging.{FilteringLogger, LoggingLevel}
 import common.rich.RichFuture.richFuture
 import common.TimedLogger
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 private object ReconcilableFiller {
   def main(args: Array[String]): Unit = {

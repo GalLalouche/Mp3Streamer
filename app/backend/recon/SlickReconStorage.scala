@@ -1,19 +1,17 @@
 package backend.recon
 
-import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
-import backend.storage.{DbProvider, IsomorphicSlickStorage, SlickStorageTemplateFromConf}
 import javax.inject.{Inject, Singleton}
-import slick.ast.{BaseTypedType, ScalaBaseType}
-import slick.jdbc.{JdbcProfile, JdbcType}
-
 import scala.concurrent.{ExecutionContext, Future}
-
 import scalaz.std.option.optionInstance
 import scalaz.OptionT
+
+import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
+import backend.storage.{DbProvider, IsomorphicSlickStorage, SlickStorageTemplateFromConf}
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFoldableOps._
-
 import common.rich.RichT.richT
+import slick.ast.{BaseTypedType, ScalaBaseType}
+import slick.jdbc.{JdbcProfile, JdbcType}
 
 private class SlickReconStorageAux(profile: JdbcProfile)(implicit ec: ExecutionContext) {
   import profile.api._

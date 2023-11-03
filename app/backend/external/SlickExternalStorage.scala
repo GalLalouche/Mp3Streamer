@@ -1,24 +1,21 @@
 package backend.external
 
 import java.time.LocalDateTime
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.std.option.optionInstance
+import scalaz.syntax.apply.ToApplyOps
 
 import backend.recon.{Album, Artist, Reconcilable}
 import backend.storage.{AlwaysFresh, DatedFreshness, DbProvider, Freshness, SlickSingleKeyColumnStorageTemplateFromConf}
 import backend.Url
-import javax.inject.{Inject, Singleton}
-import slick.ast.{BaseTypedType, ScalaBaseType}
-import slick.jdbc.JdbcType
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.std.option.optionInstance
-import scalaz.syntax.apply.ToApplyOps
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFoldableOps._
 import common.rich.func.ToMoreMonadErrorOps._
-
 import common.rich.RichT._
 import common.storage.{ColumnMappers, StringSerializable}
+import slick.ast.{BaseTypedType, ScalaBaseType}
+import slick.jdbc.JdbcType
 
 // TODO replace with composition
 private abstract class SlickExternalStorage[R <: Reconcilable](

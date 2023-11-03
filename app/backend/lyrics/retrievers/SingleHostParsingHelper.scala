@@ -1,23 +1,20 @@
 package backend.lyrics.retrievers
 
 import java.util.regex.Pattern
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 import backend.logging.Logger
 import backend.lyrics.{HtmlLyrics, Instrumental, LyricsUrl}
 import backend.lyrics.retrievers.SingleHostParsingHelper._
 import backend.Url
-import javax.inject.Inject
-import models.Song
-import play.api.http.Status
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
-
 import common.io.InternetTalker
 import common.io.RichWSResponse._
+import common.rich.func.BetterFutureInstances._
+import common.rich.func.ToMoreMonadErrorOps._
 import common.rich.primitives.RichString._
+import models.Song
+import play.api.http.Status
 
 private class SingleHostParsingHelper @Inject() (it: InternetTalker, logger: Logger) {
   private implicit val iec: ExecutionContext = it

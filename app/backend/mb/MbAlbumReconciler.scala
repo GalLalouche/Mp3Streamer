@@ -1,21 +1,19 @@
 package backend.mb
 
-import backend.logging.Logger
-import backend.recon.{Album, AlbumReconScorer, Artist, Reconciler, ReconID}
-import backend.OptionRetriever
 import javax.inject.Inject
-import play.api.libs.json.{JsObject, JsValue}
-
 import scala.concurrent.ExecutionContext
-
 import scalaz.syntax.foldable.ToFoldableOps
 import scalaz.Scalaz.{doubleInstance, ToFunctorOps}
+
+import backend.logging.Logger
+import backend.recon.{Album, AlbumReconScorer, Artist, ReconID, Reconciler}
+import backend.OptionRetriever
+import common.json.RichJson._
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreSeqInstances._
 import common.rich.func.RichOptionT._
-
-import common.json.RichJson._
 import common.rich.RichT._
+import play.api.libs.json.{JsObject, JsValue}
 
 private class MbAlbumReconciler @Inject() (
     ec: ExecutionContext,

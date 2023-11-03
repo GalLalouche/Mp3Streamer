@@ -1,10 +1,9 @@
 package backend.external
 
-import backend.recon.{Album, Artist, Reconcilable}
-import backend.storage.Freshness
-
 import scala.concurrent.Future
 
+import backend.recon.{Album, Artist, Reconcilable}
+import backend.storage.Freshness
 import common.storage.Storage
 
 private[external] trait ExternalStorage[R <: Reconcilable]

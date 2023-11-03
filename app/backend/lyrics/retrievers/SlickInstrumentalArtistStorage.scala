@@ -1,14 +1,14 @@
 package backend.lyrics.retrievers
 
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
+
 import backend.module.StandaloneModule
 import backend.recon.SlickArtistReconStorage
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Guice
-import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import slick.ast.{BaseTypedType, ScalaBaseType}
-
-import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 private class SlickInstrumentalArtistStorage @Inject() (

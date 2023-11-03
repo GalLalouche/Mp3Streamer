@@ -1,11 +1,10 @@
 package backend.recon
 
+import scala.concurrent.Future
+
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.storage.CachableStorage
 import backend.FutureOption
-
-import scala.concurrent.Future
-
 import common.storage.{StorageTemplate, StoreMode}
 
 trait ReconStorage[R <: Reconcilable]

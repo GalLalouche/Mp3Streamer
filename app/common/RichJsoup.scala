@@ -1,10 +1,9 @@
 package common
 
-import org.jsoup.nodes.Element
-
 import scala.collection.JavaConverters._
 
 import common.rich.collections.RichTraversableOnce._
+import org.jsoup.nodes.Element
 
 object RichJsoup {
   implicit class richElement(private val $ : Element) extends AnyVal {

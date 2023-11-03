@@ -1,14 +1,13 @@
 package backend.albums.filler
 
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.recon.{Artist, ArtistReconStorage, ReconID}
-import javax.inject.Inject
-import net.codingwell.scalaguice.InjectorExtensions._
-
-import scala.concurrent.{ExecutionContext, Future}
-
 import common.rich.RichFuture._
+import net.codingwell.scalaguice.InjectorExtensions._
 
 private class ArtistReconFiller @Inject() (
     ea: ExistingAlbums,

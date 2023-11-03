@@ -10,7 +10,7 @@ import com.google.inject.Guice
 import common.guice.RichModule.richModule
 import common.io.{DirectoryRef, FileRef}
 import common.test.AuxSpecs
-import models.{FakeModelFactory, Genre, GenreFinder, MemorySong, Song}
+import models.{FakeModelFactory, GenreFinder, MemorySong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import net.codingwell.scalaguice.ScalaModule
 import org.scalacheck.Arbitrary._

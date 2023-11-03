@@ -1,22 +1,20 @@
 package backend.external.expansions
 
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.std.vector.vectorInstance
+import scalaz.OptionT
+
 import backend.{FutureOption, Url}
 import backend.external.Host
 import backend.recon.{Album, StringReconScorer}
-import javax.inject.Inject
-import org.jsoup.nodes.Document
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.std.vector.vectorInstance
-import scalaz.OptionT
+import common.io.InternetTalker
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToTraverseMonadPlusOps._
-
-import common.io.InternetTalker
 import common.rich.primitives.RichString._
 import common.rich.RichT._
 import common.RichJsoup._
+import org.jsoup.nodes.Document
 
 /** Finds Wikipedia album links in an artist's Wikipedia page. */
 private class WikipediaAlbumFinder @Inject() (

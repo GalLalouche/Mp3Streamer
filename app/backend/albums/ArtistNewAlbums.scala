@@ -1,9 +1,9 @@
 package backend.albums
 
+import monocle.macros.Lenses
+
 import backend.recon.Artist
 import backend.scorer.ModelScore
-
-import monocle.macros.Lenses
 
 @Lenses
 private case class ArtistNewAlbums(

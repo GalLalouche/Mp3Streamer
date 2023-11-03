@@ -1,22 +1,20 @@
 package backend.module
 
 import java.time.Clock
+import javax.inject.Singleton
+import scala.concurrent.ExecutionContext
 
 import backend.logging.Logger
 import backend.storage.DbProvider
 import com.google.inject.Provides
-import javax.inject.Singleton
+import common.guice.ModuleUtils
+import common.io.{DirectoryRef, IODirectory, InternetTalker, RootDirectory}
+import common.rich.RichT._
 import models.IOMusicFinderModule
 import net.codingwell.scalaguice.ScalaModule
 import org.sqlite.SQLiteConfig
 import slick.jdbc.{JdbcProfile, SQLiteProfile}
 import slick.util.AsyncExecutor
-
-import scala.concurrent.ExecutionContext
-
-import common.guice.ModuleUtils
-import common.io.{DirectoryRef, InternetTalker, IODirectory, RootDirectory}
-import common.rich.RichT._
 
 object RealModule extends ScalaModule with ModuleUtils {
   override def configure(): Unit = {

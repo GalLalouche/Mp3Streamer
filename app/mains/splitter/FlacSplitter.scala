@@ -1,12 +1,7 @@
 package mains.splitter
 
 import java.io.File
-
 import javax.inject.Inject
-import models.IOMusicFinder
-import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.tag.FieldKey
-
 import scala.collection.JavaConverters._
 
 import common.io.IODirectory
@@ -14,6 +9,9 @@ import common.rich.collections.RichIterable._
 import common.rich.collections.RichTraversableOnce._
 import common.rich.path.{Directory, RichFileUtils}
 import common.rich.path.RichFile._
+import models.IOMusicFinder
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.FieldKey
 
 // Splits cue file and fixes the flac output.
 private class FlacSplitter @Inject() (cueSplitter: CueSplitter, mf: IOMusicFinder) {

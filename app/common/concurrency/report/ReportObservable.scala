@@ -1,14 +1,12 @@
 package common.concurrency.report
 
-import rx.lang.scala.{Observable, Observer, Subscription}
-
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-
 import scalaz.syntax.functor.ToFunctorOps
-import common.rich.func.MoreObservableInstances._
 
+import common.rich.func.MoreObservableInstances._
 import common.rich.primitives.RichBoolean.richBoolean
+import rx.lang.scala.{Observable, Observer, Subscription}
 
 object ReportObservable {
   type ReportObservable[Agg, Result] = Function[ReportObserver[Agg, Result], Subscription]

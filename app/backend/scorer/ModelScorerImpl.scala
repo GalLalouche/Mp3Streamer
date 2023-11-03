@@ -1,11 +1,10 @@
 package backend.scorer
 
 import javax.inject.Inject
-import models.Song
-
 import scala.concurrent.ExecutionContext
-
 import scalaz.OptionT
+
+import models.Song
 
 private class ModelScorerImpl @Inject() (
     fullInfoModelScorer: FullInfoModelScorer,

@@ -1,7 +1,8 @@
 package songs
 
-import controllers.{PlayActionConverter, PlayControllerUtils}
 import javax.inject.Inject
+
+import controllers.{PlayActionConverter, PlayControllerUtils}
 import play.api.mvc._
 import songs.SongFormatter.ShouldEncodeMp3Reader
 

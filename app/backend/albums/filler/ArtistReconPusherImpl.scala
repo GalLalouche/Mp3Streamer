@@ -1,12 +1,11 @@
 package backend.albums.filler
 
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.Scalaz.ToBindOps
+
 import backend.recon.{Artist, ArtistReconStorage, ReconID}
 import backend.recon.StoredReconResult.HasReconResult
-import javax.inject.Inject
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.Scalaz.ToBindOps
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 

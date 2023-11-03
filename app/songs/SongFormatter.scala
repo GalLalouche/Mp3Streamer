@@ -1,21 +1,19 @@
 package songs
 
-import controllers.{ControllerSongJsonifier, UrlPathUtils}
-import decoders.Mp3Encoder
 import javax.inject.Inject
-import models._
-import play.api.libs.json.JsValue
-import songs.selector.{FollowingSong, SongSelectorState}
-import songs.SongFormatter.ShouldEncodeMp3Reader
-
 import scala.language.implicitConversions
-
 import scalaz.Reader
 
 import common.io.IODirectory
 import common.json.JsonWriteable
 import common.json.ToJsonableOps._
 import common.rich.RichT._
+import controllers.{ControllerSongJsonifier, UrlPathUtils}
+import decoders.Mp3Encoder
+import models._
+import play.api.libs.json.JsValue
+import songs.selector.{FollowingSong, SongSelectorState}
+import songs.SongFormatter.ShouldEncodeMp3Reader
 
 private class SongFormatter @Inject() (
     albumFactory: AlbumFactory,

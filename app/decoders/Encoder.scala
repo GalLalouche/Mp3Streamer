@@ -1,7 +1,6 @@
 package decoders
 
 import com.google.inject.ImplementedBy
-
 import common.io.FileRef
 
 @ImplementedBy(classOf[DbPowerampCodec])

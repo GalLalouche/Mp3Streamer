@@ -1,9 +1,8 @@
 package songs
 
-import models.IOSong
-
 import common.rich.path.Directory
 import common.rich.RichT._
+import models.IOSong
 
 private object SongGroupsUpdater {
   private def trackNumbers(

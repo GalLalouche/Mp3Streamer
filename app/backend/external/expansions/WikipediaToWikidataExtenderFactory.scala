@@ -1,16 +1,15 @@
 package backend.external.expansions
 
 import java.util.regex.Pattern
+import javax.inject.Inject
 
 import backend.external.{BaseLink, Host}
 import backend.recon.Reconcilable
 import backend.Url
 import com.google.common.annotations.VisibleForTesting
-import javax.inject.Inject
-import org.jsoup.nodes.Document
-
 import common.rich.primitives.RichString._
 import common.RichJsoup._
+import org.jsoup.nodes.Document
 
 private class WikipediaToWikidataExtenderFactory @Inject() (helper: ExternalLinkExpanderHelper) {
   private def canonize(href: String): String = {

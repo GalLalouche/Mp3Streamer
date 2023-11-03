@@ -1,11 +1,11 @@
 package mains
 
 import javax.inject.Inject
-import models.MusicFinder
 
 import common.io.IODirectory
 import common.rich.collections.RichTraversableOnce._
 import common.rich.path.{Directory, RichFileUtils}
+import models.MusicFinder
 
 private class PrefixAlbumDirsWithYears @Inject() (mf: MusicFinder) {
   def addYears(d: Directory): Unit = d.dirs.filterNot(hasYear).foreach(addYear)

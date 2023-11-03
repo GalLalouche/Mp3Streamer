@@ -7,7 +7,6 @@ import scalaz.Scalaz.ToIdOps
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import backend.logging.Logger
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 import play.api.http.{HttpEntity, Writeable}

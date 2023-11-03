@@ -1,16 +1,15 @@
 package mains.random_folder
 
 import java.io.File
-
 import javax.inject.Inject
-import models.{Genre, GenreFinder}
-import models.Genre.{Classical, Metal, NewAge}
-import play.api.libs.json.Json
 
 import common.io.{IODirectory, IOFile}
 import common.json.RichJson.DynamicJson
 import common.rich.primitives.RichBoolean.richBoolean
 import common.Filter
+import models.{Genre, GenreFinder}
+import models.Genre.{Classical, Metal, NewAge}
+import play.api.libs.json.Json
 
 private object FileFilters {
   private def removeGenres(genreFinder: GenreFinder, f: File)(

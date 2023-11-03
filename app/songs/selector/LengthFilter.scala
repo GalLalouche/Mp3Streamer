@@ -1,13 +1,12 @@
 package songs.selector
 
-import backend.recon.Reconcilable.SongExtractor
-import backend.scorer.{CachedModelScorer, FullInfoScore, ModelScore, ScoreSource}
-import models.{Genre, GenreFinder, Song}
-
 import scala.concurrent.duration.Duration
 
+import backend.recon.Reconcilable.SongExtractor
+import backend.scorer.{CachedModelScorer, FullInfoScore, ModelScore, ScoreSource}
 import common.rich.RichEnumeratum.richEnumeratum
 import common.Filter
+import models.{Genre, GenreFinder, Song}
 
 private class LengthFilter(
     genreFinder: GenreFinder,

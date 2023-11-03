@@ -1,20 +1,17 @@
 package backend.recent
 
 import java.time.{Clock, LocalDate}
-
 import javax.inject.Inject
-import models.{Album, AlbumFactory, MusicFinder}
-
 import scala.Ordering.Implicits._
-
 import scalaz.std.option.optionInstance
 import scalaz.syntax.apply.^
-import common.rich.func.MoreSeqInstances._
-import common.rich.func.ToMoreFoldableOps._
 
 import common.io.{DirectoryRef, FileRef}
+import common.rich.func.MoreSeqInstances._
+import common.rich.func.ToMoreFoldableOps._
 import common.rich.RichT._
 import common.rich.RichTime.{OrderingLocalDateTime, _}
+import models.{Album, AlbumFactory, MusicFinder}
 
 private class RecentAlbums @Inject() (mf: MusicFinder, albumFactory: AlbumFactory, clock: Clock) {
   // recent doesn't care about songs.

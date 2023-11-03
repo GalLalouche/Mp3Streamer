@@ -1,6 +1,10 @@
 package backend.albums.filler
 
 import java.time.{Clock, Duration}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
+import scala.math.Ordered.orderingToOrdered
+import scalaz.Scalaz.ToBindOps
 
 import backend.albums.filler.storage.CachedNewAlbumStorage
 import backend.albums.AddedAlbumCount
@@ -8,16 +12,9 @@ import backend.logging.Logger
 import backend.mb.AlbumType
 import backend.recon.Artist
 import backend.storage.{AlwaysFresh, DatedFreshness}
-import javax.inject.{Inject, Singleton}
-
-import scala.concurrent.{ExecutionContext, Future}
-import scala.math.Ordered.orderingToOrdered
-
-import scalaz.Scalaz.ToBindOps
+import common.concurrency.SimpleTypedActor
 import common.rich.func.BetterFutureInstances.betterFutureInstances
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
-
-import common.concurrency.SimpleTypedActor
 import common.rich.RichTime.RichLocalDateTime
 
 @Singleton

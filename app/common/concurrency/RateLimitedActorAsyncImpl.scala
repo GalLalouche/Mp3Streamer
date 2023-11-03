@@ -1,12 +1,10 @@
 package common.concurrency
 
 import java.util.concurrent.atomic.{AtomicInteger, AtomicLong}
-
-import backend.logging.Logger
-
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration.Duration
 
+import backend.logging.Logger
 import common.rich.RichFuture
 
 private class RateLimitedActorAsyncImpl[Msg, Result](

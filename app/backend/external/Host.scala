@@ -1,9 +1,8 @@
 package backend.external
 
 import backend.Url
-import enumeratum.{Enum, EnumEntry}
-
 import common.rich.collections.RichTraversableOnce._
+import enumeratum.{Enum, EnumEntry}
 
 sealed case class Host private (name: String, url: Url) extends EnumEntry
 object Host extends Enum[Host] {

@@ -1,11 +1,11 @@
 package backend.lyrics.retrievers
 
+import scala.concurrent.ExecutionContext
+
 import backend.logging.Logger
 import backend.lyrics.retrievers.bandcamp.{BandcampAlbumRetriever, BandcampParser}
 import com.google.inject.Provides
 import net.codingwell.scalaguice.ScalaModule
-
-import scala.concurrent.ExecutionContext
 
 private[lyrics] object RetrieversModule extends ScalaModule {
   override def configure(): Unit =

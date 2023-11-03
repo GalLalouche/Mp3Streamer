@@ -1,16 +1,15 @@
 package backend.lyrics
 
-import backend.lyrics.retrievers.RetrievedLyricsResult
-import backend.Url
-import controllers.UrlPathUtils
 import javax.inject.Inject
-import models.Song
-import play.twirl.api.utils.StringEscapeUtils
-
 import scala.concurrent.{ExecutionContext, Future}
 
+import backend.lyrics.retrievers.RetrievedLyricsResult
+import backend.Url
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
+import controllers.UrlPathUtils
+import models.Song
+import play.twirl.api.utils.StringEscapeUtils
 
 private class LyricsFormatter @Inject() (
     ec: ExecutionContext,

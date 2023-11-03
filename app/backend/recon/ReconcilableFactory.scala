@@ -1,16 +1,15 @@
 package backend.recon
 
-import backend.recon.Reconcilable.SongExtractor
 import javax.inject.Inject
-import models.MusicFinder
-
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
+import backend.recon.Reconcilable.SongExtractor
 import common.io.{DirectoryRef, FileRef}
 import common.json.ToJsonableOps.jsonifyString
 import common.rich.primitives.RichOption.richOption
 import common.rich.RichT._
+import models.MusicFinder
 
 class ReconcilableFactory @Inject() (val mf: MusicFinder) {
   type S = mf.S

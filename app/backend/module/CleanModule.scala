@@ -1,14 +1,13 @@
 package backend.module
 
+import scala.concurrent.ExecutionContext
+
 import com.google.inject.matcher.Matchers
 import com.google.inject.spi.TypeListener
 import com.google.inject.Provider
-import net.codingwell.scalaguice.ScalaModule
-
-import scala.concurrent.ExecutionContext
-
 import common.guice.ModuleUtils
 import common.storage.Storage
+import net.codingwell.scalaguice.ScalaModule
 
 /** Creates the in-memory tables after creating the storage instances. */
 object CleanModule extends ScalaModule with ModuleUtils {

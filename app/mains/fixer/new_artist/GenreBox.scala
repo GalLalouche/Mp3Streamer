@@ -2,14 +2,12 @@ package mains.fixer.new_artist
 
 import java.awt.{Color, Font}
 import java.io.File
-
 import javax.imageio.ImageIO
-import mains.SwingUtils._
-
 import scala.swing.{BoxPanel, Label, Orientation}
 
 import common.rich.path.Directory
 import common.rich.RichT._
+import mains.SwingUtils._
 
 private class GenreBox(
     val directory: Directory,

@@ -1,9 +1,9 @@
 package backend.external.mark
 
+import scala.concurrent.Future
+
 import backend.external.{Host, LinkMark, MarkedLink}
 import backend.recon.Reconcilable
-
-import scala.concurrent.Future
 
 private[external] trait ExternalLinkMarker[R <: Reconcilable] {
   def host: Host

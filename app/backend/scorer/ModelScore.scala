@@ -1,8 +1,8 @@
 package backend.scorer
 
-import enumeratum.{Enum, EnumEntry}
-
 import scala.collection.immutable
+
+import enumeratum.{Enum, EnumEntry}
 
 sealed trait ModelScore extends EnumEntry
 

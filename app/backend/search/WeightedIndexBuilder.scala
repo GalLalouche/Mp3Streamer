@@ -1,15 +1,14 @@
 package backend.search
 
-import backend.search.WeightedIndexable.ops._
-
 import scalaz.syntax.functor.ToFunctorOps
 import scalaz.Semigroup
-import common.rich.func.MoreIterableInstances._
-import common.rich.func.MoreSetInstances._
 
+import backend.search.WeightedIndexable.ops._
 import common.ds.Trie
 import common.rich.collections.RichMap._
 import common.rich.collections.RichTraversableOnce._
+import common.rich.func.MoreIterableInstances._
+import common.rich.func.MoreSetInstances._
 
 /**
  * Weighing allows ranking of different term sources. Like a regular index, every term points to a

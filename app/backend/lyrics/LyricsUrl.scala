@@ -1,8 +1,8 @@
 package backend.lyrics
 
-import enumeratum.{Enum, EnumEntry}
-
 import scala.collection.immutable
+
+import enumeratum.{Enum, EnumEntry}
 sealed trait LyricsUrl extends EnumEntry
 object LyricsUrl extends Enum[LyricsUrl] {
   case class Url(url: io.lemonlabs.uri.Url) extends LyricsUrl

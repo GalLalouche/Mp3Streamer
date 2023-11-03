@@ -1,10 +1,10 @@
 package backend.albums.filler
 
-import backend.logging.Logger
-import backend.recon.{Album, AlbumReconStorage, Reconciler, ReconID}
 import javax.inject.Inject
-
 import scala.concurrent.{ExecutionContext, Future}
+
+import backend.logging.Logger
+import backend.recon.{Album, AlbumReconStorage, ReconID, Reconciler}
 
 private class AlbumReconFiller @Inject() (
     ea: ExistingAlbums,

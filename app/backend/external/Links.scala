@@ -1,10 +1,10 @@
 package backend.external
 
-import backend.recon.Reconcilable
-import backend.Url
-
 import monocle.macros.Lenses
 import monocle.Iso
+
+import backend.recon.Reconcilable
+import backend.Url
 
 @Lenses
 case class BaseLink[R <: Reconcilable](link: Url, host: Host)

@@ -1,6 +1,11 @@
 package backend.albums.filler.storage
 
+import monocle.Iso
+
 import java.time.{Clock, LocalDateTime, ZoneOffset}
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
+import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
 
 import backend.albums.filler.storage.LastFetchTimeImpl.prependUnit
 import backend.logging.Logger
@@ -8,19 +13,12 @@ import backend.module.StandaloneModule
 import backend.recon.Artist
 import backend.storage.{ComposedFreshnessStorage, DatedFreshness, Freshness}
 import com.google.inject.Guice
-import javax.inject.Inject
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-
-import scala.concurrent.ExecutionContext
-
-import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreInvariantFunctorOps._
 import common.rich.func.ToMoreMonadErrorOps._
-import monocle.Iso
-
 import common.rich.RichFuture.richFuture
 import common.storage.Storage
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 private class LastFetchTimeImpl @Inject() (
     storage: SlickLastFetchTimeStorage,

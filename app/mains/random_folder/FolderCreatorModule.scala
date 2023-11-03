@@ -1,14 +1,12 @@
 package mains.random_folder
 
 import java.io.File
+import scala.util.Random
 
 import com.google.inject.assistedinject.FactoryModuleBuilder
 import com.google.inject.Provides
-import net.codingwell.scalaguice.ScalaModule
-
-import scala.util.Random
-
 import common.Filter
+import net.codingwell.scalaguice.ScalaModule
 
 private class FolderCreatorModule(seed: Long = Random.nextLong()) extends ScalaModule {
   override def configure(): Unit = {

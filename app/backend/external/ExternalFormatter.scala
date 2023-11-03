@@ -1,20 +1,18 @@
 package backend.external
 
-import backend.external.extensions.SearchExtension
-import backend.recon.Reconcilable.SongExtractor
-import backend.recon.ReconID
-import controllers.UrlPathUtils
 import javax.inject.Inject
-import models.Song
-import play.api.libs.json.{Json, JsValue}
-
 import scala.concurrent.{ExecutionContext, Future}
-
 import scalaz.syntax.bind.ToBindOps
-import common.rich.func.BetterFutureInstances._
 
+import backend.external.extensions.SearchExtension
+import backend.recon.ReconID
+import backend.recon.Reconcilable.SongExtractor
 import common.json.RichJson._
+import common.rich.func.BetterFutureInstances._
 import common.rich.RichT._
+import controllers.UrlPathUtils
+import models.Song
+import play.api.libs.json.{JsValue, Json}
 
 private class ExternalFormatter @Inject() (
     ec: ExecutionContext,

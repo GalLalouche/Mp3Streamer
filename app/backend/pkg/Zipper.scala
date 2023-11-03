@@ -1,18 +1,16 @@
 package backend.pkg
 
-import backend.Retriever
-import controllers.UrlPathUtils
 import javax.inject.Inject
-import models.MusicFinder
-import play.api.libs.json.{Json, JsString}
-
 import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process._
-
 import scalaz.syntax.apply.ToApplyOps
-import common.rich.func.BetterFutureInstances._
 
+import backend.Retriever
 import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
+import common.rich.func.BetterFutureInstances._
+import controllers.UrlPathUtils
+import models.MusicFinder
+import play.api.libs.json.{JsString, Json}
 
 private class Zipper @Inject() (
     ec: ExecutionContext,

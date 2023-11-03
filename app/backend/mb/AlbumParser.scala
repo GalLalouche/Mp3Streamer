@@ -1,20 +1,19 @@
 package backend.mb
 
 import java.time.{LocalDate, Year, YearMonth}
+import javax.inject.Inject
 
 import backend.logging.Logger
 import backend.mb.AlbumParser._
 import backend.recon.{Artist, ReconID}
-import javax.inject.Inject
-import mains.fixer.StringFixer
-import play.api.libs.json.{JsObject, JsValue}
-
 import common.json.RichJson._
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
 import common.rich.RichT.richT
 import common.rich.RichTime.OrderingLocalDate
 import common.CompositeDateFormat
+import mains.fixer.StringFixer
+import play.api.libs.json.{JsObject, JsValue}
 
 private class AlbumParser @Inject() (
     logger: Logger, // TODO replace logging with ADT Result type

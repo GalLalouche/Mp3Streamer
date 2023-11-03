@@ -1,19 +1,16 @@
 package mains.cover
 
 import java.awt.Image
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 import backend.{Retriever, Url}
 import backend.logging.Logger
-import javax.inject.Inject
-import mains.SwingUtils._
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
-
 import common.io.{DirectoryRef, FileRef, InternetTalker}
 import common.io.RichWSRequest._
+import common.rich.func.BetterFutureInstances._
+import common.rich.func.ToMoreMonadErrorOps._
+import mains.SwingUtils._
 
 private object ImageDownloader {
   def folderImage(f: FileRef, local: Boolean, w: => Int, h: => Int, image: => Image): FolderImage =

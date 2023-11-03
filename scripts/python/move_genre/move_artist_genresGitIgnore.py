@@ -1,5 +1,5 @@
-from move_artist_genres import main
 from genre import Genre
+from move_artist_genres import main
 
 if __name__ == '__main__':
   main(

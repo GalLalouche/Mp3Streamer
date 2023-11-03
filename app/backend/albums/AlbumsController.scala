@@ -1,7 +1,8 @@
 package backend.albums
 
-import controllers.{PlayActionConverter, UrlDecodeUtils}
 import javax.inject.Inject
+
+import controllers.{PlayActionConverter, UrlDecodeUtils}
 import play.api.mvc.InjectedController
 
 /**

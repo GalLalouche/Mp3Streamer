@@ -1,10 +1,9 @@
 package mains.vimtag.lines
 
-import mains.vimtag.{IndividualId3, IndividualParser, Tags}
-
 import common.rich.collections.RichSeq._
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichOption._
+import mains.vimtag.{IndividualId3, IndividualParser, Tags}
 
 private object LinesParser extends IndividualParser {
   private def toMaps(lines: Seq[String]): Seq[Map[String, String]] =

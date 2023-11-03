@@ -1,9 +1,9 @@
 package backend.external.expansions
 
+import scala.concurrent.Future
+
 import backend.external.{BaseLink, BaseLinks, Host}
 import backend.recon.Reconcilable
-
-import scala.concurrent.Future
 
 /**
  * Expansions (not to be confused with ex<b>t</b>ansions) scrap a given link in search for more

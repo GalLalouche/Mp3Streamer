@@ -1,11 +1,10 @@
 package backend.albums.filler.storage
 
+import scala.concurrent.Future
+import scalaz.OptionT
+
 import backend.recon.Artist
 import backend.storage.Freshness
-
-import scala.concurrent.Future
-
-import scalaz.OptionT
 
 // TODO UnitRefreshableStorage
 private trait LastFetchTime {

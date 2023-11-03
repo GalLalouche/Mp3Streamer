@@ -1,5 +1,12 @@
 package mains.vimtag
 
+import common.io.{DirectoryRef, IODirectory}
+import common.rich.collections.RichTraversableOnce._
+import common.rich.path.RichFile._
+import common.rich.path.RichFileUtils
+import common.rich.primitives.RichBoolean._
+import common.rich.primitives.RichInt._
+import common.rich.RichT.richT
 import mains.fixer.{FixLabelsUtils, FolderFixer}
 import mains.vimtag.Flag.RemoveFeat
 import models.RichTag._
@@ -8,14 +15,6 @@ import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
 import org.jaudiotagger.tag.FieldKey
-
-import common.io.{DirectoryRef, IODirectory}
-import common.rich.collections.RichTraversableOnce._
-import common.rich.path.RichFile._
-import common.rich.path.RichFileUtils
-import common.rich.primitives.RichBoolean._
-import common.rich.primitives.RichInt._
-import common.rich.RichT.richT
 
 private object Fixer {
   def apply(dir: DirectoryRef, parsedId3: ParsedId3): Unit = {

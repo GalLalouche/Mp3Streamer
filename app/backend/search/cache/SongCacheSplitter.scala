@@ -1,13 +1,13 @@
 package backend.search.cache
 
-import backend.logging.LoggingLevel
 import javax.inject.Inject
-import models.{Album, Artist, Song}
 
+import backend.logging.LoggingLevel
 import common.io.{IODirectory, IOFile, JsonableSaver}
 import common.json.Jsonable
 import common.rich.RichT.richT
 import common.TimedLogger
+import models.{Album, Artist, Song}
 
 /**
  * Saves the song cache in individual files, adapting its format the one used by the index builder.

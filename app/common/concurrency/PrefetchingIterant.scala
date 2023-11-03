@@ -1,11 +1,10 @@
 package common.concurrency
 
 import scala.language.higherKinds
-
 import scalaz.{Monad, OptionT}
 import scalaz.syntax.functor.ToFunctorOps
-import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 
+import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.RichT.richT
 import common.Lazy
 

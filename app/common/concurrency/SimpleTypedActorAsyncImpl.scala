@@ -2,10 +2,9 @@ package common.concurrency
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
-
 import scalaz.syntax.functor.ToFunctorOps
-import common.rich.func.BetterFutureInstances._
 
+import common.rich.func.BetterFutureInstances._
 import common.rich.RichFuture
 
 /** It's a single threaded future factory basically. */

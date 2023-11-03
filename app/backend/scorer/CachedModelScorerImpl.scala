@@ -1,21 +1,19 @@
 package backend.scorer
 
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
+import scala.util.{Failure, Success, Try}
+import scalaz.Id.Id
+
 import backend.logging.Logger
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, SongScoreStorage}
-import javax.inject.Inject
-import models.{MusicFinder, Song}
-
-import scala.concurrent.ExecutionContext
-import scala.util.{Failure, Success, Try}
-
-import scalaz.Id.Id
-import common.rich.func.ToMoreMonadTransOps.toMoreMonadTransOps
-
 import common.io.FileRef
+import common.rich.func.ToMoreMonadTransOps.toMoreMonadTransOps
 import common.rich.RichFuture.richFuture
 import common.rich.RichT.richT
+import models.{MusicFinder, Song}
 
 /**
  * Works by first loading all entries from storage and caching them inside a map. Useful for

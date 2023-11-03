@@ -1,14 +1,13 @@
 package backend.scorer
 
+import scala.language.higherKinds
+import scalaz.{Bind, OptionT}
+import scalaz.syntax.bind._
+
 import backend.recon.{Album, Artist}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.FullInfoScore.Scored
 import models.Song
-
-import scala.language.higherKinds
-
-import scalaz.{Bind, OptionT}
-import scalaz.syntax.bind._
 
 /** Scores a song by trying multiple sources, from most specific score to least specific. */
 private class CompositeScorer[M[_]: Bind](
