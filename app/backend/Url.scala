@@ -5,23 +5,24 @@ import org.apache.commons.validator.routines.UrlValidator
 
 import scala.annotation.tailrec
 
-import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
+import common.rich.RichT._
 
 @deprecated("Use io.lemonlabs.uri.Url")
 case class Url(address: String) {
   require(address.isWhitespaceOrEmpty.isFalse, "empty address")
   def host: Url = {
-    val baseHost = if (address startsWith "http")
-      address.split('/')(2)
-    else
-      address.takeWhile(_ != '/')
+    val baseHost =
+      if (address.startsWith("http"))
+        address.split('/')(2)
+      else
+        address.takeWhile(_ != '/')
     Url(
       baseHost
-          // E.g., https://shanipeleg1.bandcamp.com should return bandcamp.com
-          .mapIf(a => a.startsWith("www.").isFalse && a.count(_ == '.') == 2)
-          .to(_.dropWhile(_ != '.').tail)
+        // E.g., https://shanipeleg1.bandcamp.com should return bandcamp.com
+        .mapIf(a => a.startsWith("www.").isFalse && a.count(_ == '.') == 2)
+        .to(_.dropWhile(_ != '.').tail),
     )
   }
   @tailrec final def +/(s: String): Url =

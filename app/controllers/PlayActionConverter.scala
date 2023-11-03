@@ -1,24 +1,23 @@
 package controllers
 
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.syntax.functor.ToFunctorOps
+import scalaz.Scalaz.ToIdOps
+
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import backend.logging.Logger
-import javax.inject.Inject
+import common.rich.func.BetterFutureInstances._
+import common.rich.func.ToMoreMonadErrorOps._
 import play.api.http.{HttpEntity, Writeable}
 import play.api.libs.iteratee.streams.IterateeStreams
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, AnyContent, InjectedController, Request, Result}
 
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.syntax.functor.ToFunctorOps
-import scalaz.Scalaz.ToIdOps
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
-
 /** Converts common play-agnostic return values, usually from formatter helpers, to play Actions. */
-class PlayActionConverter @Inject()(
+class PlayActionConverter @Inject() (
     ec: ExecutionContext,
     assets: Assets,
 ) extends InjectedController {
@@ -41,15 +40,15 @@ class PlayActionConverter @Inject()(
     implicit val anyEv: Resultable[Any] = (_: Any) => NoContent
     implicit val streamResultEv: Resultable[StreamResult] = sr => {
       val source = Source
-          .fromPublisher(IterateeStreams enumeratorToPublisher Enumerator.fromStream(sr.inputStream))
-          .map(ByteString.apply)
+        .fromPublisher(IterateeStreams.enumeratorToPublisher(Enumerator.fromStream(sr.inputStream)))
+        .map(ByteString.apply)
       Status(sr.status)
-          .sendEntity(HttpEntity.Streamed(source, Some(sr.contentLength), Some(sr.mimeType)))
-          .withHeaders(sr.headers.toSeq: _*)
+        .sendEntity(HttpEntity.Streamed(source, Some(sr.contentLength), Some(sr.mimeType)))
+        .withHeaders(sr.headers.toSeq: _*)
     }
     implicit val resultEv: Resultable[Result] = e => e
   }
-  private implicit class ResultableOps[R: Resultable]($: R) {
+  private implicit class ResultableOps[R: Resultable]($ : R) {
     def result: Result = implicitly[Resultable[R]].result($)
   }
 
@@ -58,15 +57,17 @@ class PlayActionConverter @Inject()(
   }
   private object Actionable {
     implicit def syncEv[A: Resultable]: Actionable[A] = f => Action(f(_).result)
-    implicit def asyncEv[A: Resultable]: Actionable[Future[A]] = f => Action.async(
-      f(_)
+    implicit def asyncEv[A: Resultable]: Actionable[Future[A]] = f =>
+      Action.async(
+        f(_)
           .map(_.result)
-          .|>(handleFutureFailure)
-    )
+          .|>(handleFutureFailure),
+      )
   }
 
-  class _Parser[A] private[PlayActionConverter](parse: Request[AnyContent] => A) {
-    def apply[C: Actionable](f: A => C): Action[AnyContent] = implicitly[Actionable[C]].apply(parse andThen f)
+  class _Parser[A] private[PlayActionConverter] (parse: Request[AnyContent] => A) {
+    def apply[C: Actionable](f: A => C): Action[AnyContent] =
+      implicitly[Actionable[C]].apply(parse andThen f)
   }
 
   def parse[A](parser: Request[AnyContent] => A): _Parser[A] = new _Parser[A](parser)

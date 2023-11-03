@@ -7,7 +7,7 @@ import scala.concurrent.ExecutionContext
 
 import scalaz.OptionT
 
-private class ModelScorerImpl @Inject()(
+private class ModelScorerImpl @Inject() (
     fullInfoModelScorer: FullInfoModelScorer,
     ec: ExecutionContext,
 ) extends ModelScorer {

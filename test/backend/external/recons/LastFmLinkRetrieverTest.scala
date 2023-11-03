@@ -2,31 +2,33 @@ package backend.external.recons
 
 import java.net.HttpURLConnection
 
-import backend.Url
+import org.scalatest.AsyncFreeSpec
+
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.Artist
-import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.AsyncFreeSpec
-
+import backend.Url
 import common.io.InternetTalker
 import common.rich.RichT._
 import common.test.AsyncAuxSpecs
+import net.codingwell.scalaguice.InjectorExtensions._
 
 class LastFmLinkRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentSpecs {
   private val config = new TestModuleConfiguration
-  private def create(config: TestModuleConfiguration): LastFmLinkRetriever = {
+  private def create(config: TestModuleConfiguration): LastFmLinkRetriever =
     new LastFmLinkRetriever(config.injector.instance[InternetTalker], millisBetweenRedirects = 1)
-  }
   "404" in {
     val c = config.copy(_urlToResponseMapper =
-        FakeWSResponse(status = HttpURLConnection.HTTP_NOT_FOUND).partialConst)
+      FakeWSResponse(status = HttpURLConnection.HTTP_NOT_FOUND).partialConst,
+    )
     create(c)(Artist("Foobar")).shouldEventuallyReturnNone()
   }
   "200" in {
     val c = config.copy(_urlToBytesMapper = getBytes("last_fm.html").partialConst)
     create(c)(Artist("dreamtheater"))
-        .mapValue(_ shouldReturn BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm))
+      .mapValue(
+        _ shouldReturn BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm),
+      )
   }
   "302" in {
     var first = false
@@ -38,6 +40,8 @@ class LastFmLinkRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with Docu
         FakeWSResponse(status = HttpURLConnection.HTTP_OK, bytes = getBytes("last_fm.html"))
     })
     create(c)(Artist("Foobar"))
-        .mapValue(_ shouldReturn BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm))
+      .mapValue(
+        _ shouldReturn BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm),
+      )
   }
 }

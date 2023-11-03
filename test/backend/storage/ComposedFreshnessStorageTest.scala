@@ -1,26 +1,29 @@
 package backend.storage
 
 import java.time.Clock
+import scalaz.syntax.bind.ToBindOps
+import scalaz.syntax.functor.ToFunctorOps
 
-import backend.module.TestModuleConfiguration
-import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 import org.scalatest.OptionValues._
 
-import scalaz.syntax.bind.ToBindOps
-import scalaz.syntax.functor.ToFunctorOps
+import backend.module.TestModuleConfiguration
 import common.rich.func.BetterFutureInstances._
-
-import common.FakeClock
 import common.rich.RichTime.{RichInstant, RichLong}
 import common.storage.StoreMode
 import common.test.AsyncAuxSpecs
+import common.FakeClock
+import net.codingwell.scalaguice.InjectorExtensions._
 
-class ComposedFreshnessStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
+class ComposedFreshnessStorageTest
+    extends AsyncFreeSpec
+    with AsyncAuxSpecs
+    with OneInstancePerTest {
   private val c = TestModuleConfiguration()
   private val clock: FakeClock = c.injector.instance[FakeClock]
 
-  private val $ = new ComposedFreshnessStorage[Int, Int](new MemoryBackedStorage, c.injector.instance[Clock])
+  private val $ =
+    new ComposedFreshnessStorage[Int, Int](new MemoryBackedStorage, c.injector.instance[Clock])
 
   "store and load" - {
     "Can load stored data" in {
@@ -39,7 +42,7 @@ class ComposedFreshnessStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with
     }
     "existing data with timestamp" in {
       $.store(1, 2) >>
-          $.freshness(1).mapValue(_.localDateTime.value shouldReturn clock.instant().toLocalDateTime)
+        $.freshness(1).mapValue(_.localDateTime.value shouldReturn clock.instant().toLocalDateTime)
     }
   }
   "mapStore updates timestamp" in {

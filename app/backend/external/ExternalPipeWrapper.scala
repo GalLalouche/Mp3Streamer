@@ -2,13 +2,13 @@ package backend.external
 
 import java.time.{Clock, Duration}
 
-import backend.recon.{Reconcilable, ReconcilerCacher, ReconID}
-import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
 import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.LinkRetrievers
+import backend.recon.{Reconcilable, ReconcilerCacher, ReconID}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.storage.{ComposedFreshnessStorage, RefreshableRetriever}
+import backend.Retriever
 import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -19,7 +19,7 @@ import common.rich.func.ToMoreMonadErrorOps._
 
 import common.rich.RichT._
 
-private class ExternalPipeWrapper[R <: Reconcilable] @Inject()(
+private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
     clock: Clock,
     ec: ExecutionContext,
     reconciler: ReconcilerCacher[R],
@@ -35,25 +35,25 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject()(
   ): Retriever[R, TimestampedLinks[R]] = new RefreshableRetriever[R, MarkedLinks[R]](
     freshnessStorage = new ComposedFreshnessStorage(storage, clock),
     onlineRetriever = new ExternalPipe[R](
-      r => reconciler(r).mapEitherMessage({
-        case NoRecon => -\/(s"Couldn't reconcile <$r>")
-        case HasReconResult(reconId, _) => \/-(reconId)
-      }),
+      r =>
+        reconciler(r).mapEitherMessage {
+          case NoRecon => -\/(s"Couldn't reconcile <$r>")
+          case HasReconResult(reconId, _) => \/-(reconId)
+        },
       provider,
       standaloneReconcilers,
       expanders,
       markers,
     ),
-    maxAge = Duration ofDays 28,
+    maxAge = Duration.ofDays(28),
     clock = clock,
   ).|>(new ExternalPipeWrapper.TimeStamper(_))
 }
 
 private object ExternalPipeWrapper {
-  private class TimeStamper[R <: Reconcilable](
-      storage: RefreshableRetriever[R, MarkedLinks[R]])(
-      implicit ec: ExecutionContext)
-      extends Retriever[R, TimestampedLinks[R]] {
+  private class TimeStamper[R <: Reconcilable](storage: RefreshableRetriever[R, MarkedLinks[R]])(
+      implicit ec: ExecutionContext,
+  ) extends Retriever[R, TimestampedLinks[R]] {
     override def apply(r: R): Future[TimestampedLinks[R]] =
       storage.withAge(r).map(e => TimestampedLinks(e._1, e._2.localDateTime.get))
   }

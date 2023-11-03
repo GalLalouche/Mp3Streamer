@@ -5,7 +5,7 @@ import org.jline.utils.Levenshtein
 
 import common.rich.primitives.RichDouble.richDouble
 
-class AlbumReconScorer @Inject()(
+class AlbumReconScorer @Inject() (
     stringReconScorer: StringReconScorer,
     artistReconsScorer: ArtistReconsScorer,
 ) extends ReconScorer[Album] {
@@ -15,7 +15,7 @@ class AlbumReconScorer @Inject()(
     math.max(
       stringReconScorer(a1.title, a2.title),
       AlbumReconScorer.levenshteinSimilarity(a1.title, a2.title) ** 0.75,
-    )
+    ),
   ).product
 }
 
@@ -29,13 +29,16 @@ object AlbumReconScorer {
       val insertCost = 1
       val replaceCost = 5
       val swapCost = 5
-      val distance = Levenshtein.distance(
-        s1, s2,
-        deleteCost,
-        insertCost,
-        replaceCost,
-        swapCost,
-      ).toDouble / 2.5
+      val distance = Levenshtein
+        .distance(
+          s1,
+          s2,
+          deleteCost,
+          insertCost,
+          replaceCost,
+          swapCost,
+        )
+        .toDouble / 2.5
 
       math.max(0.0, 1 - (distance / math.max(s1.length, s2.length)))
     }

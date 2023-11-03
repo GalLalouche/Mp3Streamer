@@ -8,8 +8,8 @@ import slick.jdbc.{JdbcProfile, JdbcType}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.OptionT
 import scalaz.std.option.optionInstance
+import scalaz.OptionT
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFoldableOps._
 
@@ -28,21 +28,22 @@ private class SlickReconStorageAux(profile: JdbcProfile)(implicit ec: ExecutionC
 }
 
 @Singleton
-private[backend] class SlickArtistReconStorage @Inject()(
+private[backend] class SlickArtistReconStorage @Inject() (
     ec: ExecutionContext,
-    dbP: DbProvider
+    dbP: DbProvider,
 ) extends IsomorphicSlickStorage[Artist, StoredReconResult]()(ec, dbP)
-    with ArtistReconStorage with ReconStorage[Artist] {
+    with ArtistReconStorage
+    with ReconStorage[Artist] {
   private implicit val iec: ExecutionContext = ec
   private val aux = new SlickReconStorageAux(profile)
   import aux.reconIdColumn
 
-  override protected implicit def btt: BaseTypedType[String] = aux.btt
+  protected implicit override def btt: BaseTypedType[String] = aux.btt
   override def isIgnored(k: Artist): Future[IgnoredReconResult] = aux.isIgnored(load(k))
 
-  override protected type Id = String
+  protected override type Id = String
 
-  override protected def extractId(a: Artist) = a.normalize
+  protected override def extractId(a: Artist) = a.normalize
   import profile.api._
 
   override type Entity = (String, Option[ReconID], Boolean)
@@ -53,23 +54,25 @@ private[backend] class SlickArtistReconStorage @Inject()(
     def isIgnored = column[Boolean]("is_ignored", O.Default(false))
     def * = (name, reconId, isIgnored)
   }
-  override protected type EntityTable = Rows
+  protected override type EntityTable = Rows
   val tableQuery = TableQuery[EntityTable]
-  override protected def toEntity(a: Artist, v: StoredReconResult) = v match {
+  protected override def toEntity(a: Artist, v: StoredReconResult) = v match {
     case NoRecon => (a.normalize, None, true)
-    case StoredReconResult.HasReconResult(reconId, isIgnored) => (a.normalize, Some(reconId), isIgnored)
+    case StoredReconResult.HasReconResult(reconId, isIgnored) =>
+      (a.normalize, Some(reconId), isIgnored)
   }
-  override protected def toId(et: EntityTable) = et.name
-  override protected def extractValue(e: Entity) = aux.toStoredReconResult(e._2, e._3)
-  override protected def extractKey(e: (String, Option[ReconID], Boolean)) = Artist(e._1)
+  protected override def toId(et: EntityTable) = et.name
+  protected override def extractValue(e: Entity) = aux.toStoredReconResult(e._2, e._3)
+  protected override def extractKey(e: (String, Option[ReconID], Boolean)) = Artist(e._1)
 }
 
 @Singleton
-private[backend] class SlickAlbumReconStorage @Inject()(
+private[backend] class SlickAlbumReconStorage @Inject() (
     ec: ExecutionContext,
     dbP: DbProvider,
     protected val artistStorage: SlickArtistReconStorage,
-) extends SlickStorageTemplateFromConf[Album, StoredReconResult](ec, dbP) with AlbumReconStorage {
+) extends SlickStorageTemplateFromConf[Album, StoredReconResult](ec, dbP)
+    with AlbumReconStorage {
   private implicit val iec: ExecutionContext = ec
   import profile.api._
 
@@ -103,17 +106,20 @@ private[backend] class SlickAlbumReconStorage @Inject()(
     }
   }
 
-  override protected def keyFilter(a: Album)(e: EntityTable) =
+  protected override def keyFilter(a: Album)(e: EntityTable) =
     e.artist === a.artist.normalize && e.album === a.normalize
-  override protected def extractValue(e: Entity) =
+  protected override def extractValue(e: Entity) =
     e._3.mapHeadOrElse(HasReconResult(_, e._4), NoRecon)
-  override def cachedStorage = db.run(tableQuery.map(_.toTuple(_.album, _.reconId, _.isIgnored)).result)
-      .map(_.map(e => e._1 -> (e._2, e._3)).toMap)
-      .map(normalizedToRecon =>
-        Function.unlift(album => normalizedToRecon
-            .get(album.normalize)
-            .map(Function.tupled(aux.toStoredReconResult))
-        )
-      )
-  override def cachedKeys = db.run(tableQuery.map(_.album).result).map(_.toSet.compose[Album](_.normalize))
+  override def cachedStorage = db
+    .run(tableQuery.map(_.toTuple(_.album, _.reconId, _.isIgnored)).result)
+    .map(_.map(e => e._1 -> (e._2, e._3)).toMap)
+    .map(normalizedToRecon =>
+      Function.unlift(album =>
+        normalizedToRecon
+          .get(album.normalize)
+          .map(Function.tupled(aux.toStoredReconResult)),
+      ),
+    )
+  override def cachedKeys =
+    db.run(tableQuery.map(_.album).result).map(_.toSet.compose[Album](_.normalize))
 }

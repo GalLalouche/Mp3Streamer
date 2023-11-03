@@ -1,8 +1,8 @@
 package backend.recon
 
 import org.scalatest.FreeSpec
-
 import org.scalatest.OptionValues._
+
 import common.test.AuxSpecs
 
 class ReconIDTest extends FreeSpec with AuxSpecs {
@@ -17,11 +17,12 @@ class ReconIDTest extends FreeSpec with AuxSpecs {
   "valid" - {
     "plain" in {
       ReconID.validate("0383dadf-2a4e-4d10-a46a-e9e041da8eb3").value shouldReturn
-          ReconID("0383dadf-2a4e-4d10-a46a-e9e041da8eb3")
+        ReconID("0383dadf-2a4e-4d10-a46a-e9e041da8eb3")
     }
     "With http" in {
-      ReconID.validate("https://musicbrainz.org/artist/70248960-cb53-4ea4-943a-edb18f7d336f")
-          .value shouldReturn ReconID("70248960-cb53-4ea4-943a-edb18f7d336f")
+      ReconID
+        .validate("https://musicbrainz.org/artist/70248960-cb53-4ea4-943a-edb18f7d336f")
+        .value shouldReturn ReconID("70248960-cb53-4ea4-943a-edb18f7d336f")
     }
   }
 }

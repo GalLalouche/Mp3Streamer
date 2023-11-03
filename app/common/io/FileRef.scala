@@ -5,11 +5,11 @@ import java.time.LocalDateTime
 
 import common.rich.RichT._
 
-trait RefSystem {self =>
+trait RefSystem { self =>
   type S <: RefSystem
-  type P <: PathRef {type S = self.S}
-  type F <: FileRef {type S = self.S}
-  type D <: DirectoryRef {type S = self.S}
+  type P <: PathRef { type S = self.S }
+  type F <: FileRef { type S = self.S }
+  type D <: DirectoryRef { type S = self.S }
 }
 
 /** Either a file or a directory. */
@@ -36,7 +36,7 @@ trait FileRef extends PathRef {
   final def lines: Seq[String] = {
     // Splitting an empty string returns [""].
     val content = readAll
-    if (content.isEmpty) Nil else content split "\n"
+    if (content.isEmpty) Nil else content.split("\n")
   }
   def inputStream: InputStream
 
@@ -57,7 +57,7 @@ trait FileRef extends PathRef {
 }
 
 /** Must exist. */
-trait DirectoryRef extends PathRef {self =>
+trait DirectoryRef extends PathRef { self =>
   type S <: RefSystem
   def addFile(name: String): S#F
   def getFile(name: String): Option[S#F]
@@ -72,9 +72,12 @@ trait DirectoryRef extends PathRef {self =>
   def hasParent: Boolean
   // TODO freaking unfoldables already
   override def parents =
-    Stream.iterate(Option(parent))(p => if (p.get.hasParent) Some(p.get.parent.asInstanceOf[S#D]) else None)
-        .takeWhile(_.isDefined)
-        .map(_.get)
+    Stream
+      .iterate(Option(parent))(p =>
+        if (p.get.hasParent) Some(p.get.parent.asInstanceOf[S#D]) else None,
+      )
+      .takeWhile(_.isDefined)
+      .map(_.get)
   /** Returns all directories between this and dir. Throws if dir is not a parent of this. */
   def relativize(dir: S#D): Seq[S#D] = {
     val ps = parents.span(_ != dir)

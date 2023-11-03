@@ -2,7 +2,7 @@ package backend.scorer.utils
 
 import backend.recon.{Album, Artist}
 import backend.scorer.ModelScore
-import ModelScore._
+import backend.scorer.ModelScore._
 
 private object OrgScoreFormatter {
   def artist(artist: Artist, score: Option[ModelScore]): String =

@@ -2,8 +2,8 @@ package common.io
 
 import java.time.LocalDateTime
 
-import scala.Ordering.Implicits._
 import scala.concurrent.Future
+import scala.Ordering.Implicits._
 
 import common.concurrency.Extra
 import common.rich.RichTime.OrderingLocalDateTime

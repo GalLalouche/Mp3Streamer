@@ -14,8 +14,8 @@ import monocle.macros.Lenses
 
 import common.json.Jsonable
 import common.json.RichJson._
-import common.rich.RichTime.{OrderingLocalDate, RichClock}
 import common.rich.primitives.RichBoolean._
+import common.rich.RichTime.{OrderingLocalDate, RichClock}
 
 @Lenses
 private case class NewAlbum(title: String, date: LocalDate, artist: Artist, albumType: AlbumType) {
@@ -39,10 +39,10 @@ private object NewAlbum {
       "albumType" -> a.albumType.toString,
     )
     override def parse(json: JsValue) = NewAlbum(
-      title = json str "title",
-      date = LocalDate.from(DateFormat.parse(json str "date")),
-      artist = Artist(json str "artistName"),
-      albumType = AlbumType.withName(json str "albumType"),
+      title = json.str("title"),
+      date = LocalDate.from(DateFormat.parse(json.str("date"))),
+      artist = Artist(json.str("artistName")),
+      albumType = AlbumType.withName(json.str("albumType")),
     )
   }
 }

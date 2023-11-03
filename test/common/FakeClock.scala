@@ -6,5 +6,5 @@ class FakeClock extends Clock {
   def advance(millis: Long): Unit = currentMillis += millis
   override def withZone(zone: ZoneId) = ???
   override def getZone = ???
-  override def instant() = Instant ofEpochMilli currentMillis
+  override def instant() = Instant.ofEpochMilli(currentMillis)
 }

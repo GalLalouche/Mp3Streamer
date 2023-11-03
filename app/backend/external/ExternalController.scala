@@ -4,8 +4,8 @@ import controllers.PlayActionConverter
 import javax.inject.Inject
 import play.api.mvc.InjectedController
 
-class ExternalController @Inject()(
-    $: ExternalFormatter,
+class ExternalController @Inject() (
+    $ : ExternalFormatter,
     converter: PlayActionConverter,
 ) extends InjectedController {
   def get(path: String) = converter.ok($.get(path))

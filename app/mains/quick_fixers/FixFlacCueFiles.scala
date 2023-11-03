@@ -10,11 +10,11 @@ import common.rich.primitives.RichString._
 private object FixFlacCueFiles {
   def main(args: Array[String]): Unit = {
     val dir = Directory("""E:\Incoming\Bittorrent\Completed\Music""")
-    dir.deepFiles.filter(_.name.endsWith(".flac.cue")) foreach {file =>
+    dir.deepFiles.filter(_.name.endsWith(".flac.cue")).foreach { file =>
       println(s"Renaming <$file>")
-      try {
+      try
         RichFileUtils.rename(file, file.getName.simpleReplace(".flac.cue", ".cue"))
-      } catch {
+      catch {
         case _: FileAlreadyExistsException => println("Replacement cue already exists, skipping")
       }
     }

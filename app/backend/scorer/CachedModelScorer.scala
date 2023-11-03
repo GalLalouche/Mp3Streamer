@@ -12,8 +12,8 @@ trait CachedModelScorer {
   def apply(a: Album): Option[ModelScore]
   def apply(s: Song): Option[ModelScore]
   /**
-   * This method should avoid parsing songs. Instead, it should extract the necessary metadata from the file
-   * path. This makes it safe to call while traversing a (very large) list of files.
+   * This method should avoid parsing songs. Instead, it should extract the necessary metadata from
+   * the file path. This makes it safe to call while traversing a (very large) list of files.
    */
   def apply(f: FileRef): Option[ModelScore]
   def fullInfo(s: Song): FullInfoScore

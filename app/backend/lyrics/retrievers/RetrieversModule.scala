@@ -8,9 +8,8 @@ import net.codingwell.scalaguice.ScalaModule
 import scala.concurrent.ExecutionContext
 
 private[lyrics] object RetrieversModule extends ScalaModule {
-  override def configure(): Unit = {
+  override def configure(): Unit =
     bind[InstrumentalArtistStorage].to[SlickInstrumentalArtistStorage]
-  }
   @Provides @CompositePassiveParser private def provideCPP(
       bandcampParser: BandcampParser,
       shironetParser: ShironetParser,

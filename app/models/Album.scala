@@ -1,14 +1,21 @@
 package models
 
-import common.io.DirectoryRef
 import monocle.macros.Lenses
 
+import common.io.DirectoryRef
+
 @Lenses
-case class Album(dir: DirectoryRef, title: String, artistName: String, year: Int, songs: Seq[Song]) {
+case class Album(
+    dir: DirectoryRef,
+    title: String,
+    artistName: String,
+    year: Int,
+    songs: Seq[Song],
+) {
   /**
-  * Returns the property if all songs share the same property, e.g., all songs in the album have the same
-  * composer. Otherwise, returns None.
-  */
+   * Returns the property if all songs share the same property, e.g., all songs in the album have
+   * the same composer. Otherwise, returns None.
+   */
   def uniformProperty[A](f: Song => Option[A]): Option[A] = {
     val set = songs.map(f).toSet
     if (set.size == 1) set.head else None

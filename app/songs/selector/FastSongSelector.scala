@@ -12,16 +12,16 @@ import common.rich.RichRandom.richRandom
 import common.TimedLogger
 
 /**
-* Sacrifices uniform distribution for lower latency while waiting for update to complete (since loading
-* TBs of songs and scoring them takes a while apparently).
-*/
-private class FastSongSelector @Inject()(
+ * Sacrifices uniform distribution for lower latency while waiting for update to complete (since
+ * loading TBs of songs and scoring them takes a while apparently).
+ */
+private class FastSongSelector @Inject() (
     mf: MusicFinder,
     timedLogger: TimedLogger,
     random: Random,
 ) extends SongSelector {
-  override final def randomSong(): Song = timedLogger.apply("fastRandomSong", LoggingLevel.Debug) {
-    @tailrec def go(dir: DirectoryRef): Song = {
+  final override def randomSong(): Song = timedLogger.apply("fastRandomSong", LoggingLevel.Debug) {
+    @tailrec def go(dir: DirectoryRef): Song =
       if (dir.dirs.isEmpty) {
         val songs = mf.getSongsInDir(dir).toVector
         if (songs.isEmpty)
@@ -29,10 +29,9 @@ private class FastSongSelector @Inject()(
         random.select(songs)
       } else
         go(random.select(dir.dirs.toVector))
-    }
-    try {
+    try
       go(random.select(mf.genreDirsWithSubGenres.toVector))
-    } catch {
+    catch {
       case _: NoSuchElementException => randomSong()
     }
   }

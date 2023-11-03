@@ -1,19 +1,20 @@
 package backend.lyrics.retrievers.genius
 
-import models.FakeModelFactory
 import org.scalatest.FreeSpec
 import org.scalatest.OptionValues._
-import play.api.libs.json.{JsObject, Json}
 
 import common.test.AuxSpecs
+import models.FakeModelFactory
+import play.api.libs.json.{JsObject, Json}
 
 class APITest extends FreeSpec with AuxSpecs {
   private val factory = new FakeModelFactory
   "parse" - {
     "valid" in {
       val json = Json.parse(getClass.getResourceAsStream("search_result.json")).as[JsObject]
-      API.parse(factory.song(artistName = "Wormwood", title = "Sunnas Hadanfard"), json)
-          .value shouldReturn "https://genius.com/Wormwood-sunnas-hadanfard-lyrics"
+      API
+        .parse(factory.song(artistName = "Wormwood", title = "Sunnas Hadanfard"), json)
+        .value shouldReturn "https://genius.com/Wormwood-sunnas-hadanfard-lyrics"
     }
     "returns none on no hits" in {
       val emptyJson =
@@ -32,11 +33,17 @@ class APITest extends FreeSpec with AuxSpecs {
     }
     "returns none when artist name does not match" in {
       val json = Json.parse(getClass.getResourceAsStream("search_result.json")).as[JsObject]
-      API.parse(factory.song(artistName = "NotWormwood", title = "Sunnas Hadanfard"), json) shouldReturn None
+      API.parse(
+        factory.song(artistName = "NotWormwood", title = "Sunnas Hadanfard"),
+        json,
+      ) shouldReturn None
     }
     "returns none when title does not match" in {
       val json = Json.parse(getClass.getResourceAsStream("search_result.json")).as[JsObject]
-      API.parse(factory.song(artistName = "Wormwood", title = "Not Sunnas Hadanfard"), json) shouldReturn None
+      API.parse(
+        factory.song(artistName = "Wormwood", title = "Not Sunnas Hadanfard"),
+        json,
+      ) shouldReturn None
     }
   }
 }

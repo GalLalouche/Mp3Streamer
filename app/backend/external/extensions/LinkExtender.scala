@@ -9,11 +9,12 @@ import common.rich.func.MoreSeqInstances._
 import common.rich.RichTuple._
 
 /**
-* Extenders (not to be confused with Ex<b>p</b>anders) provide additional links to a given links,
-* e.g., an artists discography. The key difference from expanders is that extenders do not scrap
-* HTML; rather, the extensions are hard-coded, e.g., the discography link will always be in
-* $link/discography. Therefore, these extensions neither need to be saved, nor do they involve Futures.
-*/
+ * Extenders (not to be confused with Ex<b>p</b>anders) provide additional links to a given links,
+ * e.g., an artists discography. The key difference from expanders is that extenders do not scrap
+ * HTML; rather, the extensions are hard-coded, e.g., the discography link will always be in
+ * $link/discography. Therefore, these extensions neither need to be saved, nor do they involve
+ * Futures.
+ */
 private trait LinkExtender[R <: Reconcilable] {
   def host: Host
   // When the name of the extended link is identical to the URL suffix.

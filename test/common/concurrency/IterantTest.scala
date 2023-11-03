@@ -2,23 +2,21 @@ package common.concurrency
 
 import java.util.concurrent.{LinkedBlockingQueue, Semaphore}
 import java.util.concurrent.atomic.AtomicInteger
+import scala.collection.JavaConverters._
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.OptionT
 
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
-import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.OptionT
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT
-
 import common.rich.RichT.lazyT
 import common.test.AsyncAuxSpecs
 
 class IterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
-  override implicit def executionContext: ExecutionContext = ThreadlessContext
+  implicit override def executionContext: ExecutionContext = ThreadlessContext
 
-  private def test10($: Iterant[Future, Int], expected: Seq[Int]) =
+  private def test10($ : Iterant[Future, Int], expected: Seq[Int]) =
     $.batchStep(10).map(_._1) shouldEventuallyReturn expected
   "toStream" - {
     "empty returns empty" in {
@@ -73,7 +71,8 @@ class IterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTe
     }
   }
 
-  private class InterlockingIterant(semaphore: Semaphore, from: Int, to: Int = Int.MaxValue) extends Iterant[Future, Int] {
+  private class InterlockingIterant(semaphore: Semaphore, from: Int, to: Int = Int.MaxValue)
+      extends Iterant[Future, Int] {
     override def step = {
       semaphore.acquire()
       if (from >= to)
@@ -86,25 +85,28 @@ class IterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTe
   "batchStepping with observer" - {
     val semaphore = new Semaphore(2)
     val queue = new LinkedBlockingQueue[Int]
-    val actor = SimpleActor[Int]("foo", {next =>
-      queue.put(next)
-      semaphore.release()
-    })
+    val actor = SimpleActor[Int](
+      "foo",
+      { next =>
+        queue.put(next)
+        semaphore.release()
+      },
+    )
     val onCompletedCount = new AtomicInteger(0)
 
     "interlocked" in {
-      new InterlockingIterant(semaphore, 0).batchStep(10, actor.!(_), () => ???).map(_ =>
-        queue.asScala.toSeq shouldReturn 0.until(10)
-      )
+      new InterlockingIterant(semaphore, 0)
+        .batchStep(10, actor.!(_), () => ???)
+        .map(_ => queue.asScala.toSeq shouldReturn 0.until(10))
     }
 
     "calls on completed" in {
       new InterlockingIterant(semaphore, 0, 5)
-          .batchStep(10, actor.!(_), () => onCompletedCount.incrementAndGet())
-          .map(_ =>
-            onCompletedCount.get().shouldReturn(1) &&
-                (queue.asScala.toSeq shouldReturn 0.until(5))
-          )
+        .batchStep(10, actor.!(_), () => onCompletedCount.incrementAndGet())
+        .map(_ =>
+          onCompletedCount.get().shouldReturn(1) &&
+            (queue.asScala.toSeq shouldReturn 0.until(5)),
+        )
     }
   }
 }

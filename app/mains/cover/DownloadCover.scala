@@ -1,12 +1,11 @@
 package mains.cover
 
-import backend.logging.Logger
 import com.google.inject.Guice
 import io.lemonlabs.uri.Url
 import javax.inject.Inject
 import mains.{BrowserUtils, IOUtils, MainsModule}
-import mains.cover.DownloadCover._
 import mains.cover.image.ImageAPISearch
+import mains.cover.DownloadCover._
 import models.{AlbumFactory, MusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions._
 
@@ -20,7 +19,7 @@ import common.rich.path.{Directory, RichFileUtils, TempDirectory}
 import common.rich.path.RichFile.richFile
 import common.rich.RichFuture.richFuture
 
-private[mains] class DownloadCover @Inject()(
+private[mains] class DownloadCover @Inject() (
     ec: ExecutionContext,
     mf: MusicFinder,
     albumFactory: AlbumFactory,
@@ -34,16 +33,21 @@ private[mains] class DownloadCover @Inject()(
   /**
    * Downloads a new image for the album.
    *
-   * @param albumDir Should contain the songs. The song metadata will be used to search for the correct picture.
-   * @return A future command that moves the downloaded file to the input directory and deletes all temporary files.
+   * @param albumDir
+   *   Should contain the songs. The song metadata will be used to search for the correct picture.
+   * @return
+   *   A future command that moves the downloaded file to the input directory and deletes all
+   *   temporary files.
    */
   def apply(albumDir: Directory): Future[Directory => Unit] = {
     val album = mf.getSongsInDir(IODirectory(albumDir)).head.album
-    val searchUrl = Url.parse("https://www.google.com/search").withQueryString(
-      SearchType -> ImageSearch,
-      ImageType -> Square,
-      "q" -> s"${album.artistName} ${album.title}"
-    )
+    val searchUrl = Url
+      .parse("https://www.google.com/search")
+      .withQueryString(
+        SearchType -> ImageSearch,
+        ImageType -> Square,
+        "q" -> s"${album.artistName} ${album.title}",
+      )
     val urls = imageFinder(s"${album.artistName} ${album.title}")
     val locals = LocalImageFetcher(IODirectory(albumDir))
     selectImage(locals ++ urls).map {
@@ -59,12 +63,15 @@ private[mains] class DownloadCover @Inject()(
   private def selectImage(imageURLs: FutureIterant[ImageSource]): Future[ImageChoice] = {
     val sourceToImage = imageDownloader.withOutput(IODirectory(DownloadCover.tempFolder))
     imageSelector.select(
-      Iterant.prefetching(imageURLs.filter(i => i.isSquare && i.width >= 500), 12)
-          .flatMapF(
-            // TODO filterSuccessful in rich whatever.
-            sourceToImage(_).toTry.map(_.toOption))
-          .filter(_.isDefined)
-          .map(_.get))
+      Iterant
+        .prefetching(imageURLs.filter(i => i.isSquare && i.width >= 500), 12)
+        .flatMapF(
+          // TODO filterSuccessful in rich whatever.
+          sourceToImage(_).toTry.map(_.toOption),
+        )
+        .filter(_.isDefined)
+        .map(_.get),
+    )
   }
 }
 
@@ -97,11 +104,16 @@ private object DownloadCover {
 
     import common.rich.RichFuture._
     val injector = Guice.createInjector(MainsModule)
-    val folder = Directory(IOUtils.decodeFile(args mkString " "))
+    val folder = Directory(IOUtils.decodeFile(args.mkString(" ")))
     println("Downloading cover image for " + folder.path)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    injector.instance[DownloadCover].apply(folder).collectHandle {
-      case _: CoverException => _ => ()
-    }.get.apply(folder)
+    injector
+      .instance[DownloadCover]
+      .apply(folder)
+      .collectHandle { case _: CoverException =>
+        _ => ()
+      }
+      .get
+      .apply(folder)
   }
 }

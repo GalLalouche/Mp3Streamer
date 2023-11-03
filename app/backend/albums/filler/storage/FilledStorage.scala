@@ -1,7 +1,6 @@
 package backend.albums.filler.storage
 
 import backend.albums.{ArtistNewAlbums, NewAlbum}
-import backend.albums.AlbumsModel.NonIgnoredArtist
 import backend.recon.{Artist, IgnoredReconResult}
 
 import scala.concurrent.Future

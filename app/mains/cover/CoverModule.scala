@@ -8,7 +8,6 @@ private[mains] object CoverModule extends ScalaModule {
   override def configure(): Unit = {
     install(ImageModule)
     // TODO add to scala guice.
-    install(new FactoryModuleBuilder().build(classOf[AsyncFolderImagePanelFactory])
-    )
+    install(new FactoryModuleBuilder().build(classOf[AsyncFolderImagePanelFactory]))
   }
 }

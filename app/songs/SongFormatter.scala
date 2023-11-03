@@ -5,8 +5,8 @@ import decoders.Mp3Encoder
 import javax.inject.Inject
 import models._
 import play.api.libs.json.JsValue
-import songs.SongFormatter.ShouldEncodeMp3Reader
 import songs.selector.{FollowingSong, SongSelectorState}
+import songs.SongFormatter.ShouldEncodeMp3Reader
 
 import scala.language.implicitConversions
 
@@ -17,7 +17,7 @@ import common.json.JsonWriteable
 import common.json.ToJsonableOps._
 import common.rich.RichT._
 
-private class SongFormatter @Inject()(
+private class SongFormatter @Inject() (
     albumFactory: AlbumFactory,
     groups: SongGroups,
     songSelectorState: SongSelectorState,
@@ -29,13 +29,13 @@ private class SongFormatter @Inject()(
   import songJsonifier.songJsonable
 
   private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(groups.load)
-  private def group(s: Song): Either[Song, SongGroup] = songGroups get s toRight s
+  private def group(s: Song): Either[Song, SongGroup] = songGroups.get(s).toRight(s)
 
   // Doesn't extend JsonWritable to avoid recursive implicit lookup.
   private trait Encodable[E] {
     def encode(e: E): Unit
     def jsonify(e: E): JsValue
-    def reader(e: E): ShouldEncodeMp3Reader = Reader {b =>
+    def reader(e: E): ShouldEncodeMp3Reader = Reader { b =>
       if (b)
         encode(e)
       jsonify(e)
@@ -49,11 +49,11 @@ private class SongFormatter @Inject()(
       }
     implicit val songEncodable: Encodable[Song] = jsonableEncodable(encoder ! _.file)
     implicit val songsEncodable: Encodable[Seq[Song]] =
-      jsonableEncodable(_ foreach songEncodable.encode)
+      jsonableEncodable(_.foreach(songEncodable.encode))
     implicit val eitherEncodable: Encodable[Either[Song, SongGroup]] =
       jsonableEncodable(_.fold(songEncodable.encode, songsEncodable encode _.songs))
   }
-  private implicit def encodableReader[E: Encodable]($: E): ShouldEncodeMp3Reader =
+  private implicit def encodableReader[E: Encodable]($ : E): ShouldEncodeMp3Reader =
     implicitly[Encodable[E]].reader($)
 
   def randomSong(): ShouldEncodeMp3Reader = group(songSelectorState.randomSong())
@@ -66,8 +66,9 @@ private class SongFormatter @Inject()(
   def discNumber(path: String, requestedDiscNumber: String): ShouldEncodeMp3Reader =
     songsInAlbum(path).filter(_.discNumber.contains(requestedDiscNumber)).ensuring(_.nonEmpty)
 
-  def song(path: String): ShouldEncodeMp3Reader = group(urlPathUtils parseSong path)
-  def nextSong(path: String): ShouldEncodeMp3Reader = followingSong.next(urlPathUtils.parseSong(path)).get
+  def song(path: String): ShouldEncodeMp3Reader = group(urlPathUtils.parseSong(path))
+  def nextSong(path: String): ShouldEncodeMp3Reader =
+    followingSong.next(urlPathUtils.parseSong(path)).get
 }
 
 object SongFormatter {

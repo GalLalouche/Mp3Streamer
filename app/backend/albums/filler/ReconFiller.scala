@@ -3,8 +3,8 @@ package backend.albums.filler
 import backend.logging.Logger
 import backend.recon.{Reconcilable, Reconciler, ReconID, ReconStorage}
 import backend.recon.StoredReconResult.HasReconResult
-import rx.lang.scala.Observable
 import rx.lang.scala.schedulers.ImmediateScheduler
+import rx.lang.scala.Observable
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -12,10 +12,10 @@ import scalaz.syntax.bind.ToBindOps
 import common.rich.func.MoreObservableInstances._
 
 import common.concurrency.SimpleActor
+import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.RichFuture._
 import common.rich.RichObservable
 import common.rich.RichObservable._
-import common.rich.primitives.RichBoolean.richBoolean
 
 private class ReconFiller[R <: Reconcilable](
     reconciler: Reconciler[R],
@@ -24,10 +24,15 @@ private class ReconFiller[R <: Reconcilable](
     logger: Logger,
 )(implicit ec: ExecutionContext) {
   private val cache = storage.cachedKeys.get
-  private val storer = SimpleActor.async[(R, ReconID)]("storer", {case (r, recondID) =>
-    logger.info(s"Storing <${aux.prettyPrint(r)}>: https://musicbrainz.org/${aux.musicBrainzPath}/${recondID.id}")
-    storage.store(r, HasReconResult(recondID, isIgnored = false))
-  })
+  private val storer = SimpleActor.async[(R, ReconID)](
+    "storer",
+    { case (r, recondID) =>
+      logger.info(
+        s"Storing <${aux.prettyPrint(r)}>: https://musicbrainz.org/${aux.musicBrainzPath}/${recondID.id}",
+      )
+      storage.store(r, HasReconResult(recondID, isIgnored = false))
+    },
+  )
 
   private def go(r: R): Observable[ReconID] =
     RichObservable.from(reconciler(r)).filterFuture(aux.verify(r, _))

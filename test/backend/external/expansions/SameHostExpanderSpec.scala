@@ -1,14 +1,14 @@
 package backend.external.expansions
 
+import org.scalatest.AsyncFreeSpec
+
 import backend.{FutureOption, Url}
 import backend.external.{BaseLink, DocumentSpecs}
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist}
 import com.google.inject.{Guice, Module}
-import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.AsyncFreeSpec
-
 import common.test.AsyncAuxSpecs
+import net.codingwell.scalaguice.InjectorExtensions._
 
 abstract class SameHostExpanderSpec extends AsyncFreeSpec with DocumentSpecs with AsyncAuxSpecs {
   protected def module: Module
@@ -26,9 +26,10 @@ abstract class SameHostExpanderSpec extends AsyncFreeSpec with DocumentSpecs wit
 
     val injector = Guice.createInjector(
       module,
-      TestModuleConfiguration(_urlToBytesMapper = urlToBytesMapper.orElse {
-        case Url(address) => getBytes(additionalMappings.toMap.apply(address))
-      }).module)
+      TestModuleConfiguration(_urlToBytesMapper = urlToBytesMapper.orElse { case Url(address) =>
+        getBytes(additionalMappings.toMap.apply(address))
+      }).module,
+    )
     val $ = injector.instance[SameHostExpander]
     $.apply(BaseLink[Artist](Url(artistUrl), $.host), album)
   }

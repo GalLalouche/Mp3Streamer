@@ -1,13 +1,13 @@
 package models
 
-import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.tag.FieldKey
-import org.scalatest.FreeSpec
-
 import scala.concurrent.duration.DurationInt
+
+import org.scalatest.FreeSpec
 
 import common.rich.path.RichFile._
 import common.test.{AuxSpecs, DirectorySpecs}
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.FieldKey
 
 class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
   private def getSong(location: String) = getResourceFile(location)
@@ -47,7 +47,7 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
         SongTagParser(copiedFile).year shouldReturn 2020
       }
       "non-empty optionals" in {
-        val $: Song = SongTagParser(getSong("songWithMoreInfo.mp3"))
+        val $ : Song = SongTagParser(getSong("songWithMoreInfo.mp3"))
         $.discNumber.get shouldReturn "Foobar"
         $.trackGain.get shouldReturn -1.25
         $.opus.get shouldReturn "Op. 42"
@@ -93,7 +93,9 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
       SongTagParser.extractYearFromName("blah 5678 blah 5678 blah") shouldReturn Some(5678)
     }
     "multiple years throws" in {
-      an[Exception] shouldBe thrownBy {SongTagParser.extractYearFromName("blah 5678 blah 1234 blah")}
+      an[Exception] shouldBe thrownBy {
+        SongTagParser.extractYearFromName("blah 5678 blah 1234 blah")
+      }
     }
   }
 }

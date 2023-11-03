@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.syntax.functor.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
 
-private[lyrics] class InstrumentalArtist @Inject()(
+private[lyrics] class InstrumentalArtist @Inject() (
     ec: ExecutionContext,
     storage: InstrumentalArtistStorage,
 ) extends LyricsRetriever {

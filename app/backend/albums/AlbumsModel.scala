@@ -3,9 +3,9 @@ package backend.albums
 import java.time.Duration
 
 import backend.albums.filler.storage.FilledStorage
-import backend.albums.AlbumsModel.{ArtistAlbums, ModelResult, NonIgnoredArtist}
 import backend.albums.filler.NewAlbumFiller
-import backend.recon.{Artist, ArtistReconStorage, IgnoredReconResult}
+import backend.albums.AlbumsModel.{ArtistAlbums, ModelResult, NonIgnoredArtist}
+import backend.recon.{Artist, IgnoredReconResult}
 import backend.scorer.ModelScore
 import javax.inject.Inject
 import models.{Genre, GenreFinder}
@@ -19,7 +19,7 @@ import common.rich.func.BetterFutureInstances._
 
 import common.rich.RichT.richT
 
-private class AlbumsModel @Inject()(
+private class AlbumsModel @Inject() (
     ec: ExecutionContext,
     storage: FilledStorage,
     genreFinder: GenreFinder,
@@ -31,19 +31,20 @@ private class AlbumsModel @Inject()(
     storage.all.map(e => e :+ genreFinder.forArtist(e.artist) |> Function.tupled(ModelResult.apply))
   private def albumsForArtist(artist: Artist) =
     filler.update(Duration.ofDays(90), 10)(artist) >>
-        storage.forArtist(artist)
+      storage.forArtist(artist)
   def forArtist(artistName: String): Future[ArtistAlbums] = {
     val artist = Artist(artistName).normalized
-    storage.isIgnored(artist)
-        .flatMap {
-          case IgnoredReconResult.Ignored => Future.successful(true)
-          case IgnoredReconResult.NotIgnored => Future.successful(false)
-          case IgnoredReconResult.Missing => storage.newArtist(artist).>|(false)
-        }
-        .ifM(
-          Future.successful(AlbumsModel.IgnoredArtist),
-          albumsForArtist(artist).map(NonIgnoredArtist)
-        )
+    storage
+      .isIgnored(artist)
+      .flatMap {
+        case IgnoredReconResult.Ignored => Future.successful(true)
+        case IgnoredReconResult.NotIgnored => Future.successful(false)
+        case IgnoredReconResult.Missing => storage.newArtist(artist).>|(false)
+      }
+      .ifM(
+        Future.successful(AlbumsModel.IgnoredArtist),
+        albumsForArtist(artist).map(NonIgnoredArtist),
+      )
   }
 
   def removeArtist(artistName: String): Future[_] = storage.remove(Artist(artistName))
@@ -59,7 +60,7 @@ private object AlbumsModel {
       artist: Artist,
       artistScore: Option[ModelScore],
       albums: Seq[NewAlbum],
-      genre: Option[Genre]
+      genre: Option[Genre],
   )
   sealed trait ArtistAlbums
   case class NonIgnoredArtist(albums: Seq[NewAlbum]) extends ArtistAlbums

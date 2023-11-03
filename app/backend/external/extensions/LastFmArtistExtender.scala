@@ -4,7 +4,8 @@ import backend.external.{Host, MarkedLink}
 import backend.recon.Artist
 import javax.inject.Inject
 
-private class LastFmArtistExtender @Inject()(helper: StaticExtenderHelper) extends LinkExtender[Artist] {
+private class LastFmArtistExtender @Inject() (helper: StaticExtenderHelper)
+    extends LinkExtender[Artist] {
   override val host = Host.LastFm
   private val staticExtender: StaticExtender[Artist] = new StaticExtender[Artist] {
     override def host = LastFmArtistExtender.this.host

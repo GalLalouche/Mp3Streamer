@@ -1,11 +1,11 @@
 package songs
 
-import backend.module.TestModuleConfiguration
-import models.{FakeModelFactory, FakeModelJsonable}
-import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
 
+import backend.module.TestModuleConfiguration
 import common.test.AuxSpecs
+import models.{FakeModelFactory, FakeModelJsonable}
+import net.codingwell.scalaguice.InjectorExtensions._
 
 class SongGroupsTest extends FreeSpec with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory
@@ -26,7 +26,7 @@ class SongGroupsTest extends FreeSpec with AuxSpecs {
     $(song2) shouldReturn group1
     $(song3) shouldReturn group2
     $(song4) shouldReturn group2
-    $ get song5 shouldReturn None
+    $.get(song5) shouldReturn None
   }
   "save and load" in {
     val $ = TestModuleConfiguration().injector.instance[SongGroups]

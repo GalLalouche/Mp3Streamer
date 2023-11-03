@@ -1,16 +1,16 @@
 package backend.storage
 
 import scala.concurrent.{ExecutionContext, Future}
-import common.rich.func.BetterFutureInstances._
 
 import scalaz.ListT
+import common.rich.func.BetterFutureInstances._
 
 import common.rich.RichT.richT
 
 // TODO too many damn inheritances, use type clasess?
 abstract class IsomorphicSlickStorage[Key, Value](implicit ec: ExecutionContext, dbP: DbProvider)
     extends SlickSingleKeyColumnStorageTemplateFromConf[Key, Value](ec, dbP)
-        with CachableStorage[Key, Value] {
+    with CachableStorage[Key, Value] {
   protected def extractKey(e: Entity): Key
   import profile.api._
   // TODO ListT(db.run(tableQuery.result).map(_.toList)) can be moved to SlickStorageTemplate

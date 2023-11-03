@@ -13,7 +13,7 @@ import scalaz.Scalaz.ToBindOpsUnapply
 import common.rich.func.BetterFutureInstances._
 
 /** Scores a song by trying multiple sources, from most specific score to least specific. */
-private[scorer] class CompositeStorageScorer @Inject()(
+private[scorer] class CompositeStorageScorer @Inject() (
     songScorer: StorageScorer[Song],
     albumScorer: StorageScorer[Album],
     artistScorer: StorageScorer[Artist],
@@ -27,13 +27,10 @@ private[scorer] class CompositeStorageScorer @Inject()(
     artistScorer.apply,
   )
   override def apply(s: Song): Future[FullInfoScore] = aux(s)
-  override def updateSongScore(song: Song, score: ModelScore) = {
+  override def updateSongScore(song: Song, score: ModelScore) =
     songScorer.updateScore(song, score) >> cachedModelScorerState.update()
-  }
-  override def updateAlbumScore(song: Song, score: ModelScore) = {
+  override def updateAlbumScore(song: Song, score: ModelScore) =
     albumScorer.updateScore(song.release, score) >> cachedModelScorerState.update()
-  }
-  override def updateArtistScore(song: Song, score: ModelScore) = {
+  override def updateArtistScore(song: Song, score: ModelScore) =
     artistScorer.updateScore(song.artist, score) >> cachedModelScorerState.update()
-  }
 }

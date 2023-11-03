@@ -10,7 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.RichFuture._
 
-private class ArtistReconFiller @Inject()(
+private class ArtistReconFiller @Inject() (
     ea: ExistingAlbums,
     reconciler: MbArtistReconciler,
     storage: ArtistReconStorage,

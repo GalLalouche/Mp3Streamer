@@ -1,10 +1,11 @@
 package backend.lyrics.retrievers.bandcamp
 
-import backend.lyrics.retrievers.LyricsSpec
 import org.scalatest.FreeSpec
 
+import backend.lyrics.retrievers.LyricsSpec
+
 class AlbumParserTest extends FreeSpec with LyricsSpec {
-  override private[retrievers] def parser = AlbumParser
+  private[retrievers] override def parser = AlbumParser
   "English" - {
     verifyLyrics("bandcamp_album_english", "bandcamp_english", trackNumber = 2)
   }

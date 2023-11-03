@@ -1,36 +1,36 @@
 package backend.lyrics.retrievers
 
-import backend.StorageSetup
-import backend.module.TestModuleConfiguration
-import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
-import net.codingwell.scalaguice.InjectorExtensions._
+import scalaz.syntax.bind.ToBindOps
+
 import org.scalatest.AsyncFreeSpec
 
-import scalaz.syntax.bind.ToBindOps
+import backend.module.TestModuleConfiguration
+import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
+import backend.StorageSetup
 import common.rich.func.BetterFutureInstances._
+import net.codingwell.scalaguice.InjectorExtensions._
 
 class SlickInstrumentalArtistStorageTest extends AsyncFreeSpec with StorageSetup {
-  override protected val config = TestModuleConfiguration()
+  protected override val config = TestModuleConfiguration()
   val injector = config.injector
-  override protected def storage: InstrumentalArtistStorage = {
+  protected override def storage: InstrumentalArtistStorage =
     injector.instance[SlickInstrumentalArtistStorage]
-  }
   private val artistName = "foo"
 
   override def beforeEach() = {
     val artistStorage = injector.instance[ArtistReconStorage]
     artistStorage.utils.clearOrCreateTable() >>
-        artistStorage.store(Artist(artistName), StoredReconResult.NoRecon) >>
-        super.beforeEach()
+      artistStorage.store(Artist(artistName), StoredReconResult.NoRecon) >>
+      super.beforeEach()
   }
 
   "store and load" in {
     storage.load(artistName).shouldEventuallyReturnNone() >>
-        storage.store(artistName) >>
-        storage.load(artistName).mapValue(_ shouldReturn())
+      storage.store(artistName) >>
+      storage.load(artistName).mapValue(_ shouldReturn ())
   }
   "delete" in {
     storage.store(artistName) >> storage.delete(artistName).run >>
-        storage.load(artistName).shouldEventuallyReturnNone()
+      storage.load(artistName).shouldEventuallyReturnNone()
   }
 }

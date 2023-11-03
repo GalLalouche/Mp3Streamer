@@ -15,11 +15,11 @@ import common.rich.func.MoreIteratorInstances._
 import common.rich.func.ToMoreMonadPlusOps._
 import common.rich.func.ToTraverseMonadPlusOps._
 
-import common.RichJsoup._
-import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
+import common.rich.RichT._
+import common.RichJsoup._
 
-private class AllMusicAlbumFinder @Inject()(
+private class AllMusicAlbumFinder @Inject() (
     allMusicHelper: AllMusicHelper,
     sameHostExpanderHelper: SameHostExpanderHelper,
     ec: ExecutionContext,
@@ -36,19 +36,24 @@ private class AllMusicAlbumFinder @Inject()(
     override def findAlbum(d: Document, album: Album): FutureOption[Url] = OptionT {
       def score(other: Album): Double = albumReconScorer(album, other)
       d.selectIterator(".discography table tbody tr")
-          .tryMap(albumRow => albumRow ->
-              Album(
-                title = albumRow.selectSingle(".title").text,
-                year = albumRow.selectSingle(".year").text.toInt,
-                artist = album.artist)
-          )
-          .find(_._2.|>(score) >= 0.95)
-          .map(_._1.selectFirst("td.title a")
-              .href
-              .mapIf(_.startsWith("http").isFalse).to("http://www.allmusic.com" + _)
-              .|>(Url.apply)
-          )
-          .filterM(allMusicHelper.isValidLink)
+        .tryMap(albumRow =>
+          albumRow ->
+            Album(
+              title = albumRow.selectSingle(".title").text,
+              year = albumRow.selectSingle(".year").text.toInt,
+              artist = album.artist,
+            ),
+        )
+        .find(_._2.|>(score) >= 0.95)
+        .map(
+          _._1
+            .selectFirst("td.title a")
+            .href
+            .mapIf(_.startsWith("http").isFalse)
+            .to("http://www.allmusic.com" + _)
+            .|>(Url.apply),
+        )
+        .filterM(allMusicHelper.isValidLink)
     }
   }
 

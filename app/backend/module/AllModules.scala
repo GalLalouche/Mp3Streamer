@@ -1,5 +1,7 @@
 package backend.module
 
+import java.util.logging.LogManager
+
 import backend.albums.NewAlbumModule
 import backend.external.ExternalModule
 import backend.lyrics.LyricsModule
@@ -10,8 +12,6 @@ import backend.scorer.ScorerModule
 import controllers.ControllerModule
 import net.codingwell.scalaguice.ScalaModule
 import songs.SongsModule
-
-import java.util.logging.LogManager
 
 object AllModules extends ScalaModule {
   LogManager.getLogManager.readConfiguration(getClass.getResourceAsStream("/logging.properties"))

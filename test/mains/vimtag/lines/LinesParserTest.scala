@@ -1,9 +1,9 @@
 package mains.vimtag.lines
 
-import mains.vimtag.{Change, Common, Empty, Keep, Parser}
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
+import mains.vimtag.{Change, Common, Empty, Keep, Parser}
 
 class LinesParserTest extends FreeSpec with AuxSpecs {
   private val $ = new Parser(LinesParser)
@@ -30,7 +30,7 @@ class LinesParserTest extends FreeSpec with AuxSpecs {
         "TRACK: 9",
         "DISC_NO:",
       )
-      val e = intercept[NoSuchElementException] {$(Common.dummyInitialValuesMap)(lines)}
+      val e = intercept[NoSuchElementException]($(Common.dummyInitialValuesMap)(lines))
       e.getMessage shouldReturn "key not found: ARTIST"
     }
     "Missing mandatory field in file throws" in {
@@ -55,7 +55,7 @@ class LinesParserTest extends FreeSpec with AuxSpecs {
         "TRACK: 9",
         "DISC_NO:",
       )
-      val e = intercept[NoSuchElementException] {$(Common.dummyInitialValuesMap)(lines)}
+      val e = intercept[NoSuchElementException]($(Common.dummyInitialValuesMap)(lines))
       e.getMessage shouldReturn "key not found for File2: TITLE"
     }
     "happy path" in {

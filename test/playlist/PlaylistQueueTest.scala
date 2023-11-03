@@ -1,9 +1,8 @@
 package playlist
 
+import common.JsonableSpecs
 import models.ArbitraryModels
 import org.scalacheck.Gen
-
-import common.JsonableSpecs
 
 class PlaylistQueueTest extends JsonableSpecs {
   import models.ModelJsonable.SongJsonifier

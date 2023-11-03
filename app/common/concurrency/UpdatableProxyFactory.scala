@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import common.TimedLogger
 
-class UpdatableProxyFactory @Inject()(timedLogger: TimedLogger) {
+class UpdatableProxyFactory @Inject() (timedLogger: TimedLogger) {
   def apply[A: Manifest](
       initialState: A,
       updateSelf: () => A,

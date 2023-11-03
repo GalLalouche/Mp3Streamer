@@ -3,15 +3,16 @@ package backend.recon
 import javax.inject.Inject
 import mains.fixer.StringFixer
 
+import common.rich.RichT._
 import common.rich.RichTuple._
 import common.LanguageString._
-import common.rich.RichT._
 
 /**
-* A placeholder for a class that might some day in the future actually measure the similarity between two
-* strings. Now it just removes some stop words and punctuations and checks if the strings are identical.
-*/
-class StringReconScorer @Inject()(stringFixer: StringFixer) extends ((String, String) => Double) {
+ * A placeholder for a class that might some day in the future actually measure the similarity
+ * between two strings. Now it just removes some stop words and punctuations and checks if the
+ * strings are identical.
+ */
+class StringReconScorer @Inject() (stringFixer: StringFixer) extends ((String, String) => Double) {
   import StringReconScorer._
 
   override def apply(s1: String, s2: String): Double = {
@@ -19,13 +20,12 @@ class StringReconScorer @Inject()(stringFixer: StringFixer) extends ((String, St
     if (sameAndNonEmpty(canonS1, canonS2)) 1 else 0
   }
 
-  private def canonize(s: String): String = s
-      .toLowerCase
-      .split(' ')
-      .filterNot(badWords)
-      .mkString(" ")
-      .filter(_.isLetterOrDigit)
-      .tryOrKeep(stringFixer.asciiNormalize)
+  private def canonize(s: String): String = s.toLowerCase
+    .split(' ')
+    .filterNot(badWords)
+    .mkString(" ")
+    .filter(_.isLetterOrDigit)
+    .tryOrKeep(stringFixer.asciiNormalize)
 
   private def filterHebrew(s: String): String = s.split(" ").filter(_.hasHebrew).mkString(" ")
 }

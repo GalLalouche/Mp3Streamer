@@ -3,15 +3,15 @@ package common.io
 import java.util.concurrent.TimeUnit
 
 import backend.{Retriever, Url}
+import org.jsoup.nodes.Document
+
+import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.Duration
 
 import common.io.RichWSRequest._
 import common.io.WSAliases._
 import common.rich.RichFuture._
 import common.rich.RichT._
-import org.jsoup.nodes.Document
-
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration.Duration
 
 /** Things that talk to the outside world. Spo-o-o-o-ky IO! */
 trait InternetTalker extends ExecutionContext {
@@ -29,16 +29,21 @@ trait InternetTalker extends ExecutionContext {
           client.close()
           throw e
       }
-    $ consumeTry client.close().const
+    $.consumeTry(client.close().const)
   }
 
   // TODO: handle code duplication.
-  final def asBrowser[T](url: Url, f: Retriever[WSRequest, T], timeoutInSeconds: Int = -1): Future[T] =
-    useWs(_.url(url.address)
+  final def asBrowser[T](
+      url: Url,
+      f: Retriever[WSRequest, T],
+      timeoutInSeconds: Int = -1,
+  ): Future[T] =
+    useWs(
+      _.url(url.address)
         .addHttpHeaders("user-agent" -> InternetTalker.AgentUrl)
         .mapIf(timeoutInSeconds > 0)
-        .to(_.withRequestTimeout(Duration.apply(timeoutInSeconds, TimeUnit.SECONDS))
-        ) |> f)
+        .to(_.withRequestTimeout(Duration.apply(timeoutInSeconds, TimeUnit.SECONDS))) |> f,
+    )
   final def downloadDocument(url: Url, decodeUtf: Boolean = false): Future[Document] =
     asBrowser(url, _.document(decodeUtf))
   final def get(url: Url): Future[WSResponse] = useWs(_.url(url.address).get())

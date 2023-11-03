@@ -22,17 +22,18 @@ object ReportObservable {
       observable: Observable[(ShouldNotify, Agg)],
       finisher: Seq[Agg] => Result,
   ): ReportObservable[Agg, Result] = apply(
-    Observable[Report[Agg, Result]](s => observable
+    Observable[Report[Agg, Result]](s =>
+      observable
         .doOnError(s.onError)
-        .foldLeft[mutable.Buffer[Agg]](ArrayBuffer()) {
-          case (buffer, (shouldNotify, next)) =>
-            if (shouldNotify)
-              s.onNext(Aggregation(next))
-            buffer += next
-        }.subscribe(buffer => s.onNext(Result(finisher(buffer)))
-    )),
+        .foldLeft[mutable.Buffer[Agg]](ArrayBuffer()) { case (buffer, (shouldNotify, next)) =>
+          if (shouldNotify)
+            s.onNext(Aggregation(next))
+          buffer += next
+        }
+        .subscribe(buffer => s.onNext(Result(finisher(buffer)))),
+    ),
   )
-  def apply[Agg, Result](o: Observable[Report[Agg, Result]]): ReportObservable[Agg, Result] = ro => {
+  def apply[Agg, Result](o: Observable[Report[Agg, Result]]): ReportObservable[Agg, Result] = ro =>
     o.subscribe(new Observer[Report[Agg, Result]] {
       private var hasCompleted = false
       private var hasErrored = false
@@ -60,6 +61,4 @@ object ReportObservable {
         require(hasErrored.isFalse)
       }
     })
-  }
 }
-

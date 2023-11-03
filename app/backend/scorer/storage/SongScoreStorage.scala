@@ -13,7 +13,7 @@ import scalaz.ListT
 import scalaz.Scalaz.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
 
-private[scorer] class SongScoreStorage @Inject()(
+private[scorer] class SongScoreStorage @Inject() (
     ec: ExecutionContext,
     dbP: DbProvider,
     protected val artistStorage: SlickArtistReconStorage,
@@ -28,7 +28,7 @@ private[scorer] class SongScoreStorage @Inject()(
 
   type AlbumTitle = String
   type SongTitle = String
-  override protected type Entity = (Artist, AlbumTitle, SongTitle, ModelScore)
+  protected override type Entity = (Artist, AlbumTitle, SongTitle, ModelScore)
   protected class Rows(tag: Tag) extends Table[Entity](tag, "song_score") {
     def artist = column[Artist]("artist")
     def album = column[AlbumTitle]("album")
@@ -36,17 +36,17 @@ private[scorer] class SongScoreStorage @Inject()(
     def score = column[ModelScore]("score")
     def pk = primaryKey(dbP.constraintMangler("pk"), (artist, album, song))
     def artist_fk =
-      foreignKey(
-        dbP.constraintMangler("artist_fk"), artist, artistStorage.tableQuery)(
-        _.name.mapTo[Artist])
+      foreignKey(dbP.constraintMangler("artist_fk"), artist, artistStorage.tableQuery)(
+        _.name.mapTo[Artist],
+      )
     def * = (artist, album, song, score)
   }
-  override protected type EntityTable = Rows
-  override protected val tableQuery = TableQuery[EntityTable]
-  override protected def toEntity(k: Song, v: ModelScore) =
+  protected override type EntityTable = Rows
+  protected override val tableQuery = TableQuery[EntityTable]
+  protected override def toEntity(k: Song, v: ModelScore) =
     (k.artist.normalized, k.albumName.toLowerCase, k.title.toLowerCase, v)
-  override protected def extractValue(e: (Artist, AlbumTitle, SongTitle, ModelScore)) = e._4
-  override protected def keyFilter(k: Song)(e: Rows) =
+  protected override def extractValue(e: (Artist, AlbumTitle, SongTitle, ModelScore)) = e._4
+  protected override def keyFilter(k: Song)(e: Rows) =
     e.artist === k.artist.normalized && e.song === k.title.toLowerCase && e.album === k.albumName.toLowerCase
   override def apply(a: Song) = load(a)
   def loadAll: ListT[Future, (Artist, AlbumTitle, SongTitle, ModelScore)] =

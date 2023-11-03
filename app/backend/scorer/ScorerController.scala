@@ -5,13 +5,12 @@ import controllers.{PlayActionConverter, UrlDecodeUtils}
 import javax.inject.Inject
 import play.api.mvc.InjectedController
 
-class ScorerController @Inject()(
-    $: ScorerFormatter,
+class ScorerController @Inject() (
+    $ : ScorerFormatter,
     converter: PlayActionConverter,
     decoder: UrlDecodeUtils,
     logger: Logger,
-)
-    extends InjectedController {
+) extends InjectedController {
   def getScore(filePath: String) = converter.ok($.getScore(filePath))
   def updateSongScore(filePath: String, score: String) = {
     val str = decoder.decode(filePath)

@@ -12,7 +12,7 @@ import scalaz.ListT
 import scalaz.Scalaz.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
 
-private[backend] class ArtistScoreStorage @Inject()(
+private[backend] class ArtistScoreStorage @Inject() (
     ec: ExecutionContext,
     dbP: DbProvider,
     protected val artistStorage: SlickArtistReconStorage,
@@ -25,7 +25,7 @@ private[backend] class ArtistScoreStorage @Inject()(
 
   private implicit val iec: ExecutionContext = ec
 
-  override protected type Entity = (Artist, ModelScore)
+  protected override type Entity = (Artist, ModelScore)
   protected class Rows(tag: Tag) extends Table[Entity](tag, "artist_score") {
     def artist = column[Artist]("name", O.PrimaryKey)
     def score = column[ModelScore]("score")
@@ -37,14 +37,14 @@ private[backend] class ArtistScoreStorage @Inject()(
       )
     def * = (artist, score)
   }
-  override protected type EntityTable = Rows
+  protected override type EntityTable = Rows
   override val tableQuery = TableQuery[EntityTable]
   override type Id = Artist
-  override protected def btt: BaseTypedType[Artist] = ArtistMapper
-  override protected def extractId(k: Artist) = k
-  override protected def toId(et: Rows) = et.artist
-  override protected def toEntity(k: Artist, v: ModelScore) = (k, v)
-  override protected def extractValue(e: (Artist, ModelScore)) = e._2
+  protected override def btt: BaseTypedType[Artist] = ArtistMapper
+  protected override def extractId(k: Artist) = k
+  protected override def toId(et: Rows) = et.artist
+  protected override def toEntity(k: Artist, v: ModelScore) = (k, v)
+  protected override def extractValue(e: (Artist, ModelScore)) = e._2
   override def apply(a: Artist) = load(a)
   def loadAll: ListT[Future, (Artist, ModelScore)] = ListT(db.run(tableQuery.result).map(_.toList))
   override def updateScore(a: Artist, score: ModelScore) = replace(a, score).run.void

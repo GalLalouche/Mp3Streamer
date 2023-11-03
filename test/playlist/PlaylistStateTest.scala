@@ -1,17 +1,15 @@
 package playlist
 
 import java.util.concurrent.TimeUnit
-
-import models.ArbitraryModels
-import org.scalacheck.{Arbitrary, Gen}
-
 import scala.concurrent.duration.Duration
 
 import common.JsonableSpecs
+import models.ArbitraryModels
+import org.scalacheck.{Arbitrary, Gen}
 
 class PlaylistStateTest extends JsonableSpecs {
-  import PlaylistState.PlaylistStateJsonable
   import models.ModelJsonable.SongJsonifier
+  import PlaylistState.PlaylistStateJsonable
 
   private implicit val arbPlaylistQueue: Arbitrary[PlaylistState] = Arbitrary(for {
     numberOfSongs <- Gen.choose(1, 100)

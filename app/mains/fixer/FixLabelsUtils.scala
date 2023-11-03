@@ -1,5 +1,8 @@
 package mains.fixer
 
+import java.io.File
+import java.util.regex.Pattern
+
 import com.google.common.annotations.VisibleForTesting
 import models.{Song, SongTagParser}
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
@@ -7,23 +10,22 @@ import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
 
-import java.io.File
-import java.util.regex.Pattern
 import scala.annotation.tailrec
 
-import common.rich.RichT.{richT, _}
 import common.rich.path.RichFile.richFile
 import common.rich.primitives.RichInt._
 import common.rich.primitives.RichString.richString
+import common.rich.RichT.{richT, _}
 
 private[mains] object FixLabelsUtils {
-  private val NumberFollowedBySlash = Pattern compile """\d+[/\\].*"""
-  private val InvalidFileCharacters = Pattern compile """[:\\/*?|<>]"""
-  private val MultiSpace = Pattern compile " +"
+  private val NumberFollowedBySlash = Pattern.compile("""\d+[/\\].*""")
+  private val InvalidFileCharacters = Pattern.compile("""[:\\/*?|<>]""")
+  private val MultiSpace = Pattern.compile(" +")
 
-  private def properTrackString(track: Int): String = track padLeftZeros 2
+  private def properTrackString(track: Int): String = track.padLeftZeros(2)
   @VisibleForTesting
-  def getFixedTag(f: File, fixDiscNumber: Boolean): Tag = getFixedTag(f, fixDiscNumber, AudioFileIO read f)
+  def getFixedTag(f: File, fixDiscNumber: Boolean): Tag =
+    getFixedTag(f, fixDiscNumber, AudioFileIO.read(f))
 
   private val BonusTrackSuffixes = Vector("bonus", "bonus track").map("(" + _ + ")")
   // If fixDiscNumber is false, it will be removed, unless the title indicates it is a bonus track.
@@ -45,10 +47,10 @@ private[mains] object FixLabelsUtils {
     $.setField(FieldKey.TRACK, properTrackString(song.track))
     // Not all track need to have a disc number property, e.g., bonus track.
     song.discNumber
-        .filter(fixDiscNumber.const)
-        // Replace 1/2 with 1
-        .map(_.mapIf(_.matches(NumberFollowedBySlash)).to(_.takeWhile(_.isDigit)))
-        .foreach($.setField(FieldKey.DISC_NO, _))
+      .filter(fixDiscNumber.const)
+      // Replace 1/2 with 1
+      .map(_.mapIf(_.matches(NumberFollowedBySlash)).to(_.takeWhile(_.isDigit)))
+      .foreach($.setField(FieldKey.DISC_NO, _))
 
     val lowerCasedTitle = $.getFirst(FieldKey.TITLE).toLowerCase
     if (BonusTrackSuffixes.exists(lowerCasedTitle.endsWith)) {

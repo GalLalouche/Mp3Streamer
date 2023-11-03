@@ -16,13 +16,14 @@ sealed class Genre(val name: String) extends Ordered[Genre] {
       case (true, true) => this.name.compare(that.name)
       case (true, false) => 1
       case (false, true) => -1
-      case (false, false) => (this, that) match {
-        case (Rock(_), Metal(_)) => -1
-        case (Metal(_), Rock(_)) => 1
-        case (Rock(n1), Rock(n2)) => n1.compare(n2)
-        case (Metal(n1), Metal(n2)) => n1.compare(n2)
-        case _ => throw new AssertionError()
-      }
+      case (false, false) =>
+        (this, that) match {
+          case (Rock(_), Metal(_)) => -1
+          case (Metal(_), Rock(_)) => 1
+          case (Rock(n1), Rock(n2)) => n1.compare(n2)
+          case (Metal(n1), Metal(n2)) => n1.compare(n2)
+          case _ => throw new AssertionError()
+        }
     }
   }
 }

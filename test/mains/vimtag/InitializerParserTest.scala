@@ -1,35 +1,64 @@
 package mains.vimtag
 
-import backend.module.FakeMusicFinder
-import models.FakeModelFactory
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
+import backend.module.FakeMusicFinder
 import common.io.MemoryRoot
 import common.test.AuxSpecs
+import models.FakeModelFactory
 
 abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualParser)
-    extends FreeSpec with AuxSpecs with OneInstancePerTest {
+    extends FreeSpec
+    with AuxSpecs
+    with OneInstancePerTest {
   private val mf = new FakeMusicFinder(new MemoryRoot)
   private val factory = new FakeModelFactory
   "A non-interactive initializer-parser couple returns the correct ID3" in {
-    def newSong(track: Int, title: String, year: Int, discNumber: Option[String], conductor: Option[String]) =
-      mf.copySong("dir", factory.song(
-        filePath = s"$track - $title",
-        year = year,
-        artistName = "Evgeny Kissin",
-        albumName = "Prokofiev - Piano Concerto No. 2 & 3 (Kissin, Ashkenazy)",
-        composer = Some("Prokofiev"),
-        orchestra = Some("Philharmonia Orchestra"),
-        performanceYear = Some(2009),
-        track = track,
-        title = title,
-        discNumber = discNumber,
-        conductor = conductor,
-      ))
+    def newSong(
+        track: Int,
+        title: String,
+        year: Int,
+        discNumber: Option[String],
+        conductor: Option[String],
+    ) =
+      mf.copySong(
+        "dir",
+        factory.song(
+          filePath = s"$track - $title",
+          year = year,
+          artistName = "Evgeny Kissin",
+          albumName = "Prokofiev - Piano Concerto No. 2 & 3 (Kissin, Ashkenazy)",
+          composer = Some("Prokofiev"),
+          orchestra = Some("Philharmonia Orchestra"),
+          performanceYear = Some(2009),
+          track = track,
+          title = title,
+          discNumber = discNumber,
+          conductor = conductor,
+        ),
+      )
 
-    val s1 = newSong(5, "Piano Concerto No.3 in C Major, Op.26 - I. Andante - Allegro", 2001, None, Some("Vladimir Ashkenazy"))
-    val s2 = newSong(6, "Piano Concerto No.3 in C Major, Op.26 - II. Tema & Variation", 2002, Some("Foobar"), None)
-    val s3 = newSong(9, "Piano Concerto No.3 in C Major, Op.26 - III. Allegro, ma non troppo", 2003, None, None)
+    val s1 = newSong(
+      5,
+      "Piano Concerto No.3 in C Major, Op.26 - I. Andante - Allegro",
+      2001,
+      None,
+      Some("Vladimir Ashkenazy"),
+    )
+    val s2 = newSong(
+      6,
+      "Piano Concerto No.3 in C Major, Op.26 - II. Tema & Variation",
+      2002,
+      Some("Foobar"),
+      None,
+    )
+    val s3 = newSong(
+      9,
+      "Piano Concerto No.3 in C Major, Op.26 - III. Allegro, ma non troppo",
+      2003,
+      None,
+      None,
+    )
 
     val parser = new Parser(ip)
     val initializer = new Initializer(mf, ii)
@@ -70,14 +99,17 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
 
   "Ordering" in {
     def newSong(track: Int, fileName: String) =
-      mf.copySong("dir", factory.song(
-        filePath = fileName,
-        year = 2000,
-        artistName = "Some artist",
-        albumName = "Some album",
-        track = track,
-        title = "whatever",
-      ))
+      mf.copySong(
+        "dir",
+        factory.song(
+          filePath = fileName,
+          year = 2000,
+          artistName = "Some artist",
+          albumName = "Some album",
+          track = track,
+          title = "whatever",
+        ),
+      )
 
     newSong(2, "c")
     newSong(1, "b")
@@ -96,14 +128,17 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
 
   "Multiple folders" in {
     def newSong(track: Int, subName: String, fileName: String) =
-      mf.copySong(Vector("dir", subName), factory.song(
-        filePath = fileName,
-        year = 2000,
-        artistName = "Some artist",
-        albumName = "Some album",
-        track = track,
-        title = "whatever",
-      ))
+      mf.copySong(
+        Vector("dir", subName),
+        factory.song(
+          filePath = fileName,
+          year = 2000,
+          artistName = "Some artist",
+          albumName = "Some album",
+          track = track,
+          title = "whatever",
+        ),
+      )
 
     newSong(1, "a", "a")
     newSong(2, "a", "b")

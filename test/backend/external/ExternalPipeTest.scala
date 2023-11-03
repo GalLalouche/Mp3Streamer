@@ -1,29 +1,30 @@
 package backend.external
 
-import backend.Url
-import backend.external.Host.{AllMusic, RateYourMusic, Wikipedia}
+import scala.concurrent.Future
+import scalaz.OptionT
+
+import org.scalatest.AsyncFreeSpec
+
 import backend.external.expansions.ExternalLinkExpander
 import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.{LinkRetriever, LinkRetrievers}
+import backend.external.Host.{AllMusic, RateYourMusic, Wikipedia}
 import backend.recon.{Album, ReconID}
-import org.scalatest.AsyncFreeSpec
-
-import scala.concurrent.Future
-
-import scalaz.OptionT
+import backend.Url
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT
-
 import common.rich.RichT._
 import common.test.AuxSpecs
 
 class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
   private val existingHost: Host = Host("existinghost", Url("existinghosturl"))
   private val existingLink: BaseLink[Album] = BaseLink(Url("existing"), existingHost)
-  private val existingMarkedLink: MarkedLink[Album] = MarkedLink markExisting existingLink
+  private val existingMarkedLink: MarkedLink[Album] = MarkedLink.markExisting(existingLink)
   private val rehashedLinks: BaseLink[Album] = existingLink.copy(link = Url("shouldbeignored"))
-  private val expandedLink: BaseLink[Album] = BaseLink(Url("new"), Host("newhost", Url("newhosturl")))
-  private val reconciledLink: BaseLink[Album] = BaseLink(Url("new2"), Host("newhost2", Url("newhosturl2")))
+  private val expandedLink: BaseLink[Album] =
+    BaseLink(Url("new"), Host("newhost", Url("newhosturl")))
+  private val reconciledLink: BaseLink[Album] =
+    BaseLink(Url("new2"), Host("newhost2", Url("newhosturl2")))
   private val markedReconciledLink =
     MarkedLink[Album](Url("new2"), Host("newhost2", Url("newhosturl2")), LinkMark.New)
   private val expectedNewLinks = Vector(
@@ -54,7 +55,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
     $(null).map(_ shouldMultiSetEqual (existingMarkedLink +: expectedNewLinks))
   }
   "Doesn't invoke hosts if there's no need" - {
-    val failed = Future failed new AssertionError("Shouldn't have been invoked")
+    val failed = Future.failed(new AssertionError("Shouldn't have been invoked"))
     def failedExpander(h: Host) = new ExternalLinkExpander[Album] {
       override val sourceHost: Host = existingHost
       override val potentialHostsExtracted: Traversable[Host] = Vector(h)
@@ -70,7 +71,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
         Vector(existingLink) |> constFuture,
         LinkRetrievers(Vector(failedReconciler(existingHost), newLinkReconciler)),
         Vector(failedExpander(existingHost), newLinkExpander),
-        Nil
+        Nil,
       )
       $(null).map(_ shouldMultiSetEqual (existingMarkedLink +: expectedNewLinks))
     }
@@ -80,9 +81,9 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
         Vector(existingLink) |> constFuture,
         LinkRetrievers(Vector(newLinkReconciler)),
         Vector(failedExpander(reconciledLink.host)),
-        Nil
+        Nil,
       )
-      $(null).map(_ shouldContainExactly(existingMarkedLink, markedReconciledLink))
+      $(null).map(_ shouldContainExactly (existingMarkedLink, markedReconciledLink))
     }
   }
   "Should ignored new, extra links" in {
@@ -91,17 +92,20 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
       Vector(existingLink) |> constFuture,
       LinkRetrievers(Vector(newLinkReconciler)),
       Vector(constExpander(expandedLink, rehashedLinks)),
-      Nil
+      Nil,
     )
     $(null).map(_ shouldMultiSetEqual (existingMarkedLink +: expectedNewLinks))
   }
   "Should not fail when there are multiple entries with the same host in existing" in {
     val $ = new ExternalPipe[Album](
       ReconID("foobar") |> constFuture,
-      Vector[BaseLink[Album]](existingLink, existingLink.copy(link = Url("existing2"))) |> constFuture,
+      Vector[BaseLink[Album]](
+        existingLink,
+        existingLink.copy(link = Url("existing2")),
+      ) |> constFuture,
       LinkRetrievers(Vector(newLinkReconciler)),
       Vector(newLinkExpander),
-      Nil
+      Nil,
     )
     $(null).map(_ should have size 4)
   }
@@ -110,17 +114,20 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
     val allMusicLink = BaseLink[Album](Url("amg"), AllMusic)
     val rateYouMusicLink = BaseLink[Album](Url("rym"), RateYourMusic)
     val wikiReconciler = constReconciler(Wikipedia, wikiLink)
-    def oneTimeExpander(source: BaseLink[Album], dest: BaseLink[Album]) = new ExternalLinkExpander[Album] {
-      private var firstRun = true
-      override def potentialHostsExtracted: Traversable[Host] = Vector(dest.host)
-      override def sourceHost: Host = source.host
-      override def expand = v1 =>
-        if (firstRun) {
-          firstRun = false
-          Future successful (if (v1 == source) Vector(dest) else Nil)
-        }
-        else Future failed new AssertionError(s"Expander from <$source> to <$dest> was invoke more than once")
-    }
+    def oneTimeExpander(source: BaseLink[Album], dest: BaseLink[Album]) =
+      new ExternalLinkExpander[Album] {
+        private var firstRun = true
+        override def potentialHostsExtracted: Traversable[Host] = Vector(dest.host)
+        override def sourceHost: Host = source.host
+        override def expand = v1 =>
+          if (firstRun) {
+            firstRun = false
+            Future.successful(if (v1 == source) Vector(dest) else Nil)
+          } else
+            Future.failed(
+              new AssertionError(s"Expander from <$source> to <$dest> was invoke more than once"),
+            )
+      }
 
     val expander1 = oneTimeExpander(wikiLink, allMusicLink)
     val expander2 = oneTimeExpander(allMusicLink, rateYouMusicLink)
@@ -129,7 +136,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
       Vector(existingLink) |> constFuture,
       LinkRetrievers(Vector(wikiReconciler, newLinkReconciler)),
       Vector(expander1, expander2),
-      Nil
+      Nil,
     )
     val expectedNewLinks: Vector[MarkedLink[Album]] =
       Vector(wikiLink, allMusicLink, rateYouMusicLink, reconciledLink).map(MarkedLink.markNew)

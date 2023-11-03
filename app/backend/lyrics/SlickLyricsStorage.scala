@@ -15,16 +15,17 @@ import common.rich.func.ToMoreFoldableOps._
 import common.rich.RichT._
 
 @Singleton
-private class SlickLyricsStorage @Inject()(
+private class SlickLyricsStorage @Inject() (
     ec: ExecutionContext,
     protected val dbP: DbProvider,
-) extends SlickSingleKeyColumnStorageTemplateFromConf[Song, Lyrics](ec, dbP) with LyricsStorage {
+) extends SlickSingleKeyColumnStorageTemplateFromConf[Song, Lyrics](ec, dbP)
+    with LyricsStorage {
   import profile.api._
 
-  override protected type Profile = dbP.profile.type
-  override protected type Id = String
-  override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
-  override protected type Entity = (String, String, Option[String], Option[LyricsUrl])
+  protected override type Profile = dbP.profile.type
+  protected override type Id = String
+  protected implicit override def btt: BaseTypedType[Id] = ScalaBaseType.stringType
+  protected override type Entity = (String, String, Option[String], Option[LyricsUrl])
   // instrumental songs have NULL in lyrics
   protected class LyricsTable(tag: Tag) extends Table[Entity](tag, "lyrics") {
     def song = column[String]("song", O.PrimaryKey)
@@ -34,25 +35,24 @@ private class SlickLyricsStorage @Inject()(
     def * = (song, source, lyrics, url)
   }
   private implicit val lyricsUrlColumn: JdbcType[LyricsUrl] =
-    MappedColumnType.base[LyricsUrl, String](SlickLyricsStorage.stringify, SlickLyricsStorage.decode)
-  override protected type EntityTable = LyricsTable
-  override protected val tableQuery = TableQuery[EntityTable]
+    MappedColumnType.base[LyricsUrl, String](
+      SlickLyricsStorage.stringify,
+      SlickLyricsStorage.decode,
+    )
+  protected override type EntityTable = LyricsTable
+  protected override val tableQuery = TableQuery[EntityTable]
 
-  override protected def toEntity(k: Song, l: Lyrics) = {
+  protected override def toEntity(k: Song, l: Lyrics) = {
     val (source, content, url) = l match {
       case Instrumental(source, url) => (source, None, url)
       case HtmlLyrics(source, html, url) => (source, Some(html), url)
     }
     (extractId(k), source, content, url.optFilter(_ != OldData))
   }
-  override protected def toId(et: LyricsTable) = et.song
-  override protected def extractId(s: Song) = s"${
-    s.artistName
-  } - ${
-    s.title
-  }"
-  override protected def extractValue(e: Entity) = {
-    val url = e._4 getOrElse OldData
+  protected override def toId(et: LyricsTable) = et.song
+  protected override def extractId(s: Song) = s"${s.artistName} - ${s.title}"
+  protected override def extractValue(e: Entity) = {
+    val url = e._4.getOrElse(OldData)
     e._3.mapHeadOrElse(HtmlLyrics(e._2, _, url), Instrumental(e._2, url))
   }
 }

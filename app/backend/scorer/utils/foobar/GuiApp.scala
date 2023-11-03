@@ -1,19 +1,19 @@
 package backend.scorer.utils.foobar
 
+import java.io.File
+
 import backend.albums.filler.ExistingAlbumsModules
 import backend.logging.{FilteringLogger, LoggingLevel}
 import backend.module.StandaloneModule
 import better.files
 import better.files.FileMonitor
 import com.google.inject.Guice
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-
-import java.io.File
-import scala.concurrent.ExecutionContext
-
 import javafx.stage.WindowEvent
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.scene.Scene
+
+import scala.concurrent.ExecutionContext
 
 import common.guice.RichModule.richModule
 import common.rich.RichFuture.richFuture
@@ -22,13 +22,17 @@ import common.rich.RichFuture.richFuture
 private object GuiApp extends JFXApp3 {
   private val FileDump = new File("""D:\Media-temp\streamer\now_playing.txt""")
   override def start() = {
-    val injector = Guice.createInjector(StandaloneModule.overrideWith(ExistingAlbumsModules.lazyAlbums))
+    val injector =
+      Guice.createInjector(StandaloneModule.overrideWith(ExistingAlbumsModules.lazyAlbums))
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     injector.instance[FilteringLogger].setCurrentLevel(LoggingLevel.Info)
     val aux = injector.instance[FoobarScorer]
     def update(): Unit =
-    // TODO safeForeach in MonadError or RichFuture?
-      aux.update(FileDump, () => update()).toTry.foreach(newRoot => Platform.runLater(stage.scene.get.setRoot(newRoot.get)))
+      // TODO safeForeach in MonadError or RichFuture?
+      aux
+        .update(FileDump, () => update())
+        .toTry
+        .foreach(newRoot => Platform.runLater(stage.scene.get.setRoot(newRoot.get)))
     val monitor = new FileMonitor(better.files.File(FileDump.toPath)) {
       override def onModify(file: files.File, count: Int): Unit = update()
     }

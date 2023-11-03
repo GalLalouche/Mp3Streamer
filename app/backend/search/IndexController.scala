@@ -10,8 +10,8 @@ import scalaz.Scalaz.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
 
 /** Used for updating the search index from the client. */
-class IndexController @Inject()(
-    $: IndexFormatter,
+class IndexController @Inject() (
+    $ : IndexFormatter,
     ec: ExecutionContext,
     converter: PlayActionConverter,
 ) extends InjectedController {

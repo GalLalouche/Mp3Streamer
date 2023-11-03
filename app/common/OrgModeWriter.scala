@@ -1,7 +1,7 @@
 package common
 
 /** DSL for writing org files. */
-class OrgModeWriter private(currentIndent: Int, private val reversedLines: List[String]) {
+class OrgModeWriter private (currentIndent: Int, private val reversedLines: List[String]) {
   def lines: Seq[String] = reversedLines.reverse.toVector
   def indent(f: OrgModeWriter => OrgModeWriter): OrgModeWriter = {
     val nested = f(new OrgModeWriter(currentIndent + 1, Nil))

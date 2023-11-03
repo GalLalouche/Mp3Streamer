@@ -12,8 +12,8 @@ import common.rich.RichT._
 private object Utils {
   val Source = "Bandcamp"
 
-  def doesUrlMatchHost: Url => Boolean = _.address matches UrlPattern
-  private val UrlPattern = Pattern compile """.+\.bandcamp\.com/track/.*"""
+  def doesUrlMatchHost: Url => Boolean = _.address.matches(UrlPattern)
+  private val UrlPattern = Pattern.compile(""".+\.bandcamp\.com/track/.*""")
 
   def elementToLyrics(e: Element): LyricParseResult.Lyrics =
     e.wholeText().trim() |> HtmlLyricsUtils.addBreakLines |> LyricParseResult.Lyrics

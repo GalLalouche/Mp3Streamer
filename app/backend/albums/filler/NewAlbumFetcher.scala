@@ -17,21 +17,28 @@ import common.rich.func.ToMoreMonadErrorOps._
 import common.concurrency.DaemonFixedPool
 import common.rich.RichT._
 
-@Singleton private class NewAlbumFetcher @Inject()(
+@Singleton private class NewAlbumFetcher @Inject() (
     logger: Logger,
     meta: MbArtistReconciler,
     reconciler: ReconcilerCacher[Artist],
 ) {
   private implicit val ec: ExecutionContext = DaemonFixedPool(this.simpleName, 10)
 
-  private def getReconId(artist: Artist): OptionT[Future, ReconID] = reconciler(artist).mapEitherMessage {
-    case NoRecon => -\/("No recon")
-    case HasReconResult(reconId, isIgnored) => if (isIgnored) -\/("Ignored") else \/-(reconId)
-  }.foldEither(_.fold({e =>
-    logger.debug(s"Did not fetch albums for artist <${artist.name}>; reason: <${e.getMessage}>")
-    None
-  }, Some.apply)
-  ) |> OptionT.apply
+  private def getReconId(artist: Artist): OptionT[Future, ReconID] = reconciler(artist)
+    .mapEitherMessage {
+      case NoRecon => -\/("No recon")
+      case HasReconResult(reconId, isIgnored) => if (isIgnored) -\/("Ignored") else \/-(reconId)
+    }
+    .foldEither(
+      _.fold(
+        { e =>
+          logger
+            .debug(s"Did not fetch albums for artist <${artist.name}>; reason: <${e.getMessage}>")
+          None
+        },
+        Some.apply,
+      ),
+    ) |> OptionT.apply
 
   def apply(artist: Artist): Future[Seq[NewAlbumRecon]] = (for {
     recon <- getReconId(artist)

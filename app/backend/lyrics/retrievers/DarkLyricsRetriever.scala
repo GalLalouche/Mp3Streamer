@@ -7,10 +7,10 @@ import javax.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
 
-import common.rich.RichT._
 import common.rich.primitives.RichString._
+import common.rich.RichT._
 
-private class DarkLyricsRetriever @Inject()(singleHostHelper: SingleHostParsingHelper)
+private class DarkLyricsRetriever @Inject() (singleHostHelper: SingleHostParsingHelper)
     extends HtmlRetriever {
   import DarkLyricsRetriever._
 
@@ -33,27 +33,27 @@ private object DarkLyricsRetriever {
 
   @VisibleForTesting
   private[retrievers] val parser: SingleHostParser = new SingleHostParser {
-    private val BreakLinesOrNewLinePattern = Pattern compile """((<br>)|\n)"""
+    private val BreakLinesOrNewLinePattern = Pattern.compile("""((<br>)|\n)""")
     private def isInstrumental(html: String) =
       html.removeAll(BreakLinesOrNewLinePattern).toLowerCase == "<i>[instrumental]</i>"
 
     override val source: String = "DarkLyrics"
     // HTML is structured for shit, so might as well parse it by hand.
-    private val Heading = Pattern compile ".*<h3>.*"
-    private val Div = Pattern compile ".*<div.*"
+    private val Heading = Pattern.compile(".*<h3>.*")
+    private val Div = Pattern.compile(".*<div.*")
     override def apply(html: Document, s: Song) = {
-      val currentTrack = Pattern compile s""".*a name="${s.track}".*"""
+      val currentTrack = Pattern.compile(s""".*a name="${s.track}".*""")
       val $ = html.toString
-          .split("\n")
-          .iterator
-          .dropWhile(_ doesNotMatch currentTrack)
-          .drop(1)
-          .takeWhile(e => e.doesNotMatch(Heading) && e.doesNotMatch(Div)) // this fucking site...
-          .map(_.trim)
-          .mkString("\n")
-          .|>(HtmlLyricsUtils.trimBreakLines)
-          .trim
-          .|>(HtmlLyricsUtils.canonize)
+        .split("\n")
+        .iterator
+        .dropWhile(_.doesNotMatch(currentTrack))
+        .drop(1)
+        .takeWhile(e => e.doesNotMatch(Heading) && e.doesNotMatch(Div)) // this fucking site...
+        .map(_.trim)
+        .mkString("\n")
+        .|>(HtmlLyricsUtils.trimBreakLines)
+        .trim
+        .|>(HtmlLyricsUtils.canonize)
 
       if (isInstrumental($)) LyricParseResult.Instrumental else LyricParseResult.Lyrics($)
     }

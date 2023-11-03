@@ -20,7 +20,7 @@ trait Jsonable[A] {
 
 object Jsonable {
   implicit def formatJsonable[A](implicit ev: Format[A]): Jsonable[A] = new Jsonable[A] {
-    override def jsonify(a: A): JsValue = ev writes a
+    override def jsonify(a: A): JsValue = ev.writes(a)
     override def parse(json: JsValue): A = ev.reads(json).get
   }
   implicit def seqJsonable[A: Jsonable]: Jsonable[Seq[A]] = new Jsonable[Seq[A]] {

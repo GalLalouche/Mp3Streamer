@@ -7,11 +7,11 @@ import play.api.mvc.{InjectedController, WebSocket}
 
 import scala.concurrent.ExecutionContext
 
-class RecentController @Inject()(
-    $: RecentFormatter,
+class RecentController @Inject() (
+    $ : RecentFormatter,
     converter: PlayActionConverter,
     webSocketFactory: PlayWebSocketRegistryFactory,
-    ec: ExecutionContext
+    ec: ExecutionContext,
 ) extends InjectedController {
   private implicit val iec: ExecutionContext = ec
   private val webSocket = webSocketFactory(RecentModule.WebSocketName)

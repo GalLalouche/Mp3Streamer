@@ -10,7 +10,7 @@ import common.io.IODirectory
 import common.rich.path.Directory
 import common.rich.primitives.RichString._
 
-private class FoobarGain @Inject()(mf: IOMusicFinder) {
+private class FoobarGain @Inject() (mf: IOMusicFinder) {
   /**
    * Calculates the track gain of the files in the directory. Since this uses Foobar2000, there's no
    * way to verify that the task completed. Therefore, just run this last and hope for the best :|

@@ -9,4 +9,3 @@ trait ReconFillerAux[R] {
   def prettyPrint(r: R): String
   def verify(r: R, id: ReconID): Future[Boolean]
 }
-

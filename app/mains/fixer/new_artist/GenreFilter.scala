@@ -1,9 +1,10 @@
 package mains.fixer.new_artist
 
+import java.awt.Dimension
+
 import mains.SwingUtils._
 import rx.lang.scala.{Observable, Subject}
 
-import java.awt.Dimension
 import scala.swing.{BoxPanel, Label, Orientation, Panel, TextField}
 import scala.swing.event.{Key, KeyReleased, ValueChanged}
 
@@ -19,11 +20,11 @@ private class GenreFilter extends Panel {
 
   private val textBox = new TextField(10).setFontSize(20).<|(_.requestFocus())
   def text: String = textBox.text
-  textBox.reactions += {
-    case _: ValueChanged => textSubject.onNext(())
+  textBox.reactions += { case _: ValueChanged =>
+    textSubject.onNext(())
   }
-  textBox.keys.reactions += {
-    case KeyReleased(_, key, _, _) => key match {
+  textBox.keys.reactions += { case KeyReleased(_, key, _, _) =>
+    key match {
       case Key.Enter => chooseSubject.onNext(())
       case Key.Up => selectSubject.onNext(Direction.Previous)
       case Key.Down => selectSubject.onNext(Direction.Next)

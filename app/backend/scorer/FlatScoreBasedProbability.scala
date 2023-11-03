@@ -1,18 +1,17 @@
 package backend.scorer
 
 import backend.logging.Logger
-import backend.scorer.FlatScoreBasedProbability.withoutAsserts
 import javax.inject.Singleton
 import models.Song
 
-import common.Percentage
 import common.io.FileRef
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichDouble.richDouble
+import common.Percentage
 
 /** Returns a [[ModelScore]] based weight for the song to be chosen. */
 // TODO SoftwareDesign could be an interesting guice question about passing configuration
-@Singleton private class FlatScoreBasedProbability private(
+@Singleton private class FlatScoreBasedProbability private (
     map: ModelScore => Double,
     defaultScore: Percentage,
     scorer: CachedModelScorer,
@@ -27,18 +26,20 @@ import common.rich.primitives.RichDouble.richDouble
   private val probabilities: Map[ModelScore, Percentage] = {
     val sum = songFiles.length
     val frequencies: Map[ModelScore, Int] = songFiles
-        .flatMap(scorer(_))
-        .frequencies
-    val unnormalized = frequencies.map {case (score, count) =>
+      .flatMap(scorer(_))
+      .frequencies
+    val unnormalized = frequencies.map { case (score, count) =>
       score -> map(score) / (count.toDouble / sum)
     }
     val unnormalizedSum = unnormalized.values.sum
     val $ = unnormalized.mapValues(_ / unnormalizedSum).mapValues(Percentage.apply).view.force
-    assert($.values.view.map(_.p).sum isRoughly 1.0)
+    assert($.values.view.map(_.p).sum.isRoughly(1.0))
     def baseProbability(score: ModelScore) = frequencies(score) / songFiles.size.toDouble
     def debugMessage(score: ModelScore): Unit =
-      logger.debug(s"Base probability for <$score> was <${baseProbability(score)}>, " +
-          s"required is <${map(score)}>, normalized probability is <${$(score)}>")
+      logger.debug(
+        s"Base probability for <$score> was <${baseProbability(score)}>, " +
+          s"required is <${map(score)}>, normalized probability is <${$(score)}>",
+      )
     def assertReducedProbability(score: ModelScore): Unit = {
       debugMessage(score)
       if (withAsserts)
@@ -69,7 +70,7 @@ private object FlatScoreBasedProbability {
       defaultScore: Percentage,
       scorer: CachedModelScorer,
       songFiles: Seq[FileRef],
-      logger: Logger
+      logger: Logger,
   ) = new FlatScoreBasedProbability(
     map,
     defaultScore,

@@ -21,15 +21,15 @@ import common.rich.RichT._
 
 // FIXME This module returns StringFixed titles, but then we try to remove/ignore those entities, the name
 //  doesn't match the name in the database. A simple solution could be to use the original recon ID for that.
-private class AlbumsFormatter @Inject()(
+private class AlbumsFormatter @Inject() (
     ec: ExecutionContext,
-    $: AlbumsModel,
+    $ : AlbumsModel,
     stringFixer: StringFixer,
 ) {
   private implicit val iec: ExecutionContext = ec
 
   private def fixTitles: Seq[NewAlbum] => Seq[NewAlbum] =
-    _.&|->>(Traversal.fromTraverse).^|->(NewAlbum.title).modify(_ tryOrKeep stringFixer.apply)
+    _.&|->>(Traversal.fromTraverse).^|->(NewAlbum.title).modify(_.tryOrKeep(stringFixer.apply))
   private implicit object ArtistAlbumsJsonable extends JsonWriteable[AlbumsModel.ModelResult] {
     override def jsonify(a: AlbumsModel.ModelResult) = Json.obj(
       "genre" -> a.genre.mapHeadOrElse(_.name, "N/A"),
@@ -49,7 +49,7 @@ private class AlbumsFormatter @Inject()(
   def unignoreArtist(artistName: String): Future[Seq[NewAlbum]] = $.unignoreArtist(artistName)
 
   private def extractAlbum(json: JsValue): (Artist, String) =
-    Artist(json str "artistName") -> json.str("title")
+    Artist(json.str("artistName")) -> json.str("title")
   def removeAlbum(json: JsValue): Future[_] = {
     val (artist, album) = extractAlbum(json)
     $.removeAlbum(artist, album)

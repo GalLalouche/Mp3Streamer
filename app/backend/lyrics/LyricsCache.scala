@@ -1,10 +1,10 @@
 package backend.lyrics
 
-import backend.Url
 import backend.logging.Logger
-import backend.lyrics.retrievers.{RetrievedLyricsResult, _}
+import backend.lyrics.retrievers._
 import backend.lyrics.LyricsUrl.ManualEmpty
 import backend.storage.OnlineRetrieverCacher
+import backend.Url
 import javax.inject.Inject
 import models.Song
 
@@ -21,7 +21,7 @@ import common.rich.func.ToMoreMonadErrorOps._
 import common.rich.RichT._
 
 // TODO test
-private class LyricsCache @Inject()(
+private class LyricsCache @Inject() (
     ec: ExecutionContext,
     logger: Logger,
     defaultArtistInstrumental: InstrumentalArtist,
@@ -34,13 +34,15 @@ private class LyricsCache @Inject()(
   private val firstDefaultRetrievers = DefaultClassicalInstrumental
   private val lastDefaultRetrievers = defaultArtistInstrumental
   private val allComposite = new CompositeLyricsRetriever(
-    logger, Vector(htmlComposites, albumParsers, lastDefaultRetrievers, firstDefaultRetrievers))
+    logger,
+    Vector(htmlComposites, albumParsers, lastDefaultRetrievers, firstDefaultRetrievers),
+  )
   private val cache = new OnlineRetrieverCacher[Song, Lyrics](
     lyricsStorage,
-    allComposite(_) mapEitherMessage {
+    allComposite(_).mapEitherMessage {
       case RetrievedLyricsResult.RetrievedLyrics(l) => \/-(l)
       case _ => -\/("No lyrics retrieved :(")
-    }
+    },
   )
   def find(s: Song): Future[Lyrics] = cache(s)
   def parse(url: Url, s: Song): Future[RetrievedLyricsResult] = {
@@ -50,13 +52,13 @@ private class LyricsCache @Inject()(
     }
     def check(pp: PassiveParser): Option[PassiveParser] = pp.optFilter(_.doesUrlMatchHost(url))
     check(htmlComposites)
-        .orElse(check(passiveParsers))
-        .mapHeadOrElse(aux, Future.successful(RetrievedLyricsResult.Error.unsupportedHost(url)))
+      .orElse(check(passiveParsers))
+      .mapHeadOrElse(aux, Future.successful(RetrievedLyricsResult.Error.unsupportedHost(url)))
   }
 
   def setInstrumentalSong(s: Song): Future[Instrumental] = {
     val instrumental = Instrumental("Manual override", ManualEmpty)
     cache.replace(s, instrumental).run >| instrumental
   }
-  def setInstrumentalArtist(s: Song): Future[Instrumental] = defaultArtistInstrumental add s
+  def setInstrumentalArtist(s: Song): Future[Instrumental] = defaultArtistInstrumental.add(s)
 }

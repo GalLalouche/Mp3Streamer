@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext
 import common.rich.collections.RichTraversableOnce._
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums. */
-private[external] class CompositeSameHostExpander @Inject()(
+private[external] class CompositeSameHostExpander @Inject() (
     wiki: WikipediaAlbumFinder,
     am: AllMusicAlbumFinder,
     ec: ExecutionContext,

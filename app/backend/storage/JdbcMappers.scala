@@ -12,6 +12,6 @@ private[backend] class JdbcMappers(implicit d: JdbcProfile) {
 
   implicit val ArtistMapper: BaseTypedType[Artist] =
     MappedColumnType.base[Artist, String](_.normalize, Artist.apply)
-  implicit val SongScoreMapper: BaseTypedType[ModelScore] = new ColumnMappers().enumeratumColumn(ModelScore)
+  implicit val SongScoreMapper: BaseTypedType[ModelScore] =
+    new ColumnMappers().enumeratumColumn(ModelScore)
 }
-

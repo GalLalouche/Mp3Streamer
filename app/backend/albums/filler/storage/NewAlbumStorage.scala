@@ -1,7 +1,7 @@
 package backend.albums.filler.storage
 
-import backend.albums.filler.NewAlbumRecon
 import backend.albums.{AddedAlbumCount, ArtistNewAlbums, NewAlbum}
+import backend.albums.filler.NewAlbumRecon
 import backend.recon.{Artist, ReconID}
 
 import scala.concurrent.Future
@@ -15,9 +15,9 @@ private trait NewAlbumStorage extends Storage[ReconID, StoredNewAlbum] {
   /** Takes care of all the filterings (ignored artists, albums, etc.). */
   def all: ListT[Future, ArtistNewAlbums]
   /**
-  * Takes care of all the filterings related to albums(removed, ignored, etc.),
-  * but ignored artists will still be returned.
-  */
+   * Takes care of all the filterings related to albums(removed, ignored, etc.), but ignored artists
+   * will still be returned.
+   */
   def apply(a: Artist): Future[Seq[NewAlbum]]
   def unremoveAll(a: Artist): Future[Unit]
   def storeNew(albums: Seq[NewAlbumRecon]): Future[AddedAlbumCount]

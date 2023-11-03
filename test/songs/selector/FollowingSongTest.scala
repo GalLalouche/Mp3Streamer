@@ -1,14 +1,18 @@
 package songs.selector
 
-import backend.module.{FakeMusicFinder, TestModuleConfiguration}
-import models.FakeModelFactory
-import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
+import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import common.test.AuxSpecs
+import models.FakeModelFactory
+import net.codingwell.scalaguice.InjectorExtensions._
 
-class FollowingSongTest extends FreeSpec with OneInstancePerTest with AuxSpecs with GeneratorDrivenPropertyChecks
+class FollowingSongTest
+    extends FreeSpec
+    with OneInstancePerTest
+    with AuxSpecs
+    with GeneratorDrivenPropertyChecks
     with Matchers {
   private val factory = new FakeModelFactory()
   "next song" in {
@@ -21,6 +25,6 @@ class FollowingSongTest extends FreeSpec with OneInstancePerTest with AuxSpecs w
 
     val nextSong = $.next(song1).get
     nextSong shouldReturn song2
-    $ next song2 shouldBe 'empty
+    $.next(song2) shouldBe 'empty
   }
 }

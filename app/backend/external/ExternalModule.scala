@@ -17,17 +17,23 @@ object ExternalModule extends ScalaModule {
     bind[AlbumExternalStorage].to[SlickAlbumExternalStorage]
   }
 
-  @Provides private def artistLinkExtractor(helper: MbHtmlLinkExtractorHelper): ExternalLinkProvider[Artist] =
+  @Provides private def artistLinkExtractor(
+      helper: MbHtmlLinkExtractorHelper,
+  ): ExternalLinkProvider[Artist] =
     new ExternalLinkProvider[Artist] {
       val aux = helper[Artist]("artist") _
       override def apply(v1: ReconID) = aux(v1)
     }
-  @Provides private def albumLinkExtractor(helper: MbHtmlLinkExtractorHelper): ExternalLinkProvider[Album] =
+  @Provides private def albumLinkExtractor(
+      helper: MbHtmlLinkExtractorHelper,
+  ): ExternalLinkProvider[Album] =
     new ExternalLinkProvider[Album] {
       val aux = helper[Album]("release-group") _
       override def apply(v1: ReconID) = aux(v1)
     }
 
-  @Provides private def artistReconStorage($: SlickArtistExternalStorage): ExternalStorage[Artist] = $
-  @Provides private def albumReconStorage($: SlickAlbumExternalStorage): ExternalStorage[Album] = $
+  @Provides private def artistReconStorage(
+      $ : SlickArtistExternalStorage,
+  ): ExternalStorage[Artist] = $
+  @Provides private def albumReconStorage($ : SlickAlbumExternalStorage): ExternalStorage[Album] = $
 }

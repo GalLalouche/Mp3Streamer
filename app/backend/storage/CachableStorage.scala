@@ -1,8 +1,6 @@
 package backend.storage
 
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.ListT
+import scala.concurrent.Future
 
 import common.storage.Storage
 

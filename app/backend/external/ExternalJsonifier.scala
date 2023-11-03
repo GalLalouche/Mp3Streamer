@@ -14,10 +14,10 @@ import scala.concurrent.{ExecutionContext, Future}
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 
-import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
+import common.rich.RichT._
 
-private class ExternalJsonifier @Inject()(implicit ec: ExecutionContext) {
+private class ExternalJsonifier @Inject() (implicit ec: ExecutionContext) {
   private type KVPair = (String, JsValueWrapper)
   private def formatHost(e: ExtendedLink[_]): String = e.host.name + (e.mark match {
     case LinkMark.None => ""
@@ -33,13 +33,14 @@ private class ExternalJsonifier @Inject()(implicit ec: ExecutionContext) {
     "extensions" -> Json.obj(link.extensions.map(toJson).toVector: _*),
   )
   private def toJson(linkses: Traversable[ExtendedLink[_]]): JsObject =
-    linkses.filterAndSortBy(_.host, Hosts)
-        // Filter non-new Wikidata, because they aren't shown in the client.
-        .filter(e => e.host != Wikidata || e.isNew || e.hasText)
-        // Unmark new Wikipedia links, because MusicBrainz only uses Wikidata now.
-        // Using mapIf messes up the link's type inference due to existential types.
-        .map(e => if (e.host == Wikipedia && e.isNew) e.unmark else e)
-        .map(toJson) |> Json.obj
+    linkses
+      .filterAndSortBy(_.host, Hosts)
+      // Filter non-new Wikidata, because they aren't shown in the client.
+      .filter(e => e.host != Wikidata || e.isNew || e.hasText)
+      // Unmark new Wikipedia links, because MusicBrainz only uses Wikidata now.
+      // Using mapIf messes up the link's type inference due to existential types.
+      .map(e => if (e.host == Wikipedia && e.isNew) e.unmark else e)
+      .map(toJson) |> Json.obj
   private def toJson(e: TimestampedExtendedLinks[_]): JsObject =
     toJson(e.links) + ("timestamp" -> JsString(e.timestamp |> DateStringPattern.format))
 
@@ -50,5 +51,12 @@ private class ExternalJsonifier @Inject()(implicit ec: ExecutionContext) {
 object ExternalJsonifier {
   private val DateStringPattern = DateTimeFormatter.ofPattern("dd/MM")
   val Hosts: Seq[Host] = Vector(
-    Host.MusicBrainz, Host.Wikipedia, Host.Wikidata, Host.AllMusic, Host.Facebook, Host.LastFm, Host.RateYourMusic)
+    Host.MusicBrainz,
+    Host.Wikipedia,
+    Host.Wikidata,
+    Host.AllMusic,
+    Host.Facebook,
+    Host.LastFm,
+    Host.RateYourMusic,
+  )
 }

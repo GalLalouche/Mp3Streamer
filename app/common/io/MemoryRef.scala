@@ -4,9 +4,9 @@ import java.io.InputStream
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
 
-import common.rich.primitives.RichString._
-
 import scala.collection.JavaConverters._
+
+import common.rich.primitives.RichString._
 
 trait MemorySystem extends RefSystem {
   override type S = MemorySystem
@@ -22,13 +22,11 @@ case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with Memo
   private var content: String = ""
   private var lastUpdatedTime: LocalDateTime = _
   touch()
-  private def touch(): Unit = {
+  private def touch(): Unit =
     lastUpdatedTime = LocalDateTime.now
-  }
   override def bytes = content.getBytes
-  override def write(bs: Array[Byte]): MemoryFile = {
+  override def write(bs: Array[Byte]): MemoryFile =
     write(new String(bs))
-  }
   override def write(s: String) = {
     content = s
     touch()
@@ -52,17 +50,17 @@ case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with Memo
   override def lastAccessTime = LocalDateTime.now()
 }
 
-abstract sealed class MemoryDir(val path: String) extends DirectoryRef with MemoryPath {
+sealed abstract class MemoryDir(val path: String) extends DirectoryRef with MemoryPath {
 
   private val filesByName = new ConcurrentHashMap[String, MemoryFile]().asScala
   private val dirsByName = new ConcurrentHashMap[String, MemoryDir]().asScala
-  override def getFile(name: String) = filesByName get name
+  override def getFile(name: String) = filesByName.get(name)
   override def addFile(name: String) = getFile(name).getOrElse {
     val $ = MemoryFile(this, name)
     filesByName += ((name, $))
     $
   }
-  override def getDir(name: String): Option[MemoryDir] = dirsByName get name
+  override def getDir(name: String): Option[MemoryDir] = dirsByName.get(name)
   override def addSubDir(name: String) = getDir(name).getOrElse {
     val $ = SubDir(this, name)
     dirsByName += ((name, $))
@@ -74,13 +72,13 @@ abstract sealed class MemoryDir(val path: String) extends DirectoryRef with Memo
 
   def deleteFile(name: String): Boolean = {
     val hasFile = filesByName.contains(name)
-    if (hasFile) {
+    if (hasFile)
       filesByName -= name
-    }
     hasFile
   }
 }
-private case class SubDir(parent: MemoryDir, name: String) extends MemoryDir(parent.path + "/" + name) {
+private case class SubDir(parent: MemoryDir, name: String)
+    extends MemoryDir(parent.path + "/" + name) {
   override def hasParent = true
 }
 class MemoryRoot extends MemoryDir("/") {

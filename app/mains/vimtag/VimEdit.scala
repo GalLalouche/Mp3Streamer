@@ -1,22 +1,23 @@
 package mains.vimtag
 
+import java.io.File
+
 import javax.inject.Inject
 import mains.vimtag.Initializer.InitialLines
 import mains.vimtag.VimEdit._
 
-import java.io.File
 import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process._
 
 import common.rich.path.RichFile._
 
-private class VimEdit @Inject()(cp: CommandsProvider, ec: ExecutionContext) {
+private class VimEdit @Inject() (cp: CommandsProvider, ec: ExecutionContext) {
   private val VimLocation = """"C:\Program Files\Neovim\bin\nvim-qt.exe""""
   private implicit val iec: ExecutionContext = ec
 
   def apply(initialLines: InitialLines): (File, Future[Seq[String]], Map[String, InitialValues]) = {
     val temp = File.createTempFile("vimedit", "")
-    temp.write(initialLines.lines mkString "\n")
+    temp.write(initialLines.lines.mkString("\n"))
     (temp, inFile(temp, initialLines.startingEditLine), initialLines.initialValues)
   }
   private def inFile(file: File, startingEditLine: Int): Future[Seq[String]] = Future {

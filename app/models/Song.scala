@@ -1,6 +1,7 @@
 package models
 
 import java.io.File
+
 import scala.concurrent.duration.Duration
 
 import common.io.{FileRef, IOFile, MemoryFile}
@@ -42,10 +43,23 @@ trait Song {
 }
 
 // TODO remove code duplication? hmm...
-case class IOSong(file: IOFile, title: String, artistName: String, albumName: String,
-    track: Int, year: Int, bitRate: String, duration: Duration, size: Long,
-    discNumber: Option[String], trackGain: Option[Double], composer: Option[String],
-    conductor: Option[String], orchestra: Option[String], opus: Option[String], performanceYear: Option[Int],
+case class IOSong(
+    file: IOFile,
+    title: String,
+    artistName: String,
+    albumName: String,
+    track: Int,
+    year: Int,
+    bitRate: String,
+    duration: Duration,
+    size: Long,
+    discNumber: Option[String],
+    trackGain: Option[Double],
+    composer: Option[String],
+    conductor: Option[String],
+    orchestra: Option[String],
+    opus: Option[String],
+    performanceYear: Option[Int],
 ) extends Song {
   override type F = IOFile
 }
@@ -53,10 +67,23 @@ object IOSong {
   def read(f: File): IOSong = SongTagParser(f)
 }
 
-case class MemorySong(file: MemoryFile, title: String, artistName: String, albumName: String,
-    track: Int, year: Int, bitRate: String, duration: Duration, size: Long,
-    discNumber: Option[String], trackGain: Option[Double], composer: Option[String],
-    conductor: Option[String], orchestra: Option[String], opus: Option[String], performanceYear: Option[Int],
+case class MemorySong(
+    file: MemoryFile,
+    title: String,
+    artistName: String,
+    albumName: String,
+    track: Int,
+    year: Int,
+    bitRate: String,
+    duration: Duration,
+    size: Long,
+    discNumber: Option[String],
+    trackGain: Option[Double],
+    composer: Option[String],
+    conductor: Option[String],
+    orchestra: Option[String],
+    opus: Option[String],
+    performanceYear: Option[Int],
 ) extends Song {
   override type F = MemoryFile
 }

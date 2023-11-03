@@ -1,12 +1,11 @@
 package common
 
-import org.scalacheck.Arbitrary
-import org.scalacheck.Arbitrary.arbitrary
-import play.api.libs.json.{JsNumber, JsString, JsValue}
-
 import monocle.Iso
 
 import common.json.Jsonable
+import org.scalacheck.Arbitrary
+import org.scalacheck.Arbitrary.arbitrary
+import play.api.libs.json.{JsNumber, JsString, JsValue}
 
 class JsonableTest extends JsonableSpecs {
   private implicit object IntJsonable extends Jsonable[Int] {
@@ -19,7 +18,7 @@ class JsonableTest extends JsonableSpecs {
   }
   propJsonTest[Seq[Int]]()
   property("Recursive sequence") {
-    forAll { (xs: Seq[Int], ys: Seq[Int]) => jsonTest(Vector(xs, ys)) }
+    forAll((xs: Seq[Int], ys: Seq[Int]) => jsonTest(Vector(xs, ys)))
   }
   property("None") {
     jsonTest(Option.apply[String](null))

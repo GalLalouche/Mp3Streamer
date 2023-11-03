@@ -8,7 +8,7 @@ import scala.util.Random
 
 class StandaloneModule(random: Random) extends ScalaModule {
   override def configure(): Unit = {
-    bind[ExecutionContext] toInstance ExecutionContext.Implicits.global
+    bind[ExecutionContext].toInstance(ExecutionContext.Implicits.global)
     bind[Random].toInstance(random)
 
     install(RealInternetTalkerModule.daemonic)

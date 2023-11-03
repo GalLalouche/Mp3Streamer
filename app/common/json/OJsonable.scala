@@ -14,7 +14,7 @@ trait OJsonable[T] extends Jsonable[T] {
 
 object OJsonable {
   implicit def oFormatOJsonable[A](implicit ev: OFormat[A]): OJsonable[A] = new OJsonable[A] {
-    override def jsonify(a: A): JsObject = ev writes a
+    override def jsonify(a: A): JsObject = ev.writes(a)
     override def parse(json: JsObject): A = ev.reads(json).get
   }
 }

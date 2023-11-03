@@ -1,10 +1,10 @@
 package backend.external.extensions
 
-import backend.Url
-import backend.external.{Host, LinkMark, MarkedLink}
-import backend.recon.{Album, Artist}
 import org.scalatest.FreeSpec
 
+import backend.external.{Host, LinkMark, MarkedLink}
+import backend.recon.{Album, Artist}
+import backend.Url
 import common.test.AuxSpecs
 
 class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
@@ -22,10 +22,10 @@ class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
       val result: Seq[LinkExtension[Artist]] = MusicBrainzArtistExtender.extend(artist, links)
 
       val preseededEdit = "edit-artist.url.0.text=face.book&edit-artist.url.0.link_type_id=192" +
-          "&edit-artist.url.1.text=last.fm&edit-artist.url.1.link_type_id=840"
+        "&edit-artist.url.1.text=last.fm&edit-artist.url.1.link_type_id=840"
       result shouldReturn Seq[LinkExtension[Artist]](
         LinkExtension("edit", Url("music.brainz/edit?" + preseededEdit)),
-        LinkExtension("Google", Url("http://www.google.com/search?q=foobar MusicBrainz"))
+        LinkExtension("Google", Url("http://www.google.com/search?q=foobar MusicBrainz")),
       )
     }
     "Album" in {

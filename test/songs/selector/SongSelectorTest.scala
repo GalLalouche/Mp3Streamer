@@ -1,21 +1,25 @@
 package songs.selector
 
+import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
+
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import backend.recon.{Album, Artist}
 import backend.scorer.{CachedModelScorer, ModelScore, ScoreBasedProbability}
 import com.google.inject.Guice
+import common.guice.RichModule.richModule
+import common.io.{DirectoryRef, FileRef}
+import common.test.AuxSpecs
 import models.{FakeModelFactory, Genre, GenreFinder, MemorySong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import net.codingwell.scalaguice.ScalaModule
 import org.scalacheck.Arbitrary._
-import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
-import common.guice.RichModule.richModule
-import common.io.{DirectoryRef, FileRef}
-import common.test.AuxSpecs
-
-class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs with GeneratorDrivenPropertyChecks
+class SongSelectorTest
+    extends FreeSpec
+    with OneInstancePerTest
+    with AuxSpecs
+    with GeneratorDrivenPropertyChecks
     with Matchers {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 10, workers = 5)
@@ -23,7 +27,7 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
   import factory.arbSong
 
   private def createInjector = Guice.createInjector(
-    TestModuleConfiguration().module overrideWith new ScalaModule {
+    TestModuleConfiguration().module.overrideWith(new ScalaModule {
       override def configure(): Unit = {
         bind[GenreFinder].toInstance(new GenreFinder(null) {
           override def forArtist(artist: Artist) = None
@@ -41,10 +45,10 @@ class SongSelectorTest extends FreeSpec with OneInstancePerTest with AuxSpecs wi
           override def fullInfo(s: Song) = ???
         })
       }
-    }
+    }),
   )
   "returns a random song" in {
-    forAll {ss: Vector[MemorySong] =>
+    forAll { ss: Vector[MemorySong] =>
       whenever(ss.nonEmpty) {
         val injector = createInjector
         val mf = injector.instance[FakeMusicFinder]

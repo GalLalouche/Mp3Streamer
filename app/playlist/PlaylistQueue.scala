@@ -14,6 +14,7 @@ private object PlaylistQueue {
   implicit def PlaylistJsonable(implicit songJsonable: Jsonable[Song]): Jsonable[PlaylistQueue] =
     new Jsonable[PlaylistQueue] {
       override def jsonify(p: PlaylistQueue): JsValue = p.songs.jsonify
-      override def parse(json: JsValue): PlaylistQueue = json.parse[Seq[Song]] |> PlaylistQueue.apply
+      override def parse(json: JsValue): PlaylistQueue =
+        json.parse[Seq[Song]] |> PlaylistQueue.apply
     }
 }

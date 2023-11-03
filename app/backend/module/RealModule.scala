@@ -20,13 +20,13 @@ import common.rich.RichT._
 
 object RealModule extends ScalaModule with ModuleUtils {
   override def configure(): Unit = {
-    bind[Clock] toInstance Clock.systemDefaultZone
-    bind[DbProvider] toInstance new DbProvider {
+    bind[Clock].toInstance(Clock.systemDefaultZone)
+    bind[DbProvider].toInstance(new DbProvider {
       private val props = new SQLiteConfig()
-          .<|(_.enforceForeignKeys(true))
-          .<|(_.setBusyTimeout(10000))
-          .toProperties
-          .<|(_.put("maxConnection", 4.asInstanceOf[AnyRef]))
+        .<|(_.enforceForeignKeys(true))
+        .<|(_.setBusyTimeout(10000))
+        .toProperties
+        .<|(_.put("maxConnection", 4.asInstanceOf[AnyRef]))
 
       override lazy val profile: JdbcProfile = SQLiteProfile
       override lazy val db: profile.backend.DatabaseDef = profile.api.Database.forURL(
@@ -45,7 +45,7 @@ object RealModule extends ScalaModule with ModuleUtils {
       )
       // SQLite doesn't seem to mind non-unique names.
       override def constraintMangler(name: String) = name
-    }
+    })
 
     requireBinding[Logger]
     requireBinding[ExecutionContext]

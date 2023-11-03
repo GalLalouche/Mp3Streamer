@@ -6,8 +6,8 @@ import com.google.inject.Guice
 import javax.inject.Inject
 import models.ModelJsonable
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
+import rx.lang.scala.Observable
 
 import scala.concurrent.ExecutionContext
 
@@ -17,11 +17,11 @@ import common.rich.RichFuture.richFuture
 import common.rich.RichObservable.richObservable
 import common.rich.RichT.richT
 
-private[search] class SongCacheUpdater @Inject()(
+private[search] class SongCacheUpdater @Inject() (
     saver: JsonableSaver,
     splitter: SongCacheSplitter,
     builder: SongCacheBuilder,
-    logger: Logger
+    logger: Logger,
 ) {
   import ModelJsonable._
 
@@ -39,11 +39,12 @@ private[search] class SongCacheUpdater @Inject()(
           logger.info("No change in cache.")
           return
         }
-        original.getDeleted(result)
-            .optFilter(_.nonEmpty)
-            .foreach(deleted => logger.info("Deleted files:\n" + deleted.mkString("\n")))
+        original
+          .getDeleted(result)
+          .optFilter(_.nonEmpty)
+          .foreach(deleted => logger.info("Deleted files:\n" + deleted.mkString("\n")))
 
-        saver saveObject result
+        saver.saveObject(result)
         import ModelJsonable._
         splitter(result)
       }
@@ -61,4 +62,3 @@ private object SongCacheUpdater {
     injector.instance[SongCacheUpdater].go().toFuture[Vector].get
   }
 }
-

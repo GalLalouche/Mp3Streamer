@@ -1,27 +1,27 @@
 package backend.lyrics.retrievers
 
 import backend.module.StandaloneModule
-import backend.recon.{AlbumReconStorage, ReconID, SlickArtistReconStorage}
+import backend.recon.SlickArtistReconStorage
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Guice
 import javax.inject.{Inject, Singleton}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import slick.ast.{BaseTypedType, ScalaBaseType}
-import slick.lifted.ForeignKeyQuery
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-private class SlickInstrumentalArtistStorage @Inject()(
+private class SlickInstrumentalArtistStorage @Inject() (
     ec: ExecutionContext,
     dbP: DbProvider,
-    protected val artistStorage: SlickArtistReconStorage
-) extends SlickSingleKeyColumnStorageTemplateFromConf[String, Unit](ec, dbP) with InstrumentalArtistStorage {
+    protected val artistStorage: SlickArtistReconStorage,
+) extends SlickSingleKeyColumnStorageTemplateFromConf[String, Unit](ec, dbP)
+    with InstrumentalArtistStorage {
   import profile.api._
 
-  override protected type Id = String
-  override protected implicit def btt: BaseTypedType[Id] = ScalaBaseType.stringType
-  override protected type Entity = String
+  protected override type Id = String
+  protected implicit override def btt: BaseTypedType[Id] = ScalaBaseType.stringType
+  protected override type Entity = String
   protected class ArtistTable(tag: Tag) extends Table[Entity](tag, "instrumental_artist") {
     def name = column[String]("name", O.PrimaryKey)
     def name_fk = foreignKey("name_fk", name, artistStorage.tableQuery)(
@@ -31,12 +31,12 @@ private class SlickInstrumentalArtistStorage @Inject()(
     )
     def * = name
   }
-  override protected type EntityTable = ArtistTable
-  override protected val tableQuery = TableQuery[EntityTable]
-  override protected def toEntity(k: String, v: Unit) = extractId(k)
-  override protected def extractId(k: String) = k.toLowerCase
-  override protected def toId(et: ArtistTable) = et.name
-  override protected def extractValue(e: String): Unit = ()
+  protected override type EntityTable = ArtistTable
+  protected override val tableQuery = TableQuery[EntityTable]
+  protected override def toEntity(k: String, v: Unit) = extractId(k)
+  protected override def extractId(k: String) = k.toLowerCase
+  protected override def toId(et: ArtistTable) = et.name
+  protected override def extractValue(e: String): Unit = ()
 
   // TODO SetStorage
   override def store(artistName: String): Future[Unit] = store(artistName: String, ())

@@ -30,7 +30,7 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
       "rock 'n' roll",
       "Rock n' Roll",
       "Rock N' Roll",
-    ) foreach (verifyFix(_, "Rock n' Roll"))
+    ).foreach(verifyFix(_, "Rock n' Roll"))
   }
   "vs" in {
     Vector(
@@ -39,7 +39,7 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
       "Freddy vs. Json",
       "Freddy Vs. Json",
       "Freddy Vs Json",
-    ) foreach (verifyFix(_, "Freddy vs. Json"))
+    ).foreach(verifyFix(_, "Freddy vs. Json"))
   }
   "Mixed caps" in {
     Vector("FOO", "FoO", "fOo").foreach(e => verifyFix(e, e))
@@ -85,7 +85,10 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   "stupid apostrophe" in {
     verifyFix("I’m a stupid apostrophe", "I'm a Stupid Apostrophe")
     verifyFix("Don�t", "Don't")
-    verifyFix("I Don’t love you, Like I Loved you, whenever", "I don't Love You, Like I Loved You, Whenever")
+    verifyFix(
+      "I Don’t love you, Like I Loved you, whenever",
+      "I don't Love You, Like I Loved You, Whenever",
+    )
   }
   "dashes" in {
     // All of these dashes are different! Freaking unicode.

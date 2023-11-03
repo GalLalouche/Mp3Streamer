@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import common.io.InternetTalker
 import common.io.RichWSResponse._
 
-private[cover] class ImageAPIFetcher @Inject()(
+private[cover] class ImageAPIFetcher @Inject() (
     @ApiKey apiKey: String,
     @ApiID apiID: String,
     it: InternetTalker,
@@ -18,8 +18,8 @@ private[cover] class ImageAPIFetcher @Inject()(
   def apply(terms: String, pageCount: Int): Future[JsObject] = {
     val url =
       s"https://customsearch.googleapis.com/customsearch/v1"
-    it.useWs(_
-        .url(url)
+    it.useWs(
+      _.url(url)
         .addQueryStringParameters(
           "q" -> terms,
           "cx" -> apiID,
@@ -29,7 +29,7 @@ private[cover] class ImageAPIFetcher @Inject()(
           "start" -> (pageCount * ResultsPerQuery + 1).toString,
         )
         .addHttpHeaders("accept" -> "application/json")
-        .get
+        .get,
     ).map(_.jsonObject)
   }
 }

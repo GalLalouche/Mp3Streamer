@@ -21,7 +21,7 @@ object Trie {
     override def +[B >: A](key: String, v: B): TrieImpl[B] =
       if (key.isEmpty) copy(values = values :+ v)
       else copy(map = map + (key.head -> (getOrEmpty(key.head) + (key.tail -> v))))
-    @inline def +[B >: A](e: (String, B)): TrieImpl[B] = e reduce this.+
+    @inline def +[B >: A](e: (String, B)): TrieImpl[B] = e.reduce(this.+)
     private def allValues: Iterable[A] = values ++ map.values.flatMap(_.allValues)
     override lazy val size: Int = values.size + map.valuesIterator.map(_.size).sum
     @tailrec

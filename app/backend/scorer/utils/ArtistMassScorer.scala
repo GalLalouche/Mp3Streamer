@@ -20,11 +20,11 @@ import common.rich.RichT._
 import common.OrgModeWriterMonad.OrgModeWriterMonad
 
 /**
-* Creates an .org file for faster updating of artists.
-* See [[ScoreParser]] for the parser of the output file.
-*/
+ * Creates an .org file for faster updating of artists. See [[ScoreParser]] for the parser of the
+ * output file.
+ */
 // REMAINING Support for albums, songs
-private class ArtistMassScorer @Inject()(
+private class ArtistMassScorer @Inject() (
     scorer: CachedModelScorer,
     reconcilableFactory: ReconcilableFactory,
     enumGenreFinder: GenreFinder,
@@ -42,23 +42,22 @@ private class ArtistMassScorer @Inject()(
       if (filteredArtists.isEmpty) // Don't add genres without artists
         State.init[OrgModeWriter].void
       else
-        OrgModeWriterMonad.append(g.name) >> filteredArtists
-            .toVector
-            .sortBy(_._1.name)
-            .iterator
-            .map(Function.tupled(OrgScoreFormatter.artist))
-            .traverse_(OrgModeWriterMonad.append(_) |> OrgModeWriterMonad.indent)
+        OrgModeWriterMonad.append(g.name) >> filteredArtists.toVector
+          .sortBy(_._1.name)
+          .iterator
+          .map(Function.tupled(OrgScoreFormatter.artist))
+          .traverse_(OrgModeWriterMonad.append(_) |> OrgModeWriterMonad.indent)
     }
 
     reconcilableFactory.artistDirectories
-        .groupBy(enumGenreFinder apply _.asInstanceOf[IODirectory])
-        .mapValues(_.map(reconcilableFactory dirNameToArtist _.name))
-        .toVector
-        .sortBy(_._1)
-        .traverse(Function.tupled(goGenre))
-        .void
-        .|>(OrgModeWriterMonad.run)
-        .lines
+      .groupBy(e => enumGenreFinder.apply(e.asInstanceOf[IODirectory]))
+      .mapValues(_.map(reconcilableFactory dirNameToArtist _.name))
+      .toVector
+      .sortBy(_._1)
+      .traverse(Function.tupled(goGenre))
+      .void
+      .|>(OrgModeWriterMonad.run)
+      .lines
   }
 }
 

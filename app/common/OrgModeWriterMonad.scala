@@ -10,5 +10,3 @@ object OrgModeWriterMonad {
   def append(line: String): OrgModeWriterMonad = State.modify(_.append(line))
   def appendAll(lines: Seq[String]): OrgModeWriterMonad = State.modify(_.appendAll(lines))
 }
-
-

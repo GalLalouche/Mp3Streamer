@@ -5,7 +5,7 @@ import enumeratum.{Enum, EnumEntry}
 
 import common.rich.collections.RichTraversableOnce._
 
-sealed case class Host private(name: String, url: Url) extends EnumEntry
+sealed case class Host private (name: String, url: Url) extends EnumEntry
 object Host extends Enum[Host] {
   // TODO why aren't these case objects?
   object AllMusic extends Host("AllMusic", Url("www.allmusic.com"))
@@ -22,4 +22,3 @@ object Host extends Enum[Host] {
   def withUrl(url: Url): Option[Host] = hostsByUrl.get(url.host)
   private val hostsByUrl = values.mapBy(_.url)
 }
-

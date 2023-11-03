@@ -10,8 +10,8 @@ private object ArtistScoreParser {
     private val prefix = """\**""".r
     private val header = "ARTIST ;"
     private val artistName = ".* ===".r.map(_.dropRight(4)) ^^ Artist.apply
-    override val main = (prefix ~> header ~> artistName) ~ score ^^ {
-      case name ~ score => (name, score)
+    override val main = (prefix ~> header ~> artistName) ~ score ^^ { case name ~ score =>
+      (name, score)
     }
   }
   def apply(line: String): Try[(Artist, Option[ModelScore])] = Parser.toTry(line)

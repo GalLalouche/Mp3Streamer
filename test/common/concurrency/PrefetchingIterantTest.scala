@@ -1,18 +1,17 @@
 package common.concurrency
 
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.OptionT
+
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.OptionT
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT
 import common.rich.func.RichStreamT.richStreamT
-
 import common.test.AsyncAuxSpecs
 
 class PrefetchingIterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
-  override implicit def executionContext: ExecutionContext = ThreadlessContext
+  implicit override def executionContext: ExecutionContext = ThreadlessContext
   private val actor = new TogellableProducer
   private val $ = Iterant.prefetching(Iterant.fromProducer(actor), 10)
 

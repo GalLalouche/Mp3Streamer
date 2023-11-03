@@ -2,13 +2,12 @@ package models
 
 import javax.inject.{Inject, Singleton}
 
-import common.rich.collections.RichTraversableOnce._
-import common.TimedLogger
 import common.io.DirectoryRef
+import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichOption.richOption
+import common.TimedLogger
 
-@Singleton private class StringGenreFinder @Inject()(
-    mf: MusicFinder, timedLogger: TimedLogger) {
+@Singleton private class StringGenreFinder @Inject() (mf: MusicFinder, timedLogger: TimedLogger) {
   private lazy val artistDirs = timedLogger("Fetching artistDirs") {
     mf.artistDirs
   }.mapBy(_.name.toLowerCase)
@@ -17,10 +16,15 @@ import common.rich.primitives.RichOption.richOption
     artistDirs.get(artist.normalize).map(forDir)
 
   def forDir(dir: DirectoryRef): StringGenre = {
-    require(dir.path startsWith mf.baseDir.path, s"<$dir> is not a subdirectory of <${mf.baseDir}>")
+    require(
+      dir.path.startsWith(mf.baseDir.path),
+      s"<$dir> is not a subdirectory of <${mf.baseDir}>",
+    )
     val relativeDir = dir.relativize(mf.baseDir.asInstanceOf[dir.S#D])
     if (relativeDir.isEmpty)
-      return StringGenre.Flat(dir.name.ensuring(_ == "Musicals")) // Single album musicals, e.g., Grease
+      return StringGenre.Flat(
+        dir.name.ensuring(_ == "Musicals"),
+      ) // Single album musicals, e.g., Grease
     val parentsFromBaseDir = relativeDir.reverse
     val topDirName = parentsFromBaseDir.head.name
     if (mf.flatGenres contains topDirName)
@@ -29,8 +33,8 @@ import common.rich.primitives.RichOption.richOption
       StringGenre.Nested(
         topDirName,
         parentsFromBaseDir.tail.headOption
-            .getOrThrow(s"<$dir> is a top genre, not an actual artist directory")
-            .name,
+          .getOrThrow(s"<$dir> is a top genre, not an actual artist directory")
+          .name,
       )
   }
 }

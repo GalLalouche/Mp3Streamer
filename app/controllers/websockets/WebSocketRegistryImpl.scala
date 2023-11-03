@@ -3,12 +3,13 @@ package controllers.websockets
 import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
 import akka.stream.ActorMaterializer
 import backend.logging.Logger
-import common.rich.collections.RichSet
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.WebSocket
 import rx.lang.scala.Subject
 
 import scala.collection.mutable
+
+import common.rich.collections.RichSet
 
 private object WebSocketRegistryImpl {
   private case class MessageToClient(str: String) extends AnyVal
@@ -35,8 +36,8 @@ private class WebSocketRegistryImpl(logger: Logger, name: String) extends PlayWe
 
   override def broadcast(msg: String) = actors.foreach(_ ! MessageToClient(msg))
   override def closeConnections() = actors.foreach(_ ! PoisonPill)
-  override def accept() = WebSocket.accept[String, String] {_ =>
-    //config.logger.verbose(s"${this.simpleName} received a new connection")
+  override def accept() = WebSocket.accept[String, String] { _ =>
+    // config.logger.verbose(s"${this.simpleName} received a new connection")
     connectionsSubject.onNext(())
     ActorFlow.actorRef(out => Props(new SocketActor(out)))
   }

@@ -11,11 +11,10 @@ private object AlbumScoreParser {
     private val header = "ALBUM ;"
     private val artist = ".* ;;;".r.map(_.dropRight(" ;;;".length)) ^^ Artist.apply
     private val titleYear =
-      """.* \(\d{4}\)""".r ^^ {
-        str =>
-          val year = str.takeRight("2000)".length).dropRight(1).toInt
-          val title = str.dropRight(" (2000)".length)
-          (title, year)
+      """.* \(\d{4}\)""".r ^^ { str =>
+        val year = str.takeRight("2000)".length).dropRight(1).toInt
+        val title = str.dropRight(" (2000)".length)
+        (title, year)
       }
     override val main = (prefix ~> header ~> artist) ~ titleYear ~ ("===" ~> score) ^^ {
       case artistName ~ titleYear ~ score => Album(titleYear._1, titleYear._2, artistName) -> score

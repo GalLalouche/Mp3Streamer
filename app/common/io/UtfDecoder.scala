@@ -3,7 +3,7 @@ package common.io
 import java.util.regex.Pattern
 
 private object UtfDecoder {
-  private val pattern = Pattern compile """\\u([0-9a-fA-F]{4})"""
+  private val pattern = Pattern.compile("""\\u([0-9a-fA-F]{4})""")
   def apply(s: String): String = {
     val m = pattern.matcher(s)
     val $ = new StringBuffer()

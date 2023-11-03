@@ -5,8 +5,8 @@ import backend.scorer.ModelScore
 import scala.{util => su}
 import scala.util.parsing.combinator.RegexParsers
 
-import common.rich.RichEnumeratum.richEnumeratum
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rich.RichEnumeratum.richEnumeratum
 
 private trait ParseUtils[A] extends RegexParsers {
   protected val score: Parser[Option[ModelScore]] =

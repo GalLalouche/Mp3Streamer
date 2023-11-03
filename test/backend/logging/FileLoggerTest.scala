@@ -1,28 +1,26 @@
 package backend.logging
 
 import java.time.LocalDateTime
-import java.util.concurrent.{Semaphore, TimeoutException, TimeUnit}
+import java.util.concurrent.{Semaphore, TimeUnit, TimeoutException}
+import scala.concurrent.ExecutionContext
 
-import backend.module.TestModuleConfiguration
-import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, Matchers}
 import org.scalatest.concurrent.TimeLimitedTests
 import org.scalatest.time.{Second, Span}
 
-import scala.concurrent.ExecutionContext
-
+import backend.module.TestModuleConfiguration
 import common.io.{MemoryFile, MemoryRoot, RootDirectory}
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichBoolean._
+import net.codingwell.scalaguice.InjectorExtensions._
 
 /** A special kind of file that blocks on reads and writes. */
 private[this] class BlockFileRef(val f: MemoryFile) extends MemoryFile(f.parent, f.name) {
   private val lock = new Semaphore(0)
   private val changeLock = new Semaphore(0)
-  def waitForChange(): Unit = {
+  def waitForChange(): Unit =
     if (changeLock.tryAcquire(1, TimeUnit.SECONDS).isFalse)
       throw new TimeoutException()
-  }
   def release(): Unit = lock.release()
   def block(): Unit = lock.drainPermits()
   override def bytes: Array[Byte] = {
@@ -81,7 +79,7 @@ class FileLoggerTest extends FreeSpec with TimeLimitedTests with Matchers {
 
   "writing" - {
     "should write to file" in {
-      $ info "foobar"
+      $.info("foobar")
       file.lines.single should endWith("foobar")
     }
     "should run in its own thread" in {
@@ -90,9 +88,8 @@ class FileLoggerTest extends FreeSpec with TimeLimitedTests with Matchers {
       val blockingFile = new BlockFileRef(file)
       val $ = new FileLogger(blockingFile)(new ExecutionContext {
         override def execute(runnable: Runnable): Unit = new Thread(runnable).start()
-        override def reportFailure(cause: Throwable): Unit = {
+        override def reportFailure(cause: Throwable): Unit =
           throw cause
-        }
       })
       $.info("foobar")
       blockingFile.release()

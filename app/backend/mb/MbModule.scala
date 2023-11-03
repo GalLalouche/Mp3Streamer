@@ -1,8 +1,8 @@
 package backend.mb
 
 import backend.recon.{Album, Artist, Reconciler, ReconcilerCacher, ReconID}
-import backend.OptionRetriever
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
+import backend.OptionRetriever
 import com.google.inject.Provides
 import net.codingwell.scalaguice.ScalaPrivateModule
 
@@ -18,12 +18,13 @@ object MbModule extends ScalaPrivateModule {
 
   @Provides private def artistReconciler(
       artistReconciler: ReconcilerCacher[Artist],
-      ec: ExecutionContext
-  ): OptionRetriever[Artist, ReconID] = artist => OptionT {
-    implicit val iec: ExecutionContext = ec
-    artistReconciler(artist).map {
-      case NoRecon => None
-      case HasReconResult(reconId, _) => Some(reconId)
+      ec: ExecutionContext,
+  ): OptionRetriever[Artist, ReconID] = artist =>
+    OptionT {
+      implicit val iec: ExecutionContext = ec
+      artistReconciler(artist).map {
+        case NoRecon => None
+        case HasReconResult(reconId, _) => Some(reconId)
+      }
     }
-  }
 }

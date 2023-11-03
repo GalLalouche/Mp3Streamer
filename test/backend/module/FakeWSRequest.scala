@@ -1,20 +1,19 @@
 package backend.module
 
-import backend.Url
-import play.api.libs.ws.{BodyWritable, EmptyBody, WSAuthScheme, WSBody, WSCookie, WSProxyServer, WSRequestFilter, WSSignatureCalculator}
-
-import scala.concurrent.Future
-import scala.concurrent.duration.Duration
-
-import common.rich.func.MoreSeqInstances._
 import monocle.macros.GenLens
 
+import scala.concurrent.duration.Duration
+import scala.concurrent.Future
+
+import backend.Url
 import common.io.WSAliases._
-import common.rich.RichT._
 import common.rich.collections.RichMap._
 import common.rich.collections.RichSeq._
+import common.rich.func.MoreSeqInstances._
+import common.rich.RichT._
+import play.api.libs.ws.{BodyWritable, EmptyBody, WSAuthScheme, WSBody, WSCookie, WSProxyServer, WSRequestFilter, WSSignatureCalculator}
 
-private case class FakeWSRequest private(
+private case class FakeWSRequest private (
     response: WSRequest => FakeWSResponse,
     u: Url,
     method: String = "GET",
@@ -26,7 +25,8 @@ private case class FakeWSRequest private(
     followRedirects: Option[Boolean] = None,
     requestTimeout: Option[Int] = None,
     virtualHost: Option[String] = None,
-    proxyServer: Option[WSProxyServer] = None) extends WSRequest {
+    proxyServer: Option[WSProxyServer] = None,
+) extends WSRequest {
   override val url: String = u.address
   override type Self = FakeWSRequest
   override type Response = FakeWSResponse
@@ -43,7 +43,7 @@ private case class FakeWSRequest private(
   override def withVirtualHost(vh: String) = ???
   override def withProxyServer(proxyServer: WSProxyServer) = ???
   override def withMethod(method: String) = this.ensuring(method == "GET")
-  override def execute(): Future[FakeWSResponse] = Future successful {
+  override def execute(): Future[FakeWSResponse] = Future.successful {
     try response(this)
     catch {
       case _: MatchError => throw new AssertionError(s"Invalid configuration, no response to <$u>")

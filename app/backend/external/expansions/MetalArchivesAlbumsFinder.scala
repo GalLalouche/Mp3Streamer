@@ -11,7 +11,7 @@ import common.rich.func.ToMoreMonadTransOps._
 
 import common.RichJsoup._
 
-private class MetalArchivesAlbumsFinder @Inject()(sameHostExpanderHelper: SameHostExpanderHelper)
+private class MetalArchivesAlbumsFinder @Inject() (sameHostExpanderHelper: SameHostExpanderHelper)
     extends SameHostExpander {
   override val host: Host = Host.MetalArchives
   private val documentToAlbumParser: DocumentToAlbumParser = new DocumentToAlbumParser {
@@ -26,10 +26,10 @@ private class MetalArchivesAlbumsFinder @Inject()(sameHostExpanderHelper: SameHo
     }
     override def findAlbum(d: Document, a: Album): FutureOption[Url] =
       d.selectIterator(".display.discog tr td a")
-          .find(_.text.toLowerCase == a.title.toLowerCase)
-          .map(_.href)
-          .map(Url.apply)
-          .hoistId
+        .find(_.text.toLowerCase == a.title.toLowerCase)
+        .map(_.href)
+        .map(Url.apply)
+        .hoistId
   }
 
   override def apply = sameHostExpanderHelper.apply(documentToAlbumParser)

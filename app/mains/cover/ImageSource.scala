@@ -13,10 +13,11 @@ private sealed trait ImageSource {
   def isSquare = width == height
 }
 
-private case class UrlSource(url: Url, override val width: Int, override val height: Int) extends ImageSource
+private case class UrlSource(url: Url, override val width: Int, override val height: Int)
+    extends ImageSource
 
 private case class LocalSource(file: FileRef) extends ImageSource {
-  lazy val image: BufferedImage = ImageSource toImage file
+  lazy val image: BufferedImage = ImageSource.toImage(file)
   override lazy val width: Int = image.getWidth
   override lazy val height: Int = image.getHeight
 }

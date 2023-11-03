@@ -16,7 +16,7 @@ object ModelScore extends Enum[ModelScore] {
 
   override def values: immutable.IndexedSeq[ModelScore] = findValues
   val DefaultTitle = "Default"
-  implicit class RichModelScore(private val $: Option[ModelScore]) extends AnyVal {
+  implicit class RichModelScore(private val $ : Option[ModelScore]) extends AnyVal {
     def orDefaultString: String = $.fold(DefaultTitle)(_.toString)
   }
 }

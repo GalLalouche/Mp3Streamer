@@ -9,7 +9,7 @@ import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
 
 // A stupid hack to make SongSelectorState lazy (since initializing all the songs takes a while) while
 // remaining transparent to clients.
-@Singleton class SongSelectorState @Inject()(
+@Singleton class SongSelectorState @Inject() (
     mf: MusicFinder,
     fastSongSelector: FastSongSelector,
     ssFactory: Provider[MultiStageSongSelectorFactory],

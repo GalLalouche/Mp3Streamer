@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.syntax.bind.ToBindOps
 import common.rich.func.BetterFutureInstances._
 
-private class MbExternalLinksProvider @Inject()(
+private class MbExternalLinksProvider @Inject() (
     ec: ExecutionContext,
     artistReconStorage: ArtistReconStorage,
     artistExternalStorage: ArtistExternalStorage,
@@ -29,15 +29,19 @@ private class MbExternalLinksProvider @Inject()(
   private implicit val iec: ExecutionContext = ec
   private val artistPipe = artistPipeWrapper(artistLinkRetrievers)
 
-  private def getAlbumLinks(artistLinks: MarkedLinks[Artist], album: Album): Future[TimestampedLinks[Album]] =
+  private def getAlbumLinks(
+      artistLinks: MarkedLinks[Artist],
+      album: Album,
+  ): Future[TimestampedLinks[Album]] =
     albumPipeWrapper(
       compositeSameHostExpander.toReconcilers(artistLinks.map(_.toBase)) ++ albumLinkRetrievers,
-    ) apply album
+    ).apply(album)
 
   // for testing on remote
   private[external] def apply(a: Album): ExtendedExternalLinks = {
     val artistLinks: Future[TimestampedLinks[Artist]] = artistPipe(a.artist)
-    val albumLinks: Future[TimestampedLinks[Album]] = artistLinks.map(_.links).flatMap(getAlbumLinks(_, a))
+    val albumLinks: Future[TimestampedLinks[Album]] =
+      artistLinks.map(_.links).flatMap(getAlbumLinks(_, a))
     ExtendedExternalLinks(artistLinks.map(extender(a.artist, _)), albumLinks.map(extender(a, _)))
   }
   def apply(s: Song): ExtendedExternalLinks = apply(s.release)
@@ -49,12 +53,12 @@ private class MbExternalLinksProvider @Inject()(
       // If artist recon was updated, all existing release updates should be deleted
       val artist = song.artist
       artistExternalStorage.delete(artist).run >>
-          albumExternalStorage.deleteAllLinks(artist) >>
-          artistReconStorage.update(artist, reconId).run
+        albumExternalStorage.deleteAllLinks(artist) >>
+        artistReconStorage.update(artist, reconId).run
     case UpdatedRecon.Album(reconId) =>
       val release = song.release
       albumReconStorage.delete(release).run >>
-          albumExternalStorage.delete(release).run >>
-          albumReconStorage.update(release, reconId).run
+        albumExternalStorage.delete(release).run >>
+        albumReconStorage.update(release, reconId).run
   }
 }

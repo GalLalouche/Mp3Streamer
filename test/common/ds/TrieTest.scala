@@ -25,11 +25,11 @@ class TrieTest extends FreeSpec with OneInstancePerTest with Matchers with AuxSp
   "withPrefix" - {
     "returns an exact match" in {
       $ += "foo" -> 12
-      $ withPrefix "foo" shouldReturn Vector(12)
+      $.withPrefix("foo") shouldReturn Vector(12)
     }
     "doesn't return a false match" in {
       $ += "foo" -> 12
-      $ withPrefix "bar" shouldBe empty
+      $.withPrefix("bar") shouldBe empty
     }
     "returns all matches with prefix" in {
       $ += "foobar" -> 12
@@ -44,11 +44,11 @@ class TrieTest extends FreeSpec with OneInstancePerTest with Matchers with AuxSp
   "exact" - {
     "returns an exact match" in {
       $ += "foo" -> 12
-      $ withPrefix "foo" shouldReturn Vector(12)
+      $.withPrefix("foo") shouldReturn Vector(12)
     }
     "doesn't return a false match" in {
       $ += "foo" -> 12
-      $ withPrefix "bar" shouldBe empty
+      $.withPrefix("bar") shouldBe empty
     }
     "returns nothing if no exact match" in {
       $ += "foobar" -> 12
@@ -76,7 +76,8 @@ class TrieTest extends FreeSpec with OneInstancePerTest with Matchers with AuxSp
       $.withPrefix("foo") shouldMultiSetEqual Vector(1, 3)
     }
     "fromMultiMap" in {
-      val $ = Trie.fromMultiMap(Map("foo" -> Vector(1, 4), "bar" -> Vector(2), "foobar" -> Vector(3)))
+      val $ =
+        Trie.fromMultiMap(Map("foo" -> Vector(1, 4), "bar" -> Vector(2), "foobar" -> Vector(3)))
       $ should have size 4
       $.exact("foo") shouldMultiSetEqual Vector(1, 4)
       $.withPrefix("foo") shouldMultiSetEqual Vector(1, 4, 3)

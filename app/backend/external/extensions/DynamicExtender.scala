@@ -7,4 +7,3 @@ private trait DynamicExtender[R <: Reconcilable] {
   def host: Host
   def extend(r: R, linkToExtend: MarkedLink[R], otherLinks: MarkedLinks[R]): Seq[LinkExtension[R]]
 }
-

@@ -1,7 +1,7 @@
 package backend.albums.filler.storage
 
-import backend.albums.NewAlbum
 import backend.albums.filler.NewAlbumRecon
+import backend.albums.NewAlbum
 import backend.recon.ReconID
 
 private[filler] case class StoredNewAlbum(

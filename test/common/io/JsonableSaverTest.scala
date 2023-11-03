@@ -3,22 +3,22 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.{LocalDateTime, ZoneOffset}
 
-import backend.module.TestModuleConfiguration
-import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{FreeSpec, OneInstancePerTest}
-import play.api.libs.json.{JsObject, Json, JsValue}
 
+import backend.module.TestModuleConfiguration
 import common.json.Jsonable
 import common.json.RichJson._
 import common.json.ToJsonableOps._
 import common.rich.RichT._
 import common.test.AuxSpecs
+import net.codingwell.scalaguice.InjectorExtensions._
+import play.api.libs.json.{JsObject, JsValue, Json}
 
 private object JsonableSaverTest {
   private case class Person(age: Int, name: String)
   private implicit object JsonableEv extends Jsonable[Person] {
-    override def jsonify(p: Person): JsObject = Json obj("age" -> p.age, "name" -> p.name)
-    override def parse(json: JsValue): Person = Person(json int "age", json str "name")
+    override def jsonify(p: Person): JsObject = Json.obj("age" -> p.age, "name" -> p.name)
+    override def parse(json: JsValue): Person = Person(json.int("age"), json.str("name"))
   }
 }
 class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
@@ -33,18 +33,18 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   private val p3 = Person(3, "name3")
   "saveArray" - {
     "can later load" in {
-      $ saveArray Vector(p1)
+      $.saveArray(Vector(p1))
       $.loadArray.head shouldReturn p1
     }
     "overwrites previous save" in {
-      $ saveArray Vector(p1)
-      $ saveArray Vector(p2)
+      $.saveArray(Vector(p1))
+      $.saveArray(Vector(p2))
       $.loadArray.head shouldReturn p2
     }
   }
   "saveObject" - {
     "exists" in {
-      $ saveObject p1
+      $.saveObject(p1)
       $.loadObject shouldReturn p1
     }
     "no previous file exists" in {
@@ -61,7 +61,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
     }
     "in order saved" in {
       val persons: Seq[Person] = Vector(p1, p2, p3)
-      $ saveArray persons
+      $.saveArray(persons)
       $.loadArray shouldReturn persons
     }
     "Classes containing arrays can be loaded as objects" in {
@@ -71,7 +71,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
         override def parse(json: JsValue): Persons = Persons(json.parse[Seq[Person]])
       }
       val persons = Persons(Vector(p1, p2, p3))
-      $ saveObject persons
+      $.saveObject(persons)
       $.loadObject[Persons] shouldReturn persons
     }
   }
@@ -81,7 +81,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
       $.loadArray.head shouldReturn p1
     }
     "doesn't overwrite data" in {
-      $ saveArray Vector(p1, p2)
+      $.saveArray(Vector(p1, p2))
       $.update[Person](_ ++ Vector(p3))
       $.loadArray shouldReturn Vector(p1, p2, p3)
     }
@@ -93,16 +93,16 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
     "Time after change" in {
       def toMillis(ldt: LocalDateTime): Long = ldt.toEpochSecond(ZoneOffset.UTC)
       val now = LocalDateTime.now |> toMillis
-      $ saveObject p1
+      $.saveObject(p1)
       val lastUpdateTime = $.lastUpdateTime[Person].get |> toMillis
       Math.abs(now - lastUpdateTime) < 10 shouldReturn true
     }
   }
   "override file name" in {
     val $ = new JsonableSaver(c.injector.instance[DirectoryRef, RootDirectory]) {
-      override protected def jsonFileName[T: Manifest] = "foobars.json"
+      protected override def jsonFileName[T: Manifest] = "foobars.json"
     }
-    $ saveObject p1
+    $.saveObject(p1)
     val files = root.deepFiles
     files.toVector.map(_.name) shouldReturn Vector("foobars.json")
     $.loadObject shouldReturn p1

@@ -9,7 +9,7 @@ import common.rich.func.ToMoreFoldableOps._
 
 import common.rich.collections.RichTraversableOnce._
 
-private[external] class CompositeExtender @Inject()(
+private[external] class CompositeExtender @Inject() (
     allMusicArtistExtender: AllMusicArtistExtender,
     lastFmArtistExtender: LastFmArtistExtender,
     allMusicAlbumExtender: AllMusicAlbumExtender,
@@ -21,8 +21,11 @@ private[external] class CompositeExtender @Inject()(
 
   private val artistClass = classOf[Artist]
   private val albumClass = classOf[Album]
-  private def extendLink[R <: Reconcilable : Manifest](
-      entity: R, link: MarkedLink[R], allLinks: MarkedLinks[R]): ExtendedLink[R] = {
+  private def extendLink[R <: Reconcilable: Manifest](
+      entity: R,
+      link: MarkedLink[R],
+      allLinks: MarkedLinks[R],
+  ): ExtendedLink[R] = {
     val map: HostMap[LinkExtender[R]] = (manifest.runtimeClass match {
       case `artistClass` => artistExtendersMap
       case `albumClass` => albumExtenderMap
@@ -30,6 +33,9 @@ private[external] class CompositeExtender @Inject()(
     val extendedLinks = map.get(link.host).mapHeadOrElse(_.extend(entity, allLinks), Nil)
     ExtendedLink.extend(link).withLinks(extendedLinks)
   }
-  def apply[R <: Reconcilable : Manifest](entity: R, e: TimestampedLinks[R]): TimestampedExtendedLinks[R] =
+  def apply[R <: Reconcilable: Manifest](
+      entity: R,
+      e: TimestampedLinks[R],
+  ): TimestampedExtendedLinks[R] =
     TimestampedExtendedLinks(e.links.map(extendLink(entity, _, e.links)), e.timestamp)
 }

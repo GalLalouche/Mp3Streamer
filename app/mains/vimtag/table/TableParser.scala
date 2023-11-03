@@ -1,18 +1,18 @@
 package mains.vimtag.table
 
-import mains.vimtag.{IndividualId3, IndividualParser}
-
 import java.util.regex.Pattern
 
+import mains.vimtag.{IndividualId3, IndividualParser}
+
 import scalaz.std.vector.vectorInstance
-import scalaz.State
 import scalaz.syntax.bind.ToBindOps
 import scalaz.syntax.functor.ToFunctorOps
 import scalaz.syntax.traverse._
+import scalaz.State
 
+import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 import common.rich.RichT._
-import common.rich.primitives.RichBoolean._
 
 private object TableParser extends IndividualParser {
   private type CurrentDiscNumber = Option[String]
@@ -28,24 +28,25 @@ private object TableParser extends IndividualParser {
       }
     def throwOnEmpty(tag: String, s: String) =
       s.ifNot(_.nonEmpty).thenThrow(new NoSuchElementException(s"key not found for $file: $tag"))
-    updateDiscNumber.map(IndividualId3(
-      throwOnEmpty("FILE", file),
-      throwOnEmpty("TITLE", title),
-      trackNumber.toInt,
-      _
-    ))
+    updateDiscNumber.map(
+      IndividualId3(
+        throwOnEmpty("FILE", file),
+        throwOnEmpty("TITLE", title),
+        trackNumber.toInt,
+        _,
+      ),
+    )
   }
 
-  private val LineRegex = Pattern compile """^\| *\d{1,3}.*""" // e.g., "| 1"
+  private val LineRegex = Pattern.compile("""^\| *\d{1,3}.*""") // e.g., "| 1"
   override def cutoff = _.startsWith("|-").isFalse
   override def apply(xs: Seq[String]) = xs
-      .filter(_.matches(LineRegex))
-      .map(_
-          .split(""" ?\| ?""")
-          .toVector
-          .tail // The head is always empty.
-          .map(_.trim))
-      .toVector
-      .traverse(individual)
-      .eval(None)
+    .filter(_.matches(LineRegex))
+    .map(
+      _.split(""" ?\| ?""").toVector.tail // The head is always empty.
+        .map(_.trim),
+    )
+    .toVector
+    .traverse(individual)
+    .eval(None)
 }

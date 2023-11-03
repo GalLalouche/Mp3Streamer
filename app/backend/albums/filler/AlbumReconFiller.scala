@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private class AlbumReconFiller @Inject()(
+private class AlbumReconFiller @Inject() (
     ea: ExistingAlbums,
     reconciler: Reconciler[Album],
     storage: AlbumReconStorage,

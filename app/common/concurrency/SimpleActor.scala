@@ -2,10 +2,11 @@ package common.concurrency
 
 import scala.concurrent.Future
 
-/** 
+/**
  * Since Akka's is such a pain in the ass.
- * 
- * Simple actors are a type-safe DSL for asynchronous, single-threaded tasks. All threads are daemon. 
+ *
+ * Simple actors are a type-safe DSL for asynchronous, single-threaded tasks. All threads are
+ * daemon.
  */
 trait SimpleActor[Msg] extends SimpleTypedActor[Msg, Unit]
 object SimpleActor {

@@ -9,9 +9,10 @@ import common.json.ToJsonableOps.jsonifySingle
 import common.rich.RichT._
 
 object RichJson {
-  implicit class DynamicJson(private val $: JsValue) extends AnyVal {
+  implicit class DynamicJson(private val $ : JsValue) extends AnyVal {
     def value(str: String): JsValue = $.\(str).get
-    private def isDefined: JsLookupResult => Boolean = _.toOption.exists(e => e != JsNull && e.asOpt[String].forall(_.nonEmpty))
+    private def isDefined: JsLookupResult => Boolean =
+      _.toOption.exists(e => e != JsNull && e.asOpt[String].forall(_.nonEmpty))
     def has(str: String): Boolean = $ \ str |> isDefined
     def has(i: Int): Boolean = $ \ i |> isDefined
     def /(s: String): JsObject = value(s).as[JsObject]
@@ -28,7 +29,7 @@ object RichJson {
     def stringAt(i: Int): String = $.\(i).as[String]
   }
 
-  implicit class DynamicJsonObject(private val $: JsObject) extends AnyVal {
+  implicit class DynamicJsonObject(private val $ : JsObject) extends AnyVal {
     def append[A: JsonWriteable](e: (String, Option[A])): JsObject =
       e._2.map(_.jsonify).map(e._1.->).mapHeadOrElse($.+, $)
   }

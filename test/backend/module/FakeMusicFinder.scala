@@ -1,27 +1,26 @@
 package backend.module
 
-import models.{MemorySong, MusicFinder}
-
 import scala.collection.mutable
 
 import common.io.{DirectoryRef, FileRef, MemoryDir, MemoryFile, MemorySystem}
 import common.rich.RichT._
+import models.{MemorySong, MusicFinder}
 
 class FakeMusicFinder(val baseDir: MemoryDir) extends MusicFinder {
   override type S = MemorySystem
   override val extensions = Set("mp3")
-  override protected def genresWithSubGenres: Seq[String] = Vector("music")
+  protected override def genresWithSubGenres: Seq[String] = Vector("music")
   override def flatGenres: Seq[String] = Nil
-  private val dirToAddSongsTo = baseDir addSubDir genresWithSubGenres.head
+  private val dirToAddSongsTo = baseDir.addSubDir(genresWithSubGenres.head)
   private val pathToSongs = mutable.HashMap[String, MemorySong]()
 
   private def copy(s: MemorySong, newFile: MemoryFile) =
     s.copy(file = newFile).<|(pathToSongs += newFile.path -> _)
 
   /**
-  * Adds a song under root / songs / $artist_name / $album_time / $file_name.
-  * Ensures the song's file matches the music finder directory structure.
-  */
+   * Adds a song under root / songs / $artist_name / $album_time / $file_name. Ensures the song's
+   * file matches the music finder directory structure.
+   */
   def copySong(s: MemorySong): MemorySong = copySong(Vector(s.artistName, s.albumName), s)
   /** Adds a song under the requested directory names. */
   def copySong(dirName: String, s: MemorySong): MemorySong = copySong(Vector(dirName), s)

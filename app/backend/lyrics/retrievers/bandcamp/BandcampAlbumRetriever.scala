@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 
-private[retrievers] class BandcampAlbumRetriever @Inject()(
+private[retrievers] class BandcampAlbumRetriever @Inject() (
     helper: SingleHostParsingHelper,
     externalLinksProvider: BandcampLinksProvider,
     ec: ExecutionContext,
@@ -19,7 +19,8 @@ private[retrievers] class BandcampAlbumRetriever @Inject()(
   override val parse = helper(AlbumParser)
   override val doesUrlMatchHost = Utils.doesUrlMatchHost
   override def get = song =>
-    externalLinksProvider(song).flatMapF(parse(_, song))
-        .getOrElse(NoLyrics) // Recovering from None
-        .orElse(NoLyrics) // Recovering from Future failure
+    externalLinksProvider(song)
+      .flatMapF(parse(_, song))
+      .getOrElse(NoLyrics) // Recovering from None
+      .orElse(NoLyrics) // Recovering from Future failure
 }

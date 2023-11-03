@@ -2,8 +2,8 @@ package common.concurrency
 
 import backend.logging.Logger
 
-import scala.concurrent.Future
 import scala.concurrent.duration.Duration
+import scala.concurrent.Future
 
 /** It's a single threaded future factory, basically. */
 trait SimpleTypedActor[Msg, +Result] {
@@ -18,12 +18,19 @@ object SimpleTypedActor {
     new SimpleTypedActorAsyncImpl(name, f)
 
   def asyncRateLimited[Msg, Result](
-      name: String, f: Msg => Future[Result], rateLimit: Duration, logger: Logger
+      name: String,
+      f: Msg => Future[Result],
+      rateLimit: Duration,
+      logger: Logger,
   ): SimpleTypedActor[Msg, Result] = new RateLimitedActorAsyncImpl(name, f, rateLimit, logger)
   /**
-  * Ensures uniqueness of the messages in the message queue, i.e., if a sent message already exists in the
-  * queue it will be dropped. This can be used to avoid doing unnecessary work.
-  */
-  def unique[Msg, Result](name: String, f: Msg => Result, logger: Logger): SimpleTypedActor[Msg, Result] =
+   * Ensures uniqueness of the messages in the message queue, i.e., if a sent message already exists
+   * in the queue it will be dropped. This can be used to avoid doing unnecessary work.
+   */
+  def unique[Msg, Result](
+      name: String,
+      f: Msg => Result,
+      logger: Logger,
+  ): SimpleTypedActor[Msg, Result] =
     new UniqueSimpleTypedActorImpl(name, f, logger)
 }

@@ -8,10 +8,10 @@ import models.Song
 
 import scala.util.Random
 
-import common.Filter
 import common.rich.RichT.richT
+import common.Filter
 
-private class ScoreBasedFilter @Inject()(
+private class ScoreBasedFilter @Inject() (
     random: Random,
     cachedModelScorer: CachedModelScorer,
     scoreBasedProbability: ScoreBasedProbability,

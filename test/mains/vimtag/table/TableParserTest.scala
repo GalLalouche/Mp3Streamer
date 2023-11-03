@@ -1,9 +1,9 @@
 package mains.vimtag.table
 
-import mains.vimtag.{Change, Common, Empty, Keep, Parser}
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
+import mains.vimtag.{Change, Common, Empty, Keep, Parser}
 
 class TableParserTest extends FreeSpec with AuxSpecs {
   private val $ = new Parser(TableParser)
@@ -17,7 +17,6 @@ class TableParserTest extends FreeSpec with AuxSpecs {
         "CONDUCTOR: <KEEP>",
         "ORCHESTRA: Philharmonia Orchestra",
         "PERFORMANCEYEAR: 2009",
-
         "FILE: File1",
         "TITLE: Piano Concerto No.3 in C Major, Op.26 - I. Andante - Allegro",
         "TRACK: 5",
@@ -40,7 +39,7 @@ class TableParserTest extends FreeSpec with AuxSpecs {
         "| 3       | Piano Concerto No.3 in C Major, Op.26 - III. Allegro, ma non troppo |             | File3 |",
         "|---------+---------------------------------------------------------------------+-------------+-------|",
       )
-      val e = intercept[NoSuchElementException] {$(Common.dummyInitialValuesMap)(lines)}
+      val e = intercept[NoSuchElementException]($(Common.dummyInitialValuesMap)(lines))
       e.getMessage shouldReturn "key not found: ARTIST"
     }
     "Empty mandatory cell throws" in {
@@ -53,7 +52,6 @@ class TableParserTest extends FreeSpec with AuxSpecs {
         "CONDUCTOR: <KEEP>",
         "ORCHESTRA: Philharmonia Orchestra",
         "PERFORMANCEYEAR: 2009",
-
         "FILE: File1",
         "TITLE: Piano Concerto No.3 in C Major, Op.26 - I. Andante - Allegro",
         "TRACK: 5",
@@ -76,7 +74,7 @@ class TableParserTest extends FreeSpec with AuxSpecs {
         "| 3       | Piano Concerto No.3 in C Major, Op.26 - III. Allegro, ma non troppo |             | File3 |",
         "|---------+---------------------------------------------------------------------+-------------+-------|",
       )
-      val e = intercept[NoSuchElementException] {$(Common.dummyInitialValuesMap)(lines)}
+      val e = intercept[NoSuchElementException]($(Common.dummyInitialValuesMap)(lines))
       e.getMessage shouldReturn "key not found for File2: TITLE"
     }
     "happy path" in {

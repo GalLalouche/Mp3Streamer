@@ -1,18 +1,18 @@
 package mains.fixer
 
-import models.FakeModelFactory
-import org.jaudiotagger.tag.{FieldKey, Tag}
-import org.scalatest.FreeSpec
-
 import scala.collection.JavaConverters._
 
+import org.scalatest.FreeSpec
+
 import common.test.AuxSpecs
+import models.FakeModelFactory
+import org.jaudiotagger.tag.{FieldKey, Tag}
 
 class FixLabelsUtilsTest extends FreeSpec with AuxSpecs {
   private val $ = FixLabelsUtils
 
   private def getSongFile(path: String) = getResourceFile("../../models/" + path)
-  private def getTagValue(t: Tag)(f: FieldKey): String = t getFirst f
+  private def getTagValue(t: Tag)(f: FieldKey): String = t.getFirst(f)
 
   "fixTag" - {
     "mp3" - {

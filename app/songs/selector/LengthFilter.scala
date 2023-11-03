@@ -5,10 +5,9 @@ import backend.scorer.{CachedModelScorer, FullInfoScore, ModelScore, ScoreSource
 import models.{Genre, GenreFinder, Song}
 
 import scala.concurrent.duration.Duration
-import scala.math.Ordering.Implicits._
 
-import common.Filter
 import common.rich.RichEnumeratum.richEnumeratum
+import common.Filter
 
 private class LengthFilter(
     genreFinder: GenreFinder,

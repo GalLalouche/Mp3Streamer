@@ -1,9 +1,9 @@
 package backend.storage
 
 import java.time.LocalDateTime
-import common.rich.func.ToMoreFoldableOps._
-import scalaz.std.option.optionInstance
 
+import scalaz.std.option.optionInstance
+import common.rich.func.ToMoreFoldableOps._
 import monocle.Iso
 
 sealed trait Freshness {
@@ -11,7 +11,9 @@ sealed trait Freshness {
 }
 object Freshness {
   def iso =
-    Iso[Option[LocalDateTime], Freshness](_.mapHeadOrElse(DatedFreshness, AlwaysFresh))(_.localDateTime)
+    Iso[Option[LocalDateTime], Freshness](_.mapHeadOrElse(DatedFreshness, AlwaysFresh))(
+      _.localDateTime,
+    )
 }
 
 // For values with no expiration.
@@ -21,4 +23,3 @@ case object AlwaysFresh extends Freshness {
 case class DatedFreshness(date: LocalDateTime) extends Freshness {
   override val localDateTime = Some(date)
 }
-

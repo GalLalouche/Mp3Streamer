@@ -14,13 +14,12 @@ import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToTraverseMonadPlusOps._
 
 import common.io.InternetTalker
-import common.rich.primitives.RichBoolean._
-import common.rich.RichT._
 import common.rich.primitives.RichString._
+import common.rich.RichT._
 import common.RichJsoup._
 
 /** Finds Wikipedia album links in an artist's Wikipedia page. */
-private class WikipediaAlbumFinder @Inject()(
+private class WikipediaAlbumFinder @Inject() (
     sameHostExpanderHelper: SameHostExpanderHelper,
     it: InternetTalker,
 ) extends SameHostExpander {
@@ -32,11 +31,12 @@ private class WikipediaAlbumFinder @Inject()(
 
     private def isNotRedirected(lang: String)(link: Url): Future[Boolean] = {
       // TODO Should check if the redirection points to the original url.
-      val title = link.address takeAfterLast '/'
+      val title = link.address.takeAfterLast('/')
       assert(title.nonEmpty)
-      val urlWithoutRedirection = s"https://$lang.wikipedia.org/w/index.php?title=$title&redirect=no"
+      val urlWithoutRedirection =
+        s"https://$lang.wikipedia.org/w/index.php?title=$title&redirect=no"
       it.downloadDocument(Url(urlWithoutRedirection))
-          .map(_.find("span#redirectsub").forall(_.text != "Redirect page"))
+        .map(_.find("span#redirectsub").forall(_.text != "Redirect page"))
     }
     def findAlbum(d: Document, a: Album): FutureOption[Url] = OptionT {
       val documentLanguage = d.selectSingle("html").attr("lang") match {
@@ -46,15 +46,17 @@ private class WikipediaAlbumFinder @Inject()(
       }
       def score(linkName: String): Double = StringReconScorer(a.title, linkName)
       d.selectIterator("a")
-          .filter(e => score(e.text) > 0.95)
-          .map(_.href)
-          .filter(_.nonEmpty)
-          .filterNot(_ contains "//") // Remove external links, see https://stackoverflow.com/q/4071117/736508
-          .filterNot(_ contains "redlink=1")
-          .map(s"https://$documentLanguage.wikipedia.org" + _ |> Url.apply)
-          .|>(_.toVector.ensuring(_.forall(_.isValid)))
-          .filterM(isNotRedirected(documentLanguage))
-          .map(_.headOption)
+        .filter(e => score(e.text) > 0.95)
+        .map(_.href)
+        .filter(_.nonEmpty)
+        .filterNot(
+          _ contains "//",
+        ) // Remove external links, see https://stackoverflow.com/q/4071117/736508
+        .filterNot(_ contains "redlink=1")
+        .map(s"https://$documentLanguage.wikipedia.org" + _ |> Url.apply)
+        .|>(_.toVector.ensuring(_.forall(_.isValid)))
+        .filterM(isNotRedirected(documentLanguage))
+        .map(_.headOption)
     }
   }
 

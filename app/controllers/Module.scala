@@ -1,14 +1,13 @@
 package controllers
 
+import scala.concurrent.ExecutionContext
+
 import backend.logging.{CompositeLogger, ConsoleLogger, DirectoryLogger, FilteringLogger, Logger, LoggingLevel}
 import backend.module.{RealInternetTalkerModule, RealModule}
 import com.google.inject.Provides
-import net.codingwell.scalaguice.ScalaModule
-
-import scala.concurrent.ExecutionContext
-
 import common.io.{DirectoryRef, RootDirectory}
 import common.rich.RichT._
+import net.codingwell.scalaguice.ScalaModule
 
 // Has to be a class for Play to instantiate.
 class Module extends ScalaModule {
@@ -18,7 +17,9 @@ class Module extends ScalaModule {
   }
 
   @Provides private def logger(
-      @RootDirectory rootDirectory: DirectoryRef, ec: ExecutionContext): Logger = new CompositeLogger(
+      @RootDirectory rootDirectory: DirectoryRef,
+      ec: ExecutionContext,
+  ): Logger = new CompositeLogger(
     (new ConsoleLogger with FilteringLogger).<|(_.setCurrentLevel(LoggingLevel.Verbose)),
     new DirectoryLogger(rootDirectory)(ec),
   )

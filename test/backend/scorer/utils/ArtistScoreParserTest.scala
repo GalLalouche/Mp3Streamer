@@ -1,9 +1,9 @@
 package backend.scorer.utils
 
-import backend.recon.Artist
-import backend.scorer.ModelScore
 import org.scalatest.FreeSpec
 
+import backend.recon.Artist
+import backend.scorer.ModelScore
 import common.test.AuxSpecs
 
 class ArtistScoreParserTest extends FreeSpec with AuxSpecs {
@@ -13,7 +13,8 @@ class ArtistScoreParserTest extends FreeSpec with AuxSpecs {
     ArtistScoreParser("*** ARTIST ; Blind Guardian === Gr").get shouldReturn artistAndScore
   }
   "Bijective" in {
-    ArtistScoreParser(Function.tupled(OrgScoreFormatter.artist _)(artistAndScore))
-        .get shouldReturn artistAndScore
+    ArtistScoreParser(
+      Function.tupled(OrgScoreFormatter.artist _)(artistAndScore),
+    ).get shouldReturn artistAndScore
   }
 }

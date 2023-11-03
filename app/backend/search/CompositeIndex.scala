@@ -18,7 +18,7 @@ private class CompositeIndex(songs: Index[Song], albums: Index[Album], artists: 
 
 private object CompositeIndex {
   private class Finder(terms: Seq[String]) {
-    def apply[T: Jsonable : WeightedIndexable : Manifest](index: Index[T]): Seq[T] =
-      index findIntersection terms take 10 sortBy (_.sortBy)
+    def apply[T: Jsonable: WeightedIndexable: Manifest](index: Index[T]): Seq[T] =
+      index.findIntersection(terms).take(10).sortBy(_.sortBy)
   }
 }

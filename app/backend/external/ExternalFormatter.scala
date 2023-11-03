@@ -16,7 +16,7 @@ import common.rich.func.BetterFutureInstances._
 import common.json.RichJson._
 import common.rich.RichT._
 
-private class ExternalFormatter @Inject()(
+private class ExternalFormatter @Inject() (
     ec: ExecutionContext,
     external: MbExternalLinksProvider,
     jsonifier: ExternalJsonifier,
@@ -27,7 +27,8 @@ private class ExternalFormatter @Inject()(
   private def getLinks(song: Song): Future[JsValue] = {
     val links = external(song)
     val extendMissing = TimestampedExtendedLinks.links.modify(
-      SearchExtension.extendMissing(ExternalJsonifier.Hosts, song.artist))
+      SearchExtension.extendMissing(ExternalJsonifier.Hosts, song.artist),
+    )
     for {
       artistJson <- links.artistLinks.map(extendMissing) |> jsonifier.toJsonOrError
       albumJson <- links.albumLinks |> jsonifier.toJsonOrError
@@ -35,15 +36,15 @@ private class ExternalFormatter @Inject()(
   }
 
   def get(path: String): Future[JsValue] =
-    getLinks(urlPathUtils parseSong path)
+    getLinks(urlPathUtils.parseSong(path))
 
   def refresh(path: String): Future[JsValue] = {
-    val song = urlPathUtils parseSong path
+    val song = urlPathUtils.parseSong(path)
     external.delete(song) >> getLinks(song)
   }
   def updateRecon(path: String, json: JsValue): Future[JsValue] = {
-    def getReconId(s: String) = json ostr s map ReconID.validateOrThrow
-    val song: Song = urlPathUtils parseSong path
+    def getReconId(s: String) = json.ostr(s).map(ReconID.validateOrThrow)
+    val song: Song = urlPathUtils.parseSong(path)
     val updatedRecon = UpdatedRecon.fromOptionals(getReconId("artist"), getReconId("album"))
     external.updateRecon(song)(updatedRecon) >> getLinks(song)
   }

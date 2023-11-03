@@ -1,11 +1,12 @@
 package backend.lyrics.retrievers.bandcamp
 
-import backend.lyrics.retrievers.{LyricsSpec, SingleHostParser}
-import org.scalatest.FreeSpec
 import org.scalatest.mockito.MockitoSugar
+import org.scalatest.FreeSpec
+
+import backend.lyrics.retrievers.{LyricsSpec, SingleHostParser}
 
 class SingleSongParserTest extends FreeSpec with LyricsSpec with MockitoSugar {
-  override private[retrievers] def parser: SingleHostParser = SingleSongParser
+  private[retrievers] override def parser: SingleHostParser = SingleSongParser
   "English" in {
     verifyLyrics("bandcamp_song_english", "bandcamp_english")
   }

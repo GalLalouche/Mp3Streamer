@@ -1,18 +1,19 @@
 package mains.vimtag
 
+import java.io.File
+
 import backend.module.StandaloneModule
 import com.google.inject.Guice
 import mains.{IOUtils, JavaMainUtils}
 import mains.vimtag.table.TableModule
 import net.codingwell.scalaguice.InjectorExtensions._
 
-import java.io.File
 import scala.concurrent.ExecutionContext
 import scala.io.StdIn
 
 import common.io.IODirectory
-import common.rich.RichFuture._
 import common.rich.collections.RichTraversableOnce._
+import common.rich.RichFuture._
 
 object Main {
   private case class ExceptionAfterFileCreated(f: File, e: Exception) extends Exception(e)
@@ -26,9 +27,9 @@ object Main {
     val (file, lines, initialValues) = vimEdit(injector.instance[Initializer].apply(dir))
     try {
       lines
-          .map(injector.instance[Parser].apply(initialValues))
-          .map(Fixer(dir, _))
-          .get
+        .map(injector.instance[Parser].apply(initialValues))
+        .map(Fixer(dir, _))
+        .get
       file.deleteOnExit()
       file.delete()
     } catch {

@@ -11,7 +11,7 @@ import scalaz.ListT
 import scalaz.Scalaz.ToFunctorOps
 import common.rich.func.BetterFutureInstances._
 
-private[scorer] class AlbumScoreStorage @Inject()(
+private[scorer] class AlbumScoreStorage @Inject() (
     ec: ExecutionContext,
     dbP: DbProvider,
     protected val artistStorage: SlickArtistReconStorage,
@@ -25,23 +25,23 @@ private[scorer] class AlbumScoreStorage @Inject()(
   private implicit val iec: ExecutionContext = ec
 
   type AlbumTitle = String
-  override protected type Entity = (Artist, AlbumTitle, ModelScore)
+  protected override type Entity = (Artist, AlbumTitle, ModelScore)
   protected class Rows(tag: Tag) extends Table[Entity](tag, "album_score") {
     def artist = column[Artist]("artist")
     def title = column[AlbumTitle]("title")
     def score = column[ModelScore]("score")
     def pk = primaryKey(dbP.constraintMangler("pk"), (artist, title))
     def artist_fk =
-      foreignKey(
-        dbP.constraintMangler("artist_fk"), artist, artistStorage.tableQuery)(
-        _.name.mapTo[Artist])
+      foreignKey(dbP.constraintMangler("artist_fk"), artist, artistStorage.tableQuery)(
+        _.name.mapTo[Artist],
+      )
     def * = (artist, title, score)
   }
-  override protected type EntityTable = Rows
-  override protected val tableQuery = TableQuery[EntityTable]
-  override protected def toEntity(k: Album, v: ModelScore) = (k.artist, k.title, v)
-  override protected def extractValue(e: (Artist, AlbumTitle, ModelScore)) = e._3
-  override protected def keyFilter(k: Album)(e: Rows) = e.artist === k.artist && e.title === k.title
+  protected override type EntityTable = Rows
+  protected override val tableQuery = TableQuery[EntityTable]
+  protected override def toEntity(k: Album, v: ModelScore) = (k.artist, k.title, v)
+  protected override def extractValue(e: (Artist, AlbumTitle, ModelScore)) = e._3
+  protected override def keyFilter(k: Album)(e: Rows) = e.artist === k.artist && e.title === k.title
   override def apply(a: Album) = load(a)
   def loadAll: ListT[Future, (Artist, AlbumTitle, ModelScore)] =
     ListT(db.run(tableQuery.result).map(_.toList))

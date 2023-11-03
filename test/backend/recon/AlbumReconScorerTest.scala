@@ -29,7 +29,9 @@ class AlbumReconScorerTest extends FreeSpec with AuxSpecs {
       positiveTest(testingName("Addicts: Black Meddle, Part 2", "Addicts Black Meddle II"))
     }
     "Metropolis" in {
-      positiveTest(testingName("Metropolis, Pt. 2: Scenes From a Memory", "Metropolis II Scenes from a Memory"))
+      positiveTest(
+        testingName("Metropolis, Pt. 2: Scenes From a Memory", "Metropolis II Scenes from a Memory"),
+      )
     }
     "Hatches" in {
       positiveTest(ignoreArtist("Batten the Hatches" -> 2005, "BATTEN THE HATCHES" -> 2007))
@@ -37,7 +39,9 @@ class AlbumReconScorerTest extends FreeSpec with AuxSpecs {
 
     "Common prefixes" - {
       "1" in {
-        positiveTest(testingName("Plague of Butterflies", "Plague of Butterflies / Out of This Gloomy Light"))
+        positiveTest(
+          testingName("Plague of Butterflies", "Plague of Butterflies / Out of This Gloomy Light"),
+        )
       }
       "2" in {
         positiveTest(testingName("High Visceral {Part One}", "High Visceral, I"))
@@ -46,7 +50,9 @@ class AlbumReconScorerTest extends FreeSpec with AuxSpecs {
         positiveTest(testingName("Lover's End, Part III: Skellefteå serenade", "Lover's End III"))
       }
       "4" in {
-        positiveTest(testingName("The Very Best Of / The Complete Greatest Hits", "The Very Best Of"))
+        positiveTest(
+          testingName("The Very Best Of / The Complete Greatest Hits", "The Very Best Of"),
+        )
       }
       "5" in {
         positiveTest(testingName("Retrospectacle: The Supertramp Anthology", "Retrospectacle"))

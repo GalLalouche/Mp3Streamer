@@ -1,26 +1,26 @@
 package common
 
 import org.scalatest.{FreeSpec, Matchers}
-import play.api.libs.json.{JsNull, JsNumber, JsObject, Json}
-import play.api.libs.json.Json.JsValueWrapper
 
 import common.json.RichJson._
 import common.rich.RichT._
 import common.test.AuxSpecs
+import play.api.libs.json.{JsNull, JsNumber, JsObject, Json}
+import play.api.libs.json.Json.JsValueWrapper
 
 class RichJsonTest extends FreeSpec with AuxSpecs with Matchers {
   private def withObject(a: JsValueWrapper): JsObject = Json.obj("foo" -> a)
   "dynamic json" - {
     "exists" in {
-      withObject(1) int "foo" shouldReturn 1
+      withObject(1).int("foo") shouldReturn 1
     }
     "if does not exist should throw an exception" in {
       a[NoSuchElementException] should be thrownBy withObject(1).str("bar")
     }
   }
   "has" - {
-    def verifyHas(js: JsObject): Unit = js has "foo" shouldReturn true
-    def verifyHasNot(js: JsObject): Unit = js has "foo" shouldReturn false
+    def verifyHas(js: JsObject): Unit = js.has("foo") shouldReturn true
+    def verifyHasNot(js: JsObject): Unit = js.has("foo") shouldReturn false
     "valid string" in {
       withObject("bar") |> verifyHas
     }

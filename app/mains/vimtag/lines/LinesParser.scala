@@ -8,7 +8,7 @@ import common.rich.primitives.RichOption._
 
 private object LinesParser extends IndividualParser {
   private def toMaps(lines: Seq[String]): Seq[Map[String, String]] =
-    lines.cutoffsAt(_ startsWith Tags.File).map(splitMap)
+    lines.cutoffsAt(_.startsWith(Tags.File)).map(splitMap)
   private def individual(map: Map[String, String]): IndividualId3 = {
     val file = map(Tags.File)
     def orThrow(tag: String): String =

@@ -19,8 +19,9 @@ import common.io.InternetTalker
 import common.io.WSAliases._
 import common.RichJsoup._
 
-private class LastFmLinkRetriever @VisibleForTesting private[recons](
-    it: InternetTalker, millisBetweenRedirects: Long
+private class LastFmLinkRetriever @VisibleForTesting private[recons] (
+    it: InternetTalker,
+    millisBetweenRedirects: Long,
 ) extends LinkRetriever[Artist] {
   @Inject() def this(it: InternetTalker) = this(it, millisBetweenRedirects = 100)
 
@@ -31,7 +32,9 @@ private class LastFmLinkRetriever @VisibleForTesting private[recons](
   private def handleReply(h: WSResponse): Option[BaseLink[Artist]] = h.status match {
     case HttpURLConnection.HTTP_NOT_FOUND => None
     case HttpURLConnection.HTTP_MOVED_TEMP => throw new TempRedirect
-    case HttpURLConnection.HTTP_OK => Jsoup.parse(h.body)
+    case HttpURLConnection.HTTP_OK =>
+      Jsoup
+        .parse(h.body)
         .find("link[rel=canonical]")
         .map(_.href)
         .filter(_.nonEmpty)
@@ -41,12 +44,14 @@ private class LastFmLinkRetriever @VisibleForTesting private[recons](
   override def apply(a: Artist): FutureOption[BaseLink[Artist]] = OptionT {
     val url = Url(s"https://www.last.fm/music/" + a.name.toLowerCase.replace(' ', '+'))
     it.get(url)
-        .map(handleReply)
-        .recoverWith {
-          case _: TempRedirect =>
-            Future(Thread sleep millisBetweenRedirects) >> apply(a).run
-          case e: MatchError =>
-            Future.failed(new UnsupportedOperationException("last.fm returned an unsupported status code", e))
-        }
+      .map(handleReply)
+      .recoverWith {
+        case _: TempRedirect =>
+          Future(Thread.sleep(millisBetweenRedirects)) >> apply(a).run
+        case e: MatchError =>
+          Future.failed(
+            new UnsupportedOperationException("last.fm returned an unsupported status code", e),
+          )
+      }
   }
 }

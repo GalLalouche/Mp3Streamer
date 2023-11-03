@@ -1,9 +1,9 @@
 package common
 
 /**
-* A partial function that can mutated to support new arguments. Can be more useful than a mutable Map since
-* it also supports a mutating const (i.e., default) changes.
-*/
+ * A partial function that can mutated to support new arguments. Can be more useful than a mutable
+ * Map since it also supports a mutating const (i.e., default) changes.
+ */
 // TODO move to common
 class MutablePartialFunction[A, B] extends PartialFunction[A, B] {
   private var pf: PartialFunction[A, B] = PartialFunction.empty
@@ -11,7 +11,7 @@ class MutablePartialFunction[A, B] extends PartialFunction[A, B] {
     this.pf = this.pf.orElse(pf)
     this
   }
-  def const(b: B): this.type = this.+=({case _ => b})
+  def const(b: B): this.type = this.+= { case _ => b }
   def clear(): this.type = {
     this.pf = PartialFunction.empty
     this

@@ -7,4 +7,5 @@ import scala.concurrent.Future
 
 private[external] case class ExtendedExternalLinks(
     artistLinks: Future[TimestampedExtendedLinks[Artist]],
-    albumLinks: Future[TimestampedExtendedLinks[Album]])
+    albumLinks: Future[TimestampedExtendedLinks[Album]],
+)

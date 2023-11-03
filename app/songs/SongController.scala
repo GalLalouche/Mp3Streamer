@@ -6,8 +6,8 @@ import play.api.mvc._
 import songs.SongFormatter.ShouldEncodeMp3Reader
 
 /** Handles fetch requests of JSON information. */
-class SongController @Inject()(
-    $: SongFormatter,
+class SongController @Inject() (
+    $ : SongFormatter,
     converter: PlayActionConverter,
 ) extends InjectedController {
   private def run(r: ShouldEncodeMp3Reader): Action[AnyContent] =
@@ -19,7 +19,9 @@ class SongController @Inject()(
   def randomFlacSong = run($.randomFlacSong())
 
   def album(path: String) = run($.album(path))
-  def discNumber(path: String, requestedDiscNumber: String) = run($.discNumber(path, requestedDiscNumber))
+  def discNumber(path: String, requestedDiscNumber: String) = run(
+    $.discNumber(path, requestedDiscNumber),
+  )
 
   def song(path: String) = run($.song(path))
   def nextSong(path: String) = run($.nextSong(path))

@@ -8,7 +8,7 @@ import org.jsoup.nodes.Document
 import common.rich.RichT._
 import common.RichJsoup._
 
-private class ShironetParser @Inject()(helper: SingleHostParsingHelper) extends PassiveParser {
+private class ShironetParser @Inject() (helper: SingleHostParsingHelper) extends PassiveParser {
   override def doesUrlMatchHost = _.address contains "shironet.mako.co.il"
   override def parse = helper.apply(ShironetParser.parser)
 }
@@ -18,7 +18,7 @@ private object ShironetParser {
     override def source = "Shironet"
     override def apply(d: Document, s: Song) =
       d.selectSingle(".artist_lyrics_text").wholeText |>
-          HtmlLyricsUtils.addBreakLines |>
-          LyricParseResult.Lyrics
+        HtmlLyricsUtils.addBreakLines |>
+        LyricParseResult.Lyrics
   }
 }

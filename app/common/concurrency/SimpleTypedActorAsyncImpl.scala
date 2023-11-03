@@ -13,12 +13,14 @@ private class SimpleTypedActorAsyncImpl[Msg, Result](name: String, f: Msg => Fut
     extends SimpleTypedActor[Msg, Result] {
   private implicit val ec: ExecutionContext = SingleThreadedJobQueue.executionContext(name)
   def !(m: => Msg): Future[Result] =
-    RichFuture.fromTryCallback(c => ec.execute(() =>
-      try
-        f(m).onComplete(c)
-      catch {
-        case e: Throwable => c(Failure(e))
-      }
-    ))
+    RichFuture.fromTryCallback(c =>
+      ec.execute(() =>
+        try
+          f(m).onComplete(c)
+        catch {
+          case e: Throwable => c(Failure(e))
+        },
+      ),
+    )
   def void: SimpleActor[Msg] = SimpleTypedActorAsyncImpl.this.!(_).void
 }

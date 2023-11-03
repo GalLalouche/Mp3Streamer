@@ -1,13 +1,12 @@
 package models
 
 import java.io.File
-import org.scalacheck.{Arbitrary, Gen}
-import org.scalacheck.Arbitrary.arbitrary
-
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.Duration
 
 import common.io.{IODirectory, IOFile}
+import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Arbitrary.arbitrary
 
 object ArbitraryModels {
   private implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])
@@ -28,26 +27,33 @@ object ArbitraryModels {
     orchestra <- arbitrary[Option[String]]
     opus <- arbitrary[Option[String]]
     performanceYear <- arbitrary[Option[Int]].map(_.map(_ % 3000))
-  } yield {
-    IOSong(IOFile(new File(filePath).getAbsoluteFile),
-      title, artistName, albumName, track, year, bitRate,
-      Duration(duration, TimeUnit.SECONDS), size, discNumber, trackGain,
-      composer, conductor, orchestra, opus, performanceYear,
-    )
-  }
+  } yield IOSong(
+    IOFile(new File(filePath).getAbsoluteFile),
+    title,
+    artistName,
+    albumName,
+    track,
+    year,
+    bitRate,
+    Duration(duration, TimeUnit.SECONDS),
+    size,
+    discNumber,
+    trackGain,
+    composer,
+    conductor,
+    orchestra,
+    opus,
+    performanceYear,
+  )
   implicit lazy val arbAlbum: Gen[Album] = for {
     filePath <- arbitrary[String]
     title <- arbitrary[String]
     artistName <- arbitrary[String]
     year <- arbitrary[Int].map(_ % 3000)
     songs <- arbitrary[Seq[Song]]
-  } yield {
-    Album(IODirectory(new File(filePath).getAbsoluteFile), title, artistName, year, songs)
-  }
+  } yield Album(IODirectory(new File(filePath).getAbsoluteFile), title, artistName, year, songs)
   implicit lazy val arbArtist: Gen[Artist] = for {
     name <- arbitrary[String]
     albums <- arbitrary[Set[Album]]
-  } yield {
-    Artist(name, albums)
-  }
+  } yield Artist(name, albums)
 }

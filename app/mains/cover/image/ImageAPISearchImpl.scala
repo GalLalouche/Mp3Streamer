@@ -12,13 +12,14 @@ import common.rich.func.RichStreamT
 import common.concurrency.{FutureIterant, Iterant}
 import common.rich.RichT._
 
-private class ImageAPISearchImpl @Inject()(
+private class ImageAPISearchImpl @Inject() (
     ec: ExecutionContext,
     fetcher: ImageAPIFetcher,
 ) extends ImageAPISearch {
   private implicit val iec: ExecutionContext = ec
   override def apply(terms: String): FutureIterant[ImageSource] =
-    RichStreamT.fromStream(Stream.iterate(0)(_ + 1))
-        .flatMap(i => StreamT.fromStream(fetcher(terms, i).map(Parser.apply(_).toStream)))
-        .|>(Iterant.fromStream[Future, ImageSource])
+    RichStreamT
+      .fromStream(Stream.iterate(0)(_ + 1))
+      .flatMap(i => StreamT.fromStream(fetcher(terms, i).map(Parser.apply(_).toStream)))
+      .|>(Iterant.fromStream[Future, ImageSource])
 }

@@ -1,12 +1,12 @@
 package models
 
-import backend.module.{FakeMusicFinder, TestModuleConfiguration}
-import com.google.inject.Guice
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.FreeSpec
 
+import backend.module.{FakeMusicFinder, TestModuleConfiguration}
+import com.google.inject.Guice
 import common.io.MemoryRoot
 import common.test.AuxSpecs
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 class StringGenreTest extends FreeSpec with AuxSpecs {
   private val root = new MemoryRoot
@@ -16,7 +16,8 @@ class StringGenreTest extends FreeSpec with AuxSpecs {
     (genresWithSubGenres ++ flatGenres).foreach(root.addSubDir)
     override val extensions = Set("mp3", "flac")
   }
-  private val $ = Guice.createInjector(TestModuleConfiguration(_mf = mf).module).instance[StringGenreFinder]
+  private val $ =
+    Guice.createInjector(TestModuleConfiguration(_mf = mf).module).instance[StringGenreFinder]
 
   // TODO test forArtist
   "forDir" - {

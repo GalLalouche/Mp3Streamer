@@ -8,7 +8,7 @@ import scala.util.Random
 import common.{Filter, TimedLogger}
 import common.io.RefSystem
 
-class MultiStageSongSelectorFactory @Inject()(
+class MultiStageSongSelectorFactory @Inject() (
     musicFinder: MusicFinder,
     random: Random,
     scoreBasedFilter: ScoreBasedFilter,
@@ -16,8 +16,7 @@ class MultiStageSongSelectorFactory @Inject()(
     timedLogger: TimedLogger,
 ) {
   def withSongs[Sys <: RefSystem](songs: IndexedSeq[Sys#F]): MultiStageSongSelector[Sys] =
-    new MultiStageSongSelector(
-      songs)(
+    new MultiStageSongSelector(songs)(
       musicFinder,
       random,
       Filter.always,
@@ -26,5 +25,3 @@ class MultiStageSongSelectorFactory @Inject()(
     )
   def apply(): MultiStageSongSelector[_] = withSongs(musicFinder.getSongFiles.toVector)
 }
-
-

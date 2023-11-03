@@ -10,19 +10,20 @@ import mains.fixer.StringFixer
 import play.api.libs.json.{JsObject, JsValue}
 
 import common.json.RichJson._
-import common.rich.RichTime.OrderingLocalDate
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
-import common.CompositeDateFormat
 import common.rich.RichT.richT
+import common.rich.RichTime.OrderingLocalDate
+import common.CompositeDateFormat
 
-private class AlbumParser @Inject()(
-    logger: Logger // TODO replace logging with ADT Result type
+private class AlbumParser @Inject() (
+    logger: Logger, // TODO replace logging with ADT Result type
 ) {
   private def parseDate(js: JsValue): Option[LocalDate] = {
-    val $ = js.ostr(ReleaseDate)
-        .flatMap(DateFormatter.parse)
-        .map(_.toLocalDate)
+    val $ = js
+      .ostr(ReleaseDate)
+      .flatMap(DateFormatter.parse)
+      .map(_.toLocalDate)
     if (js.has(ReleaseDate) && $.isEmpty)
       logger.warn(s"Could not parse $ReleaseDate from <$js>")
     $
@@ -39,30 +40,32 @@ private class AlbumParser @Inject()(
   } yield {
     assert(secondaryTypes.singleOpt.forall(_ == "live"))
     MbAlbumMetadata(
-      title = fixQuotes(json str "title"),
+      title = fixQuotes(json.str("title")),
       releaseDate = date,
       albumType = if (secondaryTypes.nonEmpty) AlbumType.Live else albumType,
-      reconId = ReconID.validateOrThrow(json str "id"),
+      reconId = ReconID.validateOrThrow(json.str("id")),
     )
   }
 
   def artistCredits(json: JsObject): Seq[(Artist, ReconID)] = json
-      .objects("artist-credit")
-      .map(_
-          ./("artist")
-          .toTuple(
-            _.str("name") |> Artist.apply,
-            _.str("id") |> ReconID.validateOrThrow,
-          ))
+    .objects("artist-credit")
+    .map(
+      _./("artist")
+        .toTuple(
+          _.str("name") |> Artist.apply,
+          _.str("id") |> ReconID.validateOrThrow,
+        ),
+    )
 
   // This is no longer used, but I'm keeping it in case I might need in the future.
-  def releaseToReleaseGroups(js: JsValue): Seq[MbAlbumMetadata] = js.array("releases")
-      .value
-      .flatMap(_ / ("release-group") |> parseReleaseGroup)
-      .groupBy(_.toTuple(_.title, _.albumType))
-      .values
-      .map(extractSingleRelease)
-      .toVector
+  def releaseToReleaseGroups(js: JsValue): Seq[MbAlbumMetadata] = js
+    .array("releases")
+    .value
+    .flatMap(_ / "release-group" |> parseReleaseGroup)
+    .groupBy(_.toTuple(_.title, _.albumType))
+    .values
+    .map(extractSingleRelease)
+    .toVector
 
   def releaseGroups(js: JsValue): Seq[MbAlbumMetadata] =
     js.objects("release-groups").flatMap(parseReleaseGroup)
@@ -78,8 +81,8 @@ private object AlbumParser {
   private def extractSingleRelease(releases: Iterable[MbAlbumMetadata]): MbAlbumMetadata = {
     val byDate = releases.groupBy(_.releaseDate)
     if (byDate.size > 1)
-    // If there are multiple dates, choose the first one.
-    // Note that there may be multiple releases with the same date though.
+      // If there are multiple dates, choose the first one.
+      // Note that there may be multiple releases with the same date though.
       return extractSingleRelease(byDate.minBy(_._1)._2)
     assert(releases.nonEmpty)
     if (releases.size == 1)

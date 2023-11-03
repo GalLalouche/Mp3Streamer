@@ -15,16 +15,16 @@ import common.rich.func.MoreTryInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 
 import common.io.IODirectory
-import common.rich.primitives.RichString._
-import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce._
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
 import common.rich.path.RichPath.poorPath
 import common.rich.primitives.RichBoolean._
+import common.rich.primitives.RichString._
+import common.rich.RichT.richT
 
 /** Fixes ID3 tags on mp3 and flac files to proper casing, delete unused tags, etc. */
-private class FixLabels @Inject()(mf: IOMusicFinder) {
+private class FixLabels @Inject() (mf: IOMusicFinder) {
   private def fixFile(f: File, fixDiscNumber: Boolean): Unit = {
     val audioFile = AudioFileIO.read(f)
     val newTag = FixLabelsUtils.getFixedTag(f, fixDiscNumber, audioFile)
@@ -38,28 +38,33 @@ private class FixLabels @Inject()(mf: IOMusicFinder) {
   @tailrec
   private def renameFolder(source: Directory, initialName: String): Directory = {
     val file = new File(source.parent, initialName)
-    if (source.dir renameTo file) Directory(file) else renameFolder(source, initialName + "_temp")
+    if (source.dir.renameTo(file)) Directory(file) else renameFolder(source, initialName + "_temp")
   }
 
   def fix(dir: Directory): FixedDirectory = {
-    def containsASingleFileWithExtension(extension: String) = dir.files.count(_.extension == extension) == 1
+    def containsASingleFileWithExtension(extension: String) =
+      dir.files.count(_.extension == extension) == 1
     require(
       (containsASingleFileWithExtension("flac") && containsASingleFileWithExtension("cue")).isFalse,
-      "Folder contains an unsplit flac file; please split the file and try again.")
+      "Folder contains an unsplit flac file; please split the file and try again.",
+    )
 
-    dir.files.foreach(_ setWritable true) // Stupid bittorrent.
+    dir.files.foreach(_.setWritable(true)) // Stupid bittorrent.
     dir.files.filter(_.extension == "m3u").foreach(_.delete)
 
     val ioDir = IODirectory(dir)
     val musicFiles = mf.getSongFilesInDir(ioDir).map(_.file)
-    require(musicFiles.nonEmpty, s"Could not find any songs in $dir - maybe they're in subfolders...")
+    require(
+      musicFiles.nonEmpty,
+      s"Could not find any songs in $dir - maybe they're in subfolders...",
+    )
 
     // As opposed to 1/1–Fuck those guys.
     val hasNonTrivialDiscNumber =
       musicFiles.map(AudioFileIO.read).hasSameValues(_.getTag.getFirst(FieldKey.DISC_NO)).isFalse
 
     musicFiles.foreach(fixFile(_, fixDiscNumber = hasNonTrivialDiscNumber))
-    musicFiles.foreach(f => f renameTo new File(f.parent, newFileName(f)))
+    musicFiles.foreach(f => f.renameTo(new File(f.parent, newFileName(f))))
 
     val expectedName = {
       val (year, album) = mf.getSongsInDir(ioDir).map(_.toTuple(_.year, _.albumName)).toSet.single
@@ -68,8 +73,8 @@ private class FixLabels @Inject()(mf: IOMusicFinder) {
     }
 
     Try(new FixedDirectory(renameFolder(dir, expectedName), expectedName))
-        .mapError(new Exception("could not rename the folder", _))
-        .get
+      .mapError(new Exception("could not rename the folder", _))
+      .get
   }
 
   // "This should never happen" now that validFileName is used!
@@ -78,5 +83,5 @@ private class FixLabels @Inject()(mf: IOMusicFinder) {
 }
 
 private object FixLabels {
-  private val EndingDots = Pattern compile """\.+$"""
+  private val EndingDots = Pattern.compile("""\.+$""")
 }

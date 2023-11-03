@@ -1,14 +1,13 @@
 package backend.module
 
 import backend.Url
-
 import common.io.WSAliases._
 import common.rich.primitives.RichBoolean._
 
 private class FakeWSClient(getRequest: Url => WSRequest) extends WSClient {
   private var wasClosed = false
   // For printing if the client wasn't closed
-  private val stackTrace = Thread.currentThread.getStackTrace drop 3
+  private val stackTrace = Thread.currentThread.getStackTrace.drop(3)
 
   override def underlying[T] = this.asInstanceOf[T]
 
@@ -22,7 +21,7 @@ private class FakeWSClient(getRequest: Url => WSRequest) extends WSClient {
   override def finalize(): Unit =
     if (wasClosed.isFalse) {
       println("WSClient wasn't closed :( printing stack-trace")
-      println(stackTrace mkString "\n")
+      println(stackTrace.mkString("\n"))
       println("-----------------------------------------------")
     }
 }

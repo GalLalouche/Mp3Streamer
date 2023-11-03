@@ -17,9 +17,13 @@ private[lyrics] trait PassiveParser {
 
 private object PassiveParser {
   def composite(parsers: PassiveParser*): PassiveParser = new PassiveParser {
-    override def doesUrlMatchHost = url => parsers.exists(_ doesUrlMatchHost url)
-    override val parse = (url: Url, s: Song) => parsers
-        .find(_ doesUrlMatchHost url)
-        .mapHeadOrElse(_.parse(url, s), Future.successful(RetrievedLyricsResult.Error.unsupportedHost(url)))
+    override def doesUrlMatchHost = url => parsers.exists(_.doesUrlMatchHost(url))
+    override val parse = (url: Url, s: Song) =>
+      parsers
+        .find(_.doesUrlMatchHost(url))
+        .mapHeadOrElse(
+          _.parse(url, s),
+          Future.successful(RetrievedLyricsResult.Error.unsupportedHost(url)),
+        )
   }
 }

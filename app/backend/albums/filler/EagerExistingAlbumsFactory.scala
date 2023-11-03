@@ -7,16 +7,17 @@ import models.MusicFinder
 import common.io.DirectoryRef
 import common.rich.RichT._
 
-private class EagerExistingAlbumsFactory @Inject()(
+private class EagerExistingAlbumsFactory @Inject() (
     mf: MusicFinder,
     reconcilableFactory: ReconcilableFactory,
 ) {
   def from(albums: Seq[DirectoryRef]) = new EagerExistingAlbums(
     albums
-        .map(reconcilableFactory.toAlbum(_).get)
-        .groupBy(_.artist.normalized)
-        .mapValues(_.toSet)
-        .view.force,
+      .map(reconcilableFactory.toAlbum(_).get)
+      .groupBy(_.artist.normalized)
+      .mapValues(_.toSet)
+      .view
+      .force,
   )
 
   def singleArtist(artist: Artist): EagerExistingAlbums = {

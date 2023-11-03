@@ -22,7 +22,7 @@ import monocle.Iso
 import common.rich.RichFuture.richFuture
 import common.storage.Storage
 
-private class LastFetchTimeImpl @Inject()(
+private class LastFetchTimeImpl @Inject() (
     storage: SlickLastFetchTimeStorage,
     clock: Clock,
     ec: ExecutionContext,
@@ -30,7 +30,9 @@ private class LastFetchTimeImpl @Inject()(
 ) extends LastFetchTime {
   private implicit val iec: ExecutionContext = ec
   private val xmapped: Storage[Artist, (Unit, Freshness)] =
-    storage.asInstanceOf[Storage[Artist, Option[LocalDateTime]]].xmapmi(Freshness.iso ^<-> prependUnit)
+    storage
+      .asInstanceOf[Storage[Artist, Option[LocalDateTime]]]
+      .xmapmi(Freshness.iso ^<-> prependUnit)
   private val aux = new ComposedFreshnessStorage[Artist, Unit](xmapped, clock)
   override def update(a: Artist) =
     aux.update(a, ()).run.void.listenError(logger.error(s"Failed to update artist <$a>", _))
@@ -39,10 +41,12 @@ private class LastFetchTimeImpl @Inject()(
   override def freshness(a: Artist) = aux.freshness(a)
   override def reset(a: Artist) = {
     val time = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC)
-    storage.delete(a).run
-        .>>(storage.store(a, Some(time)))
-        .>|(DatedFreshness(time))
-        .listenError(logger.error(s"Failed to reset artist <$a>", _))
+    storage
+      .delete(a)
+      .run
+      .>>(storage.store(a, Some(time)))
+      .>|(DatedFreshness(time))
+      .listenError(logger.error(s"Failed to reset artist <$a>", _))
   }
 }
 
@@ -53,9 +57,9 @@ private object LastFetchTimeImpl {
     val injector = Guice.createInjector(StandaloneModule, FillerStorageModule)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     injector
-        .instance[SlickLastFetchTimeStorage]
-        .utils.createTableIfNotExists()
-        .get
+      .instance[SlickLastFetchTimeStorage]
+      .utils
+      .createTableIfNotExists()
+      .get
   }
 }
-

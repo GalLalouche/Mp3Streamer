@@ -1,15 +1,15 @@
 package backend.albums.filler
 
+import java.time.Clock
+
 import backend.albums.NewAlbum
 import backend.logging.Logger
 import backend.recon.{Artist, StringReconScorer}
 import javax.inject.Inject
 
-import java.time.Clock
-
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
-private class FilterExistingAlbums @Inject()(
+private class FilterExistingAlbums @Inject() (
     ea: ExistingAlbums,
     clock: Clock,
     stringReconScorer: StringReconScorer,
@@ -19,8 +19,8 @@ private class FilterExistingAlbums @Inject()(
     try {
       val albumTitles = ea.albums(artist.normalized).map(_.title)
       allAlbums
-          .filter(a => albumTitles.fornone(stringReconScorer(_, a.title) > 0.95))
-          .filter(_.isReleased(clock))
+        .filter(a => albumTitles.fornone(stringReconScorer(_, a.title) > 0.95))
+        .filter(_.isReleased(clock))
     } catch {
       case e: NoSuchElementException =>
         logger.warn(s"Could not find artist <$artist>", e)

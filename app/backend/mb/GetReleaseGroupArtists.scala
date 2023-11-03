@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class GetReleaseGroupArtists @Inject()(
+class GetReleaseGroupArtists @Inject() (
     jsonDownloader: JsonDownloader,
     albumParser: AlbumParser,
     ec: ExecutionContext,

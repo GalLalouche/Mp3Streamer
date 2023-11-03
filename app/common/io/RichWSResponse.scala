@@ -1,12 +1,13 @@
 package common.io
 
-import common.io.WSAliases._
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.jsoup.Jsoup
 import play.api.libs.json.{JsObject, Json}
 
+import common.io.WSAliases._
+
 object RichWSResponse {
-  implicit class richWSResponse($: WSResponse) {
+  implicit class richWSResponse($ : WSResponse) {
     def bytes: Array[Byte] = $.bodyAsBytes.toArray
     def string: String = new String(bytes, "UTF-8")
     def jsonObject: JsObject = Json.parse(string).as[JsObject]

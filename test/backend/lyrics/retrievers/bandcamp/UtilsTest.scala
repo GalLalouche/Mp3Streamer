@@ -1,13 +1,13 @@
 package backend.lyrics.retrievers.bandcamp
 
-import backend.Url
 import org.scalatest.FreeSpec
 
+import backend.Url
 import common.test.AuxSpecs
 
 class UtilsTest extends FreeSpec with AuxSpecs {
   "doesUrlMatchHost" - {
-    def matches(s: String) = Utils doesUrlMatchHost Url(s)
+    def matches(s: String) = Utils.doesUrlMatchHost(Url(s))
     "matches" in {
       matches("https://shanipeleg.bandcamp.com/track/--3") shouldReturn true
     }

@@ -5,15 +5,15 @@ import java.time.format.DateTimeFormatter
 
 import scala.util.Try
 
-import common.CompositeDateFormat.Parser
 import common.rich.collections.RichTraversableOnce._
+import common.CompositeDateFormat.Parser
 
 object CompositeDateFormat {
   private def toParser[T](pattern: String)(implicit ev: LocalDateTimeable[T]): Parser = source =>
-    Try(ev.parse(source, DateTimeFormatter ofPattern pattern)).map(ev.toLocalDateTime).toOption
+    Try(ev.parse(source, DateTimeFormatter.ofPattern(pattern))).map(ev.toLocalDateTime).toOption
   private type Parser = String => Option[LocalDateTime]
   def apply[T: LocalDateTimeable](parser: String): CompositeDateFormat =
-    new CompositeDateFormat(Vector.empty) orElse parser
+    (new CompositeDateFormat(Vector.empty)).orElse(parser)
   trait LocalDateTimeable[T] {
     def toLocalDateTime(t: T): LocalDateTime
     def parse: (String, DateTimeFormatter) => T
@@ -30,20 +30,20 @@ object CompositeDateFormat {
     }
     implicit object YearMonthLocalDateTimeable extends LocalDateTimeable[YearMonth] {
       override def toLocalDateTime(t: YearMonth) =
-        LocalDateLocalDateTimeable toLocalDateTime t.atDay(1)
+        LocalDateLocalDateTimeable.toLocalDateTime(t.atDay(1))
       override val parse: (CharSequence, DateTimeFormatter) => YearMonth = YearMonth.parse
     }
     implicit object YearLocalDateTimeable extends LocalDateTimeable[Year] {
       override def toLocalDateTime(t: Year) =
-        YearMonthLocalDateTimeable toLocalDateTime t.atMonth(1)
+        YearMonthLocalDateTimeable.toLocalDateTime(t.atMonth(1))
       override val parse: (CharSequence, DateTimeFormatter) => Year = Year.parse
     }
   }
 }
 
 /** Tries several parsers in a sequence until the first one succeeds. Isn't total. */
-class CompositeDateFormat private(parsers: Seq[Parser]) {
-  def parse(source: String): Option[LocalDateTime] = parsers.mapFirst(_ (source))
+class CompositeDateFormat private (parsers: Seq[Parser]) {
+  def parse(source: String): Option[LocalDateTime] = parsers.mapFirst(_(source))
   def orElse[T: CompositeDateFormat.LocalDateTimeable](parser: String): CompositeDateFormat =
     new CompositeDateFormat(parsers :+ CompositeDateFormat.toParser(parser))
 }

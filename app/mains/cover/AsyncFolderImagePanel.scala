@@ -22,7 +22,7 @@ import common.rich.RichFuture.richFuture
 import common.rich.RichT._
 
 /** Eventually publishes an ImageChoice event. */
-private class AsyncFolderImagePanel @Inject()(
+private class AsyncFolderImagePanel @Inject() (
     logger: Logger,
     ec: ExecutionContext,
     @Assisted images: FutureIterant[FolderImage],
@@ -32,23 +32,27 @@ private class AsyncFolderImagePanel @Inject()(
   private implicit val iec: ExecutionContext = ec
   import AsyncFolderImagePanel._
 
-  private var current = images.oMap(image => createImagePanel(image) match {
-    case Failure(e) =>
-      logger.warn(s"Error converting <$image> to BufferImage", e)
-      None
-    case Success(value) => Some(value)
-  })
+  private var current = images.oMap(image =>
+    createImagePanel(image) match {
+      case Failure(e) =>
+        logger.warn(s"Error converting <$image> to BufferImage", e)
+        None
+      case Success(value) => Some(value)
+    },
+  )
 
   private def createImagePanel(fi: FolderImage): Try[Component] =
     createImageLabel(fi)
-        .map(Component.wrap(_).onMouseClick(() => AsyncFolderImagePanel.this.publish(Selected(fi))))
+      .map(Component.wrap(_).onMouseClick(() => AsyncFolderImagePanel.this.publish(Selected(fi))))
 
   def refresh(): Unit = {
     contents.clear()
     // Pre-populate the grid to avoid images moving around.
     val range = 0 until rows * cols
     range.map("Placeholder for image #".+).map(new TextArea(_)).foreach(contents.+=)
-    contents += Button("Fuck it, I'll do it myself!")(AsyncFolderImagePanel.this.publish(OpenBrowser))
+    contents += Button("Fuck it, I'll do it myself!")(
+      AsyncFolderImagePanel.this.publish(OpenBrowser),
+    )
     contents += Button("Show me more...")(refresh())
     for {
       currentIndex <- range
@@ -69,11 +73,11 @@ private object AsyncFolderImagePanel {
   private val Width = 500
   private class TextLabelProps(verticalAlignment: Int, horizontalAlignment: Int, color: Color) {
     def label(text: String): JLabel = new JLabel(text)
-        .<|(_.setFont(new Font("Consolas", Font.PLAIN, 20)))
-        .<|(_.setVerticalAlignment(verticalAlignment))
-        .<|(_.setHorizontalAlignment(horizontalAlignment))
-        .<|(_.setForeground(color))
-        .<|(_.setPreferredSize(new Dimension(Width, Height)))
+      .<|(_.setFont(new Font("Consolas", Font.PLAIN, 20)))
+      .<|(_.setVerticalAlignment(verticalAlignment))
+      .<|(_.setHorizontalAlignment(horizontalAlignment))
+      .<|(_.setForeground(color))
+      .<|(_.setPreferredSize(new Dimension(Width, Height)))
   }
   private val TextProps = Vector(
     // Multiple colors and locations to ensure visibility regardless of image content.
@@ -87,9 +91,8 @@ private object AsyncFolderImagePanel {
     val fileSize = s"${fi.file.size / 1024}KB"
     val text = s"${fi.width}x${fi.height} $fileSize${" LOCAL".monoidFilter(fi.isLocal)}"
     new JLabel(fi.toIcon(Width, Height))
-        .<|(_.setLayout(new SpringLayout()))
-        .<|(_.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY)))
-        .<|(TextProps.map(_ label text) foreach _.add)
+      .<|(_.setLayout(new SpringLayout()))
+      .<|(_.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY)))
+      .<|(TextProps.map(_.label(text)) foreach _.add)
   }
 }
-

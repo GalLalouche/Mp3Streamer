@@ -14,19 +14,20 @@ private object ScorerFormatter {
   private implicit object SongScoreJsonable extends JsonWriteable[FullInfoScore] {
     override def jsonify(a: FullInfoScore) = a match {
       case FullInfoScore.Default => Json.obj()
-      case FullInfoScore.Scored(score, source, song, album, artist) => Json.obj(
-        "score" -> score.entryName,
-        "source" -> source.toString,
-        "song" -> song.orDefaultString,
-        "album" -> album.orDefaultString,
-        "artist" -> artist.orDefaultString,
-      )
+      case FullInfoScore.Scored(score, source, song, album, artist) =>
+        Json.obj(
+          "score" -> score.entryName,
+          "source" -> source.toString,
+          "song" -> song.orDefaultString,
+          "album" -> album.orDefaultString,
+          "artist" -> artist.orDefaultString,
+        )
     }
   }
 }
 
 /** Fetches and updates scores for songs, albums, and artists. */
-private class ScorerFormatter @Inject()(
+private class ScorerFormatter @Inject() (
     modelScorer: FullInfoModelScorer,
     urlPathUtils: UrlPathUtils,
     ec: ExecutionContext,
