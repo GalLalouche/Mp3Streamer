@@ -6,6 +6,7 @@ import javax.inject.Inject
 import backend.albums.NewAlbum
 import backend.logging.Logger
 import backend.recon.{Artist, StringReconScorer}
+
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class FilterExistingAlbums @Inject() (

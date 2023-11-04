@@ -5,32 +5,33 @@ import backend.logging.{LoggingLevel, LoggingModules}
 import backend.module.{CleanModule, StandaloneModule}
 import backend.recon.{Artist, ReconcilableFactory}
 import com.google.inject.{Guice, Injector, Module, Provides, Singleton}
-import common.guice.RichModule.richModule
-import common.TimedLogger
 import models.IOMusicFinderModule
 import net.codingwell.scalaguice.ScalaModule
+
+import common.guice.RichModule.richModule
+import common.TimedLogger
 
 object ExistingAlbumsModules {
   def lazyAlbums: Module = new ScalaModule {
     override def configure(): Unit =
-      bind[ExistingAlbums].to[LazyExistingAlbums]
+      bind[ExistingAlbums].to[RealTimeExistingAlbums]
   }
 
   private abstract class EagerBinder extends ScalaModule {
     override def configure(): Unit =
-      bind[ExistingAlbums].to[EagerExistingAlbums]
+      bind[ExistingAlbums].to[PreCachedExistingAlbums]
   }
   def forSingleArtist(artistName: String): Module = new EagerBinder {
     @Provides @Singleton private def existingAlbumsCache(
-        factory: EagerExistingAlbumsFactory,
-    ): EagerExistingAlbums = factory.singleArtist(Artist(artistName))
+        factory: PreCachedExistingAlbumsFactory,
+    ): PreCachedExistingAlbums = factory.singleArtist(Artist(artistName))
   }
   def default: Module = new EagerBinder {
     @Provides @Singleton private def existingAlbumsCache(
-        factory: EagerExistingAlbumsFactory,
+        factory: PreCachedExistingAlbumsFactory,
         timed: TimedLogger,
         reconcilableFactory: ReconcilableFactory,
-    ): EagerExistingAlbums = timed("Creating cache", LoggingLevel.Info) {
+    ): PreCachedExistingAlbums = timed("Creating cache", LoggingLevel.Info) {
       factory.from(reconcilableFactory.albumDirectories)
     }
   }

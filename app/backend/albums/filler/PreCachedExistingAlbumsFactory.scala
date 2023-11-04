@@ -1,17 +1,17 @@
 package backend.albums.filler
 
-import javax.inject.Inject
-
 import backend.recon.{Artist, ReconcilableFactory}
-import common.io.DirectoryRef
-import common.rich.RichT._
+import javax.inject.Inject
 import models.MusicFinder
 
-private class EagerExistingAlbumsFactory @Inject() (
+import common.io.DirectoryRef
+import common.rich.RichT._
+
+private class PreCachedExistingAlbumsFactory @Inject() (
     mf: MusicFinder,
     reconcilableFactory: ReconcilableFactory,
 ) {
-  def from(albums: Seq[DirectoryRef]) = new EagerExistingAlbums(
+  def from(albums: Seq[DirectoryRef]) = new PreCachedExistingAlbums(
     albums
       .map(reconcilableFactory.toAlbum(_).get)
       .groupBy(_.artist.normalized)
@@ -20,7 +20,7 @@ private class EagerExistingAlbumsFactory @Inject() (
       .force,
   )
 
-  def singleArtist(artist: Artist): EagerExistingAlbums = {
+  def singleArtist(artist: Artist): PreCachedExistingAlbums = {
     val artistDir = mf.findArtistDir(artist.name).get
     from(artistDir.dirs.mapIf(_.isEmpty).to(Vector(artistDir)))
   }
