@@ -1,18 +1,21 @@
 package controllers
 
-import scala.concurrent.ExecutionContext
-
+import backend.albums.filler.ExistingAlbumsModules
 import backend.logging.{CompositeLogger, ConsoleLogger, DirectoryLogger, FilteringLogger, Logger, LoggingLevel}
 import backend.module.{RealInternetTalkerModule, RealModule}
+import com.google.inject.util.Modules
 import com.google.inject.Provides
+import net.codingwell.scalaguice.ScalaModule
+
+import scala.concurrent.ExecutionContext
+
 import common.io.{DirectoryRef, RootDirectory}
 import common.rich.RichT._
-import net.codingwell.scalaguice.ScalaModule
 
 // Has to be a class for Play to instantiate.
 class Module extends ScalaModule {
   override def configure(): Unit = {
-    install(RealModule)
+    install(Modules.`override`(RealModule).`with`(ExistingAlbumsModules.lazyAlbums))
     install(RealInternetTalkerModule.nonDaemonic)
   }
 
