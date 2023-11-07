@@ -1,26 +1,22 @@
 package backend.recon
 
 import javax.inject.Inject
-import scala.io.Source
-import scala.util.{Failure, Success, Try}
 
 import backend.recon.Reconcilable.SongExtractor
-import common.io.{DirectoryRef, FileRef}
-import common.json.ToJsonableOps.jsonifyString
+import models.MusicFinder
+
+import scala.util.{Failure, Success, Try}
+
+import common.io.{DirectoryRef, FileRef, JsonMapFile}
 import common.rich.primitives.RichOption.richOption
 import common.rich.RichT._
-import models.MusicFinder
 
 class ReconcilableFactory @Inject() (val mf: MusicFinder) {
   type S = mf.S
   // Some artists have invalid directory characters in their name, so their directory won't match
   // the artist name. As a stupid hack, just aggregate them below.
-  private val invalidDirectoryNames: Map[String, String] = Source
-    .fromInputStream(getClass.getResourceAsStream("directory_renames.json"), "utf-8")
-    .getLines
-    .map(_.parseJsonable[Seq[String]].toVector.ensuring(_.size == 2))
-    .map { case Vector(dirName, name) => (dirName, name) }
-    .toMap
+  private val invalidDirectoryNames: Map[String, String] =
+    JsonMapFile.readJsonMap(getClass.getResourceAsStream("directory_renames.json"))
   def dirNameToArtist(dirName: String): Artist = Artist(
     dirName.optionOrKeep(invalidDirectoryNames.get),
   )

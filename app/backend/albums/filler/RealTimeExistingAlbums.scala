@@ -1,14 +1,16 @@
 package backend.albums.filler
 
+import javax.inject.Inject
+
 import backend.logging.LoggingLevel
 import backend.recon.{Album, Artist, ReconcilableFactory}
-import javax.inject.{Inject, Singleton}
 import models.MusicFinder
 
+import common.io.JsonMapFile
 import common.rich.primitives.RichOption.richOption
 import common.TimedLogger
 
-@Singleton private class RealTimeExistingAlbums @Inject() (
+private class RealTimeExistingAlbums @Inject() (
     reconcilableFactory: ReconcilableFactory,
     mf: MusicFinder,
     timed: TimedLogger,
@@ -32,10 +34,24 @@ import common.TimedLogger
         )
     }.toVector
   }
-  override def albums: Artist => Set[Album] = artist =>
-    mf.findArtistDir(artist.name)
-      .get
-      .dirs
-      .map(reconcilableFactory.toAlbum(_).get)
-      .toSet
+
+  override def albums: Artist => Set[Album] = artist => {
+    val normalizedName = artist.normalize
+    getAlbums(normalizedName)
+      .orElse(
+        misplacedArtists
+          .get(normalizedName)
+          .flatMap(getAlbums)
+          .map(_.filter(_.artist.normalize == normalizedName)),
+      )
+      .getOrThrow(s"Could not find albums for artist $artist")
+  }
+
+  private def getAlbums(artistName: String): Option[Set[Album]] =
+    mf.findArtistDir(artistName).map(_.dirs.map(reconcilableFactory.toAlbum(_).get).toSet)
+
+  // Some artists have misplaced directories, e.g., The Neal Morse Band might be under the
+  // Neal Morse folder. As a stupid hack, we just aggregate them in a single file.
+  private def misplacedArtists: Map[String, String] =
+    JsonMapFile.readJsonMap(getClass.getResourceAsStream("directory_renames.json"))
 }
