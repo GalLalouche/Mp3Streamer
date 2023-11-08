@@ -15,9 +15,11 @@ $(function() {
 
   lyricsUrlBox.keyup(function() { // the validateBoxAndButton only applies to updateLyricsButton
     const box = $(this)
+
     function disable(b) {
       b.prop('disabled', box.val() !== "")
     }
+
     disable(instrumentalArtistButton)
     disable(instrumentalSongButton)
   })
@@ -25,8 +27,10 @@ $(function() {
   function setInstrumental(type) {
     $.post(`lyrics/instrumental/${type}/${gplaylist.currentPlayingSong().file}`, null, c => showLyrics(c))
   }
+
   instrumentalSongButton.click(() => setInstrumental("song"))
   instrumentalArtistButton.click(() => setInstrumental("artist"))
+
   function updateLyrics() {
     const url = lyricsUrlBox.val()
     const songPath = gplaylist.currentPlayingSong().file
@@ -35,6 +39,7 @@ $(function() {
       url: "lyrics/push/" + songPath,
       data: url,
       success: c => showLyrics(c),
+      error: c => showLyrics(c.statusText),
       contentType: "text/plain",
     })
     clearButtons()
@@ -47,6 +52,7 @@ $(function() {
   }
 
   const HEBREW_REGEX = /[\u0590-\u05FF]/
+
   function showLyrics(content) {
     clearButtons()
     autoScroll = true
@@ -77,6 +83,7 @@ $(function() {
   let timeBaseline = 0
 
   const scrollableElement = lyricBox
+
   function scrollLyrics() {
     // Don't start scrolling right at the beginning of the song if there is no baseline set
     const heightBaseline = scrollBaseline || (lyricsContent.height() / -4)
