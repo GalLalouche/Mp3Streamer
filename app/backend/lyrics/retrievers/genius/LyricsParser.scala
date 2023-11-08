@@ -1,15 +1,17 @@
 package backend.lyrics.retrievers.genius
 
 import java.util.regex.Pattern
-import scala.collection.JavaConverters._
 
 import backend.lyrics.retrievers.{HtmlLyricsUtils, LyricParseResult, SingleHostParser}
+import models.Song
+import org.jsoup.nodes.{Document, Element, TextNode}
+
+import scala.collection.JavaConverters._
+
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichString._
 import common.rich.RichT.richT
 import common.RichJsoup._
-import models.Song
-import org.jsoup.nodes.{Document, Element, TextNode}
 
 private object LyricsParser extends SingleHostParser {
   private val Annotations = Pattern.compile("""\[.*?\]""")
@@ -27,6 +29,8 @@ private object LyricsParser extends SingleHostParser {
         throw new IllegalArgumentException("Unexpected HTML structure")
     else if (v == Vector("[Instrumental]") || v == Vector("Instrumental"))
       LyricParseResult.Instrumental
+    else if (d.wholeText.contains("Lyrics for this song have yet to be released"))
+      LyricParseResult.NoLyrics
     else
       LyricParseResult.Lyrics(
         v.flatMap(go)
@@ -55,6 +59,7 @@ private object LyricsParser extends SingleHostParser {
               .map {
                 case e: TextNode => e.getWholeText
                 case e: Element if e.tagName == "br" => "\n"
+                case e: Element if FontStyles.contains(e.tagName) => e.outerHtml
               }
           else if (e.tagName == "i")
             go(e)
@@ -62,4 +67,6 @@ private object LyricsParser extends SingleHostParser {
             Vector.empty
         case e: TextNode => Vector(e.getWholeText)
       }
+
+  val FontStyles = Set("b", "i", "u")
 }
