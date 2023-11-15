@@ -1,9 +1,9 @@
 package backend.scorer
 
 sealed trait FullInfoScore {
-  def toModelScore: Option[ModelScore] = this match {
-    case FullInfoScore.Default => None
-    case FullInfoScore.Scored(score, _, _, _, _) => Some(score)
+  def toOptionalModelScore: OptionalModelScore = this match {
+    case FullInfoScore.Default => OptionalModelScore.Default
+    case FullInfoScore.Scored(score, _, _, _, _) => OptionalModelScore.Scored(score)
   }
 }
 object FullInfoScore {
@@ -11,9 +11,9 @@ object FullInfoScore {
   case class Scored(
       score: ModelScore,
       source: ScoreSource,
-      songScore: Option[ModelScore],
-      albumScore: Option[ModelScore],
-      artistScore: Option[ModelScore],
+      songScore: OptionalModelScore,
+      albumScore: OptionalModelScore,
+      artistScore: OptionalModelScore,
   ) extends FullInfoScore {
     // TODO more ADTs!
     // TODO SoftwareDesign Could be an interesting question

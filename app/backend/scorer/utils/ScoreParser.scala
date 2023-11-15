@@ -2,6 +2,7 @@ package backend.scorer.utils
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 import scalaz.Scalaz.{eitherInstance, optionInstance, ToFunctorOps, ToMonadPlusOpsUnapply, ToTraverseOpsUnapply, ToTuple2Ops}
 
 import backend.logging.Logger
@@ -33,13 +34,13 @@ private class ScoreParser @Inject() (
     if ((withoutPrefix.startsWith("ARTIST") || withoutPrefix.startsWith("ALBUM")).isFalse)
       return None
 
-    val $ =
+    val $ : Try[(Either[Artist, Album], Option[ModelScore])] =
       if (withoutPrefix.startsWith("ARTIST"))
         ArtistScoreParser(line).map(TuplePLenses.tuple2First.modify(Left.apply))
       else
         AlbumScoreParser(line).map(TuplePLenses.tuple2First.modify(Right.apply))
     $.filter(e =>
-      !(e._1.fold(cachedModelScorer.apply(_), cachedModelScorer.apply(_)) == e._2),
+      !(e._1.fold(cachedModelScorer.apply(_), cachedModelScorer.apply(_)).toModelScore == e._2),
     ).toOption
       .listen(e => logger.info(s"Storing <$e>"))
   }

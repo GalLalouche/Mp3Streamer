@@ -6,7 +6,6 @@ import scalaz.syntax.bind._
 
 import backend.recon.{Album, Artist}
 import backend.recon.Reconcilable.SongExtractor
-import backend.scorer.FullInfoScore.Scored
 import models.Song
 
 /** Scores a song by trying multiple sources, from most specific score to least specific. */
@@ -21,13 +20,18 @@ private class CompositeScorer[M[_]: Bind](
     songScore <- songScorer(s).run
     albumScore <- albumScorer(s.release).run
     artistScore <- artistScorer(s.artist).run
-  } yield songScore
-    .map(Scored(_, ScoreSource.Song, songScore, albumScore, artistScore))
-    .orElse(albumScore.map(Scored(_, ScoreSource.Album, songScore, albumScore, artistScore)))
-    .orElse(
-      artistScore.map(
-        Scored(_, ScoreSource.Artist, songScore, albumScore, artistScore),
-      ),
+  } yield {
+    def makeScored(source: ScoreSource)(score: ModelScore) = FullInfoScore.Scored(
+      score,
+      source,
+      songScore.toOptionalModelScore,
+      albumScore.toOptionalModelScore,
+      artistScore.toOptionalModelScore,
     )
-    .getOrElse(FullInfoScore.Default)
+    songScore
+      .map(makeScored(ScoreSource.Song))
+      .orElse(albumScore.map(makeScored(ScoreSource.Album)))
+      .orElse(artistScore.map(makeScored(ScoreSource.Artist)))
+      .getOrElse(FullInfoScore.Default)
+  }
 }

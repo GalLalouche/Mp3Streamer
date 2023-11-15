@@ -8,7 +8,7 @@ import scalaz.Scalaz.{ToBindOpsUnapply, ToFoldableOps, ToFunctorOpsUnapply}
 import scalaz.State
 
 import backend.recon.{Artist, ReconcilableFactory}
-import backend.scorer.{CachedModelScorer, ModelScore}
+import backend.scorer.{CachedModelScorer, ModelScore, OptionalModelScore}
 import backend.scorer.utils.ArtistMassScorer.Update
 import common.{OrgModeWriter, OrgModeWriterMonad}
 import common.io.IODirectory
@@ -36,7 +36,7 @@ private class ArtistMassScorer @Inject() (
         artist <- artists
         score = scorer(artist)
         if update.filterScore(score)
-      } yield (artist, score)
+      } yield (artist, score.toModelScore)
       if (filteredArtists.isEmpty) // Don't add genres without artists
         State.init[OrgModeWriter].void
       else
@@ -61,8 +61,8 @@ private class ArtistMassScorer @Inject() (
 
 private object ArtistMassScorer {
   sealed trait Update {
-    def filterScore(s: Option[ModelScore]): Boolean = this match {
-      case Update.NoScore => s.isEmpty
+    def filterScore(s: OptionalModelScore): Boolean = this match {
+      case Update.NoScore => s == OptionalModelScore.Default
       case Update.All => true
     }
   }

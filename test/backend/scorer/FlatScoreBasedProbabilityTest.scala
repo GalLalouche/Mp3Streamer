@@ -39,7 +39,7 @@ class FlatScoreBasedProbabilityTest extends WordSpec with AuxSpecs with MockitoS
           override def apply(s: Song) = apply(s.file)
           override def apply(a: Artist) = ???
           override def apply(a: Album) = ???
-          override def apply(f: FileRef) = songScores.get(f)
+          override def apply(f: FileRef) = songScores.get(f).toOptionalModelScore
           override def fullInfo(s: Song) = ???
         }
         val allFiles = songScores.keys.toVector

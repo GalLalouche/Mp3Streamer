@@ -1,14 +1,12 @@
 package backend.scorer.storage
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.ListT
 
 import backend.recon.{Album, Artist, SlickArtistReconStorage}
 import backend.scorer.ModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.ListT
 
 private[scorer] class AlbumScoreStorage @Inject() (
     protected override val ec: ExecutionContext,
@@ -41,7 +39,6 @@ private[scorer] class AlbumScoreStorage @Inject() (
   protected override def toEntity(k: Album, v: ModelScore) = (k.artist, k.title, v)
   protected override def extractValue(e: (Artist, AlbumTitle, ModelScore)) = e._3
   protected override def keyFilter(k: Album)(e: Rows) = e.artist === k.artist && e.title === k.title
-  override def apply(a: Album) = load(a)
   def loadAll: ListT[Future, (Artist, AlbumTitle, ModelScore)] =
     ListT(db.run(tableQuery.result).map(_.toList))
 }

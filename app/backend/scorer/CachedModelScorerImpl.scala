@@ -46,12 +46,13 @@ private class CachedModelScorerImpl @Inject() (
     a => albumScores.get((a.artist.normalized, a.title.toLowerCase)).hoistId,
     a => artistScores.get(a.normalized).hoistId,
   )
-  override def apply(a: Artist): Option[ModelScore] = artistScores.get(a.normalized)
-  override def apply(a: Album): Option[ModelScore] =
-    albumScores.get((a.artist.normalized, a.title.toLowerCase))
-  override def apply(s: Song): Option[ModelScore] = fullInfo(s).toModelScore
+  override def apply(a: Artist): OptionalModelScore =
+    artistScores.get(a.normalized).toOptionalModelScore
+  override def apply(a: Album): OptionalModelScore =
+    albumScores.get((a.artist.normalized, a.title.toLowerCase)).toOptionalModelScore
+  override def apply(s: Song): OptionalModelScore = fullInfo(s).toOptionalModelScore
 
-  override def apply(f: FileRef): Option[ModelScore] = {
+  override def apply(f: FileRef): OptionalModelScore = {
     lazy val id3Song = mf.parseSong(f)
     val songTitle =
       reconcilableFactory.songTitle(f).|>(toOption(f, "song")).getOrElse(id3Song.title)
@@ -63,6 +64,7 @@ private class CachedModelScorerImpl @Inject() (
       .get((artist, albumTitle, songTitle))
       .orElse(albumScores.get((artist, albumTitle)))
       .orElse(artistScores.get(artist))
+      .toOptionalModelScore
   }
 
   override def fullInfo(s: Song) = aux(s)

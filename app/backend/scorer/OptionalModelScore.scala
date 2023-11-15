@@ -3,6 +3,10 @@ package backend.scorer
 import scala.collection.immutable
 
 sealed trait OptionalModelScore {
+  def isDefined = this match {
+    case OptionalModelScore.Default => false
+    case OptionalModelScore.Scored(_) => true
+  }
   def toModelScore: Option[ModelScore] = this match {
     case OptionalModelScore.Default => None
     case OptionalModelScore.Scored(e) => Some(e)

@@ -5,7 +5,7 @@ import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import backend.recon.{Album, Artist}
-import backend.scorer.{CachedModelScorer, ModelScore, ScoreBasedProbability}
+import backend.scorer.{CachedModelScorer, ModelScore, OptionalModelScore, ScoreBasedProbability}
 import com.google.inject.Guice
 import common.guice.RichModule.richModule
 import common.io.{DirectoryRef, FileRef}
@@ -40,7 +40,7 @@ class SongSelectorTest
         bind[CachedModelScorer].toInstance(new CachedModelScorer {
           override def apply(a: Artist) = ???
           override def apply(a: Album) = ???
-          override def apply(s: Song) = Some(ModelScore.Okay)
+          override def apply(s: Song) = OptionalModelScore.Scored(ModelScore.Okay)
           override def apply(f: FileRef) = ???
           override def fullInfo(s: Song) = ???
         })

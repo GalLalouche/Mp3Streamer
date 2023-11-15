@@ -26,7 +26,7 @@ import models.Song
   private val probabilities: Map[ModelScore, Percentage] = {
     val sum = songFiles.length
     val frequencies: Map[ModelScore, Int] = songFiles
-      .flatMap(scorer(_))
+      .flatMap(scorer(_).toModelScore)
       .frequencies
     val unnormalized = frequencies.map { case (score, count) =>
       score -> map(score) / (count.toDouble / sum)
@@ -60,7 +60,7 @@ import models.Song
     assertIncreasedProbability(ModelScore.Amazing)
     $
   }
-  def apply(s: Song): Percentage = scorer(s).fold(defaultScore)(apply)
+  def apply(s: Song): Percentage = scorer(s).toModelScore.fold(defaultScore)(apply)
   def apply(score: ModelScore): Percentage = probabilities(score)
 }
 

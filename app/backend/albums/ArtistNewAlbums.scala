@@ -1,14 +1,14 @@
 package backend.albums
 
-import monocle.macros.Lenses
-
 import backend.recon.Artist
-import backend.scorer.ModelScore
+import backend.scorer.OptionalModelScore
+
+import monocle.macros.Lenses
 
 @Lenses
 private case class ArtistNewAlbums(
     artist: Artist,
-    artistScore: Option[ModelScore],
+    artistScore: OptionalModelScore,
     albums: Seq[NewAlbum],
 )
 // Needed for @lenses on a private case class.

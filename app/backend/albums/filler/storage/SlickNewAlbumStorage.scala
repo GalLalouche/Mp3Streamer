@@ -1,5 +1,4 @@
 package backend.albums.filler.storage
-
 import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,7 +15,7 @@ import backend.mb.AlbumType
 import backend.module.StandaloneModule
 import backend.recon.{Artist, ReconID, SlickArtistReconStorage}
 import backend.scorer.storage.ArtistScoreStorage
-import backend.scorer.ModelScore
+import backend.scorer.OptionalModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Guice
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
@@ -122,7 +121,7 @@ private class SlickNewAlbumStorage @Inject() (
       .map(
         _.view
           .map(TuplePLenses.tuple2First.modify(extractValue))
-          .map(TuplePLenses.tuple2Second.modify(_.map(_._2)))
+          .map(TuplePLenses.tuple2Second.modify(_.map(_._2).toOptionalModelScore))
           .groupBy(_._1.na.artist)
           .mapValues(_.map(_.swap) |> toNewAlbums)
           .map(_.flatten)
@@ -132,8 +131,8 @@ private class SlickNewAlbumStorage @Inject() (
   )
   private def shouldRemoveAlbum(e: Rows): Rep[Boolean] = e.isRemoved || e.isIgnored
   private def toNewAlbums(
-      zipped: Seq[(Option[ModelScore], StoredNewAlbum)],
-  ): (Option[ModelScore], Seq[NewAlbum]) = {
+      zipped: Seq[(OptionalModelScore, StoredNewAlbum)],
+  ): (OptionalModelScore, Seq[NewAlbum]) = {
     val (scores, albums) = zipped.unzip
     (scores.toSet.single, toNewAlbums(albums))
   }

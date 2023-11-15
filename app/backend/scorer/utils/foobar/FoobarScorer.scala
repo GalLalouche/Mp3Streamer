@@ -2,6 +2,12 @@ package backend.scorer.utils.foobar
 
 import java.io.File
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
+import scalafx.scene.control.{ComboBox, Label}
+import scalafx.scene.layout.{GridPane, Pane, VBox}
+import scalafx.scene.text.{Text, TextFlow}
+import scalafx.scene.Node
+import scalaz.syntax.bind._
 
 import backend.albums.filler.ArtistReconPusher
 import backend.logging.Logger
@@ -9,24 +15,15 @@ import backend.mb.MbArtistReconciler
 import backend.recon.{Artist, ArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{FullInfoModelScorer, FullInfoScore, OptionalModelScore, ScoreSource}
-import models.{Song, SongTagParser}
-import scalafx.scene.control.{ComboBox, Label}
-import scalafx.scene.layout.{GridPane, Pane, VBox}
-import scalafx.scene.text.{Text, TextFlow}
-import scalafx.scene.Node
-
-import scala.concurrent.{ExecutionContext, Future}
-
-import scalaz.syntax.bind._
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.ToMoreMonadErrorOps.toMoreMonadErrorOps
-
 import common.rich.path.RichFile.richFile
 import common.rich.RichFuture.richFuture
 import common.rich.RichT.richT
 import common.scalafx.Builders
 import common.scalafx.RichNode.richNode
+import models.{Song, SongTagParser}
 
 private class FoobarScorer @Inject() (
     reconciler: MbArtistReconciler,
@@ -105,7 +102,7 @@ private class FoobarScorer @Inject() (
     }
     val finalScore = new TextFlow(
       new Text("Final score: "),
-      new Text(score.toModelScore.orDefaultString).makeBold(),
+      new Text(score.toOptionalModelScore.entryName).makeBold(),
       new Text(s" (${nullableScore.source})"),
     )
     new VBox {
@@ -136,9 +133,9 @@ private object FoobarScorer {
       NullableSongScore(
         score = score.entryName,
         source = source.toString,
-        songScore = songScore.orDefaultString,
-        albumScore = albumScore.orDefaultString,
-        artistScore = artistScore.orDefaultString,
+        songScore = songScore.entryName,
+        albumScore = albumScore.entryName,
+        artistScore = artistScore.entryName,
       )
   }
   private val comboValues = OptionalModelScore.entryNames

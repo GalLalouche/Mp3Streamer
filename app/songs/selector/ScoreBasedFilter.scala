@@ -19,9 +19,9 @@ private class ScoreBasedFilter @Inject() (
   override def passes(song: Song): Boolean = {
     val percentage = scoreBasedProbability(song)
     val fullInfoScore = cachedModelScorer.fullInfo(song)
-    val score = fullInfoScore.toModelScore
+    val score = fullInfoScore.toOptionalModelScore
     val source = fullInfoScore.safeCast[Scored].map(_.source).getOrElse("N/A")
-    val shortSongString = s"${song.artistName} - ${song.title} (${score.orDefaultString}, $source)"
+    val shortSongString = s"${song.artistName} - ${song.title} (${score.entryName}, $source)"
     val $ = percentage.roll(random)
     if ($) logger.verbose(s"Chose song <$shortSongString> with probability $percentage")
     else logger.verbose(s"Skipped song <$shortSongString> with probability ${percentage.inverse}")

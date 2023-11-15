@@ -1,8 +1,9 @@
 package backend.scorer
 
-import backend.FutureOption
+import scala.concurrent.Future
+
 import models.Song
 
 trait ModelScorer {
-  def apply(s: Song): FutureOption[ModelScore]
+  def apply(s: Song): Future[OptionalModelScore]
 }
