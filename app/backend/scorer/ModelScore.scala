@@ -1,8 +1,11 @@
 package backend.scorer
 
+import enumeratum.{Enum, EnumEntry}
+
 import scala.collection.immutable
 
-import enumeratum.{Enum, EnumEntry}
+import scalaz.std.option.optionInstance
+import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
 
 sealed trait ModelScore extends EnumEntry
 
@@ -15,8 +18,9 @@ object ModelScore extends Enum[ModelScore] {
   case object Amazing extends ModelScore // Really, really good songs you haven't gotten sick of yet
 
   override def values: immutable.IndexedSeq[ModelScore] = findValues
-  val DefaultTitle = "Default"
   implicit class RichModelScore(private val $ : Option[ModelScore]) extends AnyVal {
-    def orDefaultString: String = $.fold(DefaultTitle)(_.toString)
+    def orDefaultString: String = toOptionalModelScore.entryName
+    def toOptionalModelScore: OptionalModelScore =
+      $.mapHeadOrElse(OptionalModelScore.Scored, OptionalModelScore.Default)
   }
 }

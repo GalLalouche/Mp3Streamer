@@ -2,28 +2,31 @@ package backend.scorer.utils.foobar
 
 import java.io.File
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalafx.scene.control.{ComboBox, Label}
-import scalafx.scene.layout.{GridPane, Pane, VBox}
-import scalafx.scene.text.{Text, TextFlow}
-import scalafx.scene.Node
-import scalaz.syntax.bind._
 
 import backend.albums.filler.ArtistReconPusher
 import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.recon.{Artist, ArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
-import backend.scorer.{FullInfoModelScorer, FullInfoScore, ModelScore, ScoreSource}
+import backend.scorer.{FullInfoModelScorer, FullInfoScore, OptionalModelScore, ScoreSource}
+import models.{Song, SongTagParser}
+import scalafx.scene.control.{ComboBox, Label}
+import scalafx.scene.layout.{GridPane, Pane, VBox}
+import scalafx.scene.text.{Text, TextFlow}
+import scalafx.scene.Node
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import scalaz.syntax.bind._
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.ToMoreMonadErrorOps.toMoreMonadErrorOps
+
 import common.rich.path.RichFile.richFile
 import common.rich.RichFuture.richFuture
 import common.rich.RichT.richT
 import common.scalafx.Builders
 import common.scalafx.RichNode.richNode
-import models.{Song, SongTagParser}
 
 private class FoobarScorer @Inject() (
     reconciler: MbArtistReconciler,
@@ -50,27 +53,20 @@ private class FoobarScorer @Inject() (
     $.value = score
     $.onAction = _ => {
       val value = $.value.value
-      ModelScore.withNameOption(value) match {
-        case Some(newScore) =>
-          val songSummary = source match {
-            case ScoreSource.Artist => song.artistName
-            case ScoreSource.Album => s"${song.artistName} - ${song.albumName}"
-            case ScoreSource.Song => s"${song.artistName} - ${song.title}"
-          }
-          println(s"Updating <$source> score for <$songSummary> to <$newScore>")
-          (source match {
-            case ScoreSource.Artist => scorer.updateArtistScore(song, newScore)
-            case ScoreSource.Album => scorer.updateAlbumScore(song, newScore)
-            case ScoreSource.Song => scorer.updateSongScore(song, newScore)
-          }).toTry
-            .listenError(logger.error("Failed to update score", _))
-            .>|(onScoreChange())
-        case None =>
-          assert(value == ModelScore.DefaultTitle)
-          println(s"Skipping <$value> score")
-          if (value != score) // reset score to old value.
-            $.value = score
+      val newScore = OptionalModelScore.withName(value)
+      val songSummary = source match {
+        case ScoreSource.Artist => song.artistName
+        case ScoreSource.Album => s"${song.artistName} - ${song.albumName}"
+        case ScoreSource.Song => s"${song.artistName} - ${song.title}"
       }
+      println(s"Updating <$source> score for <$songSummary> to <$newScore>")
+      (source match {
+        case ScoreSource.Artist => scorer.updateArtistScore(song, newScore)
+        case ScoreSource.Album => scorer.updateAlbumScore(song, newScore)
+        case ScoreSource.Song => scorer.updateSongScore(song, newScore)
+      }).toTry
+        .listenError(logger.error("Failed to update score", _))
+        .>|(onScoreChange())
     }
     $
   }
@@ -130,21 +126,21 @@ private object FoobarScorer {
   private def makeNullableSongScore(score: FullInfoScore) = score match {
     case FullInfoScore.Default =>
       NullableSongScore(
-        score = ModelScore.DefaultTitle,
+        score = OptionalModelScore.Default.entryName,
         source = "N/A",
-        songScore = ModelScore.DefaultTitle,
-        albumScore = ModelScore.DefaultTitle,
-        artistScore = ModelScore.DefaultTitle,
+        songScore = OptionalModelScore.Default.entryName,
+        albumScore = OptionalModelScore.Default.entryName,
+        artistScore = OptionalModelScore.Default.entryName,
       )
     case FullInfoScore.Scored(score, source, songScore, albumScore, artistScore) =>
       NullableSongScore(
-        score = score.toString,
+        score = score.entryName,
         source = source.toString,
         songScore = songScore.orDefaultString,
         albumScore = albumScore.orDefaultString,
         artistScore = artistScore.orDefaultString,
       )
   }
-  private val comboValues = ModelScore.DefaultTitle +: ModelScore.values.map(_.toString)
+  private val comboValues = OptionalModelScore.entryNames
   private val insets = Builders.insets(left = 5)
 }

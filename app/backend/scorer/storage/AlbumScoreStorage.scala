@@ -1,17 +1,17 @@
 package backend.scorer.storage
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.ListT
-import scalaz.Scalaz.ToFunctorOps
 
 import backend.recon.{Album, Artist, SlickArtistReconStorage}
 import backend.scorer.ModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
-import common.rich.func.BetterFutureInstances._
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import scalaz.ListT
 
 private[scorer] class AlbumScoreStorage @Inject() (
-    ec: ExecutionContext,
+    protected override val ec: ExecutionContext,
     dbP: DbProvider,
     protected val artistStorage: SlickArtistReconStorage,
 ) extends SlickStorageTemplateFromConf[Album, ModelScore](ec, dbP)
@@ -44,5 +44,4 @@ private[scorer] class AlbumScoreStorage @Inject() (
   override def apply(a: Album) = load(a)
   def loadAll: ListT[Future, (Artist, AlbumTitle, ModelScore)] =
     ListT(db.run(tableQuery.result).map(_.toList))
-  override def updateScore(a: Album, score: ModelScore) = replace(a, score).run.void
 }

@@ -30,10 +30,6 @@ $(function() {
   }
   fieldset.on('change', 'select', function() {
     const newScore = $(this).val()
-    if (newScore === "Default") {
-      console.log("Skipping score because it's 'Default'")
-      return
-    }
     const source = $(this).attr('source')
     $.put(`score/${source}/${newScore}/${gplaylist.currentPlayingSong().file}`, function(e) {
       console.log(`Successfully updated ${source} score to ${newScore}`)
