@@ -64,7 +64,7 @@ object SongTagParser {
       performanceYear = tag.firstNonEmpty(FieldKey.PERFORMANCE_YEAR).map(_.toInt),
     )
   }
-  private[models] def optionalSong(file: File): OptionalSong = {
+  def optionalSong(file: File): OptionalSong = {
     validateRealFile(file)
     val tag = AudioFileIO.read(file).getTag
     val year = extractYear(file, tag)
