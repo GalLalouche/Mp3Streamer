@@ -6,6 +6,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process._
 
 import common.rich.path.RichFile._
+import common.rich.primitives.RichString._
 import mains.vimtag.Initializer.InitialLines
 import mains.vimtag.VimEdit._
 
@@ -19,8 +20,11 @@ private class VimEdit @Inject() (cp: CommandsProvider, ec: ExecutionContext) {
     (temp, inFile(temp, initialLines.startingEditLine), initialLines.initialValues)
   }
   private def inFile(file: File, startingEditLine: Int): Future[Seq[String]] = Future {
+    val tempVimCode = SetupBindings.createFile()
+    val loadMacros = Vector("--", "-S", tempVimCode.getAbsolutePath.quote)
     val commands = cp.get ++ Vector(NormalCommand(s"${startingEditLine}G"))
-    val formattedCommands = commands.map(_.asCommandString).mkString(" ", " ", "")
+    val formattedCommands = (commands.map(_.asCommandString) ++ loadMacros).mkString(" ", " ", "")
+
     Vector(VimLocation + formattedCommands, file.path).!!
     file.lines.toVector
   }
