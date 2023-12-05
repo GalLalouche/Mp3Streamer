@@ -88,3 +88,6 @@ GET         /score/*path                             backend.scorer.ScorerContro
 PUT         /score/song/:score/*path                 backend.scorer.ScorerController.updateSongScore(path, score)
 PUT         /score/album/:score/*path                backend.scorer.ScorerController.updateAlbumScore(path, score)
 PUT         /score/artist/:score/*path               backend.scorer.ScorerController.updateArtistScore(path, score)
+
+GET         /lucky/search/*query                     backend.lucky.LuckyController.search(query)
+GET         /lucky/redirect/*query                   backend.lucky.LuckyController.redirect(query)

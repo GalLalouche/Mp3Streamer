@@ -23,10 +23,13 @@ class PlayActionConverter @Inject() (
   private implicit val iec: ExecutionContext = ec
   def ok[C: Writeable](f: Future[C]): Action[AnyContent] =
     Action.async(f.map(Ok(_)).|>(handleFutureFailure))
+  def ok[C: Writeable](c: C): Action[AnyContent] = Action(Ok(c))
+
+  def redirect(url: Future[String]): Action[AnyContent] =
+    Action.async(url.map(Redirect(_)).|>(handleFutureFailure))
 
   private def handleFutureFailure(f: Future[Result]): Future[Result] =
     f.listenError(_.printStackTrace()).handleErrorFlat(InternalServerError apply _.getMessage)
-  def ok[C: Writeable](c: C): Action[AnyContent] = Action(Ok(c))
 
   def noContent(f: Future[Any]): Action[AnyContent] = Action.async(f >| NoContent)
   def noContent(a: Any): Action[AnyContent] = Action(NoContent)
@@ -54,7 +57,7 @@ class PlayActionConverter @Inject() (
   trait Actionable[A] {
     def apply(f: Request[AnyContent] => A): Action[AnyContent]
   }
-  private object Actionable {
+  object Actionable {
     implicit def syncEv[A: Resultable]: Actionable[A] = f => Action(f(_).result)
     implicit def asyncEv[A: Resultable]: Actionable[Future[A]] = f =>
       Action.async(
