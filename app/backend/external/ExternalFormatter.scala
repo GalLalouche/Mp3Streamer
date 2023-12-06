@@ -24,12 +24,15 @@ private class ExternalFormatter @Inject() (
 
   private def getLinks(song: Song): Future[JsValue] = {
     val links = external(song)
-    val extendMissing = TimestampedExtendedLinks.links.modify(
+    val extendMissingArtist = TimestampedExtendedLinks.links.modify(
       SearchExtension.extendMissing(ExternalJsonifier.Hosts, song.artist),
     )
+    val extendMissingAlbum = TimestampedExtendedLinks.links.modify(
+      SearchExtension.extendMissing(Set(Host.RateYourMusic), song.release),
+    )
     for {
-      artistJson <- links.artistLinks.map(extendMissing) |> jsonifier.toJsonOrError
-      albumJson <- links.albumLinks |> jsonifier.toJsonOrError
+      artistJson <- links.artistLinks.map(extendMissingArtist) |> jsonifier.toJsonOrError
+      albumJson <- links.albumLinks.map(extendMissingAlbum) |> jsonifier.toJsonOrError
     } yield Json.obj("Artist links" -> artistJson, "Album links" -> albumJson)
   }
 
