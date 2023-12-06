@@ -42,7 +42,7 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
       expanders,
       markers,
     ),
-    maxAge = Duration.ofDays(28),
+    maxAge = Duration.ofDays(365),
     clock = clock,
   ).|>(new ExternalPipeWrapper.TimeStamper(_))
 }
