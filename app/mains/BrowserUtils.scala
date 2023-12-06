@@ -2,6 +2,7 @@ package mains
 
 import scala.sys.process.Process
 
+import common.Urls
 import io.lemonlabs.uri.Url
 
 private object BrowserUtils {
@@ -10,10 +11,6 @@ private object BrowserUtils {
     Process(
       """C:\Program Files\Google\Chrome\Application\chrome.exe """ + query.toStringPunycode,
     ).!!
-  def searchFor(query: String): Unit =
-    pointBrowserTo(Url.parse("https://www.google.com/search").withQueryString(Query -> query))
-  /* Similar to the above, but enters the first link. */
-  def searchForLucky(query: String): Unit =
-    // Since Google's feeling lucky is borken, use DuckDuckGo's.
-    pointBrowserTo(Url.parse("https://duckduckgo.com/").withQueryString(Query -> ("\\" + query)))
+  def searchFor(query: String): Unit = pointBrowserTo(Urls.googleSearch(query))
+  def searchForLucky(query: String): Unit = pointBrowserTo(Urls.searchForLucky(query))
 }
