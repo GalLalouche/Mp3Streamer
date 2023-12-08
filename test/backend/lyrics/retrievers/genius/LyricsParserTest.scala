@@ -10,6 +10,7 @@ class LyricsParserTest extends FreeSpec with LyricsSpec {
     "lyrics" in verifyLyrics("lyrics1")
     "lyrics2" in verifyLyrics("lyrics2")
     "2022" in verifyLyrics("2022")
+    "ads" in verifyLyrics("ads")
     "spacing" in verifyLyrics("spacing")
     "italics" in verifyLyrics("italics")
     "Ignores parenthesis comments" in verifyLyrics("parens")
