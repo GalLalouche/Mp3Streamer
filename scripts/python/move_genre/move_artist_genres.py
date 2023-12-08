@@ -2,16 +2,18 @@ from __future__ import annotations
 
 import glob
 import os
-import pyautogui
 import shutil
 import subprocess
 from itertools import chain
 from time import sleep
-from typing import NamedTuple, Iterable, Optional, Callable, T, Union
+from typing import NamedTuple, Iterable, Optional, Callable, TypeVar, Union
+
+import pyautogui
 
 from genre import Genre
 
-_FOOBAR_PATH = r'C:\Program Files (x86)\foobar2000\foobar2000.exe'
+T = TypeVar('T')
+_FOOBAR_PATH = r'J:\Program Files (x86)\foobar2000\foobar2000.exe'
 
 def _list_dirs(path: str) -> Iterable[str]:
   return map(lambda x: os.path.join(path, x), next(os.walk(path))[1])
@@ -115,4 +117,4 @@ def main(artist: str, target_genre: Union[str, Genre]):
 if __name__ == '__main__':
   import sys
 
-  main(sys.argv[1], sys.argv[2])
+  main(artist=sys.argv[1], target_genre=sys.argv[2])
