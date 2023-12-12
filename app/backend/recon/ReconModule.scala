@@ -2,7 +2,7 @@ package backend.recon
 
 import scala.concurrent.ExecutionContext
 
-import backend.mb.MbArtistReconciler
+import backend.albums.filler.VerifiedMbArtistReconciler
 import com.google.inject.Provides
 import net.codingwell.scalaguice.ScalaModule
 
@@ -13,7 +13,7 @@ object ReconModule extends ScalaModule {
   }
   @Provides private def artistReconcilerCacher(
       artistReconStorage: ArtistReconStorage,
-      mbArtistReconciler: MbArtistReconciler,
+      mbArtistReconciler: VerifiedMbArtistReconciler,
       ec: ExecutionContext,
   ): ReconcilerCacher[Artist] =
     new ReconcilerCacher[Artist](artistReconStorage, mbArtistReconciler)(ec)

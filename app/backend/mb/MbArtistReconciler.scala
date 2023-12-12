@@ -24,6 +24,7 @@ private[backend] class MbArtistReconciler @Inject() (
       .map(_.ostr("id").map(ReconID.validateOrThrow))
   }
 
+  // TODO Extract this to another module, this shouldn't be here
   def getAlbumsMetadata(artistKey: ReconID): Future[Seq[MbAlbumMetadata]] =
     downloader("release-group", "artist" -> artistKey.id).map(parser.releaseGroups)
 }
