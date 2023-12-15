@@ -6,16 +6,17 @@ import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpec}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.tags.Slow
 
+import backend.{Url => BackendUrl}
 import backend.external.DocumentSpecs
 import backend.lyrics.retrievers.InstrumentalArtistStorage
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
-import backend.Url
 import common.rich.func.BetterFutureInstances._
 import common.rich.path.RichFile.richFile
 import common.rich.RichFuture._
 import common.MutablePartialFunction
 import controllers.ControllerSpec
+import io.lemonlabs.uri.Url
 import play.api.http.Status
 import play.api.inject.guice.GuiceApplicationBuilder
 
@@ -28,7 +29,7 @@ class LyricsControllerTest
     with BeforeAndAfterAll
     with BeforeAndAfter {
   // Modified by some tests
-  private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]
+  private val urlToResponseMapper = MutablePartialFunction.empty[BackendUrl, FakeWSResponse]
   override def fakeApplication() = GuiceApplicationBuilder()
     .overrides(TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).module)
     .build
@@ -56,7 +57,7 @@ class LyricsControllerTest
   "get" in {
     inj
       .instanceOf[LyricsStorage]
-      .store(song, HtmlLyrics("foo", "bar", LyricsUrl.oldUrl(Url("http://foo.com"))))
+      .store(song, HtmlLyrics("foo", "bar", LyricsUrl.Url(Url.parse("http://foo.com"))))
       .get
     get(
       "lyrics/" + encodedSong,
@@ -66,9 +67,9 @@ class LyricsControllerTest
   "push" in {
     inj
       .instanceOf[LyricsStorage]
-      .store(song, HtmlLyrics("foo", "bar", LyricsUrl.oldUrl(Url("http://foo.com"))))
+      .store(song, HtmlLyrics("foo", "bar", LyricsUrl.Url(Url.parse("http://foo.com"))))
       .get
-    urlToResponseMapper += { case Url("https://www.azlyrics.com/lyrics/Foobar") =>
+    urlToResponseMapper += { case BackendUrl("https://www.azlyrics.com/lyrics/Foobar") =>
       FakeWSResponse(bytes = getResourceFile("/backend/lyrics/retrievers/az_lyrics.html").bytes)
     }
     post(

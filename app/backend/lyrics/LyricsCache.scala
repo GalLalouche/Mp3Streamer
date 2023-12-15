@@ -10,12 +10,12 @@ import backend.logging.Logger
 import backend.lyrics.retrievers._
 import backend.lyrics.LyricsUrl.ManualEmpty
 import backend.storage.OnlineRetrieverCacher
-import backend.Url
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFoldableOps._
 import common.rich.func.ToMoreFunctorOps._
 import common.rich.func.ToMoreMonadErrorOps._
 import common.rich.RichT._
+import io.lemonlabs.uri.Url
 import models.Song
 
 // TODO test

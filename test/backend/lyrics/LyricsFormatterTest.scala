@@ -7,16 +7,17 @@ import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.tags.Slow
 
+import backend.{Url => BackendUrl}
 import backend.lyrics.retrievers.{InstrumentalArtistStorage, RetrievedLyricsResult}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
-import backend.Url
 import common.rich.func.BetterFutureInstances._
 import common.rich.path.RichFile._
 import common.storage.Storage
 import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
 import common.MutablePartialFunction
 import controllers.UrlPathUtils
+import io.lemonlabs.uri.Url
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.mockito.Mockito.when
@@ -30,7 +31,7 @@ class LyricsFormatterTest
     with MockitoSugar
     with OneInstancePerTest {
   // Modified by some tests
-  private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]
+  private val urlToResponseMapper = MutablePartialFunction.empty[BackendUrl, FakeWSResponse]
   private val injector =
     TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).injector
   private val $ = injector.instance[LyricsFormatter]
@@ -53,7 +54,7 @@ class LyricsFormatterTest
       val expected = """bar<br><br>Source: <a href="http://bazz.com" target="_blank">foo</a>"""
       injector
         .instance[LyricsStorage]
-        .store(song, HtmlLyrics("foo", "bar", LyricsUrl.oldUrl(Url("http://bazz.com")))) >>
+        .store(song, HtmlLyrics("foo", "bar", LyricsUrl.Url(Url.parse("http://bazz.com")))) >>
         $.get(encodedSong) shouldEventuallyReturn expected
     }
     def testCaseObject(lu: LyricsUrl): Unit =
@@ -70,29 +71,33 @@ class LyricsFormatterTest
 
   "push" - {
     "success" in {
-      urlToResponseMapper += { case Url("https://www.azlyrics.com/lyrics/Foobar") =>
+      urlToResponseMapper += { case BackendUrl("https://www.azlyrics.com/lyrics/Foobar") =>
         FakeWSResponse(bytes = getResourceFile("/backend/lyrics/retrievers/az_lyrics.html").bytes)
       }
       injector
         .instance[LyricsStorage]
         .store(
           song,
-          HtmlLyrics("foo", "bar", LyricsUrl.oldUrl(Url("https://www.azlyrics.com/lyrics/Foobar"))),
+          HtmlLyrics(
+            "foo",
+            "bar",
+            LyricsUrl.Url(Url.parse("https://www.azlyrics.com/lyrics/Foobar")),
+          ),
         ) >>
-        $.push(encodedSong, Url("https://www.azlyrics.com/lyrics/Foobar"))
+        $.push(encodedSong, Url.parse("https://www.azlyrics.com/lyrics/Foobar"))
           .map(_ should startWith("Ascending in sectarian rapture")) >>
         getLyricsForSong.map(_ should startWith("Ascending in sectarian rapture"))
     }
     "failure returns the actual error" in {
       val cache = mock[LyricsCache]
-      when(cache.parse(Url("bar"), song))
+      when(cache.parse(Url.parse("bar"), song))
         .thenReturn(Future.successful(RetrievedLyricsResult.Error(new Exception("Oopsy <daisy>"))))
       new LyricsFormatter(
         injector.instance[ExecutionContext],
         cache,
         injector.instance[UrlPathUtils],
       )
-        .push(encodedSong, Url("bar")) shouldEventuallyReturn "Oopsy &lt;daisy&gt;"
+        .push(encodedSong, Url.parse("bar")) shouldEventuallyReturn "Oopsy &lt;daisy&gt;"
     }
   }
 

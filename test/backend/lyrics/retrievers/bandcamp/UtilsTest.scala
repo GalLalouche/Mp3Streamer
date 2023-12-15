@@ -2,8 +2,8 @@ package backend.lyrics.retrievers.bandcamp
 
 import org.scalatest.FreeSpec
 
-import backend.Url
 import common.test.AuxSpecs
+import io.lemonlabs.uri.Url
 
 class UtilsTest extends FreeSpec with AuxSpecs {
   "doesUrlMatchHost" - {

@@ -9,7 +9,7 @@ import models.Song
 import org.jsoup.nodes.Document
 
 private class ShironetParser @Inject() (helper: SingleHostParsingHelper) extends PassiveParser {
-  override def doesUrlMatchHost = _.address contains "shironet.mako.co.il"
+  override def doesUrlMatchHost = _.toStringPunycode contains "shironet.mako.co.il"
   override def parse = helper.apply(ShironetParser.parser)
 }
 

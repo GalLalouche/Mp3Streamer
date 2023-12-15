@@ -7,8 +7,8 @@ import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 import backend.logging.Logger
 import backend.lyrics.{Instrumental, LyricsUrl}
 import backend.module.TestModuleConfiguration
-import backend.Url
 import common.test.AsyncAuxSpecs
+import io.lemonlabs.uri.Url
 import models.{FakeModelFactory, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 
@@ -29,7 +29,7 @@ class CompositeHtmlRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with O
         Future.successful {
           if (s == songsToFind && url == urlToMatch)
             RetrievedLyricsResult.RetrievedLyrics(
-              Instrumental(instrumentalText, LyricsUrl.oldUrl(url)),
+              Instrumental(instrumentalText, LyricsUrl.Url(url)),
             )
           else
             RetrievedLyricsResult.NoLyrics
@@ -60,7 +60,7 @@ class CompositeHtmlRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with O
     "when one of the URLs match, shouldn't check all the subsequent URLs" in {
       r3.numberOfTimesInvoked shouldReturn 0
       $(song2) shouldEventuallyReturn
-        RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar", LyricsUrl.oldUrl(Url("bar"))))
+        RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar", LyricsUrl.Url(Url("bar"))))
     }
     "when none of the URLs match" in {
       $(unfoundSong) shouldEventuallyReturn RetrievedLyricsResult.NoLyrics
@@ -70,7 +70,7 @@ class CompositeHtmlRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with O
     "when one of the URLs match it doesn't try to the others" in {
       r3.numberOfTimesInvoked shouldReturn 0
       $.parse(Url("bar"), song2) shouldEventuallyReturn
-        RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar", LyricsUrl.oldUrl(Url("bar"))))
+        RetrievedLyricsResult.RetrievedLyrics(Instrumental("bar", LyricsUrl.Url(Url("bar"))))
     }
     "when none of the URLs match" in {
       $(unfoundSong) shouldEventuallyReturn RetrievedLyricsResult.NoLyrics

@@ -4,10 +4,10 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import scalaz.OptionT
 
-import backend.{FutureOption, Url => BackendUrl}
 import backend.logging.Logger
 import backend.lyrics.retrievers.genius.API._
 import backend.recon.StringReconScorer
+import backend.FutureOption
 import com.google.common.annotations.VisibleForTesting
 import common.io.InternetTalker
 import common.rich.RichT._
@@ -23,7 +23,7 @@ private class API @Inject() (
 ) {
   private implicit val ec: ExecutionContext = it
 
-  def getLyricUrl(song: Song): FutureOption[BackendUrl] = OptionT {
+  def getLyricUrl(song: Song): FutureOption[Url] = OptionT {
     val query = (split(song.artistName) ++ split(song.title)).mkString("+")
     it.get(Url(s"https://api.genius.com/search?access_token=$accessToken&q=$query"))
       .map(e =>
@@ -31,7 +31,7 @@ private class API @Inject() (
           logger.info(s"Got status code <${e.status}> from genius\nMessage body\n: ${e.body}")
           None
         } else
-          Json.parse(e.body).as[JsObject].|>(parse(song, _).map(BackendUrl.apply)),
+          Json.parse(e.body).as[JsObject].|>(parse(song, _).map(Url.parse)),
       )
   }
 }

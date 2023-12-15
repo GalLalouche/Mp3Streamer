@@ -4,10 +4,10 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 import backend.lyrics.retrievers.RetrievedLyricsResult
-import backend.Url
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 import controllers.UrlPathUtils
+import io.lemonlabs.uri.Url
 import models.Song
 import play.twirl.api.utils.StringEscapeUtils
 

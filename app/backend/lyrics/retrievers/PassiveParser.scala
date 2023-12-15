@@ -3,8 +3,8 @@ package backend.lyrics.retrievers
 import scala.concurrent.Future
 import scalaz.std.option.optionInstance
 
-import backend.Url
 import common.rich.func.ToMoreFoldableOps._
+import io.lemonlabs.uri.Url
 import models.Song
 
 /** Can parse lyrics but can't actively search for a URL based on song. */

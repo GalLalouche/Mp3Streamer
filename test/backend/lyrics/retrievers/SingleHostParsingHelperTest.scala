@@ -3,8 +3,8 @@ package backend.lyrics.retrievers
 import org.scalatest.AsyncFreeSpec
 
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
-import backend.Url
 import common.test.AsyncAuxSpecs
+import io.lemonlabs.uri.Url
 import models.{FakeModelFactory, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.Document
