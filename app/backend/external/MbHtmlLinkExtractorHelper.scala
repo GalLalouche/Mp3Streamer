@@ -26,6 +26,6 @@ private[backend] class MbHtmlLinkExtractorHelper @Inject() (it: InternetTalker) 
 
     val mbUrl: Url = Url(s"https://musicbrainz.org/$metadataType/${id.id}")
     val mbLink = BaseLink[R](mbUrl, Host.MusicBrainz)
-    it.downloadDocument(mbUrl).map(extractLinks).map(mbLink :: _)
+    it.downloadDocument(mbUrl.toLemonLabs).map(extractLinks).map(mbLink :: _)
   }
 }

@@ -20,7 +20,7 @@ private class SingleHostParsingHelper @Inject() (it: InternetTalker, logger: Log
   private implicit val iec: ExecutionContext = it
 
   def apply(p: SingleHostParser)(url: Url, s: Song): Future[RetrievedLyricsResult] = it
-    .getAsBrowser(url)
+    .getAsBrowser(url.toLemonLabs)
     .map(response =>
       if (response.status == Status.NOT_FOUND)
         RetrievedLyricsResult.NoLyrics

@@ -4,8 +4,8 @@ import java.awt.Image
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-import backend.{Retriever, Url}
 import backend.logging.Logger
+import backend.Retriever
 import common.io.{DirectoryRef, FileRef, InternetTalker}
 import common.io.RichWSRequest._
 import common.rich.func.BetterFutureInstances._
@@ -32,7 +32,7 @@ private class ImageDownloader @Inject() (it: InternetTalker, logger: Logger) {
   def withOutput(outputDirectory: DirectoryRef): Retriever[ImageSource, FolderImage] = {
     case UrlSource(url, width, height) =>
       it
-        .asBrowser(Url.from(url), _.bytes, timeoutInSeconds = 5)
+        .asBrowser(url, _.bytes, timeoutInSeconds = 5)
         .map { bytes =>
           val file = outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
           folderImage(file, local = false, w = width, h = height, ImageSource.toImage(file))

@@ -30,7 +30,7 @@ private class AllMusicHelper @Inject() (
 
   // TODO this should only be invoked once, from the external pipe
   def isValidLink(u: Url): Future[Boolean] =
-    it.downloadDocument(u)
+    it.downloadDocument(u.toLemonLabs)
       .map(d => hasRating(d) && hasStaffReview(d))
   def isCanonical(link: String): Boolean = canonicalRe.findAllMatchIn(link).hasNext
 

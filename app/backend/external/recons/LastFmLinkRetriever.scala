@@ -6,7 +6,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.syntax.bind.ToBindOps
 import scalaz.OptionT
 
-import backend.{FutureOption, Url}
+import backend.{FutureOption, Url => BackendUrl}
 import backend.external.{BaseLink, Host}
 import backend.recon.Artist
 import com.google.common.annotations.VisibleForTesting
@@ -14,6 +14,7 @@ import common.io.InternetTalker
 import common.io.WSAliases._
 import common.rich.func.BetterFutureInstances._
 import common.RichJsoup._
+import io.lemonlabs.uri.Url
 import org.jsoup.Jsoup
 
 private class LastFmLinkRetriever @VisibleForTesting private[recons] (
@@ -35,7 +36,7 @@ private class LastFmLinkRetriever @VisibleForTesting private[recons] (
         .find("link[rel=canonical]")
         .map(_.href)
         .filter(_.nonEmpty)
-        .map(e => BaseLink[Artist](Url(e), Host.LastFm))
+        .map(e => BaseLink[Artist](BackendUrl(e), Host.LastFm))
   }
 
   override def apply(a: Artist): FutureOption[BaseLink[Artist]] = OptionT {

@@ -7,7 +7,7 @@ import scalaz.syntax.bind.ToBindOpsUnapply
 import scalaz.syntax.functor.ToFunctorOps
 import scalaz.OptionT
 
-import backend.{FutureOption, Url}
+import backend.FutureOption
 import com.google.inject.Guice
 import common.io.{IODirectory, InternetTalker}
 import common.rich.func.BetterFutureInstances._
@@ -17,6 +17,7 @@ import common.rich.func.ToMoreMonadErrorOps._
 import common.rich.path.Directory
 import common.rich.RichFuture._
 import common.rich.RichT._
+import io.lemonlabs.uri.Url
 import mains.{IOUtils, MainsModule}
 import mains.cover.{CoverException, DownloadCover}
 import models.IOMusicFinder
