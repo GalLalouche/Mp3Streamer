@@ -40,7 +40,7 @@ class StringFixer @Inject() (logger: Logger) extends (String => String) {
   private lazy val detector = new OptimaizeLangDetector().loadModels()
   private def isExemptLanguage(lang: String) =
     // Japanese and Chinese. Life is too short to start asciing those.
-    lang == "ja" || lang.startsWith("ch")
+    lang == "ja" || lang.startsWith("ch") || lang.startsWith("zh")
 
   override def apply(s: String): String = {
     val trimmed = s.trim
