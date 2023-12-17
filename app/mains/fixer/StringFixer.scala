@@ -30,16 +30,15 @@ class StringFixer @Inject() (logger: Logger) extends (String => String) {
   } catch {
     case e: Exception =>
       val lang = detector.detect(s)
-      if (isCheckedLanguage(lang.getLanguage))
-        throw e
-      else {
+      if (isExemptLanguage(lang.getLanguage)) {
         logger.verbose(s"Could not asciify <$s>")
         s
-      }
+      } else
+        throw e
   }
   // TODO reuse this for Hebrew check as well?
   private lazy val detector = new OptimaizeLangDetector().loadModels()
-  private def isCheckedLanguage(lang: String) =
+  private def isExemptLanguage(lang: String) =
     // Japanese and Chinese. Life is too short to start asciing those.
     lang == "ja" || lang.startsWith("ch")
 
