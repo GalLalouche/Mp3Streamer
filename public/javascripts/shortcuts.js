@@ -1,5 +1,5 @@
 $(function() {
-  $(document).keyup(function(e) {
+  $(document).keypress(function(e) {
     {
       const tag = e.target.tagName.toLowerCase()
       const isFromInput = tag === 'input' || tag === 'textarea'
@@ -15,7 +15,7 @@ $(function() {
       return
     const letter = String.fromCharCode(e.which);
     switch (letter) {
-      case 'Z':
+      case 'z':
         gplayer.stop();
         if (gplaylist.currentIndex() > 0) // if not first song, go to previous song; otherwise restart song
           gplaylist.prev()
@@ -24,20 +24,20 @@ $(function() {
         break;
       case 32: // Space key
       case ' ':
-      case 'K': // fucking youtube :\
-      case 'C':
+      case 'k': // fucking youtube :\
+      case 'c':
         gplayer.togglePause()
         break;
-      case 'V':
+      case 'v':
         gplayer.stop()
         break;
-      case 'B':
+      case 'b':
         gplaylist.next()
         break;
-      case 'N':
+      case 'n':
         loadNextSong()
         break;
-      case 'S':
+      case 's':
         Search.quickSearch()
     }
   });
