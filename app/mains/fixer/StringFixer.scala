@@ -13,7 +13,6 @@ import common.rich.primitives.RichString._
 import common.rich.RichT._
 import common.LanguageString._
 import org.apache.commons.lang3.StringUtils
-import org.apache.tika.langdetect.optimaize.OptimaizeLangDetector
 import resource._
 
 class StringFixer @Inject() (logger: Logger) extends (String => String) {
@@ -29,15 +28,15 @@ class StringFixer @Inject() (logger: Logger) extends (String => String) {
       .to(asciiNormalize(withoutSpecialCharacters.flatMap(toAscii.apply)))
   } catch {
     case e: Exception =>
-      val lang = detector.detect(s)
-      if (isExemptLanguage(lang.getLanguage)) {
+      // TODO reuse this for Hebrew check as well?
+      val lang = DetectLanguage(s)
+      if (isExemptLanguage(lang)) {
         logger.verbose(s"Could not asciify <$s>")
         s
       } else
         throw e
   }
   // TODO reuse this for Hebrew check as well?
-  private lazy val detector = new OptimaizeLangDetector().loadModels()
   private def isExemptLanguage(lang: String) =
     // Japanese and Chinese. Life is too short to start asciing those.
     lang == "ja" || lang.startsWith("ch") || lang.startsWith("zh")

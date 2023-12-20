@@ -110,4 +110,9 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   "Can handle °" in {
     verifyFix("100°", "100 Degrees")
   }
+
+  "Asian languages" in {
+    verifyEmptyFix("センチメートル")
+    verifyEmptyFix("アン")
+  }
 }
