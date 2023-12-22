@@ -10,17 +10,19 @@ routesGenerator := InjectedRoutesGenerator
 
 val playWsStandaloneVersion = "1.1.2"
 
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
+addCompilerPlugin(("org.scalamacros" % "paradise" % "2.1.1").cross(CrossVersion.full))
 addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.2.4")
 Compile / doc / sources := Seq.empty
 Compile / packageDoc / publishArtifact := false
 
 resolvers ++= Seq(
-  "Typesafe Ivy Repository" at "https://repo.typesafe.com/typesafe/ivy-releases/",
-  "Typesafe Maven Repository" at "https://repo.typesafe.com/typesafe/maven-releases/",
-  "Maven Repository" at "https://repo1.maven.org/maven2/",
-  "Apache Snapshot Repository" at "https://repository.apache.org/snapshots/",
-  Resolver.file("Local ivy repo", file(System.getProperty("user.home") + "/.ivy2/local"))(Resolver.ivyStylePatterns),
+  "Typesafe Ivy Repository".at("https://repo.typesafe.com/typesafe/ivy-releases/"),
+  "Typesafe Maven Repository".at("https://repo.typesafe.com/typesafe/maven-releases/"),
+  "Maven Repository".at("https://repo1.maven.org/maven2/"),
+  "Apache Snapshot Repository".at("https://repository.apache.org/snapshots/"),
+  Resolver.file("Local ivy repo", file(System.getProperty("user.home") + "/.ivy2/local"))(
+    Resolver.ivyStylePatterns,
+  ),
   Resolver.mavenLocal,
 )
 val akkaVersion = "2.5.4"
@@ -40,7 +42,6 @@ libraryDependencies ++= Seq(
   "com.google.inject.extensions" % "guice-assistedinject" % guiceVersion,
   "com.h2database" % "h2" % "1.4.196",
   "com.jsuereth" %% "scala-arm" % "2.0",
-  "com.optimaize.languagedetector" % "language-detector" % "0.6",
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
   "com.typesafe.play" %% "play" % "2.6.6",
@@ -56,10 +57,8 @@ libraryDependencies ++= Seq(
   "my.net.jthink" % "jaudiotagger" % "2.2.9-SNAPSHOT",
   "net.codingwell" %% "scala-guice" % "4.2.1",
   "org.apache.commons" % "commons-io" % "1.3.2",
-  "org.apache.tika" % "tika-core" % "2.7.0",
-  "org.apache.tika" % "tika-langdetect-optimaize" % "2.7.0",
   "org.jsoup" % "jsoup" % "1.12.1",
-  "org.me" %% "scalacommon" % "1.0" changing(),
+  ("org.me" %% "scalacommon" % "1.0").changing(),
   "org.mockito" % "mockito-all" % "1.9.5" % "test",
   "org.scala-lang.modules" %% "scala-swing" % "2.0.0",
   "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
@@ -73,5 +72,6 @@ libraryDependencies ++= Seq(
 )
 
 scalacOptions += "-Ypartial-unification"
-lazy val root = (project in file(".")).enablePlugins(PlayScala, LauncherJarPlugin)
-    .settings(scalacOptions -= "-deprecation") // Fuck your deprecation bullshit.
+lazy val root = (project in file("."))
+  .enablePlugins(PlayScala, LauncherJarPlugin)
+  .settings(scalacOptions -= "-deprecation") // Fuck your deprecation bullshit.
