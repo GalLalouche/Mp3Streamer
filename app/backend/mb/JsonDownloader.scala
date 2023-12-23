@@ -25,9 +25,7 @@ private class JsonDownloader @Inject() (it: InternetTalker, logger: Logger) {
 
   private val actor = SimpleTypedActor.asyncRateLimited[Input, JsObject](
     "JsonDownloader",
-    { case Input(method, params, times) =>
-      aux(method, params, times)
-    },
+    { case Input(method, params, times) => aux(method, params, times) },
     1.seconds,
     logger,
   )

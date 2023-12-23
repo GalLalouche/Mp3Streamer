@@ -105,6 +105,7 @@ Array.prototype.custom_max = function() {
   }
   return max
 }
+
 // Adding this is a prototype method to Object messes things up for some reason :\
 function map_values(o, f) {
   let result = {}

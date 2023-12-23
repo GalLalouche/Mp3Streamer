@@ -31,6 +31,5 @@ object SimpleTypedActor {
       name: String,
       f: Msg => Result,
       logger: Logger,
-  ): SimpleTypedActor[Msg, Result] =
-    new UniqueSimpleTypedActorImpl(name, f, logger)
+  ): SimpleTypedActor[Msg, Result] = new UniqueSimpleTypedActorImpl(name, f, logger)
 }

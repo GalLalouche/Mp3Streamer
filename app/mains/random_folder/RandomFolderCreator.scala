@@ -1,20 +1,9 @@
 package mains.random_folder
 
-import monocle.Monocle.toApplySetterOps
-
 import java.io.File
-import javax.inject.Inject
-import scala.collection.mutable
-import scala.util.Random
 
 import com.google.inject.assistedinject.Assisted
-import common.io.{IOFile, IOSystem}
-import common.rich.collections.RichSeq._
-import common.rich.path.Directory
-import common.rich.path.RichFile._
-import common.rich.primitives.RichBoolean._
-import common.rich.primitives.RichInt._
-import common.Filter
+import javax.inject.Inject
 import me.tongfei.progressbar.ProgressBar
 import models.{IOSong, Poster}
 import org.apache.commons.io.FileUtils
@@ -24,6 +13,19 @@ import org.jaudiotagger.tag.images.StandardArtwork
 import org.jaudiotagger.tag.FieldKey
 import resource._
 import songs.selector.MultiStageSongSelector
+
+import scala.collection.mutable
+import scala.util.Random
+
+import monocle.Monocle.toApplySetterOps
+
+import common.io.{IOFile, IOSystem}
+import common.rich.collections.RichSeq._
+import common.rich.path.Directory
+import common.rich.path.RichFile._
+import common.rich.primitives.RichBoolean._
+import common.rich.primitives.RichInt._
+import common.Filter
 
 // TODO clean up all E:/Temp and use an environment variable
 /** Selects n random songs and dumps them in a folder on D:\ */
@@ -135,6 +137,6 @@ private class RandomFolderCreator @Inject() (
     // The extra files mess up the copy.
     dir.files.filter(Set("m3u", "txt") contains _.extension).foreach(_.delete())
     val songs = dir.files.toSet
-    copy(songs, Directory.makeDir(s"$tempDirectoryName/Temp/$outputName").clear(), playlistName)
+    copy(songs, Directory.makeDir(s"$tempDirectoryName/$outputName").clear(), playlistName)
   }
 }

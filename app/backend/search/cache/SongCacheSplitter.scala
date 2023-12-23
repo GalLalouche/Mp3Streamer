@@ -10,7 +10,8 @@ import common.TimedLogger
 import models.{Album, Artist, Song}
 
 /**
- * Saves the song cache in individual files, adapting its format the one used by the index builder.
+ * Saves the song cache in individual files, adapting its format to the one used by the index
+ * builder.
  */
 private class SongCacheSplitter @Inject() (
     jsonableSaver: JsonableSaver,
@@ -39,9 +40,7 @@ private class SongCacheSplitter @Inject() (
         .toSet <| jsonableSaver.saveArray,
     )
     log("saving artists") {
-      val artists = albums.groupBy(_.artistName).map { case (artistName, albums) =>
-        Artist(artistName, albums)
-      }
+      val artists = albums.groupBy(_.artistName).map(Function.tupled(Artist.apply))
       jsonableSaver.saveArray[Artist](artists)
     }
   }

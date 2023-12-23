@@ -34,9 +34,7 @@ object FindSongsNotInPlaylist {
       .map(normalizePath)
       .toSet
     println(s"playlist songs |${playlistSongs.size}|")
-    val realSongs = musicFiles.getSongFiles
-      .map(_.path |> normalizePath)
-      .toSet
+    val realSongs = musicFiles.getSongFiles.map(_.path |> normalizePath).toSet
     println(s"actual songs |${realSongs.size}|")
     val playlistMissing = realSongs.diff(playlistSongs).toVector.sorted
     playlistMissing

@@ -21,6 +21,5 @@ private[songs] object SelectorModule extends ScalaModule with ModuleUtils {
   @Provides private def lengthFilter(
       genreFinder: GenreFinder,
       cachedModelScorer: CachedModelScorer,
-  ): LengthFilter =
-    new LengthFilter(genreFinder = genreFinder, cachedModelScorer, minLength = 2.minutes)
+  ) = new LengthFilter(genreFinder, cachedModelScorer, minLength = 2.minutes)
 }

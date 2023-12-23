@@ -11,7 +11,7 @@ $(function() {
   }
 
   Volume.setManualVolume = function(v) {
-     // if v is between 0 and 1, convert to be between 0 and 100
+    // if v is between 0 and 1, convert to be between 0 and 100
     volumeBaseline = (v < 1 && v > 0 ? v * 100 : v) / calculateVolumeCoefficientFromGain()
     updateVolume()
   }

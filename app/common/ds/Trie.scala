@@ -7,7 +7,7 @@ import common.rich.RichTuple._
 sealed trait Trie[+A] {
   def +[B >: A](key: String, v: B): Trie[B]
   def +[B >: A](e: (String, B)): Trie[B]
-  /** Returns all values who key is prefixed by the input key. */
+  /** Returns all values whose key is prefixed by the input key. */
   def withPrefix(key: String): Iterable[A]
   /** Returns all values with the exact key. */
   def exact(key: String): Iterable[A]
@@ -17,7 +17,7 @@ sealed trait Trie[+A] {
 
 object Trie {
   private case class TrieImpl[+A](map: Map[Char, TrieImpl[A]], values: Vector[A]) extends Trie[A] {
-    private def getOrEmpty(c: Char): TrieImpl[A] = map.getOrElse(c, NIL)
+    private def getOrEmpty(c: Char): TrieImpl[A] = map.getOrElse(c, Nil)
     override def +[B >: A](key: String, v: B): TrieImpl[B] =
       if (key.isEmpty) copy(values = values :+ v)
       else copy(map = map + (key.head -> (getOrEmpty(key.head) + (key.tail -> v))))
@@ -31,8 +31,8 @@ object Trie {
     override def exact(key: String): Iterable[A] = aux(key, onEmptyKey = _.values)
   }
 
-  private val NIL: TrieImpl[Nothing] = TrieImpl(Map(), Vector.empty)
-  def empty[A]: Trie[A] = NIL
+  private val Nil: TrieImpl[Nothing] = TrieImpl(Map.empty, Vector.empty)
+  def empty[A]: Trie[A] = Nil
 
   def fromMap[A](map: Map[String, A]): Trie[A] = map.foldLeft(empty[A])(_ + _)
   def fromMultiMap[A](map: Map[String, Iterable[A]]): Trie[A] = map.foldLeft(empty[A]) {

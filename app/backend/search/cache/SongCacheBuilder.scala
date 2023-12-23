@@ -2,7 +2,6 @@ package backend.search.cache
 
 import java.time.Clock
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 import backend.logging.LoggingLevel
 import common.concurrency.report.ReportObservable
@@ -15,24 +14,22 @@ import rx.lang.scala.Observable
 
 private class SongCacheBuilder @Inject() (
     mf: MusicFinder,
-    ec: ExecutionContext,
     clock: Clock,
     timedLogger: TimedLogger,
 ) {
-  private implicit val iec: ExecutionContext = ec
-  private def songFiles =
-    timedLogger("fetching song files", LoggingLevel.Info)(Observable.from(mf.getSongFiles))
-  private def extractSongMetadata(f: FileRef) =
-    TimestampedSong(clock.getLocalDateTime, mf.parseSong(f))
-  @deprecated("You should probably use TimestampedSongs.fromSongJsonFile")
-  def fresh(): ReportObservable[TimestampedSong, SongCache] =
-    ReportObservable.aggregator(songFiles.map(extractSongMetadata), SongCache.apply)
   def updating(cache: SongCache): ReportObservable[TimestampedSong, SongCache] =
     ReportObservable.filteringAggregator(
-      observable = songFiles.map { f =>
-        val needsUpdate = cache.needsUpdate(f)
-        (needsUpdate, if (needsUpdate) extractSongMetadata(f) else cache.get(f).get)
+      observable = {
+        val songFiles =
+          timedLogger("fetching song files", LoggingLevel.Info)(Observable.from(mf.getSongFiles))
+        songFiles.map { f =>
+          val needsUpdate = cache.needsUpdate(f)
+          (needsUpdate, if (needsUpdate) extractSongMetadata(f) else cache.get(f).get)
+        }
       },
       finisher = SongCache.apply,
     )
+
+  private def extractSongMetadata(f: FileRef) =
+    TimestampedSong(clock.getLocalDateTime, mf.parseSong(f))
 }
