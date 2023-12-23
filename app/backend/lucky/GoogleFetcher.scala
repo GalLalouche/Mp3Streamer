@@ -16,17 +16,17 @@ import org.jsoup.nodes.Element
 import org.jsoup.Jsoup
 
 /**
- * The reason for this nonsense is that for some reason, I can't have an href that links to a
- * DuckDuckGo or Google's "I'm feeling lucky" quick search. So this is I'm feeling lucky as a
- * service, which does the traversal in the backend. Although I use DDG other places
- * ([[mains.BrowserUtils]]), I uses Google's here because it seems to work better ¯\_(ツ)_/¯.
+ * I don't actually use this anymore, since the API returned garbage results (the first result was
+ * different than the top level Google result), so I'm keeping it here for reference.
  */
-private class LuckyModel @Inject() (
+private class GoogleFetcher @Inject() (
     it: InternetTalker,
     googleSearch: GoogleSearch,
 ) {
   def search(query: String): Future[String] =
-    googleSearch(query, resultsPerQuery = 1).map(_.array("items")(0).str("link"))
+    googleSearch(query, resultsPerQuery = 7).map(
+      _.array("items").log(_.value.mkString("\n")).apply(0).str("link"),
+    )
 
   private implicit val iec: ExecutionContext = it
 

@@ -3,6 +3,7 @@ package common
 import scala.collection.JavaConverters._
 
 import common.rich.collections.RichTraversableOnce._
+import common.rich.RichT.richT
 import org.jsoup.nodes.Element
 
 object RichJsoup {
@@ -11,6 +12,7 @@ object RichJsoup {
     def selectSingle(cssQuery: String): Element = selectIterator(cssQuery).single
     def selectSingleOpt(cssQuery: String): Option[Element] = selectIterator(cssQuery).singleOpt
     def find(cssQuery: String): Option[Element] = Option($.selectFirst(cssQuery))
+    def attrOpt(s: String): Option[String] = $.attr(s).optFilter(_.nonEmpty)
 
     def href = $.attr("href")
   }
