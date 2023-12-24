@@ -105,6 +105,7 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   "colons and other delimiters" in {
     verifyFix("The band: The Album & The movie", "The Band: The Album & The Movie")
     verifyFix("The band (the album)", "The Band (The Album)")
+    verifyFix("I. the Test", "I. The Test")
   }
 
   "Can handle °" in {

@@ -176,7 +176,7 @@ object StringFixer extends StringFixer(ConsoleLogger) {
   val SpecialApostrophes: Pattern = Pattern.compile("[‘’�´]")
   private val SpecialDashes = Pattern.compile("[—–-−‐]")
 
-  private val Delimiters = Pattern.compile("""[ ()\-:/"&]+""")
+  private val Delimiters = Pattern.compile("""[ ()\-:/"&.]+""")
 
   // Modified from https://stackoverflow.com/a/29364083/736508
   // TODO RichFile should really start using UTF-8 by default
