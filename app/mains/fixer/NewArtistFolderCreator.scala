@@ -29,7 +29,8 @@ private object NewArtistFolderCreator {
       iconSideInPixels = IconSideInPixels,
       bigIconMultiplayer = BigIconMultiplayer,
       subGenreDirs = Seq("Rock", "Metal").map(genre(_).dirs),
-      bigGenreDirs = Seq("Jazz", "New Age", "Musicals").map(genre),
+      // Classical isn't here since classical music has its own special ordering mechanism.
+      bigGenreDirs = Seq("Blues", "Jazz", "New Age", "Musicals").map(genre),
     )
 
     val $ = Promise[Directory]()

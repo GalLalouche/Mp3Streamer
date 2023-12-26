@@ -15,6 +15,7 @@ class GenreFinder @Inject() (stringGenreFinder: StringGenreFinder) {
   private def from(g: StringGenre): Genre = g match {
     case StringGenre.Flat(name) =>
       name match {
+        case "Blues" => Blues
         case "Jazz" => Jazz
         case "Musicals" => Musicals
         case "New Age" => NewAge

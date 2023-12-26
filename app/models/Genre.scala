@@ -3,6 +3,7 @@ package models
 sealed class Genre(val name: String) extends Ordered[Genre] {
   private def isFlat = this match {
     case Genre.Jazz => true
+    case Genre.Blues => true
     case Genre.Musicals => true
     case Genre.NewAge => true
     case Genre.Classical => true
@@ -29,6 +30,7 @@ sealed class Genre(val name: String) extends Ordered[Genre] {
 }
 
 object Genre extends {
+  case object Blues extends Genre("Blues")
   case object Jazz extends Genre("Jazz")
   case object Musicals extends Genre("Musicals")
   case object NewAge extends Genre("New Age")
