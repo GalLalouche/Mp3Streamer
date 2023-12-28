@@ -88,11 +88,6 @@ private object DownloadCover {
       return // This can happen if a local file named folder.jpg is chosen.
     }
 
-    // backup old folder.jpg file if it exists
-    val oldFile = outputDirectory \ "folder.jpg"
-    if (oldFile.exists)
-      RichFileUtils.rename(oldFile, "folder.bak.jpg")
-
     f.move(outputDirectory)
   }
 
