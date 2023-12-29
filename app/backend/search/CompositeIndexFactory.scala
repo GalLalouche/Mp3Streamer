@@ -2,10 +2,11 @@ package backend.search
 
 import javax.inject.Inject
 
-import common.io.JsonableSaver
-import common.json.Jsonable
 import models.{Album, Artist, Song}
 import models.ModelJsonable.{AlbumJsonifier, ArtistJsonifier, SongJsonifier}
+
+import common.io.JsonableSaver
+import common.json.Jsonable
 
 private class CompositeIndexFactory @Inject() (saver: JsonableSaver) {
   def create() = {

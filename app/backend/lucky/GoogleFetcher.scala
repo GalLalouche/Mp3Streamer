@@ -1,19 +1,22 @@
 package backend.lucky
 
 import javax.inject.Inject
+
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
+
 import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.concurrent.{ExecutionContext, Future}
-import scalaz.OptionT
 
-import common.io.google.GoogleSearch
-import common.io.InternetTalker
-import common.json.RichJson._
-import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.func.BetterFutureInstances.betterFutureInstances
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
+import scalaz.OptionT
+
+import common.io.InternetTalker
+import common.io.google.GoogleSearch
+import common.json.RichJson._
 import common.rich.RichT.richT
-import org.jsoup.nodes.Element
-import org.jsoup.Jsoup
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 /**
  * I don't actually use this anymore, since the API returned garbage results (the first result was

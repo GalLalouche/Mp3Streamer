@@ -2,8 +2,9 @@ package backend.external.extensions
 
 import backend.external.{Host, MarkedLink, MarkedLinks}
 import backend.recon.{Album, Artist, Reconcilable}
-import common.rich.primitives.RichString._
+
 import common.rich.RichT._
+import common.rich.primitives.RichString._
 
 private sealed abstract class MusicBrainzExtender[R <: Reconcilable: Manifest]
     extends LinkExtender[R] {

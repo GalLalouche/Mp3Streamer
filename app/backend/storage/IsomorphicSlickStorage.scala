@@ -1,9 +1,10 @@
 package backend.storage
 
 import scala.concurrent.{ExecutionContext, Future}
-import scalaz.ListT
 
 import common.rich.func.BetterFutureInstances._
+import scalaz.ListT
+
 import common.rich.RichT.richT
 
 // TODO too many damn inheritances, use type clasess?

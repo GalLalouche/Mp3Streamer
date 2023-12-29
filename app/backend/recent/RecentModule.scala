@@ -3,11 +3,12 @@ package backend.recent
 import javax.inject.Singleton
 
 import com.google.inject.Provides
-import common.io.DirectoryRef
-import common.PipeSubject
 import models.{Album, AlbumFactory}
 import net.codingwell.scalaguice.ScalaPrivateModule
 import rx.lang.scala.{Observable, Observer}
+
+import common.PipeSubject
+import common.io.DirectoryRef
 
 object RecentModule extends ScalaPrivateModule {
   private type DirToAlbum = PipeSubject[DirectoryRef, Album]

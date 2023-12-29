@@ -1,9 +1,9 @@
 package mains.vimtag.lines
 
+import mains.vimtag.{Change, Common, Empty, Keep, Parser}
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
-import mains.vimtag.{Change, Common, Empty, Keep, Parser}
 
 class LinesParserTest extends FreeSpec with AuxSpecs {
   private val $ = new Parser(LinesParser)

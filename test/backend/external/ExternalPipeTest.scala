@@ -1,20 +1,21 @@
 package backend.external
 
-import scala.concurrent.Future
-import scalaz.OptionT
-
-import org.scalatest.AsyncFreeSpec
-
+import backend.external.Host.{AllMusic, RateYourMusic, Wikipedia}
 import backend.external.expansions.ExternalLinkExpander
 import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.{LinkRetriever, LinkRetrievers}
-import backend.external.Host.{AllMusic, RateYourMusic, Wikipedia}
 import backend.recon.{Album, ReconID}
+import io.lemonlabs.uri.Url
+import org.scalatest.AsyncFreeSpec
+
+import scala.concurrent.Future
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT
+import scalaz.OptionT
+
 import common.rich.RichT._
 import common.test.AuxSpecs
-import io.lemonlabs.uri.Url
 
 class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
   private val existingHost: Host = Host("existinghost", Url.parse("existinghosturl"))

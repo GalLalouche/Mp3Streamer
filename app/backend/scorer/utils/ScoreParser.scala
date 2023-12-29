@@ -1,20 +1,23 @@
 package backend.scorer.utils
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
-import scalaz.Scalaz.{eitherInstance, optionInstance, ToFunctorOps, ToMonadPlusOpsUnapply, ToTraverseOpsUnapply, ToTuple2Ops}
 
 import backend.logging.Logger
 import backend.recon.{Album, Artist}
 import backend.scorer.{CachedModelScorer, ModelScore}
 import backend.scorer.storage.ArtistScoreStorage
-import common.io.FileRef
+
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreSeqInstances._
 import common.rich.func.MoreTraverseInstances._
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.TuplePLenses
+import scalaz.Scalaz.{eitherInstance, optionInstance, ToFunctorOps, ToMonadPlusOpsUnapply, ToTraverseOpsUnapply, ToTuple2Ops}
+
+import common.io.FileRef
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichEither._
 import common.rich.primitives.RichString._

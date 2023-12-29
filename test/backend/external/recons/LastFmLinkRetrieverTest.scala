@@ -2,16 +2,16 @@ package backend.external.recons
 
 import java.net.HttpURLConnection
 
-import org.scalatest.AsyncFreeSpec
-
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.Artist
+import io.lemonlabs.uri.Url
+import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.AsyncFreeSpec
+
 import common.io.InternetTalker
 import common.rich.RichT._
 import common.test.AsyncAuxSpecs
-import io.lemonlabs.uri.Url
-import net.codingwell.scalaguice.InjectorExtensions._
 
 class LastFmLinkRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentSpecs {
   private val config = new TestModuleConfiguration

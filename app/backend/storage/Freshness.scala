@@ -1,11 +1,10 @@
 package backend.storage
 
-import monocle.Iso
-
 import java.time.LocalDateTime
-import scalaz.std.option.optionInstance
 
 import common.rich.func.ToMoreFoldableOps._
+import monocle.Iso
+import scalaz.std.option.optionInstance
 
 sealed trait Freshness {
   def localDateTime: Option[LocalDateTime]

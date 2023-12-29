@@ -1,10 +1,12 @@
 package backend.pkg
 
 import javax.inject.Inject
+
+import controllers.{FileStreamFormatter, StreamResult, UrlPathUtils}
+
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.io.IODirectory
-import controllers.{FileStreamFormatter, StreamResult, UrlPathUtils}
 
 private class DownloaderFormatter @Inject() (
     ec: ExecutionContext,

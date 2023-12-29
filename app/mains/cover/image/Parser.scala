@@ -1,9 +1,10 @@
 package mains.cover.image
 
-import common.json.RichJson._
 import io.lemonlabs.uri.Url
 import mains.cover.{ImageSource, UrlSource}
 import play.api.libs.json.JsObject
+
+import common.json.RichJson._
 
 private object Parser {
   def apply(json: JsObject): Seq[ImageSource] = json.array("items").value.map { e =>

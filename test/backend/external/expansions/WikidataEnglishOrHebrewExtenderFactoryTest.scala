@@ -1,10 +1,10 @@
 package backend.external.expansions
 
+import backend.external.{BaseLink, DocumentSpecs, Host}
+import io.lemonlabs.uri.Url
 import org.scalatest.FreeSpec
 
-import backend.external.{BaseLink, DocumentSpecs, Host}
 import common.rich.collections.RichTraversableOnce._
-import io.lemonlabs.uri.Url
 
 class WikidataEnglishOrHebrewExtenderFactoryTest extends FreeSpec with DocumentSpecs {
   "parse" - {

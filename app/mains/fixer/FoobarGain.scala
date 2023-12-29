@@ -1,13 +1,15 @@
 package mains.fixer
 
 import javax.inject.Inject
+
+import mains.fixer.FoobarGain._
+import models.IOMusicFinder
+
 import scala.sys.process._
 
 import common.io.IODirectory
 import common.rich.path.Directory
 import common.rich.primitives.RichString._
-import mains.fixer.FoobarGain._
-import models.IOMusicFinder
 
 private class FoobarGain @Inject() (mf: IOMusicFinder) {
   /**

@@ -2,24 +2,27 @@ package backend.external.expansions
 
 import java.util.regex.Pattern
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
-import scalaz.std.option.optionInstance
-import scalaz.Traverse
 
 import backend.external.{BaseLink, BaseLinks, Host}
 import backend.external.expansions.WikipediaAlbumExternalLinksExpander._
 import backend.logging.Logger
 import backend.recon.Album
 import com.google.common.annotations.VisibleForTesting
-import common.io.InternetTalker
-import common.rich.collections.RichTraversableOnce._
-import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
-import common.rich.func.BetterFutureInstances._
-import common.rich.primitives.RichString._
-import common.rich.RichT._
-import common.RichJsoup._
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
+
+import scala.concurrent.ExecutionContext
+
+import common.rich.func.{MoreTraversableInstances, MoreTraverseInstances, ToMoreFoldableOps, ToMoreMonadErrorOps, ToTraverseMonadPlusOps}
+import common.rich.func.BetterFutureInstances._
+import scalaz.Traverse
+import scalaz.std.option.optionInstance
+
+import common.RichJsoup._
+import common.io.InternetTalker
+import common.rich.RichT._
+import common.rich.collections.RichTraversableOnce._
+import common.rich.primitives.RichString._
 
 private class WikipediaAlbumExternalLinksExpander @Inject() (
     it: InternetTalker,

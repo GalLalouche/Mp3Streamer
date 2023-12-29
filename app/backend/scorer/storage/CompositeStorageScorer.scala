@@ -10,8 +10,8 @@ import models.Song
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
-import scalaz.Scalaz.ToBindOpsUnapply
 import common.rich.func.BetterFutureInstances._
+import scalaz.Scalaz.ToBindOpsUnapply
 
 /** Scores a song by trying multiple sources, from most specific score to least specific. */
 private[scorer] class CompositeStorageScorer @Inject() (

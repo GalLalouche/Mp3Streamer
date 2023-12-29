@@ -1,19 +1,21 @@
 package common.concurrency
 
 import java.util.concurrent.LinkedBlockingQueue
+
+import backend.logging.Logger
+import org.scalatest.{AsyncFreeSpec, Matchers}
+
 import scala.collection.JavaConverters._
-import scala.concurrent.duration._
 import scala.concurrent.Future
+import scala.concurrent.duration._
+
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.std.vector.vectorInstance
 import scalaz.syntax.functor.ToFunctorOps
 import scalaz.syntax.traverse.ToTraverseOps
 
-import org.scalatest.{AsyncFreeSpec, Matchers}
-
-import backend.logging.Logger
-import common.rich.collections.RichSeq._
 import common.rich.RichTuple._
+import common.rich.collections.RichSeq._
 import common.test.AsyncAuxSpecs
 
 class RateLimitedActorAsyncImplTest extends AsyncFreeSpec with AsyncAuxSpecs with Matchers {

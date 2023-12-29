@@ -1,13 +1,14 @@
 package common.concurrency
 
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.OptionT
-
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
+
+import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT
 import common.rich.func.RichStreamT.richStreamT
+import scalaz.OptionT
+
 import common.test.AsyncAuxSpecs
 
 class PrefetchingIterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {

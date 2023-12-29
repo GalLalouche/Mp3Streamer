@@ -1,14 +1,13 @@
 package backend.external.expansions
 
-import scala.concurrent.Future
-
-import org.scalatest.mockito.MockitoSugar
-
 import backend.recon.{Album, Artist}
 import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.ScalaModule
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import org.scalatest.mockito.MockitoSugar
+
+import scala.concurrent.Future
 
 class AllMusicAlbumFinderTest extends SameHostExpanderSpec with MockitoSugar {
   private val allMusicHelper = mock[AllMusicHelper]

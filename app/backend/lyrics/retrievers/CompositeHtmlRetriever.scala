@@ -1,10 +1,11 @@
 package backend.lyrics.retrievers
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 import backend.logging.Logger
 import backend.lyrics.retrievers.genius.GeniusLyricsRetriever
+
+import scala.concurrent.ExecutionContext
 
 private[lyrics] class CompositeHtmlRetriever(
     ec: ExecutionContext,

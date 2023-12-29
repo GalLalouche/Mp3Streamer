@@ -1,15 +1,17 @@
 package backend.lucky
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
 import backend.lucky.DuckDuckgoFetcher.{QueryPrefix, RutPrefix, UrlPrefix}
-import common.io.InternetTalker
-import common.rich.collections.RichTraversableOnce.richTraversableOnce
-import common.rich.RichT.richT
-import common.RichJsoup.richElement
 import controllers.UrlDecodeUtils
 import org.jsoup.Jsoup
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import common.RichJsoup.richElement
+import common.io.InternetTalker
+import common.rich.RichT.richT
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class DuckDuckgoFetcher @Inject() (it: InternetTalker, decoder: UrlDecodeUtils) {
   private implicit val iec: ExecutionContext = it

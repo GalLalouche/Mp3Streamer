@@ -1,8 +1,9 @@
 package backend.module
 
+import io.lemonlabs.uri.Url
+
 import common.io.WSAliases._
 import common.rich.primitives.RichBoolean._
-import io.lemonlabs.uri.Url
 
 private class FakeWSClient(getRequest: Url => WSRequest) extends WSClient {
   private var wasClosed = false

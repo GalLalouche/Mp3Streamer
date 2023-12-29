@@ -2,13 +2,14 @@ package mains.vimtag
 
 import javax.inject.Inject
 
-import common.io.DirectoryRef
-import common.rich.collections.RichSeq._
-import common.rich.primitives.RichBoolean.richBoolean
-import common.rich.RichT._
-import common.rich.RichTuple.richTuple2
 import mains.vimtag.Initializer.InitialLines
 import models.{MusicFinder, OptionalSong}
+
+import common.io.DirectoryRef
+import common.rich.RichT._
+import common.rich.RichTuple.richTuple2
+import common.rich.collections.RichSeq._
+import common.rich.primitives.RichBoolean.richBoolean
 
 /** Sets up the initial lines and writes usage instructions. */
 private class Initializer @Inject() (mf: MusicFinder, aux: IndividualInitializer) {

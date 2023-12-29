@@ -1,9 +1,9 @@
 package backend.external.expansions
 
+import backend.FutureOption
 import backend.external.{BaseLink, Host}
 import backend.external.recons.LinkRetriever
 import backend.recon.{Album, Artist}
-import backend.FutureOption
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums */
 private trait SameHostExpander {

@@ -1,16 +1,18 @@
 package backend.search
 
 import javax.inject.Inject
-import scala.concurrent.Future
 
 import backend.recent.{NewDir, RecentController}
 import backend.search.cache.SongCacheUpdater
-import common.io.DirectoryRef
-import common.rich.collections.RichTraversableOnce.richTraversableOnce
-import common.rich.RichObservable.richObservable
-import common.rich.RichT._
 import rx.lang.scala.Observer
 import songs.selector.SongSelectorState
+
+import scala.concurrent.Future
+
+import common.io.DirectoryRef
+import common.rich.RichObservable.richObservable
+import common.rich.RichT._
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 /**
  * Wraps [[SongCacheUpdater]] so it updates [[SearchState] and [[SongSearchState]] at the end, as

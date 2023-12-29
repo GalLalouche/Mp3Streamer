@@ -2,15 +2,17 @@ package backend.module
 
 import java.time.Clock
 import java.util.logging.LogManager
-import scala.collection.mutable
 
 import backend.logging.{Logger, StringBuilderLogger}
 import com.google.inject.Provides
-import common.guice.ModuleUtils
-import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
-import common.FakeClock
 import models.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
+
+import scala.collection.mutable
+
+import common.FakeClock
+import common.guice.ModuleUtils
+import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
 
 class TestModule extends ScalaModule with ModuleUtils {
   LogManager.getLogManager.readConfiguration(getClass.getResourceAsStream("/logging.properties"))

@@ -8,9 +8,9 @@ import scala.math.Ordering.Implicits._
 import common.io.{FileRef, JsonableSaver}
 import common.json.Jsonable
 import common.json.ToJsonableOps._
+import common.rich.RichTime._
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichOption.richOption
-import common.rich.RichTime._
 
 // case class for free equals and hashCode.
 private case class SongCache private (private val songsByFile: Map[FileRef, TimestampedSong]) {

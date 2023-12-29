@@ -1,13 +1,16 @@
 package backend.albums.filler
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
 
 import backend.recon.{Album, AlbumReconStorage, ReconID}
 import backend.recon.StoredReconResult.HasReconResult
+
+import scala.concurrent.{ExecutionContext, Future}
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
+import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
+
 import common.rich.RichFuture._
 
 // Easier (and safer!) than opening SQLiteBrowser!

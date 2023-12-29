@@ -2,15 +2,15 @@ package backend.external.expansions
 
 import java.net.HttpURLConnection
 
-import org.scalatest.AsyncFreeSpec
-
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
-import common.rich.collections.RichTraversableOnce._
-import common.rich.RichT._
-import common.test.AsyncAuxSpecs
 import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.AsyncFreeSpec
+
+import common.rich.RichT._
+import common.rich.collections.RichTraversableOnce._
+import common.test.AsyncAuxSpecs
 
 class WikipediaAlbumExternalLinksExpanderTest
     extends AsyncFreeSpec

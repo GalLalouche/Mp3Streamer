@@ -2,18 +2,20 @@ package mains.fixer
 
 import java.io.File
 import java.util.regex.Pattern
-import scala.annotation.tailrec
 
 import com.google.common.annotations.VisibleForTesting
-import common.rich.path.RichFile.richFile
-import common.rich.primitives.RichInt._
-import common.rich.primitives.RichString.richString
-import common.rich.RichT.{richT, _}
 import models.{Song, SongTagParser}
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
+
+import scala.annotation.tailrec
+
+import common.rich.RichT.{richT, _}
+import common.rich.path.RichFile.richFile
+import common.rich.primitives.RichInt._
+import common.rich.primitives.RichString.richString
 
 private[mains] object FixLabelsUtils {
   private val NumberFollowedBySlash = Pattern.compile("""\d+[/\\].*""")

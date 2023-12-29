@@ -1,8 +1,8 @@
 package backend.albums.filler
 
-import scala.concurrent.Future
-
 import com.google.inject.ImplementedBy
+
+import scala.concurrent.Future
 
 @ImplementedBy(classOf[ArtistReconPusherImpl])
 trait ArtistReconPusher {

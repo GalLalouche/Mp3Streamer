@@ -1,14 +1,17 @@
 package backend.external.expansions
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
+import backend.FutureOption
 import backend.external.BaseLink
 import backend.recon.{Album, Artist}
-import backend.FutureOption
-import common.io.InternetTalker
+
+import scala.concurrent.ExecutionContext
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
+
+import common.io.InternetTalker
 
 private class SameHostExpanderHelper @Inject() (it: InternetTalker) {
   private implicit val iec: ExecutionContext = it

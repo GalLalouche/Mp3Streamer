@@ -2,18 +2,20 @@ package mains.fixer
 
 import java.util.regex.Pattern
 import javax.inject.Inject
-import scala.io.Source
 
 import backend.logging.{ConsoleLogger, Logger}
 import com.google.common.annotations.VisibleForTesting
+import org.apache.commons.lang3.StringUtils
+import resource._
+
+import scala.io.Source
+
+import common.LanguageString._
+import common.rich.RichT._
 import common.rich.collections.RichSeq._
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
-import common.rich.RichT._
-import common.LanguageString._
-import org.apache.commons.lang3.StringUtils
-import resource._
 
 class StringFixer @Inject() (logger: Logger) extends (String => String) {
   import StringFixer._

@@ -2,14 +2,16 @@ package backend.module
 
 import java.time.Clock
 import java.util.UUID
-import scala.concurrent.ExecutionContext
 
 import backend.logging.LoggingModules
 import backend.storage.DbProvider
-import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
 import models.IOMusicFinderModule
 import net.codingwell.scalaguice.ScalaModule
 import slick.jdbc.{H2Profile, JdbcProfile}
+
+import scala.concurrent.ExecutionContext
+
+import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
 
 object NonPersistentModule extends ScalaModule {
   override def configure(): Unit = {

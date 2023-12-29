@@ -1,9 +1,10 @@
 package backend.lucky
 
 import javax.inject.Inject
-import scala.concurrent.Future
 
 import io.lemonlabs.uri.Url
+
+import scala.concurrent.Future
 
 /**
  * The reason for this nonsense is that for some reason, I can't have an href that links to a

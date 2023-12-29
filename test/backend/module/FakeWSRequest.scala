@@ -1,17 +1,18 @@
 package backend.module
 
-import monocle.macros.GenLens
-
-import scala.concurrent.duration.Duration
-import scala.concurrent.Future
-
-import common.io.WSAliases._
-import common.rich.collections.RichMap._
-import common.rich.collections.RichSeq._
-import common.rich.func.MoreSeqInstances._
-import common.rich.RichT._
 import io.lemonlabs.uri.Url
 import play.api.libs.ws.{BodyWritable, EmptyBody, WSAuthScheme, WSBody, WSCookie, WSProxyServer, WSRequestFilter, WSSignatureCalculator}
+
+import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+
+import common.rich.func.MoreSeqInstances._
+import monocle.macros.GenLens
+
+import common.io.WSAliases._
+import common.rich.RichT._
+import common.rich.collections.RichMap._
+import common.rich.collections.RichSeq._
 
 private case class FakeWSRequest private (
     response: WSRequest => FakeWSResponse,

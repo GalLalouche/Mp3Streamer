@@ -4,13 +4,14 @@ import java.time.Clock
 import javax.inject.Inject
 
 import backend.logging.LoggingLevel
+import models.MusicFinder
+import rx.lang.scala.Observable
+
+import common.TimedLogger
 import common.concurrency.report.ReportObservable
 import common.concurrency.report.ReportObservable.ReportObservable
 import common.io.FileRef
 import common.rich.RichTime.RichClock
-import common.TimedLogger
-import models.MusicFinder
-import rx.lang.scala.Observable
 
 private class SongCacheBuilder @Inject() (
     mf: MusicFinder,

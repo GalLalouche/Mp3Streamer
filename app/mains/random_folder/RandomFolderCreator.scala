@@ -1,16 +1,16 @@
 package mains.random_folder
 
 import java.io.File
+import javax.inject.Inject
 
 import com.google.inject.assistedinject.Assisted
-import javax.inject.Inject
 import me.tongfei.progressbar.ProgressBar
 import models.{IOSong, Poster}
 import org.apache.commons.io.FileUtils
-import org.jaudiotagger.audio.exceptions.{CannotWriteException, UnableToRenameFileException}
 import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.tag.images.StandardArtwork
+import org.jaudiotagger.audio.exceptions.{CannotWriteException, UnableToRenameFileException}
 import org.jaudiotagger.tag.FieldKey
+import org.jaudiotagger.tag.images.StandardArtwork
 import resource._
 import songs.selector.MultiStageSongSelector
 
@@ -19,13 +19,13 @@ import scala.util.Random
 
 import monocle.Monocle.toApplySetterOps
 
+import common.Filter
 import common.io.{IOFile, IOSystem}
 import common.rich.collections.RichSeq._
 import common.rich.path.Directory
 import common.rich.path.RichFile._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichInt._
-import common.Filter
 
 // TODO clean up all E:/Temp and use an environment variable
 /** Selects n random songs and dumps them in a folder on D:\ */

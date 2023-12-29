@@ -1,12 +1,12 @@
 package backend.external
 
+import io.lemonlabs.uri.Url
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.scalatest.Suite
 
 import common.rich.path.RichFile._
 import common.test.AuxSpecs
-import io.lemonlabs.uri.Url
-import org.jsoup.nodes.Document
-import org.jsoup.Jsoup
 
 trait DocumentSpecs extends AuxSpecs { self: Suite =>
   def getDocument(path: String): Document = Jsoup.parse(getResourceFile(path), "UTF-8")

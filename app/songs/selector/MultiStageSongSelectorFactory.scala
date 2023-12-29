@@ -1,11 +1,13 @@
 package songs.selector
 
 import javax.inject.Inject
+
+import models.MusicFinder
+
 import scala.util.Random
 
 import common.{Filter, TimedLogger}
 import common.io.RefSystem
-import models.MusicFinder
 
 class MultiStageSongSelectorFactory @Inject() (
     musicFinder: MusicFinder,

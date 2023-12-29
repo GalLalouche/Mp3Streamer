@@ -1,10 +1,10 @@
 package common
 
+import _root_.io.lemonlabs.uri.Url
 import org.scalatest.FreeSpec
 
-import _root_.io.lemonlabs.uri.Url
-import common.test.AuxSpecs
 import common.RichUrl.richUrl
+import common.test.AuxSpecs
 
 class RichUrlTest extends FreeSpec with AuxSpecs {
   "host" - {

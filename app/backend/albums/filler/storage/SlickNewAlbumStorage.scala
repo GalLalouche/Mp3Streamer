@@ -1,12 +1,6 @@
 package backend.albums.filler.storage
 import java.time.LocalDate
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.std.vector.vectorInstance
-import scalaz.syntax.apply.^
-import scalaz.syntax.bind.ToBindOps
-import scalaz.syntax.functor.ToFunctorOps
-import scalaz.ListT
 
 import backend.albums.{AddedAlbumCount, ArtistNewAlbums, NewAlbum}
 import backend.albums.filler.NewAlbumRecon
@@ -14,24 +8,33 @@ import backend.logging.Logger
 import backend.mb.AlbumType
 import backend.module.StandaloneModule
 import backend.recon.{Artist, ReconID, SlickArtistReconStorage}
-import backend.scorer.storage.ArtistScoreStorage
 import backend.scorer.OptionalModelScore
+import backend.scorer.storage.ArtistScoreStorage
 import backend.storage.{DbProvider, JdbcMappers, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Guice
-import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+import slick.ast.BaseTypedType
+
+import scala.concurrent.{ExecutionContext, Future}
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreApplicativeOps.toLazyApplicativeUnitOps
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.ToMoreMonadErrorOps._
 import common.rich.func.ToTraverseMonadPlusOps._
 import common.rich.func.TuplePLenses
-import common.rich.primitives.RichBoolean.richBoolean
+import scalaz.ListT
+import scalaz.std.vector.vectorInstance
+import scalaz.syntax.apply.^
+import scalaz.syntax.bind.ToBindOps
+import scalaz.syntax.functor.ToFunctorOps
+
 import common.rich.RichFuture.richFuture
 import common.rich.RichT.richT
 import common.rich.RichTime.OrderingLocalDate
 import common.rich.RichTuple.RightTuple
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import slick.ast.BaseTypedType
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rich.primitives.RichBoolean.richBoolean
 
 // There's a bit of data/code duplication between this and SlickAlbumReconStorage, but the former is used only
 // for already processed albums, and this one is for new albums.

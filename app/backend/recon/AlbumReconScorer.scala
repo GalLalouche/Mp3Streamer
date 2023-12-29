@@ -2,8 +2,9 @@ package backend.recon
 
 import javax.inject.Inject
 
-import common.rich.primitives.RichDouble.richDouble
 import org.jline.utils.Levenshtein
+
+import common.rich.primitives.RichDouble.richDouble
 
 class AlbumReconScorer @Inject() (
     stringReconScorer: StringReconScorer,

@@ -1,20 +1,23 @@
 package backend.lyrics.retrievers.genius
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
-import scalaz.OptionT
 
+import backend.FutureOption
 import backend.logging.Logger
 import backend.lyrics.retrievers.genius.API._
 import backend.recon.StringReconScorer
-import backend.FutureOption
 import com.google.common.annotations.VisibleForTesting
-import common.io.InternetTalker
-import common.rich.RichT._
 import io.lemonlabs.uri.Url
 import models.Song
 import play.api.http.Status
 import play.api.libs.json.{JsObject, Json}
+
+import scala.concurrent.ExecutionContext
+
+import scalaz.OptionT
+
+import common.io.InternetTalker
+import common.rich.RichT._
 
 private class API @Inject() (
     @AccessToken accessToken: String,

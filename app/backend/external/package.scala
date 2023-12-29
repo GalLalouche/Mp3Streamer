@@ -1,7 +1,7 @@
 package backend
 
 import backend.external.extensions.ExtendedLink
-import backend.recon.{ReconID, Reconcilable}
+import backend.recon.{Reconcilable, ReconID}
 
 package object external {
   type BaseLinks[R <: Reconcilable] = Traversable[BaseLink[R]]

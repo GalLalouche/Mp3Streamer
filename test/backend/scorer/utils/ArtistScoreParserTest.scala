@@ -1,9 +1,9 @@
 package backend.scorer.utils
 
-import org.scalatest.FreeSpec
-
 import backend.recon.Artist
 import backend.scorer.ModelScore
+import org.scalatest.FreeSpec
+
 import common.test.AuxSpecs
 
 class ArtistScoreParserTest extends FreeSpec with AuxSpecs {

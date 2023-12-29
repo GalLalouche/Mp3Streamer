@@ -1,16 +1,17 @@
 package backend.module
 
-import scala.concurrent.ExecutionContext
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.google.inject.{Module, Provides}
 import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
+import net.codingwell.scalaguice.ScalaPrivateModule
+import play.api.libs.ws.ahc.StandaloneAhcWSClient
+
+import scala.concurrent.ExecutionContext
+
 import common.guice.ModuleUtils
 import common.io.InternetTalker
 import common.io.WSAliases.WSClient
-import net.codingwell.scalaguice.ScalaPrivateModule
-import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 private class RealInternetTalkerModule private (am: ActorMaterializer)
     extends ScalaPrivateModule

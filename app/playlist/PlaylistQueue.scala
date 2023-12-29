@@ -1,9 +1,10 @@
 package playlist
 
-import common.json.ToJsonableOps._
-import common.rich.RichT._
 import models.Song
 import play.api.libs.json.JsValue
+
+import common.json.ToJsonableOps._
+import common.rich.RichT._
 
 private case class PlaylistQueue(songs: Seq[Song])
 

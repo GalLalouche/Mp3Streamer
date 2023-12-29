@@ -1,10 +1,10 @@
 package backend.external
 
-import monocle.macros.Lenses
-
 import java.time.LocalDateTime
 
 import backend.recon.Reconcilable
+
+import monocle.macros.Lenses
 
 private case class TimestampedLinks[R <: Reconcilable](
     links: MarkedLinks[R],

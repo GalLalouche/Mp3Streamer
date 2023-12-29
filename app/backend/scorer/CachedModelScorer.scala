@@ -1,8 +1,9 @@
 package backend.scorer
 
 import backend.recon.{Album, Artist}
-import common.io.FileRef
 import models.Song
+
+import common.io.FileRef
 
 // TODO interface segregation, not all scorers need this
 // TODO SoftwareDesign could be an interesting question

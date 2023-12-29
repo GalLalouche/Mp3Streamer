@@ -1,9 +1,9 @@
 package backend.lyrics.retrievers
 
-import scala.concurrent.Future
-
 import backend.Retriever
 import models.Song
+
+import scala.concurrent.Future
 
 private[lyrics] trait LyricsRetriever extends Retriever[Song, RetrievedLyricsResult] {
   // For point free style

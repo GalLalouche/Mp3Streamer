@@ -1,19 +1,21 @@
 package controllers
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.syntax.functor.ToFunctorOps
-import scalaz.Scalaz.ToIdOps
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
 import play.api.http.{HttpEntity, Writeable}
-import play.api.libs.iteratee.streams.IterateeStreams
 import play.api.libs.iteratee.Enumerator
+import play.api.libs.iteratee.streams.IterateeStreams
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, AnyContent, InjectedController, Request, Result}
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import common.rich.func.BetterFutureInstances._
+import common.rich.func.ToMoreMonadErrorOps._
+import scalaz.Scalaz.ToIdOps
+import scalaz.syntax.functor.ToFunctorOps
 
 /** Converts common play-agnostic return values, usually from formatter helpers, to play Actions. */
 class PlayActionConverter @Inject() (

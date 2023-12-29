@@ -2,15 +2,15 @@ package backend.external.extensions
 
 import java.time.LocalDateTime
 
-import org.scalatest.FreeSpec
-
 import backend.external._
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, Reconcilable}
-import common.rich.RichT._
-import common.test.AuxSpecs
 import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.FreeSpec
+
+import common.rich.RichT._
+import common.test.AuxSpecs
 
 class CompositeExtenderTest extends FreeSpec with AuxSpecs {
   private val $ = TestModuleConfiguration().injector.instance[CompositeExtender]

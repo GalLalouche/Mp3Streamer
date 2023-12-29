@@ -1,9 +1,10 @@
 package backend.storage
 
-import scala.concurrent.Future
-import scalaz.OptionT
-
 import backend.FutureOption
+
+import scala.concurrent.Future
+
+import scalaz.OptionT
 
 trait FreshnessStorage[Key, Value] {
   def freshness(k: Key): FutureOption[Freshness]

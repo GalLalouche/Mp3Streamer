@@ -1,11 +1,13 @@
 package models
 
 import java.util.concurrent.atomic.AtomicInteger
+
+import play.api.libs.json.{JsObject, Json, JsValue}
+
 import scala.collection.mutable
 
 import common.json.Jsonable
 import common.rich.primitives.RichOption._
-import play.api.libs.json.{JsObject, JsValue, Json}
 
 class FakeModelJsonable {
   private val counter = new AtomicInteger

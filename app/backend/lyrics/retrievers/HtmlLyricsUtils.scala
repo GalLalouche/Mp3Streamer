@@ -2,9 +2,9 @@ package backend.lyrics.retrievers
 
 import java.util.regex.Pattern
 
+import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
-import common.rich.RichT._
 
 private object HtmlLyricsUtils {
   private val NewLine = Pattern.compile(" *\r?\n *")

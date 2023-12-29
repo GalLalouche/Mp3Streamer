@@ -1,9 +1,9 @@
 package common.concurrency
 
 import scala.concurrent.{ExecutionContext, Future}
-import scalaz.syntax.functor.ToFunctorOps
 
 import common.rich.func.BetterFutureInstances._
+import scalaz.syntax.functor.ToFunctorOps
 
 /** It's a single threaded future factory basically. */
 private class SimpleTypedActorImpl[Msg, +Result](name: String, f: Msg => Result)

@@ -1,16 +1,15 @@
 package backend.lyrics.retrievers
 
-import scala.io.Source
-import scala.PartialFunction.cond
-
-import org.scalatest.{Assertion, Suite}
-import org.scalatest.matchers.{BePropertyMatchResult, BePropertyMatcher}
-
 import backend.external.DocumentSpecs
-import backend.lyrics.retrievers.LyricsSpec._
 import backend.lyrics.Instrumental
+import backend.lyrics.retrievers.LyricsSpec._
 import models.FakeModelFactory
+import org.scalatest.{Assertion, Suite}
+import org.scalatest.matchers.{BePropertyMatcher, BePropertyMatchResult}
 import resource.managed
+
+import scala.PartialFunction.cond
+import scala.io.Source
 
 trait LyricsSpec extends DocumentSpecs { self: Suite =>
   private[retrievers] def parser: SingleHostParser

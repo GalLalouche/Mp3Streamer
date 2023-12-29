@@ -1,23 +1,23 @@
 package controllers
 
-import scala.concurrent.{ExecutionContext, Future}
-
-import org.scalatest.{Args, TestSuite}
-import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import backend.module.TestModuleConfiguration
 import com.google.inject
 import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
-import common.rich.collections.RichSet._
-import common.rich.RichFuture._
-import common.test.AuxSpecs
 import models.{IOSong, Song}
+import org.scalatest.{Args, TestSuite}
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.{BodyWritable, WSClient, WSResponse}
 import play.api.mvc.Result
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import common.rich.RichFuture._
+import common.rich.collections.RichSet._
+import common.test.AuxSpecs
 
 trait ControllerSpec extends AuxSpecs with GuiceOneServerPerSuite { self: TestSuite =>
   // Play, being moronic as usual, will initialize an application even if the test is to be excluded,

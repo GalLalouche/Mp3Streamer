@@ -1,8 +1,8 @@
 package common.concurrency
 
-import scalaz.OptionT
-
 import backend.FutureOption
+
+import scalaz.OptionT
 
 trait AsyncProducer[Result] extends SimpleTypedActor[Unit, Option[Result]] {
   def !(): FutureOption[Result] = OptionT(this.!(()))

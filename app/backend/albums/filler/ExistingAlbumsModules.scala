@@ -8,8 +8,8 @@ import com.google.inject.{Guice, Injector, Module, Provides, Singleton}
 import models.IOMusicFinderModule
 import net.codingwell.scalaguice.ScalaModule
 
-import common.guice.RichModule.richModule
 import common.TimedLogger
+import common.guice.RichModule.richModule
 
 object ExistingAlbumsModules {
   def lazyAlbums: Module = new ScalaModule {

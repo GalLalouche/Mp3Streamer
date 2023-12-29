@@ -1,11 +1,13 @@
 package backend.albums.filler
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
 import backend.logging.Logger
 import backend.mb.{MbAlbumMetadata, MbArtistReconciler}
 import backend.recon.{Album, Artist, ReconID, StringReconScorer}
+
+import scala.concurrent.{ExecutionContext, Future}
+
 import common.rich.primitives.RichBoolean._
 
 private class ArtistReconVerifier @Inject() (

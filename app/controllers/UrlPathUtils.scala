@@ -2,8 +2,9 @@ package controllers
 
 import java.io.File
 
-import common.io.{FileRef, PathRef}
 import models.Song
+
+import common.io.{FileRef, PathRef}
 
 trait UrlPathUtils extends UrlDecodeUtils {
   /**

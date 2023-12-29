@@ -2,15 +2,18 @@ package decoders
 
 import java.util.regex.Pattern
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.syntax.apply.ToApplyOps
 
 import backend.logging.Logger
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import common.rich.func.BetterFutureInstances._
+import scalaz.syntax.apply.ToApplyOps
+
 import common.concurrency.SimpleTypedActor
 import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
-import common.rich.func.BetterFutureInstances._
-import common.rich.primitives.RichString._
 import common.rich.RichT._
+import common.rich.primitives.RichString._
 
 /** Encodes audio files files to mp3. Also handles caching. */
 @Singleton // Needed for unique actor

@@ -1,12 +1,12 @@
 package mains.fixer
 
-import scala.collection.JavaConverters._
-
-import org.scalatest.FreeSpec
-
-import common.test.AuxSpecs
 import models.FakeModelFactory
 import org.jaudiotagger.tag.{FieldKey, Tag}
+import org.scalatest.FreeSpec
+
+import scala.collection.JavaConverters._
+
+import common.test.AuxSpecs
 
 class FixLabelsUtilsTest extends FreeSpec with AuxSpecs {
   private val $ = FixLabelsUtils

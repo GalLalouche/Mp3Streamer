@@ -3,10 +3,11 @@ package mains
 import java.io.File
 
 import com.google.common.annotations.VisibleForTesting
+import org.jline.utils.Levenshtein
+
 import common.io.{DirectoryRef, IODirectory, PathRef}
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichString._
-import org.jline.utils.Levenshtein
 
 private object IOUtils {
   /** Opens windows explorer with the file in focus */

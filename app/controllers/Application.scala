@@ -2,11 +2,13 @@ package controllers
 
 import java.io.File
 import javax.inject.Inject
+
+import play.api.mvc._
+import resource.managed
+
 import scala.concurrent.ExecutionContext
 
 import common.rich.primitives.RichString._
-import play.api.mvc._
-import resource.managed
 
 class Application @Inject() (ec: ExecutionContext, converter: PlayActionConverter)
     extends InjectedController {

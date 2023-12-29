@@ -1,10 +1,11 @@
 package common
 
+import org.mockito.{ArgumentCaptor, Mockito}
+import org.mockito.Mockito.atLeast
+
 import scala.collection.JavaConverters._
 
 import common.rich.primitives.RichClass._
-import org.mockito.{ArgumentCaptor, Mockito}
-import org.mockito.Mockito.atLeast
 
 /** More mockito sugar. */
 object MockitoSyrup {

@@ -1,23 +1,23 @@
 package backend.lyrics
 
-import scalaz.syntax.bind.ToBindOps
-
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpec}
-import org.scalatest.mockito.MockitoSugar
-import org.scalatest.tags.Slow
-
 import backend.external.DocumentSpecs
 import backend.lyrics.retrievers.InstrumentalArtistStorage
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
-import common.{MutablePartialFunction, RichUrl}
-import common.rich.func.BetterFutureInstances._
-import common.rich.path.RichFile.richFile
-import common.rich.RichFuture._
 import controllers.ControllerSpec
 import io.lemonlabs.uri.Url
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpec}
+import org.scalatest.mockito.MockitoSugar
+import org.scalatest.tags.Slow
 import play.api.http.Status
 import play.api.inject.guice.GuiceApplicationBuilder
+
+import common.rich.func.BetterFutureInstances._
+import scalaz.syntax.bind.ToBindOps
+
+import common.{MutablePartialFunction, RichUrl}
+import common.rich.RichFuture._
+import common.rich.path.RichFile.richFile
 
 @Slow
 class LyricsControllerTest

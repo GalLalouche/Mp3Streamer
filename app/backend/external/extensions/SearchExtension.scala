@@ -2,8 +2,9 @@ package backend.external.extensions
 
 import backend.external.{ExtendedLinks, Host, LinkMark}
 import backend.recon.Reconcilable
-import common.Urls
 import io.lemonlabs.uri.Url
+
+import common.Urls
 
 private[external] object SearchExtension {
   def apply[R <: Reconcilable](h: Host, r: R): ExtendedLink[R] = {

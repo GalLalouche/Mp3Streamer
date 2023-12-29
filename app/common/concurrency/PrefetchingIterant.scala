@@ -1,12 +1,13 @@
 package common.concurrency
 
 import scala.language.higherKinds
+
+import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import scalaz.{Monad, OptionT}
 import scalaz.syntax.functor.ToFunctorOps
 
-import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
-import common.rich.RichT.richT
 import common.Lazy
+import common.rich.RichT.richT
 
 private class PrefetchingIterant[F[_]: Monad, A](
     private val head: OptionT[F, A],

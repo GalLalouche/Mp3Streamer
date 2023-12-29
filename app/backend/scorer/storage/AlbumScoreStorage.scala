@@ -1,12 +1,14 @@
 package backend.scorer.storage
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.ListT
 
 import backend.recon.{Album, Artist, SlickArtistReconStorage}
 import backend.scorer.ModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import scalaz.ListT
 
 private[scorer] class AlbumScoreStorage @Inject() (
     protected override val ec: ExecutionContext,

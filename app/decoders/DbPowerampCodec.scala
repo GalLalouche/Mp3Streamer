@@ -2,11 +2,12 @@ package decoders
 
 import java.io.{File, IOException}
 import javax.inject.Inject
+
 import scala.sys.process.{Process, ProcessLogger}
 
+import common.TimedLogger
 import common.io.{FileRef, IOFile}
 import common.rich.path.RichFile._
-import common.TimedLogger
 
 private class DbPowerampCodec @Inject() (timed: TimedLogger) extends Encoder {
   // Do this less hackishly

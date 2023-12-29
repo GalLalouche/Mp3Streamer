@@ -1,14 +1,16 @@
 package songs.selector
 
 import javax.inject.Inject
-import scala.util.Random
 
 import backend.logging.Logger
 import backend.scorer.{CachedModelScorer, ScoreBasedProbability}
 import backend.scorer.FullInfoScore.Scored
-import common.rich.RichT.richT
-import common.Filter
 import models.Song
+
+import scala.util.Random
+
+import common.Filter
+import common.rich.RichT.richT
 
 private class ScoreBasedFilter @Inject() (
     random: Random,

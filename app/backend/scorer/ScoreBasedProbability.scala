@@ -1,7 +1,8 @@
 package backend.scorer
 
-import common.Percentage
 import models.Song
+
+import common.Percentage
 
 /** Returns a [[ModelScore]] based weight for the song to be chosen. */
 trait ScoreBasedProbability {

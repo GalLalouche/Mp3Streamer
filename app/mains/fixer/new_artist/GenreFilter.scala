@@ -1,12 +1,14 @@
 package mains.fixer.new_artist
 
 import java.awt.Dimension
+
+import mains.SwingUtils._
+import rx.lang.scala.{Observable, Subject}
+
 import scala.swing.{BoxPanel, Label, Orientation, Panel, TextField}
 import scala.swing.event.{Key, KeyReleased, ValueChanged}
 
 import common.rich.RichT.richT
-import mains.SwingUtils._
-import rx.lang.scala.{Observable, Subject}
 
 private class GenreFilter extends Panel {
   private val textSubject = Subject[Unit]()

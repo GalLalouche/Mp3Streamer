@@ -1,20 +1,21 @@
 package backend.scorer
 
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.std.vector.vectorInstance
-import scalaz.Scalaz.{ToBindOps, ToTraverseOpsUnapply}
-
-import org.scalatest.{AsyncFreeSpec, OneInstancePerTest, Succeeded}
-import org.scalatest.tags.Slow
-
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, ArtistReconStorage, StoredReconResult}
 import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, SongScoreStorage}
-import common.rich.func.BetterFutureInstances._
-import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+import org.scalatest.{AsyncFreeSpec, OneInstancePerTest, Succeeded}
+import org.scalatest.tags.Slow
 import play.api.libs.json.Json
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import common.rich.func.BetterFutureInstances._
+import scalaz.Scalaz.{ToBindOps, ToTraverseOpsUnapply}
+import scalaz.std.vector.vectorInstance
+
+import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
 
 @Slow
 class ScorerFormatterTest

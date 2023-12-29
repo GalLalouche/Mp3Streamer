@@ -1,11 +1,13 @@
 package playlist
 
 import java.util.concurrent.TimeUnit
+
+import models.Song
+import play.api.libs.json.JsValue
+
 import scala.concurrent.duration.Duration
 
 import common.json.ToJsonableOps._
-import models.Song
-import play.api.libs.json.JsValue
 
 private case class PlaylistState(songs: Seq[Song], currentIndex: Int, currentDuration: Duration) {
   require(
@@ -16,9 +18,10 @@ private case class PlaylistState(songs: Seq[Song], currentIndex: Int, currentDur
 }
 
 private object PlaylistState {
+  import play.api.libs.json.{JsObject, Json}
+
   import common.json.Jsonable
   import common.json.RichJson._
-  import play.api.libs.json.{JsObject, Json}
 
   implicit def PlaylistStateJsonable(implicit
       songJsonable: Jsonable[Song],

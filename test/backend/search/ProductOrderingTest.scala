@@ -1,8 +1,8 @@
 package backend.search
 
+import backend.search.ProductOrdering.Impl
 import org.scalatest.FreeSpec
 
-import backend.search.ProductOrdering.Impl
 import common.test.AuxSpecs
 
 class ProductOrderingTest extends FreeSpec with AuxSpecs {

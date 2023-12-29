@@ -1,10 +1,11 @@
 package common
 
-import _root_.io.lemonlabs.uri.typesafe.PathPart
 import _root_.io.lemonlabs.uri.Url
-import common.rich.primitives.RichBoolean.richBoolean
-import common.rich.RichT.richT
+import _root_.io.lemonlabs.uri.typesafe.PathPart
 import org.apache.commons.validator.routines.UrlValidator
+
+import common.rich.RichT.richT
+import common.rich.primitives.RichBoolean.richBoolean
 
 object RichUrl {
   implicit class richUrl(private val url: Url) extends AnyVal {

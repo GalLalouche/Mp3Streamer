@@ -4,15 +4,17 @@ import java.io.FileNotFoundException
 import java.time.LocalDateTime
 import java.util.regex.Pattern
 import javax.inject.Inject
+
+import play.api.libs.json.{Json, JsValue}
+
+import common.rich.func.ToMoreFoldableOps._
 import scalaz.std.option.optionInstance
 
 import common.json.Jsonable
 import common.json.ToJsonableOps._
-import common.rich.func.ToMoreFoldableOps._
+import common.rich.RichT._
 import common.rich.primitives.RichOption._
 import common.rich.primitives.RichString._
-import common.rich.RichT._
-import play.api.libs.json.{JsValue, Json}
 
 /** Saves in json format to a file. */
 class JsonableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {

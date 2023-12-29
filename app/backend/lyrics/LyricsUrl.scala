@@ -1,8 +1,8 @@
 package backend.lyrics
 
-import scala.collection.immutable
-
 import enumeratum.{Enum, EnumEntry}
+
+import scala.collection.immutable
 
 private sealed trait LyricsUrl extends EnumEntry
 private object LyricsUrl extends Enum[LyricsUrl] {

@@ -1,11 +1,11 @@
 package mains.vimtag
 
+import backend.module.FakeMusicFinder
+import models.FakeModelFactory
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
-import backend.module.FakeMusicFinder
 import common.io.MemoryRoot
 import common.test.AuxSpecs
-import models.FakeModelFactory
 
 abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualParser)
     extends FreeSpec

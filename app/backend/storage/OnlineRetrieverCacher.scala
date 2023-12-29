@@ -1,12 +1,14 @@
 package backend.storage
 
+import backend.Retriever
+
 import scala.concurrent.ExecutionContext
 
-import backend.Retriever
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
 import common.rich.func.ToMoreFunctorOps._
 import common.rich.func.ToMoreMonadErrorOps._
+
 import common.storage.{Storage, StoreMode}
 
 /**

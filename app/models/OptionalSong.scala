@@ -1,8 +1,8 @@
 package models
 
-import monocle.macros.Lenses
-
 import java.io.File
+
+import monocle.macros.Lenses
 
 @Lenses
 case class OptionalSong(

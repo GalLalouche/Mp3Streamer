@@ -1,12 +1,14 @@
 package models
 
-import java.util.concurrent.TimeUnit
 import java.util.UUID
+import java.util.concurrent.TimeUnit
+
+import org.scalacheck.Arbitrary
+import org.scalacheck.Arbitrary.arbitrary
+
 import scala.concurrent.duration.Duration
 
 import common.io.MemoryRoot
-import org.scalacheck.Arbitrary
-import org.scalacheck.Arbitrary.arbitrary
 
 class FakeModelFactory {
   private val root = new MemoryRoot

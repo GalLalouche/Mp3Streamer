@@ -1,12 +1,12 @@
 package common.io
 
 import java.io.{File, FileInputStream, InputStream}
-import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file.Files
+import java.nio.file.attribute.BasicFileAttributes
 import java.time.{Clock, LocalDateTime, ZoneId}
 
-import common.rich.path.{Directory, RichFile}
 import common.rich.RichT._
+import common.rich.path.{Directory, RichFile}
 
 private[this] object FileUtils {
   private val currentZone = Clock.systemDefaultZone().getZone

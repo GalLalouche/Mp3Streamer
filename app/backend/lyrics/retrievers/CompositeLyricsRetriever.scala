@@ -1,9 +1,9 @@
 package backend.lyrics.retrievers
 
-import scala.concurrent.{ExecutionContext, Future}
-
 import backend.logging.Logger
 import models.Song
+
+import scala.concurrent.{ExecutionContext, Future}
 
 private[lyrics] class CompositeLyricsRetriever(
     logger: Logger,

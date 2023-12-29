@@ -1,16 +1,18 @@
 package backend.external
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.syntax.bind.ToBindOps
 
 import backend.external.expansions.CompositeSameHostExpander
 import backend.external.extensions._
 import backend.external.recons.LinkRetrievers
 import backend.recon._
 import backend.recon.Reconcilable._
-import common.rich.func.BetterFutureInstances._
 import models.Song
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import common.rich.func.BetterFutureInstances._
+import scalaz.syntax.bind.ToBindOps
 
 private class MbExternalLinksProvider @Inject() (
     ec: ExecutionContext,

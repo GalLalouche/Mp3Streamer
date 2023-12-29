@@ -1,12 +1,13 @@
 package backend.albums.filler.storage
 
-import scala.concurrent.Future
-import scalaz.OptionT
-
-import backend.albums.filler.NewAlbumRecon
 import backend.albums.AddedAlbumCount
+import backend.albums.filler.NewAlbumRecon
 import backend.recon.Artist
 import backend.storage.Freshness
+
+import scala.concurrent.Future
+
+import scalaz.OptionT
 
 private[filler] trait CachedNewAlbumStorage extends FilledStorage {
   def reset(a: Artist): Future[Freshness]

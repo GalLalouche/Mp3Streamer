@@ -1,10 +1,12 @@
 package backend.lyrics.retrievers.genius
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 import backend.lyrics.retrievers.{HtmlRetriever, SingleHostParsingHelper}
 import backend.lyrics.retrievers.RetrievedLyricsResult.NoLyrics
+
+import scala.concurrent.ExecutionContext
+
 import common.rich.func.BetterFutureInstances._
 
 private[lyrics] class GeniusLyricsRetriever @Inject() (

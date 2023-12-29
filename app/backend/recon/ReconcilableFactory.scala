@@ -8,8 +8,8 @@ import models.MusicFinder
 import scala.util.{Failure, Success, Try}
 
 import common.io.{DirectoryRef, FileRef, JsonMapFile}
-import common.rich.primitives.RichOption.richOption
 import common.rich.RichT._
+import common.rich.primitives.RichOption.richOption
 
 class ReconcilableFactory @Inject() (val mf: MusicFinder) {
   type S = mf.S

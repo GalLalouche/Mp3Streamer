@@ -1,9 +1,9 @@
 package backend.lyrics.retrievers
 
-import scala.annotation.meta.param
-import scala.annotation.Annotation
-
 import com.google.inject.BindingAnnotation
+
+import scala.annotation.Annotation
+import scala.annotation.meta.param
 
 @param
 @BindingAnnotation

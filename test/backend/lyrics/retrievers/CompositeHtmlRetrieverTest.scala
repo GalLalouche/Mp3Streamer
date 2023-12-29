@@ -1,16 +1,16 @@
 package backend.lyrics.retrievers
 
-import scala.concurrent.Future
-
-import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
-
 import backend.logging.Logger
 import backend.lyrics.{Instrumental, LyricsUrl}
 import backend.module.TestModuleConfiguration
-import common.test.AsyncAuxSpecs
 import io.lemonlabs.uri.Url
 import models.{FakeModelFactory, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
+
+import scala.concurrent.Future
+
+import common.test.AsyncAuxSpecs
 
 class CompositeHtmlRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
   private val injector = TestModuleConfiguration().injector

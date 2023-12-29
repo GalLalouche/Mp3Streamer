@@ -1,14 +1,13 @@
 package backend.lyrics.retrievers
 
-import scalaz.syntax.bind.ToBindOps
-
-import org.scalatest.AsyncFreeSpec
-
+import backend.StorageSetup
 import backend.module.TestModuleConfiguration
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
-import backend.StorageSetup
-import common.rich.func.BetterFutureInstances._
 import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.AsyncFreeSpec
+
+import common.rich.func.BetterFutureInstances._
+import scalaz.syntax.bind.ToBindOps
 
 class SlickInstrumentalArtistStorageTest extends AsyncFreeSpec with StorageSetup {
   protected override val config = TestModuleConfiguration()

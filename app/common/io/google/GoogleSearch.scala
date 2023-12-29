@@ -1,11 +1,13 @@
 package common.io.google
 
 import javax.inject.Inject
+
+import play.api.libs.json.JsObject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.io.InternetTalker
 import common.io.RichWSResponse._
-import play.api.libs.json.JsObject
 
 class GoogleSearch @Inject() private (
     @ApiKey apiKey: String,

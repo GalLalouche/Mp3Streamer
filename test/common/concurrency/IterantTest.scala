@@ -2,14 +2,16 @@ package common.concurrency
 
 import java.util.concurrent.{LinkedBlockingQueue, Semaphore}
 import java.util.concurrent.atomic.AtomicInteger
-import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.OptionT
 
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
+import scala.collection.JavaConverters._
+import scala.concurrent.{ExecutionContext, Future}
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT
+import scalaz.OptionT
+
 import common.rich.RichT.lazyT
 import common.test.AsyncAuxSpecs
 

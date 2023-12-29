@@ -4,10 +4,11 @@ import java.util.regex.Pattern
 import javax.inject.Inject
 
 import com.google.common.annotations.VisibleForTesting
-import common.rich.primitives.RichString._
-import common.rich.RichT._
 import models.Song
 import org.jsoup.nodes.Document
+
+import common.rich.RichT._
+import common.rich.primitives.RichString._
 
 private class DarkLyricsRetriever @Inject() (singleHostHelper: SingleHostParsingHelper)
     extends HtmlRetriever {

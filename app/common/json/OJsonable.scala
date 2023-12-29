@@ -1,8 +1,8 @@
 package common.json
 
-import scala.annotation.implicitNotFound
-
 import play.api.libs.json._
+
+import scala.annotation.implicitNotFound
 
 /** Saner names for play's JSON trait, and less optionality. */
 @implicitNotFound("Could not prove that ${T} is OJsonable.")

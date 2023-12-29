@@ -1,10 +1,11 @@
 package backend.module
 
+import models.{MemorySong, MusicFinder}
+
 import scala.collection.mutable
 
 import common.io.{DirectoryRef, FileRef, MemoryDir, MemoryFile, MemorySystem}
 import common.rich.RichT._
-import models.{MemorySong, MusicFinder}
 
 class FakeMusicFinder(val baseDir: MemoryDir) extends MusicFinder {
   override type S = MemorySystem

@@ -1,11 +1,11 @@
 package backend.lyrics.retrievers.genius
 
+import models.FakeModelFactory
 import org.scalatest.FreeSpec
 import org.scalatest.OptionValues._
+import play.api.libs.json.{JsObject, Json}
 
 import common.test.AuxSpecs
-import models.FakeModelFactory
-import play.api.libs.json.{JsObject, Json}
 
 class APITest extends FreeSpec with AuxSpecs {
   private val factory = new FakeModelFactory

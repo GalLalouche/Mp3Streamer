@@ -3,10 +3,11 @@ package backend.lyrics.retrievers.bandcamp
 import java.util.regex.Pattern
 
 import backend.lyrics.retrievers.{HtmlLyricsUtils, LyricParseResult}
-import common.rich.primitives.RichString._
-import common.rich.RichT._
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Element
+
+import common.rich.RichT._
+import common.rich.primitives.RichString._
 
 private object Utils {
   val Source = "Bandcamp"

@@ -5,6 +5,7 @@ import scala.concurrent.Future
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadTransOps._
+
 import common.storage.{Storage, StoreMode}
 
 class MemoryBackedStorage[Key, Value] extends Storage[Key, Value] {

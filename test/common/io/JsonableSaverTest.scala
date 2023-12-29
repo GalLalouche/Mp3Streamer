@@ -3,16 +3,16 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.{LocalDateTime, ZoneOffset}
 
-import org.scalatest.{FreeSpec, OneInstancePerTest}
-
 import backend.module.TestModuleConfiguration
+import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.{FreeSpec, OneInstancePerTest}
+import play.api.libs.json.{JsObject, Json, JsValue}
+
 import common.json.Jsonable
 import common.json.RichJson._
 import common.json.ToJsonableOps._
 import common.rich.RichT._
 import common.test.AuxSpecs
-import net.codingwell.scalaguice.InjectorExtensions._
-import play.api.libs.json.{JsObject, JsValue, Json}
 
 private object JsonableSaverTest {
   private case class Person(age: Int, name: String)

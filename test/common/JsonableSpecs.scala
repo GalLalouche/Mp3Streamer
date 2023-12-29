@@ -1,12 +1,12 @@
 package common
 
+import org.scalacheck.Arbitrary
 import org.scalatest.{PropSpec, Suite}
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
 import common.json.Jsonable
 import common.json.ToJsonableOps._
 import common.test.AuxSpecs
-import org.scalacheck.Arbitrary
 
 trait JsonableSpecs extends PropSpec with GeneratorDrivenPropertyChecks with AuxSpecs {
   self: Suite =>

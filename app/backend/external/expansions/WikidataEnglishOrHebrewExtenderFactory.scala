@@ -5,9 +5,10 @@ import javax.inject.Inject
 import backend.external.{BaseLink, Host}
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
-import common.RichJsoup._
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
+
+import common.RichJsoup._
 
 private class WikidataEnglishOrHebrewExtenderFactory @Inject() (
     helper: ExternalLinkExpanderHelper,

@@ -1,10 +1,12 @@
 package backend.scorer.storage
 
+import backend.scorer.{ModelScore, OptionalModelScore}
+
 import scala.concurrent.ExecutionContext
+
+import common.rich.func.BetterFutureInstances._
 import scalaz.Scalaz.ToFunctorOps
 
-import backend.scorer.{ModelScore, OptionalModelScore}
-import common.rich.func.BetterFutureInstances._
 import common.storage.StorageTemplate
 
 private[scorer] trait StorageScorer[A] { self: StorageTemplate[A, ModelScore] =>

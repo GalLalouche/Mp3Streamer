@@ -1,9 +1,10 @@
 package backend.lyrics.retrievers.bandcamp
 
 import backend.lyrics.retrievers.{LyricParseResult, SingleHostParser}
-import common.RichJsoup._
 import models.Song
 import org.jsoup.nodes.Document
+
+import common.RichJsoup._
 
 private object SingleSongParser extends SingleHostParser {
   override def source = Utils.Source

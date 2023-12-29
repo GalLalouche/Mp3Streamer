@@ -1,13 +1,14 @@
 package backend.external.extensions
 
-import scalaz.syntax.functor.ToFunctorOpsUnapply
-
 import backend.external.{Host, MarkedLink, MarkedLinks}
 import backend.recon.Reconcilable
-import common.rich.func.MoreSeqInstances._
-import common.rich.RichTuple._
-import common.RichUrl.richUrl
 import io.lemonlabs.uri.Url
+
+import common.rich.func.MoreSeqInstances._
+import scalaz.syntax.functor.ToFunctorOpsUnapply
+
+import common.RichUrl.richUrl
+import common.rich.RichTuple._
 
 /**
  * Extenders (not to be confused with Ex<b>p</b>anders) provide additional links to a given links,

@@ -1,8 +1,9 @@
 package common.concurrency
 
+import backend.logging.LoggingLevel
+
 import scala.concurrent.Future
 
-import backend.logging.LoggingLevel
 import common.TimedLogger
 
 class UpdatableProxy[A](

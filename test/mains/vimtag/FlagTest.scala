@@ -1,9 +1,9 @@
 package mains.vimtag
 
+import mains.vimtag.Flag.RemoveFeat
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
-import mains.vimtag.Flag.RemoveFeat
 
 class FlagTest extends FreeSpec with AuxSpecs {
   "RemoveFeat" - {

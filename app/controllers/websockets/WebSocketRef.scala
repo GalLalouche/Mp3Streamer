@@ -1,9 +1,10 @@
 package controllers.websockets
 
-import scala.concurrent.Future
-import scalaz.Reader
-
 import rx.lang.scala.Observable
+
+import scala.concurrent.Future
+
+import scalaz.Reader
 
 trait WebSocketRef {
   def broadcast(msg: String): Unit

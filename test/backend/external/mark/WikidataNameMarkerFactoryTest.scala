@@ -1,8 +1,7 @@
 package backend.external.mark
 
-import org.scalatest.FreeSpec
-
 import backend.external.DocumentSpecs
+import org.scalatest.FreeSpec
 
 class WikidataNameMarkerFactoryTest extends FreeSpec with DocumentSpecs {
   WikidataNameMarkerFactory.extract(getDocument("wikidata.html")) shouldReturn

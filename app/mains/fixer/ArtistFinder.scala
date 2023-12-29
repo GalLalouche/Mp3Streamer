@@ -2,9 +2,10 @@ package mains.fixer
 
 import javax.inject.Inject
 
+import models.IOMusicFinder
+
 import common.rich.path.Directory
 import common.rich.primitives.RichString._
-import models.IOMusicFinder
 
 private class ArtistFinder @Inject() (
     mf: IOMusicFinder,

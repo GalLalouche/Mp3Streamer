@@ -6,9 +6,9 @@ import backend.logging.LoggingLevel
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import models.MusicFinder
 
+import common.TimedLogger
 import common.io.JsonMapFile
 import common.rich.primitives.RichOption.richOption
-import common.TimedLogger
 
 private class RealTimeExistingAlbums @Inject() (
     reconcilableFactory: ReconcilableFactory,

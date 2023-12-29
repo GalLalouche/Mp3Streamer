@@ -2,9 +2,9 @@ package backend.recon
 
 import java.util.regex.Pattern
 
+import common.rich.RichT._
 import common.rich.primitives.RichOption._
 import common.rich.primitives.RichString._
-import common.rich.RichT._
 
 case class ReconID(id: String) extends AnyVal
 object ReconID {

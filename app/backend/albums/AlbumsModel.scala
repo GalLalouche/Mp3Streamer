@@ -2,21 +2,24 @@ package backend.albums
 
 import java.time.Duration
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.ListT
-import scalaz.Scalaz.{ToBindOps, ToFunctorOpsUnapply}
 
-import backend.albums.filler.storage.FilledStorage
-import backend.albums.filler.NewAlbumFiller
 import backend.albums.AlbumsModel.{ArtistAlbums, ModelResult, NonIgnoredArtist}
+import backend.albums.filler.NewAlbumFiller
+import backend.albums.filler.storage.FilledStorage
 import backend.mb.AlbumType
 import backend.recon.{Artist, IgnoredReconResult}
 import backend.scorer.OptionalModelScore
-import common.rich.func.BetterFutureInstances._
-import common.rich.RichEnumeratum.richEnumeratum
-import common.rich.RichT.richT
 import models.{Genre, GenreFinder}
 import shapeless.syntax.std.tuple.productTupleOps
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import common.rich.func.BetterFutureInstances._
+import scalaz.ListT
+import scalaz.Scalaz.{ToBindOps, ToFunctorOpsUnapply}
+
+import common.rich.RichEnumeratum.richEnumeratum
+import common.rich.RichT.richT
 
 private class AlbumsModel @Inject() (
     ec: ExecutionContext,

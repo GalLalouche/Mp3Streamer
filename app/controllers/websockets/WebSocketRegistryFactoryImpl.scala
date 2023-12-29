@@ -4,6 +4,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.{Inject, Singleton}
 
 import backend.logging.Logger
+
 import common.rich.collections.RichMap._
 
 @Singleton

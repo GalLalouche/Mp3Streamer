@@ -2,13 +2,15 @@ package mains.vimtag
 
 import java.io.File
 import javax.inject.Inject
+
+import mains.vimtag.Initializer.InitialLines
+import mains.vimtag.VimEdit._
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process._
 
 import common.rich.path.RichFile._
 import common.rich.primitives.RichString._
-import mains.vimtag.Initializer.InitialLines
-import mains.vimtag.VimEdit._
 
 private class VimEdit @Inject() (cp: CommandsProvider, ec: ExecutionContext) {
   private val VimLocation = """"C:\Program Files\Neovim\bin\nvim-qt.exe""""

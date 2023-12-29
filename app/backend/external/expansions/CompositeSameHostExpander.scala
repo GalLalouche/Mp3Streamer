@@ -1,11 +1,13 @@
 package backend.external.expansions
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 import backend.external.{BaseLinks, Host}
 import backend.external.recons.LinkRetrievers
 import backend.recon.{Album, Artist}
+
+import scala.concurrent.ExecutionContext
+
 import common.rich.collections.RichTraversableOnce._
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums. */

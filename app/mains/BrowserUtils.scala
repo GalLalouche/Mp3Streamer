@@ -1,9 +1,10 @@
 package mains
 
+import io.lemonlabs.uri.Url
+
 import scala.sys.process.Process
 
 import common.Urls
-import io.lemonlabs.uri.Url
 
 private object BrowserUtils {
   private val Query = "q"

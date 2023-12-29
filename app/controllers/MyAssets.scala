@@ -2,9 +2,10 @@ package controllers
 
 import java.io.File
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 import play.api.mvc.InjectedController
+
+import scala.concurrent.ExecutionContext
 
 // Since 2.6 ruined their own assets controller :\
 class MyAssets @Inject() (implicit ec: ExecutionContext) extends InjectedController {

@@ -1,8 +1,7 @@
 package backend.module
 
-import org.scalatest.{FreeSpec, Matchers}
-
 import com.google.inject.{Guice, Injector, Module}
+import org.scalatest.{FreeSpec, Matchers}
 
 trait ConfigurationModuleTestSpec extends FreeSpec with Matchers {
   protected def allRequiredBindingsSatisfied(configName: String, i: => Injector): Unit =

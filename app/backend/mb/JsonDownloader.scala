@@ -1,20 +1,23 @@
 package backend.mb
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration._
-import scalaz.syntax.monadError.ToMonadErrorOps
 
 import backend.logging.Logger
 import backend.mb.JsonDownloader.Input
-import common.concurrency.SimpleTypedActor
-import common.io.InternetTalker
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
-import common.rich.primitives.RichBoolean._
 import play.api.http.Status
 import play.api.libs.json._
 import play.api.libs.ws.JsonBodyReadables._
+
+import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration._
+
+import common.rich.func.BetterFutureInstances._
+import common.rich.func.ToMoreMonadErrorOps._
+import scalaz.syntax.monadError.ToMonadErrorOps
+
+import common.concurrency.SimpleTypedActor
+import common.io.InternetTalker
+import common.rich.primitives.RichBoolean._
 
 @Singleton
 private class JsonDownloader @Inject() (it: InternetTalker, logger: Logger) {

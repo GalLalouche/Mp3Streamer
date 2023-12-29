@@ -2,13 +2,14 @@ package controllers
 
 import javax.inject.Inject
 
+import models.{IOSong, ModelJsonable, Poster, Song}
+import models.ModelJsonable.SongJsonifier
+import play.api.libs.json.{JsObject, JsString}
+
 import common.io.IOFile
 import common.json.{JsonableOverrider, OJsonable, OJsonableOverrider}
 import common.json.RichJson._
 import common.rich.RichT._
-import models.{IOSong, ModelJsonable, Poster, Song}
-import models.ModelJsonable.SongJsonifier
-import play.api.libs.json.{JsObject, JsString}
 
 class ControllerSongJsonifier @Inject() (urlPathUtils: UrlPathUtils) {
   implicit val songJsonable: OJsonable[Song] =

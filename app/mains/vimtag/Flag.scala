@@ -1,13 +1,15 @@
 package mains.vimtag
 
 import java.util.regex.Pattern
+
+import enumeratum.{Enum, EnumEntry}
+
 import scala.collection.immutable
 
+import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
-import common.rich.RichT._
-import enumeratum.{Enum, EnumEntry}
 
 private sealed case class Flag(
     onByDefault: Boolean,

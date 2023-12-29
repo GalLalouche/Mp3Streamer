@@ -1,13 +1,15 @@
 package backend.albums.filler
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.Scalaz.ToBindOps
 
 import backend.recon.{Artist, ArtistReconStorage, ReconID}
 import backend.recon.StoredReconResult.HasReconResult
+
+import scala.concurrent.{ExecutionContext, Future}
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
+import scalaz.Scalaz.ToBindOps
 
 // Easier (and safer!) than opening SQLiteBrowser!
 private class ArtistReconPusherImpl @Inject() (

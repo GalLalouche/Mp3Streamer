@@ -1,13 +1,14 @@
 package backend.mb
 
-import scala.concurrent.ExecutionContext
-import scalaz.OptionT
-
-import backend.recon.{Album, Artist, ReconID, Reconciler, ReconcilerCacher}
-import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.OptionRetriever
+import backend.recon.{Album, Artist, Reconciler, ReconcilerCacher, ReconID}
+import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import com.google.inject.Provides
 import net.codingwell.scalaguice.ScalaPrivateModule
+
+import scala.concurrent.ExecutionContext
+
+import scalaz.OptionT
 
 object MbModule extends ScalaPrivateModule {
   override def configure(): Unit = {

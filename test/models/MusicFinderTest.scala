@@ -1,8 +1,8 @@
 package models
 
+import backend.module.FakeMusicFinder
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
-import backend.module.FakeMusicFinder
 import common.io.MemoryRoot
 import common.rich.collections.RichTraversableOnce._
 import common.test.AuxSpecs

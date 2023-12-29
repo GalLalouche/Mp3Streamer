@@ -1,13 +1,13 @@
 package models
 
-import scala.concurrent.duration.DurationInt
-
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.FieldKey
 import org.scalatest.FreeSpec
+
+import scala.concurrent.duration.DurationInt
 
 import common.rich.path.RichFile._
 import common.test.{AuxSpecs, DirectorySpecs}
-import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.tag.FieldKey
 
 class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
   private def getSong(location: String) = getResourceFile(location)

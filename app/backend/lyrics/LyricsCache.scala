@@ -1,22 +1,25 @@
 package backend.lyrics
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.{-\/, \/-}
-import scalaz.std.option.optionInstance
-import scalaz.syntax.functor.ToFunctorOps
 
 import backend.logging.Logger
-import backend.lyrics.retrievers._
 import backend.lyrics.LyricsUrl.ManualEmpty
+import backend.lyrics.retrievers._
 import backend.storage.OnlineRetrieverCacher
+import io.lemonlabs.uri.Url
+import models.Song
+
+import scala.concurrent.{ExecutionContext, Future}
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFoldableOps._
 import common.rich.func.ToMoreFunctorOps._
 import common.rich.func.ToMoreMonadErrorOps._
+import scalaz.{-\/, \/-}
+import scalaz.std.option.optionInstance
+import scalaz.syntax.functor.ToFunctorOps
+
 import common.rich.RichT._
-import io.lemonlabs.uri.Url
-import models.Song
 
 // TODO test
 private class LyricsCache @Inject() (

@@ -1,20 +1,22 @@
 package backend.search.cache
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 import backend.logging.{FilteringLogger, Logger, LoggingLevel}
 import backend.module.StandaloneModule
 import com.google.inject.Guice
+import models.ModelJsonable
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+import rx.lang.scala.Observable
+import rx.lang.scala.subjects.ReplaySubject
+
+import scala.concurrent.ExecutionContext
+
 import common.concurrency.report.ReportObserver
 import common.io.JsonableSaver
 import common.rich.RichFuture.richFuture
 import common.rich.RichObservable.richObservable
 import common.rich.RichT.richT
-import models.ModelJsonable
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import rx.lang.scala.subjects.ReplaySubject
-import rx.lang.scala.Observable
 
 private[search] class SongCacheUpdater @Inject() (
     saver: JsonableSaver,

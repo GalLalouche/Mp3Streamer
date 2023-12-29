@@ -1,8 +1,9 @@
 package backend.module
 
 import akka.util.ByteString
-import common.io.WSAliases._
 import play.api.libs.ws.WSCookie
+
+import common.io.WSAliases._
 
 case class FakeWSResponse(
     allHeaders: Map[String, Seq[String]] = Map(),

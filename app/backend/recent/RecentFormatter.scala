@@ -1,18 +1,21 @@
 package backend.recent
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.Reader
 
-import common.json.ToJsonableOps._
-import common.rich.collections.RichTraversableOnce.richTraversableOnce
-import common.rich.RichT._
 import controllers.websockets.PlayWebSocketRegistryFactory
 import controllers.websockets.WebSocketRef.WebSocketRefReader
 import models.Album
 import models.ModelJsonable.AlbumJsonifier
 import play.api.libs.json.JsValue
 import rx.lang.scala.Observable
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import scalaz.Reader
+
+import common.json.ToJsonableOps._
+import common.rich.RichT._
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class RecentFormatter @Inject() (
     ec: ExecutionContext,

@@ -1,19 +1,20 @@
 package backend.lyrics.retrievers
 
 import java.io.File
-import scala.concurrent.Future
-
-import org.scalatest.{Assertion, AsyncFreeSpec, Suite}
 
 import backend.lyrics.{HtmlLyrics, LyricsUrl}
 import backend.module.StandaloneModule
 import com.google.inject.Guice
-import common.rich.path.RichFile.richFile
-import common.test.AsyncAuxSpecs
 import io.lemonlabs.uri.Url
 import models.SongTagParser
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import net.codingwell.scalaguice.ScalaModule
+import org.scalatest.{Assertion, AsyncFreeSpec, Suite}
+
+import scala.concurrent.Future
+
+import common.rich.path.RichFile.richFile
+import common.test.AsyncAuxSpecs
 
 trait LyricsRetrieverIntegrationTemplate extends AsyncFreeSpec with AsyncAuxSpecs { self: Suite =>
   def go[R <: HtmlRetriever: Manifest](

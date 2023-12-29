@@ -1,10 +1,11 @@
 package common.concurrency
 
 import java.util.concurrent.Semaphore
-import scala.concurrent.{ExecutionContext, Future}
-import scala.language.postfixOps
 
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
+
+import scala.concurrent.{ExecutionContext, Future}
+import scala.language.postfixOps
 
 import common.concurrency.SimpleTypedActorImplTest.asyncAcquire
 import common.test.AsyncAuxSpecs

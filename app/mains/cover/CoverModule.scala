@@ -1,8 +1,9 @@
 package mains.cover
 
 import com.google.inject.assistedinject.FactoryModuleBuilder
-import common.io.google.GoogleModule
 import net.codingwell.scalaguice.ScalaModule
+
+import common.io.google.GoogleModule
 
 private[mains] object CoverModule extends ScalaModule {
   override def configure(): Unit = {

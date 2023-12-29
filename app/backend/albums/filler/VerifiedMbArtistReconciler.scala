@@ -1,11 +1,12 @@
 package backend.albums.filler
 
+import backend.FutureOption
+import backend.mb.MbArtistReconciler
+import backend.recon.{Artist, Reconciler, ReconID}
+import com.google.inject.Inject
+
 import scala.concurrent.ExecutionContext
 
-import backend.mb.MbArtistReconciler
-import backend.recon.{Artist, ReconID, Reconciler}
-import backend.FutureOption
-import com.google.inject.Inject
 import common.rich.func.BetterFutureInstances.betterFutureInstances
 import common.rich.func.RichOptionT.richOptionT
 

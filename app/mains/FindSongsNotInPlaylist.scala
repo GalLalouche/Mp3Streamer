@@ -2,15 +2,17 @@ package mains
 
 import java.io.File
 import java.time.Duration
-import scalaz.std.string.stringInstance
-import scalaz.std.vector.vectorInstance
+
+import models.IOMusicFinder
 
 import common.rich.func.ToMoreMonoidOps._
 import common.rich.func.ToTraverseMonadPlusOps._
+import scalaz.std.string.stringInstance
+import scalaz.std.vector.vectorInstance
+
+import common.rich.RichT.richT
 import common.rich.path.RichFile._
 import common.rich.primitives.RichString._
-import common.rich.RichT.richT
-import models.IOMusicFinder
 
 // finds songs that are in the music directory but are not saved in the playlist file
 object FindSongsNotInPlaylist {

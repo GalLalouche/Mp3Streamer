@@ -1,14 +1,15 @@
 package mains.download_cleaner
 
-import java.nio.file.attribute.FileTime
 import java.nio.file.Files
+import java.nio.file.attribute.FileTime
 import javax.inject.Inject
 
+import models.{IOMusicFinder, SongTagParser}
+
 import common.io.IODirectory
+import common.rich.RichT.richT
 import common.rich.path.RichFileUtils
 import common.rich.primitives.RichBoolean.richBoolean
-import common.rich.RichT.richT
-import models.{IOMusicFinder, SongTagParser}
 
 /** Adds the artist name to the folder if it doesn't contain it already. */
 private class ArtistNameAdder @Inject() (mf: IOMusicFinder) extends Cleaner {

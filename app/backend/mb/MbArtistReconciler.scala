@@ -1,13 +1,16 @@
 package backend.mb
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.OptionT
 
-import backend.recon.{Artist, ReconID, Reconciler}
-import common.json.RichJson._
+import backend.recon.{Artist, Reconciler, ReconID}
+
+import scala.concurrent.{ExecutionContext, Future}
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
+import scalaz.OptionT
+
+import common.json.RichJson._
 
 private[backend] class MbArtistReconciler @Inject() (
     ec: ExecutionContext,

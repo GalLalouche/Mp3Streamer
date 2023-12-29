@@ -1,9 +1,9 @@
 package backend.lyrics.retrievers
 
-import scala.concurrent.Future
-
 import io.lemonlabs.uri.Url
 import models.Song
+
+import scala.concurrent.Future
 
 private class SingleHostUrlHelper(
     singleHostUrl: SingleHostUrl,

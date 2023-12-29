@@ -2,11 +2,13 @@ package mains.fixer
 
 import java.io.{File, IOException}
 import java.nio.charset.StandardCharsets
+
+import mains.fixer.PythonLanguageDetector.Encoding
+
 import scala.io.Source
 
-import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.RichT.richT
-import mains.fixer.PythonLanguageDetector.Encoding
+import common.rich.primitives.RichBoolean.richBoolean
 
 /** Wraps a python process for detecting languages, so multiple calls are cheaper. */
 private class PythonLanguageDetector private {

@@ -1,14 +1,16 @@
 package backend.external
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
-import backend.recon.{ReconID, Reconcilable}
-import common.io.InternetTalker
-import common.rich.RichT._
-import common.RichJsoup._
+import backend.recon.{Reconcilable, ReconID}
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.{Document, Element}
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import common.RichJsoup._
+import common.io.InternetTalker
+import common.rich.RichT._
 
 /** Because MusicBrainz's API *still* doesn't allow for url-rel in release-groups. */
 private[backend] class MbHtmlLinkExtractorHelper @Inject() (it: InternetTalker) {

@@ -1,14 +1,14 @@
 package backend.lyrics.retrievers
 
-import org.scalatest.AsyncFreeSpec
-
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
-import common.test.AsyncAuxSpecs
 import io.lemonlabs.uri.Url
 import models.{FakeModelFactory, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.Document
+import org.scalatest.AsyncFreeSpec
 import play.api.http.Status
+
+import common.test.AsyncAuxSpecs
 
 class SingleHostParsingHelperTest extends AsyncFreeSpec with AsyncAuxSpecs {
   "404 returns NoLyrics" in {

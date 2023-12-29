@@ -1,19 +1,21 @@
 package backend.storage
 
 import java.time.{Clock, Duration}
-import scala.concurrent.Future
-import scalaz.syntax.bind.ToBindOps
-import scalaz.syntax.functor.ToFunctorOps
 
+import backend.module.TestModuleConfiguration
+import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 import org.scalatest.OptionValues._
 
-import backend.module.TestModuleConfiguration
+import scala.concurrent.Future
+
 import common.rich.func.BetterFutureInstances._
+import scalaz.syntax.bind.ToBindOps
+import scalaz.syntax.functor.ToFunctorOps
+
+import common.FakeClock
 import common.rich.RichT._
 import common.test.AsyncAuxSpecs
-import common.FakeClock
-import net.codingwell.scalaguice.InjectorExtensions._
 
 class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
   private val c = new TestModuleConfiguration

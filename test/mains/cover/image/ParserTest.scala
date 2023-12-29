@@ -1,11 +1,11 @@
 package mains.cover.image
 
-import org.scalatest.FreeSpec
-
-import common.test.AuxSpecs
 import io.lemonlabs.uri.Url
 import mains.cover.UrlSource
+import org.scalatest.FreeSpec
 import play.api.libs.json.{JsObject, Json}
+
+import common.test.AuxSpecs
 
 class ParserTest extends FreeSpec with AuxSpecs {
   "apply" in {

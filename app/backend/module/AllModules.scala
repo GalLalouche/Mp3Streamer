@@ -9,10 +9,11 @@ import backend.mb.MbModule
 import backend.recent.RecentModule
 import backend.recon.ReconModule
 import backend.scorer.ScorerModule
-import common.io.google.GoogleModule
 import controllers.ControllerModule
 import net.codingwell.scalaguice.ScalaModule
 import songs.SongsModule
+
+import common.io.google.GoogleModule
 
 object AllModules extends ScalaModule {
   LogManager.getLogManager.readConfiguration(getClass.getResourceAsStream("/logging.properties"))

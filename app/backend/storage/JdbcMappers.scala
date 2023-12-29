@@ -2,9 +2,10 @@ package backend.storage
 
 import backend.recon.Artist
 import backend.scorer.ModelScore
-import common.storage.ColumnMappers
 import slick.ast.BaseTypedType
 import slick.jdbc.JdbcProfile
+
+import common.storage.ColumnMappers
 
 private[backend] class JdbcMappers(implicit d: JdbcProfile) {
   import d.api._

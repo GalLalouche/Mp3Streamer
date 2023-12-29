@@ -1,18 +1,21 @@
 package backend.lyrics.retrievers.bandcamp
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.OptionT
 
+import backend.FutureOption
 import backend.external.{Host, MbHtmlLinkExtractorHelper}
 import backend.mb.ReleaseGroupToReleases
 import backend.recon.{Album, ReconID}
 import backend.recon.Reconcilable.SongExtractor
-import backend.FutureOption
-import common.rich.collections.RichTraversableOnce._
-import common.rich.func.BetterFutureInstances._
 import io.lemonlabs.uri.Url
 import models.Song
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import common.rich.func.BetterFutureInstances._
+import scalaz.OptionT
+
+import common.rich.collections.RichTraversableOnce._
 
 /**
  * MusicBrainz is supposed to allow adding Bandcamp lyric links for release groups, which would have

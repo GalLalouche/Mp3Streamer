@@ -1,10 +1,11 @@
 package controllers
 
 import java.net.HttpURLConnection
+
+import common.rich.func.ToMoreFoldableOps._
 import scalaz.std.option.optionInstance
 
 import common.io.FileRef
-import common.rich.func.ToMoreFoldableOps._
 import common.rich.primitives.RichString._
 
 class FileStreamFormatter {

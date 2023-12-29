@@ -1,6 +1,7 @@
 package backend.lyrics
 
-import common.storage.Storage
 import models.Song
+
+import common.storage.Storage
 
 private trait LyricsStorage extends Storage[Song, Lyrics]

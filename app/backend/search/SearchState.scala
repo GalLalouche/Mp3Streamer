@@ -1,11 +1,13 @@
 package backend.search
 
 import javax.inject.Inject
-import scala.concurrent.Future
 
 import com.google.inject.Singleton
-import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
 import models.{Album, Artist, Song}
+
+import scala.concurrent.Future
+
+import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
 
 @Singleton
 private class SearchState @Inject() (

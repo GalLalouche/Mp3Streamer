@@ -1,9 +1,10 @@
 package backend.mb
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
 import backend.recon.{Artist, ReconID}
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class GetReleaseGroupArtists @Inject() (
     jsonDownloader: JsonDownloader,

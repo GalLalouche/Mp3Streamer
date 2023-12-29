@@ -1,8 +1,7 @@
 package backend.lyrics.retrievers.bandcamp
 
-import org.scalatest.FreeSpec
-
 import backend.lyrics.retrievers.LyricsSpec
+import org.scalatest.FreeSpec
 
 class AlbumParserTest extends FreeSpec with LyricsSpec {
   private[retrievers] override def parser = AlbumParser

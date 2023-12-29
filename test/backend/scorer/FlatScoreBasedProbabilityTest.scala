@@ -1,20 +1,20 @@
 package backend.scorer
 
+import backend.logging.Logger
+import backend.recon.{Album, Artist}
+import models.{FakeModelFactory, Song}
+import org.scalatest.WordSpec
+import org.scalatest.mockito.MockitoSugar
+import org.scalatest.tags.Slow
+
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
-import org.scalatest.mockito.MockitoSugar
-import org.scalatest.tags.Slow
-import org.scalatest.WordSpec
-
-import backend.logging.Logger
-import backend.recon.{Album, Artist}
 import common.io.FileRef
-import common.rich.collections.RichTraversableOnce._
 import common.rich.RichEnumeratum.richEnumeratum
 import common.rich.RichRandom.richRandom
+import common.rich.collections.RichTraversableOnce._
 import common.test.AuxSpecs
-import models.{FakeModelFactory, Song}
 
 @Slow
 class FlatScoreBasedProbabilityTest extends WordSpec with AuxSpecs with MockitoSugar {

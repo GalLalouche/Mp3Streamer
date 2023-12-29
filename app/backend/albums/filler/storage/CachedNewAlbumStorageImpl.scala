@@ -1,20 +1,21 @@
 package backend.albums.filler.storage
 
-import monocle.Monocle.toApplyLensOps
-
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
-import scalaz.syntax.traverse.ToTraverseOps
-import scalaz.Scalaz.{ToApplyOps, ToFunctorOpsUnapply}
 
-import backend.albums.filler.{FilterExistingAlbums, NewAlbumRecon}
 import backend.albums.ArtistNewAlbums
+import backend.albums.filler.{FilterExistingAlbums, NewAlbumRecon}
 import backend.module.StandaloneModule
 import backend.recon.{Artist, IgnoredReconResult}
 import com.google.inject.Guice
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+
+import scala.concurrent.ExecutionContext
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreTraverseInstances._
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+import monocle.Monocle.toApplyLensOps
+import scalaz.Scalaz.{ToApplyOps, ToFunctorOpsUnapply}
+import scalaz.syntax.traverse.ToTraverseOps
 
 private class CachedNewAlbumStorageImpl @Inject() (
     lastFetchTime: LastFetchTime,

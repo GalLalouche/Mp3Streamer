@@ -3,10 +3,11 @@ package backend.lyrics.retrievers
 import javax.inject.Inject
 
 import com.google.common.annotations.VisibleForTesting
-import common.rich.RichT._
-import common.RichJsoup._
 import models.Song
 import org.jsoup.nodes.Document
+
+import common.RichJsoup._
+import common.rich.RichT._
 
 private class AzLyricsRetriever @Inject() (singleHostHelper: SingleHostParsingHelper)
     extends HtmlRetriever {

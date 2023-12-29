@@ -1,10 +1,12 @@
 package backend.albums.filler
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
 import backend.mb.GetReleaseGroupArtists
 import backend.recon.{Album, ArtistReconStorage, ReconID, StoredReconResult}
+
+import scala.concurrent.{ExecutionContext, Future}
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT.richOptionT
 

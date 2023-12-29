@@ -1,11 +1,12 @@
 package mains.cover
 
 import scala.concurrent.{ExecutionContext, Future}
+
+import common.rich.func.BetterFutureInstances._
 import scalaz.StreamT
 
 import common.concurrency.{FutureIterant, Iterant}
 import common.io.{DirectoryRef, FileRef}
-import common.rich.func.BetterFutureInstances._
 
 private object LocalImageFetcher {
   private val Extensions = Set("jpg", "png")

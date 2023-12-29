@@ -1,16 +1,18 @@
 package common.io
 
 import java.util.concurrent.TimeUnit
+
+import backend.Retriever
+import io.lemonlabs.uri.Url
+import org.jsoup.nodes.Document
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.Duration
 
-import backend.Retriever
 import common.io.RichWSRequest._
 import common.io.WSAliases._
 import common.rich.RichFuture._
 import common.rich.RichT._
-import io.lemonlabs.uri.Url
-import org.jsoup.nodes.Document
 
 /** Things that talk to the outside world. Spo-o-o-o-ky IO! */
 trait InternetTalker extends ExecutionContext {

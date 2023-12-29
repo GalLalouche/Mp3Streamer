@@ -3,21 +3,24 @@ package backend.external.expansions
 import java.net.HttpURLConnection
 import java.util.regex.Pattern
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
-import backend.external.expansions.AllMusicHelper._
 import backend.external.BaseLink
+import backend.external.expansions.AllMusicHelper._
 import backend.logging.Logger
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
-import common.io.InternetTalker
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
-import common.rich.primitives.RichBoolean._
-import common.rich.primitives.RichString._
-import common.RichJsoup._
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import common.rich.func.BetterFutureInstances._
+import common.rich.func.ToMoreMonadErrorOps._
+
+import common.RichJsoup._
+import common.io.InternetTalker
+import common.rich.primitives.RichBoolean._
+import common.rich.primitives.RichString._
 
 private class AllMusicHelper @Inject() (
     it: InternetTalker,

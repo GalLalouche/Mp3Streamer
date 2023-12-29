@@ -2,8 +2,8 @@ package mains.vimtag
 
 import java.io.File
 
-import common.rich.path.RichFile.richFile
 import common.rich.RichT.richT
+import common.rich.path.RichFile.richFile
 
 /** Creates a file with preset bindings to toggle flags on and off. */
 private object SetupBindings {

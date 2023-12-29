@@ -1,14 +1,15 @@
 package songs.selector
 
-import scala.concurrent.duration.DurationInt
-import scala.concurrent.ExecutionContext
-
 import backend.logging.Logger
 import backend.scorer.CachedModelScorer
 import com.google.inject.Provides
-import common.guice.ModuleUtils
 import models.{GenreFinder, MusicFinder}
 import net.codingwell.scalaguice.ScalaModule
+
+import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.DurationInt
+
+import common.guice.ModuleUtils
 
 private[songs] object SelectorModule extends ScalaModule with ModuleUtils {
   override def configure(): Unit = {

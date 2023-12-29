@@ -1,17 +1,17 @@
 package backend.external
 
 import java.time.LocalDateTime
-import scalaz.syntax.bind.ToBindOps
 
-import org.scalatest.AsyncFreeSpec
-
+import backend.StorageSetup
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist}
 import backend.storage.{AlwaysFresh, DatedFreshness}
-import backend.StorageSetup
-import common.rich.func.BetterFutureInstances._
 import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.AsyncFreeSpec
+
+import common.rich.func.BetterFutureInstances._
+import scalaz.syntax.bind.ToBindOps
 
 class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
   protected override val config: TestModuleConfiguration = new TestModuleConfiguration

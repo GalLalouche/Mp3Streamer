@@ -1,10 +1,10 @@
 package backend.external
 
-import monocle.macros.Lenses
-import monocle.Iso
-
 import backend.recon.Reconcilable
 import io.lemonlabs.uri.Url
+
+import monocle.Iso
+import monocle.macros.Lenses
 
 @Lenses
 case class BaseLink[R <: Reconcilable](link: Url, host: Host)

@@ -1,9 +1,10 @@
 package mains.cover
 
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.swing.event.{ComponentAdded, WindowClosing}
 import scala.swing.Frame
+import scala.swing.event.{ComponentAdded, WindowClosing}
 
 import common.concurrency.FutureIterant
 import common.rich.RichFuture._

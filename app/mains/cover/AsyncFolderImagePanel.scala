@@ -3,20 +3,23 @@ package mains.cover
 import java.awt.{Color, Font}
 import javax.inject.Inject
 import javax.swing.{BorderFactory, JLabel, SpringLayout, SwingConstants}
-import scala.concurrent.ExecutionContext
-import scala.swing.{Button, Component, Dimension, GridPanel, TextArea}
-import scala.util.{Failure, Success, Try}
-import scalaz.std.string.stringInstance
 
 import backend.logging.Logger
 import com.google.inject.assistedinject.Assisted
-import common.concurrency.FutureIterant
+import mains.SwingUtils._
+
+import scala.concurrent.ExecutionContext
+import scala.swing.{Button, Component, Dimension, GridPanel, TextArea}
+import scala.util.{Failure, Success, Try}
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT.richOptionT
 import common.rich.func.ToMoreMonoidOps._
+import scalaz.std.string.stringInstance
+
+import common.concurrency.FutureIterant
 import common.rich.RichFuture.richFuture
 import common.rich.RichT._
-import mains.SwingUtils._
 
 /** Eventually publishes an ImageChoice event. */
 private class AsyncFolderImagePanel @Inject() (

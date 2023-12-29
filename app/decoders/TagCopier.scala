@@ -1,9 +1,10 @@
 package decoders
 
-import common.io.IOFile
 import models.RichTag._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.{FieldKey, Tag}
+
+import common.io.IOFile
 
 private object TagCopier {
   def apply(input: IOFile, output: IOFile): Unit = {

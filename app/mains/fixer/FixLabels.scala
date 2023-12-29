@@ -3,22 +3,25 @@ package mains.fixer
 import java.io.File
 import java.util.regex.Pattern
 import javax.inject.Inject
+
+import models.{IOMusicFinder, IOSong}
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.FieldKey
+
 import scala.annotation.tailrec
 import scala.util.Try
 
-import common.io.IODirectory
-import common.rich.collections.RichTraversableOnce._
 import common.rich.func.MoreTryInstances._
 import common.rich.func.ToMoreMonadErrorOps._
+
+import common.io.IODirectory
+import common.rich.RichT.richT
+import common.rich.collections.RichTraversableOnce._
 import common.rich.path.Directory
 import common.rich.path.RichFile.richFile
 import common.rich.path.RichPath.poorPath
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
-import common.rich.RichT.richT
-import models.{IOMusicFinder, IOSong}
-import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.tag.FieldKey
 
 /** Fixes ID3 tags on mp3 and flac files to proper casing, delete unused tags, etc. */
 private class FixLabels @Inject() (mf: IOMusicFinder) {

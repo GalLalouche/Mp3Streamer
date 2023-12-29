@@ -1,16 +1,18 @@
 package mains.vimtag.table
 
 import java.util.regex.Pattern
+
+import mains.vimtag.{IndividualId3, IndividualParser}
+
+import scalaz.State
 import scalaz.std.vector.vectorInstance
 import scalaz.syntax.bind.ToBindOps
 import scalaz.syntax.functor.ToFunctorOps
 import scalaz.syntax.traverse._
-import scalaz.State
 
+import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
-import common.rich.RichT._
-import mains.vimtag.{IndividualId3, IndividualParser}
 
 private object TableParser extends IndividualParser {
   private type CurrentDiscNumber = Option[String]

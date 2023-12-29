@@ -2,17 +2,20 @@ package backend.external
 
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
-import backend.external.extensions.{ExtendedLink, LinkExtension}
 import backend.external.ExternalJsonifier._
 import backend.external.Host.{Wikidata, Wikipedia}
-import common.rich.collections.RichTraversableOnce._
+import backend.external.extensions.{ExtendedLink, LinkExtension}
+import play.api.libs.json.{JsObject, Json, JsString}
+import play.api.libs.json.Json.JsValueWrapper
+
+import scala.concurrent.{ExecutionContext, Future}
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
+
 import common.rich.RichT._
-import play.api.libs.json.{JsObject, JsString, Json}
-import play.api.libs.json.Json.JsValueWrapper
+import common.rich.collections.RichTraversableOnce._
 
 private class ExternalJsonifier @Inject() (implicit ec: ExecutionContext) {
   private type KVPair = (String, JsValueWrapper)

@@ -1,6 +1,10 @@
 package playlist
 
 import javax.inject.Inject
+
+import controllers.{ControllerSongJsonifier, UrlPathUtils}
+import play.api.libs.json.JsValue
+
 import scala.concurrent.duration.DurationInt
 
 import common.io.JsonableSaver
@@ -8,8 +12,6 @@ import common.json.JsonReadable
 import common.json.RichJson._
 import common.json.ToJsonableOps._
 import common.rich.RichT._
-import controllers.{ControllerSongJsonifier, UrlPathUtils}
-import play.api.libs.json.JsValue
 
 private class PlaylistFormatter @Inject() (
     saver: JsonableSaver,

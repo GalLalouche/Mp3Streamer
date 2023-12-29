@@ -8,12 +8,12 @@ import play.api.libs.json.{JsArray, Json, JsString, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import scalaz.std.option.optionInstance
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreTraverseInstances._
 import common.rich.func.ToMoreFoldableOps._
 import monocle.Monocle.toApplyTraversalOps
 import monocle.Traversal
+import scalaz.std.option.optionInstance
 
 import common.json.JsonWriteable
 import common.json.RichJson._

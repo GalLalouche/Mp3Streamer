@@ -1,11 +1,12 @@
 package common.json
 
+import play.api.libs.json.{JsArray, JsLookupResult, JsNull, JsObject, JsValue}
+
+import common.rich.func.ToMoreFoldableOps._
 import scalaz.std.option.optionInstance
 
 import common.json.ToJsonableOps.jsonifySingle
-import common.rich.func.ToMoreFoldableOps._
 import common.rich.RichT._
-import play.api.libs.json.{JsArray, JsLookupResult, JsNull, JsObject, JsValue}
 
 object RichJson {
   implicit class DynamicJson(private val $ : JsValue) extends AnyVal {

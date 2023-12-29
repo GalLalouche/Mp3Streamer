@@ -1,15 +1,17 @@
 package backend.lyrics.retrievers.genius
 
 import java.util.regex.Pattern
-import scala.collection.JavaConverters._
 
 import backend.lyrics.retrievers.{HtmlLyricsUtils, LyricParseResult, SingleHostParser}
-import common.rich.collections.RichTraversableOnce.richTraversableOnce
-import common.rich.primitives.RichString._
-import common.rich.RichT.richT
-import common.RichJsoup._
 import models.Song
 import org.jsoup.nodes.{Document, Element, TextNode}
+
+import scala.collection.JavaConverters._
+
+import common.RichJsoup._
+import common.rich.RichT.richT
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rich.primitives.RichString._
 
 private object LyricsParser extends SingleHostParser {
   override val source = "GeniusLyrics"

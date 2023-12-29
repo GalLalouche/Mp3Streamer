@@ -2,10 +2,10 @@ package models
 
 import javax.inject.{Inject, Singleton}
 
+import common.TimedLogger
 import common.io.DirectoryRef
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichOption.richOption
-import common.TimedLogger
 
 @Singleton private class StringGenreFinder @Inject() (mf: MusicFinder, timedLogger: TimedLogger) {
   private lazy val artistDirs = timedLogger("Fetching artistDirs") {

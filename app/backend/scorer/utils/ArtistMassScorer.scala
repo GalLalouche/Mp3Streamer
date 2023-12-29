@@ -1,21 +1,24 @@
 package backend.scorer.utils
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
-import scalaz.std.vector.vectorInstance
-import scalaz.syntax.traverse.ToTraverseOps
-import scalaz.Scalaz.{ToBindOpsUnapply, ToFoldableOps, ToFunctorOpsUnapply}
-import scalaz.State
 
 import backend.recon.{Artist, ReconcilableFactory}
 import backend.scorer.{CachedModelScorer, ModelScore, OptionalModelScore}
 import backend.scorer.utils.ArtistMassScorer.Update
-import common.{OrgModeWriter, OrgModeWriterMonad}
-import common.io.IODirectory
-import common.rich.func.MoreIteratorInstances.IteratorMonadPlus
-import common.rich.RichT._
-import common.OrgModeWriterMonad.OrgModeWriterMonad
 import models.{Genre, GenreFinder}
+
+import scala.concurrent.ExecutionContext
+
+import common.rich.func.MoreIteratorInstances.IteratorMonadPlus
+import scalaz.Scalaz.{ToBindOpsUnapply, ToFoldableOps, ToFunctorOpsUnapply}
+import scalaz.State
+import scalaz.std.vector.vectorInstance
+import scalaz.syntax.traverse.ToTraverseOps
+
+import common.{OrgModeWriter, OrgModeWriterMonad}
+import common.OrgModeWriterMonad.OrgModeWriterMonad
+import common.io.IODirectory
+import common.rich.RichT._
 
 /**
  * Creates an .org file for faster updating of artists. See [[ScoreParser]] for the parser of the

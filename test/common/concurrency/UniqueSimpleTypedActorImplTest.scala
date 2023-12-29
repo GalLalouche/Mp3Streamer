@@ -1,13 +1,14 @@
 package common.concurrency
 
 import java.util.concurrent.Semaphore
+
+import backend.logging.Logger
+import org.scalatest.{FreeSpec, OneInstancePerTest}
+
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-import org.scalatest.{FreeSpec, OneInstancePerTest}
-
-import backend.logging.Logger
 import common.test.AuxSpecs
 
 class UniqueSimpleTypedActorImplTest extends FreeSpec with OneInstancePerTest with AuxSpecs {

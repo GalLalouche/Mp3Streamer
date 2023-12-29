@@ -1,10 +1,11 @@
 package controllers
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
 import decoders.Mp3Encoder
 import play.api.mvc.InjectedController
+
+import scala.concurrent.{ExecutionContext, Future}
 
 private class StreamerFormatter @Inject() (
     ec: ExecutionContext,

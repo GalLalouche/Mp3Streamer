@@ -1,9 +1,10 @@
 package common.io
 
-import common.io.WSAliases._
-import org.jsoup.nodes.Document
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.libs.json.{JsObject, Json}
+
+import common.io.WSAliases._
 
 object RichWSResponse {
   implicit class richWSResponse($ : WSResponse) {

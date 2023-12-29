@@ -1,7 +1,8 @@
 package backend.albums.filler
 
-import backend.recon.{Artist, ReconcilableFactory}
 import javax.inject.Inject
+
+import backend.recon.{Artist, ReconcilableFactory}
 import models.MusicFinder
 
 import common.io.DirectoryRef

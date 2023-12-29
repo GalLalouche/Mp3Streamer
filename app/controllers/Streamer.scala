@@ -1,10 +1,12 @@
 package controllers
 
 import javax.inject.Inject
+
+import play.api.mvc.InjectedController
+
 import scala.concurrent.ExecutionContext
 
 import common.rich.RichT._
-import play.api.mvc.InjectedController
 
 class Streamer @Inject() (
     ec: ExecutionContext,

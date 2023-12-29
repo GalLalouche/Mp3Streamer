@@ -1,11 +1,12 @@
 package backend.lyrics.retrievers
 
-import scala.concurrent.Future
-import scalaz.std.option.optionInstance
-
-import common.rich.func.ToMoreFoldableOps._
 import io.lemonlabs.uri.Url
 import models.Song
+
+import scala.concurrent.Future
+
+import common.rich.func.ToMoreFoldableOps._
+import scalaz.std.option.optionInstance
 
 /** Can parse lyrics but can't actively search for a URL based on song. */
 private[lyrics] trait PassiveParser {

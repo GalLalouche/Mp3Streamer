@@ -2,10 +2,11 @@ package common
 
 import java.time.{LocalDate, LocalDateTime, Year, YearMonth}
 import java.time.format.DateTimeFormatter
+
 import scala.util.Try
 
-import common.rich.collections.RichTraversableOnce._
 import common.CompositeDateFormat.Parser
+import common.rich.collections.RichTraversableOnce._
 
 object CompositeDateFormat {
   private def toParser[T](pattern: String)(implicit ev: LocalDateTimeable[T]): Parser = source =>

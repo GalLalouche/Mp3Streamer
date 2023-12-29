@@ -2,26 +2,29 @@ package mains.fixer
 
 import java.net.ConnectException
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.syntax.bind.ToBindOpsUnapply
-import scalaz.syntax.functor.ToFunctorOps
-import scalaz.OptionT
 
 import backend.FutureOption
 import com.google.inject.Guice
-import common.io.{IODirectory, InternetTalker}
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.RichOptionT._
-import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
-import common.rich.func.ToMoreMonadErrorOps._
-import common.rich.path.Directory
-import common.rich.RichFuture._
-import common.rich.RichT._
 import io.lemonlabs.uri.Url
 import mains.{IOUtils, MainsModule}
 import mains.cover.{CoverException, DownloadCover}
 import models.IOMusicFinder
 import net.codingwell.scalaguice.InjectorExtensions._
+
+import scala.concurrent.{ExecutionContext, Future}
+
+import common.rich.func.BetterFutureInstances._
+import common.rich.func.RichOptionT._
+import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
+import common.rich.func.ToMoreMonadErrorOps._
+import scalaz.OptionT
+import scalaz.syntax.bind.ToBindOpsUnapply
+import scalaz.syntax.functor.ToFunctorOps
+
+import common.io.{InternetTalker, IODirectory}
+import common.rich.RichFuture._
+import common.rich.RichT._
+import common.rich.path.Directory
 
 private class FolderFixer @Inject() (
     fixLabels: FixLabels,

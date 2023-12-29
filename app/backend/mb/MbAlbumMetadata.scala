@@ -1,12 +1,14 @@
 package backend.mb
 
 import java.time.{Clock, LocalDate}
-import scala.Ordering.Implicits._
 
 import backend.recon.ReconID
-import common.rich.primitives.RichString._
-import common.rich.RichTime.{OrderingLocalDateTime, RichClock}
 import mains.fixer.StringFixer
+
+import scala.Ordering.Implicits._
+
+import common.rich.RichTime.{OrderingLocalDateTime, RichClock}
+import common.rich.primitives.RichString._
 
 private[backend] case class MbAlbumMetadata(
     title: String,

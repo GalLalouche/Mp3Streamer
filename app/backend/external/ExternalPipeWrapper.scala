@@ -2,18 +2,21 @@ package backend.external
 
 import java.time.{Clock, Duration}
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-import scalaz.{-\/, \/-}
 
+import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
 import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.LinkRetrievers
-import backend.recon.{ReconID, Reconcilable, ReconcilerCacher}
+import backend.recon.{Reconcilable, ReconcilerCacher, ReconID}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.storage.{ComposedFreshnessStorage, RefreshableRetriever}
-import backend.Retriever
+
+import scala.concurrent.{ExecutionContext, Future}
+
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
+import scalaz.{-\/, \/-}
+
 import common.rich.RichT._
 
 private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
