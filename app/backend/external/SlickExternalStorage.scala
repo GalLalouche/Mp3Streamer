@@ -8,12 +8,12 @@ import scalaz.syntax.apply.ToApplyOps
 
 import backend.recon.{Album, Artist, Reconcilable}
 import backend.storage.{AlwaysFresh, DatedFreshness, DbProvider, Freshness, SlickSingleKeyColumnStorageTemplateFromConf}
-import backend.Url
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFoldableOps._
 import common.rich.func.ToMoreMonadErrorOps._
 import common.rich.RichT._
 import common.storage.{ColumnMappers, StringSerializable}
+import io.lemonlabs.uri.Url
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType
 
@@ -38,19 +38,20 @@ private abstract class SlickExternalStorage[R <: Reconcilable](
           .split(if (s.contains(SplitCharBackup)) SplitCharBackup else SplitChar)
           .ifNot(_.length == 4)
           .thenThrow(InvalidEntry(s))
-        val url = Url(split(1))
+        val url = Url.parse(split(1))
         val mark = {
           val markText = split(3)
           LinkMark.withNameOption(markText).getOrElse(LinkMark.Text.read(markText))
         }
         MarkedLink[R](
-          link = Url(split(2)),
+          link = Url.parse(split(2)),
           host = Host.withUrl(url).getOrElse(Host(name = split(0), url = url)),
           mark = mark,
         )
       }
       override def stringify(e: MarkedLink[R]): String = {
-        val encodedLink = Vector(e.host.name, e.host.url.address, e.link.address, e.mark)
+        val encodedLink =
+          Vector(e.host.name, e.host.url.toStringPunycode, e.link.toStringPunycode, e.mark)
         encodedLink.mkString(if (encodedLink.toString.contains(";")) SplitCharBackup else SplitChar)
       }
     }

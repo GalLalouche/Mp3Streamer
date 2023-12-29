@@ -18,7 +18,7 @@ private sealed abstract class MusicBrainzExtender[R <: Reconcilable: Manifest]
     override def host: Host = MusicBrainzExtender.this.host
     override def extend(t: R, linkToModify: MarkedLink[R], otherLinks: MarkedLinks[R]) = {
       def preseededEdit(e: MarkedLink[R], i: Int): String =
-        s"edit-$reconcilableType.url.$i.text=${e.link.address}" +
+        s"edit-$reconcilableType.url.$i.text=${e.link}" +
           s"&edit-$reconcilableType.url.$i.link_type_id=${externalTypeIds(e.host)}"
       val preseed = otherLinks
         .filter(_.isNew)

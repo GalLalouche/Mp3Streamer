@@ -19,7 +19,7 @@ private[retrievers] class BandcampAlbumRetriever @Inject() (
   override val doesUrlMatchHost = Utils.doesUrlMatchHost
   override def get = song =>
     externalLinksProvider(song)
-      .flatMapF(url => parse(url.toLemonLabs, song))
+      .flatMapF(parse(_, song))
       .getOrElse(NoLyrics) // Recovering from None
       .orElse(NoLyrics) // Recovering from Future failure
 }

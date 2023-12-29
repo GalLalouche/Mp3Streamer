@@ -6,9 +6,9 @@ import scala.concurrent.{ExecutionContext, Future}
 import scalaz.syntax.bind.ToBindOps
 import scalaz.OptionT
 
-import backend.{FutureOption, Url => BackendUrl}
 import backend.external.{BaseLink, Host}
 import backend.recon.Artist
+import backend.FutureOption
 import com.google.common.annotations.VisibleForTesting
 import common.io.InternetTalker
 import common.io.WSAliases._
@@ -36,11 +36,11 @@ private class LastFmLinkRetriever @VisibleForTesting private[recons] (
         .find("link[rel=canonical]")
         .map(_.href)
         .filter(_.nonEmpty)
-        .map(e => BaseLink[Artist](BackendUrl(e), Host.LastFm))
+        .map(e => BaseLink[Artist](Url.parse(e), Host.LastFm))
   }
 
   override def apply(a: Artist): FutureOption[BaseLink[Artist]] = OptionT {
-    val url = Url(s"https://www.last.fm/music/" + a.name.toLowerCase.replace(' ', '+'))
+    val url = Url.parse(s"https://www.last.fm/music/" + a.name.toLowerCase.replace(' ', '+'))
     it.get(url)
       .map(handleReply)
       .recoverWith {

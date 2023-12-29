@@ -1,7 +1,7 @@
 package backend.external.expansions
 
 import backend.recon.{Album, Artist}
-import backend.Url
+import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.ScalaModule
 
 class MetalArchivesAlbumsFinderTest extends SameHostExpanderSpec {
@@ -23,7 +23,7 @@ class MetalArchivesAlbumsFinderTest extends SameHostExpanderSpec {
       Album("Blood for the Blood God", 2014, Artist("Cruachan")),
     )
       .mapValue(
-        _.link shouldReturn Url(
+        _.link shouldReturn Url.parse(
           "http://www.metal-archives.com/albums/Cruachan/Blood_for_the_Blood_God/475926",
         ),
       )

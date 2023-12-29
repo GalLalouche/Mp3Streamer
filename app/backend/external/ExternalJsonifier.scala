@@ -22,11 +22,12 @@ private class ExternalJsonifier @Inject() (implicit ec: ExecutionContext) {
     case LinkMark.Missing => "?"
     case LinkMark.Text(s) => s"* $s" // Currently, Text is only added to new links
   })
-  private def toJson(extension: LinkExtension[_]): KVPair = extension.name -> extension.link.address
+  private def toJson(extension: LinkExtension[_]): KVPair =
+    extension.name -> extension.link.toStringPunycode
   private def toJson(link: ExtendedLink[_]): KVPair = link.host.name -> Json.obj(
     // This has to be canonized late, otherwise the "*" will be deleted.
     "host" -> formatHost(link),
-    "main" -> link.link.address,
+    "main" -> link.link.toStringPunycode,
     "extensions" -> Json.obj(link.extensions.map(toJson).toVector: _*),
   )
   private def toJson(linkses: Traversable[ExtendedLink[_]]): JsObject =

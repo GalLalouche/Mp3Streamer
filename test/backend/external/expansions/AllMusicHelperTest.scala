@@ -7,11 +7,11 @@ import org.scalatest.AsyncFreeSpec
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.Album
-import backend.Url
 import common.io.WSAliases._
 import common.rich.primitives.RichBoolean._
 import common.rich.RichT._
 import common.test.AsyncAuxSpecs
+import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
 
 class AllMusicHelperTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentSpecs {
@@ -60,7 +60,7 @@ class AllMusicHelperTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentS
       }
     }
     "isValid" - {
-      val url = Url("http://foobar")
+      val url = Url.parse("http://foobar")
       "yes" in {
         create(withDocument(validLink))
           .isValidLink(url) shouldEventuallyReturn true
@@ -83,12 +83,12 @@ class AllMusicHelperTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentS
     "mw link" in {
       $.canonize(
         BaseLink[Album](
-          Url("http://www.allmusic.com/album/born-in-the-usa-mw0000191830"),
+          Url.parse("http://www.allmusic.com/album/born-in-the-usa-mw0000191830"),
           Host.Wikipedia,
         ),
       )
         .map(
-          _.link.address shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830",
+          _.link.toStringPunycode shouldReturn "http://www.allmusic.com/album/born-in-the-usa-mw0000191830",
         )
     }
     "rlink" - {
@@ -107,18 +107,24 @@ class AllMusicHelperTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentS
           "http://www.allmusic.com/album/r827504" ->
             "http://www.allmusic.com/album/home-mw0000533017",
         )
-          .canonize(BaseLink[Album](Url("http://www.allmusic.com/album/r827504"), Host.Wikipedia))
-          .map(_.link.address shouldReturn "http://www.allmusic.com/album/home-mw0000533017")
+          .canonize(
+            BaseLink[Album](Url.parse("http://www.allmusic.com/album/r827504"), Host.Wikipedia),
+          )
+          .map(
+            _.link.toStringPunycode shouldReturn "http://www.allmusic.com/album/home-mw0000533017",
+          )
       }
       val link =
-        BaseLink[Album](Url("http://www.allmusic.com/album/ghost-r2202519"), Host.Wikipedia)
+        BaseLink[Album](Url.parse("http://www.allmusic.com/album/ghost-r2202519"), Host.Wikipedia)
       "without www" in {
         withRedirectingMock(
           "http://www.allmusic.com/album/ghost-r2202519" ->
             "http://www.allmusic.com/album/ghost-mw0002150605",
         )
           .canonize(link)
-          .map(_.link.address shouldReturn "http://www.allmusic.com/album/ghost-mw0002150605")
+          .map(
+            _.link.toStringPunycode shouldReturn "http://www.allmusic.com/album/ghost-mw0002150605",
+          )
       }
       "multiple retries" - {
         "succeeds after second" in {
@@ -127,7 +133,9 @@ class AllMusicHelperTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentS
             "http://www.allmusic.com/album/ghost-r2202520" -> "http://www.allmusic.com/album/ghost-mw0002150605",
           )
             .canonize(link)
-            .map(_.link.address shouldReturn "http://www.allmusic.com/album/ghost-mw0002150605")
+            .map(
+              _.link.toStringPunycode shouldReturn "http://www.allmusic.com/album/ghost-mw0002150605",
+            )
         }
         "gives up eventually, returning the last url" in {
           withRedirectingMock(
@@ -135,7 +143,9 @@ class AllMusicHelperTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentS
             "http://www.allmusic.com/album/ghost-r2202520" -> "http://www.allmusic.com/album/ghost-r2202520",
           )
             .canonize(link)
-            .map(_.link.address shouldReturn "http://www.allmusic.com/album/ghost-r2202520")
+            .map(
+              _.link.toStringPunycode shouldReturn "http://www.allmusic.com/album/ghost-r2202520",
+            )
         }
       }
     }

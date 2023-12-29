@@ -6,10 +6,10 @@ import org.scalatest.AsyncFreeSpec
 
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
-import backend.Url
 import common.rich.collections.RichTraversableOnce._
 import common.rich.RichT._
 import common.test.AsyncAuxSpecs
+import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
 
 class WikipediaAlbumExternalLinksExpanderTest
@@ -28,7 +28,7 @@ class WikipediaAlbumExternalLinksExpanderTest
   "extract allmusic link" in {
     $.parseDocument(getDocument("allmusic_link.html"))
       .filter(_.host == Host.AllMusic)
-      .map(_.link.address)
+      .map(_.link.toStringPunycode)
       .single shouldReturn
       "http://www.allmusic.com/album/born-in-the-usa-mw0000191830"
   }
@@ -39,6 +39,6 @@ class WikipediaAlbumExternalLinksExpanderTest
       )
       .injector
       .instance[WikipediaAlbumExternalLinksExpander]
-    $.expand(BaseLink(Url("allmusic_rlink.html"), Host.Wikipedia)) shouldEventuallyReturn Nil
+    $.expand(BaseLink(Url.parse("allmusic_rlink.html"), Host.Wikipedia)) shouldEventuallyReturn Nil
   }
 }

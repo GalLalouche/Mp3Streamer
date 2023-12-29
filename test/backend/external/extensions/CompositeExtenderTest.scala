@@ -7,9 +7,9 @@ import org.scalatest.FreeSpec
 import backend.external._
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, Reconcilable}
-import backend.Url
 import common.rich.RichT._
 import common.test.AuxSpecs
+import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
 
 class CompositeExtenderTest extends FreeSpec with AuxSpecs {
@@ -40,18 +40,18 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
     "artist" in {
       val artist = Artist("Foobar")
       val links = Host.values
-        .map(MarkedLink[Artist](Url("foo.bar"), _, LinkMark.None))
+        .map(MarkedLink[Artist](Url.parse("foo.bar"), _, LinkMark.None))
         .|>(TimestampedLinks(_, LocalDateTime.now))
       val result = $.apply(artist, links)
 
       val expected: Map[Host, Seq[LinkExtension[Artist]]] = Map(
         Host.MusicBrainz -> Vector(
-          LinkExtension("edit", Url("foo.bar/edit")),
-          LinkExtension("Google", Url("https://www.google.com/search?q=foobar+MusicBrainz")),
-          LinkExtension("Lucky", Url("lucky/redirect/foobar MusicBrainz")),
+          LinkExtension("edit", Url.parse("foo.bar/edit")),
+          LinkExtension("Google", Url.parse("https://www.google.com/search?q=foobar+MusicBrainz")),
+          LinkExtension("Lucky", Url.parse("lucky/redirect/foobar MusicBrainz")),
         ),
-        Host.AllMusic -> Vector(LinkExtension("discography", Url("foo.bar/discography"))),
-        Host.LastFm -> Vector(LinkExtension("similar", Url("foo.bar/+similar"))),
+        Host.AllMusic -> Vector(LinkExtension("discography", Url.parse("foo.bar/discography"))),
+        Host.LastFm -> Vector(LinkExtension("similar", Url.parse("foo.bar/+similar"))),
       )
 
       verify(links, result, expected)
@@ -59,13 +59,13 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
     "album" in {
       val album = Album("Foo", 2000, Artist("Bar"))
       val links = Host.values
-        .map(MarkedLink[Album](Url("foo.bar"), _, LinkMark.None))
+        .map(MarkedLink[Album](Url.parse("foo.bar"), _, LinkMark.None))
         .|>(TimestampedLinks(_, LocalDateTime.now))
       val result = $.apply(album, links)
 
       val expected: Map[Host, Seq[LinkExtension[Album]]] = Map(
-        Host.MusicBrainz -> Vector(LinkExtension("edit", Url("foo.bar/edit"))),
-        Host.AllMusic -> Vector(LinkExtension("similar", Url("foo.bar/similar"))),
+        Host.MusicBrainz -> Vector(LinkExtension("edit", Url.parse("foo.bar/edit"))),
+        Host.AllMusic -> Vector(LinkExtension("similar", Url.parse("foo.bar/similar"))),
       )
 
       verify(links, result, expected)

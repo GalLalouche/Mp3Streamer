@@ -7,10 +7,10 @@ import org.scalatest.AsyncFreeSpec
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.Artist
-import backend.Url
 import common.io.InternetTalker
 import common.rich.RichT._
 import common.test.AsyncAuxSpecs
+import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
 
 class LastFmLinkRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentSpecs {
@@ -27,7 +27,10 @@ class LastFmLinkRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with Docu
     val c = config.copy(_urlToBytesMapper = getBytes("last_fm.html").partialConst)
     create(c)(Artist("dreamtheater"))
       .mapValue(
-        _ shouldReturn BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm),
+        _ shouldReturn BaseLink[Artist](
+          Url.parse("http://www.last.fm/music/Dream+Theater"),
+          Host.LastFm,
+        ),
       )
   }
   "302" in {
@@ -41,7 +44,10 @@ class LastFmLinkRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with Docu
     })
     create(c)(Artist("Foobar"))
       .mapValue(
-        _ shouldReturn BaseLink[Artist](Url("http://www.last.fm/music/Dream+Theater"), Host.LastFm),
+        _ shouldReturn BaseLink[Artist](
+          Url.parse("http://www.last.fm/music/Dream+Theater"),
+          Host.LastFm,
+        ),
       )
   }
 }

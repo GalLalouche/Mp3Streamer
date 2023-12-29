@@ -2,7 +2,7 @@ package backend.external.extensions
 
 import backend.external.{Host, LinkMark, MarkedLink}
 import backend.recon.Reconcilable
-import backend.Url
+import io.lemonlabs.uri.Url
 
 private[external] case class LinkExtension[R <: Reconcilable](name: String, link: Url)
 private[external] case class ExtendedLink[R <: Reconcilable](

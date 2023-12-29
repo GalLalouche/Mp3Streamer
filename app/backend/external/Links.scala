@@ -4,7 +4,7 @@ import monocle.macros.Lenses
 import monocle.Iso
 
 import backend.recon.Reconcilable
-import backend.Url
+import io.lemonlabs.uri.Url
 
 @Lenses
 case class BaseLink[R <: Reconcilable](link: Url, host: Host)

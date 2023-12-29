@@ -4,9 +4,9 @@ import javax.inject.Inject
 
 import backend.external.{BaseLink, Host}
 import backend.recon.Reconcilable
-import backend.Url
 import com.google.common.annotations.VisibleForTesting
 import common.RichJsoup._
+import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
 private class WikidataEnglishOrHebrewExtenderFactory @Inject() (
@@ -28,7 +28,7 @@ private object WikidataEnglishOrHebrewExtenderFactory {
       )
     selectLanguage("en")
       .orElse(selectLanguage("he"))
-      .map(e => BaseLink[R](Url(e.href), Host.Wikipedia))
+      .map(e => BaseLink[R](Url.parse(e.href), Host.Wikipedia))
       .toVector
   }
 }

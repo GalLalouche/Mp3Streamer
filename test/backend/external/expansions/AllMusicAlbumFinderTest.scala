@@ -5,7 +5,7 @@ import scala.concurrent.Future
 import org.scalatest.mockito.MockitoSugar
 
 import backend.recon.{Album, Artist}
-import backend.Url
+import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.ScalaModule
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -25,7 +25,9 @@ class AllMusicAlbumFinderTest extends SameHostExpanderSpec with MockitoSugar {
     "Find links" in {
       findAlbum("allmusic_discography.html", Album("A night at the opera", 1975, Artist("Queen")))
         .mapValue(
-          _.link shouldReturn Url("http://www.allmusic.com/album/a-night-at-the-opera-mw0000391519"),
+          _.link shouldReturn Url.parse(
+            "http://www.allmusic.com/album/a-night-at-the-opera-mw0000391519",
+          ),
         )
     }
     "Missing input in discography list" in {
@@ -34,7 +36,7 @@ class AllMusicAlbumFinderTest extends SameHostExpanderSpec with MockitoSugar {
         Album("The Ghost of Tom Joad", 1995, Artist("Bruce Springsteen")),
       )
         .mapValue(
-          _.link shouldReturn Url(
+          _.link shouldReturn Url.parse(
             "http://www.allmusic.com/album/the-ghost-of-tom-joad-mw0000181768",
           ),
         )
@@ -42,12 +44,14 @@ class AllMusicAlbumFinderTest extends SameHostExpanderSpec with MockitoSugar {
     "href already has host name" in {
       findAlbum("allmusic_discography3.html", Album("A Wintersunset", 1996, Artist("Empyrium")))
         .mapValue(
-          _.link shouldReturn Url("http://www.allmusic.com/album/a-wintersunset-mw0001654263"),
+          _.link shouldReturn Url.parse("http://www.allmusic.com/album/a-wintersunset-mw0001654263"),
         )
     }
     "additional hrefs in <td>s chooses the one with .title prefix" in {
       findAlbum("allmusic_discography4.html", Album("Clouds", 1992, Artist("Tiamat")))
-        .mapValue(_.link shouldReturn Url("https://www.allmusic.com/album/clouds-mw0000103448"))
+        .mapValue(
+          _.link shouldReturn Url.parse("https://www.allmusic.com/album/clouds-mw0000103448"),
+        )
     }
     "invalid link returns None" in {
       when(allMusicHelper.isValidLink(any())).thenReturn(Future.successful(false))

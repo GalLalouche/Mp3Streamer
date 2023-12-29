@@ -5,10 +5,10 @@ import javax.inject.Inject
 
 import backend.external.{BaseLink, Host}
 import backend.recon.Reconcilable
-import backend.Url
 import com.google.common.annotations.VisibleForTesting
 import common.rich.primitives.RichString._
 import common.RichJsoup._
+import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
 private class WikipediaToWikidataExtenderFactory @Inject() (helper: ExternalLinkExpanderHelper) {
@@ -23,7 +23,7 @@ private class WikipediaToWikidataExtenderFactory @Inject() (helper: ExternalLink
   @VisibleForTesting
   def parse[R <: Reconcilable](d: Document) =
     d.selectSingleOpt("#t-wikibase a")
-      .map(e => BaseLink[R](Url(canonize(e.href)), Host.Wikidata))
+      .map(e => BaseLink[R](Url.parse(canonize(e.href)), Host.Wikidata))
       .toVector
   def create[R <: Reconcilable]: ExternalLinkExpander[R] = new ExternalLinkExpander[R] {
     override def sourceHost: Host = Host.Wikipedia

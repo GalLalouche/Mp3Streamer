@@ -5,11 +5,12 @@ import scalaz.syntax.bind.ToBindOps
 
 import org.scalatest.AsyncFreeSpec
 
-import backend._
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist}
 import backend.storage.{AlwaysFresh, DatedFreshness}
+import backend.StorageSetup
 import common.rich.func.BetterFutureInstances._
+import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
 
 class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
@@ -19,23 +20,23 @@ class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
 
   private val album: Album = Album("the spam album", 2000, Artist("foo and the bar band"))
   private val link1 = MarkedLink[Album](
-    Url("www.foobar.com/foo/bar.html"),
-    Host("foobar", Url("www.foobar.com")),
+    Url.parse("www.foobar.com/foo/bar.html"),
+    Host("foobar", Url.parse("www.foobar.com")),
     LinkMark.New,
   )
   private val link2 = MarkedLink[Album](
-    Url("www.bazqux.com/baz/qux.html"),
-    Host("bazqux", Url("www.bazqux.com")),
+    Url.parse("www.bazqux.com/baz/qux.html"),
+    Host("bazqux", Url.parse("www.bazqux.com")),
     LinkMark.None,
   )
   private val link3 = MarkedLink[Album](
-    Url("www.spam.com/eggs/ni.html"),
-    Host("bazqux", Url("www.spam.com")),
+    Url.parse("www.spam.com/eggs/ni.html"),
+    Host("bazqux", Url.parse("www.spam.com")),
     LinkMark.Missing,
   )
   private val link4 = MarkedLink[Album](
-    Url("www.spam.com/eggs/ni.html"),
-    Host("egg", Url("www.grault.com")),
+    Url.parse("www.spam.com/eggs/ni.html"),
+    Host("egg", Url.parse("www.grault.com")),
     LinkMark.Text("corge"),
   )
 
@@ -49,8 +50,8 @@ class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
   }
   "Can update" in {
     val link = MarkedLink[Album](
-      Url("www.foobar.com/foo/bar.html"),
-      Host("foobar", Url("www.foobar.com")),
+      Url.parse("www.foobar.com/foo/bar.html"),
+      Host("foobar", Url.parse("www.foobar.com")),
       LinkMark.New,
     )
     storage.store(album, Nil -> AlwaysFresh) >>
@@ -73,8 +74,8 @@ class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
 
   "Can handle links with ';' in their text" in {
     val link5 = MarkedLink[Album](
-      Url("www.bazqux.com/baz/quxlt&;.html"),
-      Host("annoying", Url("annoying.com")),
+      Url.parse("www.bazqux.com/baz/quxlt&;.html"),
+      Host("annoying", Url.parse("annoying.com")),
       LinkMark.New,
     )
     val value = Vector(link1, link2, link3, link4, link5) -> DatedFreshness(LocalDateTime.now)
@@ -82,12 +83,12 @@ class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
   }
   "canonicalizes host on extraction" in {
     val nonStandardWikipediaLink = MarkedLink[Album](
-      Url("en.wikipedia.org/foo/bar.html"),
-      Host("Wikipedia", Url("en.wikipedia.org")),
+      Url.parse("en.wikipedia.org/foo/bar.html"),
+      Host("Wikipedia", Url.parse("en.wikipedia.org")),
       LinkMark.New,
     )
     val standardWikipediaLink =
-      MarkedLink[Album](Url("en.wikipedia.org/foo/bar.html"), Host.Wikipedia, LinkMark.New)
+      MarkedLink[Album](Url.parse("en.wikipedia.org/foo/bar.html"), Host.Wikipedia, LinkMark.New)
     storage.store(album, Vector(nonStandardWikipediaLink) -> AlwaysFresh) >>
       storage.load(album).valueShouldEventuallyReturn(Vector(standardWikipediaLink) -> AlwaysFresh)
   }

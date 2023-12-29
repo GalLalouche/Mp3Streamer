@@ -5,9 +5,9 @@ import scala.concurrent.ExecutionContext
 import scalaz.std.option.optionInstance
 import scalaz.OptionT
 
-import backend.{FutureOption, Url}
 import backend.external.Host
 import backend.recon.{Album, AlbumReconScorer}
+import backend.FutureOption
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreIteratorInstances._
 import common.rich.func.ToMoreMonadPlusOps._
@@ -15,6 +15,7 @@ import common.rich.func.ToTraverseMonadPlusOps._
 import common.rich.primitives.RichBoolean._
 import common.rich.RichT._
 import common.RichJsoup._
+import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
 private class AllMusicAlbumFinder @Inject() (
@@ -30,7 +31,7 @@ private class AllMusicAlbumFinder @Inject() (
   private val documentToAlbumParser: DocumentToAlbumParser = new DocumentToAlbumParser {
     override def host: Host = AllMusicAlbumFinder.this.host
 
-    override def modifyUrl(u: Url, a: Album) = u +/ "discography"
+    override def modifyUrl(u: Url, a: Album) = u.addPathPart("discography")
     override def findAlbum(d: Document, album: Album): FutureOption[Url] = OptionT {
       def score(other: Album): Double = albumReconScorer(album, other)
       d.selectIterator(".discography table tbody tr")
@@ -49,7 +50,7 @@ private class AllMusicAlbumFinder @Inject() (
             .href
             .mapIf(_.startsWith("http").isFalse)
             .to("http://www.allmusic.com" + _)
-            .|>(Url.apply),
+            .|>(Url.parse),
         )
         .filterM(allMusicHelper.isValidLink)
     }

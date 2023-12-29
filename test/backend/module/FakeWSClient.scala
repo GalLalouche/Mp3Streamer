@@ -1,8 +1,8 @@
 package backend.module
 
-import backend.Url
 import common.io.WSAliases._
 import common.rich.primitives.RichBoolean._
+import io.lemonlabs.uri.Url
 
 private class FakeWSClient(getRequest: Url => WSRequest) extends WSClient {
   private var wasClosed = false
@@ -12,7 +12,8 @@ private class FakeWSClient(getRequest: Url => WSRequest) extends WSClient {
   override def underlying[T] = this.asInstanceOf[T]
 
   override def url(url: String): WSRequest =
-    if (wasClosed) throw new IllegalStateException("WSClient is closed") else getRequest(Url(url))
+    if (wasClosed) throw new IllegalStateException("WSClient is closed")
+    else getRequest(Url.parse(url))
 
   override def close(): Unit =
     if (wasClosed) throw new IllegalStateException("WSClient was already closed")

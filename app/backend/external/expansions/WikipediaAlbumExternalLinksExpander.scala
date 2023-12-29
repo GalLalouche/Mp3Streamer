@@ -10,7 +10,6 @@ import backend.external.{BaseLink, BaseLinks, Host}
 import backend.external.expansions.WikipediaAlbumExternalLinksExpander._
 import backend.logging.Logger
 import backend.recon.Album
-import backend.Url
 import com.google.common.annotations.VisibleForTesting
 import common.io.InternetTalker
 import common.rich.collections.RichTraversableOnce._
@@ -19,6 +18,7 @@ import common.rich.func.BetterFutureInstances._
 import common.rich.primitives.RichString._
 import common.rich.RichT._
 import common.RichJsoup._
+import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
 private class WikipediaAlbumExternalLinksExpander @Inject() (
@@ -55,7 +55,7 @@ private class WikipediaAlbumExternalLinksExpander @Inject() (
     .map(_.href)
     .flatMap(extractSemiCanonicalAllMusicLink)
     .|>(preferCanonical)
-    .map(Url.apply)
+    .map(Url.parse)
     .|>(_.singleOpt)
 
   @VisibleForTesting

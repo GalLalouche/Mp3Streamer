@@ -1,7 +1,7 @@
 package backend.external.expansions
 
 import backend.recon.{Album, Artist}
-import backend.Url
+import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.ScalaModule
 
 class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
@@ -22,7 +22,7 @@ class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
       Album("Lady in Gold", 2016, Artist("Blues Pills")),
       DiscographyExtractLink -> NotRedirected,
     )
-      .mapValue(_.link shouldReturn Url("https://en.wikipedia.org/wiki/Lady_in_Gold_(album)"))
+      .mapValue(_.link shouldReturn Url.parse("https://en.wikipedia.org/wiki/Lady_in_Gold_(album)"))
   }
   "Choose correct language" in {
     findAlbum(
@@ -31,7 +31,9 @@ class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
       HebrewDiscographyExtractLink -> NotRedirected,
     )
       .mapValue(
-        _.link shouldReturn Url("https://he.wikipedia.org/wiki/%D7%91%D7%A9%D7%93%D7%95%D7%AA"),
+        _.link shouldReturn Url.parse(
+          "https://he.wikipedia.org/wiki/%D7%91%D7%A9%D7%93%D7%95%D7%AA",
+        ),
       )
   }
   "Return nothing on red link" in {
@@ -54,7 +56,9 @@ class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
       "https://en.wikipedia.org/w/index.php?title=Preachers_of_the_Night&redirect=no" -> Redirected,
     )
       .mapValue(
-        _.link shouldReturn Url("https://en.wikipedia.org/wiki/Preachers_of_the_Night_(album)"),
+        _.link shouldReturn Url.parse(
+          "https://en.wikipedia.org/wiki/Preachers_of_the_Night_(album)",
+        ),
       )
   }
   "Links starting with // are ignored" in {
@@ -63,7 +67,7 @@ class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
       Album("Alvvays", 2014, Artist("Alvvays")),
       "https://en.wikipedia.org/w/index.php?title=Alvvays_(album)&redirect=no" -> NotRedirected,
     )
-      .mapValue(_.link shouldReturn Url("https://en.wikipedia.org/wiki/Alvvays_(album)"))
+      .mapValue(_.link shouldReturn Url.parse("https://en.wikipedia.org/wiki/Alvvays_(album)"))
   }
 
   "Ignores external links" in {

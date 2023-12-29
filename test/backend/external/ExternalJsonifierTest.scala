@@ -7,8 +7,8 @@ import org.scalatest.AsyncFreeSpec
 
 import backend.external.extensions.{ExtendedLink, SearchExtension}
 import backend.recon.{Album, Artist}
-import backend.Url
 import common.test.AuxSpecs
+import io.lemonlabs.uri.Url
 import play.api.libs.json.Json
 
 class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
@@ -21,13 +21,13 @@ class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
         TimestampedExtendedLinks[Album](
           Vector(
             new ExtendedLink(
-              Url("https://www.wikidata.org/wiki/Q1340975"),
+              Url.parse("https://www.wikidata.org/wiki/Q1340975"),
               Host.Wikidata,
               LinkMark.Text("The River (1980 double studio album by Bruce Springsteen)"),
               extensions = Nil,
             ),
             new ExtendedLink(
-              Url("https://en.wikipedia.org/wiki/The_River_New(Bruce_Springsteen_album)"),
+              Url.parse("https://en.wikipedia.org/wiki/The_River_New(Bruce_Springsteen_album)"),
               Host.Wikipedia,
               LinkMark.New,
               extensions = Nil,
@@ -54,7 +54,7 @@ class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
             "main" -> "javascript:void(0)",
             "extensions" -> Json.obj(
               "Google" -> "https://www.google.com/search?q=bruce+springsteen+-+the+river+AllMusic",
-              "Lucky" -> "lucky/redirect/bruce springsteen - the river AllMusic",
+              "Lucky" -> "lucky/redirect/bruce%20springsteen%20-%20the%20river%20AllMusic",
             ),
           ),
           "timestamp" -> "17/10",
@@ -77,7 +77,7 @@ class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
             "main" -> "javascript:void(0)",
             "extensions" -> Json.obj(
               "Google" -> "https://www.google.com/search?q=bruce+springsteen+-+the+river+Wikipedia",
-              "Lucky" -> "lucky/redirect/bruce springsteen - the river Wikipedia",
+              "Lucky" -> "lucky/redirect/bruce%20springsteen%20-%20the%20river%20Wikipedia",
             ),
           ),
           "timestamp" -> "17/10",

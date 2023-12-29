@@ -2,12 +2,13 @@ package backend.external.expansions
 
 import javax.inject.Inject
 
-import backend.{FutureOption, Url}
 import backend.external.Host
 import backend.recon.Album
+import backend.FutureOption
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadTransOps._
 import common.RichJsoup._
+import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
 private class MetalArchivesAlbumsFinder @Inject() (sameHostExpanderHelper: SameHostExpanderHelper)
@@ -17,17 +18,17 @@ private class MetalArchivesAlbumsFinder @Inject() (sameHostExpanderHelper: SameH
     override val host = MetalArchivesAlbumsFinder.this.host
 
     override def modifyUrl(u: Url, a: Album) = {
-      val address = u.address
+      val address = u.toStringPunycode
       val albumArtistName = a.artist.name
       val urlArtistName = address.split('/').dropRight(1).last
       val artistId = address.split('/').last.toInt
-      Url(s"http://www.metal-archives.com/band/discography/id/$artistId/tab/all")
+      Url.parse(s"http://www.metal-archives.com/band/discography/id/$artistId/tab/all")
     }
     override def findAlbum(d: Document, a: Album): FutureOption[Url] =
       d.selectIterator(".display.discog tr td a")
         .find(_.text.toLowerCase == a.title.toLowerCase)
         .map(_.href)
-        .map(Url.apply)
+        .map(Url.parse)
         .hoistId
   }
 

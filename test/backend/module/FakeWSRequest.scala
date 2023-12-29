@@ -5,12 +5,12 @@ import monocle.macros.GenLens
 import scala.concurrent.duration.Duration
 import scala.concurrent.Future
 
-import backend.Url
 import common.io.WSAliases._
 import common.rich.collections.RichMap._
 import common.rich.collections.RichSeq._
 import common.rich.func.MoreSeqInstances._
 import common.rich.RichT._
+import io.lemonlabs.uri.Url
 import play.api.libs.ws.{BodyWritable, EmptyBody, WSAuthScheme, WSBody, WSCookie, WSProxyServer, WSRequestFilter, WSSignatureCalculator}
 
 private case class FakeWSRequest private (
@@ -27,7 +27,7 @@ private case class FakeWSRequest private (
     virtualHost: Option[String] = None,
     proxyServer: Option[WSProxyServer] = None,
 ) extends WSRequest {
-  override val url: String = u.address
+  override val url: String = u.toStringPunycode
   override type Self = FakeWSRequest
   override type Response = FakeWSResponse
 

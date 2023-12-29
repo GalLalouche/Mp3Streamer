@@ -4,9 +4,9 @@ import org.scalatest.AsyncFreeSpec
 
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, ReconID}
-import backend.Url
 import com.google.inject.Key
 import common.rich.RichT._
+import io.lemonlabs.uri.Url
 
 class MbHtmlLinkExtractorTest extends AsyncFreeSpec with DocumentSpecs {
   private def withDocument(name: String) =
@@ -17,30 +17,30 @@ class MbHtmlLinkExtractorTest extends AsyncFreeSpec with DocumentSpecs {
     // Instance with type aliases is bugged it seems
     val $ = injector.getInstance(new Key[ExternalLinkProvider[Artist]]() {})
     val expected = Vector(
-      BaseLink[Artist](Url("http://www.allmusic.com/artist/mn0002658855"), Host.AllMusic),
-      BaseLink[Artist](Url("http://www.last.fm/music/Deafheaven"), Host.LastFm),
+      BaseLink[Artist](Url.parse("http://www.allmusic.com/artist/mn0002658855"), Host.AllMusic),
+      BaseLink[Artist](Url.parse("http://www.last.fm/music/Deafheaven"), Host.LastFm),
       BaseLink[Artist](
-        Url("https://rateyourmusic.com/artist/deafheaven"),
-        Host("RateYourMusic", Url("rateyourmusic.com")),
+        Url.parse("https://rateyourmusic.com/artist/deafheaven"),
+        Host("RateYourMusic", Url.parse("rateyourmusic.com")),
       ),
       BaseLink[Artist](
-        Url("http://www.metal-archives.com/bands/Deafheaven/3540315870"),
-        Host("MetalArchives", Url("www.metal-archives.com")),
+        Url.parse("http://www.metal-archives.com/bands/Deafheaven/3540315870"),
+        Host("MetalArchives", Url.parse("www.metal-archives.com")),
       ),
       BaseLink[Artist](
-        Url("https://www.facebook.com/deafheaven"),
-        Host("Facebook", Url("www.facebook.com")),
+        Url.parse("https://www.facebook.com/deafheaven"),
+        Host("Facebook", Url.parse("www.facebook.com")),
       ),
-      BaseLink[Artist](Url("https://www.wikidata.org/wiki/Q5245804"), Host.Wikidata),
-      BaseLink[Artist](Url("https://en.wikipedia.org/wiki/Deafheaven"), Host.Wikipedia),
-      BaseLink[Artist](Url("https://musicbrainz.org/artist/foobar"), Host.MusicBrainz),
-      BaseLink[Artist](Url("https://deafheavens.bandcamp.com/"), Host.Bandcamp),
+      BaseLink[Artist](Url.parse("https://www.wikidata.org/wiki/Q5245804"), Host.Wikidata),
+      BaseLink[Artist](Url.parse("https://en.wikipedia.org/wiki/Deafheaven"), Host.Wikipedia),
+      BaseLink[Artist](Url.parse("https://musicbrainz.org/artist/foobar"), Host.MusicBrainz),
+      BaseLink[Artist](Url.parse("https://deafheavens.bandcamp.com/"), Host.Bandcamp),
       /* Ignored */
-      // BaseLink[Artist](Url("http://deafheaven.com/"), Host("home", Url("deafheaven.com"))),
-      // BaseLink[Artist](Url("https://itunes.apple.com/es/album/id1123970968"), Host("itunes", Url("itunes.apple.com"))),
-      // BaseLink[Artist](Url("http://www.discogs.com/artist/2025280"), Host("discogs", Url("www.discogs.com"))),
-      // BaseLink[Artist](Url("https://myspace.com/deafheaven"), Host("myspace", Url("myspace.com"))),
-      // BaseLink[Artist](Url("https://twitter.com/deafheavenband"), Host("twitter", Url("twitter.com"))),
+      // BaseLink[Artist](Url.parse("http://deafheaven.com/"), Host("home", Url.parse("deafheaven.com"))),
+      // BaseLink[Artist](Url.parse("https://itunes.apple.com/es/album/id1123970968"), Host("itunes", Url.parse("itunes.apple.com"))),
+      // BaseLink[Artist](Url.parse("http://www.discogs.com/artist/2025280"), Host("discogs", Url.parse("www.discogs.com"))),
+      // BaseLink[Artist](Url.parse("https://myspace.com/deafheaven"), Host("myspace", Url.parse("myspace.com"))),
+      // BaseLink[Artist](Url.parse("https://twitter.com/deafheavenband"), Host("twitter", Url.parse("twitter.com"))),
     )
 
     $(ReconID("foobar")).map(_ shouldMultiSetEqual expected)
@@ -51,14 +51,14 @@ class MbHtmlLinkExtractorTest extends AsyncFreeSpec with DocumentSpecs {
     val $ = injector.getInstance(new Key[ExternalLinkProvider[Album]]() {})
     val expected = Vector(
       BaseLink[Album](
-        Url("https://rateyourmusic.com/release/album/deafheaven/sunbather/"),
-        Host("RateYourMusic", Url("rateyourmusic.com")),
+        Url.parse("https://rateyourmusic.com/release/album/deafheaven/sunbather/"),
+        Host("RateYourMusic", Url.parse("rateyourmusic.com")),
       ),
-      BaseLink[Album](Url("https://www.wikidata.org/wiki/Q15717528"), Host.Wikidata),
-      BaseLink[Album](Url("https://en.wikipedia.org/wiki/Sunbather_(album)"), Host.Wikipedia),
-      BaseLink[Album](Url("https://musicbrainz.org/release-group/foobar"), Host.MusicBrainz),
+      BaseLink[Album](Url.parse("https://www.wikidata.org/wiki/Q15717528"), Host.Wikidata),
+      BaseLink[Album](Url.parse("https://en.wikipedia.org/wiki/Sunbather_(album)"), Host.Wikipedia),
+      BaseLink[Album](Url.parse("https://musicbrainz.org/release-group/foobar"), Host.MusicBrainz),
       /* Ignored */
-      // BaseLink[Album](Url("http://www.discogs.com/master/559132"), Host("discogs", Url("www.discogs.com"))),
+      // BaseLink[Album](Url.parse("http://www.discogs.com/master/559132"), Host("discogs", Url.parse("www.discogs.com"))),
     )
 
     $(ReconID("foobar")).map(_ shouldMultiSetEqual expected)

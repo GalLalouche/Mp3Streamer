@@ -29,5 +29,5 @@ private object WikidataNameMarkerFactory {
       l: MarkedLink[R],
   )(implicit it: InternetTalker): Future[LinkMark] =
     if (l.isNew.isFalse) Future.successful(l.mark)
-    else it.downloadDocument(l.link.toLemonLabs).map(extract(_) |> LinkMark.Text.apply)
+    else it.downloadDocument(l.link).map(extract(_) |> LinkMark.Text.apply)
 }

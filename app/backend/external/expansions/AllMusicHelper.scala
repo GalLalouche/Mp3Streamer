@@ -9,7 +9,6 @@ import backend.external.expansions.AllMusicHelper._
 import backend.external.BaseLink
 import backend.logging.Logger
 import backend.recon.Reconcilable
-import backend.Url
 import com.google.common.annotations.VisibleForTesting
 import common.io.InternetTalker
 import common.rich.func.BetterFutureInstances._
@@ -17,6 +16,7 @@ import common.rich.func.ToMoreMonadErrorOps._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 import common.RichJsoup._
+import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
 private class AllMusicHelper @Inject() (
@@ -30,20 +30,19 @@ private class AllMusicHelper @Inject() (
 
   // TODO this should only be invoked once, from the external pipe
   def isValidLink(u: Url): Future[Boolean] =
-    it.downloadDocument(u.toLemonLabs)
-      .map(d => hasRating(d) && hasStaffReview(d))
+    it.downloadDocument(u).map(d => hasRating(d) && hasStaffReview(d))
   def isCanonical(link: String): Boolean = canonicalRe.findAllMatchIn(link).hasNext
 
   def canonize[R <: Reconcilable](link: BaseLink[R]): Future[BaseLink[R]] = {
     val MaxTries = 5
     def followRedirect(currentTry: Int)(url: Url): Future[Url] =
-      if (canonicalLink.matcher(url.address.takeAfterLast('/')).matches)
+      if (canonicalLink.matcher(url.toStringPunycode.takeAfterLast('/')).matches)
         Future.successful(url)
       else if (currentTry >= MaxTries) {
         logger.warn(s"AllMusic canonization gave up after <$MaxTries> tries")
         Future.successful(url)
       } else
-        it.useWs(_.url(url.address).withFollowRedirects(false).get())
+        it.useWs(_.url(url.toStringPunycode).withFollowRedirects(false).get())
           .filterWithMessageF(
             _.status == HttpURLConnection.HTTP_MOVED_PERM,
             e =>
@@ -51,7 +50,7 @@ private class AllMusicHelper @Inject() (
                 s"but was ${e.statusText} (${e.status})",
           )
           .map(_.header("location").get)
-          .map(Url.apply)
+          .map(Url.parse)
           .flatMap(followRedirect(currentTry + 1))
     followRedirect(0)(link.link).map(BaseLink[R](_, link.host))
   }

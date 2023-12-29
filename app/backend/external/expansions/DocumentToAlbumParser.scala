@@ -1,8 +1,9 @@
 package backend.external.expansions
 
-import backend.{FutureOption, Url}
 import backend.external.Host
 import backend.recon.Album
+import backend.FutureOption
+import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
 private trait DocumentToAlbumParser {

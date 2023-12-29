@@ -7,15 +7,14 @@ import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.tags.Slow
 
-import backend.{Url => BackendUrl}
 import backend.lyrics.retrievers.{InstrumentalArtistStorage, RetrievedLyricsResult}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
+import common.{MutablePartialFunction, RichUrl}
 import common.rich.func.BetterFutureInstances._
 import common.rich.path.RichFile._
 import common.storage.Storage
 import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
-import common.MutablePartialFunction
 import controllers.UrlPathUtils
 import io.lemonlabs.uri.Url
 import models.{IOSong, Song}
@@ -31,7 +30,7 @@ class LyricsFormatterTest
     with MockitoSugar
     with OneInstancePerTest {
   // Modified by some tests
-  private val urlToResponseMapper = MutablePartialFunction.empty[BackendUrl, FakeWSResponse]
+  private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]
   private val injector =
     TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).injector
   private val $ = injector.instance[LyricsFormatter]
@@ -71,7 +70,7 @@ class LyricsFormatterTest
 
   "push" - {
     "success" in {
-      urlToResponseMapper += { case BackendUrl("https://www.azlyrics.com/lyrics/Foobar") =>
+      urlToResponseMapper += { case RichUrl.Unapplied("https://www.azlyrics.com/lyrics/Foobar") =>
         FakeWSResponse(bytes = getResourceFile("/backend/lyrics/retrievers/az_lyrics.html").bytes)
       }
       injector

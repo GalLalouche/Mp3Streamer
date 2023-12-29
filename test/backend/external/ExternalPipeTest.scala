@@ -10,25 +10,26 @@ import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.{LinkRetriever, LinkRetrievers}
 import backend.external.Host.{AllMusic, RateYourMusic, Wikipedia}
 import backend.recon.{Album, ReconID}
-import backend.Url
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT
 import common.rich.RichT._
 import common.test.AuxSpecs
+import io.lemonlabs.uri.Url
 
 class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
-  private val existingHost: Host = Host("existinghost", Url("existinghosturl"))
-  private val existingLink: BaseLink[Album] = BaseLink(Url("existing"), existingHost)
+  private val existingHost: Host = Host("existinghost", Url.parse("existinghosturl"))
+  private val existingLink: BaseLink[Album] = BaseLink(Url.parse("existing"), existingHost)
   private val existingMarkedLink: MarkedLink[Album] = MarkedLink.markExisting(existingLink)
-  private val rehashedLinks: BaseLink[Album] = existingLink.copy(link = Url("shouldbeignored"))
+  private val rehashedLinks: BaseLink[Album] =
+    existingLink.copy(link = Url.parse("shouldbeignored"))
   private val expandedLink: BaseLink[Album] =
-    BaseLink(Url("new"), Host("newhost", Url("newhosturl")))
+    BaseLink(Url.parse("new"), Host("newhost", Url.parse("newhosturl")))
   private val reconciledLink: BaseLink[Album] =
-    BaseLink(Url("new2"), Host("newhost2", Url("newhosturl2")))
+    BaseLink(Url.parse("new2"), Host("newhost2", Url.parse("newhosturl2")))
   private val markedReconciledLink =
-    MarkedLink[Album](Url("new2"), Host("newhost2", Url("newhosturl2")), LinkMark.New)
+    MarkedLink[Album](Url.parse("new2"), Host("newhost2", Url.parse("newhosturl2")), LinkMark.New)
   private val expectedNewLinks = Vector(
-    MarkedLink[Album](Url("new"), Host("newhost", Url("newhosturl")), LinkMark.New),
+    MarkedLink[Album](Url.parse("new"), Host("newhost", Url.parse("newhosturl")), LinkMark.New),
     markedReconciledLink,
   )
   private def constExpander(links: BaseLink[Album]*) = new ExternalLinkExpander[Album] {
@@ -101,7 +102,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
       ReconID("foobar") |> constFuture,
       Vector[BaseLink[Album]](
         existingLink,
-        existingLink.copy(link = Url("existing2")),
+        existingLink.copy(link = Url.parse("existing2")),
       ) |> constFuture,
       LinkRetrievers(Vector(newLinkReconciler)),
       Vector(newLinkExpander),
@@ -110,9 +111,9 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
     $(null).map(_ should have size 4)
   }
   "Should apply its finders recursively, but once at most" in {
-    val wikiLink = BaseLink[Album](Url("wiki"), Wikipedia)
-    val allMusicLink = BaseLink[Album](Url("amg"), AllMusic)
-    val rateYouMusicLink = BaseLink[Album](Url("rym"), RateYourMusic)
+    val wikiLink = BaseLink[Album](Url.parse("wiki"), Wikipedia)
+    val allMusicLink = BaseLink[Album](Url.parse("amg"), AllMusic)
+    val rateYouMusicLink = BaseLink[Album](Url.parse("rym"), RateYourMusic)
     val wikiReconciler = constReconciler(Wikipedia, wikiLink)
     def oneTimeExpander(source: BaseLink[Album], dest: BaseLink[Album]) =
       new ExternalLinkExpander[Album] {
@@ -156,8 +157,12 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
       Vector(marker),
     )
     val expectedNewLinks = Vector(
-      MarkedLink[Album](Url("new"), Host("newhost", Url("newhosturl")), LinkMark.New),
-      MarkedLink[Album](Url("new2"), Host("newhost2", Url("newhosturl2")), LinkMark.Text("foobar")),
+      MarkedLink[Album](Url.parse("new"), Host("newhost", Url.parse("newhosturl")), LinkMark.New),
+      MarkedLink[Album](
+        Url.parse("new2"),
+        Host("newhost2", Url.parse("newhosturl2")),
+        LinkMark.Text("foobar"),
+      ),
     )
     $(null).map(_ shouldMultiSetEqual (existingMarkedLink +: expectedNewLinks))
   }

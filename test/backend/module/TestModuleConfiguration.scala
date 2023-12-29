@@ -4,12 +4,12 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 import backend.storage.DbProvider
-import backend.Url
 import com.google.inject.{Guice, Module, Provides}
 import com.google.inject.util.Modules
 import common.io.{InternetTalker, MemoryRoot, RootDirectory}
 import common.io.WSAliases._
 import common.rich.RichT._
+import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.ScalaModule
 import slick.jdbc.{H2Profile, JdbcProfile}
 import slick.util.AsyncExecutor
