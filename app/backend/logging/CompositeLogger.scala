@@ -1,4 +1,5 @@
 package backend.logging
+
 import java.time.LocalDateTime
 
 class CompositeLogger(loggers: Traversable[Logger]) extends Logger {

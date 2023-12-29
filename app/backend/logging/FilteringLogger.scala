@@ -1,4 +1,5 @@
 package backend.logging
+
 import java.time.LocalDateTime
 
 trait FilteringLogger extends Logger {

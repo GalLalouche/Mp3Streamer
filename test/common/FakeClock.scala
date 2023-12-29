@@ -1,4 +1,5 @@
 package common
+
 import java.time.{Clock, Instant, ZoneId}
 
 class FakeClock extends Clock {
