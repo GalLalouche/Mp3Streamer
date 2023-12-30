@@ -3,22 +3,21 @@ package common.concurrency
 import scala.language.higherKinds
 
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
-import scalaz.{Monad, OptionT}
-import scalaz.syntax.functor.ToFunctorOps
+import scalaz.{Monad, Need, OptionT}
+import scalaz.Scalaz.ToFunctorOps
 
-import common.Lazy
 import common.rich.RichT.richT
 
 private class PrefetchingIterant[F[_]: Monad, A](
     private val head: OptionT[F, A],
-    private val tail: Lazy[OptionT[F, PrefetchingIterant[F, A]]],
+    private val tail: Need[OptionT[F, PrefetchingIterant[F, A]]],
     capacity: Int,
 ) extends Iterant[F, A] {
   private def forceEvaluation(n: Int): Unit = if (n > 0)
-    tail.get.listen(_.forceEvaluation(n - 1))
+    tail.value.listen(_.forceEvaluation(n - 1))
   override def step = for {
     h <- head
-    t <- tail.get
+    t <- tail.value
   } yield {
     t.forceEvaluation(capacity)
     (h, t)
@@ -33,7 +32,7 @@ private object PrefetchingIterant {
       val (h, t) = i.step.unzip
       new PrefetchingIterant(
         h,
-        Lazy(t).map(_.map(preevaluating(_, initial - 1))),
+        Need(t).map(_.map(preevaluating(_, initial - 1))),
         capacity,
       ).<|(_.forceEvaluation(initial - 1))
     }
