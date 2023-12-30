@@ -2,7 +2,7 @@ package common.ds
 
 import scala.annotation.tailrec
 
-import common.rich.RichTuple._
+import scalaz.syntax.std.tuple.ToTuple2Ops
 
 sealed trait Trie[+A] {
   def +[B >: A](key: String, v: B): Trie[B]
@@ -21,7 +21,7 @@ object Trie {
     override def +[B >: A](key: String, v: B): TrieImpl[B] =
       if (key.isEmpty) copy(values = values :+ v)
       else copy(map = map + (key.head -> (getOrEmpty(key.head) + (key.tail -> v))))
-    @inline def +[B >: A](e: (String, B)): TrieImpl[B] = e.reduce(this.+)
+    @inline def +[B >: A](e: (String, B)): TrieImpl[B] = e.fold(this.+)
     private def allValues: Iterable[A] = values ++ map.values.flatMap(_.allValues)
     override lazy val size: Int = values.size + map.valuesIterator.map(_.size).sum
     @tailrec

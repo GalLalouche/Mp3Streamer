@@ -12,9 +12,9 @@ import scala.concurrent.duration._
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.std.vector.vectorInstance
 import scalaz.syntax.functor.ToFunctorOps
+import scalaz.syntax.std.tuple.ToTuple2Ops
 import scalaz.syntax.traverse.ToTraverseOps
 
-import common.rich.RichTuple._
 import common.rich.collections.RichSeq._
 import common.test.AsyncAuxSpecs
 
@@ -30,7 +30,7 @@ class RateLimitedActorAsyncImplTest extends AsyncFreeSpec with AsyncAuxSpecs wit
     1.to(5).toVector.traverse($ ! _) >| {
       val v = queue.asScala.toVector
       v.map(_._1) shouldReturn 1.to(5).toVector
-      all(v.map(_._2).pairSliding.map(_.swap.reduce(_ - _)).toVector) should be >= 10L
+      all(v.map(_._2).pairSliding.map(_.swap.fold(_ - _)).toVector) should be >= 10L
     }
   }
 }

@@ -14,9 +14,9 @@ import common.rich.func.MoreTraverseInstances._
 import common.rich.func.ToMoreFoldableOps._
 import scalaz.std.option.optionInstance
 import scalaz.syntax.bind.ToBindOps
+import scalaz.syntax.std.tuple.ToTuple2Ops
 import scalaz.syntax.traverse.ToTraverseOps
 
-import common.rich.RichTuple._
 import common.rich.collections.RichSet._
 import common.rich.collections.RichTraversableOnce._
 
@@ -84,7 +84,7 @@ private class ExternalPipe[R <: Reconcilable](
         expander <- expanders
       } yield expander -> r
       for {
-        newLinkSet <- expanderLinkPairs.traverseM(_.reduce(_ expand _)).map(_.toSet)
+        newLinkSet <- expanderLinkPairs.traverseM(_.fold(_ expand _)).map(_.toSet)
         noNewLinks = newLinkSet <= result
         r <- if (noNewLinks) Future.successful(result) else aux(newLinkSet ++ result)
       } yield r
