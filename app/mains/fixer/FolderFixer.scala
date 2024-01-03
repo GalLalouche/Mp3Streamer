@@ -8,6 +8,7 @@ import com.google.inject.Guice
 import io.lemonlabs.uri.Url
 import mains.{IOUtils, MainsModule}
 import mains.cover.{CoverException, DownloadCover}
+import mains.fixer.FolderFixer.TempLarge
 import models.IOMusicFinder
 import net.codingwell.scalaguice.InjectorExtensions._
 
@@ -24,7 +25,7 @@ import scalaz.syntax.functor.ToFunctorOps
 import common.io.{InternetTalker, IODirectory}
 import common.rich.RichFuture._
 import common.rich.RichT._
-import common.rich.path.Directory
+import common.rich.path.{Directory, RichFileUtils}
 
 private class FolderFixer @Inject() (
     fixLabels: FixLabels,
@@ -62,6 +63,13 @@ private class FolderFixer @Inject() (
         ().const
     }
 
+  private def moveOriginalFolder(folder: Directory): Unit = {
+    val target = System.getenv(TempLarge)
+    require(target != null, s"Missing environment variable $TempLarge")
+    println(s"Moving folder to $target")
+    RichFileUtils.move(folder, Directory(target))
+  }
+
   private def updateServer(): Future[Unit] = {
     println("Updating remote server if running...")
     it.get(Url("http://localhost:9000/debug/smart_refresh"))
@@ -82,6 +90,7 @@ private class FolderFixer @Inject() (
     moveDirectory(artist, destination, folderImage, fixedDirectory)
       .listen(foobarGain.apply)
       .filterWithMessage(fixLabels.verify, "Failed to rename some files!")
+      .>|(moveOriginalFolder(folder))
       .>>(updateServer())
       .>|(println("--Done!--"))
       .get
@@ -94,4 +103,6 @@ private[mains] object FolderFixer {
       .createInjector(MainsModule)
       .instance[FolderFixer]
       .run(Directory(IOUtils.decodeFile(args(0))))
+
+  private val TempLarge = "TEMP_LARGE"
 }
