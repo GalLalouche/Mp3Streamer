@@ -7,6 +7,7 @@ import backend.albums.filler.{FilterExistingAlbums, NewAlbumRecon}
 import backend.module.StandaloneModule
 import backend.recon.{Artist, IgnoredReconResult}
 import com.google.inject.Guice
+import models.Album.AlbumTitle
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 import scala.concurrent.ExecutionContext
@@ -45,8 +46,8 @@ private class CachedNewAlbumStorageImpl @Inject() (
       IgnoredReconResult from _.map(_.localDateTime.isEmpty),
     )
   override def unignore(artist: Artist) = lastFetchTime.unignore(artist).void
-  override def remove(artist: Artist, albumName: String) = newAlbumStorage.remove(artist, albumName)
-  override def ignore(artist: Artist, albumName: String) = newAlbumStorage.ignore(artist, albumName)
+  override def remove(artist: Artist, title: AlbumTitle) = newAlbumStorage.remove(artist, title)
+  override def ignore(artist: Artist, title: AlbumTitle) = newAlbumStorage.ignore(artist, title)
 }
 
 private object CachedNewAlbumStorageImpl {

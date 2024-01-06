@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter
 import backend.mb.{AlbumType, MbAlbumMetadata}
 import backend.recon.{Album, Artist}
 import mains.fixer.StringFixer
+import models.Album.AlbumTitle
 import play.api.libs.json.{Json, JsValue}
 
 import scala.Ordering.Implicits._
@@ -18,7 +19,12 @@ import common.rich.RichTime.{OrderingLocalDate, RichClock}
 import common.rich.primitives.RichBoolean._
 
 @Lenses
-private case class NewAlbum(title: String, date: LocalDate, artist: Artist, albumType: AlbumType) {
+private case class NewAlbum(
+    title: AlbumTitle,
+    date: LocalDate,
+    artist: Artist,
+    albumType: AlbumType,
+) {
   def isReleased(clock: Clock) = date <= clock.getLocalDate
 
   assert(StringFixer.SpecialQuotes.matcher(title).find().isFalse, title)

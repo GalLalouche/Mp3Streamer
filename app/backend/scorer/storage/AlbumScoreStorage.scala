@@ -5,6 +5,7 @@ import javax.inject.Inject
 import backend.recon.{Album, Artist, SlickArtistReconStorage}
 import backend.scorer.ModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
+import models.Album.AlbumTitle
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -23,7 +24,6 @@ private[scorer] class AlbumScoreStorage @Inject() (
 
   private implicit val iec: ExecutionContext = ec
 
-  type AlbumTitle = String
   protected override type Entity = (Artist, AlbumTitle, ModelScore)
   protected class Rows(tag: Tag) extends Table[Entity](tag, "album_score") {
     def artist = column[Artist]("artist")

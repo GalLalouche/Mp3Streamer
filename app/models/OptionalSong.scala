@@ -2,6 +2,7 @@ package models
 
 import java.io.File
 
+import models.Album.AlbumTitle
 import models.Song.TrackNumber
 
 import monocle.macros.Lenses
@@ -11,7 +12,7 @@ case class OptionalSong(
     file: String,
     title: Option[String],
     artistName: Option[String],
-    albumName: Option[String],
+    albumName: Option[AlbumTitle],
     track: Option[TrackNumber],
     year: Option[Int],
     discNumber: Option[String],

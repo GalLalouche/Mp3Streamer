@@ -223,21 +223,21 @@ private class SlickNewAlbumStorage @Inject() (
 
   private def updateAlbum(
       f: EntityTable => Rep[Boolean],
-  )(artist: Artist, albumName: String): Future[Unit] = {
+  )(artist: Artist, title: AlbumTitle): Future[Unit] = {
     val filter =
-      tableQuery.filter(e => e.artist === artist.normalize && e.album === albumName.toLowerCase)
+      tableQuery.filter(e => e.artist === artist.normalize && e.album === title.toLowerCase)
     for {
       albumExists <- db.run(filter.exists.result)
       _ <- Future
-        .failed(new IllegalArgumentException(s"Could not find album <${artist.name} - $albumName>"))
+        .failed(new IllegalArgumentException(s"Could not find album <${artist.name} - $title>"))
         .whenMLazy(albumExists.isFalse)
       _ <- db.run(filter.map(f).update(true))
     } yield ()
   }
-  override def remove(artist: Artist, albumName: String) =
-    updateAlbum(_.isRemoved)(artist, albumName)
-  override def ignore(artist: Artist, albumName: String) =
-    remove(artist, albumName) >> updateAlbum(_.isIgnored)(artist, albumName)
+  override def remove(artist: Artist, title: AlbumTitle) =
+    updateAlbum(_.isRemoved)(artist, title)
+  override def ignore(artist: Artist, title: AlbumTitle) =
+    remove(artist, title) >> updateAlbum(_.isIgnored)(artist, title)
 }
 
 private object SlickNewAlbumStorage {

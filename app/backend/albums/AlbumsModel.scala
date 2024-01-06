@@ -10,6 +10,7 @@ import backend.mb.AlbumType
 import backend.recon.{Artist, IgnoredReconResult}
 import backend.scorer.OptionalModelScore
 import models.{Genre, GenreFinder}
+import models.Album.AlbumTitle
 import shapeless.syntax.std.tuple.productTupleOps
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -55,8 +56,8 @@ private class AlbumsModel @Inject() (
   def ignoreArtist(artistName: String): Future[_] = storage.ignore(Artist(artistName))
   def unignoreArtist(artistName: String): Future[Seq[NewAlbum]] =
     storage.unignore(Artist(artistName)) >> albumsForArtist(Artist(artistName).normalized)
-  def removeAlbum(artist: Artist, albumName: String): Future[_] = storage.remove(artist, albumName)
-  def ignoreAlbum(artist: Artist, albumName: String): Future[_] = storage.ignore(artist, albumName)
+  def removeAlbum(artist: Artist, title: AlbumTitle): Future[_] = storage.remove(artist, title)
+  def ignoreAlbum(artist: Artist, title: AlbumTitle): Future[_] = storage.ignore(artist, title)
 }
 
 private object AlbumsModel {

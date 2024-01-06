@@ -3,7 +3,8 @@ package models
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-import models.Song.TrackNumber
+import models.Album.AlbumTitle
+import models.Song.{SongTitle, TrackNumber}
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
 
@@ -15,7 +16,7 @@ class FakeModelFactory {
   private val root = new MemoryRoot
   def album(
       dirName: String = UUID.randomUUID().toString,
-      title: String = "album",
+      title: AlbumTitle = "album",
       artistName: String = "artist",
       year: Int = 2000,
       songs: Seq[Song] = Nil,
@@ -29,9 +30,9 @@ class FakeModelFactory {
     )
   def song(
       filePath: String = s"${UUID.randomUUID()}.mp3",
-      title: String = "title",
+      title: SongTitle = "title",
       artistName: String = "artist",
-      albumName: String = "album",
+      albumName: AlbumTitle = "album",
       track: TrackNumber = 1,
       year: Int = 2000,
       bitRate: String = "320",
@@ -66,9 +67,9 @@ class FakeModelFactory {
   def artist(name: String = "artist", albums: Seq[Album] = Nil): Artist = Artist(name, albums.toSet)
   implicit val arbSong: Arbitrary[MemorySong] = Arbitrary(
     for {
-      title <- arbitrary[String]
+      title <- arbitrary[SongTitle]
       artistName <- arbitrary[String]
-      albumName <- arbitrary[String]
+      albumName <- arbitrary[AlbumTitle]
       track <- arbitrary[TrackNumber].map(_ % 100)
       year <- arbitrary[Int].map(_ % 3000)
       bitRate <- arbitrary[Int].map(_ % 10000).map(_ / 32.0).map(_.toString)

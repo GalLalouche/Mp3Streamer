@@ -2,6 +2,7 @@ package models
 
 import java.io.File
 
+import models.Album.AlbumTitle
 import models.Song.{SongTitle, TrackNumber}
 
 import scala.concurrent.duration.Duration
@@ -13,7 +14,7 @@ trait Song {
   def file: F
   def title: SongTitle
   def artistName: String
-  def albumName: String
+  def albumName: AlbumTitle
   def track: Int
   def year: Int
   def bitRate: String
@@ -54,7 +55,7 @@ case class IOSong(
     file: IOFile,
     title: SongTitle,
     artistName: String,
-    albumName: String,
+    albumName: AlbumTitle,
     track: TrackNumber,
     year: Int,
     bitRate: String,
@@ -78,7 +79,7 @@ case class MemorySong(
     file: MemoryFile,
     title: SongTitle,
     artistName: String,
-    albumName: String,
+    albumName: AlbumTitle,
     track: TrackNumber,
     year: Int,
     bitRate: String,

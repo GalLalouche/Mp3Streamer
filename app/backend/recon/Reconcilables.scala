@@ -1,5 +1,6 @@
 package backend.recon
 
+import models.Album.AlbumTitle
 import models.Song
 import models.Song.SongTitle
 
@@ -13,14 +14,14 @@ case class Artist(name: String) extends Reconcilable {
   override def normalize: String = name.toLowerCase
   def normalized: Artist = Artist(normalize)
 }
-case class Album(title: String, year: Int, artist: Artist) extends Reconcilable {
+case class Album(title: AlbumTitle, year: Int, artist: Artist) extends Reconcilable {
   def artistName: String = artist.name
   override def normalize: String = s"${artist.normalize} - ${title.toLowerCase}"
   def normalized: Album = copy(title = title.toLowerCase, artist = artist.normalized)
 }
 case class Track(title: SongTitle, album: Album) extends Reconcilable {
   def artistName: String = album.artist.name
-  def albumName: String = album.title
+  def albumName: AlbumTitle = album.title
   override def normalize: String = ???
 }
 
