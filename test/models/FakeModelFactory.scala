@@ -3,6 +3,7 @@ package models
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
+import models.Song.TrackNumber
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
 
@@ -31,7 +32,7 @@ class FakeModelFactory {
       title: String = "title",
       artistName: String = "artist",
       albumName: String = "album",
-      track: Int = 1,
+      track: TrackNumber = 1,
       year: Int = 2000,
       bitRate: String = "320",
       duration: Int = 3600,
@@ -68,7 +69,7 @@ class FakeModelFactory {
       title <- arbitrary[String]
       artistName <- arbitrary[String]
       albumName <- arbitrary[String]
-      track <- arbitrary[Int].map(_ % 100)
+      track <- arbitrary[TrackNumber].map(_ % 100)
       year <- arbitrary[Int].map(_ % 3000)
       bitRate <- arbitrary[Int].map(_ % 10000).map(_ / 32.0).map(_.toString)
       duration <- arbitrary[Int].map(_ % 1000)

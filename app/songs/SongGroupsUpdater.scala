@@ -1,6 +1,7 @@
 package songs
 
 import models.IOSong
+import models.Song.TrackNumber
 
 import common.rich.RichT._
 import common.rich.path.Directory
@@ -8,9 +9,9 @@ import common.rich.path.Directory
 private object SongGroupsUpdater {
   private def trackNumbers(
       directory: String,
-      trackNumbersFirst: Int,
-      trackNumbersSecond: Int,
-      trackNumbersRest: Int*,
+      trackNumbersFirst: TrackNumber,
+      trackNumbersSecond: TrackNumber,
+      trackNumbersRest: TrackNumber*,
   ): SongGroup = {
     val trackNumbers = trackNumbersFirst :: trackNumbersSecond :: trackNumbersRest.toList
     val dir = Directory(directory)

@@ -3,6 +3,7 @@ package models
 import java.io.File
 import java.util.concurrent.TimeUnit
 
+import models.Song.TrackNumber
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.arbitrary
 
@@ -17,7 +18,7 @@ object ArbitraryModels {
     title <- arbitrary[String]
     artistName <- arbitrary[String]
     albumName <- arbitrary[String]
-    track <- arbitrary[Int].map(_ % 100)
+    track <- arbitrary[TrackNumber].map(_ % 100)
     year <- arbitrary[Int].map(_ % 3000)
     bitRate <- arbitrary[Int].map(_ % 10000).map(_ / 32.0).map(_.toString)
     duration <- arbitrary[Int].map(_ % 1000)

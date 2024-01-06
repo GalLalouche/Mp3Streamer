@@ -1,5 +1,7 @@
 package mains.vimtag
 
+import models.Song.TrackNumber
+
 private case class ParsedId3(
     artist: ParsedTag[String],
     album: ParsedTag[String],
@@ -19,7 +21,7 @@ private case class ParsedId3(
 private case class IndividualId3(
     relativeFileName: String,
     title: String,
-    track: Int,
+    track: TrackNumber,
     discNumber: Option[String],
 ) {
   require(track > 0)
@@ -29,7 +31,7 @@ private object IndividualId3 {
   def apply(
       relativeFileName: String,
       title: String,
-      track: Int,
+      track: TrackNumber,
       discNumber: Option[String],
   ): IndividualId3 = new IndividualId3(
     relativeFileName = relativeFileName.trim,

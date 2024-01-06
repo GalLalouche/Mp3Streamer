@@ -4,6 +4,7 @@ import javax.inject.Inject
 
 import mains.vimtag.Initializer.InitialLines
 import models.{MusicFinder, OptionalSong}
+import models.Song.TrackNumber
 
 import scalaz.syntax.std.tuple.ToTuple2Ops
 
@@ -45,7 +46,7 @@ private class Initializer @Inject() (mf: MusicFinder, aux: IndividualInitializer
       .stripPrefix("/")
     def files: Seq[String] = sequence(_.file |> relativize)
     def titles: Seq[String] = sequence(_.title.getOrElse(""))
-    def tracks: Seq[Int] = songs.zipWithIndex
+    def tracks: Seq[TrackNumber] = songs.zipWithIndex
       .map(_.modifySecond(_ + 1))
       .map(_.fold(_.track.getOrElse(_)))
     def discNumbers: Seq[String] = sequence(_.discNumber.getOrElse(""))

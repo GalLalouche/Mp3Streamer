@@ -4,6 +4,7 @@ import backend.external.DocumentSpecs
 import backend.lyrics.Instrumental
 import backend.lyrics.retrievers.LyricsSpec._
 import models.FakeModelFactory
+import models.Song.TrackNumber
 import org.scalatest.{Assertion, Suite}
 import org.scalatest.matchers.{BePropertyMatcher, BePropertyMatchResult}
 import resource.managed
@@ -19,7 +20,7 @@ trait LyricsSpec extends DocumentSpecs { self: Suite =>
   protected[retrievers] def verifyLyrics(
       htmlFileName: String,
       resultFileName: String,
-      trackNumber: Int = 1,
+      trackNumber: TrackNumber = 1,
   ): Assertion =
     parseDocument(htmlFileName, trackNumber) match {
       case LyricParseResult.Lyrics(l) =>
@@ -33,12 +34,12 @@ trait LyricsSpec extends DocumentSpecs { self: Suite =>
     }
   protected[retrievers] def verifyInstrumental(
       htmlFileName: String,
-      trackNumber: Int = 1,
+      trackNumber: TrackNumber = 1,
   ): Assertion =
     (parseDocument(htmlFileName, trackNumber) should be).an(instrumental)
   protected[retrievers] def verifyError(htmlFileName: String): Assertion =
     parseDocument(htmlFileName) shouldBe a[LyricParseResult.Error]
-  private def parseDocument(htmlFileName: String, trackNumber: Int = 1): LyricParseResult =
+  private def parseDocument(htmlFileName: String, trackNumber: TrackNumber = 1): LyricParseResult =
     parser(getDocument(htmlFileName + ".html"), factory.song(track = trackNumber))
 }
 

@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit
 
 import com.google.common.annotations.VisibleForTesting
 import models.RichTag._
+import models.Song.TrackNumber
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
 
@@ -23,7 +24,7 @@ object SongTagParser {
   // FLAC tag supports proper custom tag fetching, but MP3 tags have to be parsed manually
   private def parseReplayGain(s: String): Try[Double] = Try(s.split(' ').head.toDouble)
 
-  private def parseTrack(s: String): Int =
+  private def parseTrack(s: String): TrackNumber =
     s.takeWhile(_.isDigit).toInt // takeWhile handles "01/08" formats.
 
   private def validateRealFile(file: File): Unit = {

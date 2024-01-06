@@ -2,6 +2,8 @@ package models
 
 import java.io.File
 
+import models.Song.TrackNumber
+
 import scala.concurrent.duration.Duration
 
 import common.io.{FileRef, IOFile, MemoryFile}
@@ -42,13 +44,17 @@ trait Song {
   )
 }
 
+object Song {
+  type TrackNumber = Int
+}
+
 // TODO remove code duplication? hmm...
 case class IOSong(
     file: IOFile,
     title: String,
     artistName: String,
     albumName: String,
-    track: Int,
+    track: TrackNumber,
     year: Int,
     bitRate: String,
     duration: Duration,
@@ -72,7 +78,7 @@ case class MemorySong(
     title: String,
     artistName: String,
     albumName: String,
-    track: Int,
+    track: TrackNumber,
     year: Int,
     bitRate: String,
     duration: Duration,

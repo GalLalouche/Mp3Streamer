@@ -5,6 +5,7 @@ import java.util.regex.Pattern
 
 import com.google.common.annotations.VisibleForTesting
 import models.{Song, SongTagParser}
+import models.Song.TrackNumber
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.jaudiotagger.tag.flac.FlacTag
@@ -22,7 +23,7 @@ private[mains] object FixLabelsUtils {
   private val InvalidFileCharacters = Pattern.compile("""[:\\/*?|<>]""")
   private val MultiSpace = Pattern.compile(" +")
 
-  private def properTrackString(track: Int): String = track.padLeftZeros(2)
+  private def properTrackString(track: TrackNumber): String = track.padLeftZeros(2)
   @VisibleForTesting
   def getFixedTag(f: File, fixDiscNumber: Boolean): Tag =
     getFixedTag(f, fixDiscNumber, AudioFileIO.read(f))

@@ -2,6 +2,7 @@ package mains.vimtag
 
 import backend.module.FakeMusicFinder
 import models.FakeModelFactory
+import models.Song.TrackNumber
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import common.io.MemoryRoot
@@ -15,7 +16,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
   private val factory = new FakeModelFactory
   "A non-interactive initializer-parser couple returns the correct ID3" in {
     def newSong(
-        track: Int,
+        track: TrackNumber,
         title: String,
         year: Int,
         discNumber: Option[String],
@@ -98,7 +99,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
   }
 
   "Ordering" in {
-    def newSong(track: Int, fileName: String) =
+    def newSong(track: TrackNumber, fileName: String) =
       mf.copySong(
         "dir",
         factory.song(
@@ -127,7 +128,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
   }
 
   "Multiple folders" in {
-    def newSong(track: Int, subName: String, fileName: String) =
+    def newSong(track: TrackNumber, subName: String, fileName: String) =
       mf.copySong(
         Vector("dir", subName),
         factory.song(
