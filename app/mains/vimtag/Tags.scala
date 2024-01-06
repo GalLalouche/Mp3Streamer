@@ -1,5 +1,7 @@
 package mains.vimtag
 
+import models.Song.SongTitle
+
 private object Tags {
   val Keep: String = "<KEEP>"
   val Common: String = "<COMMON>"
@@ -16,7 +18,7 @@ private object Tags {
   val PerformanceYear: String = "PERFORMANCEYEAR"
 
   val File: String = "FILE"
-  val Title: String = "TITLE"
+  val Title: SongTitle = "TITLE"
   val Track: String = "TRACK"
   val DiscNo: String = "DISC_NO"
 }

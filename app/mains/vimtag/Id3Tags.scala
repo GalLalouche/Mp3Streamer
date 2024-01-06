@@ -1,6 +1,6 @@
 package mains.vimtag
 
-import models.Song.TrackNumber
+import models.Song.{SongTitle, TrackNumber}
 
 private case class ParsedId3(
     artist: ParsedTag[String],
@@ -20,7 +20,7 @@ private case class ParsedId3(
 // Individual tags should never be Keep since there's no point to it: just keep the existing value.
 private case class IndividualId3(
     relativeFileName: String,
-    title: String,
+    title: SongTitle,
     track: TrackNumber,
     discNumber: Option[String],
 ) {
@@ -30,7 +30,7 @@ private case class IndividualId3(
 private object IndividualId3 {
   def apply(
       relativeFileName: String,
-      title: String,
+      title: SongTitle,
       track: TrackNumber,
       discNumber: Option[String],
   ): IndividualId3 = new IndividualId3(

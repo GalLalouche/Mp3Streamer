@@ -1,6 +1,7 @@
 package backend.recon
 
 import models.Song
+import models.Song.SongTitle
 
 import monocle.macros.Lenses
 
@@ -17,7 +18,7 @@ case class Album(title: String, year: Int, artist: Artist) extends Reconcilable 
   override def normalize: String = s"${artist.normalize} - ${title.toLowerCase}"
   def normalized: Album = copy(title = title.toLowerCase, artist = artist.normalized)
 }
-case class Track(title: String, album: Album) extends Reconcilable {
+case class Track(title: SongTitle, album: Album) extends Reconcilable {
   def artistName: String = album.artist.name
   def albumName: String = album.title
   override def normalize: String = ???

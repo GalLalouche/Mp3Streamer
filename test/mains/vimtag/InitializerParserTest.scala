@@ -2,7 +2,7 @@ package mains.vimtag
 
 import backend.module.FakeMusicFinder
 import models.FakeModelFactory
-import models.Song.TrackNumber
+import models.Song.{SongTitle, TrackNumber}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import common.io.MemoryRoot
@@ -17,7 +17,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
   "A non-interactive initializer-parser couple returns the correct ID3" in {
     def newSong(
         track: TrackNumber,
-        title: String,
+        title: SongTitle,
         year: Int,
         discNumber: Option[String],
         conductor: Option[String],
