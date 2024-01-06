@@ -9,7 +9,7 @@ import io.lemonlabs.uri.Url
 import mains.{IOUtils, MainsModule}
 import mains.cover.{CoverException, DownloadCover}
 import mains.fixer.FolderFixer.TempLarge
-import models.IOMusicFinder
+import models.{ArtistFinder, IOMusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -83,7 +83,7 @@ private class FolderFixer @Inject() (
 
   private def run(folder: Directory): Unit = {
     val artist = mf.getSongsInDir(IODirectory(folder)).head.artistName
-    val destination = OptionT(Future(artistFinder(artist)))
+    val destination = OptionT(Future(artistFinder(artist).map(_.asInstanceOf[IODirectory].dir)))
     val folderImage = downloadCover(folder)
     println("fixing directory")
     val fixedDirectory = Future(fixLabels.fix(folder.cloneDir()))
