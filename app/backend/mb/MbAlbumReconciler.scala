@@ -11,8 +11,9 @@ import scala.concurrent.ExecutionContext
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.MoreSeqInstances._
-import common.rich.func.RichOptionT._
+import common.rich.func.ToTransableOps.toTransableOps
 import scalaz.Scalaz.{doubleInstance, ToFunctorOps}
+import scalaz.std.option.optionInstance
 import scalaz.syntax.foldable.ToFoldableOps
 
 import common.json.RichJson._

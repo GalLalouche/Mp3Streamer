@@ -9,7 +9,7 @@ import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
 import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadTransOps._
+import common.rich.func.ToTransableOps.toHoistIdOps
 
 import common.RichJsoup._
 

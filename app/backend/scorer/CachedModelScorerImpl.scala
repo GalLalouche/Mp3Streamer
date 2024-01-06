@@ -11,7 +11,7 @@ import models.{MusicFinder, Song}
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
 
-import common.rich.func.ToMoreMonadTransOps.toMoreMonadTransOps
+import common.rich.func.ToTransableOps.toHoistIdOps
 import scalaz.Id.Id
 
 import common.io.FileRef
