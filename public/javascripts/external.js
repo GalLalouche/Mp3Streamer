@@ -2,6 +2,7 @@ $(function() {
   function href(target, name) {
     return `<a target=_blank href="${target}">${name}</a>`
   }
+
   const externalDivs = $(".external")
 
   let currentPosterRgb = []
@@ -48,14 +49,17 @@ $(function() {
   function setLinkColor(e) {
     e.css("background-image", `linear-gradient(to top left, ${(rgb2String(makeLighter(currentPosterRgb, 0.5)))}, ${rgb2String(currentPosterRgb)})`)
   }
+
+  function cleanUp() {
+    externalDivs.children('ul').remove()
+    externalDivs.children('span').remove()
+  }
+
   // Yey, currying!
   function showLinks(debugLink) {
-    function cleanUp() {
-      externalDivs.children('ul').remove()
-      externalDivs.children('span').remove()
-    }
     cleanUp()
     externalDivs.prepend(span("Fetching links..."))
+
     function externalLinks(links) {
       cleanUp()
       artistReconBox.val("")
@@ -83,6 +87,7 @@ $(function() {
         setLinkColor(fieldset)
       })
     }
+
     return externalLinks
   }
 
@@ -90,8 +95,9 @@ $(function() {
     const externalUrl = remotePath + song.file
     $.get(externalUrl, showLinks(externalUrl))
         .fail(function() {
-          // FIXME nope
-          externalDivs.html("Error occurred while fetching links")
+          cleanUp()
+          // FIXME A better error message
+          externalDivs.append(span("Error occurred while fetching links"))
         })
   }
 
