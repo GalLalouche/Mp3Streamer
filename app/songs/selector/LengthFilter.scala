@@ -8,6 +8,7 @@ import scala.concurrent.duration.Duration
 
 import common.Filter
 import common.rich.RichEnumeratum.richEnumeratum
+import common.rich.primitives.RichBoolean.richBoolean
 
 private class LengthFilter(
     genreFinder: GenreFinder,
@@ -16,12 +17,14 @@ private class LengthFilter(
 ) extends Filter[Song] {
   private implicit val ordering: Ordering[ModelScore] = ModelScore.ordering
   override def passes(song: Song): Boolean = genreFinder.forArtist(song.artist) match {
-    case Some(Genre.Metal(_)) => song.duration >= minLength || songScoreIsGood(song)
+    // Special exempt for grind subgenres, because, well, you know.
+    case Some(Genre.Metal(subgenre)) if subgenre.toLowerCase.contains("grind").isFalse =>
+      song.duration >= minLength || hasExplicitSongScore(song)
     case _ => true
   }
 
   // If a specific song has been explicitly scored, it overrides the length requirements.
-  private def songScoreIsGood(song: Song): Boolean = scorer.fullInfo(song) match {
+  private def hasExplicitSongScore(song: Song): Boolean = scorer.fullInfo(song) match {
     case FullInfoScore.Default => false
     case FullInfoScore.Scored(_, source, _, _, _) => source == ScoreSource.Song
   }
