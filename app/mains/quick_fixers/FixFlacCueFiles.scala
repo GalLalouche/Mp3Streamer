@@ -8,9 +8,8 @@ import common.rich.primitives.RichString._
 
 /** Renames stupid X.flac.cue files to X.cue files. */
 private object FixFlacCueFiles {
-  def main(args: Array[String]): Unit = {
-    val dir = Directory("""E:\Incoming\Bittorrent\Completed\Music""")
-    dir.deepFiles.filter(_.name.endsWith(".flac.cue")).foreach { file =>
+  def go(dir: String): Unit =
+    Directory(dir).deepFiles.filter(_.name.endsWith(".flac.cue")).foreach { file =>
       println(s"Renaming <$file>")
       try
         RichFileUtils.rename(file, file.getName.simpleReplace(".flac.cue", ".cue"))
@@ -18,5 +17,4 @@ private object FixFlacCueFiles {
         case _: FileAlreadyExistsException => println("Replacement cue already exists, skipping")
       }
     }
-  }
 }
