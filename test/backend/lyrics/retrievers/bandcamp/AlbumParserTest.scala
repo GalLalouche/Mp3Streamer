@@ -11,4 +11,7 @@ class AlbumParserTest extends FreeSpec with LyricsSpec {
   "Hebrew" in {
     verifyLyrics("bandcamp_album_hebrew", "bandcamp_hebrew", trackNumber = 3)
   }
+  "Instrumental" in {
+    verifyInstrumental("bandcamp_instrumental", trackNumber = 5)
+  }
 }
