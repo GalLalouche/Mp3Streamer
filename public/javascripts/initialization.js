@@ -4,7 +4,10 @@ WAIT_DELAY = 25;
 isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) !== null;
 const isMuted = () => window.location.pathname === "/mute"
 
-const _getSearchParam = key => new URL(window.location).searchParams.get(key)
+const EncodedPlus = encodeURIComponent("+")
+// Manually decode + to %2B, since otherwise it will be interpreted as a space
+const _getSearchParam = key =>
+    new URL(window.location.toString().replace("+", EncodedPlus)).searchParams.get(key)
 /** @return {string} The path of a debug song if exists, null otherwise. */
 const getDebugSong = () => _getSearchParam("addSong")
 /** @return {string} The path of a debug album if exists, null otherwise. */
