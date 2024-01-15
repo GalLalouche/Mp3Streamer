@@ -15,10 +15,10 @@ trait UrlPathUtils extends UrlDecodeUtils {
   def encodePath(f: PathRef): String
   override def decode(s: String): String
 
-  // While one could potentially use JsString(path).parseJsonable[Song] or something to that effect,
-  // the path isn't really a JSON value, and also it tightly couples the code to the specific Jsonable
-  // implementation.
-  def parseSong(path: String): Song
-  def parseFile(path: String): File
-  def parseFileRef(path: String): FileRef
+  // These shouldn't be used by formatters. Instead, the controllers should use UrlPathUtils to
+  // decode the path before sending it to the formatter, since it's the controller's job to handle
+  // decoding.
+  @deprecated def parseSong(path: String): Song
+  @deprecated def parseFile(path: String): File
+  @deprecated def parseFileRef(path: String): FileRef
 }
