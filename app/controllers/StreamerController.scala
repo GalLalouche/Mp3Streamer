@@ -8,16 +8,15 @@ import scala.concurrent.ExecutionContext
 
 import common.rich.RichT._
 
-class Streamer @Inject() (
-    ec: ExecutionContext,
+class StreamerController @Inject() (
     $ : StreamerFormatter,
+    decoder: UrlDecodeUtils,
     converter: PlayActionConverter,
+    ec: ExecutionContext,
 ) extends InjectedController {
-  private implicit val iec: ExecutionContext = ec
-
   def download(path: String) = converter.parse(
     _.toTuple(_.headers.get("Range"), PlayControllerUtils.shouldEncodeMp3),
-  ) { case (range, shouldEncode) => $(path, range, shouldEncode) }
+  ) { case (range, shouldEncode) => $(decoder.decode(path), range, shouldEncode) }
 
   // for debugging; plays the song in the browser instead of downloading it
   // "Temporarily" (07/05/22) disabled, because IntelliJ and Play don't want to play nicely.
