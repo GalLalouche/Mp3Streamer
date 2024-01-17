@@ -28,6 +28,7 @@ $(function() {
   /* Metadata stuff */
   const isClassicalPiece = media => !!media.composer
   playlistUtils.isClassicalPiece = isClassicalPiece
+
   function additionalData(media) {
     if (isClassicalPiece(media).isFalse())
       return [
@@ -62,6 +63,7 @@ $(function() {
     media.artistName,
   ].concat(additionalData(media)).concat([
     media.duration.timeFormat(),
+    media.bitrate + "kbps",
   ]).join(", ")
 
   playlistUtils.mediaMetadataHtml = function(media) {
