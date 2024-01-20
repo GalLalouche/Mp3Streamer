@@ -1,9 +1,11 @@
 // Loading and saving playlists, either locally (backup) or from the server.
 $(function() {
   const body = $("body")
+
   function listenToClick(id, callback) {
     body.on("click", "button#" + id, callback)
   }
+
   listenToClick("update_playlist", function() {
     const playlist = gplaylist.songs().slice(gplaylist.currentIndex()).map(x => x.file);
     postJson("playlist/queue", playlist, () => $.toast("Playlist successfully updated"))
@@ -19,6 +21,7 @@ $(function() {
       duration: gplayer.currentPlayingInSeconds()
     }
   }
+
   listenToClick("update_state", function() {
     const state = getState()
     state.songs = state.songs.map(x => x.file)
@@ -32,25 +35,37 @@ $(function() {
     gplayer.skip(state.duration)
     // gplayer.playCurrentSong()
   }
+
   listenToClick("load_state", function() {
     $.get("playlist/state", setState)
   })
 
   const backupKey = "backup"
+
   function saveBackup() {
     const state = getState()
+    if (state.songs.length == 0) {
+      console.log("Won't save empty backup")
+      return
+    }
     state.volume = Volume.getVolumeBaseline()
     localStorage.setItem(backupKey, JSON.stringify(state))
   }
+
   function loadBackup() {
     return JSON.parse(localStorage.getItem(backupKey))
   }
+
   listenToClick("update_backup", function() {
     saveBackup()
     $.toast("Backup successfully created")
   })
   listenToClick("load_backup", function() {
     const state = loadBackup()
+    if (state.songs.length == 0) {
+      console.log("Won't load empty backup")
+      return
+    }
     setState(state)
     Volume.setManualVolume(state.volume)
   })
