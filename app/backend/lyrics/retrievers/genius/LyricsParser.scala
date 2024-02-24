@@ -62,7 +62,7 @@ private object LyricsParser extends SingleHostParser {
     case e: TextNode => Vector(e.getWholeText)
   }
 
-  private val FontStyles = Set("b", "i", "u")
+  private val FontStyles = Set("b", "i", "u", "em")
   private val Annotations = Pattern.compile("""\[.*?\]""")
   private val GapBetweenAnnotations = Pattern.compile("\n{2,}")
   private val EmptyLeadingLines = Pattern.compile("^\n*")
