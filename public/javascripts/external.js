@@ -16,7 +16,8 @@ $(function() {
       $("<input class='external-recon-id' placeholder='Album ID' type='text'/>").appendTo(externalAlbum)
   appendBr(externalAlbum)
   const updateReconButton = button("Update Recon").appendTo(externalDivs)
-  const refreshButton = button("Refresh").appendTo(externalDivs)
+  button("Refresh").appendTo(externalArtist).click(refresh("artist"))
+  button("Refresh").appendTo(externalAlbum).click(refresh("album"))
   const remotePath = "external/"
 
   function getExtensions(link) {
@@ -109,10 +110,15 @@ $(function() {
   externalDivs.on("click", ".copy-to-clipboard", function() {
     copyTextToClipboard($(this).attr("url"))
   })
-  refreshButton.click(() => {
-    const songPath = gplaylist.currentPlayingSong().file
-    $.get(remotePath + "refresh/" + songPath, showLinks(remotePath + songPath))
-  })
+
+  function refresh(target) {
+    return function() {
+      const songPath = gplaylist.currentPlayingSong().file
+      // TODO showLinks should only fetch the links for the target.
+      $.get(`${remotePath}refresh/${target}/${songPath}`, showLinks(remotePath + songPath))
+    }
+  }
+
   // TODO this is a hack to also handle all other fieldsets, probably shouldn't be in this file...
   Poster.rgbListeners.push(rgb => {
     currentPosterRgb = rgb
@@ -121,4 +127,5 @@ $(function() {
     })
   })
 })
+
 External = {}

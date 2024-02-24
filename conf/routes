@@ -38,7 +38,8 @@ POST        /lyrics/instrumental/song/*path            backend.lyrics.LyricsCont
 POST        /lyrics/instrumental/artist/*path          backend.lyrics.LyricsController.setInstrumentalArtist(path)
 
 # External
-GET         /external/refresh/*path                    backend.external.ExternalController.refresh(path)
+GET         /external/refresh/artist/*path             backend.external.ExternalController.refreshArtist(path)
+GET         /external/refresh/album/*path              backend.external.ExternalController.refreshAlbum(path)
 POST        /external/recons/*path                     backend.external.ExternalController.updateRecon(path)
 GET         /external/*path                            backend.external.ExternalController.get(path)
 

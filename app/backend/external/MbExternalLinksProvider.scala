@@ -47,8 +47,9 @@ private class MbExternalLinksProvider @Inject() (
   }
   def apply(s: Song): ExtendedExternalLinks = apply(s.release)
 
-  def delete(song: Song): Future[_] =
-    artistExternalStorage.delete(song.artist).run >> albumExternalStorage.delete(song.release).run
+  def deleteArtist(song: Song): Future[_] = artistExternalStorage.delete(song.artist).run
+  def deleteAlbum(song: Song): Future[_] = albumExternalStorage.delete(song.release).run
+
   def updateRecon(song: Song): UpdatedRecon => Future[_] = {
     case UpdatedRecon.Artist(reconId) =>
       // If artist recon was updated, all existing release updates should be deleted

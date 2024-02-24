@@ -10,6 +10,7 @@ class ExternalController @Inject() (
     converter: PlayActionConverter,
 ) extends InjectedController {
   def get(path: String) = converter.ok($.get(path))
-  def refresh(path: String) = converter.ok($.refresh(path))
+  def refreshArtist(path: String) = converter.ok($.refreshArtist(path))
+  def refreshAlbum(path: String) = converter.ok($.refreshAlbum(path))
   def updateRecon(path: String) = converter.parseJson($.updateRecon(path, _))
 }

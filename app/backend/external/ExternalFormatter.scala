@@ -42,9 +42,12 @@ private class ExternalFormatter @Inject() (
   def get(path: String): Future[JsValue] =
     getLinks(urlPathUtils.parseSong(path))
 
-  def refresh(path: String): Future[JsValue] = {
+  def refreshArtist(path: String): Future[JsValue] = refresh(path, external.deleteArtist)
+  def refreshAlbum(path: String): Future[JsValue] = refresh(path, external.deleteAlbum)
+
+  private def refresh(path: String, deleteAction: Song => Future[_]): Future[JsValue] = {
     val song = urlPathUtils.parseSong(path)
-    external.delete(song) >> getLinks(song)
+    deleteAction(song) >> getLinks(song)
   }
   def updateRecon(path: String, json: JsValue): Future[JsValue] = {
     def getReconId(s: String) = json.ostr(s).map(ReconID.validateOrThrow)
