@@ -1,6 +1,10 @@
 package models
 
-import common.io.{DirectoryRef, FileRef, IODirectory, IOFile, IOSystem}
+import com.google.common.collect.BiMap
+import models.MusicFinder.{ArtistName, DirectoryName}
+
+import common.io.{DirectoryRef, FileRef, IODirectory, IOFile, IOSystem, JsonMapFile}
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 /** Can be extended to override its values in tests */
 class IOMusicFinder extends MusicFinder {
@@ -13,6 +17,8 @@ class IOMusicFinder extends MusicFinder {
   override def parseSong(f: FileRef) = IOSong.read(f.asInstanceOf[IOFile].file)
   override def getOptionalSongsInDir(d: DirectoryRef): Seq[OptionalSong] =
     getSongFilesInDir(d).map(SongTagParser optionalSong _.file)
+  protected override lazy val invalidDirectoryNames: BiMap[DirectoryName, ArtistName] =
+    JsonMapFile.readJsonMap(getClass.getResourceAsStream("directory_renames.json")).toBiMap
 }
 
 /**

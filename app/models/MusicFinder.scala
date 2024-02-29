@@ -1,6 +1,10 @@
 package models
 
+import com.google.common.collect.BiMap
+import models.MusicFinder.{ArtistName, DirectoryName}
+
 import common.io.{DirectoryRef, FileRef, RefSystem}
+import common.rich.RichT.richT
 
 trait MusicFinder { self =>
   type S <: RefSystem { type S = self.S }
@@ -24,8 +28,14 @@ trait MusicFinder { self =>
   }
   def findArtistDir(name: String): Option[S#D] = {
     val normalizedName = name.toLowerCase
-    artistDirs.find(_.name.toLowerCase == normalizedName)
+    artistDirs.find(_.name.|>(dirNameToArtist).toLowerCase == normalizedName)
   }
+
+  def dirNameToArtist(name: DirectoryName): ArtistName =
+    name.optionOrKeep(invalidDirectoryNames.get(_).opt)
+  // Some artists have invalid directory characters in their name, so their directory won't match
+  // the artist name. As a stupid hack, just aggregate them below.
+  protected def invalidDirectoryNames: BiMap[DirectoryName, ArtistName]
   def albumDirs: Seq[S#D] = albumDirs(genreDirs)
   def albumDirs(startingFrom: Seq[S#D]): Seq[S#D] = startingFrom.view
     .flatMap(_.deepDirs)
@@ -39,4 +49,9 @@ trait MusicFinder { self =>
   def getSongsInDir(d: DirectoryRef): Seq[Song { type F = S#F }] =
     getSongFilesInDir(d).map(parseSong)
   def getOptionalSongsInDir(d: DirectoryRef): Seq[OptionalSong]
+}
+
+object MusicFinder {
+  type ArtistName = String
+  type DirectoryName = String
 }

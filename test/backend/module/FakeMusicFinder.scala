@@ -1,5 +1,6 @@
 package backend.module
 
+import com.google.common.collect.ImmutableBiMap
 import models.{MemorySong, MusicFinder}
 
 import scala.collection.mutable
@@ -31,4 +32,5 @@ class FakeMusicFinder(val baseDir: MemoryDir) extends MusicFinder {
   override def parseSong(f: FileRef): MemorySong = pathToSongs(f.path)
   override def getOptionalSongsInDir(d: DirectoryRef) =
     d.files.map(_.path).map(pathToSongs).map(_.toOptionalSong)
+  protected override val invalidDirectoryNames = ImmutableBiMap.of()
 }

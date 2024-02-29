@@ -26,7 +26,7 @@ private class FindArtistWithMismatchedFolderName @Inject() (
         .head
         .file,
     ).artist
-    if artist != rf.dirNameToArtist(artistDir.name)
+    if artist != rf.toArtist(artistDir)
   } yield (artist, artistDir)
 }
 

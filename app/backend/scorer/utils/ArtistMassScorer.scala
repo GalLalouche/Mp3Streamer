@@ -52,7 +52,7 @@ private class ArtistMassScorer @Inject() (
 
     reconcilableFactory.artistDirectories
       .groupBy(e => enumGenreFinder.apply(e.asInstanceOf[IODirectory]))
-      .mapValues(_.map(reconcilableFactory dirNameToArtist _.name))
+      .mapValues(_.map(reconcilableFactory.toArtist))
       .toVector
       .sortBy(_._1)
       .traverse(Function.tupled(goGenre))

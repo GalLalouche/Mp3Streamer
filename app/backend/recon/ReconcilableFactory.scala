@@ -7,19 +7,13 @@ import models.MusicFinder
 
 import scala.util.{Failure, Success, Try}
 
-import common.io.{DirectoryRef, FileRef, JsonMapFile}
+import common.io.{DirectoryRef, FileRef}
 import common.rich.RichT._
 import common.rich.primitives.RichOption.richOption
 
 class ReconcilableFactory @Inject() (val mf: MusicFinder) {
   type S = mf.S
-  // Some artists have invalid directory characters in their name, so their directory won't match
-  // the artist name. As a stupid hack, just aggregate them below.
-  private val invalidDirectoryNames: Map[String, String] =
-    JsonMapFile.readJsonMap(getClass.getResourceAsStream("directory_renames.json"))
-  def dirNameToArtist(dirName: String): Artist = Artist(
-    dirName.optionOrKeep(invalidDirectoryNames.get),
-  )
+  def toArtist(dir: DirectoryRef): Artist = Artist(mf.dirNameToArtist(dir.name))
   // This is Try so the error could be reserved.
   def toAlbum(dir: DirectoryRef): Try[Album] =
     if (dir.name.take(4).exists(_.isDigit))
@@ -36,7 +30,7 @@ class ReconcilableFactory @Inject() (val mf: MusicFinder) {
                 )
                 .take(4)
                 .toInt,
-              artist = dirNameToArtist(dir.parent.name),
+              artist = toArtist(dir.parent),
             ),
           )
         case _ => Failure(new IllegalArgumentException(s"Bad name for <$dir>"))
