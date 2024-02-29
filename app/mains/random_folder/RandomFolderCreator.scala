@@ -27,19 +27,17 @@ import common.rich.path.RichFile._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichInt._
 
-// TODO clean up all E:/Temp and use an environment variable
 /** Selects n random songs and dumps them in a folder on D:\ */
 private class RandomFolderCreator @Inject() (
     @Seed seed: Long,
     @Assisted songSelector: MultiStageSongSelector[IOSystem],
 ) {
-  val random = new Random(seed)
-  private val tempDirectoryName = System.getProperty("java.io.tmpdir")
+  private val random = new Random(seed)
+  private val tempDirectoryName = System.getenv("TEMP_LARGE").ensuring(_ != null)
 
   private def createPlaylistFile(outputDir: Directory, name: String): File = {
-    val files = outputDir.files
     val playlistFile = outputDir.addFile(s"$name.m3u")
-    files.map(_.name).foreach(playlistFile.appendLine)
+    outputDir.files.map(_.name).foreach(playlistFile.appendLine)
     playlistFile
   }
 
