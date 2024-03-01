@@ -4,8 +4,7 @@ import java.io.File
 import java.util.regex.Pattern
 
 import com.google.common.annotations.VisibleForTesting
-import models.{Song, SongTagParser}
-import models.Song.TrackNumber
+import models.{Song, SongTagParser, TrackNumber}
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.jaudiotagger.tag.flac.FlacTag
@@ -15,7 +14,7 @@ import scala.annotation.tailrec
 
 import common.rich.RichT.{richT, _}
 import common.rich.path.RichFile.richFile
-import common.rich.primitives.RichInt._
+import common.rich.primitives.RichInt.Rich
 import common.rich.primitives.RichString.richString
 
 private[mains] object FixLabelsUtils {

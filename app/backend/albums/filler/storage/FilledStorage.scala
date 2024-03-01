@@ -2,7 +2,7 @@ package backend.albums.filler.storage
 
 import backend.albums.{ArtistNewAlbums, NewAlbum}
 import backend.recon.{Artist, IgnoredReconResult}
-import models.Album.AlbumTitle
+import models.TypeAliases.AlbumTitle
 
 import scala.concurrent.Future
 

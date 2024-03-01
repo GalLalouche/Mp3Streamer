@@ -1,7 +1,6 @@
 package songs
 
-import models.IOSong
-import models.Song.TrackNumber
+import models.{IOSong, TrackNumber}
 
 import common.rich.RichT._
 import common.rich.path.Directory

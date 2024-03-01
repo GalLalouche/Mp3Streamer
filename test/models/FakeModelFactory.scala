@@ -3,8 +3,6 @@ package models
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-import models.Album.AlbumTitle
-import models.Song.{SongTitle, TrackNumber}
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
 
@@ -17,21 +15,20 @@ class FakeModelFactory {
   def album(
       dirName: String = UUID.randomUUID().toString,
       title: AlbumTitle = "album",
-      artistName: String = "artist",
+      artistName: ArtistName = "artist",
       year: Int = 2000,
       songs: Seq[Song] = Nil,
-  ) =
-    Album(
-      root.addSubDir(dirName),
-      title = title,
-      artistName = artistName,
-      year = year,
-      songs = songs,
-    )
+  ) = Album(
+    root.addSubDir(dirName),
+    title = title,
+    artistName = artistName,
+    year = year,
+    songs = songs,
+  )
   def song(
       filePath: String = s"${UUID.randomUUID()}.mp3",
       title: SongTitle = "title",
-      artistName: String = "artist",
+      artistName: ArtistName = "artist",
       albumName: AlbumTitle = "album",
       track: TrackNumber = 1,
       year: Int = 2000,
@@ -45,26 +42,26 @@ class FakeModelFactory {
       orchestra: Option[String] = None,
       opus: Option[String] = None,
       performanceYear: Option[Int] = None,
-  ): MemorySong =
-    MemorySong(
-      root.addFile(filePath),
-      title,
-      artistName,
-      albumName,
-      track,
-      year,
-      bitRate,
-      Duration(duration, TimeUnit.SECONDS),
-      size,
-      discNumber,
-      trackGain,
-      composer,
-      conductor,
-      orchestra,
-      opus,
-      performanceYear,
-    )
-  def artist(name: String = "artist", albums: Seq[Album] = Nil): Artist = Artist(name, albums.toSet)
+  ): MemorySong = MemorySong(
+    root.addFile(filePath),
+    title,
+    artistName,
+    albumName,
+    track,
+    year,
+    bitRate,
+    Duration(duration, TimeUnit.SECONDS),
+    size,
+    discNumber,
+    trackGain,
+    composer,
+    conductor,
+    orchestra,
+    opus,
+    performanceYear,
+  )
+  def artist(name: ArtistName = "artist", albums: Seq[Album] = Nil): Artist =
+    Artist(name, albums.toSet)
   implicit val arbSong: Arbitrary[MemorySong] = Arbitrary(
     for {
       title <- arbitrary[SongTitle]

@@ -1,8 +1,7 @@
 package mains.vimtag
 
 import backend.module.FakeMusicFinder
-import models.FakeModelFactory
-import models.Song.{SongTitle, TrackNumber}
+import models.{FakeModelFactory, SongTitle, TrackNumber}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 import common.io.MemoryRoot

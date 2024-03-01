@@ -3,7 +3,7 @@ package backend.albums.filler.storage
 import backend.albums.{AddedAlbumCount, ArtistNewAlbums, NewAlbum}
 import backend.albums.filler.NewAlbumRecon
 import backend.recon.{Artist, ReconID}
-import models.Album.AlbumTitle
+import models.AlbumTitle
 
 import scala.concurrent.Future
 

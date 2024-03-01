@@ -6,6 +6,7 @@ import backend.module.StandaloneModule
 import backend.recon.SlickArtistReconStorage
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Guice
+import models.TypeAliases.ArtistName
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import slick.ast.{BaseTypedType, ScalaBaseType}
 
@@ -16,7 +17,7 @@ private class SlickInstrumentalArtistStorage @Inject() (
     ec: ExecutionContext,
     dbP: DbProvider,
     protected val artistStorage: SlickArtistReconStorage,
-) extends SlickSingleKeyColumnStorageTemplateFromConf[String, Unit](ec, dbP)
+) extends SlickSingleKeyColumnStorageTemplateFromConf[ArtistName, Unit](ec, dbP)
     with InstrumentalArtistStorage {
   import profile.api._
 
@@ -24,7 +25,7 @@ private class SlickInstrumentalArtistStorage @Inject() (
   protected implicit override def btt: BaseTypedType[Id] = ScalaBaseType.stringType
   protected override type Entity = String
   protected class ArtistTable(tag: Tag) extends Table[Entity](tag, "instrumental_artist") {
-    def name = column[String]("name", O.PrimaryKey)
+    def name = column[ArtistName]("name", O.PrimaryKey)
     def name_fk = foreignKey("name_fk", name, artistStorage.tableQuery)(
       _.name,
       onUpdate = ForeignKeyAction.Cascade,
@@ -40,7 +41,7 @@ private class SlickInstrumentalArtistStorage @Inject() (
   protected override def extractValue(e: String): Unit = ()
 
   // TODO SetStorage
-  override def store(artistName: String): Future[Unit] = store(artistName: String, ())
+  override def store(artistName: ArtistName): Future[Unit] = store(artistName: ArtistName, ())
 }
 
 object SlickInstrumentalArtistStorage {

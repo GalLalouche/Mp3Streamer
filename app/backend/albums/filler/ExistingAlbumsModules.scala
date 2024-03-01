@@ -6,6 +6,7 @@ import backend.module.{CleanModule, StandaloneModule}
 import backend.recon.{Artist, ReconcilableFactory}
 import com.google.inject.{Guice, Injector, Module, Provides, Singleton}
 import models.IOMusicFinderModule
+import models.TypeAliases.ArtistName
 import net.codingwell.scalaguice.ScalaModule
 
 import common.TimedLogger
@@ -21,10 +22,10 @@ object ExistingAlbumsModules {
     override def configure(): Unit =
       bind[ExistingAlbums].to[PreCachedExistingAlbums]
   }
-  def forSingleArtist(artistName: String): Module = new EagerBinder {
+  def forSingleArtist(name: ArtistName): Module = new EagerBinder {
     @Provides @Singleton private def existingAlbumsCache(
         factory: PreCachedExistingAlbumsFactory,
-    ): PreCachedExistingAlbums = factory.singleArtist(Artist(artistName))
+    ): PreCachedExistingAlbums = factory.singleArtist(Artist(name))
   }
   def default: Module = new EagerBinder {
     @Provides @Singleton private def existingAlbumsCache(

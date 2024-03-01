@@ -1,8 +1,7 @@
 package backend.recon
 
-import models.Album.AlbumTitle
-import models.Song
-import models.Song.SongTitle
+import models.{Song, SongTitle}
+import models.TypeAliases.{AlbumTitle, ArtistName}
 
 import monocle.macros.Lenses
 
@@ -10,7 +9,7 @@ sealed trait Reconcilable {
   def normalize: String
 }
 @Lenses
-case class Artist(name: String) extends Reconcilable {
+case class Artist(name: ArtistName) extends Reconcilable {
   override def normalize: String = name.toLowerCase
   def normalized: Artist = Artist(normalize)
 }

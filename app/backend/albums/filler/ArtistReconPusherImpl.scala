@@ -4,6 +4,7 @@ import javax.inject.Inject
 
 import backend.recon.{Artist, ArtistReconStorage, ReconID}
 import backend.recon.StoredReconResult.HasReconResult
+import models.TypeAliases.ArtistName
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -20,26 +21,26 @@ private class ArtistReconPusherImpl @Inject() (
   implicit val iec: ExecutionContext = ec
 
   private def go(
-      artistName: String,
+      name: ArtistName,
       musicBrainzId: String,
       isIgnored: Boolean,
       validateAlbums: Boolean,
   ): Future[Unit] = {
-    val artist = Artist(artistName)
+    val artist = Artist(name)
     val reconID = ReconID.validateOrThrow(musicBrainzId)
     val isValid = if (validateAlbums) verifier(artist, reconID) else Future.successful(true)
     isValid
-      .filterWithMessage(identity, s"Could not validate <$artistName> with ID <$musicBrainzId>")
+      .filterWithMessage(identity, s"Could not validate <$name> with ID <$musicBrainzId>")
       .>>(storage.store(artist, HasReconResult(reconID, isIgnored)))
   }
 
   override def withValidation(
-      artistName: String,
+      name: ArtistName,
       reconId: String,
       isIgnored: Boolean,
   ): Future[Unit] =
     go(
-      artistName = artistName,
+      name = name,
       musicBrainzId = reconId,
       isIgnored = isIgnored,
       validateAlbums = true,
@@ -48,9 +49,9 @@ private class ArtistReconPusherImpl @Inject() (
    * Does not perform validation, since sometimes MusicBrainz has incorrect album definitions that
    * is too annoying to fix.
    */
-  def force(artistName: String, reconId: String, isIgnored: Boolean): Future[Unit] =
+  def force(name: ArtistName, reconId: String, isIgnored: Boolean): Future[Unit] =
     go(
-      artistName = artistName,
+      name = name,
       musicBrainzId = reconId,
       isIgnored = isIgnored,
       validateAlbums = false,

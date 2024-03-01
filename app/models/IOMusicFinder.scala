@@ -1,7 +1,7 @@
 package models
 
 import com.google.common.collect.BiMap
-import models.MusicFinder.{ArtistName, DirectoryName}
+import models.MusicFinder.DirectoryName
 
 import common.io.{DirectoryRef, FileRef, IODirectory, IOFile, IOSystem, JsonMapFile}
 import common.rich.collections.RichTraversableOnce.richTraversableOnce

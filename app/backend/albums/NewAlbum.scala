@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter
 import backend.mb.{AlbumType, MbAlbumMetadata}
 import backend.recon.{Album, Artist}
 import mains.fixer.StringFixer
-import models.Album.AlbumTitle
+import models.TypeAliases.AlbumTitle
 import play.api.libs.json.{Json, JsValue}
 
 import scala.Ordering.Implicits._

@@ -5,6 +5,7 @@ import javax.inject.Inject
 import backend.logging.LoggingLevel
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import models.MusicFinder
+import models.TypeAliases.ArtistName
 
 import common.TimedLogger
 import common.rich.primitives.RichOption.richOption
@@ -37,6 +38,6 @@ private class RealTimeExistingAlbums @Inject() (
   override def albums: Artist => Set[Album] = artist =>
     getAlbums(artist.normalize).getOrThrow(s"Could not find albums for artist $artist")
 
-  private def getAlbums(artistName: String): Option[Set[Album]] =
+  private def getAlbums(artistName: ArtistName): Option[Set[Album]] =
     mf.findArtistDir(artistName).map(_.dirs.map(reconcilableFactory.toAlbum(_).get).toSet)
 }

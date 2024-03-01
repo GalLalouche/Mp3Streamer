@@ -9,8 +9,8 @@ import backend.albums.filler.storage.FilledStorage
 import backend.mb.AlbumType
 import backend.recon.{Artist, IgnoredReconResult}
 import backend.scorer.OptionalModelScore
-import models.{Genre, GenreFinder}
-import models.Album.AlbumTitle
+import models.{AlbumTitle, Genre, GenreFinder}
+import models.TypeAliases.ArtistName
 import shapeless.syntax.std.tuple.productTupleOps
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,8 +37,8 @@ private class AlbumsModel @Inject() (
       storage
         .forArtist(artist)
         .map(_.sortBy(a => (AlbumType.ordinal(a.albumType), -a.date.toEpochDay)))
-  def forArtist(artistName: String): Future[ArtistAlbums] = {
-    val artist = Artist(artistName).normalized
+  def forArtist(name: ArtistName): Future[ArtistAlbums] = {
+    val artist = Artist(name).normalized
     storage
       .isIgnored(artist)
       .flatMap {
@@ -52,10 +52,10 @@ private class AlbumsModel @Inject() (
       )
   }
 
-  def removeArtist(artistName: String): Future[_] = storage.remove(Artist(artistName))
-  def ignoreArtist(artistName: String): Future[_] = storage.ignore(Artist(artistName))
-  def unignoreArtist(artistName: String): Future[Seq[NewAlbum]] =
-    storage.unignore(Artist(artistName)) >> albumsForArtist(Artist(artistName).normalized)
+  def removeArtist(name: ArtistName): Future[_] = storage.remove(Artist(name))
+  def ignoreArtist(name: ArtistName): Future[_] = storage.ignore(Artist(name))
+  def unignoreArtist(name: ArtistName): Future[Seq[NewAlbum]] =
+    storage.unignore(Artist(name)) >> albumsForArtist(Artist(name).normalized)
   def removeAlbum(artist: Artist, title: AlbumTitle): Future[_] = storage.remove(artist, title)
   def ignoreAlbum(artist: Artist, title: AlbumTitle): Future[_] = storage.ignore(artist, title)
 }

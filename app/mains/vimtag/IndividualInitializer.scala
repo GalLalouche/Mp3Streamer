@@ -1,7 +1,7 @@
 package mains.vimtag
 
 import mains.vimtag.IndividualInitializer.IndividualTags
-import models.Song.{SongTitle, TrackNumber}
+import models.{SongTitle, TrackNumber}
 
 private trait IndividualInitializer {
   def apply(tags: Seq[IndividualTags]): Seq[String]

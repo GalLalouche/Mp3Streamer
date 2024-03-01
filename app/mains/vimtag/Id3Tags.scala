@@ -1,7 +1,6 @@
 package mains.vimtag
 
-import models.Album.AlbumTitle
-import models.Song.{SongTitle, TrackNumber}
+import models.{AlbumTitle, SongTitle, TrackNumber}
 
 private case class ParsedId3(
     artist: ParsedTag[String],

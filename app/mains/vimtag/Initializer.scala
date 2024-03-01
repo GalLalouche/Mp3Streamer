@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import mains.vimtag.Initializer.InitialLines
 import models.{MusicFinder, OptionalSong}
-import models.Song.TrackNumber
+import models.TypeAliases.TrackNumber
 
 import scalaz.syntax.std.tuple.ToTuple2Ops
 

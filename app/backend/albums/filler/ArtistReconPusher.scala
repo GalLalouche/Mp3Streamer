@@ -1,10 +1,11 @@
 package backend.albums.filler
 
 import com.google.inject.ImplementedBy
+import models.TypeAliases.ArtistName
 
 import scala.concurrent.Future
 
 @ImplementedBy(classOf[ArtistReconPusherImpl])
 trait ArtistReconPusher {
-  def withValidation(artistName: String, reconId: String, isIgnored: Boolean): Future[Unit]
+  def withValidation(artistName: ArtistName, reconId: String, isIgnored: Boolean): Future[Unit]
 }

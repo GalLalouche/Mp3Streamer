@@ -3,6 +3,7 @@ package backend.albums
 import javax.inject.Inject
 
 import controllers.{PlayActionConverter, UrlDecodeUtils}
+import models.TypeAliases.ArtistName
 import play.api.mvc.InjectedController
 
 /**
@@ -15,11 +16,12 @@ class AlbumsController @Inject() (
     decoder: UrlDecodeUtils,
 ) extends InjectedController {
   def albums = converter.ok($.albums)
-  def forArtist(artistName: String) = converter.ok($.forArtist(decoder.decode(artistName)))
+  def forArtist(artistName: ArtistName) = converter.ok($.forArtist(decoder.decode(artistName)))
 
-  def removeArtist(artist: String) = converter.noContent($.removeArtist(decoder.decode(artist)))
-  def ignoreArtist(artist: String) = converter.noContent($.ignoreArtist(decoder.decode(artist)))
-  def unignoreArtist(artist: String) = converter.noContent($.unignoreArtist(decoder.decode(artist)))
+  def removeArtist(artist: ArtistName) = converter.noContent($.removeArtist(decoder.decode(artist)))
+  def ignoreArtist(artist: ArtistName) = converter.noContent($.ignoreArtist(decoder.decode(artist)))
+  def unignoreArtist(artist: ArtistName) =
+    converter.noContent($.unignoreArtist(decoder.decode(artist)))
 
   def removeAlbum() = converter.parseJson($.removeAlbum)
   def ignoreAlbum() = converter.parseJson($.ignoreAlbum)

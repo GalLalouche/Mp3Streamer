@@ -1,6 +1,6 @@
 package mains.vimtag
 
-import models.Song.SongTitle
+import models.TypeAliases.SongTitle
 
 private object Tags {
   val Keep: String = "<KEEP>"

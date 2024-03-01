@@ -5,7 +5,7 @@ import javax.inject.Inject
 import backend.recon.{Album, Artist, SlickArtistReconStorage}
 import backend.scorer.ModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
-import models.Album.AlbumTitle
+import models.AlbumTitle
 
 import scala.concurrent.{ExecutionContext, Future}
 

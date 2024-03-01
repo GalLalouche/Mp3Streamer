@@ -4,7 +4,7 @@ import java.time.{Clock, LocalDate}
 
 import backend.recon.ReconID
 import mains.fixer.StringFixer
-import models.Album.AlbumTitle
+import models.AlbumTitle
 
 import scala.Ordering.Implicits._
 

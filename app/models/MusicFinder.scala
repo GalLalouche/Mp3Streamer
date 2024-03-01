@@ -1,7 +1,7 @@
 package models
 
 import com.google.common.collect.BiMap
-import models.MusicFinder.{ArtistName, DirectoryName}
+import models.MusicFinder.DirectoryName
 
 import common.io.{DirectoryRef, FileRef, RefSystem}
 import common.rich.RichT.richT
@@ -26,7 +26,7 @@ trait MusicFinder { self =>
     def getDirs(xs: Seq[String]): Seq[S#D] = xs.view.map(getDir).flatMap(_.dirs)
     getDirs(genresWithSubGenres).flatMap(_.dirs) ++ getDirs(flatGenres)
   }
-  def findArtistDir(name: String): Option[S#D] = {
+  def findArtistDir(name: ArtistName): Option[S#D] = {
     val normalizedName = name.toLowerCase
     artistDirs.find(_.name.|>(dirNameToArtist).toLowerCase == normalizedName)
   }
@@ -52,6 +52,5 @@ trait MusicFinder { self =>
 }
 
 object MusicFinder {
-  type ArtistName = String
   type DirectoryName = String
 }

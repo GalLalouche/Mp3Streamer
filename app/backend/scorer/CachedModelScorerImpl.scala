@@ -6,7 +6,7 @@ import backend.logging.Logger
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, SongScoreStorage}
-import models.{MusicFinder, Song}
+import models.{AlbumTitle, MusicFinder, Song, SongTitle}
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
@@ -34,8 +34,6 @@ private class CachedModelScorerImpl @Inject() (
 ) extends CachedModelScorer {
   private implicit val iec: ExecutionContext = ec
 
-  type SongTitle = String
-  type AlbumTitle = String
   private lazy val songScores: Map[(Artist, AlbumTitle, SongTitle), ModelScore] =
     songScorer.loadAll.run.get.map(e => (e._1, e._2.toLowerCase, e._3.toLowerCase) -> e._4).toMap
   private lazy val albumScores: Map[(Artist, AlbumTitle), ModelScore] =

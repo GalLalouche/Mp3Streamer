@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit
 
 import com.google.common.annotations.VisibleForTesting
 import models.RichTag._
-import models.Song.TrackNumber
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
 

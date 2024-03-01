@@ -6,7 +6,7 @@ import backend.recon.{Artist, SlickArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.ModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
-import models.Song
+import models.{AlbumTitle, Song, SongTitle}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -25,8 +25,6 @@ private[scorer] class SongScoreStorage @Inject() (
 
   private implicit val iec: ExecutionContext = ec
 
-  type AlbumTitle = String
-  type SongTitle = String
   protected override type Entity = (Artist, AlbumTitle, SongTitle, ModelScore)
   protected class Rows(tag: Tag) extends Table[Entity](tag, "song_score") {
     def artist = column[Artist]("artist")
@@ -46,7 +44,9 @@ private[scorer] class SongScoreStorage @Inject() (
     (k.artist.normalized, k.albumName.toLowerCase, k.title.toLowerCase, v)
   protected override def extractValue(e: (Artist, AlbumTitle, SongTitle, ModelScore)) = e._4
   protected override def keyFilter(k: Song)(e: Rows) =
-    e.artist === k.artist.normalized && e.song === k.title.toLowerCase && e.album === k.albumName.toLowerCase
+    e.artist === k.artist.normalized &&
+      e.song === k.title.toLowerCase &&
+      e.album === k.albumName.toLowerCase
   def loadAll: ListT[Future, (Artist, AlbumTitle, SongTitle, ModelScore)] =
     ListT(db.run(tableQuery.result).map(_.toList))
 }

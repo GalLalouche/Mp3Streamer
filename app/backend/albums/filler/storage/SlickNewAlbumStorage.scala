@@ -13,6 +13,7 @@ import backend.scorer.OptionalModelScore
 import backend.scorer.storage.ArtistScoreStorage
 import backend.storage.{DbProvider, JdbcMappers, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Guice
+import models.{AlbumTitle, ArtistName}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import slick.ast.BaseTypedType
 
@@ -82,9 +83,7 @@ private class SlickNewAlbumStorage @Inject() (
     isIgnored = e._7,
   )
   protected override def toId(et: Rows) = et.reconId
-  private type AlbumTitle = String
   private type AlbumType = String
-  private type ArtistName = String
   private type IsRemoved = Boolean
   private type IsIgnored = Boolean
   protected override type Entity =

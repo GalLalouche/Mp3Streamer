@@ -7,7 +7,7 @@ import backend.albums.filler.{FilterExistingAlbums, NewAlbumRecon}
 import backend.module.StandaloneModule
 import backend.recon.{Artist, IgnoredReconResult}
 import com.google.inject.Guice
-import models.Album.AlbumTitle
+import models.AlbumTitle
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 import scala.concurrent.ExecutionContext

@@ -2,9 +2,6 @@ package models
 
 import java.io.File
 
-import models.Album.AlbumTitle
-import models.Song.{SongTitle, TrackNumber}
-
 import scala.concurrent.duration.Duration
 
 import common.io.{FileRef, IOFile, MemoryFile}
@@ -15,7 +12,7 @@ trait Song {
   def title: SongTitle
   def artistName: String
   def albumName: AlbumTitle
-  def track: Int
+  def track: TrackNumber
   def year: Int
   def bitRate: String
   def duration: Duration
@@ -43,11 +40,6 @@ trait Song {
     opus = opus,
     performanceYear = performanceYear,
   )
-}
-
-object Song {
-  type TrackNumber = Int
-  type SongTitle = String
 }
 
 // TODO remove code duplication? hmm...

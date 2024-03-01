@@ -1,7 +1,5 @@
 package models
 
-import models.Album.AlbumTitle
-
 import monocle.macros.Lenses
 
 import common.io.DirectoryRef
@@ -10,7 +8,7 @@ import common.io.DirectoryRef
 case class Album(
     dir: DirectoryRef,
     title: AlbumTitle,
-    artistName: String,
+    artistName: ArtistName,
     year: Int,
     songs: Seq[Song],
 ) {
@@ -28,8 +26,4 @@ case class Album(
   def opus: Option[String] = uniformProperty(_.opus)
   def orchestra: Option[String] = uniformProperty(_.orchestra)
   def performanceYear: Option[Int] = uniformProperty(_.performanceYear)
-}
-
-object Album {
-  type AlbumTitle = String
 }

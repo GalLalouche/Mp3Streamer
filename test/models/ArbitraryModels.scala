@@ -3,7 +3,6 @@ package models
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-import models.Song.TrackNumber
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.arbitrary
 
@@ -15,9 +14,9 @@ object ArbitraryModels {
   private implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])
   implicit lazy val arbSong: Gen[Song] = for {
     filePath <- arbitrary[String]
-    title <- arbitrary[String]
-    artistName <- arbitrary[String]
-    albumName <- arbitrary[String]
+    title <- arbitrary[SongTitle]
+    artistName <- arbitrary[ArtistName]
+    albumName <- arbitrary[AlbumTitle]
     track <- arbitrary[TrackNumber].map(_ % 100)
     year <- arbitrary[Int].map(_ % 3000)
     bitRate <- arbitrary[Int].map(_ % 10000).map(_ / 32.0).map(_.toString)

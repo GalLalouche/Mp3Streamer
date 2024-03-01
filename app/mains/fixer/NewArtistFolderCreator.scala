@@ -2,6 +2,7 @@ package mains.fixer
 
 import mains.BrowserUtils
 import mains.fixer.new_artist.GenrePanel
+import models.TypeAliases.ArtistName
 
 import scala.concurrent.{Future, Promise}
 import scala.swing.Frame
@@ -18,11 +19,11 @@ import common.rich.path.Directory
  * ------ Rock || Metal || Jazz || New Age Folk Pop || Black Hard Classic || Death Prog || Doom
  */
 private object NewArtistFolderCreator {
-  def selectGenreDirAndPopupBrowser(artistName: String): Future[Directory] = {
-    BrowserUtils.searchForLucky(artistName + " rateyourmusic")
-    selectGenreDir(artistName)
+  def selectGenreDirAndPopupBrowser(name: ArtistName): Future[Directory] = {
+    BrowserUtils.searchForLucky(name + " rateyourmusic")
+    selectGenreDir(name)
   }
-  def selectGenreDir(artistName: String): Future[Directory] = {
+  def selectGenreDir(name: ArtistName): Future[Directory] = {
     // TODO this should use IOMusicFinder
     def genre(dirName: String) = Directory("g:/media/music/" + dirName)
     val panel = GenrePanel(
@@ -40,7 +41,7 @@ private object NewArtistFolderCreator {
     }
     frame.contents = panel
     frame.open()
-    frame.title = "Select genre for " + artistName
+    frame.title = "Select genre for " + name
     panel.clicks.first.subscribe { d =>
       $.success(d)
       frame.dispose()

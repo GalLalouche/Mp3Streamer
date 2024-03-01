@@ -3,8 +3,7 @@ package backend.lyrics.retrievers
 import backend.external.DocumentSpecs
 import backend.lyrics.Instrumental
 import backend.lyrics.retrievers.LyricsSpec._
-import models.FakeModelFactory
-import models.Song.TrackNumber
+import models.{FakeModelFactory, TrackNumber}
 import org.scalatest.{Assertion, Suite}
 import org.scalatest.matchers.{BePropertyMatcher, BePropertyMatchResult}
 import resource.managed
