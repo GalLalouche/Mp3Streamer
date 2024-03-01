@@ -20,7 +20,7 @@ import common.rich.primitives.RichString.richString
 
 private[mains] object FixLabelsUtils {
   private val NumberFollowedBySlash = Pattern.compile("""\d+[/\\].*""")
-  private val InvalidFileCharacters = Pattern.compile("""[:\\/*?|<>]""")
+  private val InvalidFileCharacters = Pattern.compile("""[:\\/*?|<>"]""")
   private val MultiSpace = Pattern.compile(" +")
 
   private def properTrackString(track: TrackNumber): String = track.padLeftZeros(2)
