@@ -36,7 +36,7 @@ private class ExternalFormatter @Inject() (
     for {
       artistJson <- links.artistLinks.map(extendMissingArtist) |> jsonifier.toJsonOrError
       albumJson <- links.albumLinks.map(extendMissingAlbum) |> jsonifier.toJsonOrError
-    } yield Json.obj("Artist links" -> artistJson, "Album links" -> albumJson)
+    } yield Json.obj("Artist" -> artistJson, "Album" -> albumJson)
   }
 
   def get(path: String): Future[JsValue] =
