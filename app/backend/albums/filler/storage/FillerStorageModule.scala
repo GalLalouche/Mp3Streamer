@@ -6,6 +6,7 @@ private[albums] object FillerStorageModule extends ScalaModule {
   override def configure() = {
     bind[LastFetchTime].to[LastFetchTimeImpl]
     bind[NewAlbumStorage].to[SlickNewAlbumStorage]
+    bind[NewAlbumCleaner].to[NewAlbumStorage]
     bind[CachedNewAlbumStorage].to[CachedNewAlbumStorageImpl]
     bind[FilledStorage].to[CachedNewAlbumStorage]
   }

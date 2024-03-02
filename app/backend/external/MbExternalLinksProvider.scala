@@ -2,6 +2,7 @@ package backend.external
 
 import javax.inject.Inject
 
+import backend.albums.filler.storage.NewAlbumCleaner
 import backend.external.expansions.CompositeSameHostExpander
 import backend.external.extensions._
 import backend.external.recons.LinkRetrievers
@@ -23,6 +24,7 @@ private class MbExternalLinksProvider @Inject() (
     compositeSameHostExpander: CompositeSameHostExpander,
     albumReconStorage: AlbumReconStorage,
     albumExternalStorage: AlbumExternalStorage,
+    newAlbumStorage: NewAlbumCleaner,
     extender: CompositeExtender,
     artistPipeWrapper: ExternalPipeWrapper[Artist],
     albumPipeWrapper: ExternalPipeWrapper[Album],
@@ -56,6 +58,7 @@ private class MbExternalLinksProvider @Inject() (
       val artist = song.artist
       artistExternalStorage.delete(artist).run >>
         albumExternalStorage.deleteAllLinks(artist) >>
+        newAlbumStorage.deleteAll(artist) >>
         artistReconStorage.update(artist, reconId).run
     case UpdatedRecon.Album(reconId) =>
       val release = song.release

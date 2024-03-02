@@ -211,14 +211,8 @@ private class SlickNewAlbumStorage @Inject() (
         .listenError(logger.error(s"Failed to store albums: <${newAlbums.mkString("\n")}>", _))
     } yield result
   }
-  override def remove(artist: Artist) = db
-    .run(
-      tableQuery
-        .filter(e => e.artist === artist.normalize)
-        .map(_.isRemoved)
-        .update(true),
-    )
-    .void
+  override def remove(artist: Artist) =
+    db.run(tableQuery.filter(e => e.artist === artist.normalize).map(_.isRemoved).update(true)).void
 
   private def updateAlbum(
       f: EntityTable => Rep[Boolean],
@@ -237,6 +231,8 @@ private class SlickNewAlbumStorage @Inject() (
     updateAlbum(_.isRemoved)(artist, title)
   override def ignore(artist: Artist, title: AlbumTitle) =
     remove(artist, title) >> updateAlbum(_.isIgnored)(artist, title)
+  override def deleteAll(artist: Artist) =
+    db.run(tableQuery.filter(e => e.artist === artist.normalize).delete).void
 }
 
 private object SlickNewAlbumStorage {
