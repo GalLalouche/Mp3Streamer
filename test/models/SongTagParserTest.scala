@@ -92,10 +92,8 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
     "multiple same years succeeds" in {
       SongTagParser.extractYearFromName("blah 5678 blah 5678 blah") shouldReturn Some(5678)
     }
-    "multiple years throws" in {
-      an[Exception] shouldBe thrownBy {
-        SongTagParser.extractYearFromName("blah 5678 blah 1234 blah")
-      }
+    "multiple years returns None" in {
+      SongTagParser.extractYearFromName("blah 5678 blah 1234 blah") shouldReturn None
     }
   }
 }
