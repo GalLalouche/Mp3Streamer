@@ -50,7 +50,7 @@ class StringFixer @Inject() (logger: Logger) extends (String => String) {
     lang == "ja" || lang.startsWith("ch") || lang.startsWith("zh")
 
   override def apply(s: String): String = {
-    val trimmed = trimAll(s)
+    val trimmed = s.replaceAll(AllSpaces, " ").trim
     if (trimmed.hasHebrew)
       trimmed
         .replaceAll(
@@ -181,7 +181,7 @@ object StringFixer extends StringFixer(ConsoleLogger) {
   private val ConjuctiveN = Pattern.compile(" '?[Nn]'")
   private val Vs = Pattern.compile(""" vs\.? """, Pattern.CASE_INSENSITIVE)
   // \p{Z}: any kind of whitespace or invisible separator.
-  private val TrimmedSpaces = Pattern.compile("""(^\p{Z}+)|(\p{Z}+$)""")
+  private val AllSpaces = Pattern.compile("""\p{Z}""")
   val SpecialQuotes: Pattern = Pattern.compile("[“”]")
   val SpecialApostrophes: Pattern = Pattern.compile("[‘’�´]")
   private val SpecialDashes = Pattern.compile("[—–-−‐]")
@@ -198,6 +198,4 @@ object StringFixer extends StringFixer(ConsoleLogger) {
       .++(33.to(126).map(_.toChar :-> (_.toString)))
   private def normalizeDashesAndApostrophes(s: String) =
     s.replaceAll(SpecialApostrophes, "'").replaceAll(SpecialDashes, "-")
-  // TODO move to ScalaCommon
-  private def trimAll(s: String): String = s.removeAll(TrimmedSpaces)
 }

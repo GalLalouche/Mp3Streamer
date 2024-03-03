@@ -10,11 +10,12 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   private def verifyFix(original: String, fix: String): Unit = $(original) shouldReturn fix
   private def verifyEmptyFix(original: String): Unit = verifyFix(original, original)
 
-  "Trims" in {
+  "Stupid spaces" in {
     verifyFix("  Foo Bar ", "Foo Bar")
     // List is from https://stackoverflow.com/a/28295597/736508
     val badChars = Vector('\u00A0', '\u2007', '\u202F')
     verifyFix(badChars.reverse.mkString + "  foo bar " ++ badChars, "Foo Bar")
+    verifyFix("Missed Call (1)", "Missed Call (1)")
   }
   "Ordered numerals" in {
     verifyEmptyFix("1st")
