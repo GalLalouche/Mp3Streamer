@@ -21,3 +21,20 @@ case class OptionalSong(
 ) {
   def directory: String = new File(file).getParent
 }
+
+object OptionalSong {
+  def empty(file: String): OptionalSong = OptionalSong(
+    file = file,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+  )
+}

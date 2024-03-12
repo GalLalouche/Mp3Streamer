@@ -38,7 +38,7 @@ object SongTagParser {
       .map(_.group(1).toInt)
       .orElse(extractYearFromName(file.parent.name))
   @VisibleForTesting private[models] def extractYearFromName(s: String): Option[Int] =
-    findYear(s).toSet.singleOpt.map(_.toInt)
+    findYear(s).toSet.optFilter(_.size == 1).map(_.single.toInt)
   def apply(file: File): IOSong = {
     validateRealFile(file)
     apply(file, AudioFileIO.read(file))
@@ -69,20 +69,24 @@ object SongTagParser {
   def optionalSong(file: File): OptionalSong = {
     validateRealFile(file)
     val tag = AudioFileIO.read(file).getTag
-    val year = extractYear(file, tag)
-    OptionalSong(
-      file = file.path,
-      title = tag.firstNonEmpty(FieldKey.TITLE),
-      artistName = tag.firstNonEmpty(FieldKey.ARTIST),
-      albumName = tag.firstNonEmpty(FieldKey.ALBUM),
-      track = tag.firstNonEmpty(FieldKey.TRACK).map(parseTrack),
-      year = year,
-      discNumber = tag.firstNonEmpty(FieldKey.DISC_NO),
-      composer = tag.firstNonEmpty(FieldKey.COMPOSER),
-      conductor = tag.firstNonEmpty(FieldKey.CONDUCTOR),
-      orchestra = tag.firstNonEmpty(FieldKey.ORCHESTRA),
-      opus = tag.firstNonEmpty(FieldKey.OPUS),
-      performanceYear = tag.firstNonEmpty(FieldKey.PERFORMANCE_YEAR).map(_.toInt),
-    )
+    if (tag == null)
+      OptionalSong.empty(file.path)
+    else {
+      val year = extractYear(file, tag)
+      OptionalSong(
+        file = file.path,
+        title = tag.firstNonEmpty(FieldKey.TITLE),
+        artistName = tag.firstNonEmpty(FieldKey.ARTIST),
+        albumName = tag.firstNonEmpty(FieldKey.ALBUM),
+        track = tag.firstNonEmpty(FieldKey.TRACK).map(parseTrack),
+        year = year,
+        discNumber = tag.firstNonEmpty(FieldKey.DISC_NO),
+        composer = tag.firstNonEmpty(FieldKey.COMPOSER),
+        conductor = tag.firstNonEmpty(FieldKey.CONDUCTOR),
+        orchestra = tag.firstNonEmpty(FieldKey.ORCHESTRA),
+        opus = tag.firstNonEmpty(FieldKey.OPUS),
+        performanceYear = tag.firstNonEmpty(FieldKey.PERFORMANCE_YEAR).map(_.toInt),
+      )
+    }
   }
 }
