@@ -28,6 +28,7 @@ private class AllMusicAlbumFinder @Inject() (
     albumReconScorer: AlbumReconScorer,
 ) extends SameHostExpander {
   private implicit val iec: ExecutionContext = ec
+  override val qualityRank: Int = 0
 
   override val host = Host.AllMusic
 

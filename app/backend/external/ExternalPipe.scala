@@ -60,6 +60,7 @@ private class ExternalPipe[R <: Reconcilable](
   private def applyNewHostReconcilers(entity: R, existingHosts: Set[Host]): Future[BaseLinks[R]] =
     standaloneReconcilers.get
       .filterNot(existingHosts apply _.host)
+      .toTraversable
       .traverse(_(entity).run)
       .map(_.flatten)
 

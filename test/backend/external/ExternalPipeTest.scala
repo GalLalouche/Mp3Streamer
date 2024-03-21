@@ -40,6 +40,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
   }
   private def constReconciler(_host: Host, link: BaseLink[Album]) = new LinkRetriever[Album] {
     override val host = _host
+    override val qualityRank = 0
     override def apply(v1: Album) = RichOptionT.pointSome[Future].apply(link)
   }
   private val newLinkExpander = constExpander(expandedLink)
@@ -50,7 +51,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
     val $ = new ExternalPipe[Album](
       ReconID("foobar") |> constFuture,
       Vector(existingLink) |> constFuture,
-      LinkRetrievers(Vector(newLinkReconciler)),
+      LinkRetrievers(newLinkReconciler),
       Vector(newLinkExpander),
       Nil,
     )
@@ -65,13 +66,14 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
     }
     def failedReconciler(_host: Host) = new LinkRetriever[Album] {
       override val host = _host
+      override val qualityRank = Int.MaxValue
       override def apply(a: Album) = OptionT[Future, BaseLink[Album]](failed)
     }
     "Should not invoke on existing hosts" in {
       val $ = new ExternalPipe[Album](
         ReconID("foobar") |> constFuture,
         Vector(existingLink) |> constFuture,
-        LinkRetrievers(Vector(failedReconciler(existingHost), newLinkReconciler)),
+        LinkRetrievers(failedReconciler(existingHost), newLinkReconciler),
         Vector(failedExpander(existingHost), newLinkExpander),
         Nil,
       )
@@ -81,7 +83,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
       val $ = new ExternalPipe[Album](
         ReconID("foobar") |> constFuture,
         Vector(existingLink) |> constFuture,
-        LinkRetrievers(Vector(newLinkReconciler)),
+        LinkRetrievers(newLinkReconciler),
         Vector(failedExpander(reconciledLink.host)),
         Nil,
       )
@@ -92,7 +94,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
     val $ = new ExternalPipe[Album](
       ReconID("foobar") |> constFuture,
       Vector(existingLink) |> constFuture,
-      LinkRetrievers(Vector(newLinkReconciler)),
+      LinkRetrievers(newLinkReconciler),
       Vector(constExpander(expandedLink, rehashedLinks)),
       Nil,
     )
@@ -105,7 +107,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
         existingLink,
         existingLink.copy(link = Url.parse("existing2")),
       ) |> constFuture,
-      LinkRetrievers(Vector(newLinkReconciler)),
+      LinkRetrievers(newLinkReconciler),
       Vector(newLinkExpander),
       Nil,
     )
@@ -136,7 +138,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
     val $ = new ExternalPipe[Album](
       ReconID("foobar") |> constFuture,
       Vector(existingLink) |> constFuture,
-      LinkRetrievers(Vector(wikiReconciler, newLinkReconciler)),
+      LinkRetrievers(wikiReconciler, newLinkReconciler),
       Vector(expander1, expander2),
       Nil,
     )
@@ -153,7 +155,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
     val $ = new ExternalPipe[Album](
       ReconID("foobar") |> constFuture,
       Vector(existingLink) |> constFuture,
-      LinkRetrievers(Vector(newLinkReconciler)),
+      LinkRetrievers(newLinkReconciler),
       Vector(newLinkExpander),
       Vector(marker),
     )

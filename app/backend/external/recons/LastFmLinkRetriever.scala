@@ -24,6 +24,7 @@ private class LastFmLinkRetriever @VisibleForTesting private[recons] (
     it: InternetTalker,
     millisBetweenRedirects: Long,
 ) extends LinkRetriever[Artist] {
+  override val qualityRank: Int = 1 // Not 0 since there might be another artist with the same name.
   @Inject() def this(it: InternetTalker) = this(it, millisBetweenRedirects = 100)
 
   override val host = Host.LastFm

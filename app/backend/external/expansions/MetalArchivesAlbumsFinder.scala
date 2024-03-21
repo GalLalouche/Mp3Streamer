@@ -16,6 +16,7 @@ import common.RichJsoup._
 private class MetalArchivesAlbumsFinder @Inject() (sameHostExpanderHelper: SameHostExpanderHelper)
     extends SameHostExpander {
   override val host: Host = Host.MetalArchives
+  override val qualityRank = 1
   private val documentToAlbumParser: DocumentToAlbumParser = new DocumentToAlbumParser {
     override val host = MetalArchivesAlbumsFinder.this.host
 

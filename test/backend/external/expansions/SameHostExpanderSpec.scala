@@ -25,10 +25,12 @@ abstract class SameHostExpanderSpec extends AsyncFreeSpec with DocumentSpecs wit
       case address if address.toStringPunycode == expandingUrl => getBytes(documentName)
     }
 
+    val map = additionalMappings.toMap
     val injector = Guice.createInjector(
       module,
-      TestModuleConfiguration(_urlToBytesMapper = urlToBytesMapper.orElse { case address =>
-        getBytes(additionalMappings.toMap.apply(address.toStringPunycode))
+      TestModuleConfiguration(_urlToBytesMapper = urlToBytesMapper.orElse {
+        case address if map.contains(address.toStringPunycode) =>
+          getBytes(map.apply(address.toStringPunycode))
       }).module,
     )
     val $ = injector.instance[SameHostExpander]

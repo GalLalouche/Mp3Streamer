@@ -4,6 +4,8 @@ import backend.recon.{Album, Artist}
 import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.ScalaModule
 
+import common.rich.func.BetterFutureInstances._
+
 class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
   protected override def module = new ScalaModule {
     override def configure() =
@@ -23,6 +25,17 @@ class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
       DiscographyExtractLink -> NotRedirected,
     )
       .mapValue(_.link shouldReturn Url.parse("https://en.wikipedia.org/wiki/Lady_in_Gold_(album)"))
+  }
+  "Return the correct link to a wikipedia site, not a file." in {
+    findAlbum(
+      "wikipedia-with-file.html",
+      Album("Fear of a Blank Planet", 2007, Artist("Porcupine tree")),
+      "https://en.wikipedia.org/w/index.php?title=Fear_of_a_Blank_Planet&redirect=no" -> NotRedirected,
+      "https://en.wikipedia.org/w/index.php?title=Fear_of_a_Blank_Planet_(song)&redirect=no" -> Redirected,
+    ).map(_.link)
+      .valueShouldEventuallyReturn(
+        Url.parse("https://en.wikipedia.org/wiki/Fear_of_a_Blank_Planet"),
+      )
   }
   "Choose correct language" in {
     findAlbum(

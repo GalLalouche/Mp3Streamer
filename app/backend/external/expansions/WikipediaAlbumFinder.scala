@@ -28,6 +28,7 @@ private class WikipediaAlbumFinder @Inject() (
 ) extends SameHostExpander {
   private implicit val iec: ExecutionContext = it
   override val host = Host.Wikipedia
+  override val qualityRank = 2 // Parsing wikipedia for links is pretty error-prone.
 
   private val documentToAlbumParser: DocumentToAlbumParser = new DocumentToAlbumParser {
     override def host: Host = WikipediaAlbumFinder.this.host
@@ -56,6 +57,7 @@ private class WikipediaAlbumFinder @Inject() (
         // Remove external links, see https://stackoverflow.com/q/4071117/736508
         .filterNot(_ contains "//")
         .filterNot(_ contains "redlink=1")
+        .filterNot(_ contains "File:")
         .map(s"https://$documentLanguage.wikipedia.org" + _ |> Url.parse)
         .|>(_.toVector.ensuring(_.forall(_.isValid)))
         .filterM(isNotRedirected(documentLanguage))
