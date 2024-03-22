@@ -1,4 +1,4 @@
-$(function () {
+$(function() {
   const PLAY = "play"
   const ADD = "plus"
   const ADD_ENTIRE_ALBUM = "plus-square"
@@ -13,12 +13,12 @@ $(function () {
 
     function specificResults(name, itemProducer, appendTo, array) {
       const ul = elem("ul").appendTo(appendTo || $(`#${name}-results`).empty())
-      $.each(array || jsArray[`${name}s`], function (_, e) {
+      $.each(array || jsArray[`${name}s`], function(_, e) {
         const li = $(`<li class="${name}-result search-result">${itemProducer(e)}</li>`)
         li.appendTo(ul).data(e)
         li.attr("title", "")
-        li.mouseover(function () {
-          if (li.custom_overflown())
+        li.mouseover(function() {
+          if (!li.attr('title') && li.custom_overflown())
             li.custom_tooltip(`${itemProducer(e).split(">").custom_last().trim()}`)
         })
       })
@@ -28,7 +28,7 @@ $(function () {
       return // A later request has already set the result.
     results.attr("time", requestTime)
 
-    specificResults("song", function (song) {
+    specificResults("song", function(song) {
       function suffix() {
         if (!song.composer) // Assumes all classical pieces have a composer field.
           return `${song.artistName}: ${song.title} (${song.duration.timeFormat()})`
@@ -43,12 +43,12 @@ $(function () {
 
       return `${icon(ADD)} ${icon(PLAY)} ${suffix()}`
     })
-    $.each($(".song-result"), function () {
+    $.each($(".song-result"), function() {
       const song = $(this).data()
-      $(this).custom_tooltip(`${song.year}, ${song.albumName}, ${song.track}`)
+      $(this).custom_tooltip(gplaylist.toString(song))
     })
 
-    specificResults("album", function (album) {
+    specificResults("album", function(album) {
       function albumText() {
         if (!album.composer) // Assumes all classical pieces have a composer field.
           return `${album.artistName}: ${album.year || "NO_YEAR"} ${album.title}`
@@ -73,7 +73,7 @@ $(function () {
     })
 
     specificResults("artist", () => "")
-    $.each($(".artist-result"), function () {
+    $.each($(".artist-result"), function() {
       const li = $(this)
       const artist = li.data()
       const albums = div().appendTo(li)
@@ -104,21 +104,21 @@ $(function () {
   }
 
   const getData = e => $(e).closest("li").data()
-  results.on("click", '#song-results .fa', function (e) {
+  results.on("click", '#song-results .fa', function(e) {
     const song = getData(this)
     const isPlay = e.target.classList.contains("fa-play")
     $.get("data/songs/" + song.file, e => gplaylist.add(e, isPlay))
   })
-  results.on("click", `.album-result .fa-${ADD_ENTIRE_ALBUM}`, function () {
+  results.on("click", `.album-result .fa-${ADD_ENTIRE_ALBUM}`, function() {
     const album = getData(this)
     $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
   })
-  results.on("click", `.album-result .fa-${ADD_DISC}`, function () {
+  results.on("click", `.album-result .fa-${ADD_DISC}`, function() {
     const album = getData(this)
     const discNumber = $(this).closest("td").text()
     $.get(`data/discs/${discNumber}/${album.dir}`, e => gplaylist.add(e, false))
   })
-  results.on("click", `.album-result .fa-${DOWNLOAD_FILE}`, function () {
+  results.on("click", `.album-result .fa-${DOWNLOAD_FILE}`, function() {
     const album = getData(this)
     $.get("download/" + album.dir)
   })
@@ -143,7 +143,7 @@ $(function () {
   }
 
   // When Enter is pressed and there is a *single* search result in the active tab, click it.
-  searchBox.on("keydown", function (e) {
+  searchBox.on("keydown", function(e) {
     if (e.keyCode !== ENTER_CODE)
       return
     const activeTab = "[role=tabpanel]:not([style*='display: none'])"
@@ -168,11 +168,11 @@ $(function () {
   // shortcuts are Re-enabled. This way, after 10 minutes of playing, you can still press 'K' to pause the
   // damn thing.
   const INPUT_TIMEOUT_IN_MILLIS = 10000
-  setInterval(function () {
+  setInterval(function() {
     if (Date.now() - timeOfLastInput > INPUT_TIMEOUT_IN_MILLIS)
       searchBox.blur()
   }, INPUT_TIMEOUT_IN_MILLIS)
-  Search.quickSearch = function () {
+  Search.quickSearch = function() {
     clearResults()
     searchBox.focus()
     scan()
