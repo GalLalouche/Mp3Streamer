@@ -40,8 +40,8 @@ private object Flag extends Enum[Flag] {
         comment = "Removes (Feat. X) from title",
         mnemonic = "feat",
       ) {
-    private val parens = Pattern.compile(""" +\(Feat.* .*\)""", Pattern.CASE_INSENSITIVE)
-    private val noParens = Pattern.compile(""" Feat.* .*""", Pattern.CASE_INSENSITIVE)
+    private val parens = Pattern.compile(""" +\(F(ea)?t.* .*\)""", Pattern.CASE_INSENSITIVE)
+    private val noParens = Pattern.compile(""" F(ea)?t.* .*""", Pattern.CASE_INSENSITIVE)
     def removeFeat: String => String = _.removeAll(parens).removeAll(noParens)
   }
   object RenameFiles

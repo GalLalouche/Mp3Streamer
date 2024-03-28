@@ -11,6 +11,9 @@ class FlagTest extends FreeSpec with AuxSpecs {
       RemoveFeat.removeFeat("Foo Bar") shouldReturn "Foo Bar"
     }
     "Parens" - {
+      "Remove Ft." in {
+        RemoveFeat.removeFeat("Foo Bar (Ft. Moo)") shouldReturn "Foo Bar"
+      }
       "Remove Feat." in {
         RemoveFeat.removeFeat("Foo Bar (Feat. Moo)") shouldReturn "Foo Bar"
       }
