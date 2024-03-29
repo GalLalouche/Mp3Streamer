@@ -47,8 +47,8 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
       val expected: Map[Host, Seq[LinkExtension[Artist]]] = Map(
         Host.MusicBrainz -> Vector(
           LinkExtension("edit", Url.parse("foo.bar/edit")),
-          LinkExtension("Google", Url.parse("https://www.google.com/search?q=foobar+MusicBrainz")),
-          LinkExtension("Lucky", Url.parse("lucky/redirect/foobar MusicBrainz")),
+          LinkExtension("Google", Url.parse("https://www.google.com/search?q=MusicBrainz+foobar")),
+          LinkExtension("Lucky", Url.parse("lucky/redirect/MusicBrainz foobar")),
         ),
         Host.AllMusic -> Vector(LinkExtension("discography", Url.parse("foo.bar/discography"))),
         Host.LastFm -> Vector(LinkExtension("similar", Url.parse("foo.bar/+similar"))),

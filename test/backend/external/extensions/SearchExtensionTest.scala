@@ -12,8 +12,8 @@ class SearchExtensionTest extends FreeSpec with AuxSpecs {
     val $ = SearchExtension(Host("foo bar", Url.parse("www.foo.bar")), Artist("qux bazz"))
     val extensions = $.extensions.toVector
     extensions should have length 2
-    extensions(0).link shouldReturn Url.parse("https://www.google.com/search?q=qux+bazz+foo+bar")
-    extensions(1).link shouldReturn Url.parse("lucky/redirect/qux bazz foo bar")
+    extensions(0).link shouldReturn Url.parse("https://www.google.com/search?q=foo+bar+qux+bazz")
+    extensions(1).link shouldReturn Url.parse("lucky/redirect/foo bar qux bazz")
     $.host shouldReturn Host("foo bar", Url.parse("www.foo.bar"))
     $.mark shouldReturn LinkMark.Missing
   }
@@ -25,7 +25,7 @@ class SearchExtensionTest extends FreeSpec with AuxSpecs {
     $.map(_.host) shouldMultiSetEqual hosts
     val extensions = $.find(_.host == Host.AllMusic).get.extensions.toVector
     extensions should have length 2
-    extensions(0).link shouldReturn Url.parse("https://www.google.com/search?q=foo+bar+AllMusic")
-    extensions(1).link shouldReturn Url.parse("lucky/redirect/foo bar AllMusic")
+    extensions(0).link shouldReturn Url.parse("https://www.google.com/search?q=AllMusic+foo+bar")
+    extensions(1).link shouldReturn Url.parse("lucky/redirect/AllMusic foo bar")
   }
 }

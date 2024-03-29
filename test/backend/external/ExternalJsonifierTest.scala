@@ -54,8 +54,8 @@ class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
             "host" -> "AllMusic?",
             "main" -> "javascript:void(0)",
             "extensions" -> Json.obj(
-              "Google" -> "https://www.google.com/search?q=bruce+springsteen+-+the+river+AllMusic",
-              "Lucky" -> "lucky/redirect/bruce%20springsteen%20-%20the%20river%20AllMusic",
+              "Google" -> "https://www.google.com/search?q=AllMusic+bruce+springsteen+-+the+river",
+              "Lucky" -> "lucky/redirect/AllMusic%20bruce%20springsteen%20-%20the%20river",
             ),
           ),
           "timestamp" -> "17/10",
@@ -77,8 +77,8 @@ class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
             "host" -> "Wikipedia?",
             "main" -> "javascript:void(0)",
             "extensions" -> Json.obj(
-              "Google" -> "https://www.google.com/search?q=bruce+springsteen+-+the+river+Wikipedia",
-              "Lucky" -> "lucky/redirect/bruce%20springsteen%20-%20the%20river%20Wikipedia",
+              "Google" -> "https://www.google.com/search?q=Wikipedia+bruce+springsteen+-+the+river",
+              "Lucky" -> "lucky/redirect/Wikipedia%20bruce%20springsteen%20-%20the%20river",
             ),
           ),
           "timestamp" -> "17/10",

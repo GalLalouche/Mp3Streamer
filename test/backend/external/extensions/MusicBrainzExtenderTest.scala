@@ -25,8 +25,8 @@ class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
         "&edit-artist.url.1.text=last.fm&edit-artist.url.1.link_type_id=840"
       result shouldReturn Seq[LinkExtension[Artist]](
         LinkExtension("edit", Url.parse("music.brainz/edit?" + preseededEdit)),
-        LinkExtension("Google", Url.parse("https://www.google.com/search?q=foobar+MusicBrainz")),
-        LinkExtension("Lucky", Url.parse("lucky/redirect/foobar MusicBrainz")),
+        LinkExtension("Google", Url.parse("https://www.google.com/search?q=MusicBrainz+foobar")),
+        LinkExtension("Lucky", Url.parse("lucky/redirect/MusicBrainz foobar")),
       )
     }
     "Album" in {

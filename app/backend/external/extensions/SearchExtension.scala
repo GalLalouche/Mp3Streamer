@@ -8,7 +8,7 @@ import common.Urls
 
 private[external] object SearchExtension {
   def apply[R <: Reconcilable](h: Host, r: R): ExtendedLink[R] = {
-    val query = s"${r.normalize} ${h.name}"
+    val query = s"${h.name} ${r.normalize}"
     ExtendedLink(
       Url.parse("javascript:void(0)"),
       h,
