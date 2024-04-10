@@ -17,6 +17,7 @@ body {
   display: inline-block;
   vertical-align: middle;
 }
+
 .playlist-item-poster {
   width: 3%;
   padding-right: 5px;
@@ -47,24 +48,28 @@ span.jp-playlist-item {
   left: 1320px;
   float: left;
 }
+
 #last_album {
   position: absolute;
   left: 800px;
   float: right;
   margin-top: 5px;
 }
+
 #search {
   position: absolute;
   left: 800px;
   float: right;
   margin-top: 30px;
 }
+
 #search-results {
   width: 400px
 }
+
 .search-result {
   white-space: nowrap;
-  text-overflow:ellipsis;
+  text-overflow: ellipsis;
   overflow: hidden;
 }
 
@@ -79,6 +84,7 @@ span.jp-playlist-item {
 #score select {
   float: right;
 }
+
 #score > div {
   overflow: hidden;
 }
@@ -88,11 +94,13 @@ span.jp-playlist-item {
   left: 1300px;
   float: right;
 }
+
 #lyric-box {
   height: 770px;
   overflow-y: scroll;
   direction: ltr;
 }
+
 #lyric-contents {
   margin-right: 10px;
 }
@@ -112,25 +120,34 @@ span.jp-playlist-item {
 .jp-metadata {
   color: #666;
 }
+
 .jp-title {
   font-size: 16px;
 }
+
 .jp-playlist-current .jp-title {
   color: #0d88c1;
 }
+
 .jp-playlist-current div a {
   font-size: 20px;
   margin-top: -4px;
 }
+
 .jp-artist {
   color: #666;
   font-weight: bold;
 }
+
 .jp-list-duration {
   color: #666;
   display: inline-block;
   vertical-align: bottom;
   width: 65px;
+}
+
+.mac .jp-list-duration {
+  width: 76px;
 }
 
 div.jp-controls-holder {
@@ -150,6 +167,7 @@ div.jp-interface {
   padding-left: 1em;
   margin-bottom: 5px;
 }
+
 .external-recon-id {
   margin-bottom: 1px;
 }
@@ -157,17 +175,20 @@ div.jp-interface {
 #new-albums {
   width: 400px;
 }
+
 #new-albums ul {
   margin: 0;
 }
 
 .jp-mute,
 .jp-unmute {
-    left: 0;
+  left: 0;
 }
+
 .jp-volume-max {
-    left: 134px;
+  left: 134px;
 }
+
 .jp-volume-bar {
   top: 17px;
   left: 22px;

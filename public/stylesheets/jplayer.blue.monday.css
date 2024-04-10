@@ -492,6 +492,10 @@ div.jp-type-playlist div.jp-playlist a.jp-playlist-item-remove {
     color: #666;
 }
 
+.mac div.jp-type-playlist div.jp-playlist a.jp-playlist-item-remove {
+    margin-right: 8px;
+}
+
 div.jp-type-playlist div.jp-playlist a.jp-playlist-item-remove:hover {
     color: #0d88c1;
 }
