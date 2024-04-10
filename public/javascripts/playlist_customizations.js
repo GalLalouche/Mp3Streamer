@@ -76,8 +76,8 @@ $(function() {
     return `<span class='${this.options.playlistOptions.itemClass}' tabindex='1'>
               <span class="width-limited-playlist-span">
                 <span class="jp-title">${media.title}</span> <span class="jp-metadata">${metadata}</span>
-              </span>
-              <span class="jp-list-duration">, ${media.duration.timeFormat()})</span>
+              </span><!--
+              --><span class="jp-list-duration">, ${media.duration.timeFormat()})</span>
             </span>`
   }
 })
