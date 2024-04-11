@@ -17,6 +17,7 @@ import scalaz.Id.Id
 import common.io.FileRef
 import common.rich.RichFuture.richFuture
 import common.rich.RichT.richT
+import common.rich.primitives.RichBoolean.richBoolean
 
 /**
  * Works by first loading all entries from storage and caching them inside a map. Useful for
@@ -72,7 +73,10 @@ private class CachedModelScorerImpl @Inject() (
 
   private def toOption[A](fileRef: FileRef, subject: String)(t: Try[A]): Option[A] = t match {
     case Failure(exception) =>
-      logger.debug(s"Could not parse <$subject> from <$fileRef> because: <${exception.getMessage}>")
+      if (fileRef.path.contains("Classical").isFalse)
+        logger.debug(
+          s"Could not parse <$subject> from <$fileRef> because: <${exception.getMessage}>",
+        )
       None
     case Success(value) => Some(value)
   }
