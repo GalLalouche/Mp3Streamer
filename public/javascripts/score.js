@@ -1,14 +1,16 @@
 $(function() {
   const fieldset = $("#score")
+
   function clearScores() {
     fieldset.empty()
     fieldset.append($("<div>Waiting for score...<\div>"))
   }
+
   function updateScore(score) {
     function scoreMenu(title) {
       const result = $("<select>")
       const normalizedTitle = title.toLowerCase()
-      for (const s of ["Default", "Crappy", "Meh", "Okay", "Good", "Great", "Amazing", "Classic"]) {
+      for (const s of ["Default", "Crappy", "Meh", "Okay", "Good", "Great", "Amazing"]) {
         const option = elem("option", s)
         if (s === score[normalizedTitle])
           option.attr("selected", "selected")
@@ -17,6 +19,7 @@ $(function() {
       result.attr('source', normalizedTitle)
       return $("<div>").append(span(`${title}`)).append(result)
     }
+
     fieldset.empty()
     fieldset
         .append(elem("legend", score.score ? `${score.score} (from ${score.source})` : "No score"))
@@ -24,6 +27,7 @@ $(function() {
         .append(scoreMenu("Album"))
         .append(scoreMenu("Artist"))
   }
+
   Score.show = function(song) {
     clearScores()
     $.get("score/" + song.file, score => updateScore(score))
