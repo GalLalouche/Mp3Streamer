@@ -33,7 +33,7 @@ private class DuckDuckgoFetcher @Inject() (it: InternetTalker, decoder: UrlDecod
 }
 
 private object DuckDuckgoFetcher {
-  private val QueryPrefix = "https://duckduckgo.com/?q=\\!"
+  private val QueryPrefix = "https://duckduckgo.com/?q=\\"
   private val UrlPrefix = "0; url=/l/?uddg="
   private val RutPrefix = "&rut"
 }
