@@ -41,13 +41,15 @@ class StringFixer @Inject() (logger: Logger) extends (String => String) {
       if (isExemptLanguage(lang)) {
         logger.verbose(s"Could not asciify <$s>")
         s
-      } else
+      } else {
+        logger.verbose(s"Language <$lang> is not exempt")
         throw e
+      }
   }
   // TODO reuse this for Hebrew check as well?
   private def isExemptLanguage(lang: String) =
     // Japanese and Chinese. Life is too short to start asciing those.
-    lang == "ja" || lang.startsWith("ch") || lang.startsWith("zh")
+    lang == "ja" || lang.startsWith("ch") || lang.startsWith("zh") || lang == "ko"
 
   override def apply(s: String): String = {
     val trimmed = s.replaceAll(AllSpaces, " ").trim

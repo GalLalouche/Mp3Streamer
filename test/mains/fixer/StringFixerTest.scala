@@ -122,5 +122,6 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
   "Asian languages" in {
     verifyEmptyFix("センチメートル")
     verifyEmptyFix("アン")
+    verifyEmptyFix("한국")
   }
 }
