@@ -7,6 +7,7 @@ import mains.fixer.PythonLanguageDetector.Encoding
 
 import scala.io.Source
 
+import common.rich.RichInputStream.richInputStream
 import common.rich.RichT.richT
 import common.rich.primitives.RichBoolean.richBoolean
 
@@ -29,14 +30,14 @@ private class PythonLanguageDetector private {
       Source.fromInputStream(process.getErrorStream).getLines().mkString("\n"),
   )
 
-  private val process: Process =
+  private val process: Process = {
+    val tempFile = File.createTempFile("language_detector", ".py").<|(_.deleteOnExit())
+    getClass.getResourceAsStream("language_detector.py").writeTo(tempFile)
     new ProcessBuilder()
-      .command(
-        "python",
-        new File(getClass.getResource("language_detector.py").toURI).getAbsolutePath,
-      )
+      .command("python", tempFile.getAbsolutePath)
       .<|(_.environment().put("PYTHONIOENCODING", Encoding.toString))
       .start()
+  }
 }
 
 private object PythonLanguageDetector {
