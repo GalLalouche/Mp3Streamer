@@ -2,6 +2,8 @@ package mains.splitter
 
 import java.io.File
 
+import scala.sys.process.Process
+
 import common.rich.path.RichFile._
 
 private object Mp3SpltSplitter extends CueSplitter {
@@ -9,19 +11,17 @@ private object Mp3SpltSplitter extends CueSplitter {
 
   override def apply(cueFile: File, flacFile: File) = {
     val output = cueFile.parent.addSubDir("convert").clear()
-    sys.process
-      .Process(
-        Vector(
-          """C:\Program Files (x86)\mp3splt\mp3splt.exe""",
-          "-c",
-          cueFile.getAbsolutePath,
-          "-d",
-          output.path,
-          flacFile.path,
-        ),
-        Mp3SpltPath,
-      )
-      .!
+    Process(
+      Vector(
+        """C:\Program Files (x86)\mp3splt\mp3splt.exe""",
+        "-c",
+        cueFile.getAbsolutePath,
+        "-d",
+        output.path,
+        flacFile.path,
+      ),
+      Mp3SpltPath,
+    ).!
     output
   }
 }

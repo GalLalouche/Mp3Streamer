@@ -29,7 +29,6 @@ case class TestModuleConfiguration(
       PartialFunction.empty,
     private val _root: MemoryRoot = new MemoryRoot,
 ) {
-
   private def getRequest(u: Url): WSRequest = {
     val partialRequest: Url => WSRequest =
       if (_urlToBytesMapper.isDefinedAt(u))

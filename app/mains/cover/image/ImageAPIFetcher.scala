@@ -10,13 +10,12 @@ import scala.concurrent.Future
 import common.io.google.GoogleSearch
 
 private[cover] class ImageAPIFetcher @Inject() (googleSearch: GoogleSearch) {
-  def apply(terms: String, pageCount: Int): Future[JsObject] =
-    googleSearch(
-      terms,
-      resultsPerQuery = ResultsPerQuery,
-      "searchType" -> "image",
-      "start" -> (pageCount * ResultsPerQuery + 1).toString,
-    )
+  def apply(terms: String, pageCount: Int): Future[JsObject] = googleSearch(
+    terms,
+    resultsPerQuery = ResultsPerQuery,
+    "searchType" -> "image",
+    "start" -> (pageCount * ResultsPerQuery + 1).toString,
+  )
 }
 
 private object ImageAPIFetcher {

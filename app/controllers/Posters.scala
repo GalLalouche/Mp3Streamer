@@ -9,7 +9,5 @@ import scala.concurrent.ExecutionContext
 class Posters @Inject() (ec: ExecutionContext, $ : PostersFormatter) extends InjectedController {
   private implicit val iec: ExecutionContext = ec
 
-  def image(path: String) = Action {
-    Ok.sendFile($.image(path))
-  }
+  def image(path: String) = Action(Ok.sendFile($.image(path)))
 }
