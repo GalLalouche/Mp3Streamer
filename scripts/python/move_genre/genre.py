@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enum import Enum, auto
 
+
 class Genre(Enum):
   # Rock
   ADULT_CONTEMPORARY = auto()
@@ -15,6 +16,7 @@ class Genre(Enum):
   CLASSIC_ROCK = auto()
   CLASSICAL_PROG = auto()
   CROSS_OVER_PROG = auto()
+  PROGRESSIVE_HARD_ROCK = auto()
   DARK_CABARET = auto()
   DARK_FOLK = auto()
   EMO = auto()
@@ -189,6 +191,8 @@ class Genre(Enum):
       return "Rock n' Roll"
     if self == Genre.ROCK_PROGRESSIVO_ITALIANO:
       return "Rock Progressivo Italiano"
+    if self == Genre.PROGRESSIVE_HARD_ROCK:
+      return "Progressive Hard Rock"
     if self == Genre.SHOEGAZE:
       return "Shoegaze"
     if self == Genre.SOFT_ROCK:
