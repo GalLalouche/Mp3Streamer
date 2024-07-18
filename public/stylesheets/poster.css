@@ -2,14 +2,22 @@
   min-width: 125px;
   height: 100%;
 }
+
+.poster-buttons input {
+  height: 24.5%;
+  width: 100%;
+}
+
 .poster-buttons button {
   height: 24.5%;
   width: 100%;
 }
+
 .poster-buttons:nth-child(n+3) button {
   height: 24.5%;
   width: 100%;
 }
+
 #jp_poster_0 {
   width: 500px;
   height: 500px;

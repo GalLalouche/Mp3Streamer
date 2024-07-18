@@ -3,92 +3,93 @@
 # ~~~~
 
 # Home page
-GET         /                                          controllers.Application.index()
-GET         /mute                                      controllers.Application.index()
-GET         /mp3                                       controllers.Application.index()
-GET         /sjs                                       controllers.Application.sjs()
-GET         /client/*file                              controllers.Application.sjsClient(file)
+GET           /                                          controllers.Application.index()
+GET           /mute                                      controllers.Application.index()
+GET           /mp3                                       controllers.Application.index()
+GET           /sjs                                       controllers.Application.sjs()
+GET           /client/*file                              controllers.Application.sjsClient(file)
 # To debug a particular song, use addSong html parameter, e.g., mute?addSong=pathToSong
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                              controllers.MyAssets.asset(file)
-GET         /js/*file                                  controllers.MyAssets.javascript(file)
+GET           /assets/*file                              controllers.MyAssets.asset(file)
+GET           /js/*file                                  controllers.MyAssets.javascript(file)
 
 # SongController! (Lazy, because fetching all the songs takes a while)
-GET         /data/randomSong                           songs.SongController.randomSong
-GET         /data/randomSong/mp3                       songs.SongController.randomMp3Song
-GET         /data/randomSong/flac                      songs.SongController.randomFlacSong
-GET         /data/albums/*path                         songs.SongController.album(path)
-GET         /data/discs/:disc/*path                    songs.SongController.discNumber(path, disc)
-GET         /data/songs/*path                          songs.SongController.song(path)
-GET         /data/nextSong                             songs.SongController.nextSong(path)
+GET           /data/randomSong                           songs.SongController.randomSong
+GET           /data/randomSong/mp3                       songs.SongController.randomMp3Song
+GET           /data/randomSong/flac                      songs.SongController.randomFlacSong
+GET           /data/albums/*path                         songs.SongController.album(path)
+GET           /data/discs/:disc/*path                    songs.SongController.discNumber(path, disc)
+GET           /data/songs/*path                          songs.SongController.song(path)
+GET           /data/nextSong                             songs.SongController.nextSong(path)
 
 # Streamer
-GET         /stream/download/*path                     controllers.StreamerController.download(path)
+GET           /stream/download/*path                     controllers.StreamerController.download(path)
 # "Temporarily" (07/05/22) disabled, because IntelliJ and Play don't want to play nicely.
 #GET         /stream/play/*path                       controllers.Streamer.playSong(path)
 
 # Posters
-GET         /posters/*path                             controllers.Posters.image(path)
+GET           /posters/*path                             controllers.Posters.image(path)
 
 # Lyrics
-GET         /lyrics/*path                              backend.lyrics.LyricsController.get(path)
-POST        /lyrics/push/*path                         backend.lyrics.LyricsController.push(path)
-POST        /lyrics/instrumental/song/*path            backend.lyrics.LyricsController.setInstrumentalSong(path)
-POST        /lyrics/instrumental/artist/*path          backend.lyrics.LyricsController.setInstrumentalArtist(path)
+GET           /lyrics/*path                              backend.lyrics.LyricsController.get(path)
+POST          /lyrics/push/*path                         backend.lyrics.LyricsController.push(path)
+POST          /lyrics/instrumental/song/*path            backend.lyrics.LyricsController.setInstrumentalSong(path)
+POST          /lyrics/instrumental/artist/*path          backend.lyrics.LyricsController.setInstrumentalArtist(path)
 
 # External
-GET         /external/refresh/artist/*path             backend.external.ExternalController.refreshArtist(path)
-GET         /external/refresh/album/*path              backend.external.ExternalController.refreshAlbum(path)
-POST        /external/recons/*path                     backend.external.ExternalController.updateRecon(path)
-GET         /external/*path                            backend.external.ExternalController.get(path)
+GET           /external/refresh/artist/*path             backend.external.ExternalController.refreshArtist(path)
+GET           /external/refresh/album/*path              backend.external.ExternalController.refreshAlbum(path)
+POST          /external/recons/*path                     backend.external.ExternalController.updateRecon(path)
+GET           /external/*path                            backend.external.ExternalController.get(path)
 
 # Searcher
-GET         /search/*path                              backend.search.SearchController.search(path)
+GET           /search/*path                              backend.search.SearchController.search(path)
 
 # Web sockets
-GET         /ws/console                                controllers.websockets.ConsoleSocket.accept
+GET           /ws/console                                controllers.websockets.ConsoleSocket.accept
 
 # Playlist
-GET         /playlist/queue                            playlist.PlaylistController.getQueue
-POST        /playlist/queue                            playlist.PlaylistController.setQueue()
-GET         /playlist/state                            playlist.PlaylistController.getState
-POST        /playlist/state                            playlist.PlaylistController.setState()
+GET           /playlist/                                 playlist.PlaylistController.getIds
+GET           /playlist/:id                              playlist.PlaylistController.get(id)
+PUT           /playlist/:id                              playlist.PlaylistController.set(id)
+DELETE        /playlist/:id                              playlist.PlaylistController.remove(id)
 
 # Index
-GET         /index/index                               backend.search.IndexController.index()
+GET           /index/index                               backend.search.IndexController.index()
 
 # Albums (Lazy, because ExistingAlbums takes a while to load)
-GET         /new_albums/index.html                     @backend.albums.AlbumsController.index
-GET         /new_albums/albums/                        @backend.albums.AlbumsController.albums
-GET         /new_albums/albums/*artist                 @backend.albums.AlbumsController.forArtist(artist)
-PUT         /new_albums/artist/remove/*artist          @backend.albums.AlbumsController.removeArtist(artist)
-PUT         /new_albums/artist/ignore/*artist          @backend.albums.AlbumsController.ignoreArtist(artist)
-PUT         /new_albums/artist/unignore/*artist        @backend.albums.AlbumsController.unignoreArtist(artist)
-PUT         /new_albums/album/remove                   @backend.albums.AlbumsController.removeAlbum
-PUT         /new_albums/album/ignore                   @backend.albums.AlbumsController.ignoreAlbum
+GET           /new_albums/index.html                     @backend.albums.AlbumsController.index
+GET           /new_albums/albums/                        @backend.albums.AlbumsController.albums
+GET           /new_albums/albums/*artist                 @backend.albums.AlbumsController.forArtist(artist)
+PUT           /new_albums/artist/remove/*artist          @backend.albums.AlbumsController.removeArtist(artist)
+PUT           /new_albums/artist/ignore/*artist          @backend.albums.AlbumsController.ignoreArtist(artist)
+PUT           /new_albums/artist/unignore/*artist        @backend.albums.AlbumsController.unignoreArtist(artist)
+PUT           /new_albums/album/remove                   @backend.albums.AlbumsController.removeAlbum
+PUT           /new_albums/album/ignore                   @backend.albums.AlbumsController.ignoreAlbum
 
 # Recent
-GET         /recent/albums/                            backend.recent.RecentController.recent(amount: Int = 10)
-GET         /recent/albums/:amount                     backend.recent.RecentController.recent(amount: Int)
-GET         /recent/double/                            backend.recent.RecentController.double(amount: Int = 10)
-GET         /recent/double/:amount                     backend.recent.RecentController.double(amount: Int)
-GET         /recent/last                               backend.recent.RecentController.last
-GET         /recent/since/:duration                    backend.recent.RecentController.since(duration)
+GET           /recent/albums/                            backend.recent.RecentController.recent(amount: Int = 10)
+GET           /recent/albums/:amount                     backend.recent.RecentController.recent(amount: Int)
+GET           /recent/double/                            backend.recent.RecentController.double(amount: Int = 10)
+GET           /recent/double/:amount                     backend.recent.RecentController.double(amount: Int)
+GET           /recent/last                               backend.recent.RecentController.last
+GET           /recent/since/:duration                    backend.recent.RecentController.since(duration)
 # Not realy a GET, but this makes it easier to invoke from the browser
-GET         /recent/last/debug                         backend.recent.RecentController.debugLast()
-GET         /ws/last_album                             backend.recent.RecentController.accept
+GET           /recent/last/debug                         backend.recent.RecentController.debugLast()
+GET           /ws/last_album                             backend.recent.RecentController.accept
 
 # Downloader
 #GET         /download/*path                          backend.pkg.DownloaderController.download(path)
 
 # Scorer
-GET         /score/*path                               backend.scorer.ScorerController.getScore(path)
+GET           /score/*path                               backend.scorer.ScorerController.getScore(path)
+
 # Doesn't make a whole of sense from a REST stand point, but it's easier than fiddling with
 # HTTP parameters combined with a suffix path.
-PUT         /score/song/:score/*path                   backend.scorer.ScorerController.updateSongScore(path, score)
-PUT         /score/album/:score/*path                  backend.scorer.ScorerController.updateAlbumScore(path, score)
-PUT         /score/artist/:score/*path                 backend.scorer.ScorerController.updateArtistScore(path, score)
+PUT           /score/song/:score/*path                   backend.scorer.ScorerController.updateSongScore(path, score)
+PUT           /score/album/:score/*path                  backend.scorer.ScorerController.updateAlbumScore(path, score)
+PUT           /score/artist/:score/*path                 backend.scorer.ScorerController.updateArtistScore(path, score)
 
-GET         /lucky/search/*query                       backend.lucky.LuckyController.search(query)
-GET         /lucky/redirect/*query                     backend.lucky.LuckyController.redirect(query)
+GET           /lucky/search/*query                       backend.lucky.LuckyController.search(query)
+GET           /lucky/redirect/*query                     backend.lucky.LuckyController.redirect(query)

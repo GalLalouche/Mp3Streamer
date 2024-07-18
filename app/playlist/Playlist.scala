@@ -9,7 +9,7 @@ import scala.concurrent.duration.Duration
 
 import common.json.ToJsonableOps._
 
-private case class PlaylistState(songs: Seq[Song], currentIndex: Int, currentDuration: Duration) {
+private case class Playlist(songs: Seq[Song], currentIndex: Int, currentDuration: Duration) {
   require(
     currentIndex < songs.length && currentIndex >= 0,
     s"currentIndex <$currentIndex> out of range (0-${songs.length})",
@@ -17,22 +17,20 @@ private case class PlaylistState(songs: Seq[Song], currentIndex: Int, currentDur
   require(currentDuration != null)
 }
 
-private object PlaylistState {
+private object Playlist {
   import play.api.libs.json.{JsObject, Json}
 
   import common.json.Jsonable
   import common.json.RichJson._
 
-  implicit def PlaylistStateJsonable(implicit
-      songJsonable: Jsonable[Song],
-  ): Jsonable[PlaylistState] =
-    new Jsonable[PlaylistState] {
-      override def jsonify(ps: PlaylistState): JsObject = Json.obj(
+  implicit def PlaylistStateJsonable(implicit songJsonable: Jsonable[Song]): Jsonable[Playlist] =
+    new Jsonable[Playlist] {
+      override def jsonify(ps: Playlist): JsObject = Json.obj(
         "songs" -> ps.songs.jsonify,
         "duration" -> ps.currentDuration.toSeconds,
         "currentIndex" -> ps.currentIndex,
       )
-      override def parse(json: JsValue): PlaylistState = PlaylistState(
+      override def parse(json: JsValue): Playlist = Playlist(
         songs = json.value("songs").parse[Seq[Song]],
         currentIndex = json.int("currentIndex"),
         currentDuration = Duration.apply(json.int("duration"), TimeUnit.SECONDS),

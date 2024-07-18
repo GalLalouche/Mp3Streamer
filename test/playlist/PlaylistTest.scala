@@ -9,16 +9,16 @@ import scala.concurrent.duration.Duration
 
 import common.JsonableSpecs
 
-class PlaylistStateTest extends JsonableSpecs {
-  import PlaylistState.PlaylistStateJsonable
+class PlaylistTest extends JsonableSpecs {
+  import Playlist.PlaylistStateJsonable
   import models.ModelJsonable.SongJsonifier
 
-  private implicit val arbPlaylistQueue: Arbitrary[PlaylistState] = Arbitrary(for {
+  private implicit val arbPlaylistQueue: Arbitrary[Playlist] = Arbitrary(for {
     numberOfSongs <- Gen.choose(1, 100)
     songs <- Gen.listOfN(numberOfSongs, ArbitraryModels.arbSong)
     currentIndex <- Gen.choose(0, numberOfSongs - 1)
     currentDuration <- Gen.choose(0, 1000).map(Duration(_, TimeUnit.SECONDS))
-  } yield PlaylistState(songs, currentIndex, currentDuration))
+  } yield Playlist(songs, currentIndex, currentDuration))
 
-  propJsonTest[PlaylistState]()
+  propJsonTest[Playlist]()
 }

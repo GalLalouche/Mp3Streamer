@@ -50,6 +50,7 @@ class JsonableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
     workingDir.getFile(jsonFileName).map(_.readAll |> Json.parse)
   /** Loads the previously saved entries, or returns an empty list. */
   def loadArray[T: Jsonable: Manifest]: Seq[T] = load.mapHeadOrElse(_.parse[Seq[T]], Nil)
+  def loadObjectOpt[T: Jsonable: Manifest]: Option[T] = load.map(_.parse[T])
   /** Loads the previously saved entry, or throws an exception if no file has been found */
   def loadObject[T: Jsonable: Manifest]: T =
     load.getOrThrow(new FileNotFoundException(s"Couldn't find file for type <$manifest>")).parse[T]
