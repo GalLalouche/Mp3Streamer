@@ -11,6 +11,7 @@ import common.json.{JsonableOverrider, OJsonable, OJsonableOverrider}
 import common.json.RichJson._
 import common.rich.RichT._
 
+// TODO document the difference between this implementation Models.Jsonable
 class ControllerSongJsonifier @Inject() (urlPathUtils: UrlPathUtils) {
   implicit val songJsonable: OJsonable[Song] =
     JsonableOverrider[Song](new OJsonableOverrider[Song] {
