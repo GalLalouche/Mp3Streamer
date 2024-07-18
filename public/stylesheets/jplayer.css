@@ -78,7 +78,11 @@ span.jp-playlist-item {
   left: 800px;
   top: 300px;
   float: right;
-  width: 300px;
+  width: 350px;
+}
+
+#score {
+  width: 180px;
 }
 
 #score select {
