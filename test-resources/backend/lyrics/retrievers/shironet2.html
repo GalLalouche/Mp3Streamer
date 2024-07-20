@@ -1,0 +1,1926 @@
+<!--  jsp/performers/perf -->
+<!DOCTYPE html>
+<html xmlns:fb="http://ogp.me/ns/fb#">
+<head><script>/*! For license information please see capture.bundle.js.LICENSE.txt */
+(function(){var __webpack_modules__={752:function(t){t.exports={hasLocalStorage:function(){return"object"==typeof window&&"object"==typeof window.localStorage},KEY_ENABLE_AGENT:"eudaEnableAgent",KEY_AGENT_VERSION:"eudaAgentVersion",KEY_SYNC_LOAD:"eudaSyncLoad",KEY_FORCE_AGENT:"eudaForce",KEY_CLEAR_TEXT:"eudaClearText"}},6624:function(t,e,n){var r=n(6624),i;i=function(){var t,e,i;return function t(e,n,r){function i(s,a){if(!n[s]){if(!e[s]){var c="function"==typeof _dereq_&&_dereq_;if(!a&&c)return c(s,!0);if(o)return o(s,!0);var l=new Error("Cannot find module '"+s+"'");throw l.code="MODULE_NOT_FOUND",l}var u=n[s]={exports:{}};e[s][0].call(u.exports,(function(t){var n=e[s][1][t];return i(n||t)}),u,u.exports,t,e,n,r)}return n[s].exports}for(var o="function"==typeof _dereq_&&_dereq_,s=0;s<r.length;s++)i(r[s]);return i}({1:[function(t,e,n){"use strict";e.exports=function(t){var e=t._SomePromiseArray;function n(t){var n=new e(t),r=n.promise();return n.setHowMany(1),n.setUnwrap(),n.init(),r}t.any=function(t){return n(t)},t.prototype.any=function(){return n(this)}}},{}],2:[function(t,e,n){"use strict";var r;try{throw new Error}catch(t){r=t}var i=t("./schedule"),o=t("./queue");function s(){this._customScheduler=!1,this._isTickUsed=!1,this._lateQueue=new o(16),this._normalQueue=new o(16),this._haveDrainedQueues=!1;var t=this;this.drainQueues=function(){t._drainQueues()},this._schedule=i}function a(t){for(;t.length()>0;)c(t)}function c(t){var e=t.shift();if("function"!=typeof e)e._settlePromises();else{var n=t.shift(),r=t.shift();e.call(n,r)}}s.prototype.setScheduler=function(t){var e=this._schedule;return this._schedule=t,this._customScheduler=!0,e},s.prototype.hasCustomScheduler=function(){return this._customScheduler},s.prototype.haveItemsQueued=function(){return this._isTickUsed||this._haveDrainedQueues},s.prototype.fatalError=function(t,e){e?(process.stderr.write("Fatal "+(t instanceof Error?t.stack:t)+"\n"),process.exit(2)):this.throwLater(t)},s.prototype.throwLater=function(t,e){if(1===arguments.length&&(e=t,t=function(){throw e}),"undefined"!=typeof setTimeout)setTimeout((function(){t(e)}),0);else try{this._schedule((function(){t(e)}))}catch(t){throw new Error("No async scheduler available\n\n    See http://goo.gl/MqrFmX\n")}},s.prototype.invokeLater=function(t,e,n){this._lateQueue.push(t,e,n),this._queueTick()},s.prototype.invoke=function(t,e,n){this._normalQueue.push(t,e,n),this._queueTick()},s.prototype.settlePromises=function(t){this._normalQueue._pushOne(t),this._queueTick()},s.prototype._drainQueues=function(){a(this._normalQueue),this._reset(),this._haveDrainedQueues=!0,a(this._lateQueue)},s.prototype._queueTick=function(){this._isTickUsed||(this._isTickUsed=!0,this._schedule(this.drainQueues))},s.prototype._reset=function(){this._isTickUsed=!1},e.exports=s,e.exports.firstLineError=r},{"./queue":26,"./schedule":29}],3:[function(t,e,n){"use strict";e.exports=function(t,e,n,r){var i=!1,o=function(t,e){this._reject(e)},s=function(t,e){e.promiseRejectionQueued=!0,e.bindingPromise._then(o,o,null,this,t)},a=function(t,e){0==(50397184&this._bitField)&&this._resolveCallback(e.target)},c=function(t,e){e.promiseRejectionQueued||this._reject(t)};t.prototype.bind=function(o){i||(i=!0,t.prototype._propagateFrom=r.propagateFromFunction(),t.prototype._boundValue=r.boundValueFunction());var l=n(o),u=new t(e);u._propagateFrom(this,1);var p=this._target();if(u._setBoundTo(l),l instanceof t){var h={promiseRejectionQueued:!1,promise:u,target:p,bindingPromise:l};p._then(e,s,void 0,u,h),l._then(a,c,void 0,u,h),u._setOnCancel(l)}else u._resolveCallback(p);return u},t.prototype._setBoundTo=function(t){void 0!==t?(this._bitField=2097152|this._bitField,this._boundTo=t):this._bitField=-2097153&this._bitField},t.prototype._isBound=function(){return 2097152==(2097152&this._bitField)},t.bind=function(e,n){return t.resolve(n).bind(e)}}},{}],4:[function(t,e,n){"use strict";var i;void 0!==r&&(i=r);var o=t("./promise")();o.noConflict=function(){try{r===o&&(r=i)}catch(t){}return o},e.exports=o},{"./promise":22}],5:[function(t,e,n){"use strict";var r=Object.create;if(r){var i=r(null),o=r(null);i[" size"]=o[" size"]=0}e.exports=function(e){var n=t("./util"),r=n.canEvaluate;function i(t){var r=function(t,r){var i;if(null!=t&&(i=t[r]),"function"!=typeof i){var o="Object "+n.classString(t)+" has no method '"+n.toString(r)+"'";throw new e.TypeError(o)}return i}(t,this.pop());return r.apply(t,this)}function o(t){return t[this]}function s(t){var e=+this;return e<0&&(e=Math.max(0,e+t.length)),t[e]}n.isIdentifier,e.prototype.call=function(t){var e=[].slice.call(arguments,1);return e.push(t),this._then(i,void 0,void 0,e,void 0)},e.prototype.get=function(t){var e;if("number"==typeof t)e=s;else if(r){var n=(void 0)(t);e=null!==n?n:o}else e=o;return this._then(e,void 0,void 0,t,void 0)}}},{"./util":36}],6:[function(t,e,n){"use strict";e.exports=function(e,n,r,i){var o=t("./util"),s=o.tryCatch,a=o.errorObj,c=e._async;e.prototype.break=e.prototype.cancel=function(){if(!i.cancellation())return this._warn("cancellation is disabled");for(var t=this,e=t;t._isCancellable();){if(!t._cancelBy(e)){e._isFollowing()?e._followee().cancel():e._cancelBranched();break}var n=t._cancellationParent;if(null==n||!n._isCancellable()){t._isFollowing()?t._followee().cancel():t._cancelBranched();break}t._isFollowing()&&t._followee().cancel(),t._setWillBeCancelled(),e=t,t=n}},e.prototype._branchHasCancelled=function(){this._branchesRemainingToCancel--},e.prototype._enoughBranchesHaveCancelled=function(){return void 0===this._branchesRemainingToCancel||this._branchesRemainingToCancel<=0},e.prototype._cancelBy=function(t){return t===this?(this._branchesRemainingToCancel=0,this._invokeOnCancel(),!0):(this._branchHasCancelled(),!!this._enoughBranchesHaveCancelled()&&(this._invokeOnCancel(),!0))},e.prototype._cancelBranched=function(){this._enoughBranchesHaveCancelled()&&this._cancel()},e.prototype._cancel=function(){this._isCancellable()&&(this._setCancelled(),c.invoke(this._cancelPromises,this,void 0))},e.prototype._cancelPromises=function(){this._length()>0&&this._settlePromises()},e.prototype._unsetOnCancel=function(){this._onCancelField=void 0},e.prototype._isCancellable=function(){return this.isPending()&&!this._isCancelled()},e.prototype.isCancellable=function(){return this.isPending()&&!this.isCancelled()},e.prototype._doInvokeOnCancel=function(t,e){if(o.isArray(t))for(var n=0;n<t.length;++n)this._doInvokeOnCancel(t[n],e);else if(void 0!==t)if("function"==typeof t){if(!e){var r=s(t).call(this._boundValue());r===a&&(this._attachExtraTrace(r.e),c.throwLater(r.e))}}else t._resultCancelled(this)},e.prototype._invokeOnCancel=function(){var t=this._onCancel();this._unsetOnCancel(),c.invoke(this._doInvokeOnCancel,this,t)},e.prototype._invokeInternalOnCancel=function(){this._isCancellable()&&(this._doInvokeOnCancel(this._onCancel(),!0),this._unsetOnCancel())},e.prototype._resultCancelled=function(){this.cancel()}}},{"./util":36}],7:[function(t,e,n){"use strict";e.exports=function(e){var n=t("./util"),r=t("./es5").keys,i=n.tryCatch,o=n.errorObj;return function(t,s,a){return function(c){var l=a._boundValue();t:for(var u=0;u<t.length;++u){var p=t[u];if(p===Error||null!=p&&p.prototype instanceof Error){if(c instanceof p)return i(s).call(l,c)}else if("function"==typeof p){var h=i(p).call(l,c);if(h===o)return h;if(h)return i(s).call(l,c)}else if(n.isObject(c)){for(var f=r(p),_=0;_<f.length;++_){var d=f[_];if(p[d]!=c[d])continue t}return i(s).call(l,c)}}return e}}}},{"./es5":13,"./util":36}],8:[function(t,e,n){"use strict";e.exports=function(t){var e=!1,n=[];function r(){this._trace=new r.CapturedTrace(i())}function i(){var t=n.length-1;if(t>=0)return n[t]}return t.prototype._promiseCreated=function(){},t.prototype._pushContext=function(){},t.prototype._popContext=function(){return null},t._peekContext=t.prototype._peekContext=function(){},r.prototype._pushContext=function(){void 0!==this._trace&&(this._trace._promiseCreated=null,n.push(this._trace))},r.prototype._popContext=function(){if(void 0!==this._trace){var t=n.pop(),e=t._promiseCreated;return t._promiseCreated=null,e}return null},r.CapturedTrace=null,r.create=function(){if(e)return new r},r.deactivateLongStackTraces=function(){},r.activateLongStackTraces=function(){var n=t.prototype._pushContext,o=t.prototype._popContext,s=t._peekContext,a=t.prototype._peekContext,c=t.prototype._promiseCreated;r.deactivateLongStackTraces=function(){t.prototype._pushContext=n,t.prototype._popContext=o,t._peekContext=s,t.prototype._peekContext=a,t.prototype._promiseCreated=c,e=!1},e=!0,t.prototype._pushContext=r.prototype._pushContext,t.prototype._popContext=r.prototype._popContext,t._peekContext=t.prototype._peekContext=i,t.prototype._promiseCreated=function(){var t=this._peekContext();t&&null==t._promiseCreated&&(t._promiseCreated=this)}},r}},{}],9:[function(t,e,n){"use strict";e.exports=function(e,n,r,i){var o,s,a,c,l=e._async,u=t("./errors").Warning,p=t("./util"),h=t("./es5"),f=p.canAttachTrace,_=/[\\\/]bluebird[\\\/]js[\\\/](release|debug|instrumented)/,d=/\((?:timers\.js):\d+:\d+\)/,v=/[\/<\(](.+?):(\d+):(\d+)\)?\s*$/,y=null,g=null,m=!1,b=!(0==p.env("BLUEBIRD_DEBUG")),w=!(0==p.env("BLUEBIRD_WARNINGS")||!b&&!p.env("BLUEBIRD_WARNINGS")),C=!(0==p.env("BLUEBIRD_LONG_STACK_TRACES")||!b&&!p.env("BLUEBIRD_LONG_STACK_TRACES")),E=0!=p.env("BLUEBIRD_W_FORGOTTEN_RETURN")&&(w||!!p.env("BLUEBIRD_W_FORGOTTEN_RETURN"));!function(){var t=[];function n(){for(var e=0;e<t.length;++e)t[e]._notifyUnhandledRejection();r()}function r(){t.length=0}c=function(e){t.push(e),setTimeout(n,1)},h.defineProperty(e,"_unhandledRejectionCheck",{value:n}),h.defineProperty(e,"_unhandledRejectionClear",{value:r})}(),e.prototype.suppressUnhandledRejections=function(){var t=this._target();t._bitField=-1048577&t._bitField|524288},e.prototype._ensurePossibleRejectionHandled=function(){0==(524288&this._bitField)&&(this._setRejectionIsUnhandled(),c(this))},e.prototype._notifyUnhandledRejectionIsHandled=function(){K("rejectionHandled",o,void 0,this)},e.prototype._setReturnedNonUndefined=function(){this._bitField=268435456|this._bitField},e.prototype._returnedNonUndefined=function(){return 0!=(268435456&this._bitField)},e.prototype._notifyUnhandledRejection=function(){if(this._isRejectionUnhandled()){var t=this._settledValue();this._setUnhandledRejectionIsNotified(),K("unhandledRejection",s,t,this)}},e.prototype._setUnhandledRejectionIsNotified=function(){this._bitField=262144|this._bitField},e.prototype._unsetUnhandledRejectionIsNotified=function(){this._bitField=-262145&this._bitField},e.prototype._isUnhandledRejectionNotified=function(){return(262144&this._bitField)>0},e.prototype._setRejectionIsUnhandled=function(){this._bitField=1048576|this._bitField},e.prototype._unsetRejectionIsUnhandled=function(){this._bitField=-1048577&this._bitField,this._isUnhandledRejectionNotified()&&(this._unsetUnhandledRejectionIsNotified(),this._notifyUnhandledRejectionIsHandled())},e.prototype._isRejectionUnhandled=function(){return(1048576&this._bitField)>0},e.prototype._warn=function(t,e,n){return q(t,e,n||this)},e.onPossiblyUnhandledRejection=function(t){var n=e._getContext();s=p.contextBind(n,t)},e.onUnhandledRejectionHandled=function(t){var n=e._getContext();o=p.contextBind(n,t)};var j=function(){};e.longStackTraces=function(){if(l.haveItemsQueued()&&!et.longStackTraces)throw new Error("cannot enable long stack traces after promises have been created\n\n    See http://goo.gl/MqrFmX\n");if(!et.longStackTraces&&W()){var t=e.prototype._captureStackTrace,r=e.prototype._attachExtraTrace,i=e.prototype._dereferenceTrace;et.longStackTraces=!0,j=function(){if(l.haveItemsQueued()&&!et.longStackTraces)throw new Error("cannot enable long stack traces after promises have been created\n\n    See http://goo.gl/MqrFmX\n");e.prototype._captureStackTrace=t,e.prototype._attachExtraTrace=r,e.prototype._dereferenceTrace=i,n.deactivateLongStackTraces(),et.longStackTraces=!1},e.prototype._captureStackTrace=D,e.prototype._attachExtraTrace=U,e.prototype._dereferenceTrace=M,n.activateLongStackTraces()}},e.hasLongStackTraces=function(){return et.longStackTraces&&W()};var k={unhandledrejection:{before:function(){var t=p.global.onunhandledrejection;return p.global.onunhandledrejection=null,t},after:function(t){p.global.onunhandledrejection=t}},rejectionhandled:{before:function(){var t=p.global.onrejectionhandled;return p.global.onrejectionhandled=null,t},after:function(t){p.global.onrejectionhandled=t}}},F=function(){var t=function(t,e){if(!t)return!p.global.dispatchEvent(e);var n;try{return n=t.before(),!p.global.dispatchEvent(e)}finally{t.after(n)}};try{if("function"==typeof CustomEvent){var e=new CustomEvent("CustomEvent");return p.global.dispatchEvent(e),function(e,n){e=e.toLowerCase();var r=new CustomEvent(e,{detail:n,cancelable:!0});return h.defineProperty(r,"promise",{value:n.promise}),h.defineProperty(r,"reason",{value:n.reason}),t(k[e],r)}}return"function"==typeof Event?(e=new Event("CustomEvent"),p.global.dispatchEvent(e),function(e,n){e=e.toLowerCase();var r=new Event(e,{cancelable:!0});return r.detail=n,h.defineProperty(r,"promise",{value:n.promise}),h.defineProperty(r,"reason",{value:n.reason}),t(k[e],r)}):((e=document.createEvent("CustomEvent")).initCustomEvent("testingtheevent",!1,!0,{}),p.global.dispatchEvent(e),function(e,n){e=e.toLowerCase();var r=document.createEvent("CustomEvent");return r.initCustomEvent(e,!1,!0,n),t(k[e],r)})}catch(t){}return function(){return!1}}(),T=p.isNode?function(){return process.emit.apply(process,arguments)}:p.global?function(t){var e="on"+t.toLowerCase(),n=p.global[e];return!!n&&(n.apply(p.global,[].slice.call(arguments,1)),!0)}:function(){return!1};function x(t,e){return{promise:e}}var S={promiseCreated:x,promiseFulfilled:x,promiseRejected:x,promiseResolved:x,promiseCancelled:x,promiseChained:function(t,e,n){return{promise:e,child:n}},warning:function(t,e){return{warning:e}},unhandledRejection:function(t,e,n){return{reason:e,promise:n}},rejectionHandled:x},A=function(t){var e=!1;try{e=T.apply(null,arguments)}catch(t){l.throwLater(t),e=!0}var n=!1;try{n=F(t,S[t].apply(null,arguments))}catch(t){l.throwLater(t),n=!0}return n||e};function R(){return!1}function P(t,e,n){var r=this;try{t(e,n,(function(t){if("function"!=typeof t)throw new TypeError("onCancel must be a function, got: "+p.toString(t));r._attachCancellationCallback(t)}))}catch(t){return t}}function O(t){if(!this._isCancellable())return this;var e=this._onCancel();void 0!==e?p.isArray(e)?e.push(t):this._setOnCancel([e,t]):this._setOnCancel(t)}function L(){return this._onCancelField}function N(t){this._onCancelField=t}function V(){this._cancellationParent=void 0,this._onCancelField=void 0}function I(t,e){if(0!=(1&e)){this._cancellationParent=t;var n=t._branchesRemainingToCancel;void 0===n&&(n=0),t._branchesRemainingToCancel=n+1}0!=(2&e)&&t._isBound()&&this._setBoundTo(t._boundTo)}e.config=function(t){if("longStackTraces"in(t=Object(t))&&(t.longStackTraces?e.longStackTraces():!t.longStackTraces&&e.hasLongStackTraces()&&j()),"warnings"in t){var n=t.warnings;et.warnings=!!n,E=et.warnings,p.isObject(n)&&"wForgottenReturn"in n&&(E=!!n.wForgottenReturn)}if("cancellation"in t&&t.cancellation&&!et.cancellation){if(l.haveItemsQueued())throw new Error("cannot enable cancellation after promises are in use");e.prototype._clearCancellationData=V,e.prototype._propagateFrom=I,e.prototype._onCancel=L,e.prototype._setOnCancel=N,e.prototype._attachCancellationCallback=O,e.prototype._execute=P,H=I,et.cancellation=!0}if("monitoring"in t&&(t.monitoring&&!et.monitoring?(et.monitoring=!0,e.prototype._fireEvent=A):!t.monitoring&&et.monitoring&&(et.monitoring=!1,e.prototype._fireEvent=R)),"asyncHooks"in t&&p.nodeSupportsAsyncResource){var o=et.asyncHooks,s=!!t.asyncHooks;o!==s&&(et.asyncHooks=s,s?r():i())}return e},e.prototype._fireEvent=R,e.prototype._execute=function(t,e,n){try{t(e,n)}catch(t){return t}},e.prototype._onCancel=function(){},e.prototype._setOnCancel=function(t){},e.prototype._attachCancellationCallback=function(t){},e.prototype._captureStackTrace=function(){},e.prototype._attachExtraTrace=function(){},e.prototype._dereferenceTrace=function(){},e.prototype._clearCancellationData=function(){},e.prototype._propagateFrom=function(t,e){};var H=function(t,e){0!=(2&e)&&t._isBound()&&this._setBoundTo(t._boundTo)};function B(){var t=this._boundTo;return void 0!==t&&t instanceof e?t.isFulfilled()?t.value():void 0:t}function D(){this._trace=new Z(this._peekContext())}function U(t,e){if(f(t)){var n=this._trace;if(void 0!==n&&e&&(n=n._parent),void 0!==n)n.attachExtraTrace(t);else if(!t.__stackCleaned__){var r=$(t);p.notEnumerableProp(t,"stack",r.message+"\n"+r.stack.join("\n")),p.notEnumerableProp(t,"__stackCleaned__",!0)}}}function M(){this._trace=void 0}function q(t,n,r){if(et.warnings){var i,o=new u(t);if(n)r._attachExtraTrace(o);else if(et.longStackTraces&&(i=e._peekContext()))i.attachExtraTrace(o);else{var s=$(o);o.stack=s.message+"\n"+s.stack.join("\n")}A("warning",o)||Y(o,"",!0)}}function G(t){for(var e=[],n=0;n<t.length;++n){var r=t[n],i="    (No stack trace)"===r||y.test(r),o=i&&X(r);i&&!o&&(m&&" "!==r.charAt(0)&&(r="    "+r),e.push(r))}return e}function $(t){var e=t.stack,n=t.toString();return e="string"==typeof e&&e.length>0?function(t){for(var e=t.stack.replace(/\s+$/g,"").split("\n"),n=0;n<e.length;++n){var r=e[n];if("    (No stack trace)"===r||y.test(r))break}return n>0&&"SyntaxError"!=t.name&&(e=e.slice(n)),e}(t):["    (No stack trace)"],{message:n,stack:"SyntaxError"==t.name?e:G(e)}}function Y(t,e,n){if("undefined"!=typeof console){var r;if(p.isObject(t)){var i=t.stack;r=e+g(i,t)}else r=e+String(t);"function"==typeof a?a(r,n):"function"!=typeof console.log&&"object"!=typeof console.log||console.log(r)}}function K(t,e,n,r){var i=!1;try{"function"==typeof e&&(i=!0,"rejectionHandled"===t?e(r):e(n,r))}catch(t){l.throwLater(t)}"unhandledRejection"===t?A(t,n,r)||i||Y(n,"Unhandled rejection "):A(t,r)}function Q(t){var e;if("function"==typeof t)e="[function "+(t.name||"anonymous")+"]";else{if(e=t&&"function"==typeof t.toString?t.toString():p.toString(t),/\[object [a-zA-Z0-9$_]+\]/.test(e))try{e=JSON.stringify(t)}catch(t){}0===e.length&&(e="(empty array)")}return"(<"+function(t){var e=41;return t.length<e?t:t.substr(0,e-3)+"..."}(e)+">, no stack trace)"}function W(){return"function"==typeof tt}var X=function(){return!1},z=/[\/<\(]([^:\/]+):(\d+):(?:\d+)\)?\s*$/;function J(t){var e=t.match(z);if(e)return{fileName:e[1],line:parseInt(e[2],10)}}function Z(t){this._parent=t,this._promisesCreated=0;var e=this._length=1+(void 0===t?0:t._length);tt(this,Z),e>32&&this.uncycle()}p.inherits(Z,Error),n.CapturedTrace=Z,Z.prototype.uncycle=function(){var t=this._length;if(!(t<2)){for(var e=[],n={},r=0,i=this;void 0!==i;++r)e.push(i),i=i._parent;for(r=(t=this._length=r)-1;r>=0;--r){var o=e[r].stack;void 0===n[o]&&(n[o]=r)}for(r=0;r<t;++r){var s=n[e[r].stack];if(void 0!==s&&s!==r){s>0&&(e[s-1]._parent=void 0,e[s-1]._length=1),e[r]._parent=void 0,e[r]._length=1;var a=r>0?e[r-1]:this;s<t-1?(a._parent=e[s+1],a._parent.uncycle(),a._length=a._parent._length+1):(a._parent=void 0,a._length=1);for(var c=a._length+1,l=r-2;l>=0;--l)e[l]._length=c,c++;return}}}},Z.prototype.attachExtraTrace=function(t){if(!t.__stackCleaned__){this.uncycle();for(var e=$(t),n=e.message,r=[e.stack],i=this;void 0!==i;)r.push(G(i.stack.split("\n"))),i=i._parent;!function(t){for(var e=t[0],n=1;n<t.length;++n){for(var r=t[n],i=e.length-1,o=e[i],s=-1,a=r.length-1;a>=0;--a)if(r[a]===o){s=a;break}for(a=s;a>=0;--a){var c=r[a];if(e[i]!==c)break;e.pop(),i--}e=r}}(r),function(t){for(var e=0;e<t.length;++e)(0===t[e].length||e+1<t.length&&t[e][0]===t[e+1][0])&&(t.splice(e,1),e--)}(r),p.notEnumerableProp(t,"stack",function(t,e){for(var n=0;n<e.length-1;++n)e[n].push("From previous event:"),e[n]=e[n].join("\n");return n<e.length&&(e[n]=e[n].join("\n")),t+"\n"+e.join("\n")}(n,r)),p.notEnumerableProp(t,"__stackCleaned__",!0)}};var tt=function(){var t=/^\s*at\s*/,e=function(t,e){return"string"==typeof t?t:void 0!==e.name&&void 0!==e.message?e.toString():Q(e)};if("number"==typeof Error.stackTraceLimit&&"function"==typeof Error.captureStackTrace){Error.stackTraceLimit+=6,y=t,g=e;var n=Error.captureStackTrace;return X=function(t){return _.test(t)},function(t,e){Error.stackTraceLimit+=6,n(t,e),Error.stackTraceLimit-=6}}var r,i=new Error;if("string"==typeof i.stack&&i.stack.split("\n")[0].indexOf("stackDetection@")>=0)return y=/@/,g=e,m=!0,function(t){t.stack=(new Error).stack};try{throw new Error}catch(t){r="stack"in t}return!("stack"in i)&&r&&"number"==typeof Error.stackTraceLimit?(y=t,g=e,function(t){Error.stackTraceLimit+=6;try{throw new Error}catch(e){t.stack=e.stack}Error.stackTraceLimit-=6}):(g=function(t,e){return"string"==typeof t?t:"object"!=typeof e&&"function"!=typeof e||void 0===e.name||void 0===e.message?Q(e):e.toString()},null)}();"undefined"!=typeof console&&void 0!==console.warn&&(a=function(t){console.warn(t)},p.isNode&&process.stderr.isTTY?a=function(t,e){var n=e?"[33m":"[31m";console.warn(n+t+"[0m\n")}:p.isNode||"string"!=typeof(new Error).stack||(a=function(t,e){console.warn("%c"+t,e?"color: darkorange":"color: red")}));var et={warnings:w,longStackTraces:!1,cancellation:!1,monitoring:!1,asyncHooks:!1};return C&&e.longStackTraces(),{asyncHooks:function(){return et.asyncHooks},longStackTraces:function(){return et.longStackTraces},warnings:function(){return et.warnings},cancellation:function(){return et.cancellation},monitoring:function(){return et.monitoring},propagateFromFunction:function(){return H},boundValueFunction:function(){return B},checkForgottenReturns:function(t,e,n,r,i){if(void 0===t&&null!==e&&E){if(void 0!==i&&i._returnedNonUndefined())return;if(0==(65535&r._bitField))return;n&&(n+=" ");var o="",s="";if(e._trace){for(var a=e._trace.stack.split("\n"),c=G(a),l=c.length-1;l>=0;--l){var u=c[l];if(!d.test(u)){var p=u.match(v);p&&(o="at "+p[1]+":"+p[2]+":"+p[3]+" ");break}}if(c.length>0){var h=c[0];for(l=0;l<a.length;++l)if(a[l]===h){l>0&&(s="\n"+a[l-1]);break}}}var f="a promise was created in a "+n+"handler "+o+"but was not returned from it, see http://goo.gl/rRqMUw"+s;r._warn(f,!0,e)}},setBounds:function(t,e){if(W()){for(var n,r,i=(t.stack||"").split("\n"),o=(e.stack||"").split("\n"),s=-1,a=-1,c=0;c<i.length;++c)if(l=J(i[c])){n=l.fileName,s=l.line;break}for(c=0;c<o.length;++c){var l;if(l=J(o[c])){r=l.fileName,a=l.line;break}}s<0||a<0||!n||!r||n!==r||s>=a||(X=function(t){if(_.test(t))return!0;var e=J(t);return!!(e&&e.fileName===n&&s<=e.line&&e.line<=a)})}},warn:q,deprecated:function(t,e){var n=t+" is deprecated and will be removed in a future version.";return e&&(n+=" Use "+e+" instead."),q(n)},CapturedTrace:Z,fireDomEvent:F,fireGlobalEvent:T}}},{"./errors":12,"./es5":13,"./util":36}],10:[function(t,e,n){"use strict";e.exports=function(t){function e(){return this.value}function n(){throw this.reason}t.prototype.return=t.prototype.thenReturn=function(n){return n instanceof t&&n.suppressUnhandledRejections(),this._then(e,void 0,void 0,{value:n},void 0)},t.prototype.throw=t.prototype.thenThrow=function(t){return this._then(n,void 0,void 0,{reason:t},void 0)},t.prototype.catchThrow=function(t){if(arguments.length<=1)return this._then(void 0,n,void 0,{reason:t},void 0);var e=arguments[1],r=function(){throw e};return this.caught(t,r)},t.prototype.catchReturn=function(n){if(arguments.length<=1)return n instanceof t&&n.suppressUnhandledRejections(),this._then(void 0,e,void 0,{value:n},void 0);var r=arguments[1];r instanceof t&&r.suppressUnhandledRejections();var i=function(){return r};return this.caught(n,i)}}},{}],11:[function(t,e,n){"use strict";e.exports=function(t,e){var n=t.reduce,r=t.all;function i(){return r(this)}t.prototype.each=function(t){return n(this,t,e,0)._then(i,void 0,void 0,this,void 0)},t.prototype.mapSeries=function(t){return n(this,t,e,e)},t.each=function(t,r){return n(t,r,e,0)._then(i,void 0,void 0,t,void 0)},t.mapSeries=function(t,r){return n(t,r,e,e)}}},{}],12:[function(t,e,n){"use strict";var r,i,o=t("./es5"),s=o.freeze,a=t("./util"),c=a.inherits,l=a.notEnumerableProp;function u(t,e){function n(r){if(!(this instanceof n))return new n(r);l(this,"message","string"==typeof r?r:e),l(this,"name",t),Error.captureStackTrace?Error.captureStackTrace(this,this.constructor):Error.call(this)}return c(n,Error),n}var p=u("Warning","warning"),h=u("CancellationError","cancellation error"),f=u("TimeoutError","timeout error"),_=u("AggregateError","aggregate error");try{r=TypeError,i=RangeError}catch(t){r=u("TypeError","type error"),i=u("RangeError","range error")}for(var d="join pop push shift unshift slice filter forEach some every map indexOf lastIndexOf reduce reduceRight sort reverse".split(" "),v=0;v<d.length;++v)"function"==typeof Array.prototype[d[v]]&&(_.prototype[d[v]]=Array.prototype[d[v]]);o.defineProperty(_.prototype,"length",{value:0,configurable:!1,writable:!0,enumerable:!0}),_.prototype.isOperational=!0;var y=0;function g(t){if(!(this instanceof g))return new g(t);l(this,"name","OperationalError"),l(this,"message",t),this.cause=t,this.isOperational=!0,t instanceof Error?(l(this,"message",t.message),l(this,"stack",t.stack)):Error.captureStackTrace&&Error.captureStackTrace(this,this.constructor)}_.prototype.toString=function(){var t=Array(4*y+1).join(" "),e="\n"+t+"AggregateError of:\n";y++,t=Array(4*y+1).join(" ");for(var n=0;n<this.length;++n){for(var r=this[n]===this?"[Circular AggregateError]":this[n]+"",i=r.split("\n"),o=0;o<i.length;++o)i[o]=t+i[o];e+=(r=i.join("\n"))+"\n"}return y--,e},c(g,Error);var m=Error.__BluebirdErrorTypes__;m||(m=s({CancellationError:h,TimeoutError:f,OperationalError:g,RejectionError:g,AggregateError:_}),o.defineProperty(Error,"__BluebirdErrorTypes__",{value:m,writable:!1,enumerable:!1,configurable:!1})),e.exports={Error:Error,TypeError:r,RangeError:i,CancellationError:m.CancellationError,OperationalError:m.OperationalError,TimeoutError:m.TimeoutError,AggregateError:m.AggregateError,Warning:p}},{"./es5":13,"./util":36}],13:[function(t,e,n){var r=function(){"use strict";return void 0===this}();if(r)e.exports={freeze:Object.freeze,defineProperty:Object.defineProperty,getDescriptor:Object.getOwnPropertyDescriptor,keys:Object.keys,names:Object.getOwnPropertyNames,getPrototypeOf:Object.getPrototypeOf,isArray:Array.isArray,isES5:r,propertyIsWritable:function(t,e){var n=Object.getOwnPropertyDescriptor(t,e);return!(n&&!n.writable&&!n.set)}};else{var i={}.hasOwnProperty,o={}.toString,s={}.constructor.prototype,a=function(t){var e=[];for(var n in t)i.call(t,n)&&e.push(n);return e};e.exports={isArray:function(t){try{return"[object Array]"===o.call(t)}catch(t){return!1}},keys:a,names:a,defineProperty:function(t,e,n){return t[e]=n.value,t},getDescriptor:function(t,e){return{value:t[e]}},freeze:function(t){return t},getPrototypeOf:function(t){try{return Object(t).constructor.prototype}catch(t){return s}},isES5:r,propertyIsWritable:function(){return!0}}}},{}],14:[function(t,e,n){"use strict";e.exports=function(t,e){var n=t.map;t.prototype.filter=function(t,r){return n(this,t,r,e)},t.filter=function(t,r,i){return n(t,r,i,e)}}},{}],15:[function(t,e,n){"use strict";e.exports=function(e,n,r){var i=t("./util"),o=e.CancellationError,s=i.errorObj,a=t("./catch_filter")(r);function c(t,e,n){this.promise=t,this.type=e,this.handler=n,this.called=!1,this.cancelPromise=null}function l(t){this.finallyHandler=t}function u(t,e){return null!=t.cancelPromise&&(arguments.length>1?t.cancelPromise._reject(e):t.cancelPromise._cancel(),t.cancelPromise=null,!0)}function p(){return f.call(this,this.promise._target()._settledValue())}function h(t){if(!u(this,t))return s.e=t,s}function f(t){var i=this.promise,a=this.handler;if(!this.called){this.called=!0;var c=this.isFinallyHandler()?a.call(i._boundValue()):a.call(i._boundValue(),t);if(c===r)return c;if(void 0!==c){i._setReturnedNonUndefined();var f=n(c,i);if(f instanceof e){if(null!=this.cancelPromise){if(f._isCancelled()){var _=new o("late cancellation observer");return i._attachExtraTrace(_),s.e=_,s}f.isPending()&&f._attachCancellationCallback(new l(this))}return f._then(p,h,void 0,this,void 0)}}}return i.isRejected()?(u(this),s.e=t,s):(u(this),t)}return c.prototype.isFinallyHandler=function(){return 0===this.type},l.prototype._resultCancelled=function(){u(this.finallyHandler)},e.prototype._passThrough=function(t,e,n,r){return"function"!=typeof t?this.then():this._then(n,r,void 0,new c(this,e,t),void 0)},e.prototype.lastly=e.prototype.finally=function(t){return this._passThrough(t,0,f,f)},e.prototype.tap=function(t){return this._passThrough(t,1,f)},e.prototype.tapCatch=function(t){var n=arguments.length;if(1===n)return this._passThrough(t,1,void 0,f);var r,o=new Array(n-1),s=0;for(r=0;r<n-1;++r){var c=arguments[r];if(!i.isObject(c))return e.reject(new TypeError("tapCatch statement predicate: expecting an object but got "+i.classString(c)));o[s++]=c}o.length=s;var l=arguments[r];return this._passThrough(a(o,l,this),1,void 0,f)},c}},{"./catch_filter":7,"./util":36}],16:[function(t,e,n){"use strict";e.exports=function(e,n,r,i,o,s){var a=t("./errors").TypeError,c=t("./util"),l=c.errorObj,u=c.tryCatch,p=[];function h(t,n,i,o){if(s.cancellation()){var a=new e(r),c=this._finallyPromise=new e(r);this._promise=a.lastly((function(){return c})),a._captureStackTrace(),a._setOnCancel(this)}else(this._promise=new e(r))._captureStackTrace();this._stack=o,this._generatorFunction=t,this._receiver=n,this._generator=void 0,this._yieldHandlers="function"==typeof i?[i].concat(p):p,this._yieldedPromise=null,this._cancellationPhase=!1}c.inherits(h,o),h.prototype._isResolved=function(){return null===this._promise},h.prototype._cleanup=function(){this._promise=this._generator=null,s.cancellation()&&null!==this._finallyPromise&&(this._finallyPromise._fulfill(),this._finallyPromise=null)},h.prototype._promiseCancelled=function(){if(!this._isResolved()){var t;if(void 0!==this._generator.return)this._promise._pushContext(),t=u(this._generator.return).call(this._generator,void 0),this._promise._popContext();else{var n=new e.CancellationError("generator .return() sentinel");e.coroutine.returnSentinel=n,this._promise._attachExtraTrace(n),this._promise._pushContext(),t=u(this._generator.throw).call(this._generator,n),this._promise._popContext()}this._cancellationPhase=!0,this._yieldedPromise=null,this._continue(t)}},h.prototype._promiseFulfilled=function(t){this._yieldedPromise=null,this._promise._pushContext();var e=u(this._generator.next).call(this._generator,t);this._promise._popContext(),this._continue(e)},h.prototype._promiseRejected=function(t){this._yieldedPromise=null,this._promise._attachExtraTrace(t),this._promise._pushContext();var e=u(this._generator.throw).call(this._generator,t);this._promise._popContext(),this._continue(e)},h.prototype._resultCancelled=function(){if(this._yieldedPromise instanceof e){var t=this._yieldedPromise;this._yieldedPromise=null,t.cancel()}},h.prototype.promise=function(){return this._promise},h.prototype._run=function(){this._generator=this._generatorFunction.call(this._receiver),this._receiver=this._generatorFunction=void 0,this._promiseFulfilled(void 0)},h.prototype._continue=function(t){var n=this._promise;if(t===l)return this._cleanup(),this._cancellationPhase?n.cancel():n._rejectCallback(t.e,!1);var r=t.value;if(!0===t.done)return this._cleanup(),this._cancellationPhase?n.cancel():n._resolveCallback(r);var o=i(r,this._promise);if(o instanceof e||(o=function(t,n,r){for(var o=0;o<n.length;++o){r._pushContext();var s=u(n[o])(t);if(r._popContext(),s===l){r._pushContext();var a=e.reject(l.e);return r._popContext(),a}var c=i(s,r);if(c instanceof e)return c}return null}(o,this._yieldHandlers,this._promise),null!==o)){var s=(o=o._target())._bitField;0==(50397184&s)?(this._yieldedPromise=o,o._proxy(this,null)):0!=(33554432&s)?e._async.invoke(this._promiseFulfilled,this,o._value()):0!=(16777216&s)?e._async.invoke(this._promiseRejected,this,o._reason()):this._promiseCancelled()}else this._promiseRejected(new a("A value %s was yielded that could not be treated as a promise\n\n    See http://goo.gl/MqrFmX\n\n".replace("%s",String(r))+"From coroutine:\n"+this._stack.split("\n").slice(1,-7).join("\n")))},e.coroutine=function(t,e){if("function"!=typeof t)throw new a("generatorFunction must be a function\n\n    See http://goo.gl/MqrFmX\n");var n=Object(e).yieldHandler,r=h,i=(new Error).stack;return function(){var e=t.apply(this,arguments),o=new r(void 0,void 0,n,i),s=o.promise();return o._generator=e,o._promiseFulfilled(void 0),s}},e.coroutine.addYieldHandler=function(t){if("function"!=typeof t)throw new a("expecting a function but got "+c.classString(t));p.push(t)},e.spawn=function(t){if(s.deprecated("Promise.spawn()","Promise.coroutine()"),"function"!=typeof t)return n("generatorFunction must be a function\n\n    See http://goo.gl/MqrFmX\n");var r=new h(t,this),i=r.promise();return r._run(e.spawn),i}}},{"./errors":12,"./util":36}],17:[function(t,e,n){"use strict";e.exports=function(e,n,r,i,o){var s=t("./util");s.canEvaluate,s.tryCatch,s.errorObj,e.join=function(){var t,e=arguments.length-1;e>0&&"function"==typeof arguments[e]&&(t=arguments[e]);var r=[].slice.call(arguments);t&&r.pop();var i=new n(r).promise();return void 0!==t?i.spread(t):i}}},{"./util":36}],18:[function(t,e,n){"use strict";e.exports=function(e,n,r,i,o,s){var a=t("./util"),c=a.tryCatch,l=a.errorObj,u=e._async;function p(t,n,r,i){this.constructor$(t),this._promise._captureStackTrace();var s=e._getContext();if(this._callback=a.contextBind(s,n),this._preservedValues=i===o?new Array(this.length()):null,this._limit=r,this._inFlight=0,this._queue=[],u.invoke(this._asyncInit,this,void 0),a.isArray(t))for(var c=0;c<t.length;++c){var l=t[c];l instanceof e&&l.suppressUnhandledRejections()}}function h(t,n,i,o){if("function"!=typeof n)return r("expecting a function but got "+a.classString(n));var s=0;if(void 0!==i){if("object"!=typeof i||null===i)return e.reject(new TypeError("options argument must be an object but it is "+a.classString(i)));if("number"!=typeof i.concurrency)return e.reject(new TypeError("'concurrency' must be a number but it is "+a.classString(i.concurrency)));s=i.concurrency}return new p(t,n,s="number"==typeof s&&isFinite(s)&&s>=1?s:0,o).promise()}a.inherits(p,n),p.prototype._asyncInit=function(){this._init$(void 0,-2)},p.prototype._init=function(){},p.prototype._promiseFulfilled=function(t,n){var r=this._values,o=this.length(),a=this._preservedValues,u=this._limit;if(n<0){if(r[n=-1*n-1]=t,u>=1&&(this._inFlight--,this._drainQueue(),this._isResolved()))return!0}else{if(u>=1&&this._inFlight>=u)return r[n]=t,this._queue.push(n),!1;null!==a&&(a[n]=t);var p=this._promise,h=this._callback,f=p._boundValue();p._pushContext();var _=c(h).call(f,t,n,o),d=p._popContext();if(s.checkForgottenReturns(_,d,null!==a?"Promise.filter":"Promise.map",p),_===l)return this._reject(_.e),!0;var v=i(_,this._promise);if(v instanceof e){var y=(v=v._target())._bitField;if(0==(50397184&y))return u>=1&&this._inFlight++,r[n]=v,v._proxy(this,-1*(n+1)),!1;if(0==(33554432&y))return 0!=(16777216&y)?(this._reject(v._reason()),!0):(this._cancel(),!0);_=v._value()}r[n]=_}return++this._totalResolved>=o&&(null!==a?this._filter(r,a):this._resolve(r),!0)},p.prototype._drainQueue=function(){for(var t=this._queue,e=this._limit,n=this._values;t.length>0&&this._inFlight<e;){if(this._isResolved())return;var r=t.pop();this._promiseFulfilled(n[r],r)}},p.prototype._filter=function(t,e){for(var n=e.length,r=new Array(n),i=0,o=0;o<n;++o)t[o]&&(r[i++]=e[o]);r.length=i,this._resolve(r)},p.prototype.preservedValues=function(){return this._preservedValues},e.prototype.map=function(t,e){return h(this,t,e,null)},e.map=function(t,e,n,r){return h(t,e,n,r)}}},{"./util":36}],19:[function(t,e,n){"use strict";e.exports=function(e,n,r,i,o){var s=t("./util"),a=s.tryCatch;e.method=function(t){if("function"!=typeof t)throw new e.TypeError("expecting a function but got "+s.classString(t));return function(){var r=new e(n);r._captureStackTrace(),r._pushContext();var i=a(t).apply(this,arguments),s=r._popContext();return o.checkForgottenReturns(i,s,"Promise.method",r),r._resolveFromSyncValue(i),r}},e.attempt=e.try=function(t){if("function"!=typeof t)return i("expecting a function but got "+s.classString(t));var r,c=new e(n);if(c._captureStackTrace(),c._pushContext(),arguments.length>1){o.deprecated("calling Promise.try with more than 1 argument");var l=arguments[1],u=arguments[2];r=s.isArray(l)?a(t).apply(u,l):a(t).call(u,l)}else r=a(t)();var p=c._popContext();return o.checkForgottenReturns(r,p,"Promise.try",c),c._resolveFromSyncValue(r),c},e.prototype._resolveFromSyncValue=function(t){t===s.errorObj?this._rejectCallback(t.e,!1):this._resolveCallback(t,!0)}}},{"./util":36}],20:[function(t,e,n){"use strict";var r=t("./util"),i=r.maybeWrapAsError,o=t("./errors").OperationalError,s=t("./es5"),a=/^(?:name|message|stack|cause)$/;function c(t){var e;if(function(t){return t instanceof Error&&s.getPrototypeOf(t)===Error.prototype}(t)){(e=new o(t)).name=t.name,e.message=t.message,e.stack=t.stack;for(var n=s.keys(t),i=0;i<n.length;++i){var c=n[i];a.test(c)||(e[c]=t[c])}return e}return r.markAsOriginatingFromRejection(t),t}e.exports=function(t,e){return function(n,r){if(null!==t){if(n){var o=c(i(n));t._attachExtraTrace(o),t._reject(o)}else if(e){var s=[].slice.call(arguments,1);t._fulfill(s)}else t._fulfill(r);t=null}}}},{"./errors":12,"./es5":13,"./util":36}],21:[function(t,e,n){"use strict";e.exports=function(e){var n=t("./util"),r=e._async,i=n.tryCatch,o=n.errorObj;function s(t,e){if(!n.isArray(t))return a.call(this,t,e);var s=i(e).apply(this._boundValue(),[null].concat(t));s===o&&r.throwLater(s.e)}function a(t,e){var n=this._boundValue(),s=void 0===t?i(e).call(n,null):i(e).call(n,null,t);s===o&&r.throwLater(s.e)}function c(t,e){if(!t){var n=new Error(t+"");n.cause=t,t=n}var s=i(e).call(this._boundValue(),t);s===o&&r.throwLater(s.e)}e.prototype.asCallback=e.prototype.nodeify=function(t,e){if("function"==typeof t){var n=a;void 0!==e&&Object(e).spread&&(n=s),this._then(n,c,void 0,this,t)}return this}}},{"./util":36}],22:[function(t,e,n){"use strict";e.exports=function(){var n=function(){return new y("circular promise resolution chain\n\n    See http://goo.gl/MqrFmX\n")},r=function(){return new P.PromiseInspection(this._target())},i=function(t){return P.reject(new y(t))};function o(){}var s={},a=t("./util");a.setReflectHandler(r);var c=function(){var t=process.domain;return void 0===t?null:t},l=function(){return{domain:c(),async:null}},u=a.isNode&&a.nodeSupportsAsyncResource?t("async_hooks").AsyncResource:null,p=function(){return{domain:c(),async:new u("Bluebird::Promise")}},h=a.isNode?l:function(){return null};a.notEnumerableProp(P,"_getContext",h);var f=t("./es5"),_=t("./async"),d=new _;f.defineProperty(P,"_async",{value:d});var v=t("./errors"),y=P.TypeError=v.TypeError;P.RangeError=v.RangeError;var g=P.CancellationError=v.CancellationError;P.TimeoutError=v.TimeoutError,P.OperationalError=v.OperationalError,P.RejectionError=v.OperationalError,P.AggregateError=v.AggregateError;var m=function(){},b={},w={},C=t("./thenables")(P,m),E=t("./promise_array")(P,m,C,i,o),j=t("./context")(P),k=j.create,F=t("./debuggability")(P,j,(function(){h=p,a.notEnumerableProp(P,"_getContext",p)}),(function(){h=l,a.notEnumerableProp(P,"_getContext",l)})),T=(F.CapturedTrace,t("./finally")(P,C,w)),x=t("./catch_filter")(w),S=t("./nodeback"),A=a.errorObj,R=a.tryCatch;function P(t){t!==m&&function(t,e){if(null==t||t.constructor!==P)throw new y("the promise constructor cannot be invoked directly\n\n    See http://goo.gl/MqrFmX\n");if("function"!=typeof e)throw new y("expecting a function but got "+a.classString(e))}(this,t),this._bitField=0,this._fulfillmentHandler0=void 0,this._rejectionHandler0=void 0,this._promise0=void 0,this._receiver0=void 0,this._resolveFromExecutor(t),this._promiseCreated(),this._fireEvent("promiseCreated",this)}function O(t){this.promise._resolveCallback(t)}function L(t){this.promise._rejectCallback(t,!1)}function N(t){var e=new P(m);e._fulfillmentHandler0=t,e._rejectionHandler0=t,e._promise0=t,e._receiver0=t}return P.prototype.toString=function(){return"[object Promise]"},P.prototype.caught=P.prototype.catch=function(t){var e=arguments.length;if(e>1){var n,r=new Array(e-1),o=0;for(n=0;n<e-1;++n){var s=arguments[n];if(!a.isObject(s))return i("Catch statement predicate: expecting an object but got "+a.classString(s));r[o++]=s}if(r.length=o,"function"!=typeof(t=arguments[n]))throw new y("The last argument to .catch() must be a function, got "+a.toString(t));return this.then(void 0,x(r,t,this))}return this.then(void 0,t)},P.prototype.reflect=function(){return this._then(r,r,void 0,this,void 0)},P.prototype.then=function(t,e){if(F.warnings()&&arguments.length>0&&"function"!=typeof t&&"function"!=typeof e){var n=".then() only accepts functions but was passed: "+a.classString(t);arguments.length>1&&(n+=", "+a.classString(e)),this._warn(n)}return this._then(t,e,void 0,void 0,void 0)},P.prototype.done=function(t,e){this._then(t,e,void 0,void 0,void 0)._setIsFinal()},P.prototype.spread=function(t){return"function"!=typeof t?i("expecting a function but got "+a.classString(t)):this.all()._then(t,void 0,void 0,b,void 0)},P.prototype.toJSON=function(){var t={isFulfilled:!1,isRejected:!1,fulfillmentValue:void 0,rejectionReason:void 0};return this.isFulfilled()?(t.fulfillmentValue=this.value(),t.isFulfilled=!0):this.isRejected()&&(t.rejectionReason=this.reason(),t.isRejected=!0),t},P.prototype.all=function(){return arguments.length>0&&this._warn(".all() was passed arguments but it does not take any"),new E(this).promise()},P.prototype.error=function(t){return this.caught(a.originatesFromRejection,t)},P.getNewLibraryCopy=e.exports,P.is=function(t){return t instanceof P},P.fromNode=P.fromCallback=function(t){var e=new P(m);e._captureStackTrace();var n=arguments.length>1&&!!Object(arguments[1]).multiArgs,r=R(t)(S(e,n));return r===A&&e._rejectCallback(r.e,!0),e._isFateSealed()||e._setAsyncGuaranteed(),e},P.all=function(t){return new E(t).promise()},P.cast=function(t){var e=C(t);return e instanceof P||((e=new P(m))._captureStackTrace(),e._setFulfilled(),e._rejectionHandler0=t),e},P.resolve=P.fulfilled=P.cast,P.reject=P.rejected=function(t){var e=new P(m);return e._captureStackTrace(),e._rejectCallback(t,!0),e},P.setScheduler=function(t){if("function"!=typeof t)throw new y("expecting a function but got "+a.classString(t));return d.setScheduler(t)},P.prototype._then=function(t,e,n,r,i){var o=void 0!==i,s=o?i:new P(m),c=this._target(),l=c._bitField;o||(s._propagateFrom(this,3),s._captureStackTrace(),void 0===r&&0!=(2097152&this._bitField)&&(r=0!=(50397184&l)?this._boundValue():c===this?void 0:this._boundTo),this._fireEvent("promiseChained",this,s));var u=h();if(0!=(50397184&l)){var p,f,_=c._settlePromiseCtx;0!=(33554432&l)?(f=c._rejectionHandler0,p=t):0!=(16777216&l)?(f=c._fulfillmentHandler0,p=e,c._unsetRejectionIsUnhandled()):(_=c._settlePromiseLateCancellationObserver,f=new g("late cancellation observer"),c._attachExtraTrace(f),p=e),d.invoke(_,c,{handler:a.contextBind(u,p),promise:s,receiver:r,value:f})}else c._addCallbacks(t,e,s,r,u);return s},P.prototype._length=function(){return 65535&this._bitField},P.prototype._isFateSealed=function(){return 0!=(117506048&this._bitField)},P.prototype._isFollowing=function(){return 67108864==(67108864&this._bitField)},P.prototype._setLength=function(t){this._bitField=-65536&this._bitField|65535&t},P.prototype._setFulfilled=function(){this._bitField=33554432|this._bitField,this._fireEvent("promiseFulfilled",this)},P.prototype._setRejected=function(){this._bitField=16777216|this._bitField,this._fireEvent("promiseRejected",this)},P.prototype._setFollowing=function(){this._bitField=67108864|this._bitField,this._fireEvent("promiseResolved",this)},P.prototype._setIsFinal=function(){this._bitField=4194304|this._bitField},P.prototype._isFinal=function(){return(4194304&this._bitField)>0},P.prototype._unsetCancelled=function(){this._bitField=-65537&this._bitField},P.prototype._setCancelled=function(){this._bitField=65536|this._bitField,this._fireEvent("promiseCancelled",this)},P.prototype._setWillBeCancelled=function(){this._bitField=8388608|this._bitField},P.prototype._setAsyncGuaranteed=function(){if(!d.hasCustomScheduler()){var t=this._bitField;this._bitField=t|(536870912&t)>>2^134217728}},P.prototype._setNoAsyncGuarantee=function(){this._bitField=-134217729&(536870912|this._bitField)},P.prototype._receiverAt=function(t){var e=0===t?this._receiver0:this[4*t-4+3];if(e!==s)return void 0===e&&this._isBound()?this._boundValue():e},P.prototype._promiseAt=function(t){return this[4*t-4+2]},P.prototype._fulfillmentHandlerAt=function(t){return this[4*t-4+0]},P.prototype._rejectionHandlerAt=function(t){return this[4*t-4+1]},P.prototype._boundValue=function(){},P.prototype._migrateCallback0=function(t){t._bitField;var e=t._fulfillmentHandler0,n=t._rejectionHandler0,r=t._promise0,i=t._receiverAt(0);void 0===i&&(i=s),this._addCallbacks(e,n,r,i,null)},P.prototype._migrateCallbackAt=function(t,e){var n=t._fulfillmentHandlerAt(e),r=t._rejectionHandlerAt(e),i=t._promiseAt(e),o=t._receiverAt(e);void 0===o&&(o=s),this._addCallbacks(n,r,i,o,null)},P.prototype._addCallbacks=function(t,e,n,r,i){var o=this._length();if(o>=65531&&(o=0,this._setLength(0)),0===o)this._promise0=n,this._receiver0=r,"function"==typeof t&&(this._fulfillmentHandler0=a.contextBind(i,t)),"function"==typeof e&&(this._rejectionHandler0=a.contextBind(i,e));else{var s=4*o-4;this[s+2]=n,this[s+3]=r,"function"==typeof t&&(this[s+0]=a.contextBind(i,t)),"function"==typeof e&&(this[s+1]=a.contextBind(i,e))}return this._setLength(o+1),o},P.prototype._proxy=function(t,e){this._addCallbacks(void 0,void 0,e,t,null)},P.prototype._resolveCallback=function(t,e){if(0==(117506048&this._bitField)){if(t===this)return this._rejectCallback(n(),!1);var r=C(t,this);if(!(r instanceof P))return this._fulfill(t);e&&this._propagateFrom(r,2);var i=r._target();if(i!==this){var o=i._bitField;if(0==(50397184&o)){var s=this._length();s>0&&i._migrateCallback0(this);for(var a=1;a<s;++a)i._migrateCallbackAt(this,a);this._setFollowing(),this._setLength(0),this._setFollowee(r)}else if(0!=(33554432&o))this._fulfill(i._value());else if(0!=(16777216&o))this._reject(i._reason());else{var c=new g("late cancellation observer");i._attachExtraTrace(c),this._reject(c)}}else this._reject(n())}},P.prototype._rejectCallback=function(t,e,n){var r=a.ensureErrorObject(t),i=r===t;if(!i&&!n&&F.warnings()){var o="a promise was rejected with a non-error: "+a.classString(t);this._warn(o,!0)}this._attachExtraTrace(r,!!e&&i),this._reject(t)},P.prototype._resolveFromExecutor=function(t){if(t!==m){var e=this;this._captureStackTrace(),this._pushContext();var n=!0,r=this._execute(t,(function(t){e._resolveCallback(t)}),(function(t){e._rejectCallback(t,n)}));n=!1,this._popContext(),void 0!==r&&e._rejectCallback(r,!0)}},P.prototype._settlePromiseFromHandler=function(t,e,n,r){var i=r._bitField;if(0==(65536&i)){var o;r._pushContext(),e===b?n&&"number"==typeof n.length?o=R(t).apply(this._boundValue(),n):(o=A).e=new y("cannot .spread() a non-array: "+a.classString(n)):o=R(t).call(e,n);var s=r._popContext();0==(65536&(i=r._bitField))&&(o===w?r._reject(n):o===A?r._rejectCallback(o.e,!1):(F.checkForgottenReturns(o,s,"",r,this),r._resolveCallback(o)))}},P.prototype._target=function(){for(var t=this;t._isFollowing();)t=t._followee();return t},P.prototype._followee=function(){return this._rejectionHandler0},P.prototype._setFollowee=function(t){this._rejectionHandler0=t},P.prototype._settlePromise=function(t,e,n,i){var s=t instanceof P,a=this._bitField,c=0!=(134217728&a);0!=(65536&a)?(s&&t._invokeInternalOnCancel(),n instanceof T&&n.isFinallyHandler()?(n.cancelPromise=t,R(e).call(n,i)===A&&t._reject(A.e)):e===r?t._fulfill(r.call(n)):n instanceof o?n._promiseCancelled(t):s||t instanceof E?t._cancel():n.cancel()):"function"==typeof e?s?(c&&t._setAsyncGuaranteed(),this._settlePromiseFromHandler(e,n,i,t)):e.call(n,i,t):n instanceof o?n._isResolved()||(0!=(33554432&a)?n._promiseFulfilled(i,t):n._promiseRejected(i,t)):s&&(c&&t._setAsyncGuaranteed(),0!=(33554432&a)?t._fulfill(i):t._reject(i))},P.prototype._settlePromiseLateCancellationObserver=function(t){var e=t.handler,n=t.promise,r=t.receiver,i=t.value;"function"==typeof e?n instanceof P?this._settlePromiseFromHandler(e,r,i,n):e.call(r,i,n):n instanceof P&&n._reject(i)},P.prototype._settlePromiseCtx=function(t){this._settlePromise(t.promise,t.handler,t.receiver,t.value)},P.prototype._settlePromise0=function(t,e,n){var r=this._promise0,i=this._receiverAt(0);this._promise0=void 0,this._receiver0=void 0,this._settlePromise(r,t,i,e)},P.prototype._clearCallbackDataAtIndex=function(t){var e=4*t-4;this[e+2]=this[e+3]=this[e+0]=this[e+1]=void 0},P.prototype._fulfill=function(t){var e=this._bitField;if(!((117506048&e)>>>16)){if(t===this){var r=n();return this._attachExtraTrace(r),this._reject(r)}this._setFulfilled(),this._rejectionHandler0=t,(65535&e)>0&&(0!=(134217728&e)?this._settlePromises():d.settlePromises(this),this._dereferenceTrace())}},P.prototype._reject=function(t){var e=this._bitField;if(!((117506048&e)>>>16)){if(this._setRejected(),this._fulfillmentHandler0=t,this._isFinal())return d.fatalError(t,a.isNode);(65535&e)>0?d.settlePromises(this):this._ensurePossibleRejectionHandled()}},P.prototype._fulfillPromises=function(t,e){for(var n=1;n<t;n++){var r=this._fulfillmentHandlerAt(n),i=this._promiseAt(n),o=this._receiverAt(n);this._clearCallbackDataAtIndex(n),this._settlePromise(i,r,o,e)}},P.prototype._rejectPromises=function(t,e){for(var n=1;n<t;n++){var r=this._rejectionHandlerAt(n),i=this._promiseAt(n),o=this._receiverAt(n);this._clearCallbackDataAtIndex(n),this._settlePromise(i,r,o,e)}},P.prototype._settlePromises=function(){var t=this._bitField,e=65535&t;if(e>0){if(0!=(16842752&t)){var n=this._fulfillmentHandler0;this._settlePromise0(this._rejectionHandler0,n,t),this._rejectPromises(e,n)}else{var r=this._rejectionHandler0;this._settlePromise0(this._fulfillmentHandler0,r,t),this._fulfillPromises(e,r)}this._setLength(0)}this._clearCancellationData()},P.prototype._settledValue=function(){var t=this._bitField;return 0!=(33554432&t)?this._rejectionHandler0:0!=(16777216&t)?this._fulfillmentHandler0:void 0},"undefined"!=typeof Symbol&&Symbol.toStringTag&&f.defineProperty(P.prototype,Symbol.toStringTag,{get:function(){return"Object"}}),P.defer=P.pending=function(){return F.deprecated("Promise.defer","new Promise"),{promise:new P(m),resolve:O,reject:L}},a.notEnumerableProp(P,"_makeSelfResolutionError",n),t("./method")(P,m,C,i,F),t("./bind")(P,m,C,F),t("./cancel")(P,E,i,F),t("./direct_resolve")(P),t("./synchronous_inspection")(P),t("./join")(P,E,C,m,d),P.Promise=P,P.version="3.7.2",t("./call_get.js")(P),t("./generators.js")(P,i,m,C,o,F),t("./map.js")(P,E,i,C,m,F),t("./nodeify.js")(P),t("./promisify.js")(P,m),t("./props.js")(P,E,C,i),t("./race.js")(P,m,C,i),t("./reduce.js")(P,E,i,C,m,F),t("./settle.js")(P,E,F),t("./some.js")(P,E,i),t("./timers.js")(P,m,F),t("./using.js")(P,i,C,k,m,F),t("./any.js")(P),t("./each.js")(P,m),t("./filter.js")(P,m),a.toFastProperties(P),a.toFastProperties(P.prototype),N({a:1}),N({b:2}),N({c:3}),N(1),N((function(){})),N(void 0),N(!1),N(new P(m)),F.setBounds(_.firstLineError,a.lastLineError),P}},{"./any.js":1,"./async":2,"./bind":3,"./call_get.js":5,"./cancel":6,"./catch_filter":7,"./context":8,"./debuggability":9,"./direct_resolve":10,"./each.js":11,"./errors":12,"./es5":13,"./filter.js":14,"./finally":15,"./generators.js":16,"./join":17,"./map.js":18,"./method":19,"./nodeback":20,"./nodeify.js":21,"./promise_array":23,"./promisify.js":24,"./props.js":25,"./race.js":27,"./reduce.js":28,"./settle.js":30,"./some.js":31,"./synchronous_inspection":32,"./thenables":33,"./timers.js":34,"./using.js":35,"./util":36,async_hooks:void 0}],23:[function(t,e,n){"use strict";e.exports=function(e,n,r,i,o){var s=t("./util");function a(t){var r=this._promise=new e(n);t instanceof e&&(r._propagateFrom(t,3),t.suppressUnhandledRejections()),r._setOnCancel(this),this._values=t,this._length=0,this._totalResolved=0,this._init(void 0,-2)}return s.isArray,s.inherits(a,o),a.prototype.length=function(){return this._length},a.prototype.promise=function(){return this._promise},a.prototype._init=function t(n,o){var a=r(this._values,this._promise);if(a instanceof e){var c=(a=a._target())._bitField;if(this._values=a,0==(50397184&c))return this._promise._setAsyncGuaranteed(),a._then(t,this._reject,void 0,this,o);if(0==(33554432&c))return 0!=(16777216&c)?this._reject(a._reason()):this._cancel();a=a._value()}if(null!==(a=s.asArray(a)))0!==a.length?this._iterate(a):-5===o?this._resolveEmptyArray():this._resolve(function(t){switch(t){case-2:return[];case-3:return{};case-6:return new Map}}(o));else{var l=i("expecting an array or an iterable object but got "+s.classString(a)).reason();this._promise._rejectCallback(l,!1)}},a.prototype._iterate=function(t){var n=this.getActualLength(t.length);this._length=n,this._values=this.shouldCopyValues()?new Array(n):this._values;for(var i=this._promise,o=!1,s=null,a=0;a<n;++a){var c=r(t[a],i);s=c instanceof e?(c=c._target())._bitField:null,o?null!==s&&c.suppressUnhandledRejections():null!==s?0==(50397184&s)?(c._proxy(this,a),this._values[a]=c):o=0!=(33554432&s)?this._promiseFulfilled(c._value(),a):0!=(16777216&s)?this._promiseRejected(c._reason(),a):this._promiseCancelled(a):o=this._promiseFulfilled(c,a)}o||i._setAsyncGuaranteed()},a.prototype._isResolved=function(){return null===this._values},a.prototype._resolve=function(t){this._values=null,this._promise._fulfill(t)},a.prototype._cancel=function(){!this._isResolved()&&this._promise._isCancellable()&&(this._values=null,this._promise._cancel())},a.prototype._reject=function(t){this._values=null,this._promise._rejectCallback(t,!1)},a.prototype._promiseFulfilled=function(t,e){return this._values[e]=t,++this._totalResolved>=this._length&&(this._resolve(this._values),!0)},a.prototype._promiseCancelled=function(){return this._cancel(),!0},a.prototype._promiseRejected=function(t){return this._totalResolved++,this._reject(t),!0},a.prototype._resultCancelled=function(){if(!this._isResolved()){var t=this._values;if(this._cancel(),t instanceof e)t.cancel();else for(var n=0;n<t.length;++n)t[n]instanceof e&&t[n].cancel()}},a.prototype.shouldCopyValues=function(){return!0},a.prototype.getActualLength=function(t){return t},a}},{"./util":36}],24:[function(t,e,n){"use strict";e.exports=function(e,n){var r={},i=t("./util"),o=t("./nodeback"),s=i.withAppended,a=i.maybeWrapAsError,c=i.canEvaluate,l=t("./errors").TypeError,u={__isPromisified__:!0},p=new RegExp("^(?:"+["arity","length","name","arguments","caller","callee","prototype","__isPromisified__"].join("|")+")$"),h=function(t){return i.isIdentifier(t)&&"_"!==t.charAt(0)&&"constructor"!==t};function f(t){return!p.test(t)}function _(t){try{return!0===t.__isPromisified__}catch(t){return!1}}function d(t,e,n){var r=i.getDataPropertyOrDefault(t,e+n,u);return!!r&&_(r)}function v(t,e,n,r){for(var o=i.inheritedDataKeys(t),s=[],a=0;a<o.length;++a){var c=o[a],u=t[c],p=r===h||h(c);"function"!=typeof u||_(u)||d(t,c,e)||!r(c,u,t,p)||s.push(c,u)}return function(t,e,n){for(var r=0;r<t.length;r+=2){var i=t[r];if(n.test(i))for(var o=i.replace(n,""),s=0;s<t.length;s+=2)if(t[s]===o)throw new l("Cannot promisify an API that has normal methods with '%s'-suffix\n\n    See http://goo.gl/MqrFmX\n".replace("%s",e))}}(s,e,n),s}var y=c?void 0:function(t,c,l,u,p,h){var f=function(){return this}(),_=t;function d(){var i=c;c===r&&(i=this);var l=new e(n);l._captureStackTrace();var u="string"==typeof _&&this!==f?this[_]:t,p=o(l,h);try{u.apply(i,s(arguments,p))}catch(t){l._rejectCallback(a(t),!0,!0)}return l._isFateSealed()||l._setAsyncGuaranteed(),l}return"string"==typeof _&&(t=u),i.notEnumerableProp(d,"__isPromisified__",!0),d};function g(t,e,n,o,s){for(var a=new RegExp(e.replace(/([$])/,"\\$")+"$"),c=v(t,e,a,n),l=0,u=c.length;l<u;l+=2){var p=c[l],h=c[l+1],f=p+e;if(o===y)t[f]=y(p,r,p,h,e,s);else{var _=o(h,(function(){return y(p,r,p,h,e,s)}));i.notEnumerableProp(_,"__isPromisified__",!0),t[f]=_}}return i.toFastProperties(t),t}e.promisify=function(t,e){if("function"!=typeof t)throw new l("expecting a function but got "+i.classString(t));if(_(t))return t;var n=function(t,e,n){return y(t,e,void 0,t,null,n)}(t,void 0===(e=Object(e)).context?r:e.context,!!e.multiArgs);return i.copyDescriptors(t,n,f),n},e.promisifyAll=function(t,e){if("function"!=typeof t&&"object"!=typeof t)throw new l("the target of promisifyAll must be an object or a function\n\n    See http://goo.gl/MqrFmX\n");var n=!!(e=Object(e)).multiArgs,r=e.suffix;"string"!=typeof r&&(r="Async");var o=e.filter;"function"!=typeof o&&(o=h);var s=e.promisifier;if("function"!=typeof s&&(s=y),!i.isIdentifier(r))throw new RangeError("suffix must be a valid identifier\n\n    See http://goo.gl/MqrFmX\n");for(var a=i.inheritedDataKeys(t),c=0;c<a.length;++c){var u=t[a[c]];"constructor"!==a[c]&&i.isClass(u)&&(g(u.prototype,r,o,s,n),g(u,r,o,s,n))}return g(t,r,o,s,n)}}},{"./errors":12,"./nodeback":20,"./util":36}],25:[function(t,e,n){"use strict";e.exports=function(e,n,r,i){var o,s=t("./util"),a=s.isObject,c=t("./es5");"function"==typeof Map&&(o=Map);var l=function(){var t=0,e=0;function n(n,r){this[t]=n,this[t+e]=r,t++}return function(r){e=r.size,t=0;var i=new Array(2*r.size);return r.forEach(n,i),i}}();function u(t){var e,n=!1;if(void 0!==o&&t instanceof o)e=l(t),n=!0;else{var r=c.keys(t),i=r.length;e=new Array(2*i);for(var s=0;s<i;++s){var a=r[s];e[s]=t[a],e[s+i]=a}}this.constructor$(e),this._isMap=n,this._init$(void 0,n?-6:-3)}function p(t){var n,o=r(t);return a(o)?(n=o instanceof e?o._then(e.props,void 0,void 0,void 0,void 0):new u(o).promise(),o instanceof e&&n._propagateFrom(o,2),n):i("cannot await properties of a non-object\n\n    See http://goo.gl/MqrFmX\n")}s.inherits(u,n),u.prototype._init=function(){},u.prototype._promiseFulfilled=function(t,e){if(this._values[e]=t,++this._totalResolved>=this._length){var n;if(this._isMap)n=function(t){for(var e=new o,n=t.length/2|0,r=0;r<n;++r){var i=t[n+r],s=t[r];e.set(i,s)}return e}(this._values);else{n={};for(var r=this.length(),i=0,s=this.length();i<s;++i)n[this._values[i+r]]=this._values[i]}return this._resolve(n),!0}return!1},u.prototype.shouldCopyValues=function(){return!1},u.prototype.getActualLength=function(t){return t>>1},e.prototype.props=function(){return p(this)},e.props=function(t){return p(t)}}},{"./es5":13,"./util":36}],26:[function(t,e,n){"use strict";function r(t){this._capacity=t,this._length=0,this._front=0}r.prototype._willBeOverCapacity=function(t){return this._capacity<t},r.prototype._pushOne=function(t){var e=this.length();this._checkCapacity(e+1),this[this._front+e&this._capacity-1]=t,this._length=e+1},r.prototype.push=function(t,e,n){var r=this.length()+3;if(this._willBeOverCapacity(r))return this._pushOne(t),this._pushOne(e),void this._pushOne(n);var i=this._front+r-3;this._checkCapacity(r);var o=this._capacity-1;this[i+0&o]=t,this[i+1&o]=e,this[i+2&o]=n,this._length=r},r.prototype.shift=function(){var t=this._front,e=this[t];return this[t]=void 0,this._front=t+1&this._capacity-1,this._length--,e},r.prototype.length=function(){return this._length},r.prototype._checkCapacity=function(t){this._capacity<t&&this._resizeTo(this._capacity<<1)},r.prototype._resizeTo=function(t){var e=this._capacity;this._capacity=t,function(t,e,n,r,i){for(var o=0;o<i;++o)n[o+r]=t[o+e],t[o+e]=void 0}(this,0,this,e,this._front+this._length&e-1)},e.exports=r},{}],27:[function(t,e,n){"use strict";e.exports=function(e,n,r,i){var o=t("./util");function s(t,a){var c,l=r(t);if(l instanceof e)return(c=l).then((function(t){return s(t,c)}));if(null===(t=o.asArray(t)))return i("expecting an array or an iterable object but got "+o.classString(t));var u=new e(n);void 0!==a&&u._propagateFrom(a,3);for(var p=u._fulfill,h=u._reject,f=0,_=t.length;f<_;++f){var d=t[f];(void 0!==d||f in t)&&e.cast(d)._then(p,h,void 0,u,null)}return u}e.race=function(t){return s(t,void 0)},e.prototype.race=function(){return s(this,void 0)}}},{"./util":36}],28:[function(t,e,n){"use strict";e.exports=function(e,n,r,i,o,s){var a=t("./util"),c=a.tryCatch;function l(t,n,r,i){this.constructor$(t);var s=e._getContext();this._fn=a.contextBind(s,n),void 0!==r&&(r=e.resolve(r))._attachCancellationCallback(this),this._initialValue=r,this._currentCancellable=null,this._eachValues=i===o?Array(this._length):0===i?null:void 0,this._promise._captureStackTrace(),this._init$(void 0,-5)}function u(t,e){this.isFulfilled()?e._resolve(t):e._reject(t)}function p(t,e,n,i){return"function"!=typeof e?r("expecting a function but got "+a.classString(e)):new l(t,e,n,i).promise()}function h(t){this.accum=t,this.array._gotAccum(t);var n=i(this.value,this.array._promise);return n instanceof e?(this.array._currentCancellable=n,n._then(f,void 0,void 0,this,void 0)):f.call(this,n)}function f(t){var n,r=this.array,i=r._promise,o=c(r._fn);i._pushContext(),(n=void 0!==r._eachValues?o.call(i._boundValue(),t,this.index,this.length):o.call(i._boundValue(),this.accum,t,this.index,this.length))instanceof e&&(r._currentCancellable=n);var a=i._popContext();return s.checkForgottenReturns(n,a,void 0!==r._eachValues?"Promise.each":"Promise.reduce",i),n}a.inherits(l,n),l.prototype._gotAccum=function(t){void 0!==this._eachValues&&null!==this._eachValues&&t!==o&&this._eachValues.push(t)},l.prototype._eachComplete=function(t){return null!==this._eachValues&&this._eachValues.push(t),this._eachValues},l.prototype._init=function(){},l.prototype._resolveEmptyArray=function(){this._resolve(void 0!==this._eachValues?this._eachValues:this._initialValue)},l.prototype.shouldCopyValues=function(){return!1},l.prototype._resolve=function(t){this._promise._resolveCallback(t),this._values=null},l.prototype._resultCancelled=function(t){if(t===this._initialValue)return this._cancel();this._isResolved()||(this._resultCancelled$(),this._currentCancellable instanceof e&&this._currentCancellable.cancel(),this._initialValue instanceof e&&this._initialValue.cancel())},l.prototype._iterate=function(t){var n,r;this._values=t;var i=t.length;void 0!==this._initialValue?(n=this._initialValue,r=0):(n=e.resolve(t[0]),r=1),this._currentCancellable=n;for(var o=r;o<i;++o){var s=t[o];s instanceof e&&s.suppressUnhandledRejections()}if(!n.isRejected())for(;r<i;++r){var a={accum:null,value:t[r],index:r,length:i,array:this};n=n._then(h,void 0,void 0,a,void 0),0==(127&r)&&n._setNoAsyncGuarantee()}void 0!==this._eachValues&&(n=n._then(this._eachComplete,void 0,void 0,this,void 0)),n._then(u,u,void 0,n,this)},e.prototype.reduce=function(t,e){return p(this,t,e,null)},e.reduce=function(t,e,n,r){return p(t,e,n,r)}}},{"./util":36}],29:[function(t,e,r){"use strict";var i,o,s,a,c,l=t("./util"),u=l.getNativePromise();if(l.isNode&&"undefined"==typeof MutationObserver){var p=n.g.setImmediate,h=process.nextTick;i=l.isRecentNode?function(t){p.call(n.g,t)}:function(t){h.call(process,t)}}else if("function"==typeof u&&"function"==typeof u.resolve){var f=u.resolve();i=function(t){f.then(t)}}else i="undefined"==typeof MutationObserver||"undefined"!=typeof window&&window.navigator&&(window.navigator.standalone||window.cordova)||!("classList"in document.documentElement)?"undefined"!=typeof setImmediate?function(t){setImmediate(t)}:"undefined"!=typeof setTimeout?function(t){setTimeout(t,0)}:function(){throw new Error("No async scheduler available\n\n    See http://goo.gl/MqrFmX\n")}:(o=document.createElement("div"),s={attributes:!0},a=!1,c=document.createElement("div"),new MutationObserver((function(){o.classList.toggle("foo"),a=!1})).observe(c,s),function(t){var e=new MutationObserver((function(){e.disconnect(),t()}));e.observe(o,s),a||(a=!0,c.classList.toggle("foo"))});e.exports=i},{"./util":36}],30:[function(t,e,n){"use strict";e.exports=function(e,n,r){var i=e.PromiseInspection;function o(t){this.constructor$(t)}t("./util").inherits(o,n),o.prototype._promiseResolved=function(t,e){return this._values[t]=e,++this._totalResolved>=this._length&&(this._resolve(this._values),!0)},o.prototype._promiseFulfilled=function(t,e){var n=new i;return n._bitField=33554432,n._settledValueField=t,this._promiseResolved(e,n)},o.prototype._promiseRejected=function(t,e){var n=new i;return n._bitField=16777216,n._settledValueField=t,this._promiseResolved(e,n)},e.settle=function(t){return r.deprecated(".settle()",".reflect()"),new o(t).promise()},e.allSettled=function(t){return new o(t).promise()},e.prototype.settle=function(){return e.settle(this)}}},{"./util":36}],31:[function(t,e,n){"use strict";e.exports=function(e,n,r){var i=t("./util"),o=t("./errors").RangeError,s=t("./errors").AggregateError,a=i.isArray,c={};function l(t){this.constructor$(t),this._howMany=0,this._unwrap=!1,this._initialized=!1}function u(t,e){if((0|e)!==e||e<0)return r("expecting a positive integer\n\n    See http://goo.gl/MqrFmX\n");var n=new l(t),i=n.promise();return n.setHowMany(e),n.init(),i}i.inherits(l,n),l.prototype._init=function(){if(this._initialized)if(0!==this._howMany){this._init$(void 0,-5);var t=a(this._values);!this._isResolved()&&t&&this._howMany>this._canPossiblyFulfill()&&this._reject(this._getRangeError(this.length()))}else this._resolve([])},l.prototype.init=function(){this._initialized=!0,this._init()},l.prototype.setUnwrap=function(){this._unwrap=!0},l.prototype.howMany=function(){return this._howMany},l.prototype.setHowMany=function(t){this._howMany=t},l.prototype._promiseFulfilled=function(t){return this._addFulfilled(t),this._fulfilled()===this.howMany()&&(this._values.length=this.howMany(),1===this.howMany()&&this._unwrap?this._resolve(this._values[0]):this._resolve(this._values),!0)},l.prototype._promiseRejected=function(t){return this._addRejected(t),this._checkOutcome()},l.prototype._promiseCancelled=function(){return this._values instanceof e||null==this._values?this._cancel():(this._addRejected(c),this._checkOutcome())},l.prototype._checkOutcome=function(){if(this.howMany()>this._canPossiblyFulfill()){for(var t=new s,e=this.length();e<this._values.length;++e)this._values[e]!==c&&t.push(this._values[e]);return t.length>0?this._reject(t):this._cancel(),!0}return!1},l.prototype._fulfilled=function(){return this._totalResolved},l.prototype._rejected=function(){return this._values.length-this.length()},l.prototype._addRejected=function(t){this._values.push(t)},l.prototype._addFulfilled=function(t){this._values[this._totalResolved++]=t},l.prototype._canPossiblyFulfill=function(){return this.length()-this._rejected()},l.prototype._getRangeError=function(t){var e="Input array must contain at least "+this._howMany+" items but contains only "+t+" items";return new o(e)},l.prototype._resolveEmptyArray=function(){this._reject(this._getRangeError(0))},e.some=function(t,e){return u(t,e)},e.prototype.some=function(t){return u(this,t)},e._SomePromiseArray=l}},{"./errors":12,"./util":36}],32:[function(t,e,n){"use strict";e.exports=function(t){function e(t){void 0!==t?(t=t._target(),this._bitField=t._bitField,this._settledValueField=t._isFateSealed()?t._settledValue():void 0):(this._bitField=0,this._settledValueField=void 0)}e.prototype._settledValue=function(){return this._settledValueField};var n=e.prototype.value=function(){if(!this.isFulfilled())throw new TypeError("cannot get fulfillment value of a non-fulfilled promise\n\n    See http://goo.gl/MqrFmX\n");return this._settledValue()},r=e.prototype.error=e.prototype.reason=function(){if(!this.isRejected())throw new TypeError("cannot get rejection reason of a non-rejected promise\n\n    See http://goo.gl/MqrFmX\n");return this._settledValue()},i=e.prototype.isFulfilled=function(){return 0!=(33554432&this._bitField)},o=e.prototype.isRejected=function(){return 0!=(16777216&this._bitField)},s=e.prototype.isPending=function(){return 0==(50397184&this._bitField)},a=e.prototype.isResolved=function(){return 0!=(50331648&this._bitField)};e.prototype.isCancelled=function(){return 0!=(8454144&this._bitField)},t.prototype.__isCancelled=function(){return 65536==(65536&this._bitField)},t.prototype._isCancelled=function(){return this._target().__isCancelled()},t.prototype.isCancelled=function(){return 0!=(8454144&this._target()._bitField)},t.prototype.isPending=function(){return s.call(this._target())},t.prototype.isRejected=function(){return o.call(this._target())},t.prototype.isFulfilled=function(){return i.call(this._target())},t.prototype.isResolved=function(){return a.call(this._target())},t.prototype.value=function(){return n.call(this._target())},t.prototype.reason=function(){var t=this._target();return t._unsetRejectionIsUnhandled(),r.call(t)},t.prototype._value=function(){return this._settledValue()},t.prototype._reason=function(){return this._unsetRejectionIsUnhandled(),this._settledValue()},t.PromiseInspection=e}},{}],33:[function(t,e,n){"use strict";e.exports=function(e,n){var r=t("./util"),i=r.errorObj,o=r.isObject,s={}.hasOwnProperty;return function(t,a){if(o(t)){if(t instanceof e)return t;var c=function(t){try{return function(t){return t.then}(t)}catch(t){return i.e=t,i}}(t);if(c===i){a&&a._pushContext();var l=e.reject(c.e);return a&&a._popContext(),l}if("function"==typeof c)return function(t){try{return s.call(t,"_promise0")}catch(t){return!1}}(t)?(l=new e(n),t._then(l._fulfill,l._reject,void 0,l,null),l):function(t,o,s){var a=new e(n),c=a;s&&s._pushContext(),a._captureStackTrace(),s&&s._popContext();var l=!0,u=r.tryCatch(o).call(t,p,h);function p(t){a&&(a._resolveCallback(t),a=null)}function h(t){a&&(a._rejectCallback(t,l,!0),a=null)}return l=!1,a&&u===i&&(a._rejectCallback(u.e,!0,!0),a=null),c}(t,c,a)}return t}}},{"./util":36}],34:[function(t,e,n){"use strict";e.exports=function(e,n,r){var i=t("./util"),o=e.TimeoutError;function s(t){this.handle=t}s.prototype._resultCancelled=function(){clearTimeout(this.handle)};var a=function(t){return c(+this).thenReturn(t)},c=e.delay=function(t,i){var o,c;return void 0!==i?(o=e.resolve(i)._then(a,null,null,t,void 0),r.cancellation()&&i instanceof e&&o._setOnCancel(i)):(o=new e(n),c=setTimeout((function(){o._fulfill()}),+t),r.cancellation()&&o._setOnCancel(new s(c)),o._captureStackTrace()),o._setAsyncGuaranteed(),o};function l(t){return clearTimeout(this.handle),t}function u(t){throw clearTimeout(this.handle),t}e.prototype.delay=function(t){return c(t,this)},e.prototype.timeout=function(t,e){var n,a;t=+t;var c=new s(setTimeout((function(){n.isPending()&&function(t,e,n){var r;r="string"!=typeof e?e instanceof Error?e:new o("operation timed out"):new o(e),i.markAsOriginatingFromRejection(r),t._attachExtraTrace(r),t._reject(r),null!=n&&n.cancel()}(n,e,a)}),t));return r.cancellation()?(a=this.then(),(n=a._then(l,u,void 0,c,void 0))._setOnCancel(c)):n=this._then(l,u,void 0,c,void 0),n}}},{"./util":36}],35:[function(t,e,n){"use strict";e.exports=function(e,n,r,i,o,s){var a=t("./util"),c=t("./errors").TypeError,l=t("./util").inherits,u=a.errorObj,p=a.tryCatch,h={};function f(t){setTimeout((function(){throw t}),0)}function _(t,n){var i=0,s=t.length,a=new e(o);return function o(){if(i>=s)return a._fulfill();var c=function(t){var e=r(t);return e!==t&&"function"==typeof t._isDisposable&&"function"==typeof t._getDisposer&&t._isDisposable()&&e._setDisposable(t._getDisposer()),e}(t[i++]);if(c instanceof e&&c._isDisposable()){try{c=r(c._getDisposer().tryDispose(n),t.promise)}catch(t){return f(t)}if(c instanceof e)return c._then(o,f,null,null,null)}o()}(),a}function d(t,e,n){this._data=t,this._promise=e,this._context=n}function v(t,e,n){this.constructor$(t,e,n)}function y(t){return d.isDisposer(t)?(this.resources[this.index]._setDisposable(t),t.promise()):t}function g(t){this.length=t,this.promise=null,this[t-1]=null}d.prototype.data=function(){return this._data},d.prototype.promise=function(){return this._promise},d.prototype.resource=function(){return this.promise().isFulfilled()?this.promise().value():h},d.prototype.tryDispose=function(t){var e=this.resource(),n=this._context;void 0!==n&&n._pushContext();var r=e!==h?this.doDispose(e,t):null;return void 0!==n&&n._popContext(),this._promise._unsetDisposable(),this._data=null,r},d.isDisposer=function(t){return null!=t&&"function"==typeof t.resource&&"function"==typeof t.tryDispose},l(v,d),v.prototype.doDispose=function(t,e){return this.data().call(t,t,e)},g.prototype._resultCancelled=function(){for(var t=this.length,n=0;n<t;++n){var r=this[n];r instanceof e&&r.cancel()}},e.using=function(){var t=arguments.length;if(t<2)return n("you must pass at least 2 arguments to Promise.using");var i,o=arguments[t-1];if("function"!=typeof o)return n("expecting a function but got "+a.classString(o));var c=!0;2===t&&Array.isArray(arguments[0])?(t=(i=arguments[0]).length,c=!1):(i=arguments,t--);for(var l=new g(t),h=0;h<t;++h){var f=i[h];if(d.isDisposer(f)){var v=f;(f=f.promise())._setDisposable(v)}else{var m=r(f);m instanceof e&&(f=m._then(y,null,null,{resources:l,index:h},void 0))}l[h]=f}var b=new Array(l.length);for(h=0;h<b.length;++h)b[h]=e.resolve(l[h]).reflect();var w=e.all(b).then((function(t){for(var e=0;e<t.length;++e){var n=t[e];if(n.isRejected())return u.e=n.error(),u;if(!n.isFulfilled())return void w.cancel();t[e]=n.value()}C._pushContext(),o=p(o);var r=c?o.apply(void 0,t):o(t),i=C._popContext();return s.checkForgottenReturns(r,i,"Promise.using",C),r})),C=w.lastly((function(){var t=new e.PromiseInspection(w);return _(l,t)}));return l.promise=C,C._setOnCancel(l),C},e.prototype._setDisposable=function(t){this._bitField=131072|this._bitField,this._disposer=t},e.prototype._isDisposable=function(){return(131072&this._bitField)>0},e.prototype._getDisposer=function(){return this._disposer},e.prototype._unsetDisposable=function(){this._bitField=-131073&this._bitField,this._disposer=void 0},e.prototype.disposer=function(t){if("function"==typeof t)return new v(t,this,i());throw new c}}},{"./errors":12,"./util":36}],36:[function(t,e,i){"use strict";var o=t("./es5"),s="undefined"==typeof navigator,a={e:{}},c,l="undefined"!=typeof self?self:"undefined"!=typeof window?window:void 0!==n.g?n.g:void 0!==this?this:null;function u(){try{var t=c;return c=null,t.apply(this,arguments)}catch(t){return a.e=t,a}}function p(t){return c=t,u}var h=function(t,e){var n={}.hasOwnProperty;function r(){for(var r in this.constructor=t,this.constructor$=e,e.prototype)n.call(e.prototype,r)&&"$"!==r.charAt(r.length-1)&&(this[r+"$"]=e.prototype[r])}return r.prototype=e.prototype,t.prototype=new r,t.prototype};function f(t){return null==t||!0===t||!1===t||"string"==typeof t||"number"==typeof t}function _(t){return"function"==typeof t||"object"==typeof t&&null!==t}function d(t){return f(t)?new Error(T(t)):t}function v(t,e){var n,r=t.length,i=new Array(r+1);for(n=0;n<r;++n)i[n]=t[n];return i[n]=e,i}function y(t,e,n){if(!o.isES5)return{}.hasOwnProperty.call(t,e)?t[e]:void 0;var r=Object.getOwnPropertyDescriptor(t,e);return null!=r?null==r.get&&null==r.set?r.value:n:void 0}function g(t,e,n){if(f(t))return t;var r={value:n,configurable:!0,enumerable:!1,writable:!0};return o.defineProperty(t,e,r),t}function m(t){throw t}var b=function(){var t=[Array.prototype,Object.prototype,Function.prototype],e=function(e){for(var n=0;n<t.length;++n)if(t[n]===e)return!0;return!1};if(o.isES5){var n=Object.getOwnPropertyNames;return function(t){for(var r=[],i=Object.create(null);null!=t&&!e(t);){var s;try{s=n(t)}catch(t){return r}for(var a=0;a<s.length;++a){var c=s[a];if(!i[c]){i[c]=!0;var l=Object.getOwnPropertyDescriptor(t,c);null!=l&&null==l.get&&null==l.set&&r.push(c)}}t=o.getPrototypeOf(t)}return r}}var r={}.hasOwnProperty;return function(n){if(e(n))return[];var i=[];t:for(var o in n)if(r.call(n,o))i.push(o);else{for(var s=0;s<t.length;++s)if(r.call(t[s],o))continue t;i.push(o)}return i}}(),w=/this\s*\.\s*\S+\s*=/;function C(t){try{if("function"==typeof t){var e=o.names(t.prototype),n=o.isES5&&e.length>1,r=e.length>0&&!(1===e.length&&"constructor"===e[0]),i=w.test(t+"")&&o.names(t).length>0;if(n||r||i)return!0}return!1}catch(t){return!1}}function E(t){function e(){}e.prototype=t;var n=new e;function r(){return typeof n.foo}return r(),r(),t}var j=/^[a-z$_][a-z$_0-9]*$/i;function k(t){return j.test(t)}function F(t,e,n){for(var r=new Array(t),i=0;i<t;++i)r[i]=e+i+n;return r}function T(t){try{return t+""}catch(t){return"[no string representation]"}}function x(t){return t instanceof Error||null!==t&&"object"==typeof t&&"string"==typeof t.message&&"string"==typeof t.name}function S(t){try{g(t,"isOperational",!0)}catch(t){}}function A(t){return null!=t&&(t instanceof Error.__BluebirdErrorTypes__.OperationalError||!0===t.isOperational)}function R(t){return x(t)&&o.propertyIsWritable(t,"stack")}var P="stack"in new Error?function(t){return R(t)?t:new Error(T(t))}:function(t){if(R(t))return t;try{throw new Error(T(t))}catch(t){return t}};function O(t){return{}.toString.call(t)}function L(t,e,n){for(var r=o.names(t),i=0;i<r.length;++i){var s=r[i];if(n(s))try{o.defineProperty(e,s,o.getDescriptor(t,s))}catch(t){}}}var N=function(t){return o.isArray(t)?t:null};if("undefined"!=typeof Symbol&&Symbol.iterator){var V="function"==typeof Array.from?function(t){return Array.from(t)}:function(t){for(var e,n=[],r=t[Symbol.iterator]();!(e=r.next()).done;)n.push(e.value);return n};N=function(t){return o.isArray(t)?t:null!=t&&"function"==typeof t[Symbol.iterator]?V(t):null}}var I="undefined"!=typeof process&&"[object process]"===O(process).toLowerCase(),H="undefined"!=typeof process&&void 0!==process.env,B;function D(t){return H?process.env[t]:void 0}function U(){if("function"==typeof r)try{if("[object Promise]"===O(new r((function(){}))))return r}catch(t){}}function M(t,e){if(null===t||"function"!=typeof e||e===B)return e;null!==t.domain&&(e=t.domain.bind(e));var n=t.async;if(null!==n){var r=e;e=function(){var t=new Array(2).concat([].slice.call(arguments));return t[0]=r,t[1]=this,n.runInAsyncScope.apply(n,t)}}return e}var q={setReflectHandler:function(t){B=t},isClass:C,isIdentifier:k,inheritedDataKeys:b,getDataPropertyOrDefault:y,thrower:m,isArray:o.isArray,asArray:N,notEnumerableProp:g,isPrimitive:f,isObject:_,isError:x,canEvaluate:s,errorObj:a,tryCatch:p,inherits:h,withAppended:v,maybeWrapAsError:d,toFastProperties:E,filledRange:F,toString:T,canAttachTrace:R,ensureErrorObject:P,originatesFromRejection:A,markAsOriginatingFromRejection:S,classString:O,copyDescriptors:L,isNode:I,hasEnvVariables:H,env:D,global:l,getNativePromise:U,contextBind:M},G;q.isRecentNode=q.isNode&&(process.versions&&process.versions.node?G=process.versions.node.split(".").map(Number):process.version&&(G=process.version.split(".").map(Number)),0===G[0]&&G[1]>10||G[0]>0),q.nodeSupportsAsyncResource=q.isNode&&function(){var e=!1;try{e="function"==typeof t("async_hooks").AsyncResource.prototype.runInAsyncScope}catch(t){e=!1}return e}(),q.isNode&&q.toFastProperties(process);try{throw new Error}catch(t){q.lastLineError=t}e.exports=q},{"./es5":13,async_hooks:void 0}]},{},[4])(4)},t.exports=i(),"undefined"!=typeof window&&null!==window?window.P=window.Promise:"undefined"!=typeof self&&null!==self&&(self.P=self.Promise)}},__webpack_module_cache__={};function __webpack_require__(t){var e=__webpack_module_cache__[t];if(void 0!==e)return e.exports;var n=__webpack_module_cache__[t]={exports:{}};return __webpack_modules__[t](n,n.exports,__webpack_require__),n.exports}__webpack_require__.g=function(){if("object"==typeof globalThis)return globalThis;try{return this||new Function("return this")()}catch(t){if("object"==typeof window)return window}}();var __webpack_exports__={};!function(){var Promise=__webpack_require__(6624);const{KEY_FORCE_AGENT:KEY_FORCE_AGENT,KEY_AGENT_VERSION:KEY_AGENT_VERSION,KEY_ENABLE_AGENT:KEY_ENABLE_AGENT,KEY_SYNC_LOAD:KEY_SYNC_LOAD}=__webpack_require__(752);(function(){const resourceBasePath="/678c37f1-fcea-354f-853d-32b794d02404",csmBasePath="/4359d65e-dd82-3237-8c34-3c0c315503df",getVersionIntervalSeconds="300";let enableAgent=!1,syncLoad=!1,agentVersion,forceAgent=getBooleanFromLocalStorage(KEY_FORCE_AGENT),agentLoaded=!1;function getBooleanFromLocalStorage(t){return"true"===getFromLocalStorage(t)}function getFromLocalStorage(t){return localStorage.getItem(t)}function loader(){let t=3e4;parseInt(getVersionIntervalSeconds)>0&&(t=1e3*getVersionIntervalSeconds),captureConfig(),init().then((()=>{setTimeout(loader,t)})).catch((e=>{console.error(e),setTimeout(loader,t)}))}function captureConfig(t){enableAgent=void 0,syncLoad=void 0,agentVersion=void 0,forceAgent=getBooleanFromLocalStorage(KEY_FORCE_AGENT),t?(enableAgent=t.enableAgent,syncLoad=t.syncLoad,agentVersion=t.agentVersion,localStorage.setItem(KEY_AGENT_VERSION,agentVersion),localStorage.setItem(KEY_ENABLE_AGENT,enableAgent),localStorage.setItem(KEY_SYNC_LOAD,syncLoad)):(enableAgent=getBooleanFromLocalStorage(KEY_ENABLE_AGENT),syncLoad=getBooleanFromLocalStorage(KEY_SYNC_LOAD),agentVersion=getFromLocalStorage(KEY_AGENT_VERSION))}function init(){return new Promise(((t,e)=>{syncLoad&&enableAgent?loadAgentCode().then((()=>{loadConfigFromServer().then((()=>t())).catch((t=>e(t)))})):loadConfigFromServer().then((()=>(isAgentRequired()&&loadAgentCode().then((()=>t())).catch((t=>e(t))),t())))}))}function loadConfigFromServer(){return new Promise((async(t,e)=>{try{const n=await fetch(`${csmBasePath}/eudaapi/version`,{method:"POST",headers:{Accept:"application/json","Content-Type":"application/json"},body:JSON.stringify({location:location.href})});n.status>=400&&e("Bad response from server");captureConfig(await n.json()),t()}catch(t){e(t)}}))}function isAgentRequired(){return!!forceAgent||enableAgent}function loadAgentCodeAsync(t){return new Promise(((e,n)=>{let r=0,i=setInterval((()=>{r++;let o=document.getElementsByTagName("head")[0];if(o){clearInterval(i);let n=document.createElement("script");return n.src=t,o.appendChild(n),agentLoaded=!0,e()}if(r>10)return clearInterval(i),console.info("couldn't load script no Head present"),n()}),10)}))}function loadAgentCodeSync(url){return new Promise(((resolve,reject)=>{let xhr=new XMLHttpRequest;xhr.onreadystatechange=function(){if(this.readyState)return 200===this.status?(eval(xhr.responseText),agentLoaded=!0,resolve()):reject(`request returned status ${this.status}`)},xhr.open("GET",url,!1),xhr.send()}))}function loadAgentCode(){return new Promise(((t,e)=>{if(agentLoaded)return t();let n=`${resourceBasePath}/eudaapi/get-script/euda?ver=${agentVersion}`;syncLoad?loadAgentCodeSync(n).then((()=>t())).catch((t=>e(t))):loadAgentCodeAsync(n).then((()=>t())).catch((t=>e(t)))}))}loader()})()}()})();
+//# sourceMappingURL=capture.bundle.js.map{}
+</script>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<!-- /jsp/jsi/headerInit_Performer_Page -->
+<script>
+	function getReferrer(){
+		const d = new Date();
+		d.setTime(d.getTime()+(60 * 1000));
+		const expires = "expires="+d.toGMTString();
+		document.cookie = "mako_referrer=" + (document.referrer || "empty") +"; " + expires + ";domain=.mako.co.il;path=/";
+	}
+	var agent = navigator.userAgent.toLowerCase();
+	var myUrl = window.location.href.toLowerCase();
+	if(agent.indexOf('android') != -1 || agent.indexOf('iphone') != -1 || agent.indexOf('ipad') != -1){
+		if(location.host.indexOf("shironet") == 0)
+		{
+			getReferrer();
+			window.location = myUrl.replace(location.host,'m'+location.host);
+		}
+	}
+	else{
+		if(location.host.indexOf("mshironet") == 0)
+		{
+			getReferrer();
+			window.location = myUrl.replace(location.host,location.host.substring(1));
+		}
+	}
+
+</script>
+<meta name="expires" content="never" />
+<meta name="language" content="hebrew" />
+<meta name="distribution" content="Global" />
+<meta name="robots" content="index, follow" />
+
+<link rel="SHORTCUT ICON" href="/jsp/images/shironet.ico" />
+<link href="/jsp/css/global.css" rel="stylesheet" type="text/css" />
+<link href="/jsp/css/header.css" rel="stylesheet" type="text/css" />
+<link href="/jsp/css/talkbacks.css" rel="stylesheet" type="text/css" />
+<link href="/jsp/css/footer.css" rel="stylesheet" type="text/css" />
+<link href="/jsp/css/googleAds.css" rel="stylesheet"/>
+
+
+
+<script src="/js/ajax.js" language="javascript"></script>
+<script src="/js/general.js" language="javascript"></script>
+<script>
+	MM_preloadImages('/jsp/images/global_bg_top_left.gif', '/jsp/images/global_bg_top_right.gif', '/jsp/images/global_bg_left.gif', '/jsp/images/global_bg_right.gif', '/jsp/images/header_blue_bg_980.jpg', '/jsp/images/header_search_box_bg.jpg', '/jsp/images/global_main_td_shadow.jpg', '/jsp/images/global_bg_top_gray.gif', '/jsp/images/global_main_td_shadow.jpg','/jsp/images/global_table_shadow_1020.gif', '/jsp/images/artist_menu_box.gif', '/jsp/images/artist_menu_box_hover.gif');
+</script>
+<script async src="//mrb.upapi.net/code?w=5632346594213888&uponit=true"></script><link href="/jsp/css/artist.css" rel="stylesheet" type="text/css" />
+	<script src="/js/performerAjax.js" language="javascript"></script>
+	<script src="/js/performer.js" language="javascript"></script>
+	<script src="/js/dw_cookies.js" language="javascript"></script>
+	
+	<meta name="description" content="מילים לשיר אליפלט של אריק איינשטיין באתר שירונט. אתר שירונט מספק מידע על כל האמנים בישראל ובעולם, כולל מילים לשירים, אקורדים, קליפים ועוד" />
+		<title>מילים לשיר אליפלט - אריק איינשטיין  - שירונט</title>
+		<meta property="og:title" content="מילים לשיר אליפלט - אריק איינשטיין "/>
+		<meta property="og:url" content="https://shironet.mako.co.il/artist?type=lyrics&lang=1&prfid=166&wrkid=307 "/>
+		<meta property="og:image" content="https://mediashironet.mako.co.il/media/performers/heb/0/166/profile/166_t110.jpg"/>
+		<meta property="og:type" content="song"/>
+		<link rel="image_src" href="https://mediashironet.mako.co.il/media/performers/heb/0/166/profile/166_t110.jpg" />
+		<link rel="canonical" href="https://shironet.mako.co.il/artist?type=lyrics&lang=1&prfid=166&wrkid=307" />
+		<link rel="alternate" media="handheld" href="https://mshironet.mako.co.il/artist?type=lyrics&lang=1&prfid=166&wrkid=307" />
+		
+		<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "MusicRecording",
+    "url": "https://shironet.mako.co.il/artist?type=lyrics&lang=1&prfid=166&wrkid=307",
+    "name": "אליפלט",
+    "byArtist":
+		{       "@type": "MusicGroup",         
+				"name": "אריק איינשטיין", 
+				"url": "https://shironet.mako.co.il/artist?prfid=166&lang=1",
+				"image": "https://mediashironet.mako.co.il/media/performers/heb/0/166/profile/166_t152.jpg"     
+		}
+}
+		</script>
+		
+	<meta property="og:site_name" content="שירונט"/>
+	<meta property="fb:app_id" content="225736910835244"/>
+	<meta property="og:description" content="שירים, שמות שירים, אקורדים לשירים, חדשות ועוד"/>
+<script>var __uzdbm_1 = "80363aec-72bc-4d26-ba39-d685a2005e43";var __uzdbm_2 = "NDRkMjQ3NDctY2MzZi00YTgxLTkxMmItMzE0N2U1NzRiODljJDIxNy4xMzIuMTMyLjYx";var __uzdbm_3 = "7f600006744ce1-3cee-45dd-86a5-5b15378d0cfd17200843815361376965644-e49056b228dc356d22";var __uzdbm_4 = "false";var __uzdbm_5 = "uzmx";var __uzdbm_6 = "7f90004187ea0b-1e11-4e8b-ad7a-b8b3ab979e635-17171846355754276711605-043722f7d3dca47f37";var __uzdbm_7 = "mako.co.il";</script> <script>   (function (w, d, e, u, c, g, a, b) {     w["SSJSConnectorObj"] = w["SSJSConnectorObj"] || {       ss_cid: c,       domain_info: "auto",     };     w[g] = function (i, j) {       w["SSJSConnectorObj"][i] = j;     };     a = d.createElement(e);     a.async = true;     if (       navigator.userAgent.indexOf('MSIE') !== -1 ||       navigator.appVersion.indexOf('Trident/') > -1     ) {       u = u.replace("/advanced/", "/advanced/ie/");     }     a.src = u;     b = d.getElementsByTagName(e)[0];     b.parentNode.insertBefore(a, b);   })(     window, document, "script", "https://shironet.mako.co.il/18f5227b-e27b-445a-a53f-f845fbe69b40/stormcaster.js", "cc3h", "ssConf"   );   ssConf("c1", "https://shironet.mako.co.il");   ssConf("c3", "c99a4269-161c-4242-a3f0-28d44fa6ce24");   ssConf("au", "shironet.mako.co.il");   ssConf("cu", "validate.perfdrive.com, ssc"); </script></head>
+<body>
+<div id="fb-root"></div>
+<script>
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+
+window.fbAsyncInit = function () {
+	 		      FB.init({
+	 		        appId: "1562619343827114",
+	 		        xfbml: true,
+	 		        version: 'v2.8'
+	 		      });
+	 		      FB.AppEvents.logPageView();
+	 		  };
+</script><script type='text/javascript'>
+	var googletag = googletag || {};
+	googletag.cmd = googletag.cmd || [];
+	(function() {
+	var gads = document.createElement('script');
+	gads.async = true;
+	gads.type = 'text/javascript';
+	var useSSL = 'https:' == document.location.protocol;
+	gads.src = (useSSL ? 'https:' : 'http:') + 
+	'//securepubads.g.doubleclick.net/tag/js/gpt.js';
+	var node = document.getElementsByTagName('script')[0];
+	node.parentNode.insertBefore(gads, node);
+	})();
+	</script>
+	
+	<script type='text/javascript'>	
+
+				var DFP = { isOzen: false,
+				
+		showOzenIfPossible: function(){
+		    		var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;		    		
+		    		if (width >= 1228) 
+		    			googletag.cmd.push(function() { googletag.display('CM8ShowAd_OZEN1_120X600'); });
+		},
+		getDecision: function(a,b,c,d){			
+	if (d == 'ELVIS_MEGAPLASMA' || d == 'ELVIS_PLASMA' || d == 'Plasma_HP' || d == 'Billboard' || d == 'mega_Plasma_HP' ){
+		if(!c){
+
+			if (d != 'Plasma_HP' && d != 'Billboard' ){
+				
+			}
+			else if(d == 'Plasma_HP' && !this.isOzen){
+				DFP.showOzenIfPossible();
+				this.isOzen = true;
+			}
+			else if(d == 'Billboard'){
+				 $('#CM8ShowAd_JAMBO1_970X90').show();
+				 $('#CM8ShowAd_MEGA_PLASMA_970X330').hide();
+				} 
+
+		}else if(c){
+
+			if(d != 'Plasma_HP'){
+				$('#CM8ShowAd_MEGA_PLASMA_970X330').hide();
+				DFP.showOzenIfPossible();
+				googletag.cmd.push(function() { googletag.display('CM8ShowAd_JAMBO1_970X90'); });
+				this.isOzen = true;
+			}
+			
+			else if(this.isOzen){
+				googletag.cmd.push(function() { googletag.display('CM8ShowAd_JAMBO1_970X90'); });
+			}
+			else{
+				googletag.cmd.push(function() { googletag.display('CM8ShowAd_JAMBO1_970X90'); });
+				DFP.showOzenIfPossible();
+			}
+			if(d == 'Billboard'){
+				 $('#CM8ShowAd_JAMBO1_970X90').hide();
+			} 
+			
+		}
+	}		
+ } 
+};
+googletag.cmd.push(function() {
+// permutive code
+if(0===window.googletag.pubads().getTargeting("permutive").length){var g=window.localStorage.getItem("_pdfps");window.googletag.pubads().setTargeting("permutive",g?JSON.parse(g):[])}
+// end permutive code
+googletag.defineSlot('/242748299/shironnet/PREMIUM',[[970,330],[5,5],[3,3],[970,250]],'CM8ShowAd_MEGA_PLASMA_970X330').addService(googletag.pubads()).setTargeting("FORMAT", ["PLASMA1_970","MEGA_PLASMA","ELVIS_MEGAPLASMA","ELVIS_PLASMA","Billboard970"]).setCollapseEmptyDiv(true,true);
+googletag.defineSlot('/242748299/shironnet/JAMBO1_970',[970,90], 'CM8ShowAd_JAMBO1_970X90').addService(googletag.pubads()).setTargeting("FORMAT", "JAMBO1_970").setCollapseEmptyDiv(true,true);
+googletag.defineSlot('/242748299/shironnet/OZEN',[[120,600]],'CM8ShowAd_OZEN1_120X600').addService(googletag.pubads()).setTargeting("FORMAT","OZEN");
+googletag.defineSlot('/242748299/shironnet/MONSTER1_250',[250,250], 'CM8ShowAd_MONSTER1_250X250').addService(googletag.pubads()).setTargeting("FORMAT", "MONSTER1_250");
+googletag.defineSlot('/242748299/shironnet/MONSTER2_250',[250,250], 'CM8ShowAd_MONSTER2_250X250').addService(googletag.pubads()).setTargeting("FORMAT", "MONSTER2_250");
+googletag.defineSlot('/242748299/shironnet/STANDARD1',[234,60],'CM8ShowAd_STANDARD1_234X60').addService(googletag.pubads()).setTargeting("FORMAT","STANDARD1");
+
+	if (location.hostname != 'shironet.mako.co.il'){googletag.pubads().setTargeting("TEST", "TEST");}
+	
+googletag.enableServices();
+});
+</script>
+<script>
+        !function(n,e,o,r,i){if(!e){e=e||{},window.permutive=e,e.q=[],e.config=i||{},e.config.projectId=o,e.config.apiKey=r,e.config.environment=e.config.environment||"production";for(var t=["addon","identify","track","trigger","query","segment","segments","ready","on","once","user","consent"],c=0;c<t.length;c++){var f=t[c];e[f]=function(n){return function(){var o=Array.prototype.slice.call(arguments,0);e.q.push({functionName:n,arguments:o})}}(f)}}}(document,window.permutive,"e40fe333-ed16-40e2-902d-2810c99b8c80","34892ffd-594e-409e-a5b1-d4caa1655e1a",{});
+  		window.addEventListener("DOMContentLoaded", function () {
+    		permutive.addon("web", {
+        		page: {
+            publisher: "keshet",
+            category: (function () {
+                try {
+                  return window.location.pathname;
+                } catch (e) {
+                    return null;
+                }
+            })(),
+            description: (function () {
+                try {
+                    return document.querySelectorAll('meta[name="description"]')[0].content || null;
+                } catch (e) {
+                    return null;
+                }
+            })(),
+            dayofweek: (new Date).toLocaleDateString("en-us", {
+                weekday: "long"
+            }),
+            article: {
+                publishingdate: null,
+                author: null,
+                editortags: (function () {
+                    try {
+                        var nodes = document.querySelectorAll('meta[property="og:description"]');
+                        var keywords = [];
+                        for (var i = 0; i < nodes.length; ++i) {
+                            keywords = keywords.concat(nodes[i].content.split(',').map(function (k) {
+                                return k.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+                            }));
+                        }
+                        return keywords;
+                    } catch (t) {
+                        return null;
+                    }
+                })()
+            }
+        }
+    })
+});
+</script>
+<script async src="https://cdn.permutive.com/e40fe333-ed16-40e2-902d-2810c99b8c80-web.js"></script>
+<script async src="//mrb.upapi.net/code?w=5632346594213888&uponit=true"></script>
+<!-- GTM ----------- -->
+
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-WH7Q78" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WH7Q78');</script>
+
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-W46HF6" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W46HF6');</script>
+
+<!-- End GTM ----------- -->
+<div id="CM8ShowAd_MEGA_PLASMA_970X330" title="MEGA_PLASMA_970X330">
+	<script type='text/javascript'>
+			googletag.cmd.push(function() { googletag.display('CM8ShowAd_MEGA_PLASMA_970X330'); });			
+	</script>
+</div>
+<div id="CM8ShowAd_JAMBO1_970X90" data-title="JAMBO1_970X90"></div>
+<div id="CM8ShowAd_OZEN1_120X600"></div>
+
+ 
+<form id="headerSearchForm0" name="headerSearchForm0" action="/search" method="get">
+	<input type="hidden" id="q" name="q">
+</form>												
+
+<form id="headerSearchForm1" name="headerSearchForm1" action="/searchSongs" method="get">
+	<input type="hidden" id="q" name="q">
+	<input type="hidden" id="type" name="type" value="works">
+</form>
+
+<form id="headerSearchForm2" name="headerSearchForm2" action="/searchSongs" method="get">
+	<input type="hidden" id="q" name="q">
+	<input type="hidden" id="type" name="type" value="lyrics">
+</form>
+
+<form id="headerSearchForm3" name="headerSearchForm3" action="/searchArtists" method="get">
+	<input type="hidden" id="q" name="q">
+</form>
+
+
+<table width="1020" border="0" cellspacing="0" cellpadding="0" dir="rtl" align="center">
+	<tr>
+		<td align="center" class="global_main_shadow">
+			<table width="1020" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="20" align="left" valign="top">
+						<img src="/jsp/images/global_bg_top_right.gif" width="20" height="184" /></td>
+					<td>
+						<table width="980" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td align="center" valign="top" class="global_content">
+									<table width="980" border="0" cellspacing="0" cellpadding="0">
+									    <tr><td>
+											<link rel="stylesheet" href="/jsp/css/mako.css"/>
+				                            <div id="mako_top_bar">
+				                            	<p>
+				                            		<label><a href="//www.mako.co.il/&Partner=shironet"></a></label>
+				                            		
+														<fb:like href="https://www.facebook.com/keshet.mako" send="false" layout="button_count" width="85" show_faces="false" colorscheme="dark"></fb:like>				                            		
+				                            		<a href="https://www.mako.co.il/?Partner=shironet">ראשי</a>	
+				                            		<a href="https://www.mako.co.il/music?Partner=shironet">מוזיקה</a>	
+				                            		<a href="https://hitlist.mako.co.il/?Partner=shironet">היטליסט</a>
+																				<a href="https://www.mako.co.il/entertainment?Partner=shironet">סלבס</a>
+																				<a href="https://www.mako.co.il/culture?Partner=shironet">תרבות</a>
+				                            		<a href="https://www.mako.co.il/mako-vod?Partner=shironet">+12</a>
+				                            		<button></button>
+				                            		<input>
+				                            		<span class="err">נא להזין 2 תווים לפחות</span>
+				                            	</p>		 	
+				                            </div>	
+				                            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>								        
+				                            <script src="/js/mako.js"></script>								        
+									    </td></tr>									
+										<tr>
+											<td height="108" align="center" valign="top" class="header_main_bg">
+												<table width="960" border="0" cellspacing="0" cellpadding="0">
+													<tr>
+														<td rowspan="3" width="257">
+															<a href="/"><img width="240" height="89" border="0" src="/jsp/images/blank.gif" title="מילים לשירים - שירונט"/></a>
+														</td>
+														<!-- HEADER REMOVED -->
+														<!--
+														<td align="left">
+															<table width="0" border="0" cellpadding="0" cellspacing="0" class="header_user_menu_text">
+																<tr>
+																	<td id="headerUserName">
+																		&#1513;&#1500;&#1493;&#1501; &#1488;&#1493;&#1512;&#1495;!&nbsp;|&nbsp;
+																	</td>
+																	
+																	<td id="headerRegister">
+																		<a href="/jsp/users/register.jsp" class="header_user_menu">&#1492;&#1497;&#1512;&#1513;&#1501;</a>&nbsp;|&nbsp;
+																	</td>
+																	
+																	<td id="headerLogin">
+																		<a href="/jsp/users/login.jsp?retURL=/artist@lang=1~prfid=166~type=lyrics~wrkid=307" class="header_user_menu">&#1492;&#1514;&#1495;&#1489;&#1512;</a>&nbsp;|&nbsp;
+																	</td>
+
+																	<td id="headerControlPanel" style="display: none;">
+																		<a href="/servlet/com.dic.shironet.users.site.servletUserControlPanel" class="header_user_menu">&#1492;&#1492;&#1490;&#1491;&#1512;&#1493;&#1514; &#1513;&#1500;&#1497;</a>&nbsp;|&nbsp;
+																	</td>
+																	
+																	<td id="headerLogoff" style="display: none;">
+																		<a href="/servlet/com.dic.shironet.users.site.servletLogoutUser?retURL=/artist@lang=1~prfid=166~type=lyrics~wrkid=307" class="header_user_menu">&#1492;&#1514;&#1504;&#1514;&#1511;</a>&nbsp;|&nbsp;
+																	</td>
+																	
+																	<td>
+																			<a href="#" onclick="createBookmarkLink(); return false" class="header_user_menu">&#1492;&#1493;&#1505;&#1507; &#1500;&#1502;&#1493;&#1506;&#1491;&#1508;&#1497;&#1501;
+																		<img src="/jsp/images/header_icon_make_hp.gif" width="14" height="13" border="0" /></a></td>
+																</tr>
+															</table>
+														</td>
+														-->
+														<!-- END: HEADER REMOVED-->
+													</tr>
+													
+													<tr>
+														<td>
+															&nbsp;
+														</td>
+													</tr>
+													
+													<tr>
+														<td align="right">
+
+
+															<table border="0" cellspacing="0" cellpadding="0" align="right" width="440">
+																<tr>
+																	<td id="searchTab0" width="63" align="center" class="header_search_box_text_selected" onclick="showSearchTab(0); return false;">הכל</td>
+																	<td id="searchTab1" width="63" align="center" class="header_search_box_text" onclick="showSearchTab(1); return false;">שירים</td>
+																	<td id="searchTab2" width="70" align="center" class="header_search_box_text" onclick="showSearchTab(2); return false;">מילים לשירים</td>
+																	<td id="searchTab3" width="60" align="center" class="header_search_box_text" onclick="showSearchTab(3); return false;">אמנים</td>
+																	<td width="125" align="center">&nbsp;</td>
+																</tr>
+																
+			
+																
+			
+																
+																<tr id="searchBox">
+																	<td width="100%" colspan="6" align="center" valign="middle" class="header_search_box">
+																		<form onsubmit="searchSubmit(); return false;" >
+																			<input type="text" name="query" id="query" class="header_search_field" value="" onkeydown="updateSearchBtn(event);"/>
+																		&nbsp;
+																		<span id="readySearchBtn">
+																			<input type="image" src="/jsp/images/header_search_btn.jpg" name="Search1" id="Search1" width="92" height="30" border="0" align="absmiddle" 
+																			onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('Search1','','/jsp/images/header_search_btn_hover.jpg',1)" 
+																			onclick="searchSubmit(); return false;" />
+																		</span>
+																		<span id="workingSearchBtn" style="position: relative; display: none;">
+																		<image src="/jsp/images/header_search_btn_loader.gif" align="absmiddle"  />
+
+																		</span>
+																	</td>
+																</tr>
+																</form>
+			
+															</table>
+														</td>
+													</tr>
+
+
+													
+				
+													
+												</table>
+											</td>
+										</tr>
+										
+										
+			
+									</table>
+
+
+						   <div id="menu" >
+						    <ul class="menu" id="menu">
+						    <li  class="item1 first "><a href="//shironet.mako.co.il/"><span>ראשי</span></a></li>
+						    <li class="item1 current"><a href="/html/indexes/performers/"><span>אמנים</span></a></li>
+						    <li class="item1"><a href="/html/indexes/performers/index_heb_chords.html"><span>אקורדים</span></a></li>
+						    <li class="item1"><a href="/html/indexes/works/"><span>שירים לפי נושאים</span></a></li>						   
+						    </ul>
+						    
+						   </div>
+								
+			           </td>
+			          </tr>
+						</table>						
+						
+					</td>
+					<td width="20" align="right" valign="top">
+						<img src="/jsp/images/global_bg_top_left.gif" width="20" height="184" /></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+
+<script>
+	//getUserData();
+</script>
+<script src="/js/printPerformer.js"></script>							        
+<table width="1020" border="0" cellspacing="0" cellpadding="0" dir="rtl" align="center">
+	<tr>
+		<td align="center" class="global_main_shadow">
+			<table width="1020" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="20" align="left" valign="top">
+						<img src="/jsp/images/global_bg_right.gif" width="20" height="556" /></td>
+					<td valign="top">
+					<p id="breadcrumbs"><a href="/">עמוד הבית</a> > <a href="/html/indexes/performers/">אמנים ישראלים</a> > <a href="/artist?prfid=166&lang=1 ">אריק איינשטיין</a> > <a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=307">אליפלט</a></p>  
+						<table width="980" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td align="center" valign="top" class="global_content">
+									<table width="100%" border="0" cellspacing="0" cellpadding="0">
+										<tr>
+											<td align="center" valign="top">
+												
+												<table width="100%" border="0" cellspacing="0" cellpadding="0">
+			
+													
+													<tr>
+														<td align="right" valign="top">
+														
+															<table border="0" cellspacing="0" cellpadding="0" width="152">
+
+																<tr>
+							                    <td width="162">
+																		<img src="https://mediashironet.mako.co.il/media/performers/heb/0/166/profile/166_t152.jpg" title="מילים לשירים ואקורדים של אריק איינשטיין" height="200" width="152"/>
+																		</td>
+							                  </tr>
+
+			
+																<tr>
+	<td width="152">
+		<div id="rightMenu">
+			<ul>
+				<li>
+						<a href="/artist?prfid=166&lang=1">ראשי</a>
+				</li>
+				<li>
+					<a href="/artist?type=works&lang=1&prfid=166">שירים</a>
+				</li>
+				<li>
+						<a href="/artist?type=works_chords&lang=1&prfid=166">אקורדים</a>
+					</li>
+				<li>
+						<a href="/artist?type=biography&lang=1&prfid=166">ביוגרפיה</a>
+					</li>
+				<li>
+						<a href="/artist?type=discography&lang=1&prfid=166">דיסקוגרפיה</a>
+				</li>
+				<li>
+						<a href="/artist?type=pictures&lang=1&prfid=166">תמונות</a>
+				</li>
+				</ul>
+		</div>
+		
+	</td>
+</tr>
+<tr>
+																	<td>
+																		&nbsp;
+																	</td>
+																</tr>
+																<tr>
+																	<td align="center">
+																		
+																	</td>
+																</tr>
+																<tr>
+																	<td>&nbsp;</td>
+																</tr>
+																
+																<tr>
+																	<td>&nbsp;</td>
+																</tr>
+
+																</table>
+														</td>
+														
+														<td align="center" valign="top" width="100%" style="padding-left: 5px; padding-right: 5px;padding-top:8px;" >
+															<table width="100%" border="0" cellspacing="0" cellpadding="0">
+																<tr>
+																	<td>
+																		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+																			<tr>
+																				<td align="right" width="70">
+																					<table border="0" cellspacing="0" cellpadding="0">
+																						<tr>
+																						<td valign="bottom" align="right" class="artist_color_green">
+																								<img src="/jsp/images/artist_icon_comments.gif" width="9" height="8" />6 תגובות &nbsp;
+																							</td>
+																						</tr>
+																					</table>																				
+																				</td>
+																				
+																				<td align="center">
+																					<center>
+	<span style="font-size: 12px; text-decoration: none;" id="teaserArea">
+	</span>
+</center>
+</td>
+
+
+																				<td align="left">
+																					<table border="0" cellspacing="9" cellpadding="0" align="left">
+																						<tr>
+																							<td valign="top">
+																								<fb:like href="http://shironet.mako.co.il/artist?type=lyrics&lang=1&prfid=166&wrkid=307" send="false" layout="button_count" width="250" show_faces="false"></fb:like>
+																							</td>
+																							<td valign="top">
+	      																							<a class="artist_utills_links" data-print-url="/artist?type=lyrics&lang=1&prfid=166&wrkid=307&print=true">
+	      																								<img width="20" height="19" border="0" align="absmiddle" alt="הדפסה" title="הדפסה" src="/jsp/images/btn_print.png"/>
+	      																							</a>
+	     																						</td>
+	     																						<td valign="top">
+	        																						<a href="#" class="artist_utills_links" onclick="sendFriend('https://shironet.mako.co.il/artist@lang=1~prfid=166~type=lyrics~wrkid=307'); return false;">
+	      																								<img width="20" height="19" border="0" align="absmiddle" alt="שלח לחבר" title="שלח לחבר" src="/jsp/images/btn_email.png"/ >
+	      																							</a>
+	     																						</td>
+	     																					</tr>
+																					</table>
+																			   </td>
+																			</tr>
+																		</table>
+																	</td>
+																</tr>
+																
+																<tr>
+																	<td style="padding: 1px;"><img align="top" src="/jsp/images/blue-line-940.gif" width="480" height="2"/></td>
+																</tr>
+
+						    
+																<td>
+		<meta itemprop="byArtist" content="אריק איינשטיין">
+		<meta itemprop="inAlbum" content=""></meta>
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" dir="rtl">
+
+			<tr>
+				<td>
+					<span itemprop="name" class="artist_song_name_txt">
+					<h1 class="artist_song_name_txt" style="margin:0;">אליפלט</h1>
+					</span>
+					
+					<a class="artist_singer_title" href="/artist?prfid=166&lang=1">אריק איינשטיין</a>
+
+									<br>
+								<b>מילים: <a class="artist_normal_txt_black" href="/artist?prfid=743&lang=1">נתן אלתרמן</a></b><br>
+								<meta itemprop="lyricist" content="נתן אלתרמן">							
+							<meta itemprop="composer" content="סשה ארגוב">
+																	
+								<b>לחן: <a class="artist_normal_txt_black" href="/artist?prfid=762&lang=1">סשה ארגוב</a></b><br>
+							<a class="artist_normal_txt_black" href="#" onclick="toggleOtherPerformers(); return false;" style="font-weight: bold;">
+							
+							קיימים 7 ביצועים נוספים לשיר זה
+							</a>
+							<span id="otherPerformers" style="display: none; font-weight: bold;">
+								:<br>
+								ביצוע: 	<select class="artist_select" onchange="location.href='/artist?type=lyrics&lang=1&prfid=' + this.value + '&wrkid=307'"> <option value="166" selected>בחר ביצוע</option><option value="202">ברי סחרוף</option><option value="352">התרנגולים</option><option value="419">חנן יובל</option><option value="890">רונית אופיר</option><option value="1030">תרצה אתר</option><option value="85">אושיק לוי</option><option value="15225">גאיה ממן</option></select></span>
+							<br>
+						<span dir="ltr">
+							<img src="/jsp/images/blank.gif" height="5"><br>
+								<a href="/artist?type=chords&lang=1&prfid=166&wrkid=307" class="artist_normal_txt_black"><b>אקורדים</b> <img src="/jsp/images/icon_chords_page.gif" border="0" width="13" height="12"></a>
+						</span>
+						<br><br><br>
+
+					<span  itemprop="Lyrics" class="artist_lyrics_text">נזמר נא את שיר אליפלט<br>ונגידה כולנו בקול:<br>כאשר עוד היה הוא רק ילד,<br>כבר היה הוא ביש גדא גדול.<br>בו שכנים ושכנות דיברו דופי<br>ואמרו שום דבר לא יועיל -<br>אליפלט הוא ילד בלי אופי,<br>אין לו אופי אפילו במיל.<br><br>אם גוזלים מידיו צעצוע,<br>הוא נשאר מבולבל ומחייך,<br>מחייך מבלי דעת מדוע,<br>וכיצד ובשל מה זה ואיך.<br><br>ונדמה כי סביבו, זה מוזר,<br>אז דבר מה התרונן כה ושר.<br>בלי מדוע ובלי כיצד,<br>בלי היכן ובלי איך ולמה,<br>בלי לאן ומאיזה צד,<br>בלי מתי ובלי אן וכמה.<br>כי סביב ככינור וחליל<br>מנגינה מאירה, מצלצלת.<br>אם נסביר לך מה זה יועיל,<br>איזה ילד אתה אליפלט.<br><br>בליל קרב ברעום אש מזנקת,<br>בין אנשי הפלוגה קול עבר:<br>העמדה הקדמית מנותקת,<br>מלאי תחמושת אזל בה מכבר.<br>אז הרגיש אליפלט כאילו<br>הוא מוכרח את המלאי לחדש,<br>וכיוון שאין אופי במיל לו,<br>הוא זחל כך ישר מול האש.<br><br>ובשובו מהומם ופצוע,<br>התמוטט הוא, כרע וחייך.<br>הוא חייך מבלי דעת מדוע,<br>וכיצד ובשל מה זה ואיך.<br><br>ובליבות חבריו, זה מוזר,<br>אז דבר מה התרונן כה ושר.<br>בלי מדוע ובלי כיצד,<br>בלי היכן ובלי איך ולמה,<br>בלי לאן ומאיזה צד,<br>בלי מתי ובלי אן וכמה.<br>מסביב ככינור וחליל<br>מנגינה מאירה, מצלצלת.<br>אם נסביר לך מה זה יועיל,<br>איזה ילד אתה אליפלט.<br><br>ובלילה חבוש קסדת פלד,<br>אט ירד המלאך גבריאל,<br>וניגש למראשות אליפלט,<br>ששכב במשלט על התל.<br>הוא אמר: אליפלט אל פחד,<br>אליפלט, אל פחד וחיל ‟<br>במרום לנו יש ממך נחת,<br>אף שאין לך אופי במיל.<br><br>זהו זמר פשוט גם תמוה,<br>אין ראשית לו וסוף והמשך,<br>זימרנוהו בלי דעת מדוע<br>וכיצד ובשל מה זה ואיך.<br><br>זימרנוהו כך סתם זה מוזר,<br>כי דבר מה התרונן בו ושר...</span>
+						<fb:recommendations-bar site="shironet.mako.co.il" href="http://shironet.mako.co.il/artist?type=lyrics&lang=1&prfid=166&wrkid=307" read_time="30" side="right" action="like"></fb:recommendations-bar>
+					</td>
+
+
+				<td width="100" valign="top" align="center">
+
+					<table width="99" cellspacing="0" cellpadding="3" border="0" align="left">
+						<tr>
+							<td>
+									<script>ajaxSetClip(1, 166, 307);</script>
+								</td>
+							</tr>
+
+
+					</table>
+				</td>
+			</tr>
+		</table>
+	</td>
+<tr>
+	<td align="left" dir="ltr">
+	</td>
+</tr>
+
+<tr>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>
+		<table width="52%" cellspacing="0" cellpadding="8" border="0">
+	    <tr>
+		<!--
+		 <td>
+	        	<a href="#" class="artist_utills_links" onclick="toggleSuggestBox(); return false;">
+	      		<img width="14" height="14" border="0" align="absmiddle" src="/jsp/images/icon_add.gif"/ >
+	      		שלח קליפ
+	      	</a>
+	      </td>
+		-->
+	      <td>
+	      	<a class="artist_utills_links" href="/jsp/contact/contact.jsp?subject=טעות בשיר אליפלט - אליפלט">
+	      		<img width="14" height="14" border="0" align="absmiddle" src="/jsp/images/icon_error.gif"/>
+	      		דווח על טעות
+	      	</a>
+	      </td>
+	    </tr>
+    </table>
+  </td>
+</tr>
+<tr id="suggestClipBox" style="display: none;">
+	<td>
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" dir="rtl">
+			<tr>
+				<td align="center">
+
+					<div style="" id="clipEditPanel" class="clipEditPanel" align="right" dir="rtl">
+						הכנס כתובת YouTube עבור
+						<span style="font-weight: bold;" id="clipPrfName">אליפלט</span>
+						-
+						<span style="font-weight: bold;" id="clipPrfName">אריק איינשטיין</span>
+						<br/>
+
+						<span style="font-size: smaller; color: #ababab">כתובת הקליפ בפורמט:<br/> http://www.youtube.com/embed/J6mLBOj9YJ</span>
+						<input type="text" dir="ltr" style="width: 70%;" class="textarea_general" id="suggestClipScript"/>
+							<input type="button" onclick="ajaxSuggestClip(1, 166, 'אריק איינשטיין', 307, 'אליפלט'); return false;" class="searchButton" value="שלח"/>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</td>
+</tr>
+
+<tr id="suggestClipComplete" style="display: none;">
+	<td>
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" dir="rtl">
+			<tr>
+				<td align="center">
+					<div style="" id="clipEditPanel" class="clipEditPanel" align="center">
+						תודה, המערכת תבדוק את הקליפ ותוסיף אותו למאגר
+					</div>
+				</td>
+			</tr>
+		</table>
+	</td>
+</tr>
+
+
+
+
+<tr style="display: none;">
+	<td class="artist_normal_txt" align="right">
+		© זכויות היוצרים שמורות למחברים
+		
+			ול<a target="_blank" href="http://members.acum.org.il/servlet/QMainServlet?QType=ACUM_QTYPE_WRK_BY_WORK_DETAILS&amp;OutSideCall=1&amp;ShowSyncrnize=1&amp;OutSideSync=1&amp;SyncDsp=1&amp;RecordChoice=00000&amp;InterfaceLang=1&amp;WCaeNumber=&amp;fldUserType=1&amp;CnfW=0&amp;MemT=0&amp;fldSourceCall=1&amp;fldSystemType=0&amp;WorkID=003095">אקו"ם</a>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div class="OUTBRAIN" data-widget-id="AR_1" data-ob-template="Shironet"></div>
+	</td>
+</tr>
+
+
+<script>
+	ajaxIncreaseWorkCounter(1, 307, 166);
+</script>
+<tr>
+																	<td><img width="0" height="0" style="display:none" id="cellcomPicStatPlayer" src='' border='0' alt='' /></td>
+																</tr>
+																<tr>
+																	<td align="center">
+																		<!-- jsp\jsi\ads\performers\adx_468x60.jsi -->
+
+<div id="googleAds" class="google_ads google_adx" style="margin-top:15px">
+	<script>
+		google_ad_client = "ca-pub-3428971881228561";
+		/* web direct 468/60 */
+		google_ad_slot = "4124191763";
+		google_ad_width = 468;
+		google_ad_height = 60;
+	</script>
+	<script src="//pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+</div>
+</td>
+																</tr>
+																<tr>
+																	<td>&nbsp;</td>
+																</tr>
+															
+
+			
+																<script src="/js/talkbacks.js" language="javascript"></script>
+
+
+
+<tr id="talkbacks_wrapper">
+	<td colspan="2">
+		<table width="435" border="0" cellspacing="0" cellpadding="0" align="center">
+			<tr>
+				<td align="right" class="talkback_blue_header">
+					תגובות
+				</td>
+			</tr>
+			<tr id="shoutbox">
+				<td align="center" valign="middle">
+					<table width="435" align="center" border="0" class="talkback_frame_box">
+						<tr>
+							<td align="right" width="50">
+								<b>כותרת</b>
+							</td>
+							<td align="right">
+								<input id="title" name="title" type="text" class="talkback_text_box" onFocus="this.value = ''; this.onfocus = null;" value="הוסף תגובה!">
+							</td>
+						</tr>
+						
+						<tr>
+							<td align="right" width="50">
+								<b>שם</b>
+							</td>
+							<td id="talkbackNameBox" align="right">
+								<input id="name" name="name" type="text" class="talkback_text_box">
+							</td>
+						</tr>
+						
+						<script>
+							setTimeout("setTalkbackName();", 500);
+						</script>
+						
+						<tr>
+							<td colspan="2">
+								<textarea name="content" id="content" class="talkback_comment_box"></textarea>												
+							</td>
+						</tr>
+					
+						<tr>
+							<td align="center" colspan="2">
+								<div id="talkbackError" class="talkback_error" style="display: none;" align="right">
+								ניתן לכתוב תגובות באורך של עד 1000 תווים
+								</div>
+							</td>
+						</tr>
+						
+						<tr>
+							<td align="center" colspan="2">
+								<input type="image" src="/jsp/images/global_post_comment_btn.gif" name="Image66" id="Image66" width="99" height="25" border="0" alt="Submit Form" align="absmiddle" 
+								onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('Image66','','/jsp/images/global_post_comment_btn_h.gif',1)"  
+								onclick="submitTalkback(3,307,1,166); return false;"/>
+							</td>
+						</tr>
+					</table>
+
+				</td>
+			</tr>
+			
+			<tr id="shoutboxSending" height="20" style="display: none;">
+				<td align="center" valign="middle">
+					<table width="435" align="center" border="0" class="talkback_frame_box">				
+						<tr>
+							<td height="20" align="center">
+								<img src="/jsp/images/global_loading.gif">
+								שולח תגובה
+							
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			
+			<tr id="shoutboxSent" height="20" style="display: none;">
+				<td align="center" valign="middle">
+					<table width="435" align="center" border="0" class="talkback_frame_box">				
+						<tr>
+							<td height="20" align="center" style="font-size: 14px;">
+								תודה, תגובתך התקבלה ותפורסם בהתאם לשיקולי המערכת
+							
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					<iframe src="/jsp/jsi/talkbackForm.html" id="talkbackFormFrame" width="0" height="0" frameborder="0"></iframe>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+						<td>
+							<table border="0" width="100%">
+								<tr>
+									<td>
+										<table border="0" cellpadding="0" cellspacing="2" width="100%">
+											<tr>
+												<td colspan="1" class="talkback_normal_txt" align="right" valign="bottom">
+													<div class="talkback_title_div">
+														<b>6. לשיר</b>
+														</div>
+												</td>
+												<td width="150" align="left" valign="bottom">
+													<span class="talkback_color_gray">
+														31/03/2014 - 15:00</span>
+												</td>
+											</tr>
+											
+											<tr>
+												<td colspan="2" align="right" align="center">
+													<img src="/jsp/images/talkback_line.gif" width="430" height="2"></td>
+											</tr>
+											
+											<tr>
+												<td colspan="2">
+													<table width="100%" cellpadding="0" cellspacing="0" border="0">
+													
+														<tr>
+															<td class="talkback_gray_text" align="right" colspan="1" valign="top">
+																מאת 
+																<span class="talkback_user_name"  >
+																	דניאל צאנה</span>
+															</td>
+															</tr>
+					
+														<tr>
+															<td colspan="2" class="talkback_normal_txt" width="100%" align="right" valign="top"> 
+																<div class="talkback_talkback_div">
+																	שיר מהמםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםםם כל פעם שאני שומע את השיר יש לי צמרמורת</div>
+															</td>
+														</tr>
+																
+																</table>
+															</td>
+														</tr>
+											
+											
+
+											
+										</table>
+
+									</td>
+								</tr>
+							</table>
+									
+							
+						</td>
+						
+					</tr>
+					
+				
+				<tr>
+						<td>
+							<table border="0" width="100%">
+								<tr>
+									<td>
+										<table border="0" cellpadding="0" cellspacing="2" width="100%">
+											<tr>
+												<td colspan="1" class="talkback_normal_txt" align="right" valign="bottom">
+													<div class="talkback_title_div">
+														<b>5. שיר מקסים!</b>
+														</div>
+												</td>
+												<td width="150" align="left" valign="bottom">
+													<span class="talkback_color_gray">
+														17/01/2014 - 20:04</span>
+												</td>
+											</tr>
+											
+											<tr>
+												<td colspan="2" align="right" align="center">
+													<img src="/jsp/images/talkback_line.gif" width="430" height="2"></td>
+											</tr>
+											
+											<tr>
+												<td colspan="2">
+													<table width="100%" cellpadding="0" cellspacing="0" border="0">
+													
+														<tr>
+															<td class="talkback_gray_text" align="right" colspan="1" valign="top">
+																מאת 
+																<span class="talkback_user_name"  >
+																	שירה </span>
+															</td>
+															</tr>
+					
+														<tr>
+															<td colspan="2" class="talkback_normal_txt" width="100%" align="right" valign="top"> 
+																<div class="talkback_talkback_div">
+																	השיר מקסים שגורם לי להתרגש בכל פעם שאני שומעת אותו!המילים נכנסות לך ללב ולא יוצאות ממנו.אליפלט...</div>
+															</td>
+														</tr>
+																
+																</table>
+															</td>
+														</tr>
+											
+											
+
+											
+										</table>
+
+									</td>
+								</tr>
+							</table>
+									
+							
+						</td>
+						
+					</tr>
+					
+				
+				<tr>
+						<td>
+							<table border="0" width="100%">
+								<tr>
+									<td>
+										<table border="0" cellpadding="0" cellspacing="2" width="100%">
+											<tr>
+												<td colspan="1" class="talkback_normal_txt" align="right" valign="bottom">
+													<div class="talkback_title_div">
+														<b>4. שאלה</b>
+														</div>
+												</td>
+												<td width="150" align="left" valign="bottom">
+													<span class="talkback_color_gray">
+														06/11/2013 - 12:50</span>
+												</td>
+											</tr>
+											
+											<tr>
+												<td colspan="2" align="right" align="center">
+													<img src="/jsp/images/talkback_line.gif" width="430" height="2"></td>
+											</tr>
+											
+											<tr>
+												<td colspan="2">
+													<table width="100%" cellpadding="0" cellspacing="0" border="0">
+													
+														<tr>
+															<td class="talkback_gray_text" align="right" colspan="1" valign="top">
+																מאת 
+																<span class="talkback_user_name"  >
+																	סקרן</span>
+															</td>
+															</tr>
+					
+														<tr>
+															<td colspan="2" class="talkback_normal_txt" width="100%" align="right" valign="top"> 
+																<div class="talkback_talkback_div">
+																	מאיזה אלבום זה?</div>
+															</td>
+														</tr>
+																
+																</table>
+															</td>
+														</tr>
+											
+											
+
+											
+										</table>
+
+									</td>
+								</tr>
+							</table>
+									
+							
+						</td>
+						
+					</tr>
+					
+				
+				<tr>
+						<td>
+							<table border="0" width="100%">
+								<tr>
+									<td>
+										<table border="0" cellpadding="0" cellspacing="2" width="100%">
+											<tr>
+												<td colspan="1" class="talkback_normal_txt" align="right" valign="bottom">
+													<div class="talkback_title_div">
+														<b>3. צמרמורת</b>
+														</div>
+												</td>
+												<td width="150" align="left" valign="bottom">
+													<span class="talkback_color_gray">
+														20/10/2011 - 22:04</span>
+												</td>
+											</tr>
+											
+											<tr>
+												<td colspan="2" align="right" align="center">
+													<img src="/jsp/images/talkback_line.gif" width="430" height="2"></td>
+											</tr>
+											
+											<tr>
+												<td colspan="2">
+													<table width="100%" cellpadding="0" cellspacing="0" border="0">
+													
+														<tr>
+															<td class="talkback_gray_text" align="right" colspan="1" valign="top">
+																מאת 
+																<span class="talkback_user_name"  >
+																	אור</span>
+															</td>
+															</tr>
+					
+														<tr>
+															<td colspan="2" class="talkback_normal_txt" width="100%" align="right" valign="top"> 
+																<div class="talkback_talkback_div">
+																	אחד השירים המרגשים, נכס צאן ברזל.</div>
+															</td>
+														</tr>
+																
+																</table>
+															</td>
+														</tr>
+											
+											
+
+											
+										</table>
+
+									</td>
+								</tr>
+							</table>
+									
+							
+						</td>
+						
+					</tr>
+					
+				
+				<tr>
+						<td>
+							<table border="0" width="100%">
+								<tr>
+									<td>
+										<table border="0" cellpadding="0" cellspacing="2" width="100%">
+											<tr>
+												<td colspan="1" class="talkback_normal_txt" align="right" valign="bottom">
+													<div class="talkback_title_div">
+														<b>2. מדהים אתה אליפלט</b>
+														</div>
+												</td>
+												<td width="150" align="left" valign="bottom">
+													<span class="talkback_color_gray">
+														10/06/2011 - 10:38</span>
+												</td>
+											</tr>
+											
+											<tr>
+												<td colspan="2" align="right" align="center">
+													<img src="/jsp/images/talkback_line.gif" width="430" height="2"></td>
+											</tr>
+											
+											<tr>
+												<td colspan="2">
+													<table width="100%" cellpadding="0" cellspacing="0" border="0">
+													
+														<tr>
+															<td class="talkback_gray_text" align="right" colspan="1" valign="top">
+																מאת 
+																<span class="talkback_user_name"  >
+																	מיכל</span>
+															</td>
+															</tr>
+					
+														<tr>
+															<td colspan="2" class="talkback_normal_txt" width="100%" align="right" valign="top"> 
+																<div class="talkback_talkback_div">
+																	שיר מרגש, הרקע שלו מיוחד ממש נגע לי ללב</div>
+															</td>
+														</tr>
+																
+																</table>
+															</td>
+														</tr>
+											
+											
+
+											
+										</table>
+
+									</td>
+								</tr>
+							</table>
+									
+							
+						</td>
+						
+					</tr>
+					
+				
+				<tr>
+						<td>
+							<table border="0" width="100%">
+								<tr>
+									<td>
+										<table border="0" cellpadding="0" cellspacing="2" width="100%">
+											<tr>
+												<td colspan="1" class="talkback_normal_txt" align="right" valign="bottom">
+													<div class="talkback_title_div">
+														<b>1. השיר היחיד שגרם לי לבכות</b>
+														</div>
+												</td>
+												<td width="150" align="left" valign="bottom">
+													<span class="talkback_color_gray">
+														07/06/2010 - 22:01</span>
+												</td>
+											</tr>
+											
+											<tr>
+												<td colspan="2" align="right" align="center">
+													<img src="/jsp/images/talkback_line.gif" width="430" height="2"></td>
+											</tr>
+											
+											<tr>
+												<td colspan="2">
+													<table width="100%" cellpadding="0" cellspacing="0" border="0">
+													
+														<tr>
+															<td class="talkback_gray_text" align="right" colspan="1" valign="top">
+																מאת 
+																<span class="talkback_user_name"  >
+																	אייל</span>
+															</td>
+															</tr>
+					
+														<tr>
+															<td colspan="2" class="talkback_normal_txt" width="100%" align="right" valign="top"> 
+																<div class="talkback_talkback_div">
+																	שיר מרגש. אין דברים כאלו יותר.</div>
+															</td>
+														</tr>
+																
+																</table>
+															</td>
+														</tr>
+											
+											
+
+											
+										</table>
+
+									</td>
+								</tr>
+							</table>
+									
+							
+						</td>
+						
+					</tr>
+					
+				
+				<tr>
+						<td align="center">
+							</td>
+					</tr>
+
+				<tr>
+					<td>
+						&nbsp;
+					</td>
+				</tr>
+			</table>
+
+	</td>
+</tr>
+
+</table>
+														</td>
+													</tr>
+												</table>
+											</td>
+										
+										
+											<td align="center" class="artist_player_bg" valign="top">
+												<table width="336" border="0" cellspacing="0" cellpadding="0" valign="top">
+	<tr>
+		<td align="center" valign="top">
+			<div id="playerArea" style="display: none;" class="artist_player_bg">
+				<iframe id="playerIframe" width="336" height="260" frameborder="0"></iframe>				 
+			</div>
+			<table width="100%" border="0" cellspacing="4" cellpadding="0">
+				<tr id="playerTitles" style="display: none;">
+					<td align="right" valign="top" class="artist_normal_txt">
+						עכשיו מתנגן: <a href class="artist_player_nowplaying"><span id="nowPlayingTitle">בחר שיר מן הרשימה</a></span><br />
+					</td>
+					<td align="left" valign="top">
+						<a href="/jsp/contact/contact.jsp" class="artist_red_link">דווח על וידיאו זה</a>
+					</td>
+				</tr>
+				
+			</table>
+			<table id="playerAdArea" cellpadding="0" cellspacing="0">
+				<tr>
+					<td height="5"></td>
+				</tr>
+				<tr>
+					<td align="center" valign="middle">
+						<table cellpadding="0" cellspacing="0">
+	<tr>
+		<td width="336" height="260" align="center" valign="middle" background="/jsp/images/artist_player_box_ad2.gif">
+			<div class="ad b250X250XMONSTER cm8">
+				<div id="CM8ShowAd_MONSTER1_250X250" title="MONSTER1_250X250">
+					<script type='text/javascript'>
+					googletag.cmd.push(function() { googletag.display('CM8ShowAd_MONSTER1_250X250'); });
+					</script>
+				</div>
+			</div>
+		</td>
+	</tr>
+</table>
+
+
+</td>
+				</tr>
+				<tr>
+					<td height="5"></td>
+				</tr>
+			</table>
+			
+		</td>
+	</tr>
+	<tr>
+		<td align="center" valign="top">
+			<div class="FBLikeWrapper">
+				<fb:like-box href="http://www.facebook.com/pages/shironet/183143930709" width="302" show_faces="true" stream="false" header="false"></fb:like-box>
+			</div>
+		</td>
+	</tr>
+	<tr><td height="5"></td></tr>
+	<tr>
+		<td align="center" valign="top">
+			<table width="146" border="0" cellpadding="0" cellspacing="2" class="artist_player_box">
+				<tr>
+					<td colspan="2">
+						<table width="100%" border="0" cellspacing="3" cellpadding="3">
+							<tr id="playlistSelectorRow">
+								<td>
+										<a href="" id="listSelector1" class="selected" onclick="playlistSelector(1); return false;">אריק איינשטיין</a>
+									</td>
+								<td>
+									<a href="" id="listSelector2" onclick="forceRefresh = false; ajaxGetPlaylist(1); return false;">הרשימה שלי</a>
+								</td>
+								
+								<td>
+									<a href="" id="listSelector3" onclick="forceRefresh = false; ajaxGetFavorites(1); return false;">אמנים מועדפים</a>
+								</td>
+								
+							</tr>
+						</table>
+					</td>
+				</tr>
+				
+				
+				
+				<tr id="clipsPlaylistLoading" style="display: none;">
+					<td colspan="2" align="center" valign="middle">
+						<label>
+							<img src="/jsp/images/global_loading.gif">
+							אנא המתן...
+						</label>
+					</td>
+				</tr>
+				
+				<tr id="clipsPlaylistLoggedOut" style="display: none;">
+					<td colspan="2" id="clipsPlaylistCellLoggedOut">
+						<br>
+						<center>
+						<span class="artist_normal_text" style="font-size: 14px;">
+							עליך להיות משתמש רשום בשירונט<br>
+							לחץ <a href="/jsp/users/register.jsp?retURL=/artist@lang=1~prfid=166~type=lyrics~wrkid=307">כאן</a> כדי להירשם
+							או <a href="/jsp/users/login.jsp?retURL=/artist@lang=1~prfid=166~type=lyrics~wrkid=307">כאן</a> כדי להיכנס.
+						</span>
+						</center>
+
+					</td>
+				</tr>
+				
+				<tr id="clipsPlaylist1">
+					<td colspan="2" id="clipsPlaylistCell1" align="left">
+						
+					<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 0);" onmouseout="hideLine('a', 0);" id="leftItem_a_0">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 56129, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play56129','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play56129"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=56129" class="artist_player_songlist">	לבדנו כביכול</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_0" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=56129&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_56129">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 56129); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 1);" onmouseout="hideLine('a', 1);" id="leftItem_a_1">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 39306, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play39306','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play39306"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=39306" class="artist_player_songlist">	פוליטיקה</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_1" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=39306&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_39306">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 39306); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 2);" onmouseout="hideLine('a', 2);" id="leftItem_a_2">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 39232, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play39232','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play39232"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=39232" class="artist_player_songlist">	Waiting For A Better Day</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_2" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=39232&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_39232">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 39232); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 3);" onmouseout="hideLine('a', 3);" id="leftItem_a_3">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 38508, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play38508','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play38508"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=38508" class="artist_player_songlist">	מה פה הולך</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_3" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=38508&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_38508">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 38508); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 4);" onmouseout="hideLine('a', 4);" id="leftItem_a_4">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 38109, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play38109','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play38109"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=38109" class="artist_player_songlist">	נותרו שנים ספורות</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_4" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=38109&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_38109">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 38109); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 5);" onmouseout="hideLine('a', 5);" id="leftItem_a_5">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 13885, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play13885','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play13885"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=13885" class="artist_player_songlist">	שיר בנאלי</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_5" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=13885&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_13885">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 13885); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 6);" onmouseout="hideLine('a', 6);" id="leftItem_a_6">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 9444, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play9444','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play9444"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=9444" class="artist_player_songlist">	ילדי ההפקר</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_6" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=9444&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_9444">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 9444); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 7);" onmouseout="hideLine('a', 7);" id="leftItem_a_7">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 8502, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play8502','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play8502"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=8502" class="artist_player_songlist">	היום השיר שלי עצוב</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_7" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=8502&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_8502">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 8502); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 8);" onmouseout="hideLine('a', 8);" id="leftItem_a_8">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 7197, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play7197','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play7197"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=7197" class="artist_player_songlist">	כמה חם</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_8" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=7197&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_7197">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 7197); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 9);" onmouseout="hideLine('a', 9);" id="leftItem_a_9">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 3228, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play3228','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play3228"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=3228" class="artist_player_songlist">	תרנגולת כחולה</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_9" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=3228&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_3228">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 3228); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 10);" onmouseout="hideLine('a', 10);" id="leftItem_a_10">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 3159, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play3159','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play3159"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=3159" class="artist_player_songlist">	תוצרת הארץ</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_10" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=3159&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_3159">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 3159); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 11);" onmouseout="hideLine('a', 11);" id="leftItem_a_11">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 3148, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play3148','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play3148"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=3148" class="artist_player_songlist">	תאמר אהיה רב</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_11" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=3148&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_3148">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 3148); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 12);" onmouseout="hideLine('a', 12);" id="leftItem_a_12">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 3110, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play3110','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play3110"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=3110" class="artist_player_songlist">	שני שושנים</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_12" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=3110&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_3110">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 3110); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 13);" onmouseout="hideLine('a', 13);" id="leftItem_a_13">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 3100, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play3100','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play3100"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=3100" class="artist_player_songlist">	שמש רטובה</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_13" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=3100&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_3100">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 3100); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<table width="100%" height="27" border="0" cellpadding="0" cellspacing="0" style="border: 1px solid #ffffff;" dir="rtl"
+												onmouseover="highlightLine('a', 14);" onmouseout="hideLine('a', 14);" id="leftItem_a_14">
+									<tr>
+										<td width="23" align="right" valign="middle">
+										<a href="#" onclick="ajaxSetClip(1, 166, 3075, 'leftPanel'); return false;"
+											onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('play3075','','/jsp/images/player_icon_play.gif',1)">
+											<img src="/jsp/images/player_icon_play.gif" border="0" title="נגן קליפ" id="play3075"></a>
+											</td>
+										<td align="right" valign="middle">
+												<a title="מילות השיר" href="/artist?type=lyrics&lang=1&prfid=166&wrkid=3075" class="artist_player_songlist">	שלוש ארבע לעבודה</a>
+												</td>
+										<td align="left" valign="middle">
+											<table width="0%" border="0" cellspacing="3" cellpadding="0" id="artist_list_item_a_14" style="display: none;">
+												<tr>
+													<td>
+														<a href="/artist?type=lyrics&lang=1&prfid=166&wrkid=3075&play=true">
+														<img src="/jsp/images/playlist_icon_lyricsPlay.gif" border="0" title="נגן קליפ וצפה במילים"></a></td>
+													<td id="icon_add_3075">
+														<a  href="#" onclick="ajaxAddPlaylistItem(1, 166, 3075); return false;">
+														<img src="/jsp/images/player_icon_add.gif" border="0" title="הוסף לרשימה שלי"></a></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							<span style="text-align: left"><a href="/artist?type=works&lang=1&prfid=166" class="artist_player_songlist">לרשימה המלאה...</a></span>
+					</td>
+				</tr>
+
+				
+				<tr id="clipsPlaylist2" style="display: none;">
+					<td colspan="2" id="clipsPlaylistCell2"></td>
+				</tr>
+				
+				<tr id="clipsPlaylist3" style="display: none;">
+					<td colspan="2" id="clipsPlaylistCell3"></td>
+				</tr>
+				
+				
+
+				
+				<tr>
+					<td colspan="2">
+						&nbsp;
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table><table border="0">
+													<tr>
+														<td align="center" valign="top">
+															&nbsp;
+														</td>
+													</tr>
+													<tr>
+														<td align="center" valign="top">
+															<div class="ad b250X250XMONSTER cm8">
+		<div id="CM8ShowAd_MONSTER2_250X250" title="MONSTER2_250X250">
+		<script type='text/javascript'>
+		googletag.cmd.push(function() { googletag.display('CM8ShowAd_MONSTER2_250X250'); });
+		</script>
+		</div>
+	</div>
+</td>
+													</tr>
+												</table>
+											</td>						
+										</tr>
+			
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+					<td width="20" align="right" valign="top">
+						<img src="/jsp/images/global_bg_left.gif" width="20" height="556" /></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<table width="1020" border="0" cellspacing="0" cellpadding="0" dir="rtl" align="center">
+  <tr>
+    <td align="center" class="global_main_shadow">
+      <table width="980" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td align="center" valign="top" class="global_content">
+            <!--start footer code here -->
+            <table width="980" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td align="center" class="footer_main_bg">
+                  <table width="980" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td height="5"></td>
+                    </tr>
+                    <tr>
+                      <td width="15">&nbsp;</td>
+                      <td class="footer_bottom_category">
+                        ראשי
+                      </td>
+                      <td class="footer_bottom_category">
+                        שירים
+                      </td>
+                      <td class="footer_bottom_category">
+                        אמנים
+                      </td>
+                      <td class="footer_bottom_category">
+                        עקוב אחרינו
+                      </td>
+                      <td width="15">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td colspan="11" height="1">
+                        <img src="/jsp/images/footer_line_brake.jpg" width="980" height="1" /></td>
+                    </tr>
+                    <tr>
+                      <td height="3"></td>
+                    </tr>
+                    <tr>
+                      <td width="15">&nbsp;</td>
+                      <td align="right" valign="top">
+                        <a href="/" class="footer_bottom_link">דף הבית</a><br>
+                        <a href="//www.mako.co.il/help-terms-of-use/Article-d37908dd1674c11006.htm" target="_blank" class="footer_bottom_link">תקנון</a><br>
+		        <a href="https://www.mako.co.il/help-5bb6bf4ccf39c110/Article-b7ff18a9de86471026.htm" target="_blank" class="footer_bottom_link">הסדרי נגישות</a><br>
+                      </td>
+                      <td align="right" valign="top">
+                        <a href="/html/indexes/works/" class="footer_bottom_link">אינדקס לשירים</a><br>
+                        <!-- <a href="//shironet.mako.co.il/jsp/contact/sendsong.jsp" class="footer_bottom_link">שלח שיר</a><br> -->
+                      </td>
+                      <td align="right" valign="top">
+                        <a href="/html/indexes/performers/" class="footer_bottom_link">אינדקס אמנים</a><br>
+                        <a href="//shironet.mako.co.il/html/indexes/performers/index_heb_chords.html" class="footer_bottom_link">אקורדים לשירים</a><br>
+                      </td>
+                      <td align="right" valign="top" >
+                        <a href="//www.facebook.com/pages/shironet/183143930709" target="_blank" class="footer_bottom_link" style="font-size: 12px;">
+                          <img src="/jsp/images/icon_facebook.gif" border="0" align="right" style="margin-left: 5px;">
+                          Facebook
+                        </a>
+                        <br>
+                        <!-- <a href="/jsp/contact/contact.jsp" class="footer_bottom_link">צור קשר</a> -->
+                      </td>
+                      <td align="right" width="15">&nbsp;</td>
+                    </tr>
+                    <tr>
+                      <td height="5"></td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<table width="1020" border="0" cellspacing="0" cellpadding="0" align="center" dir="rtl">
+  <tr>
+    <td align="center" class="footer_shadow" valign="bottom">
+      <table width="980" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td align="center" width="70">
+            &nbsp;
+          </td>
+          <td align="right" valign="top" class="footer_copyright">
+            <a target="_blank" href="//www.mako.co.il/">
+              <img src="/jsp/images/mako/logo_mako.png" border="0" align="absbottom" width="53" height="21">
+            </a>          
+          </td>
+          <td align="center">
+            &nbsp;
+          </td>
+          <td align="center" class="footer_copyright" style="display: none;" valign="top">
+            כל הזכויות שמורות לשירונט
+          </td>
+          <td align="center">
+            &nbsp;
+          </td>
+          <td align="left"  valign="bottom">
+            <a href="//www.acum.org.il/" target="_blank">
+            <img src="/jsp/images/footer_akum_logo.gif" border="0"/>
+            </a>
+          </td> 
+          <td align="center" width="70">
+            &nbsp;
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<table width="1020" border="0" cellspacing="0" cellpadding="0" align="center" dir="rtl">
+  <tr>
+    <td>
+      <table>
+        
+        <tr>
+          <td align="center" width="70">
+            &nbsp;
+          </td>
+          <td colspan="5" align=center>
+            <span style="color: #666666; font-size: 10px">
+
+        <p>שירונט- אתר המוזיקה הגדול בישראל הכולל מילים לשירים בעברית, מילים לשירים באנגלית וקליפי יוטיוב. מאגר מילות שירים מסגנונות מוזיקליים שונים: מוזיקה מזרחית, מוסיקה ים תיכונית, רוק, פופ, היפ הופ, ג'אז, בלוז, שירה בציבור, ארץ ישראל הישנה והטובה, שירי חתונה, שירי אהבה, אקורדים לשירים לועזיים ועבריים. יכול כי בשוגג נפלו טעויות במילות השירים. האתר אינו נושא באחריות כי מילות השירים מדויקות, וככל שהנך מזה/ה טעות במילות מי מהשירים אנא דווחו לנו על כך ואנו נתקן את הטעות.<br /></p></span>
+          </td>
+          <td align="center" width="70">
+            &nbsp;
+          </td>
+        </tr>
+        
+      </table>
+    </td>
+  </tr>
+</table>
+<script>
+    if (window.CM8AjaxRefresh) {CM8AjaxRefresh("!" + CM8OnLoadFormats);}
+  </script>   
+<script>
+  if (document.body.clientWidth <= 1020 && screen.width >= 1024)
+  {
+    document.body.style.overflowX = "hidden";
+    document.body.style.marginLeft = "-8px";
+    document.documentElement.style.overflowX = "hidden";
+  }
+</script>
+
+<script>var chid='shironet';</script>
+<script src="//rcs.mako.co.il/js/scripts/mako_ga_gen.js"></script>
+<script src="//rcs.mako.co.il/js/domo/domo-1.0.0.js"></script>
+    <script src="//rcs.mako.co.il/js/scripts/domoBundle.js"></script>
+    <script>callStats(getDomoPageView());</script>
+    <script src="//widgets.outbrain.com/outbrain.js"></script>
+</body>
+	<script>
+		ajaxIncreasePerfCounter(1, 166);
+	</script>
+<script>
+		if (window.location.href.indexOf('play=true') >= 0)
+			ajaxSetClip(1, 166, 307);
+	</script>
+</html>

@@ -7,7 +7,7 @@ import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 
 private object HtmlLyricsUtils {
-  private val NewLine = Pattern.compile(" *\r?\n *")
+  private val NewLine = Pattern.compile(" *(\r?\n|\r) *")
   private val CanonicalBreakLine = "<br>\n"
   private def ensureSuffix(s: String): String =
     s.mapIf(_.endsWith(CanonicalBreakLine).isFalse).to(_ + CanonicalBreakLine)
