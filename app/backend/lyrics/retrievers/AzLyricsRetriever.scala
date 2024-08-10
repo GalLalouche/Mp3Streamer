@@ -7,7 +7,8 @@ import models.Song
 import org.jsoup.nodes.Document
 
 import common.RichJsoup._
-import common.rich.RichT._
+import common.rich.RichT.richT
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class AzLyricsRetriever @Inject() (singleHostHelper: SingleHostParsingHelper)
     extends HtmlRetriever {
@@ -32,8 +33,10 @@ private object AzLyricsRetriever {
   private[retrievers] val parser: SingleHostParser = new SingleHostParser {
     // AZ lyrics don't support instrumental :\
     override def apply(d: Document, s: Song): LyricParseResult = LyricParseResult.Lyrics(
-      d.selectSingle(".main-page .text-center div:not([class]):not([id])")
-        .wholeText
+      d.selectIterator(".main-page .text-center div:not([class]):not([id])")
+        .map(_.wholeText)
+        .filter(_.nonEmpty)
+        .single
         .trim
         .|>(HtmlLyricsUtils.addBreakLines),
     )

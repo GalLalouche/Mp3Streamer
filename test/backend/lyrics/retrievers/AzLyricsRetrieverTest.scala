@@ -11,5 +11,8 @@ class AzLyricsRetrieverTest extends FreeSpec with LyricsSpec {
     ) shouldReturn
       "https://www.azlyrics.com/lyrics/gunsnroses/paradisecity.html"
   }
-  "fromHtml" - { "has lyrics" in verifyLyrics("az_lyrics") }
+  "fromHtml" - {
+    "has lyrics" in verifyLyrics("az_lyrics")
+    "has lyrics and image" in verifyLyrics("az_lyrics_with_image")
+  }
 }
