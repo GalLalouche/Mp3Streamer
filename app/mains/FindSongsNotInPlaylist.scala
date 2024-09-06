@@ -17,7 +17,9 @@ import common.rich.primitives.RichString._
 // finds songs that are in the music directory but are not saved in the playlist file
 object FindSongsNotInPlaylist {
   private val musicFiles = new IOMusicFinder {
-    override val extensions = Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg")
+    override val extensions =
+      Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg", "m4a")
+    override val unsupportedExtensions = Set()
   }
   private val UtfBytemarkPrefix = 65279
   private def normalizePath(s: String) = s.toLowerCase.simpleReplace("""\""", "/")

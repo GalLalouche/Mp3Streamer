@@ -39,9 +39,9 @@ object Main {
     case ExceptionAfterFileCreated(file, e) =>
       println(s"Temporary file at: <$file>")
       handleException(e)
-    case e: Exception => handleException(e)
+    case e: Throwable => handleException(e)
   }
-  private def handleException(e: Exception): Unit = {
+  private def handleException(e: Throwable): Unit = {
     e.printStackTrace()
     StdIn.readLine()
   }

@@ -14,6 +14,7 @@ class IOMusicFinder extends MusicFinder {
   override def flatGenres: Seq[String] = Vector("New Age", "Jazz", "Musicals", "Classical")
 
   override val extensions = Set("mp3", "flac")
+  override val unsupportedExtensions = Set("ape", "wma", "mp4", "wav", "aiff", "aac", "ogg", "m4a")
   override def parseSong(f: FileRef) = IOSong.read(f.asInstanceOf[IOFile].file)
   override def getOptionalSongsInDir(d: DirectoryRef): Seq[OptionalSong] =
     getSongFilesInDir(d).map(SongTagParser optionalSong _.file)

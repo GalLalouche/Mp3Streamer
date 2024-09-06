@@ -6,6 +6,8 @@ import mains.vimtag.Initializer.InitialLines
 import models.{MusicFinder, OptionalSong}
 import models.TypeAliases.TrackNumber
 
+import common.rich.func.ToMoreMonoidOps.monoidFilter
+import scalaz.std.string.stringInstance
 import scalaz.syntax.std.tuple.ToTuple2Ops
 
 import common.io.DirectoryRef
@@ -17,9 +19,18 @@ import common.rich.primitives.RichBoolean.richBoolean
 /** Sets up the initial lines and writes usage instructions. */
 private class Initializer @Inject() (mf: MusicFinder, aux: IndividualInitializer) {
   private class Extractor(dir: DirectoryRef) {
-    private lazy val songFiles = (dir +: dir.dirs).flatMap(mf.getOptionalSongsInDir)
+    private def unsupportedFilesMsg = {
+      val unsupportedFiles =
+        dir.deepFiles.view.map(_.extension).filter(mf.unsupportedExtensions).toSet
+      s"; However, it did contain unsupported files with extensions: $unsupportedFiles"
+        .monoidFilter(unsupportedFiles.nonEmpty)
+    }
+    private lazy val songFiles =
+      (dir +: dir.dirs)
+        .flatMap(mf.getOptionalSongsInDir)
+        .ensuring(_.nonEmpty, s"No ${mf.extensions} files found in directory$unsupportedFilesMsg")
     private lazy val ordering: Ordering[OptionalSong] =
-      if (songFiles.ensuring(_.nonEmpty).forall(_.track.isDefined))
+      if (songFiles.forall(_.track.isDefined))
         Ordering.by(_.toTuple(_.directory, _.track))
       else
         Ordering.by(_.file)
@@ -51,6 +62,7 @@ private class Initializer @Inject() (mf: MusicFinder, aux: IndividualInitializer
       .map(_.fold(_.track.getOrElse(_)))
     def discNumbers: Seq[String] = sequence(_.discNumber.getOrElse(""))
   }
+
   def apply(dir: DirectoryRef): InitialLines = {
     val $ = new Extractor(dir)
     val instructions = Vector(

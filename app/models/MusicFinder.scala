@@ -10,6 +10,8 @@ trait MusicFinder { self =>
   type S <: RefSystem { type S = self.S }
   def baseDir: S#D
   def extensions: Set[String]
+  /** Known file extensions which aren't for various reasons, e.g., monkey 🙉. */
+  def unsupportedExtensions: Set[String]
 
   /**
    * Dirs with an extra level of sub-genre nesting, e.g., metal which has death and black metal

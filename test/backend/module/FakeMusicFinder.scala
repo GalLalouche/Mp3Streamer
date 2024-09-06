@@ -11,6 +11,7 @@ import common.rich.RichT._
 class FakeMusicFinder(val baseDir: MemoryDir) extends MusicFinder {
   override type S = MemorySystem
   override val extensions = Set("mp3")
+  override val unsupportedExtensions = Set()
   protected override def genresWithSubGenres: Seq[String] = Vector("music")
   override def flatGenres: Seq[String] = Nil
   private val dirToAddSongsTo = baseDir.addSubDir(genresWithSubGenres.head)
