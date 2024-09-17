@@ -16,7 +16,11 @@ import common.rich.primitives.RichString._
 private object LyricsParser extends SingleHostParser {
   override val source = "GeniusLyrics"
   override def apply(d: Document, s: Song): LyricParseResult = {
-    val v = d.selectIterator("#lyrics-root div[data-lyrics-container]").toVector
+    val v =
+      d.selectIterator("#lyrics-root div[data-lyrics-container]")
+        .toVector
+        .mapIf(_.isEmpty)
+        .to(d.selectIterator(".lyrics").toVector)
     if (v.isEmpty)
       if (d.wholeText.contains("This song is an instrumental"))
         LyricParseResult.Instrumental
@@ -62,7 +66,7 @@ private object LyricsParser extends SingleHostParser {
     case e: TextNode => Vector(e.getWholeText)
   }
 
-  private val FontStyles = Set("b", "i", "u", "em")
+  private val FontStyles = Set("b", "i", "u", "em", "strong")
   private val Annotations = Pattern.compile("""\[.*?\]""")
   private val GapBetweenAnnotations = Pattern.compile("\n{2,}")
   private val EmptyLeadingLines = Pattern.compile("^\n*")
