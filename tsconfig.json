@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "decorators",
+      "dom",
+      "es2020",
+      "es2015.collection",
+      "es5",
+      "scripthost"
+    ],
+    "esModuleInterop": true,
+    "mapRoot": "/assets",
+    "module": "es2020",
+    "moduleResolution":"node",
+    "outDir": "target/web/public/main/typescripts/",
+    "rootDir": "public/typescripts",
+    "sourceMap": true,
+    "sourceRoot": "/assets",
+
+    "target": "es2020"
+  },
+  "exclude": [
+    "target"
+  ]
+}

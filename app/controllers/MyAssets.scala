@@ -13,4 +13,7 @@ class MyAssets @Inject() (implicit ec: ExecutionContext) extends InjectedControl
     Ok.sendFile(new File("""public\""" + path))
   }
   def javascript(path: String) = asset("javascripts" + path)
+  def typescript(path: String) = Action {
+    Ok.sendFile(new File("target/web/public/main/typescripts/" + path))
+  }
 }
