@@ -90,6 +90,7 @@ private class Initializer @Inject() (mf: MusicFinder, aux: IndividualInitializer
       "# Individual tags",
       "# Individual tracks are pre-ordered by track number",
       "# FILE isn't actually a tag but is used later on in the process (so don't delete or modify it!)",
+      "# However, you can reorder lines (for tables, you can sort by column using <leaders>ts)",
     ) |> Initializer.flatten
     val individualTags: Seq[String] = $.files
       .zip($.titles)
