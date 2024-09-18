@@ -44,7 +44,8 @@ trait FileRef extends PathRef {
     val i = name.lastIndexOf('.')
     if (i == -1) "" else name.substring(i + 1).toLowerCase
   }
-  final lazy val nameWithoutExtension: String = name.dropRight(extension.length)
+  final lazy val nameWithoutExtension: String =
+    name.mapIf(extension.nonEmpty).to(_.dropRight(extension.length + 1))
 
   def lastModified: LocalDateTime
   def creationTime: LocalDateTime
