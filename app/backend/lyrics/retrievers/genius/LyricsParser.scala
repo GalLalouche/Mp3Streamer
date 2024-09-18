@@ -59,7 +59,7 @@ private object LyricsParser extends SingleHostParser {
             case e: Element if FontStyles.contains(e.tagName) => Some(e.outerHtml)
             case e: Element if e.tagName == "inread-ad" => None
           }
-      else if (e.tagName == "i")
+      else if (e.tagName == "i" || e.tagName == "b")
         go(e)
       else
         Vector.empty
