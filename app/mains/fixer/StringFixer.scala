@@ -31,7 +31,7 @@ class StringFixer @Inject() (logger: Logger) extends (String => String) {
       .to(
         asciiNormalize(
           withoutSpecialCharacters
-            .flatMap(a => toAscii.get(a).getOrThrow(s"Can't asscify '$a' (${a.toInt}) in '$s'")),
+            .flatMap(a => toAscii.get(a).getOrThrow(s"Can't asciify '$a' (${a.toInt}) in '$s'")),
         ),
       )
   } catch {

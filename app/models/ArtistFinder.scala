@@ -3,7 +3,7 @@ package models
 import javax.inject.Inject
 
 import mains.fixer.StringFixer
-import models.ArtistFinder.{EndsInDotPattern, IllegalWindowCharactersPattern}
+import models.ArtistFinder.{DotSuffixes, IllegalWindowCharactersPattern}
 
 import common.io.DirectoryRef
 import common.rich.primitives.RichString._
@@ -13,7 +13,7 @@ class ArtistFinder @Inject() (mf: MusicFinder, stringFixer: StringFixer) {
     // See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
     val canonicalArtistFolderName =
       stringFixer(artist).toLowerCase
-        .removeAll(EndsInDotPattern)
+        .removeAll(DotSuffixes)
         .removeAll(IllegalWindowCharactersPattern)
 
     println(s"finding matching folder for artist <$canonicalArtistFolderName>")
@@ -23,7 +23,7 @@ class ArtistFinder @Inject() (mf: MusicFinder, stringFixer: StringFixer) {
 
 private object ArtistFinder {
   // A windows folder name cannot end in '.'.
-  private val EndsInDotPattern = """\.*$""".r.pattern
+  private val DotSuffixes = """\.*$""".r.pattern
   // A windows folder name cannot contain '<', '>', ':', '"', '/', '\', '\', '|', '?', '*'.
   private val IllegalWindowCharactersPattern = """[<>:"/\\|?*]""".r.pattern
 }
