@@ -1424,6 +1424,7 @@
     },
     play: function(time) {
       const self = this
+
       function getTime() { // Returns current time in seconds or NaN
         if (typeof time === "number")
           return time
@@ -1434,6 +1435,7 @@
           return ratio * self.htmlElement.media.duration
         return NaN
       }
+
       time = getTime()
       if (this.status.srcSet) {
         if (this.html.active) {
@@ -1904,8 +1906,7 @@
       // Video html or flash resized if necessary at this time, or if native video controls being used.
       if (!this.status.waitForPlay && this.html.active && this.status.video || this.html.video.available && this.html.used && this.status.nativeVideoControls) {
         this.internal.video.jq.css({'width': this.status.width, 'height': this.status.height})
-      }
-      else if (!this.status.waitForPlay && this.flash.active && this.status.video) {
+      } else if (!this.status.waitForPlay && this.flash.active && this.status.video) {
         this.internal.flash.jq.css({'width': this.status.width, 'height': this.status.height})
       }
     },
@@ -2260,12 +2261,10 @@
         try {
           flash = new ActiveXObject(("ShockwaveFlash.ShockwaveFlash." + version))
           flashIsInstalled = true
-        }
-        catch (e) {
+        } catch (e) {
           // Throws an error if the version isn't available
         }
-      }
-      else if (navigator.plugins && navigator.mimeTypes.length > 0) {
+      } else if (navigator.plugins && navigator.mimeTypes.length > 0) {
         flash = navigator.plugins["Shockwave Flash"]
         if (flash) {
           const flashVersion = navigator.plugins["Shockwave Flash"].description.replace(/.*\s(\d+\.\d+).*/, "$1")
