@@ -1,14 +1,14 @@
 package models
 
 sealed class Genre(val name: String) extends Ordered[Genre] {
-  private def isFlat = this match {
+  def isFlat: Boolean = this match {
     case Genre.Jazz => true
     case Genre.Blues => true
     case Genre.Musicals => true
     case Genre.NewAge => true
     case Genre.Classical => true
-    case Genre.Rock(subgenre) => false
-    case Genre.Metal(subgenre) => false
+    case Genre.Rock(_) => false
+    case Genre.Metal(_) => false
     case _ => throw new AssertionError()
   }
   override def compare(that: Genre): Int = {
