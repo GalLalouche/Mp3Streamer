@@ -42,6 +42,8 @@ libraryDependencies ++= Seq(
   "com.google.inject.extensions" % "guice-assistedinject" % guiceVersion,
   "com.h2database" % "h2" % "1.4.196",
   "com.jsuereth" %% "scala-arm" % "2.0",
+  "com.outr" %% "scribe" % "3.15.0",
+  "com.typesafe" % "config" % "1.4.3",
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
   "com.typesafe.play" %% "play" % "2.6.6",
@@ -58,7 +60,6 @@ libraryDependencies ++= Seq(
   "net.codingwell" %% "scala-guice" % "4.2.1",
   "org.apache.commons" % "commons-io" % "1.3.2",
   "org.jsoup" % "jsoup" % "1.12.1",
-  ("org.me" %% "scalacommon" % "1.0").changing(),
   "org.mockito" % "mockito-all" % "1.9.5" % "test",
   "org.scala-lang.modules" %% "scala-swing" % "2.0.0",
   "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
@@ -69,6 +70,7 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-concurrent" % scalazVersion,
   "org.scalaz" %% "scalaz-core" % scalazVersion,
   "org.xerial" % "sqlite-jdbc" % "3.32.3.2",
+  ("org.me" %% "scalacommon" % "1.0").changing(),
 )
 
 scalacOptions += "-Ypartial-unification"

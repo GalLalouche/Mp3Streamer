@@ -1,9 +1,7 @@
 package backend.mb
 
 import java.time.{LocalDate, Year, YearMonth}
-import javax.inject.Inject
 
-import backend.logging.Logger
 import backend.mb.AlbumParser._
 import backend.recon.{Artist, ReconID}
 import mains.fixer.StringFixer
@@ -16,16 +14,15 @@ import common.rich.RichTime.OrderingLocalDate
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
 
-private class AlbumParser @Inject() (
-    logger: Logger, // TODO replace logging with ADT Result type
-) {
+private class AlbumParser {
   private def parseDate(js: JsValue): Option[LocalDate] = {
     val $ = js
       .ostr(ReleaseDate)
       .flatMap(DateFormatter.parse)
       .map(_.toLocalDate)
     if (js.has(ReleaseDate) && $.isEmpty)
-      logger.warn(s"Could not parse $ReleaseDate from <$js>")
+      // TODO replace logging with ADT Result type
+      scribe.warn(s"Could not parse $ReleaseDate from <$js>")
     $
   }
 

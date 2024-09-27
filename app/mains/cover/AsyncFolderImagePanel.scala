@@ -4,7 +4,6 @@ import java.awt.{Color, Font}
 import javax.inject.Inject
 import javax.swing.{BorderFactory, JLabel, SpringLayout, SwingConstants}
 
-import backend.logging.Logger
 import com.google.inject.assistedinject.Assisted
 import mains.SwingUtils._
 
@@ -23,7 +22,6 @@ import common.rich.RichT._
 
 /** Eventually publishes an ImageChoice event. */
 private class AsyncFolderImagePanel @Inject() (
-    logger: Logger,
     ec: ExecutionContext,
     @Assisted images: FutureIterant[FolderImage],
     @Assisted("rows") rows: Int,
@@ -35,7 +33,7 @@ private class AsyncFolderImagePanel @Inject() (
   private var current = images.oMap(image =>
     createImagePanel(image) match {
       case Failure(e) =>
-        logger.warn(s"Error converting <$image> to BufferImage", e)
+        scribe.warn(s"Error converting <$image> to BufferImage", e)
         None
       case Success(value) => Some(value)
     },

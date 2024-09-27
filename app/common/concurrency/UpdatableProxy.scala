@@ -1,7 +1,5 @@
 package common.concurrency
 
-import backend.logging.LoggingLevel
-
 import scala.concurrent.Future
 
 import common.TimedLogger
@@ -13,7 +11,7 @@ class UpdatableProxy[A](
     timedLogger: TimedLogger,
 ) {
   private val extra = Extra(name + " Updatable") {
-    timedLogger.apply("Updating " + name, LoggingLevel.Debug) {
+    timedLogger.apply("Updating " + name, scribe.debug(_)) {
       state = updateSelf()
     }
   }

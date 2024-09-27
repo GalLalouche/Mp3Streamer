@@ -8,7 +8,7 @@ import common.rich.path.RichFile._
 
 @Slow
 class PostersTest extends FreeSpec with ControllerSpec {
-  private val $ = app.injector.instanceOf[Posters]
+  private lazy val $ = app.injector.instanceOf[Posters]
 
   "image" in {
     val file = getResourceFile("poster.jpg")

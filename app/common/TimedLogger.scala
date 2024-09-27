@@ -2,14 +2,12 @@ package common
 
 import javax.inject.Inject
 
-import backend.logging.{Logger, LoggingLevel}
-
-class TimedLogger @Inject() (logger: Logger) {
-  def apply[T](task: String, logLevel: LoggingLevel = LoggingLevel.Verbose)(f: => T): T = {
+class TimedLogger @Inject() {
+  def apply[T](task: String, logger: String => Unit = scribe.trace(_))(f: => T): T = {
     val start = System.currentTimeMillis
-    logger.log(s"starts $task", logLevel)
+    logger(s"starts $task")
     val $ = f
-    logger.log(s"$task took ${System.currentTimeMillis - start} ms", logLevel)
+    logger(s"$task took ${System.currentTimeMillis - start} ms")
     $
   }
 }

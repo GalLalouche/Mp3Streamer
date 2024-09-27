@@ -2,7 +2,6 @@ package backend.mb
 
 import javax.inject.{Inject, Singleton}
 
-import backend.logging.Logger
 import backend.mb.JsonDownloader.Input
 import play.api.http.Status
 import play.api.libs.json._
@@ -20,7 +19,7 @@ import common.io.InternetTalker
 import common.rich.primitives.RichBoolean._
 
 @Singleton
-private class JsonDownloader @Inject() (it: InternetTalker, logger: Logger) {
+private class JsonDownloader @Inject() (it: InternetTalker) {
   private implicit val ec: ExecutionContext = it
 
   def apply(method: String, params: (String, String)*): Future[JsObject] =
@@ -30,7 +29,6 @@ private class JsonDownloader @Inject() (it: InternetTalker, logger: Logger) {
     "JsonDownloader",
     { case Input(method, params, times) => aux(method, params, times) },
     1.seconds,
-    logger,
   )
   private def aux(method: String, params: Seq[(String, String)], times: Int): Future[JsObject] =
     getJson(method, params).handleError { e =>

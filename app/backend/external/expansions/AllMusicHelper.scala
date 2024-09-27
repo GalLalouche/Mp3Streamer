@@ -6,7 +6,6 @@ import javax.inject.Inject
 
 import backend.external.BaseLink
 import backend.external.expansions.AllMusicHelper._
-import backend.logging.Logger
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
 import io.lemonlabs.uri.Url
@@ -24,7 +23,6 @@ import common.rich.primitives.RichString._
 
 private class AllMusicHelper @Inject() (
     it: InternetTalker,
-    logger: Logger,
 ) {
   private implicit val iec: ExecutionContext = it
   private val canonicalLink = Pattern.compile("[a-zA-Z\\-0-9]+-mw\\d+")
@@ -42,7 +40,7 @@ private class AllMusicHelper @Inject() (
       if (canonicalLink.matcher(url.toStringPunycode.takeAfterLast('/')).matches)
         Future.successful(url)
       else if (currentTry >= MaxTries) {
-        logger.warn(s"AllMusic canonization gave up after <$MaxTries> tries")
+        scribe.warn(s"AllMusic canonization gave up after <$MaxTries> tries")
         Future.successful(url)
       } else
         it.useWs(_.url(url.toStringPunycode).withFollowRedirects(false).get())

@@ -5,7 +5,6 @@ import javax.inject.Inject
 
 import backend.external.{BaseLink, BaseLinks, Host}
 import backend.external.expansions.WikipediaAlbumExternalLinksExpander._
-import backend.logging.Logger
 import backend.recon.Album
 import com.google.common.annotations.VisibleForTesting
 import io.lemonlabs.uri.Url
@@ -26,7 +25,6 @@ import common.rich.primitives.RichString._
 
 private class WikipediaAlbumExternalLinksExpander @Inject() (
     it: InternetTalker,
-    logger: Logger,
     allMusicHelper: AllMusicHelper,
     expanderHelper: ExternalLinkExpanderHelper,
 ) extends ExternalLinkExpander[Album]
@@ -69,7 +67,7 @@ private class WikipediaAlbumExternalLinksExpander @Inject() (
     // Compiler won't pick up type definitions, so explicitly naming Traverse is necessary
     .flatMap(Traverse[Traversable].traverse(_)(allMusicHelper.canonize))
     .flatMap(_.filterM(allMusicHelper isValidLink _.link))
-    .listenError(logger.error("WikipediaAlbumExternalLinksExpander failed to extract links", _))
+    .listenError(scribe.error("WikipediaAlbumExternalLinksExpander failed to extract links", _))
     .orElse(Nil)
 }
 

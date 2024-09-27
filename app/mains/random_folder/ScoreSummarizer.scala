@@ -2,7 +2,6 @@ package mains.random_folder
 
 import javax.inject.Inject
 
-import backend.logging.FilteringLogger
 import backend.scorer.{CachedModelScorer, ModelScore}
 import models.MusicFinder
 
@@ -13,7 +12,6 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
 private class ScoreSummarizer @Inject() (
     mf: MusicFinder,
     scorer: CachedModelScorer,
-    logger: FilteringLogger,
 ) {
   def summary(
       outputDir: IODirectory,
@@ -26,7 +24,7 @@ private class ScoreSummarizer @Inject() (
         .flatMap(scorer(_).toModelScore)
         .frequencies
     ModelScore.values.foreach(score =>
-      logger.info(
+      scribe.info(
         s"Score $score makes up " +
           s"${Percentage(allScores.getOrElse(score, 0).toDouble / totalSongs).prettyPrint(2)} of total playlist",
       ),

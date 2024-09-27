@@ -2,7 +2,6 @@ package backend.lyrics
 
 import javax.inject.Inject
 
-import backend.logging.Logger
 import backend.lyrics.LyricsUrl.ManualEmpty
 import backend.lyrics.retrievers._
 import backend.storage.OnlineRetrieverCacher
@@ -24,7 +23,6 @@ import common.rich.RichT._
 // TODO test
 private class LyricsCache @Inject() (
     ec: ExecutionContext,
-    logger: Logger,
     defaultArtistInstrumental: InstrumentalArtist,
     htmlComposites: CompositeHtmlRetriever,
     @CompositePassiveParser passiveParsers: PassiveParser,
@@ -35,7 +33,6 @@ private class LyricsCache @Inject() (
   private val firstDefaultRetrievers = DefaultClassicalInstrumental
   private val lastDefaultRetrievers = defaultArtistInstrumental
   private val allComposite = new CompositeLyricsRetriever(
-    logger,
     Vector(htmlComposites, albumParsers, lastDefaultRetrievers, firstDefaultRetrievers),
   )
   private val cache = new OnlineRetrieverCacher[Song, Lyrics](

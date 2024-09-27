@@ -3,7 +3,6 @@ package backend.module
 import java.time.Clock
 import java.util.UUID
 
-import backend.logging.LoggingModules
 import backend.storage.DbProvider
 import models.IOMusicFinderModule
 import net.codingwell.scalaguice.ScalaModule
@@ -27,7 +26,6 @@ object NonPersistentModule extends ScalaModule {
 
     install(RealInternetTalkerModule.daemonic)
     install(AllModules)
-    install(LoggingModules.ConsoleWithFiltering)
     install(IOMusicFinderModule)
   }
 }

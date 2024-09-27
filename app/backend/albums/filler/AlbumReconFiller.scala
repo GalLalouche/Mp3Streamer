@@ -2,7 +2,6 @@ package backend.albums.filler
 
 import javax.inject.Inject
 
-import backend.logging.Logger
 import backend.recon.{Album, AlbumReconStorage, Reconciler, ReconID}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -12,9 +11,8 @@ private class AlbumReconFiller @Inject() (
     reconciler: Reconciler[Album],
     storage: AlbumReconStorage,
     ec: ExecutionContext,
-    logger: Logger,
 ) {
-  private val aux = new ReconFiller[Album](reconciler, storage, AlbumReconFiller.Aux, logger)(ec)
+  private val aux = new ReconFiller[Album](reconciler, storage, AlbumReconFiller.Aux)(ec)
   def go(): Future[_] = aux.go(ea.allAlbums)
 }
 

@@ -2,7 +2,6 @@ package backend.scorer
 
 import javax.inject.Singleton
 
-import backend.logging.Logger
 import models.Song
 
 import common.Percentage
@@ -17,7 +16,6 @@ import common.rich.primitives.RichDouble.richDouble
     defaultScore: Percentage,
     scorer: CachedModelScorer,
     songFiles: Seq[FileRef],
-    logger: Logger,
     withAsserts: Boolean,
 ) extends ScoreBasedProbability {
   {
@@ -37,7 +35,7 @@ import common.rich.primitives.RichDouble.richDouble
     assert($.values.view.map(_.p).sum.isRoughly(1.0))
     def baseProbability(score: ModelScore) = frequencies(score) / songFiles.size.toDouble
     def debugMessage(score: ModelScore): Unit =
-      logger.debug(
+      scribe.debug(
         s"Base probability for <$score> was <${baseProbability(score)}>, " +
           s"required is <${map(score)}>, normalized probability is <${$(score)}>",
       )
@@ -71,13 +69,11 @@ private object FlatScoreBasedProbability {
       defaultScore: Percentage,
       scorer: CachedModelScorer,
       songFiles: Seq[FileRef],
-      logger: Logger,
   ) = new FlatScoreBasedProbability(
     map,
     defaultScore,
     scorer,
     songFiles,
-    logger,
     withAsserts = true,
   )
 
@@ -86,13 +82,11 @@ private object FlatScoreBasedProbability {
       defaultScore: Percentage,
       scorer: CachedModelScorer,
       songFiles: Seq[FileRef],
-      logger: Logger,
   ): FlatScoreBasedProbability = new FlatScoreBasedProbability(
     map,
     defaultScore,
     scorer,
     songFiles,
-    logger,
     withAsserts = false,
   )
 }

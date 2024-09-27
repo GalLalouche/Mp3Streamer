@@ -5,7 +5,6 @@ import javax.inject.Inject
 
 import backend.albums.{AddedAlbumCount, ArtistNewAlbums, NewAlbum}
 import backend.albums.filler.NewAlbumRecon
-import backend.logging.Logger
 import backend.mb.AlbumType
 import backend.module.StandaloneModule
 import backend.recon.{Artist, ReconID, SlickArtistReconStorage}
@@ -47,7 +46,6 @@ private class SlickNewAlbumStorage @Inject() (
     protected val lastFetchTime: SlickLastFetchTimeStorage,
     protected val artistStorage: SlickArtistReconStorage,
     protected val artistScoreStorage: ArtistScoreStorage,
-    logger: Logger,
 ) extends SlickSingleKeyColumnStorageTemplateFromConf[ReconID, StoredNewAlbum](ec, dbP)
     with NewAlbumStorage {
   private implicit val iec: ExecutionContext = ec
@@ -179,7 +177,7 @@ private class SlickNewAlbumStorage @Inject() (
         .exists
         .result,
     )
-    .listen(e => if (e) logger.warn(s"<$a> already exists with a different ReconID... skipping"))
+    .listen(e => if (e) scribe.warn(s"<$a> already exists with a different ReconID... skipping"))
   private def isValid(e: NewAlbumRecon): Future[Boolean] =
     ^(exists(e.reconId), existsWithADifferentReconID(e))(_ neither _)
   override def storeNew(albums: Seq[NewAlbumRecon]): Future[AddedAlbumCount] = {
@@ -208,7 +206,7 @@ private class SlickNewAlbumStorage @Inject() (
             .++=(newAlbums.map(toPartialEntity).ensuring(_.nonEmpty)),
         )
         .whenMLazy(result > 0)
-        .listenError(logger.error(s"Failed to store albums: <${newAlbums.mkString("\n")}>", _))
+        .listenError(scribe.error(s"Failed to store albums: <${newAlbums.mkString("\n")}>", _))
     } yield result
   }
   override def remove(artist: Artist) =

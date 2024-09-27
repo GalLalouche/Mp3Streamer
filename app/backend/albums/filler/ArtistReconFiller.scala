@@ -2,7 +2,6 @@ package backend.albums.filler
 
 import javax.inject.Inject
 
-import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.recon.{Artist, ArtistReconStorage, ReconID}
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -17,7 +16,6 @@ private class ArtistReconFiller @Inject() (
     storage: ArtistReconStorage,
     verifier: ArtistReconVerifier,
     ec: ExecutionContext,
-    logger: Logger,
 ) {
   private object Aux extends ReconFillerAux[Artist] {
     override def musicBrainzPath = "artist"
@@ -25,7 +23,7 @@ private class ArtistReconFiller @Inject() (
     override def verify(r: Artist, id: ReconID) = verifier(r, id)
   }
 
-  private val aux = new ReconFiller[Artist](reconciler, storage, Aux, logger)(ec)
+  private val aux = new ReconFiller[Artist](reconciler, storage, Aux)(ec)
 
   def go(): Future[_] = aux.go(ea.artists)
 }

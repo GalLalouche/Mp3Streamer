@@ -1,6 +1,5 @@
 package backend.scorer
 
-import backend.logging.Logger
 import backend.recon.{Album, Artist}
 import models.{FakeModelFactory, Song}
 import org.scalatest.WordSpec
@@ -48,7 +47,6 @@ class FlatScoreBasedProbabilityTest extends WordSpec with AuxSpecs with MockitoS
           defaultScore = 0.1,
           FakeModelScorer,
           allFiles,
-          Logger.Empty,
         )
         val buffer = new ArrayBuffer[FileRef]()
         while (buffer.length < 1000) {

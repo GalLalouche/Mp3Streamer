@@ -13,7 +13,7 @@ class ModuleTest extends ConfigurationModuleTestSpec {
   allRequiredBindingsSatisfied(
     "ControllerUtils",
     Modules.combine(
-      new controllers.Module,
+      new controllers.Module(level = None),
       new ScalaModule {
         override def configure() =
           // Execution context is provided by Play at runtime.

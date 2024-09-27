@@ -1,7 +1,6 @@
 package backend.albums.filler
 
 import backend.albums.filler.storage.FillerStorageModule
-import backend.logging.{LoggingLevel, LoggingModules}
 import backend.module.{CleanModule, StandaloneModule}
 import backend.recon.{Artist, ReconcilableFactory}
 import com.google.inject.{Guice, Injector, Module, Provides, Singleton}
@@ -32,7 +31,7 @@ object ExistingAlbumsModules {
         factory: PreCachedExistingAlbumsFactory,
         timed: TimedLogger,
         reconcilableFactory: ReconcilableFactory,
-    ): PreCachedExistingAlbums = timed("Creating cache", LoggingLevel.Info) {
+    ): PreCachedExistingAlbums = timed("Creating cache", scribe.info(_)) {
       factory.from(reconcilableFactory.albumDirectories)
     }
   }
@@ -40,7 +39,6 @@ object ExistingAlbumsModules {
     Guice.createInjector(overridenModule.overrideWith(new ScalaModule {
       override def configure(): Unit = {
         install(existingAlbumsModule)
-        install(LoggingModules.ConsoleWithFiltering)
         install(IOMusicFinderModule)
         install(FillerStorageModule)
       }

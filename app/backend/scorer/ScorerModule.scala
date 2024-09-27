@@ -1,6 +1,5 @@
 package backend.scorer
 
-import backend.logging.Logger
 import backend.recon.{Album, Artist}
 import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, CompositeStorageScorer, SongScoreStorage, StorageScorer}
 import com.google.inject.Provides
@@ -21,7 +20,6 @@ object ScorerModule extends ScalaModule {
   @Provides private def provideScoreBasedProbability(
       scorer: CachedModelScorer,
       mf: MusicFinder,
-      logger: Logger,
   ): FlatScoreBasedProbability = {
     def requiredProbability: ModelScore => Double = {
       case ModelScore.Crappy => 0
@@ -37,7 +35,6 @@ object ScorerModule extends ScalaModule {
       defaultScore,
       scorer,
       mf.getSongFiles,
-      logger: Logger,
     )
   }
 }

@@ -4,7 +4,6 @@ import java.io.File
 import javax.inject.Inject
 
 import backend.albums.filler.ArtistReconPusher
-import backend.logging.Logger
 import backend.mb.MbArtistReconciler
 import backend.recon.{Artist, ArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
@@ -34,7 +33,6 @@ private class FoobarScorer @Inject() (
     pusher: ArtistReconPusher,
     scorer: FullInfoModelScorer,
     ec: ExecutionContext,
-    logger: Logger,
 ) {
   import FoobarScorer._
 
@@ -65,7 +63,7 @@ private class FoobarScorer @Inject() (
         case ScoreSource.Album => scorer.updateAlbumScore(song, newScore)
         case ScoreSource.Song => scorer.updateSongScore(song, newScore)
       }).toTry
-        .listenError(logger.error("Failed to update score", _))
+        .listenError(scribe.error("Failed to update score", _))
         .>|(onScoreChange())
     }
     $
@@ -76,7 +74,7 @@ private class FoobarScorer @Inject() (
     .ifM(
       Future.successful(Unit),
       reconciler(a)
-        .listen(_ => logger.info(s"Reconciled <$a>"))
+        .listen(_ => scribe.info(s"Reconciled <$a>"))
         .flatMapF(r => pusher.withValidation(a.name, r.id, isIgnored = false))
         .run
         .void,
