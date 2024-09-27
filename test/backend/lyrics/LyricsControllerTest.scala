@@ -1,6 +1,7 @@
 package backend.lyrics
 
 import backend.external.DocumentSpecs
+import backend.logging.ScribeUtils
 import backend.lyrics.retrievers.InstrumentalArtistStorage
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
@@ -11,10 +12,8 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatest.tags.Slow
 import play.api.http.Status
 import play.api.inject.guice.GuiceApplicationBuilder
-
 import common.rich.func.BetterFutureInstances._
 import scalaz.syntax.bind.ToBindOps
-
 import common.{MutablePartialFunction, RichUrl}
 import common.rich.RichFuture._
 import common.rich.path.RichFile.richFile
@@ -33,14 +32,15 @@ class LyricsControllerTest
     .overrides(TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).module)
     .build
 
-  private val inj = app.injector
   protected override def beforeAll(): Unit = {
+    super.beforeAll()
     val artistStorage = inj.instanceOf[ArtistReconStorage]
     (artistStorage.utils.clearOrCreateTable() >>
       artistStorage.store(Artist(song.artistName), StoredReconResult.NoRecon) >>
       inj.instanceOf[LyricsStorage].utils.createTable() >>
       inj.instanceOf[InstrumentalArtistStorage].utils.createTable()).get
   }
+  private lazy val inj = app.injector
 
   before {
     urlToResponseMapper.clear()

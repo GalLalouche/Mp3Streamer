@@ -3,7 +3,6 @@ package backend.lyrics.retrievers.genius
 import javax.inject.Inject
 
 import backend.FutureOption
-import backend.logging.Logger
 import backend.lyrics.retrievers.genius.API._
 import backend.recon.StringReconScorer
 import com.google.common.annotations.VisibleForTesting
@@ -21,7 +20,6 @@ import common.rich.RichT._
 
 private class API @Inject() (
     @AccessToken accessToken: String,
-    logger: Logger,
     it: InternetTalker,
 ) {
   private implicit val ec: ExecutionContext = it
@@ -31,7 +29,7 @@ private class API @Inject() (
     it.get(Url(s"https://api.genius.com/search?access_token=$accessToken&q=$query"))
       .map(e =>
         if (e.status != Status.OK) {
-          logger.info(s"Got status code <${e.status}> from genius\nMessage body\n: ${e.body}")
+          scribe.info(s"Got status code <${e.status}> from genius\nMessage body\n: ${e.body}")
           None
         } else
           Json.parse(e.body).as[JsObject].|>(parse(song, _).map(Url.parse)),

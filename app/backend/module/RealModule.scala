@@ -3,7 +3,6 @@ package backend.module
 import java.time.Clock
 import javax.inject.Singleton
 
-import backend.logging.Logger
 import backend.storage.DbProvider
 import com.google.inject.Provides
 import models.IOMusicFinderModule
@@ -47,7 +46,6 @@ object RealModule extends ScalaModule with ModuleUtils {
       override def constraintMangler(name: String) = name
     })
 
-    requireBinding[Logger]
     requireBinding[ExecutionContext]
     requireBinding[InternetTalker]
 

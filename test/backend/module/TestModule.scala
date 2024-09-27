@@ -3,12 +3,10 @@ package backend.module
 import java.time.Clock
 import java.util.logging.LogManager
 
-import backend.logging.{Logger, StringBuilderLogger}
+import backend.logging.ScribeUtils
 import com.google.inject.Provides
 import models.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
-
-import scala.collection.mutable
 
 import common.FakeClock
 import common.guice.ModuleUtils
@@ -18,7 +16,9 @@ class TestModule extends ScalaModule with ModuleUtils {
   LogManager.getLogManager.readConfiguration(getClass.getResourceAsStream("/logging.properties"))
   override def configure() = {
     bind[FakeClock].toInstance(new FakeClock)
-    bind[Logger].toInstance(new StringBuilderLogger(new mutable.StringBuilder))
+    // TODO this should be a handler!
+    // bind[Logger].toInstance(new StringBuilderLogger(new mutable.StringBuilder))
+    ScribeUtils.noLogs()
 
     requireBinding[MemoryRoot]
     requireBinding[FakeMusicFinder]

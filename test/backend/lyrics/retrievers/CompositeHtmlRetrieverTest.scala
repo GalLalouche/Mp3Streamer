@@ -1,11 +1,9 @@
 package backend.lyrics.retrievers
 
-import backend.logging.Logger
 import backend.lyrics.{Instrumental, LyricsUrl}
 import backend.module.TestModuleConfiguration
 import io.lemonlabs.uri.Url
 import models.{FakeModelFactory, Song}
-import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
 import scala.concurrent.Future
@@ -45,8 +43,7 @@ class CompositeHtmlRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with O
   private val r1 = new FakeLyricsRetriever(song1, Url("foo"), "foo")
   private val r2 = new FakeLyricsRetriever(song2, Url("bar"), "bar")
   private val r3 = new FakeLyricsRetriever(song3, Url("bazz"), "quxx")
-  private val $ =
-    new CompositeHtmlRetriever(executionContext, injector.instance[Logger], Vector(r1, r2, r3))
+  private val $ = new CompositeHtmlRetriever(executionContext, Vector(r1, r2, r3))
 
   "doesUrlMatch" - {
     "when one of the URLs match" in {

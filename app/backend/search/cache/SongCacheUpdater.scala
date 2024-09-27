@@ -2,13 +2,14 @@ package backend.search.cache
 
 import javax.inject.Inject
 
-import backend.logging.{FilteringLogger, Logger, LoggingLevel}
+import backend.logging.ScribeUtils
 import backend.module.StandaloneModule
 import com.google.inject.Guice
 import models.ModelJsonable
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
+import scribe.Level
 
 import scala.concurrent.ExecutionContext
 
@@ -22,7 +23,6 @@ private[search] class SongCacheUpdater @Inject() (
     saver: JsonableSaver,
     splitter: SongCacheSplitter,
     builder: SongCacheBuilder,
-    logger: Logger,
 ) {
   import ModelJsonable._
 
@@ -37,13 +37,13 @@ private[search] class SongCacheUpdater @Inject() (
       override def onComplete(result: SongCache): Unit = {
         $.onCompleted()
         if (original == result) {
-          logger.info("No change in cache.")
+          scribe.info("No change in cache.")
           return
         }
         original
           .getDeleted(result)
           .optFilter(_.nonEmpty)
-          .foreach(deleted => logger.info("Deleted files:\n" + deleted.mkString("\n")))
+          .foreach(deleted => scribe.info("Deleted files:\n" + deleted.mkString("\n")))
 
         saver.saveObject(result)
         import ModelJsonable._
@@ -58,7 +58,7 @@ private[search] class SongCacheUpdater @Inject() (
 private object SongCacheUpdater {
   def main(args: Array[String]): Unit = {
     val injector = Guice.createInjector(StandaloneModule)
-    injector.instance[FilteringLogger].setCurrentLevel(LoggingLevel.Verbose)
+    ScribeUtils.setRootLevel(Level.Trace)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     injector.instance[SongCacheUpdater].go().toFuture[Vector].get
   }

@@ -3,7 +3,6 @@ package backend.lyrics.retrievers
 import java.util.regex.Pattern
 import javax.inject.Inject
 
-import backend.logging.Logger
 import backend.lyrics.{HtmlLyrics, Instrumental, LyricsUrl}
 import backend.lyrics.retrievers.SingleHostParsingHelper._
 import io.lemonlabs.uri.Url
@@ -19,7 +18,7 @@ import common.io.InternetTalker
 import common.io.RichWSResponse._
 import common.rich.primitives.RichString._
 
-private class SingleHostParsingHelper @Inject() (it: InternetTalker, logger: Logger) {
+private class SingleHostParsingHelper @Inject() (it: InternetTalker) {
   private implicit val iec: ExecutionContext = it
 
   def apply(p: SingleHostParser)(url: Url, s: Song): Future[RetrievedLyricsResult] =
@@ -29,7 +28,7 @@ private class SingleHostParsingHelper @Inject() (it: InternetTalker, logger: Log
         if (response.status == Status.NOT_FOUND)
           RetrievedLyricsResult.NoLyrics
         else if (response.status >= 300) {
-          logger.warn(s"Got error code <${response.status}> for <$url>")
+          scribe.warn(s"Got error code <${response.status}> for <$url>")
           RetrievedLyricsResult.NoLyrics
         } else
           p(response.document, s) match {
@@ -43,7 +42,7 @@ private class SingleHostParsingHelper @Inject() (it: InternetTalker, logger: Log
       )
       .filterWithMessage(
         {
-          case RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(_, h, url)) =>
+          case RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(_, h, _)) =>
             h.doesNotMatch(EmptyHtmlRegex)
           case _ => true
         },

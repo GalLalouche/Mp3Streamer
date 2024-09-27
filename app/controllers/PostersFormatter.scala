@@ -4,7 +4,6 @@ import java.io.File
 import javax.imageio.ImageIO
 import javax.inject.Inject
 
-import backend.logging.Logger
 import models.GenreFinder
 
 import scala.concurrent.ExecutionContext
@@ -17,7 +16,6 @@ private class PostersFormatter @Inject() (
     urlPathUtils: UrlPathUtils,
     ec: ExecutionContext,
     genreFinder: GenreFinder,
-    logger: Logger,
 ) {
   def image(path: String): File = urlPathUtils.parseFile(path).<|(validate)
 
@@ -28,7 +26,7 @@ private class PostersFormatter @Inject() (
     lazy val tuple = s"($width X $height)"
     def warnOnCompositeGenres(s: String): Unit =
       if (genreFinder(new IODirectory(file.getParent)).isFlat.isFalse)
-        logger.warn(s)
+        scribe.warn(s)
     if (height < 500 || width < 500)
       warnOnCompositeGenres(s"Image $file dimensions is too small: $tuple")
     if (height != width)

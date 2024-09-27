@@ -4,7 +4,6 @@ import java.awt.Image
 import javax.inject.Inject
 
 import backend.Retriever
-import backend.logging.Logger
 import mains.SwingUtils._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,7 +27,7 @@ private object ImageDownloader {
 }
 
 /** Downloads images and saves them to a directory; local image sources will be noop-ed. */
-private class ImageDownloader @Inject() (it: InternetTalker, logger: Logger) {
+private class ImageDownloader @Inject() (it: InternetTalker) {
   import ImageDownloader._
 
   private implicit val iec: ExecutionContext = it
@@ -40,7 +39,7 @@ private class ImageDownloader @Inject() (it: InternetTalker, logger: Logger) {
           val file = outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
           folderImage(file, local = false, w = width, h = height, ImageSource.toImage(file))
         }
-        .listenError(e => logger.error(s"Error downloading file <$url>", e))
+        .listenError(e => scribe.error(s"Error downloading file <$url>", e))
     case l: LocalSource =>
       Future.successful(folderImage(l.file, local = true, l.width, l.height, l.image))
   }

@@ -1,16 +1,17 @@
 package common.concurrency
 
-import java.util.concurrent.Semaphore
+import backend.logging.ScribeUtils
 
+import java.util.concurrent.Semaphore
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
-
 import common.concurrency.SimpleTypedActorImplTest.asyncAcquire
 import common.test.AsyncAuxSpecs
 
 class SimpleTypedActorImplTest extends AsyncFreeSpec with OneInstancePerTest with AsyncAuxSpecs {
+  ScribeUtils.noLogs()
   "apply (sync)" - {
     "basic test" in {
       (SimpleTypedActor[String, Int]("MyName", _.length) ! "Foobar") shouldEventuallyReturn 6

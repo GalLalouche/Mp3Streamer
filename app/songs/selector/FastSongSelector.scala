@@ -2,7 +2,6 @@ package songs.selector
 
 import javax.inject.Inject
 
-import backend.logging.LoggingLevel
 import models.{MusicFinder, Song}
 
 import scala.annotation.tailrec
@@ -21,7 +20,7 @@ private class FastSongSelector @Inject() (
     timedLogger: TimedLogger,
     random: Random,
 ) extends SongSelector {
-  final override def randomSong(): Song = timedLogger.apply("fastRandomSong", LoggingLevel.Debug) {
+  final override def randomSong(): Song = timedLogger.apply("fastRandomSong", scribe.debug(_)) {
     @tailrec def go(dir: DirectoryRef): Song =
       if (dir.dirs.isEmpty) {
         val songs = mf.getSongsInDir(dir).toVector

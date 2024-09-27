@@ -1,7 +1,8 @@
 package backend.module
 
-import java.util.UUID
+import backend.logging.ScribeUtils
 
+import java.util.UUID
 import backend.storage.DbProvider
 import com.google.inject.{Guice, Module, Provides}
 import com.google.inject.util.Modules
@@ -11,7 +12,6 @@ import slick.jdbc.{H2Profile, JdbcProfile}
 import slick.util.AsyncExecutor
 
 import scala.concurrent.ExecutionContext
-
 import common.io.{InternetTalker, MemoryRoot, RootDirectory}
 import common.io.WSAliases._
 import common.rich.RichT._
@@ -58,6 +58,7 @@ case class TestModuleConfiguration(
           }
           override def constraintMangler(name: String) = s"${UUID.randomUUID()}_$name"
         })
+        ScribeUtils.noLogs()
       }
 
       @Provides

@@ -2,7 +2,6 @@ package common.concurrency
 
 import java.util.concurrent.LinkedBlockingQueue
 
-import backend.logging.Logger
 import org.scalatest.{AsyncFreeSpec, Matchers}
 
 import scala.collection.JavaConverters._
@@ -25,7 +24,6 @@ class RateLimitedActorAsyncImplTest extends AsyncFreeSpec with AsyncAuxSpecs wit
       "name",
       i => Future.successful(queue.put(i, System.currentTimeMillis())),
       10.millis,
-      Logger.Empty,
     )
     1.to(5).toVector.traverse($ ! _) >| {
       val v = queue.asScala.toVector

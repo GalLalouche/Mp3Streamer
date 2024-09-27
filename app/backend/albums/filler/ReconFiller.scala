@@ -1,6 +1,5 @@
 package backend.albums.filler
 
-import backend.logging.Logger
 import backend.recon.{Reconcilable, Reconciler, ReconID, ReconStorage}
 import backend.recon.StoredReconResult.HasReconResult
 import rx.lang.scala.Observable
@@ -21,13 +20,12 @@ private class ReconFiller[R <: Reconcilable](
     reconciler: Reconciler[R],
     storage: ReconStorage[R],
     aux: ReconFillerAux[R],
-    logger: Logger,
 )(implicit ec: ExecutionContext) {
   private val cache = storage.cachedKeys.get
   private val storer = SimpleActor.async[(R, ReconID)](
     "storer",
     { case (r, recondID) =>
-      logger.info(
+      scribe.info(
         s"Storing <${aux.prettyPrint(r)}>: https://musicbrainz.org/${aux.musicBrainzPath}/${recondID.id}",
       )
       storage.store(r, HasReconResult(recondID, isIgnored = false))

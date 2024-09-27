@@ -2,7 +2,6 @@ package backend.search.cache
 
 import javax.inject.Inject
 
-import backend.logging.LoggingLevel
 import models.{Album, Artist, Song}
 
 import common.TimedLogger
@@ -23,7 +22,7 @@ private class SongCacheSplitter @Inject() (
       albumJsonable: Jsonable[Album],
       artistJsonable: Jsonable[Artist],
   ): Unit = {
-    def log[A](t: String)(a: A): A = timedLogger(t, LoggingLevel.Info)(a)
+    def log[A](t: String)(a: A): A = timedLogger(t, scribe.info(_))(a)
     val songs = log("saving songs")(cs.songs <| jsonableSaver.saveArray)
     val albums = log("saving albums")(
       songs
