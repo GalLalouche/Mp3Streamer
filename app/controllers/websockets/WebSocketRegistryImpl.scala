@@ -2,7 +2,6 @@ package controllers.websockets
 
 import akka.actor.{Actor, ActorRef, ActorSystem, PoisonPill, Props}
 import akka.stream.ActorMaterializer
-import backend.logging.Logger
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.WebSocket
 import rx.lang.scala.Subject
@@ -17,7 +16,7 @@ private object WebSocketRegistryImpl {
   private implicit val materializer: ActorMaterializer = ActorMaterializer()(system)
 }
 
-private class WebSocketRegistryImpl(logger: Logger, name: String) extends PlayWebSocketRef {
+private class WebSocketRegistryImpl(name: String) extends PlayWebSocketRef {
   import controllers.websockets.WebSocketRegistryImpl._
 
   private val actors: mutable.Set[ActorRef] = RichSet.concurrentSet
@@ -26,7 +25,7 @@ private class WebSocketRegistryImpl(logger: Logger, name: String) extends PlayWe
     override def postStop() = actors -= this.self
     def receive = {
       case msg: String =>
-        logger.verbose(s"$name received message <$msg>")
+        scribe.trace(s"$name received message <$msg>")
         messagesSubject.onNext(msg)
       case MessageToClient(msg) => out ! msg
     }
@@ -37,7 +36,7 @@ private class WebSocketRegistryImpl(logger: Logger, name: String) extends PlayWe
   override def broadcast(msg: String) = actors.foreach(_ ! MessageToClient(msg))
   override def closeConnections() = actors.foreach(_ ! PoisonPill)
   override def accept() = WebSocket.accept[String, String] { _ =>
-    // config.logger.verbose(s"${this.simpleName} received a new connection")
+    // config.scribe.trace(s"${this.simpleName} received a new connection")
     connectionsSubject.onNext(())
     ActorFlow.actorRef(out => Props(new SocketActor(out)))
   }

@@ -3,7 +3,6 @@ package backend.mb
 import javax.inject.Inject
 
 import backend.OptionRetriever
-import backend.logging.Logger
 import backend.recon.{Album, AlbumReconScorer, Artist, Reconciler, ReconID}
 import play.api.libs.json.{JsObject, JsValue}
 
@@ -24,7 +23,6 @@ private class MbAlbumReconciler @Inject() (
     downloader: JsonDownloader,
     artistReconciler: OptionRetriever[Artist, ReconID],
     albumReconScorer: AlbumReconScorer,
-    logger: Logger,
 ) extends Reconciler[Album] {
   private implicit val iec: ExecutionContext = ec
 
@@ -45,7 +43,7 @@ private class MbAlbumReconciler @Inject() (
     .map(_._1)
     .map(_.str("id").thrush(ReconID.validateOrThrow))
     .<| {
-      case None => logger.debug(s"Could not reconcile album: <$a>")
+      case None => scribe.debug(s"Could not reconcile album: <$a>")
       case _ => ()
     }
 }

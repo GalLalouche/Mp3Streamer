@@ -2,26 +2,22 @@ package backend.lyrics.retrievers
 
 import javax.inject.Inject
 
-import backend.logging.Logger
 import backend.lyrics.retrievers.genius.GeniusLyricsRetriever
 
 import scala.concurrent.ExecutionContext
 
 private[lyrics] class CompositeHtmlRetriever(
     ec: ExecutionContext,
-    logger: Logger,
     retrievers: Seq[HtmlRetriever],
-) extends CompositeLyricsRetriever(logger, retrievers)(ec)
+) extends CompositeLyricsRetriever(retrievers)(ec)
     with HtmlRetriever {
   @Inject() def this(
       ec: ExecutionContext,
-      logger: Logger,
       geniusLyricsRetriever: GeniusLyricsRetriever,
       azLyricsRetriever: AzLyricsRetriever,
       darkLyricsRetriever: DarkLyricsRetriever,
   ) = this(
     ec,
-    logger,
     Vector(
       geniusLyricsRetriever,
       azLyricsRetriever,

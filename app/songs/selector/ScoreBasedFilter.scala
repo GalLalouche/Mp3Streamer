@@ -2,7 +2,6 @@ package songs.selector
 
 import javax.inject.Inject
 
-import backend.logging.Logger
 import backend.scorer.{CachedModelScorer, ScoreBasedProbability}
 import backend.scorer.FullInfoScore.Scored
 import models.Song
@@ -16,7 +15,6 @@ private class ScoreBasedFilter @Inject() (
     random: Random,
     cachedModelScorer: CachedModelScorer,
     scoreBasedProbability: ScoreBasedProbability,
-    logger: Logger,
 ) extends Filter[Song] {
   override def passes(song: Song): Boolean = {
     val percentage = scoreBasedProbability(song)
@@ -25,8 +23,8 @@ private class ScoreBasedFilter @Inject() (
     val source = fullInfoScore.safeCast[Scored].map(_.source).getOrElse("N/A")
     val shortSongString = s"${song.artistName} - ${song.title} (${score.entryName}, $source)"
     val $ = percentage.roll(random)
-    if ($) logger.verbose(s"Chose song <$shortSongString> with probability $percentage")
-    else logger.verbose(s"Skipped song <$shortSongString> with probability ${percentage.inverse}")
+    if ($) scribe.trace(s"Chose song <$shortSongString> with probability $percentage")
+    else scribe.trace(s"Skipped song <$shortSongString> with probability ${percentage.inverse}")
     $
   }
 }

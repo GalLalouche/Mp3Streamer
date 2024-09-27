@@ -1,7 +1,6 @@
 package backend.albums.filler
 
 import backend.albums.NewAlbum
-import backend.logging.Logger
 import backend.mb.{MbAlbumMetadata, MbArtistReconciler}
 import backend.recon.{Artist, ReconcilerCacher, ReconID}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
@@ -18,7 +17,6 @@ import common.concurrency.DaemonFixedPool
 import common.rich.RichT._
 
 @Singleton private class NewAlbumFetcher @Inject() (
-    logger: Logger,
     meta: MbArtistReconciler,
     reconciler: ReconcilerCacher[Artist],
 ) {
@@ -32,7 +30,7 @@ import common.rich.RichT._
     .foldEither(
       _.fold(
         { e =>
-          logger
+          scribe
             .debug(s"Did not fetch albums for artist <${artist.name}>; reason: <${e.getMessage}>")
           None
         },
@@ -42,7 +40,7 @@ import common.rich.RichT._
 
   def apply(artist: Artist): Future[Seq[NewAlbumRecon]] = (for {
     recon <- getReconId(artist)
-    _ = logger.debug(s"Fetching new albums for <$artist>")
+    _ = scribe.debug(s"Fetching new albums for <$artist>")
     albums <- meta.getAlbumsMetadata(recon).liftSome
   } yield albums.map(NewAlbumFetcher.toReconned(artist))) | Nil
 }

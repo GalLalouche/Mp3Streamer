@@ -1,6 +1,5 @@
 package backend.lyrics.retrievers
 
-import backend.logging.Logger
 import backend.lyrics.retrievers.bandcamp.{BandcampAlbumRetriever, BandcampParser}
 import com.google.inject.Provides
 import net.codingwell.scalaguice.ScalaModule
@@ -18,6 +17,5 @@ private[lyrics] object RetrieversModule extends ScalaModule {
   @Provides @CompositeAlbumParser private def provideCAP(
       ec: ExecutionContext,
       bandcampParser: BandcampAlbumRetriever,
-      logger: Logger,
-  ): HtmlRetriever = new CompositeHtmlRetriever(ec, logger, Vector(bandcampParser))
+  ): HtmlRetriever = new CompositeHtmlRetriever(ec, Vector(bandcampParser))
 }

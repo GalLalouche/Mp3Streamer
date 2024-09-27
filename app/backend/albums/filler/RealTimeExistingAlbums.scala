@@ -2,7 +2,6 @@ package backend.albums.filler
 
 import javax.inject.Inject
 
-import backend.logging.LoggingLevel
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import models.MusicFinder
 import models.TypeAliases.ArtistName
@@ -15,7 +14,7 @@ private class RealTimeExistingAlbums @Inject() (
     mf: MusicFinder,
     timed: TimedLogger,
 ) extends ExistingAlbums {
-  override def artists: Iterable[Artist] = timed("Fetching artists (lazy)", LoggingLevel.Info) {
+  override def artists: Iterable[Artist] = timed("Fetching artists (lazy)", scribe.info(_)) {
     reconcilableFactory.artistDirectories.flatMap { artistDir =>
       val dirs = artistDir.dirs
       // "Standard" artists have albums prefixed with release year.

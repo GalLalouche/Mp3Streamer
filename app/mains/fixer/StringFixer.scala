@@ -1,9 +1,7 @@
 package mains.fixer
 
 import java.util.regex.Pattern
-import javax.inject.Inject
 
-import backend.logging.{ConsoleLogger, Logger}
 import com.google.common.annotations.VisibleForTesting
 import org.apache.commons.lang3.StringUtils
 import resource._
@@ -18,7 +16,7 @@ import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichOption.richOption
 import common.rich.primitives.RichString._
 
-class StringFixer @Inject() (logger: Logger) extends (String => String) {
+class StringFixer extends (String => String) {
   import StringFixer._
 
   def asciiNormalize(s: String): String = try {
@@ -39,10 +37,10 @@ class StringFixer @Inject() (logger: Logger) extends (String => String) {
       // TODO reuse this for Hebrew check as well?
       val lang = DetectLanguage(s)
       if (isExemptLanguage(lang)) {
-        logger.verbose(s"Could not asciify <$s>")
+        scribe.trace(s"Could not asciify <$s>")
         s
       } else {
-        logger.verbose(s"Language <$lang> is not exempt")
+        scribe.trace(s"Language <$lang> is not exempt")
         throw e
       }
   }
@@ -84,7 +82,7 @@ class StringFixer @Inject() (logger: Logger) extends (String => String) {
   }
 }
 
-object StringFixer extends StringFixer(ConsoleLogger) {
+object StringFixer extends StringFixer() {
   @VisibleForTesting
   private[fixer] val lowerCaseWords = Vector(
     "'em",

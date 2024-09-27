@@ -1,29 +1,36 @@
 package controllers
 
 import backend.albums.filler.ExistingAlbumsModules
-import backend.logging.{CompositeLogger, ConsoleLogger, DirectoryLogger, FilteringLogger, Logger, LoggingLevel}
+import backend.logging.{ScribeConfigLoader, ScribeUtils}
 import backend.module.{RealInternetTalkerModule, RealModule}
-import com.google.inject.Provides
+import com.google.common.annotations.VisibleForTesting
 import com.google.inject.util.Modules
 import net.codingwell.scalaguice.ScalaModule
+import scribe.Level
 
-import scala.concurrent.ExecutionContext
-
-import common.io.{DirectoryRef, RootDirectory}
-import common.rich.RichT._
-
-// Has to be a class for Play to instantiate.
-class Module extends ScalaModule {
+// Has to be a class for Play to instantiate. The main constructor should only be used by tests.
+class Module @VisibleForTesting() (level: Option[Level]) extends ScalaModule {
+  def this() = this(Module.defaultLogLevel)
   override def configure(): Unit = {
     install(Modules.`override`(RealModule).`with`(ExistingAlbumsModules.lazyAlbums))
     install(RealInternetTalkerModule.nonDaemonic)
+    setScribeLogging()
   }
 
-  @Provides private def logger(
-      @RootDirectory rootDirectory: DirectoryRef,
-      ec: ExecutionContext,
-  ): Logger = new CompositeLogger(
-    (new ConsoleLogger with FilteringLogger).<|(_.setCurrentLevel(LoggingLevel.Verbose)),
-    new DirectoryLogger(rootDirectory)(ec),
-  )
+  private def setScribeLogging(): Unit = {
+    // TODO file logging
+    val envLevel = Option(System.getenv("log_level")).map(_.toLowerCase)
+    val levelToUse = envLevel.flatMap(ScribeUtils.parseLevel).orElse(this.level)
+    levelToUse match {
+      case Some(value) =>
+        ScribeUtils.setRootLevel(value)
+        ScribeConfigLoader.go()
+      case None => ScribeUtils.noLogs()
+    }
+  }
+}
+
+private object Module {
+  /** Should only be used for testing! Set `None` for no logs. */
+  private[controllers] var defaultLogLevel: Option[Level] = Some(Level.Debug)
 }

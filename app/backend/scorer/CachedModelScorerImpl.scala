@@ -2,7 +2,6 @@ package backend.scorer
 
 import javax.inject.Inject
 
-import backend.logging.Logger
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, SongScoreStorage}
@@ -31,7 +30,6 @@ private class CachedModelScorerImpl @Inject() (
     reconcilableFactory: ReconcilableFactory,
     mf: MusicFinder,
     ec: ExecutionContext,
-    logger: Logger,
 ) extends CachedModelScorer {
   private implicit val iec: ExecutionContext = ec
 
@@ -74,7 +72,7 @@ private class CachedModelScorerImpl @Inject() (
   private def toOption[A](fileRef: FileRef, subject: String)(t: Try[A]): Option[A] = t match {
     case Failure(exception) =>
       if (fileRef.path.contains("Classical").isFalse)
-        logger.debug(
+        scribe.debug(
           s"Could not parse <$subject> from <$fileRef> because: <${exception.getMessage}>",
         )
       None

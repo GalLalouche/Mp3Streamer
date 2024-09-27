@@ -1,6 +1,5 @@
 package songs.selector
 
-import backend.logging.LoggingLevel
 import models.{MusicFinder, Song}
 import songs.selector.MultiStageSongSelector.fileFilterSetter
 
@@ -27,7 +26,7 @@ class MultiStageSongSelector[Sys <: RefSystem](private val songs: IndexedSeq[Sys
     private val timedLogger: TimedLogger,
 ) extends SongSelector {
   final override def randomSong(): Song =
-    timedLogger("Selecting a random song", LoggingLevel.Verbose)(randomSongImpl())
+    timedLogger("Selecting a random song")(randomSongImpl())
 
   @tailrec private def randomSongImpl(): Song = {
     val file = random.select(songs)

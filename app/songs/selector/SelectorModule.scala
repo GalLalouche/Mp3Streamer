@@ -1,6 +1,5 @@
 package songs.selector
 
-import backend.logging.Logger
 import backend.scorer.CachedModelScorer
 import com.google.inject.Provides
 import models.{GenreFinder, MusicFinder}
@@ -15,7 +14,6 @@ private[songs] object SelectorModule extends ScalaModule with ModuleUtils {
   override def configure(): Unit = {
     requireBinding[ExecutionContext]
     requireBinding[MusicFinder]
-    requireBinding[Logger]
     bind[SongSelector].to[SongSelectorState]
   }
 

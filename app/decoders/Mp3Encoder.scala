@@ -3,8 +3,6 @@ package decoders
 import java.util.regex.Pattern
 import javax.inject.{Inject, Singleton}
 
-import backend.logging.Logger
-
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.BetterFutureInstances._
@@ -21,12 +19,11 @@ class Mp3Encoder @Inject() (
     @RootDirectory rootDirectory: DirectoryRef,
     encoder: Encoder,
     ec: ExecutionContext,
-    logger: Logger,
 ) extends SimpleTypedActor[FileRef, FileRef] {
   private implicit val iec: ExecutionContext = ec
   private val outputDir = rootDirectory.addSubDir("musicOutput")
   private val cleaner = new FolderCleaner(outputDir)
-  private val actor = SimpleTypedActor.unique("Mp3Encoder", encodeFileIfNeeded, logger)
+  private val actor = SimpleTypedActor.unique("Mp3Encoder", encodeFileIfNeeded)
 
   private def encodeFileIfNeeded(f: FileRef) =
     f.mapIf(_.extension.toLowerCase != "mp3").to(encode(_))

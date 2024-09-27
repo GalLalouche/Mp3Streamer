@@ -6,7 +6,7 @@ import backend.module.TestModuleConfiguration
 import com.google.inject
 import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
 import models.{IOSong, Song}
-import org.scalatest.{Args, TestSuite}
+import org.scalatest.{Args, BeforeAndAfterAll, TestSuite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -14,12 +14,14 @@ import play.api.libs.ws.{BodyWritable, WSClient, WSResponse}
 import play.api.mvc.Result
 
 import scala.concurrent.{ExecutionContext, Future}
-
 import common.rich.RichFuture._
 import common.rich.collections.RichSet._
 import common.test.AuxSpecs
 
-trait ControllerSpec extends AuxSpecs with GuiceOneServerPerSuite { self: TestSuite =>
+trait ControllerSpec extends AuxSpecs with GuiceOneServerPerSuite with BeforeAndAfterAll { self: TestSuite =>
+  override protected def beforeAll(): Unit = {
+    Module.defaultLogLevel = None
+  }
   // Play, being moronic as usual, will initialize an application even if the test is to be excluded,
   // resulting in poor performance.
   // TODO create new issue in github https://github.com/playframework/playframework/issues/new

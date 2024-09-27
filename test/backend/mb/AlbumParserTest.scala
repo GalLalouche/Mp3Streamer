@@ -2,7 +2,6 @@ package backend.mb
 
 import java.time.LocalDate
 
-import backend.logging.Logger
 import backend.recon.{Artist, ReconID}
 import org.scalatest.FreeSpec
 import org.scalatest.Inside._
@@ -12,7 +11,7 @@ import play.api.libs.json.{JsObject, Json}
 import common.test.AuxSpecs
 
 class AlbumParserTest extends FreeSpec with AuxSpecs {
-  private val $ = new AlbumParser(Logger.Empty)
+  private val $ = new AlbumParser
   private def parse(s: String): Option[MbAlbumMetadata] =
     $.parseReleaseGroup(Json.parse(s.stripMargin).as[JsObject])
   "valid input" in {

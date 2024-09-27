@@ -1,7 +1,5 @@
 package common.concurrency
 
-import backend.logging.Logger
-
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 
@@ -21,8 +19,7 @@ object SimpleTypedActor {
       name: String,
       f: Msg => Future[Result],
       rateLimit: Duration,
-      logger: Logger,
-  ): SimpleTypedActor[Msg, Result] = new RateLimitedActorAsyncImpl(name, f, rateLimit, logger)
+  ): SimpleTypedActor[Msg, Result] = new RateLimitedActorAsyncImpl(name, f, rateLimit)
   /**
    * Ensures uniqueness of the messages in the message queue, i.e., if a sent message already exists
    * in the queue it will be dropped. This can be used to avoid doing unnecessary work.
@@ -30,6 +27,5 @@ object SimpleTypedActor {
   def unique[Msg, Result](
       name: String,
       f: Msg => Result,
-      logger: Logger,
-  ): SimpleTypedActor[Msg, Result] = new UniqueSimpleTypedActorImpl(name, f, logger)
+  ): SimpleTypedActor[Msg, Result] = new UniqueSimpleTypedActorImpl(name, f)
 }

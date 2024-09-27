@@ -1,12 +1,10 @@
 package backend.lyrics.retrievers
 
-import backend.logging.Logger
 import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
 private[lyrics] class CompositeLyricsRetriever(
-    logger: Logger,
     retrievers: Seq[LyricsRetriever],
 )(implicit ec: ExecutionContext)
     extends LyricsRetriever {
@@ -15,7 +13,7 @@ private[lyrics] class CompositeLyricsRetriever(
       result.flatMap {
         case RetrievedLyricsResult.NoLyrics => nextRetriever(s)
         case RetrievedLyricsResult.Error(e) =>
-          logger.error("Failed to parse lyrics: ", e)
+          scribe.error("Failed to parse lyrics: ", e)
           nextRetriever(s)
         case e: RetrievedLyricsResult.RetrievedLyrics => Future.successful(e)
       },

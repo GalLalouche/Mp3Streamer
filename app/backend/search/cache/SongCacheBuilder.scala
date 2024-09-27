@@ -3,7 +3,6 @@ package backend.search.cache
 import java.time.Clock
 import javax.inject.Inject
 
-import backend.logging.LoggingLevel
 import models.MusicFinder
 import rx.lang.scala.Observable
 
@@ -22,7 +21,7 @@ private class SongCacheBuilder @Inject() (
     ReportObservable.filteringAggregator(
       observable = {
         val songFiles =
-          timedLogger("fetching song files", LoggingLevel.Info)(Observable.from(mf.getSongFiles))
+          timedLogger("fetching song files", scribe.info(_))(Observable.from(mf.getSongFiles))
         songFiles.map { f =>
           val needsUpdate = cache.needsUpdate(f)
           (needsUpdate, if (needsUpdate) extractSongMetadata(f) else cache.get(f).get)

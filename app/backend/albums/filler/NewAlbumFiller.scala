@@ -5,7 +5,6 @@ import javax.inject.{Inject, Singleton}
 
 import backend.albums.AddedAlbumCount
 import backend.albums.filler.storage.CachedNewAlbumStorage
-import backend.logging.Logger
 import backend.mb.AlbumType
 import backend.recon.Artist
 import backend.storage.{AlwaysFresh, DatedFreshness}
@@ -27,7 +26,6 @@ private[albums] class NewAlbumFiller @Inject() private (
     ea: PreCachedExistingAlbums,
     clock: Clock,
     ec: ExecutionContext,
-    logger: Logger,
 ) {
   private implicit val iec: ExecutionContext = ec
   // TODO code duplication with RefreshableRetriever
@@ -36,7 +34,7 @@ private[albums] class NewAlbumFiller @Inject() private (
     Function.tupled(storage.storeNew),
   )
   private def ignore(reason: String) = {
-    logger.verbose(reason)
+    scribe.trace(reason)
     Future.successful(0: AddedAlbumCount)
   }
   def update(maxAge: Duration, maxCachedAlbums: Int)(a: Artist): Future[AddedAlbumCount] =
@@ -48,7 +46,7 @@ private[albums] class NewAlbumFiller @Inject() private (
         ifFalse = storage
           .freshness(a)
           .getOrElseF {
-            logger.verbose(s"Storing new artist <$a>")
+            scribe.trace(s"Storing new artist <$a>")
             storage.reset(a)
           }
           .flatMap {
@@ -57,13 +55,13 @@ private[albums] class NewAlbumFiller @Inject() private (
               val age = dt.age(clock)
               val info = s"<$a> because it is <${age.toDays}> days old (from <${dt.toLocalDate}>)"
               if (age > maxAge) {
-                logger.debug(s"Fetching new data for $info")
+                scribe.debug(s"Fetching new data for $info")
                 storage.unremoveAll(a) >> fetcher(a).flatMap(finisher.!(_, Set(a)))
               } else {
-                logger.verbose(s"Skipping $info")
+                scribe.trace(s"Skipping $info")
                 Future.successful(0: AddedAlbumCount)
               }
           }
-          .listen(stored => if (stored > 0) logger.debug(s"Stored <$stored> new albums.")),
+          .listen(stored => if (stored > 0) scribe.debug(s"Stored <$stored> new albums.")),
       )
 }

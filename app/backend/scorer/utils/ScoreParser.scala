@@ -2,7 +2,6 @@ package backend.scorer.utils
 
 import javax.inject.Inject
 
-import backend.logging.Logger
 import backend.recon.{Album, Artist}
 import backend.scorer.{CachedModelScorer, ModelScore}
 import backend.scorer.storage.ArtistScoreStorage
@@ -26,7 +25,6 @@ import common.rich.primitives.RichString._
 private class ScoreParser @Inject() (
     artistScoreStorage: ArtistScoreStorage,
     cachedModelScorer: CachedModelScorer,
-    logger: Logger,
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
@@ -45,7 +43,7 @@ private class ScoreParser @Inject() (
     $.filter(e =>
       !(e._1.fold(cachedModelScorer.apply(_), cachedModelScorer.apply(_)).toModelScore == e._2),
     ).toOption
-      .listen(e => logger.info(s"Storing <$e>"))
+      .listen(e => scribe.info(s"Storing <$e>"))
   }
   private def store(scores: Seq[(Either[Artist, Album], ModelScore)]): Future[Unit] = {
     val (artists, albums) = scores.map(_.fold(_.eitherStrengthenLeft(_))).separate
