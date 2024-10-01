@@ -1295,7 +1295,7 @@
       this.html.active = false
       this.flash.active = false
     },
-    setMedia: function(media) {
+    setMedia: function(song) {
 
       /*	media[format] = String: URL of format. Must contain all of the supplied option's video or audio formats.
        *	media.poster = String: Video poster URL.
@@ -1306,7 +1306,7 @@
 
       const self = this
       let supported = false
-      const posterChanged = this.status.media.poster !== media.poster // Compare before reset. Important for OSX Safari as this.htmlElement.poster.src is absolute, even if original poster URL was relative.
+      const posterChanged = this.status.media.poster !== song.poster // Compare before reset. Important for OSX Safari as this.htmlElement.poster.src is absolute, even if original poster URL was relative.
 
       this._resetMedia()
       this._resetGate()
@@ -1315,17 +1315,17 @@
       $.each(this.formats, function(formatPriority, format) {
         const isVideo = self.format[format].media === 'video'
         $.each(self.solutions, function(solutionPriority, solution) {
-          if (self[solution].support[format] && self._validString(media[format])) { // Format supported in solution and url given for format.
+          if (self[solution].support[format] && self._validString(song[format])) { // Format supported in solution and url given for format.
             const isHtml = solution === 'html'
 
             if (isVideo) {
               if (isHtml) {
                 self.html.video.gate = true
-                self._html_setVideo(media)
+                self._html_setVideo(song)
                 self.html.active = true
               } else {
                 self.flash.gate = true
-                self._flash_setVideo(media)
+                self._flash_setVideo(song)
                 self.flash.active = true
               }
               if (self.css.jq.videoPlay.length) {
@@ -1335,11 +1335,11 @@
             } else {
               if (isHtml) {
                 self.html.audio.gate = true
-                self._html_setAudio(media)
+                self._html_setAudio(song)
                 self.html.active = true
               } else {
                 self.flash.gate = true
-                self._flash_setAudio(media)
+                self._flash_setAudio(song)
                 self.flash.active = true
               }
               if (self.css.jq.videoPlay.length) {
@@ -1362,16 +1362,16 @@
           // Set poster IMG if native video controls are not being used
           // Note: With IE the IMG onload event occurs immediately when cached.
           // Note: Poster hidden by default in _resetMedia()
-          if (this._validString(media.poster)) {
+          if (this._validString(song.poster)) {
             if (posterChanged) { // Since some browsers do not generate img onload event.
-              this.htmlElement.poster.src = media.poster
+              this.htmlElement.poster.src = song.poster
             } else {
               this.internal.poster.jq.show()
             }
           }
         }
         this.status.srcSet = true
-        this.status.media = $.extend({}, media)
+        this.status.media = $.extend({}, song)
         this._updateButtons(false)
         this._updateInterface()
       } else { // jPlayer cannot support any formats provided in this browser
@@ -1963,12 +1963,13 @@
       }
       this._trigger($.jPlayer.event.timeupdate); // The flash generates this event for its solution.
     },
-    _html_setAudio: function(media) {
+    _html_setAudio: function(song) {
       const self = this
       // Always finds a format due to checks in setMedia()
       $.each(this.formats, function(priority, format) {
-        if (self.html.support[format] && media[format]) {
-          self.status.src = media[format]
+        if (self.html.support[format] && song[format]) {
+          self.status.src = song[format]
+          self.status.offline_url = song.offline_url
           self.status.format[format] = true
           self.status.formatType = format
           return false
@@ -1999,6 +2000,7 @@
         if (this.htmlElement.media.id === this.internal.video.id && !this.status.nativeVideoControls) {
           this.internal.video.jq.css({'width': '0px', 'height': '0px'})
         }
+        this.htmlElement.media.offline_url = undefined
         this.htmlElement.media.pause()
       }
     },
@@ -2022,6 +2024,10 @@
       const self = this
       this._html_load(); // Loads if required and clears any delayed commands.
 
+      // Can happen when the blob was downloaded, but the song has not changed, e.g.,
+      // pausing and then playing.
+      if (!this.htmlElement.media.src.startsWith("blob") && self.htmlElement.media.offline_url)
+        this.htmlElement.media.src = self.htmlElement.media.offline_url
       this.htmlElement.media.play(); // Before currentTime attempt otherwise Firefox 4 Beta never loads.
 
       if (!isNaN(time)) {

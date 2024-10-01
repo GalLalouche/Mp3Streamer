@@ -1,4 +1,5 @@
 $(function() {
+  const fileDownloader = new FileDownloader()
   const randomSongUrl = "data/randomSong"
   // Initialize playlist
   // noinspection JSUndeclaredVariable
@@ -23,7 +24,20 @@ $(function() {
   // TODO don't call if the same song?
   $(playlist.cssSelector.jPlayer).data("jPlayer").onPlay = function() {
     const currentPlayingSong = playlist.currentPlayingSong()
+    const media = getMedia()
     const songInfo = `${currentPlayingSong.artistName} - ${currentPlayingSong.title}`
+    // TODO extract/document
+    if (!currentPlayingSong.offline_url) {
+      const offline_promise = fileDownloader.download(media.src)
+      offline_promise.then(blob => {
+        console.log(`Blob for ${songInfo} downloaded`)
+        const offline_url = URL.createObjectURL(blob)
+        currentPlayingSong.offline_url = offline_url
+        if (currentPlayingSong.file === playlist.currentPlayingSong().file && !media.offline_url)
+          media.offline_url = offline_url
+      })
+    } else if (!media.offline_url)
+      media.offline_url = currentPlayingSong.offline_url
     $(".jp-currently-playing").html(songInfo)
     document.title = songInfo
     $('#favicon').remove()
@@ -58,9 +72,11 @@ $(function() {
     loadNextRandom(true)
   // Fetches new songs before current song ends.
   setInterval(function() {
-    const media = $(playlist.cssSelector.jPlayer).data("jPlayer").htmlElement.media
+    const media = getMedia()
     const isSongNearlyFinished = media.duration - media.currentTime < WAIT_DELAY
     if (shouldLoadNextSongFromRandom() && isSongNearlyFinished)
       loadNextRandom(false)
   }, (WAIT_DELAY - 5) * 1000)
+
+  const getMedia = () => $(playlist.cssSelector.jPlayer).data("jPlayer").htmlElement.media
 })

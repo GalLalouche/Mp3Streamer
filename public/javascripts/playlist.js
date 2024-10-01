@@ -44,6 +44,7 @@ $(function() {
   }
 
   function setState(state) {
+    state.songs.forEach(song => song.offline_url = null)
     gplayer.stop()
     gplaylist.setPlaylist(state.songs, false)
     gplaylist.select(state.currentIndex)
