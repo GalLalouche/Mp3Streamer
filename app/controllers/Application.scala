@@ -13,7 +13,7 @@ import common.rich.primitives.RichString._
 class Application @Inject() (ec: ExecutionContext, converter: PlayActionConverter)
     extends InjectedController {
   private implicit val iec: ExecutionContext = ec
-  def index = converter.html("main")
+  def index = Action(Ok.sendFile(new File("public/html/main.html")))
 
   def song = Action {
     val file =
