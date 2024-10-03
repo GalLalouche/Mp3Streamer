@@ -23,6 +23,8 @@ interface Song {
     // Either mp3 or flac should be available
     readonly mp3?: string
     readonly flac?: string
+
+    offline_url?: string
 }
 
 abstract class Player {
@@ -32,8 +34,8 @@ abstract class Player {
     abstract pause(): void
     abstract isPaused(): boolean
     restart(): void {
-        this.stop();
-        this.playCurrentSong();
+        this.stop()
+        this.playCurrentSong()
     }
     togglePause(): void {
         if (this.isPaused())
@@ -62,7 +64,7 @@ interface JPlayerElement {
     override playCurrentSong(): void {this.click("play")}
     override isPaused(): boolean {return this.player().data().jPlayer.status.paused}
     override percentageOfSongPlayed() {
-        const jPlayer = this.player().data().jPlayer;
+        const jPlayer = this.player().data().jPlayer
         return jPlayer ? jPlayer.status.currentPercentAbsolute : undefined
     }
     override currentPlayingInSeconds(): number {
