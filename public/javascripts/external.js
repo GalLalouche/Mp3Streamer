@@ -11,10 +11,10 @@ $(function() {
   const externalAlbum = $("#external-album")
   const artistReconBox =
       $("<input class='external-recon-id' placeholder='Artist ID' type='text'/>").appendTo(externalArtist)
-  appendBr(externalArtist)
+  externalArtist.appendBr()
   const albumReconBox =
       $("<input class='external-recon-id' placeholder='Album ID' type='text'/>").appendTo(externalAlbum)
-  appendBr(externalAlbum)
+  externalAlbum.appendBr()
   const updateReconButton = button("Update Recon").appendTo(externalDivs)
   button("Refresh").appendTo(externalArtist).click(refresh("artist"))
   button("Refresh").appendTo(externalAlbum).click(refresh("album"))

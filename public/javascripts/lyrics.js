@@ -5,7 +5,7 @@ $(function() {
   // on the lyrics, not the buttons and text box.
   const lyricBox = div({id: 'lyric-box'}).appendTo(lyricsDiv)
   const lyricsContent = div({id: 'lyric-contents'}).appendTo(lyricBox)
-  appendBr(lyricsDiv)
+  lyricsDiv.appendBr()
   const lyricsPusher = div().appendTo(lyricsDiv)
   const lyricsUrlBox = $("<input id='lyrics-url' placeholder='Lyrics URL' type='text'/>").appendTo(lyricsPusher)
   const updateLyricsButton = button("Update lyrics").appendTo(lyricsPusher)
