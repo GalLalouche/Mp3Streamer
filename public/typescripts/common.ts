@@ -68,8 +68,8 @@ function showDesktopNotification(title: string, body: string, timelimitInSeconds
         }, timelimitInSeconds * 1000)
 }
 
-function map_values(o: object, f: (arg0: any) => any): object {
-    let result: object = {}
+function map_values(o: Record<string, any>, f: (arg0: any) => any): object {
+    let result: Record<string, any> = {}
     for (const key in o) {
         result[key] = f(o[key])
     }
@@ -91,11 +91,11 @@ interface Array<T> {
     custom_max(): T | null
 }
 
-Array.prototype.custom_last = () => this [this.length - 1]
-Array.prototype.custom_sort_by = f =>
-    this
-        .map(e => [e, f(e)])
-        .sort((a, b) => {
+Array.prototype.custom_last = function () {return this [this.length - 1]}
+Array.prototype.custom_sort_by = function <S, T>(f: (a: T) => S): T[] {
+    return this
+        .map((e: T): [T, S] => [e, f(e)])
+        .sort((a: [T, S], b: [T, S]) => {
             const fa = a[1]
             const fb = b[1]
             if (fa === fb)
@@ -105,7 +105,8 @@ Array.prototype.custom_sort_by = f =>
             else
                 return 1
         })
-        .map(e => e[0])
+        .map((e: [T, S]) => e[0])
+}
 Array.prototype.custom_group_by = function <S extends string | number | symbol, T>(f: (a: T) => S) {
     let result: ObjectIndex<S, T[]> = {} as unknown as ObjectIndex<S, T[]>
     this.forEach((e: T) => {
@@ -117,7 +118,7 @@ Array.prototype.custom_group_by = function <S extends string | number | symbol, 
     return result
 }
 Array.prototype.custom_max = function () {
-    let max = null
+    let max: number | null = null
     for (const e of this) {
         if (max === null) {
             max = e
