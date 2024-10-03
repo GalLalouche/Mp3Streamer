@@ -1,12 +1,6 @@
-declare function div(any: any): JQuery<HTMLElement>
-
 declare const gplaylist: Playlist
 declare const Poster: any
 declare const PLAYLIST_NAME_KEY: string
-
-declare function br(any: any): JQuery<HTMLElement>
-
-declare function putJson(path: string, data: object): void
 
 interface JQueryStatic {
     toast(s: string): void
@@ -43,7 +37,7 @@ $(function () {
                     loadPlaylist(id)
                     $dialog.dialog("close")
                 },
-            })).append(br)
+            })).appendBr()
         }
 
         $dialog.dialog({autoOpen: true, modal: true})
