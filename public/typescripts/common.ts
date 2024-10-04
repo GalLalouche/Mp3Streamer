@@ -185,3 +185,9 @@ function require(cond: boolean, message?: string): void {
     if (!cond)
         throw new IllegalArgumentException(message || "requirement failed")
 }
+
+function eventListenerToPromise(element: HTMLElement, event: string): Promise<void> {
+    return new Promise((resolve, _reject) => {
+        element.addEventListener(event, function () {resolve()})
+    })
+}
