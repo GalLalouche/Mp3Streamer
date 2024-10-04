@@ -176,3 +176,12 @@ Boolean.prototype.isFalse = function () {
 }
 
 const ENTER_CODE: number = 13
+
+class IllegalArgumentException extends Error {
+    constructor(message: string) {super(message)}
+}
+
+function require(cond: boolean, message?: string): void {
+    if (!cond)
+        throw new IllegalArgumentException(message || "requirement failed")
+}
