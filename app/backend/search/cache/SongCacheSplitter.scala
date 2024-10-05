@@ -22,9 +22,8 @@ private class SongCacheSplitter @Inject() (
       albumJsonable: Jsonable[Album],
       artistJsonable: Jsonable[Artist],
   ): Unit = {
-    def log[A](t: String)(a: A): A = timedLogger(t, scribe.info(_))(a)
-    val songs = log("saving songs")(cs.songs <| jsonableSaver.saveArray)
-    val albums = log("saving albums")(
+    val songs = cs.songs <| jsonableSaver.saveArray
+    val albums =
       songs
         .groupBy(_.file.asInstanceOf[IOFile].file.getParent)
         .map { case (parent, songs) =>
@@ -37,11 +36,9 @@ private class SongCacheSplitter @Inject() (
             songs.toVector,
           )
         }
-        .toSet <| jsonableSaver.saveArray,
-    )
-    log("saving artists") {
-      val artists = albums.groupBy(_.artistName).map(Function.tupled(Artist.apply))
-      jsonableSaver.saveArray[Artist](artists)
-    }
+        .toSet <| jsonableSaver.saveArray
+
+    val artists = albums.groupBy(_.artistName).map(Function.tupled(Artist.apply))
+    jsonableSaver.saveArray[Artist](artists)
   }
 }
