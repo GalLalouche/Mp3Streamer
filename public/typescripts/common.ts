@@ -191,3 +191,16 @@ function eventListenerToPromise(element: HTMLElement, event: string): Promise<vo
         element.addEventListener(event, function () {resolve()})
     })
 }
+
+// Type checkers
+function isString(e: any): e is string {
+    return typeof e == "string"
+}
+
+function isObject(e: any): e is object {
+    return typeof e == "object"
+}
+
+function isFunction(e: any): e is Function {
+    return typeof e == "function"
+}
