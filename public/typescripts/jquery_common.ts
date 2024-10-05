@@ -39,14 +39,21 @@ jQuery.each(["put", "delete"], function (i, method) {
     jQuery[method] = func
 })
 
-function elem(elementName: string, config?: object, innerText?: string): JQuery<HTMLElement> {
+function elem(elementName: string): JQuery<HTMLElement>
+function elem(elementName: string, configOrInnerText: object | string): JQuery<HTMLElement>
+function elem(elementName: string, config: object, innerText: string): JQuery<HTMLElement>
+
+function elem(elementName: string, config?: object | string, innerText?: string): JQuery<HTMLElement> {
     if (innerText) {
-        // If innerText is given, config has to be a config, otherwise it can be an innerText
-        assert(typeof config === 'object' && typeof innerText === 'string')
-        return $(`<${elementName}/>`, config).html(innerText)
+        if (isObject(config))
+            return $(`<${elementName}/>`, config).html(innerText)
+        else
+            throw new AssertionError(
+                `config should have been an object if innerText is passed, was ${typeof config}`,
+            )
     }
 
-    if (typeof config === 'object')
+    if (isObject(config))
         return $(`<${elementName}/>`, config)
 
     return $(`<${elementName}>${config || ""}</${elementName}>`)
