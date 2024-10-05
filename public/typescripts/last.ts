@@ -1,7 +1,5 @@
 // A very simple module, showing the most recent album, so it can be easily added to the playlist.
 
-declare function openConnection(url: string, handle: (s: any) => void): WebSocket
-
 const ADD = "plus"
 
 function write(value: JQuery<HTMLElement>): void {
@@ -43,7 +41,7 @@ class LastAlbum {
 
     private openLastAlbumConnection(): void {
         this.last_album_websocket =
-            openConnection("last_album", msg => this.updateAlbum(JSON.parse(msg.data)))
+            custom_openConnection("last_album", msg => this.updateAlbum(JSON.parse(msg.data)))
     }
 
     reopenLastAlbumWebsocketIfNeeded(): void {

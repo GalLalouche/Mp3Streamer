@@ -3,11 +3,11 @@
 <head>
   <script type="text/javascript" src="/assets/javascripts/jquery.js"></script>
   <script type="text/javascript" src="/assets/javascripts/common.js"></script>
-  <script type="text/javascript" src="/assets/javascripts/ws/common.js"></script>
+  <script type="text/javascript" src="/ts/ws_common.js"></script>
   <script type="text/javascript">
     $(function() {
       const start = new Date().getTime();
-      openConnection("refresh", function(msg, connection) {
+      custom_openConnection("refresh", function(msg, connection) {
         try {
           const json = JSON.parse(msg.data);
           const ratio = json.finished / json.total
@@ -27,11 +27,11 @@
   </script>
 </head>
 <body>
-  Status:
-  <div id="status">
-    N/A
-  </div>
-  Time elapsed: <span id="elapsed"> N/A </span> <br/>
-  Time remaining (est.): <span id="remaining"> N/A </span> <br/>
+Status:
+<div id="status">
+  N/A
+</div>
+Time elapsed: <span id="elapsed"> N/A </span> <br/>
+Time remaining (est.): <span id="remaining"> N/A </span> <br/>
 </body>
 </html>
