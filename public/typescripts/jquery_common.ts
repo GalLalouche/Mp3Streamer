@@ -61,7 +61,7 @@ function elem(elementName: string, config?: object | string, innerText?: string)
 
 const elemFactory = (e: string) => (config?: object) => elem(e, config)
 const button = (config: object, text?: string) => elem("button", config, text)
-const span = (config: object) => elem("span", config)
+const span = (configOrInnerText: object | string) => elem("span", configOrInnerText)
 const li = (config: object) => elem("li", config)
 const div = elemFactory('div')
 const img = (src: string) => elem('img').attr("src", src)

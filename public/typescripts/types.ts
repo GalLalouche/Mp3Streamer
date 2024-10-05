@@ -27,6 +27,13 @@ interface Song {
     offline_url?: string
 }
 
+interface Album {
+    artistName: string
+    title: string
+    year: number
+    dir: string
+}
+
 abstract class Player {
     abstract load(song: Song): void
     abstract playCurrentSong(): void
