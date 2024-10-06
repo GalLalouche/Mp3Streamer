@@ -63,7 +63,7 @@ $(function () {
     }
 
     function setState(state: PlaylistJson): void {
-        state.songs.forEach(song => song.offline_url = null)
+        state.songs.forEach(song => song.offline_url = undefined)
         gplayer.stop()
         gplaylist.setPlaylist(state.songs, false)
         gplaylist.select(state.currentIndex)
@@ -95,7 +95,12 @@ $(function () {
         $.toast("Backup successfully created")
     })
     listenToClick("load_backup", function () {
-        const state = JSON.parse(localStorage.getItem(backupKey))
+        const item = localStorage.getItem(backupKey)
+        if (!item) {
+            $.toast("No backup to load!")
+            return
+        }
+        const state = JSON.parse(item)
         if (state.songs.length === 0) {
             console.log("Won't load empty backup")
             return

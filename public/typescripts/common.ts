@@ -150,7 +150,7 @@ interface Number {
 Number.prototype.withMinDigits = function (n: number): string {
     return this.toLocaleString('en-US', {minimumIntegerDigits: n})
 }
-Number.prototype.timeFormat = function () {
+Number.prototype.timeFormat = function (this: number) {
     const hours = Math.floor(this / 3600)
     const minutes = Math.floor((this - (hours * 3600)) / 60)
     const seconds = Math.round(this - (hours * 3600) - (minutes * 60))

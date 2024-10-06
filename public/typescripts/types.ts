@@ -78,7 +78,7 @@ interface JPlayerElement {
         return this.player().data().jPlayer.status.currentTime
     }
     private volumeBar() {return $(".jp-volume-bar-value")}
-    override getVolume(): number {return this.volumeBar().width()}
+    override getVolume(): number {return this.volumeBar().width()!}
     setVolume(v: number): void {
         this.volumeBar().width(`${v}%`)
         this.player().jPlayer("volume", v / 100.0)
