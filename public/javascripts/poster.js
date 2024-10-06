@@ -23,8 +23,8 @@ $(() => {
 
   poster[0].addEventListener('load', function() {
     getColorAsync(poster.attr("src"), rgb => {
-      const color = makeLighter(rgb, 0.5)
-      document.body.style.backgroundColor = rgb2String(color)
+      const color = rgb.makeLighter(0.5)
+      document.body.style.backgroundColor = color.toString()
       Poster.rgbListeners.forEach(l => l(color))
     })
   })
