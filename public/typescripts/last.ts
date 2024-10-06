@@ -16,7 +16,7 @@ function addAlbum(album: Album): void {
 
 class LastAlbum {
     private shouldAddNextNewAlbum: boolean = false
-    private lastAlbumText: string = undefined
+    private lastAlbumText?: string = undefined
 
     constructor() {
         this.openLastAlbumConnection()
@@ -37,7 +37,7 @@ class LastAlbum {
         this.lastAlbumText = text
     }
 
-    private last_album_websocket: WebSocket = undefined
+    private last_album_websocket?: WebSocket = undefined
 
     private openLastAlbumConnection(): void {
         this.last_album_websocket =
@@ -45,7 +45,8 @@ class LastAlbum {
     }
 
     reopenLastAlbumWebsocketIfNeeded(): void {
-        if (this.last_album_websocket.readyState === this.last_album_websocket.CLOSED)
+        if (this.last_album_websocket &&
+            this.last_album_websocket.readyState === this.last_album_websocket.CLOSED)
             this.openLastAlbumConnection()
     }
 

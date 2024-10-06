@@ -40,8 +40,8 @@ jQuery.each(["put", "delete"], function (i, method) {
 })
 
 function elem(elementName: string): JQuery<HTMLElement>
-function elem(elementName: string, configOrInnerText: object | string): JQuery<HTMLElement>
-function elem(elementName: string, config: object, innerText: string): JQuery<HTMLElement>
+function elem(elementName: string, configOrInnerText?: object | string): JQuery<HTMLElement>
+function elem(elementName: string, config: object, innerText?: string): JQuery<HTMLElement>
 
 function elem(elementName: string, config?: object | string, innerText?: string): JQuery<HTMLElement> {
     if (innerText) {
@@ -98,7 +98,7 @@ function validateBoxAndButton(
         if (event.keyCode === ENTER_CODE)
             runIfEnabled()
         else
-            button.prop('disabled', false === validationFunction($(this).val()))
+            button.prop('disabled', validationFunction($(this).val()!).isFalse())
     })
 }
 

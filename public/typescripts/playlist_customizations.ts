@@ -37,7 +37,8 @@ class PlaylistCustomizations {
                 song.year.toString(),
             ]
 
-        const titleContainsComposer = song.albumName.toLowerCase().includes(song.composer.toLowerCase())
+        const titleContainsComposer =
+            song.albumName.toLowerCase().includes(song.composer?.toLowerCase()!)
         const pieceTitle = titleContainsComposer ? song.albumName : `${song.composer}'s ${song.albumName}`
         const opusSuffix = song.opus ? `, ${song.opus}` : ''
         return [
@@ -48,7 +49,7 @@ class PlaylistCustomizations {
             song.performanceYear,
             song.track,
         ].filter(x => x)
-            .map(x => x.toString())
+            .map(x => x!.toString())
     }
 
     static formattedMetadata(song: Song): string {
@@ -72,7 +73,7 @@ class PlaylistCustomizations {
 }
 
 // This is meant to be monkey-patched into playlist (hence the use of this.options).
-function mediaMetadataHtml(song: Song): string {
+function mediaMetadataHtml(this: { options: any }, song: Song): string {
     const metadata =
         `<span class="jp-artist" dir="ltr">${song.artistName}</span> ` +
         `(<span class="jp-parens">${PlaylistCustomizations.formattedMetadata(song)}</span>`
