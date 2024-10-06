@@ -224,7 +224,7 @@
       const result = $(listItem);
       result.prepend(img(media.poster).addClass("playlist-item-poster"))
       getColorAsync(media.poster, rgb => {
-        result.css('background-color', rgb2String(makeLighter(rgb, 0.1)))
+        result.css('background-color', rgb.makeLighter(0.1).toString())
       })
       return result;
     },
@@ -303,7 +303,7 @@
         $(`${this.cssSelector.title} li`).html(
             this.playlist[index].title
             + (this.playlist[index].artistName ? " <span class='jp-artist'>by "
-            + this.playlist[index].artistName + "</span>" : ""));
+                + this.playlist[index].artistName + "</span>" : ""));
       }
     },
     setPlaylist: function(playlist, instant) {

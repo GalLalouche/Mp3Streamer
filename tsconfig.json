@@ -13,6 +13,7 @@
     "module": "es2020",
     "moduleResolution":"node",
     "noImplicitAny": true,
+    "noImplicitReturns": true,
     "outDir": "target/web/public/main/typescripts/",
     "rootDir": "public/typescripts",
     "sourceMap": true,
