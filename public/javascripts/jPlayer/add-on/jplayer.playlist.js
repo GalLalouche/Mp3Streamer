@@ -213,7 +213,7 @@
         listItem += ")</span>";
       }
 
-      this.mediaMetadataHtml = playlistUtils.mediaMetadataHtml
+      this.mediaMetadataHtml = mediaMetadataHtml
       // The title is given next in the HTML otherwise the float:right on the free media corrupts in IE6/7
       listItem += this.mediaMetadataHtml(media)
       appendIcon(options.removeThisClass, "&times;")
