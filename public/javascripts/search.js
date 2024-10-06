@@ -109,7 +109,9 @@ $(function() {
     const isPlay = e.target.classList.contains("fa-play")
     $.get("data/songs/" + song.file, e => gplaylist.add(e, isPlay))
   })
-  results.on("click", `.album-result .fa-${ADD_ENTIRE_ALBUM}`, function() {
+  results.on("click", `.album-result .fa-${ADD_ENTIRE_ALBUM}`, function(e) {
+    if (e.target !== this) // Prevents clicks on anything other than that selector.
+      return
     const album = getData(this)
     $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
   })
