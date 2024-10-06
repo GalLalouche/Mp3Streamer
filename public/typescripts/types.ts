@@ -86,12 +86,6 @@ interface JPlayerElement {
     override skip(seconds: number): void {this.player().jPlayer("play", seconds)}
 }
 
-declare interface PlaylistUtils {
-    mediaMetadata(song: Song): string
-}
-
-declare const playlistUtils: PlaylistUtils
-
 abstract class Playlist {
     clear(instant: boolean): void {this.setPlaylist([], instant)}
     setPlaylist(playlist: Song[], instant: boolean): void {
@@ -115,7 +109,7 @@ abstract class Playlist {
     abstract songs(): Song[]
     last(): Song {return this.songs()[this.length() - 1]}
     length(): number {return this.songs().length}
-    toString(song: Song): string {return playlistUtils.mediaMetadata(song)}
+    toString(song: Song): string {return PlaylistCustomizations.mediaMetadata(song)}
     // The list presentation reversed, so song at index 0 is actually the last song, not the first.
     getDisplayedIndex(index: number): number {return this.length() - 1 - index}
 }
