@@ -1,9 +1,9 @@
 type Method = "POST" | "PUT"
 
-function ajaxJson(method: Method, url: string, data: object, success?: any): void {
+function ajaxJson(method: Method, url: string, data: object | string, success?: any): void {
     $.ajax({
         url: url,
-        data: typeof data === 'string' ? data : JSON.stringify(data),
+        data: isString(data) ? data : JSON.stringify(data),
         type: method,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -22,8 +22,17 @@ function putJson(url: string, data: object, success?: any): void {
     ajaxJson("PUT", url, data, success)
 }
 
-jQuery.each(["put", "delete"], function (i, method) {
-    function func(url: string, data: object, callback: any, type: any): any {
+interface JQueryStatic {
+    put(url: string, success?: (o: any) => void): void
+    put(url: string, data: object, success?: (o: any) => void): void
+    put(url: string, data: object, typ?: string, success?: (o: any) => void): void
+    delete(url: string, success?: (o: any) => void): void
+    delete(url: string, data: object, success?: (o: any) => void): void
+    delete(url: string, data: object, typ?: string, success?: (o: any) => void): void
+}
+
+jQuery.each(["put", "delete"], function (_i, method) {
+    function func(url: string, data: object, callback: any, type?: string): any {
         return isFunction(data)
             ? arguments.callee(url, undefined, data, type || callback)
             : jQuery.ajax({
@@ -42,8 +51,11 @@ jQuery.each(["put", "delete"], function (i, method) {
 function elem(elementName: string): JQuery<HTMLElement>
 function elem(elementName: string, configOrInnerText?: object | string): JQuery<HTMLElement>
 function elem(elementName: string, config: object, innerText?: string): JQuery<HTMLElement>
-
 function elem(elementName: string, config?: object | string, innerText?: string): JQuery<HTMLElement> {
+    return _elemImpl(elementName, config, innerText)
+}
+
+function _elemImpl(elementName: string, config?: object | string, innerText?: string): JQuery<HTMLElement> {
     if (innerText) {
         if (isObject(config))
             return $(`<${elementName}/>`, config).html(innerText)
@@ -60,7 +72,13 @@ function elem(elementName: string, config?: object | string, innerText?: string)
 }
 
 const elemFactory = (e: string) => (config?: object) => elem(e, config)
-const button = (config: object, text?: string) => elem("button", config, text)
+
+function button(text: string): JQuery<HTMLElement>
+function button(config: object, text: string): JQuery<HTMLElement>
+function button(config?: object | string, innerText?: string): JQuery<HTMLElement> {
+    return _elemImpl("button", config, innerText)
+}
+
 const span = (configOrInnerText: object | string) => elem("span", configOrInnerText)
 const li = (config: object) => elem("li", config)
 const div = elemFactory('div')

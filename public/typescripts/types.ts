@@ -27,11 +27,15 @@ interface Song {
     offline_url?: string
 }
 
+type AlbumType = 'Album' | 'Live' | 'EP'
+
 interface Album {
     artistName: string
     title: string
     year: number
     dir: string
+    date: Date
+    albumType: AlbumType
 }
 
 abstract class Player {
