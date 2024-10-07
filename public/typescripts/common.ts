@@ -161,10 +161,14 @@ Number.prototype.timeFormat = function (this: number) {
 
 interface String {
     takeAfterLast(substring: string): string
+    capitalize(): string
 }
 
 String.prototype.takeAfterLast = function (subs) {
     return this.substring(this.lastIndexOf(subs) + 1)
+}
+String.prototype.capitalize = function () {
+    return this[0].toUpperCase() + this.slice(1)
 }
 
 interface Boolean {
