@@ -1,8 +1,6 @@
-declare const gplaylist: Playlist
-
-interface JQueryStatic {
-  toast(s: string): void
-}
+import {PLAYLIST_NAME_KEY, Poster} from "./poster.js"
+import {gplayer, gplaylist, Song} from "./types.js"
+import {Volume} from "./volume.js"
 
 $(function () {
   const Volume: Volume = (window as any).Volume

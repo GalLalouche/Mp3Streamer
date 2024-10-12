@@ -1,3 +1,6 @@
+import * as NewAlbumInfo from '/ts/new_albums_info.js'
+import {Lyrics} from '/ts/lyrics.js'
+
 $(function() {
   const fileDownloader = new FileDownloader()
   const randomSongUrl = "data/randomSong"
@@ -20,6 +23,9 @@ $(function() {
     else
       playlist.oldNext()
   }
+
+  const getMedia = () => $(playlist.cssSelector.jPlayer).data("jPlayer").htmlElement.media
+
   // On play event hook
   // TODO don't call if the same song?
   $(playlist.cssSelector.jPlayer).data("jPlayer").onPlay = function() {
@@ -77,6 +83,4 @@ $(function() {
     if (shouldLoadNextSongFromRandom() && isSongNearlyFinished)
       loadNextRandom(false)
   }, (WAIT_DELAY - 5) * 1000)
-
-  const getMedia = () => $(playlist.cssSelector.jPlayer).data("jPlayer").htmlElement.media
 })

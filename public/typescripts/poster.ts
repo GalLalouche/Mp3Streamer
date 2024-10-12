@@ -1,17 +1,18 @@
-const PLAYLIST_NAME_KEY = "playlist_name"
+export const PLAYLIST_NAME_KEY = "playlist_name.js"
 
-class Poster {
+export class Poster {
   static rgbListeners: ((rgb: RGB) => void)[] = []
   // TODO This *really* shouldn't be here, it's just that this button is near the poster :\
   static playlistName: JQuery<HTMLElement>
 }
 
-$(() => {
+(window as any).Poster = Poster
+
+waitForElem("#jp_poster_0").then(p => $(p)).then(poster => {
   function buttonAux(id: string, text: string): JQuery<HTMLElement> {
     return button({"id": id}, text)
   }
 
-  const poster = $("#jp_poster_0")
   poster.addClass("poster")
   const div = poster.closest("div")
   const posterAndButtonsDiv = table({"id": "poster-table"}).append(

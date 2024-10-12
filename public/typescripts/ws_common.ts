@@ -1,14 +1,14 @@
-interface WebSocket {
+interface WebSocket extends globalThis.WebSocket {
   reconnect(): void
 }
 
-function custom_openConnection(
+export default function openConnection(
   path: string,
   onMessage: (s: MessageEvent, connection: WebSocket) => void,
   autoReconnectOnClose: boolean = false,
   autoConnectionInterval: number = 10000,
 ): WebSocket {
-  const result = new WebSocket("ws://" + window.location.host + "/ws/" + path)
+  const result = new WebSocket("ws://" + window.location.host + "/ws/" + path) as WebSocket
   result.onopen = function () {
     // console.log(path + " connection opened");
   }
@@ -28,7 +28,7 @@ function custom_openConnection(
   result.reconnect = function () {
     setTimeout(function () {
       // console.log("Retrying connection...")
-      const new_connection = new WebSocket(result.url)
+      const new_connection = new WebSocket(result.url) as WebSocket
       new_connection.onopen = result.onopen
       new_connection.onmessage = result.onmessage
       new_connection.onclose = result.onclose

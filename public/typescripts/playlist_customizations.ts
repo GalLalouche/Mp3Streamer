@@ -1,4 +1,6 @@
-// Since jplayer.playlist.js is too freaking big, this extracts my customization
+// Since jplayer.playlist.js is too freaking big, this extracts my customization.
+
+import {gplaylist, Song} from "./types.js"
 
 $(function () {
   const playlistElement = $(".jp-playlist")
@@ -26,7 +28,7 @@ $(function () {
   })
 })
 
-class PlaylistCustomizations {
+export class PlaylistCustomizations {
   private static isClassicalPiece(song: Song): boolean { return !!song.composer}
 
   private static additionalData(song: Song): string[] {
@@ -90,3 +92,4 @@ function mediaMetadataHtml(this: { options: any }, song: Song): string {
   )
 }
 
+(window as any).mediaMetadataHtml = mediaMetadataHtml

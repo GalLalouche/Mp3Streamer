@@ -5,7 +5,7 @@ $(function() {
 
   const externalDivs = $(".external")
 
-  let currentPosterRgb = []
+  let currentPosterRgb = null
 
   const externalArtist = $("#external-artist")
   const externalAlbum = $("#external-album")
@@ -48,6 +48,8 @@ $(function() {
   }
 
   function setLinkColor(e) {
+    if (!currentPosterRgb)
+      return
     const c1 = currentPosterRgb.makeLighter(0.5).toString()
     const c2 = currentPosterRgb.toString()
     e.css("background-image", `linear-gradient(to top left, ${c1}, ${c2})`)
