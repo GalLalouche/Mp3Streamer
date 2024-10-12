@@ -196,6 +196,33 @@ function eventListenerToPromise(element: HTMLElement, event: string): Promise<vo
   })
 }
 
+async function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+// Adapted from https://stackoverflow.com/a/61511955/736508
+async function waitForElem(selector: string): Promise<Element> {
+  return new Promise(resolve => {
+    const result = document.querySelector(selector)
+    if (result) {
+      return resolve(result)
+    }
+
+    const observer = new MutationObserver(mutations => {
+      const result = document.querySelector(selector)
+      if (result) {
+        observer.disconnect()
+        resolve(result)
+      }
+    })
+
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    })
+  })
+}
+
 // Type checkers
 function isString(e: any): e is string {
   return typeof e == "string"

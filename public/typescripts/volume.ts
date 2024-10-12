@@ -1,7 +1,8 @@
-declare const gplayer: Player
+import {gplayer, Song} from "./types.js"
+
 const DEFAULT_GAIN = -10.0
 
-class Volume {
+export class Volume {
   // The volume that was preset by the user. Start at 20.0, so it could increase 5-fold.
   private volumeBaseline: number = 20.0
   private currentGain: number = DEFAULT_GAIN

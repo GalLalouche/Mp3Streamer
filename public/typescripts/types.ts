@@ -1,4 +1,6 @@
-interface Song {
+import {PlaylistCustomizations} from "./playlist_customizations.js"
+
+export interface Song {
   readonly title: string
   readonly artistName: string
   readonly albumName: string
@@ -27,9 +29,9 @@ interface Song {
   offline_url?: string
 }
 
-type AlbumType = 'Album' | 'Live' | 'EP'
+export type AlbumType = 'Album' | 'Live' | 'EP'
 
-interface Album {
+export interface Album {
   artistName: string
   title: string
   year: number
@@ -38,7 +40,7 @@ interface Album {
   albumType: AlbumType
 }
 
-abstract class Player {
+export abstract class Player {
   abstract load(song: Song): void
   abstract playCurrentSong(): void
   abstract stop(): void
@@ -66,31 +68,8 @@ interface JPlayerElement {
   data(): any
 }
 
-(window as any).gplayer = new class extends Player {
-  private player(): JPlayerElement {return $("#jquery_jplayer_1") as unknown as JPlayerElement}
-  override load(song: Song): void {this.player().jPlayer("setMedia", song)}
-  private click(what: string): void {$(".jp-" + what).click()}
-  override pause(): void {this.click("pause")}
-  override stop(): void {this.click("stop")}
-  override playCurrentSong(): void {this.click("play")}
-  override isPaused(): boolean {return this.player().data().jPlayer.status.paused}
-  override percentageOfSongPlayed() {
-    const jPlayer = this.player().data().jPlayer
-    return jPlayer ? jPlayer.status.currentPercentAbsolute : undefined
-  }
-  override currentPlayingInSeconds(): number {
-    return this.player().data().jPlayer.status.currentTime
-  }
-  private volumeBar() {return $(".jp-volume-bar-value")}
-  override getVolume(): number {return this.volumeBar().width()!}
-  setVolume(v: number): void {
-    this.volumeBar().width(`${v}%`)
-    this.player().jPlayer("volume", v / 100.0)
-  }
-  override skip(seconds: number): void {this.player().jPlayer("play", seconds)}
-}
 
-abstract class Playlist {
+export abstract class Playlist {
   clear(instant: boolean): void {this.setPlaylist([], instant)}
   setPlaylist(playlist: Song[], instant: boolean): void {
     this.clear(instant)
@@ -118,8 +97,7 @@ abstract class Playlist {
   getDisplayedIndex(index: number): number {return this.length() - 1 - index}
 }
 
-declare let playlist: any;
-(window as any).gplaylist = makePlaylist()
+declare let playlist: any
 
 function makePlaylist(): Playlist {
   function pl(): any {return playlist}
@@ -140,3 +118,31 @@ function makePlaylist(): Playlist {
   $(function (): void {pl().getDisplayedIndex = result.getDisplayedIndex})
   return result
 }
+
+export const gplaylist: Playlist = makePlaylist();
+(window as any).gplaylist = gplaylist
+
+export const gplayer = new class extends Player {
+  private player(): JPlayerElement {return $("#jquery_jplayer_1") as unknown as JPlayerElement}
+  override load(song: Song): void {this.player().jPlayer("setMedia", song)}
+  private click(what: string): void {$(".jp-" + what).click()}
+  override pause(): void {this.click("pause")}
+  override stop(): void {this.click("stop")}
+  override playCurrentSong(): void {this.click("play")}
+  override isPaused(): boolean {return this.player().data().jPlayer.status.paused}
+  override percentageOfSongPlayed() {
+    const jPlayer = this.player().data().jPlayer
+    return jPlayer ? jPlayer.status.currentPercentAbsolute : undefined
+  }
+  override currentPlayingInSeconds(): number {
+    return this.player().data().jPlayer.status.currentTime
+  }
+  private volumeBar() {return $(".jp-volume-bar-value")}
+  override getVolume(): number {return this.volumeBar().width()!}
+  setVolume(v: number): void {
+    this.volumeBar().width(`${v}%`)
+    this.player().jPlayer("volume", v / 100.0)
+  }
+  override skip(seconds: number): void {this.player().jPlayer("play", seconds)}
+};
+(window as any).gplayer = gplayer

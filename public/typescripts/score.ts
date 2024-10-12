@@ -1,6 +1,8 @@
 // TODO use enums and use Object.values to get this list for the drop down list.
-type Score = "Default" | "Crappy" | "Meh" | "Okay" | "Good" | "Great" | "Amazing"
-type Source = "Artist" | "Album" | "Song"
+import {gplaylist, Song} from "./types.js"
+
+export type Score = "Default" | "Crappy" | "Meh" | "Okay" | "Good" | "Great" | "Amazing"
+export type Source = "Artist" | "Album" | "Song"
 
 class ScoreResult {
   constructor(
@@ -12,13 +14,13 @@ class ScoreResult {
   ) {}
 }
 
-class ScoreOps {
+export class ScoreOps {
   private readonly fieldset = $("#score")
   constructor() {
     this.fieldset.on('change', 'select', function () {
       const newScore = $(this).val()
       const source = $(this).attr('source')
-      $.put(`score/${source}/${newScore}/${gplaylist.currentPlayingSong().file}`, function (e) {
+      $.put(`score/${source}/${newScore}/${gplaylist.currentPlayingSong().file}`, function () {
         console.log(`Successfully updated ${source} score to ${newScore}`)
       })
     })

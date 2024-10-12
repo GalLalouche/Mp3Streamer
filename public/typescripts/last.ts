@@ -1,5 +1,8 @@
 // A very simple module, showing the most recent album, so it can be easily added to the playlist.
 
+import openConnection from "./ws_common.js"
+import {Album, gplaylist} from "./types.js"
+
 const ADD = "plus"
 
 function write(value: JQuery<HTMLElement>): void {
@@ -41,7 +44,7 @@ class LastAlbum {
 
   private openLastAlbumConnection(): void {
     this.last_album_websocket =
-      custom_openConnection("last_album", msg => this.updateAlbum(JSON.parse(msg.data)))
+      openConnection("last_album", msg => this.updateAlbum(JSON.parse(msg.data)))
   }
 
   reopenLastAlbumWebsocketIfNeeded(): void {
