@@ -1,6 +1,4 @@
 declare const gplaylist: Playlist
-declare const Poster: any
-declare const PLAYLIST_NAME_KEY: string
 
 interface JQueryStatic {
   toast(s: string): void
@@ -82,7 +80,7 @@ $(function () {
     }
     state.volume = Volume.getVolumeBaseline()
     localStorage.setItem(backupKey, JSON.stringify(state))
-    const playlistName = Poster.playlistName.val()
+    const playlistName = Poster.playlistName.val() as string
     if (playlistName) {
       localStorage.setItem(PLAYLIST_NAME_KEY, playlistName)
       console.log(`Saving playlist ${playlistName} remotely`)

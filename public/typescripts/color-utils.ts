@@ -3,9 +3,9 @@ declare class ColorThief {
 }
 
 class ColorGetter {
-  private readonly cache: Record<string, RGB> = {}
+  private static readonly cache: Record<string, RGB> = {}
   private static graynessLevel(rgb: RGB): number {return rgb.toHSL().s}
-  async getColorAsync(src: string): Promise<RGB> {
+  static async getColorAsync(src: string): Promise<RGB> {
     if (this.cache[src])
       return this.cache[src]
 
@@ -33,11 +33,10 @@ class ColorGetter {
   }
 
   // TODO remove this, replace using code with async
-  getColorCallback(src: string, callback: (nt: RGB) => void): void {
+  static getColorCallback(src: string, callback: (nt: RGB) => void): void {
     this.getColorAsync(src).then(callback)
   }
 }
 
-const colorGetter: ColorGetter = new ColorGetter;
-
-(window as any).getColorAsync = colorGetter.getColorCallback.bind(colorGetter)
+(window as any).ColorGetter = ColorGetter;
+(window as any).getColorAsync = ColorGetter.getColorCallback.bind(ColorGetter)
