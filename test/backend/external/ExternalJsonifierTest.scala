@@ -40,22 +40,24 @@ class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
       )
       $.toJsonOrError(links).map {
         _ shouldReturn Json.obj(
-          "Wikipedia" -> Json.obj(
-            "host" -> "Wikipedia",
-            "main" -> "https://en.wikipedia.org/wiki/The_River_New(Bruce_Springsteen_album)",
-            "extensions" -> Json.obj(),
-          ),
-          "Wikidata" -> Json.obj(
-            "host" -> "Wikidata* The River (1980 double studio album by Bruce Springsteen)",
-            "main" -> "https://www.wikidata.org/wiki/Q1340975",
-            "extensions" -> Json.obj(),
-          ),
-          "AllMusic" -> Json.obj(
-            "host" -> "AllMusic?",
-            "main" -> "javascript:void(0)",
-            "extensions" -> Json.obj(
-              "Google" -> "https://www.google.com/search?q=AllMusic+bruce+springsteen+-+the+river",
-              "Lucky" -> "lucky/redirect/AllMusic%20bruce%20springsteen%20-%20the%20river",
+          "links" -> Json.obj(
+            "Wikipedia" -> Json.obj(
+              "host" -> "Wikipedia",
+              "main" -> "https://en.wikipedia.org/wiki/The_River_New(Bruce_Springsteen_album)",
+              "extensions" -> Json.obj(),
+            ),
+            "Wikidata" -> Json.obj(
+              "host" -> "Wikidata* The River (1980 double studio album by Bruce Springsteen)",
+              "main" -> "https://www.wikidata.org/wiki/Q1340975",
+              "extensions" -> Json.obj(),
+            ),
+            "AllMusic" -> Json.obj(
+              "host" -> "AllMusic?",
+              "main" -> "javascript:void(0)",
+              "extensions" -> Json.obj(
+                "Google" -> "https://www.google.com/search?q=AllMusic+bruce+springsteen+-+the+river",
+                "Lucky" -> "lucky/redirect/AllMusic%20bruce%20springsteen%20-%20the%20river",
+              ),
             ),
           ),
           "timestamp" -> "17/10",
@@ -73,12 +75,14 @@ class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
       )
       $.toJsonOrError(links).map {
         _ shouldReturn Json.obj(
-          "Wikipedia" -> Json.obj(
-            "host" -> "Wikipedia?",
-            "main" -> "javascript:void(0)",
-            "extensions" -> Json.obj(
-              "Google" -> "https://www.google.com/search?q=Wikipedia+bruce+springsteen+-+the+river",
-              "Lucky" -> "lucky/redirect/Wikipedia%20bruce%20springsteen%20-%20the%20river",
+          "links" -> Json.obj(
+            "Wikipedia" -> Json.obj(
+              "host" -> "Wikipedia?",
+              "main" -> "javascript:void(0)",
+              "extensions" -> Json.obj(
+                "Google" -> "https://www.google.com/search?q=Wikipedia+bruce+springsteen+-+the+river",
+                "Lucky" -> "lucky/redirect/Wikipedia%20bruce%20springsteen%20-%20the%20river",
+              ),
             ),
           ),
           "timestamp" -> "17/10",

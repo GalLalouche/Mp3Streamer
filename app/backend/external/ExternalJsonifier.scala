@@ -42,8 +42,10 @@ private class ExternalJsonifier @Inject() (implicit ec: ExecutionContext) {
       // Using mapIf messes up the link's type inference due to existential types.
       .map(e => if (e.host == Wikipedia && e.isNew) e.unmark else e)
       .map(toJson) |> Json.obj
-  private def toJson(e: TimestampedExtendedLinks[_]): JsObject =
-    toJson(e.links) + ("timestamp" -> JsString(e.timestamp |> DateStringPattern.format))
+  private def toJson(e: TimestampedExtendedLinks[_]): JsObject = Json.obj(
+    "links" -> toJson(e.links),
+    "timestamp" -> JsString(e.timestamp |> DateStringPattern.format),
+  )
 
   def toJsonOrError(links: Future[TimestampedExtendedLinks[_]]): Future[JsObject] =
     links.map(toJson).handleErrorFlat(e => Json.obj("error" -> e.getMessage))

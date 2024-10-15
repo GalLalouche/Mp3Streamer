@@ -1,6 +1,7 @@
 import * as NewAlbumInfo from './new_albums_info.js'
 import {FileDownloader} from './file_downloader.js'
 import {Lyrics} from './lyrics.js'
+import {External} from './external.js'
 import {getDebugAlbum, getDebugSong, isMuted, WAIT_DELAY} from './initialization.js'
 import {Globals} from "./globals.js"
 import {gplaylist, Playlist, Song} from "./types.js"
@@ -29,10 +30,6 @@ declare class JPlayerPlaylist extends Playlist {
 interface PlaylistHacks {
   oldNext: () => void
   next: () => void
-}
-
-declare class External {
-  static show(song: Song): void
 }
 
 $(function () {
