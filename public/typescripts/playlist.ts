@@ -3,8 +3,6 @@ import {gplayer, gplaylist, Song} from "./types.js"
 import {Volume} from "./volume.js"
 
 $(function () {
-  const Volume: Volume = (window as any).Volume
-
   class PlaylistJson {
     constructor(
       public songs: Song[],

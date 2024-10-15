@@ -1,35 +1,73 @@
-import * as NewAlbumInfo from '/ts/new_albums_info.js'
-import {Lyrics} from '/ts/lyrics.js'
-import {getDebugAlbum, getDebugSong, isMuted, WAIT_DELAY} from '/ts/initialization.js'
-import {Globals} from "/ts/globals.js"
+import * as NewAlbumInfo from './new_albums_info.js'
+import {FileDownloader} from './file_downloader.js'
+import {Lyrics} from './lyrics.js'
+import {getDebugAlbum, getDebugSong, isMuted, WAIT_DELAY} from './initialization.js'
+import {Globals} from "./globals.js"
+import {gplaylist, Playlist, Song} from "./types.js"
+import {Volume} from "./volume.js"
+import {ScoreOps} from "./score.js"
 
-$(function() {
+declare class JPlayerPlaylist extends Playlist {
+  add(song: Song, playNow: boolean): void
+  protected _next(): void
+  play(index: number): void
+  select(index: number): void
+  prev(): void
+  currentIndex(): number
+  songs(): Song[]
+
+  constructor(
+    cssSelector: { jPlayer: string, cssSelectorAncestor: string },
+    playlist: Song[],
+    options: {
+      swfPath: string,
+      supplied: string,
+    },
+  )
+}
+
+interface PlaylistHacks {
+  oldNext: () => void
+  next: () => void
+}
+
+declare class External {
+  static show(song: Song): void
+}
+
+$(function () {
   const fileDownloader = new FileDownloader()
   const randomSongUrl = "data/randomSong"
+  const JPLAYER_ID = "#jquery_jplayer_1"
   const playlist = new JPlayerPlaylist({
-    jPlayer: "#jquery_jplayer_1",
-    cssSelectorAncestor: "#jp_container_1"
+    jPlayer: JPLAYER_ID,
+    cssSelectorAncestor: "#jp_container_1",
   }, [], {
     swfPath: "../js",
-    supplied: "webmv, ogv, m4a, oga, mp3, flac"
+    supplied: "webmv, ogv, m4a, oga, mp3, flac",
   })
   Globals.playlist = playlist
   // Modify next to fetch a random song if in shuffle mode and at the last song
   // TODO move to playlist_customization
-  playlist.oldNext = playlist.next
+  let hacks = playlist as unknown as PlaylistHacks
+  hacks.oldNext = playlist.next
   const shouldLoadNextSongFromRandom = () => playlist.isLastSongPlaying()
-  playlist.next = function() {
+  hacks.next = function () {
     if (shouldLoadNextSongFromRandom())
       loadNextRandom(true)
     else
-      playlist.oldNext()
+      hacks.oldNext()
   }
 
-  const getMedia = () => $(playlist.cssSelector.jPlayer).data("jPlayer").htmlElement.media
+  function jPlayerObject(): any {
+    return $(JPLAYER_ID).data('jPlayer')
+  }
+
+  const getMedia = () => jPlayerObject().htmlElement.media
 
   // On play event hook
   // TODO don't call if the same song?
-  $(playlist.cssSelector.jPlayer).data("jPlayer").onPlay = function() {
+  jPlayerObject().onPlay = function () {
     const currentPlayingSong = playlist.currentPlayingSong()
     const media = getMedia()
     const songInfo = `${currentPlayingSong.artistName} - ${currentPlayingSong.title}`
@@ -49,19 +87,20 @@ $(function() {
     document.title = songInfo
     $('#favicon').remove()
 
-    $('head').append(`<link href="${$("img.poster")[0].src}" id="favicon" rel="shortcut icon">`)
+    $('head')
+      .append(`<link href="${($("img.poster")[0] as any).src}" id="favicon" rel="shortcut icon">`)
 
     // TODO use plain old observers here
     Lyrics.show(currentPlayingSong)
     External.show(currentPlayingSong)
     Volume.setPeak(currentPlayingSong)
-    Score.show(currentPlayingSong)
+    ScoreOps.show(currentPlayingSong)
     NewAlbumInfo.show(currentPlayingSong)
   }
   $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()
 
-  function loadNextRandom(playNow) {
-    $.get(randomSongUrl, function(data) {
+  function loadNextRandom(playNow: boolean): void {
+    $.get(randomSongUrl, function (data) {
       playlist.add(data, playNow)
     })
   }
@@ -78,7 +117,7 @@ $(function() {
   } else
     loadNextRandom(true)
   // Fetches new songs before current song ends.
-  setInterval(function() {
+  setInterval(function () {
     const media = getMedia()
     const isSongNearlyFinished = media.duration - media.currentTime < WAIT_DELAY
     if (shouldLoadNextSongFromRandom() && isSongNearlyFinished)

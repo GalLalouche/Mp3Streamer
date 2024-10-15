@@ -15,8 +15,9 @@ class ScoreResult {
 }
 
 export class ScoreOps {
-  private readonly fieldset = $("#score")
-  constructor() {
+  private static fieldset: JQuery<HTMLElement>
+  static setup(): void {
+    this.fieldset = $("#score")
     this.fieldset.on('change', 'select', function () {
       const newScore = $(this).val()
       const source = $(this).attr('source')
@@ -25,17 +26,17 @@ export class ScoreOps {
       })
     })
   }
-  show(song: Song): void {
+  static show(song: Song): void {
     this.clearScores()
     $.get("score/" + song.file, score => this.updateScore(score))
   }
 
-  private clearScores(): void {
+  private static clearScores(): void {
     this.fieldset.empty()
     this.fieldset.append($("<div>Waiting for score...<\div>"))
   }
 
-  private updateScore(score: ScoreResult): void {
+  private static updateScore(score: ScoreResult): void {
     function scoreMenu(key: keyof ScoreResult): JQuery<HTMLElement> {
       const result = $("<select>")
       for (const s of ["Default", "Crappy", "Meh", "Okay", "Good", "Great", "Amazing"]) {
@@ -58,5 +59,5 @@ export class ScoreOps {
 }
 
 $(function () {
-  (window as any).Score = new ScoreOps()
+  ScoreOps.setup()
 })

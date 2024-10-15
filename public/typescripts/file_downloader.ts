@@ -1,6 +1,6 @@
 import {LRUCache} from 'lru-cache'
 
-class FileDownloader {
+export class FileDownloader {
   private requests: Map<string, Promise<Blob>> = new Map()
   private cache = new LRUCache<string, Blob>({
     max: 10,
