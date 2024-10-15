@@ -1,4 +1,5 @@
 import {PlaylistCustomizations} from "./playlist_customizations.js"
+import {Globals} from "./globals.js"
 
 export interface Song {
   readonly title: string
@@ -97,10 +98,8 @@ export abstract class Playlist {
   getDisplayedIndex(index: number): number {return this.length() - 1 - index}
 }
 
-declare let playlist: any
-
 function makePlaylist(): Playlist {
-  function pl(): any {return playlist}
+  function pl(): any {return Globals.playlist}
 
   const result = new class extends Playlist {
     override currentIndex() {return pl().current}
