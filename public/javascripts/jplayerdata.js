@@ -1,18 +1,19 @@
 import * as NewAlbumInfo from '/ts/new_albums_info.js'
 import {Lyrics} from '/ts/lyrics.js'
+import {getDebugAlbum, getDebugSong, isMuted, WAIT_DELAY} from '/ts/initialization.js'
+import {Globals} from "/ts/globals.js"
 
 $(function() {
   const fileDownloader = new FileDownloader()
   const randomSongUrl = "data/randomSong"
-  // Initialize playlist
-  // noinspection JSUndeclaredVariable
-  playlist = new JPlayerPlaylist({ // Explicitly global.
+  const playlist = new JPlayerPlaylist({
     jPlayer: "#jquery_jplayer_1",
     cssSelectorAncestor: "#jp_container_1"
   }, [], {
     swfPath: "../js",
     supplied: "webmv, ogv, m4a, oga, mp3, flac"
   })
+  Globals.playlist = playlist
   // Modify next to fetch a random song if in shuffle mode and at the last song
   // TODO move to playlist_customization
   playlist.oldNext = playlist.next
