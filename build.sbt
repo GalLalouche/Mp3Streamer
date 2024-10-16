@@ -25,7 +25,7 @@ resolvers ++= Seq(
   ),
   Resolver.mavenLocal,
 )
-val akkaVersion = "2.5.4"
+val akkaVersion = "2.6.21"
 val monocleVersion = "1.5.0"
 val playIterateesVersion = "2.6.1"
 val scalazVersion = "7.2.15"
@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.4.3",
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
-  "com.typesafe.play" %% "play" % "2.6.6",
+  "com.typesafe.play" %% "play" % "2.8.22",
   "com.typesafe.play" %% "play-ahc-ws-standalone" % playWsStandaloneVersion,
   "com.typesafe.play" %% "play-iteratees" % playIterateesVersion,
   "com.typesafe.play" %% "play-iteratees-reactive-streams" % playIterateesVersion,
@@ -59,6 +59,7 @@ libraryDependencies ++= Seq(
   "my.net.jthink" % "jaudiotagger" % "2.2.9-SNAPSHOT",
   "net.codingwell" %% "scala-guice" % "4.2.1",
   "org.apache.commons" % "commons-io" % "1.3.2",
+  "org.apache.commons" % "commons-lang3" % "3.17.0",
   "org.jsoup" % "jsoup" % "1.12.1",
   "org.mockito" % "mockito-all" % "1.9.5" % "test",
   "org.scala-lang.modules" %% "scala-swing" % "2.0.0",
