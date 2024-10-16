@@ -17,15 +17,11 @@ function addAlbum(album: Album): void {
   $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
 }
 
-class LastAlbum {
-  private shouldAddNextNewAlbum: boolean = false
-  private lastAlbumText?: string = undefined
+export class LastAlbum {
+  private static shouldAddNextNewAlbum: boolean = false
+  private static lastAlbumText?: string = undefined
 
-  constructor() {
-    this.openLastAlbumConnection()
-    write(span("Fetching last album..."))
-  }
-  private updateAlbum(album: Album): void {
+  private static updateAlbum(album: Album): void {
     const text = albumText(album)
     if (text !== this.lastAlbumText && this.shouldAddNextNewAlbum) {
       addAlbum(album)
@@ -40,20 +36,24 @@ class LastAlbum {
     this.lastAlbumText = text
   }
 
-  private last_album_websocket?: WebSocket = undefined
+  private static last_album_websocket?: WebSocket = undefined
 
-  private openLastAlbumConnection(): void {
+  private static openLastAlbumConnection(): void {
     this.last_album_websocket =
       openConnection("last_album", msg => this.updateAlbum(JSON.parse(msg.data)))
   }
 
-  reopenLastAlbumWebsocketIfNeeded(): void {
+  static reopenLastAlbumWebsocketIfNeeded(): void {
     if (this.last_album_websocket &&
       this.last_album_websocket.readyState === this.last_album_websocket.CLOSED)
       this.openLastAlbumConnection()
   }
 
-  addNextNewAlbum(): void {this.shouldAddNextNewAlbum = true}
+  static addNextNewAlbum(): void {this.shouldAddNextNewAlbum = true}
 }
 
-(window as any).LastAlbum = new LastAlbum()
+$(function () {
+  write(span("Fetching last album..."))
+  LastAlbum.reopenLastAlbumWebsocketIfNeeded();
+  (window as any).LastAlbum = LastAlbum
+})
