@@ -1,46 +1,53 @@
-$(function() {
-  $(document).keypress(function(e) {
+import {gplayer, gplaylist, Song} from "./types.js"
+
+declare class Search {
+  static quickSearch(): void
+}
+
+$(function () {
+  $(document).keypress(function (e) {
     {
-      const tag = e.target.tagName.toLowerCase()
+      const tag = (e.target as any).tagName.toLowerCase()
       const isFromInput = tag === 'input' || tag === 'textarea'
 
       if (isFromInput) // ignore text input into boxes
         if (e.keyCode === 27) // Esc key
-          e.target.blur()
+          (e.target as any).blur()
         else
           return
     }
     // Global shortcuts to control the player.
     if (e.ctrlKey) // Don't trigger on e.g., ctrl-c
       return
-    const letter = String.fromCharCode(e.which);
+    const letter = String.fromCharCode(e.which)
+    assert(letter.length == 1)
     switch (letter) {
       case 'z':
-        gplayer.stop();
+        gplayer.stop()
         if (gplaylist.currentIndex() > 0) // if not first song, go to previous song; otherwise restart song
           gplaylist.prev()
         gplayer.load(gplaylist.currentPlayingSong())
         gplayer.playCurrentSong()
-        break;
-      case 32: // Space key
+        break
       case ' ':
       case 'k': // fucking youtube :\
       case 'c':
         gplayer.togglePause()
-        break;
+        break
       case 'v':
         gplayer.stop()
-        break;
+        break
       case 'b':
         gplaylist.next()
-        break;
+        break
       case 'n':
         loadNextSong()
-        break;
+        break
       case 's':
         Search.quickSearch()
+        e.preventDefault()
     }
-  });
+  })
 
   function loadNextSong() {
     const songs = gplaylist.songs()
@@ -49,17 +56,16 @@ $(function() {
     for (let index = gplaylist.currentIndex(); index < gplaylist.length() - 1; index++) {
       const currentSong = songs[index]
       const nextSong = songs[index + 1]
-      const same = field => currentSong[field] === nextSong[field]
+
+      function same(field: keyof Song): boolean {return currentSong[field] === nextSong[field]}
+
       if ((same("artistName") && same("albumName") && currentSong.track + 1 === nextSong.track).isFalse())
         return
     }
-    $.get("data/nextSong?path=" + gplaylist.last().file, function(song) {
+    $.get("data/nextSong?path=" + gplaylist.last().file, function (song) {
       gplaylist.add(song, false)
     })
   }
 
-  // pauses on poster click
-  $(document).on("click", ".poster", function(e) {
-    gplayer.togglePause()
-  });
-});
+  $(document).on("click", ".poster", () => gplayer.togglePause())
+})
