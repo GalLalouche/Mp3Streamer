@@ -33,12 +33,25 @@ export interface Song {
 export type AlbumType = 'Album' | 'Live' | 'EP'
 
 export interface Album {
-  artistName: string
-  title: string
-  year: number
-  dir: string
-  date: Date
-  albumType: AlbumType
+  readonly artistName: string
+  readonly title: string
+  readonly year: number
+  readonly dir: string
+  readonly date: Date
+  readonly albumType: AlbumType
+
+  // Classical music fields
+  readonly composer?: string
+  readonly conductor?: string
+  readonly opus?: string
+  readonly orchestra?: string
+  readonly performanceYear?: number
+  readonly discNumbers?: string[]
+}
+
+export interface Artist {
+  readonly name: string
+  readonly albums: Album[]
 }
 
 export abstract class Player {
