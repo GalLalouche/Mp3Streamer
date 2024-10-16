@@ -32,9 +32,9 @@ interface JQueryStatic {
 }
 
 jQuery.each(["put", "delete"], function (_i, method) {
-  function func(url: string, data: object, callback: any, type?: string): any {
+  function func(url: string, data: object | undefined, callback: any, type?: string): any {
     return isFunction(data)
-      ? arguments.callee(url, undefined, data, type || callback)
+      ? func(url, undefined, data, type || callback)
       : jQuery.ajax({
         url: url,
         type: method,
