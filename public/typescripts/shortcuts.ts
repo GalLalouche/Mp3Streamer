@@ -1,8 +1,5 @@
 import {gplayer, gplaylist, Song} from "./types.js"
-
-declare class Search {
-  static quickSearch(): void
-}
+import {Search} from "./search.js"
 
 $(function () {
   $(document).keypress(function (e) {
