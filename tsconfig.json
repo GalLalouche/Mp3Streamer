@@ -9,14 +9,14 @@
       "scripthost"
     ],
     "esModuleInterop": true,
-    "mapRoot": "/assets",
+    "mapRoot": "/ts",
     "module": "es2020",
     "moduleResolution":"node",
     "strict": true,
     "outDir": "target/web/public/main/typescripts/",
     "rootDir": "public/typescripts",
     "sourceMap": true,
-    "sourceRoot": "/assets",
+    "sourceRoot": "/ts",
 
     "target": "es2020"
   },
