@@ -20,7 +20,7 @@ export class ScoreOps {
     this.fieldset = $("#score")
     this.fieldset.on('change', 'select', function () {
       const newScore = $(this).val()
-      const source = $(this).attr('source')
+      const source = $(this).attr('source')!.toLowerCase()
       $.put(`score/${source}/${newScore}/${gplaylist.currentPlayingSong().file}`, function () {
         console.log(`Successfully updated ${source} score to ${newScore}`)
       })
