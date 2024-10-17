@@ -19,6 +19,13 @@ private sealed case class Flag(
 ) extends EnumEntry
 
 private object Flag extends Enum[Flag] {
+  object Asciify
+      extends Flag(
+        flag = "<STRICT_ASCII>",
+        onByDefault = true,
+        comment = "Fail if ASCIIfication failed, and language isn't exempt",
+        mnemonic = "sa",
+      )
   object ResetTrackNumbers
       extends Flag(
         flag = "<RESET_TRACK>",

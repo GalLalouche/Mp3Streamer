@@ -24,16 +24,16 @@ import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 
 /** Fixes ID3 tags on mp3 and flac files to proper casing, delete unused tags, etc. */
-private class FixLabels @Inject() (mf: IOMusicFinder) {
+private class FixLabels @Inject() (mf: IOMusicFinder, fixLabelsUtils: FixLabelsUtils) {
   private def fixFile(f: File, fixDiscNumber: Boolean): Unit = {
     val audioFile = AudioFileIO.read(f)
-    val newTag = FixLabelsUtils.getFixedTag(f, fixDiscNumber, audioFile)
+    val newTag = fixLabelsUtils.getFixedTag(f, fixDiscNumber, audioFile)
     audioFile.delete()
     audioFile.setTag(newTag)
     audioFile.commit()
   }
 
-  private def newFileName(f: File): String = FixLabelsUtils.newFileName(IOSong.read(f), f.extension)
+  private def newFileName(f: File): String = fixLabelsUtils.newFileName(IOSong.read(f), f.extension)
 
   @tailrec
   private def renameFolder(source: Directory, initialName: String): Directory = {
@@ -69,7 +69,7 @@ private class FixLabels @Inject() (mf: IOMusicFinder) {
     val expectedName = {
       val (year, album) = mf.getSongsInDir(ioDir).map(_.toTuple(_.year, _.albumName)).toSet.single
       // In addition to regular file name limitations, a directory name cannot end in ".".
-      s"$year ${FixLabelsUtils.validFileName(album).removeAll(FixLabels.EndingDots)}"
+      s"$year ${fixLabelsUtils.validFileName(album).removeAll(FixLabels.EndingDots)}"
     }
 
     Try(new FixedDirectory(renameFolder(dir, expectedName), expectedName))

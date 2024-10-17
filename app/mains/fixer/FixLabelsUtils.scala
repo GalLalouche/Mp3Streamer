@@ -2,6 +2,7 @@ package mains.fixer
 
 import java.io.File
 import java.util.regex.Pattern
+import javax.inject.Inject
 
 import com.google.common.annotations.VisibleForTesting
 import models.{Song, SongTagParser, TrackNumber}
@@ -17,7 +18,7 @@ import common.rich.path.RichFile.richFile
 import common.rich.primitives.RichInt.Rich
 import common.rich.primitives.RichString.richString
 
-private[mains] object FixLabelsUtils {
+private[mains] class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
   private val NumberFollowedBySlash = Pattern.compile("""\d+[/\\].*""")
   private val InvalidFileCharacters = Pattern.compile("""[:\\/*?|<>"]""")
   private val MultiSpace = Pattern.compile(" +")
@@ -35,7 +36,7 @@ private[mains] object FixLabelsUtils {
 
     @tailrec
     def set(key: FieldKey, a: Any): Unit = a match {
-      case s: String => $.setField(key, StringFixer(s))
+      case s: String => $.setField(key, stringFixer(s))
       case i: Int => $.setField(key, i.toString)
       case None => ()
       case Some(x) => set(key, x)
