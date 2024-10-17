@@ -3,9 +3,9 @@
 # ~~~~
 
 # Home page
-GET           /                                          controllers.Application.index()
-GET           /mute                                      controllers.Application.index()
-GET           /mp3                                       controllers.Application.index()
+GET           /                                          controllers.Application.index
+GET           /mute                                      controllers.Application.index
+GET           /mp3                                       controllers.Application.index
 GET           /sjs                                       controllers.Application.sjs()
 GET           /client/*file                              controllers.Application.sjsClient(file)
 # To debug a particular song, use addSong html parameter, e.g., mute?addSong=pathToSong
