@@ -1,14 +1,19 @@
 package mains.vimtag
 
-import mains.fixer.{FixLabelsUtils, FolderFixer}
+import com.google.inject.Guice
+import mains.MainsModule
+import mains.fixer.{FixLabelsUtils, FolderFixer, StringFixer}
 import mains.vimtag.Flag.RemoveFeat
 import models.RichTag._
 import models.SongTagParser
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+import net.codingwell.scalaguice.ScalaModule
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
 
+import common.guice.RichModule.richModule
 import common.io.{DirectoryRef, IODirectory}
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce._
@@ -26,6 +31,13 @@ private object Fixer {
       parsedId3.songId3s.hasSameValues(_.discNumber).isFalse
     val renameFiles = parsedId3.flags(Flag.RenameFiles)
     val fixFolder = parsedId3.flags(Flag.FixFolder)
+    val injector = Guice.createInjector(MainsModule.overrideWith(new ScalaModule {
+      override def configure(): Unit =
+        bind[StringFixer].toInstance(new StringFixer() {
+          protected override def isExemptLanguage(lang: String): Boolean =
+            parsedId3.flags(Flag.Asciify).isFalse || super.isExemptLanguage(lang)
+        })
+    }))
     for ((individual, index) <- parsedId3.songId3s.zipWithIndex) {
       val file = ioDir.getFile(individual.relativeFileName).get.file
       val audioFile = AudioFileIO.read(file)
@@ -66,13 +78,13 @@ private object Fixer {
       if (fixFolder.isFalse && renameFiles) // FixFolder renames files anyway
         RichFileUtils.rename(
           file,
-          FixLabelsUtils.newFileName(SongTagParser.apply(file), file.extension),
+          injector.instance[FixLabelsUtils].newFileName(SongTagParser.apply(file), file.extension),
         )
       else if (file.parent != ioDir.dir)
         RichFileUtils.move(file, ioDir.dir)
     }
     ioDir.dir.dirs.filter(_.deepPaths.isEmpty).foreach(_.dir.delete())
     if (fixFolder)
-      FolderFixer.main(Array(dir.path))
+      injector.instance[FolderFixer].run(ioDir.dir)
   }
 }

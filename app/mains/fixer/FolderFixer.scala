@@ -27,7 +27,7 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 import common.rich.path.{Directory, RichFileUtils}
 
-private class FolderFixer @Inject() (
+private[mains] class FolderFixer @Inject() private (
     fixLabels: FixLabels,
     mf: IOMusicFinder,
     artistFinder: ArtistFinder,
@@ -81,7 +81,7 @@ private class FolderFixer @Inject() (
       .listenError(e => println("Failed to update server: " + e.getMessage))
   }
 
-  private def run(folder: Directory): Unit = {
+  def run(folder: Directory): Unit = {
     val artist = mf.getSongsInDir(IODirectory(folder)).head.artistName
     val destination = OptionT(Future(artistFinder(artist).map(_.asInstanceOf[IODirectory].dir)))
     val folderImage = downloadCover(folder)

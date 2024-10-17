@@ -1,6 +1,8 @@
 package mains.fixer
 
+import backend.module.TestModuleConfiguration
 import models.FakeModelFactory
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.scalatest.FreeSpec
 
@@ -9,7 +11,7 @@ import scala.collection.JavaConverters._
 import common.test.AuxSpecs
 
 class FixLabelsUtilsTest extends FreeSpec with AuxSpecs {
-  private val $ = FixLabelsUtils
+  private val $ = new TestModuleConfiguration().injector.instance[FixLabelsUtils]
 
   private def getSongFile(path: String) = getResourceFile("../../models/" + path)
   private def getTagValue(t: Tag)(f: FieldKey): String = t.getFirst(f)

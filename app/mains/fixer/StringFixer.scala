@@ -45,7 +45,7 @@ class StringFixer extends (String => String) {
       }
   }
   // TODO reuse this for Hebrew check as well?
-  private def isExemptLanguage(lang: String) =
+  protected def isExemptLanguage(lang: String): Boolean =
     // Japanese and Chinese. Life is too short to start asciing those.
     lang == "ja" || lang.startsWith("ch") || lang.startsWith("zh") || lang == "ko"
 
