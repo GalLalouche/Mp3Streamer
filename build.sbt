@@ -55,7 +55,7 @@ libraryDependencies ++= Seq(
   "commons-validator" % "commons-validator" % "1.6",
   "io.lemonlabs" %% "scala-uri" % "3.0.0",
   "io.reactivex" %% "rxscala" % "0.26.4",
-  "me.tongfei" % "progressbar" % "0.7.1",
+  "me.tongfei" % "progressbar" % "0.9.5",
   "my.net.jthink" % "jaudiotagger" % "2.2.9-SNAPSHOT",
   "net.codingwell" %% "scala-guice" % "4.2.1",
   "org.apache.commons" % "commons-io" % "1.3.2",

@@ -97,11 +97,11 @@
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api/2.3.3/jakarta.xml.bind-api-2.3.3.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/javax/inject/javax.inject/1/javax.inject-1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/joda-time/joda-time/2.10.5/joda-time-2.10.5.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/me/tongfei/progressbar/0.7.1/progressbar-0.7.1.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/me/tongfei/progressbar/0.9.5/progressbar-0.9.5.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/net/codingwell/scala-guice_2.12/4.2.1/scala-guice_2.12-4.2.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/checkerframework/checker-qual/3.8.0/checker-qual-3.8.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/jline/jline/3.7.0/jline-3.7.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/joda/joda-convert/1.7/joda-convert-1.7.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/jsoup/jsoup/1.12.1/jsoup-1.12.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/lz4/lz4-java/1.8.0/lz4-java-1.8.0.jar" />
