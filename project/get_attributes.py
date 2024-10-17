@@ -8,10 +8,10 @@ def format(s):
 
 
 if __name__ == '__main__':
-  output = subprocess.run(["/c/Program Files/Java/jdk1.8.0_141/bin/java",
+  output = subprocess.run(["/c/Users/Gal/scoop/apps/openjdk17/current/bin/java.exe",
                            "-Xmx2G",
                            "-jar",
-                           "c:/dev/lang/scala/sbt/bin/sbt-launch.jar",
+                           "j:/dev/lang/scala/sbt/bin/sbt-launch.jar",
                            "show compile:dependencyClasspath"
                            ],
                           stdout=subprocess.PIPE
