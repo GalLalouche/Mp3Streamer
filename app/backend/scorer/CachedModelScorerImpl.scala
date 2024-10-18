@@ -46,13 +46,16 @@ private class CachedModelScorerImpl @Inject() (
     a => albumScores.get((a.artist.normalized, a.title.toLowerCase)).hoistId,
     a => artistScores.get(a.normalized).hoistId,
   )
-  override def apply(a: Artist): OptionalModelScore =
+  override def explicitScore(a: Artist): OptionalModelScore =
     artistScores.get(a.normalized).toOptionalModelScore
-  override def apply(a: Album): OptionalModelScore =
+  override def explicitScore(a: Album): OptionalModelScore =
     albumScores.get((a.artist.normalized, a.title.toLowerCase)).toOptionalModelScore
-  override def apply(s: Song): OptionalModelScore = fullInfo(s).toOptionalModelScore
+  override def explicitScore(s: Song): OptionalModelScore =
+    songScores
+      .get((s.artist.normalized, s.release.normalized.title, s.title.toLowerCase))
+      .toOptionalModelScore
 
-  override def apply(f: FileRef): OptionalModelScore = {
+  override def aggregateScore(f: FileRef): OptionalModelScore = {
     lazy val id3Song = mf.parseSong(f)
     val songTitle =
       reconcilableFactory.songTitle(f).|>(toOption(f, "song")).getOrElse(id3Song.title)

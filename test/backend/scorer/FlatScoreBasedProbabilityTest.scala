@@ -35,10 +35,11 @@ class FlatScoreBasedProbabilityTest extends WordSpec with AuxSpecs with MockitoS
         val songs = Vector.fill(20000)(modelFactory.song())
         val songScores = songs.view.map(_.file: FileRef).map(_ -> randomScore).toMap
         object FakeModelScorer extends CachedModelScorer {
-          override def apply(s: Song) = apply(s.file)
-          override def apply(a: Artist) = ???
-          override def apply(a: Album) = ???
-          override def apply(f: FileRef) = songScores.get(f).toOptionalModelScore
+          override def explicitScore(a: Artist) = ???
+          override def explicitScore(a: Album) = ???
+          override def explicitScore(s: Song) = ???
+          override def aggregateScore(f: FileRef) = songScores.get(f).toOptionalModelScore
+          override def aggregateScore(s: Song) = aggregateScore(s.file)
           override def fullInfo(s: Song) = ???
         }
         val allFiles = songScores.keys.toVector

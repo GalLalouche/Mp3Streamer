@@ -38,10 +38,10 @@ class SongSelectorTest
           override def apply(s: ModelScore) = 0.5
         })
         bind[CachedModelScorer].toInstance(new CachedModelScorer {
-          override def apply(a: Artist) = ???
-          override def apply(a: Album) = ???
-          override def apply(s: Song) = OptionalModelScore.Scored(ModelScore.Okay)
-          override def apply(f: FileRef) = ???
+          override def explicitScore(a: Artist) = ???
+          override def explicitScore(a: Album) = ???
+          override def explicitScore(s: Song) = OptionalModelScore.Scored(ModelScore.Okay)
+          override def aggregateScore(f: FileRef) = ???
           override def fullInfo(s: Song) = ???
         })
       }

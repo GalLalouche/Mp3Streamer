@@ -37,7 +37,7 @@ private class ArtistMassScorer @Inject() (
     def goGenre(g: Genre, artists: Iterable[Artist]): OrgModeWriterMonad = {
       val filteredArtists: Iterable[(Artist, Option[ModelScore])] = for {
         artist <- artists
-        score = scorer(artist)
+        score = scorer.explicitScore(artist)
         if update.filterScore(score)
       } yield (artist, score.toModelScore)
       if (filteredArtists.isEmpty) // Don't add genres without artists

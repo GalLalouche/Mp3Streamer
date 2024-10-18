@@ -41,7 +41,9 @@ private class ScoreParser @Inject() (
       else
         AlbumScoreParser(line).map(TuplePLenses.tuple2First.modify(Right.apply))
     $.filter(e =>
-      !(e._1.fold(cachedModelScorer.apply(_), cachedModelScorer.apply(_)).toModelScore == e._2),
+      !(e._1
+        .fold(cachedModelScorer.explicitScore, cachedModelScorer.explicitScore)
+        .toModelScore == e._2),
     ).toOption
       .listen(e => scribe.info(s"Storing <$e>"))
   }

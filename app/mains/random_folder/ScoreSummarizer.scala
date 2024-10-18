@@ -21,7 +21,7 @@ private class ScoreSummarizer @Inject() (
       mf.getSongFilesInDir(outputDir)
         .view
         .map(mf.parseSong)
-        .flatMap(scorer(_).toModelScore)
+        .flatMap(scorer.aggregateScore(_).toModelScore)
         .frequencies
     ModelScore.values.foreach(score =>
       scribe.info(

@@ -16,9 +16,9 @@ import common.io.FileRef
   private val updatable: UpdatableProxy[CachedModelScorer] = factory.initialize(provider.get)
   def update() = updatable.update()
 
-  override def apply(a: Artist) = updatable.current.apply(a)
-  override def apply(a: Album) = updatable.current.apply(a)
-  override def apply(s: Song) = updatable.current.apply(s)
-  override def apply(f: FileRef) = updatable.current.apply(f)
+  override def explicitScore(a: Artist) = updatable.current.explicitScore(a)
+  override def explicitScore(a: Album) = updatable.current.explicitScore(a)
+  override def explicitScore(s: Song) = updatable.current.explicitScore(s)
+  override def aggregateScore(f: FileRef) = updatable.current.aggregateScore(f)
   override def fullInfo(s: Song) = updatable.current.fullInfo(s)
 }
