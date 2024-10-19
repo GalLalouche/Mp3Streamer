@@ -88,8 +88,8 @@ export abstract class Playlist {
   setPlaylist(playlist: Song[], instant: boolean): void {
     this.clear(instant)
     playlist.forEach(s => console.log(s))
-    const self = this
-    playlist.forEach(s => self.add(s, false))
+    const that = this
+    playlist.forEach(s => that.add(s, false))
   }
   abstract add(song: Song, playNow: boolean): void
   protected abstract _next(): void

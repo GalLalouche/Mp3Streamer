@@ -10,12 +10,12 @@ export class External {
 
   static show(song: Song): void {
     const externalUrl = remotePath + song.file
-    const self = this
+    const that = this
     $.get(externalUrl, this.helper.showLinks(externalUrl))
       .fail(function () {
-        self.helper.cleanUp()
+        that.helper.cleanUp()
         // FIXME A better error message
-        self.helper.externalDivs.append(span("Error occurred while fetching links"))
+        that.helper.externalDivs.append(span("Error occurred while fetching links"))
       })
   }
 }
@@ -44,7 +44,7 @@ class Helper {
     this.albumReconBox =
       $("<input class='external-recon-id' placeholder='Album ID' type='text'/>")
         .appendTo(this.externalAlbum)
-    const self = this
+    const that = this
     this.externalAlbum.appendBr()
     const updateReconButton = button("Update Recon").appendTo(this.externalDivs)
     button("Refresh").appendTo(this.externalArtist).click(this.refresh("artist").bind(this))
@@ -64,16 +64,16 @@ class Helper {
     Poster.rgbListeners.push(rgb => {
       this.currentPosterRgb = rgb
       $("#field-set-group fieldset").each(function () {
-        self.setLinkColor($(this))
+        that.setLinkColor($(this))
       })
     })
   }
   refresh(target: string): () => void {
-    const self = this
+    const that = this
     return function () {
       const songPath = gplaylist.currentPlayingSong().file
       // TODO showLinks should only fetch the links for the target.
-      $.get(`${remotePath}refresh/${target}/${songPath}`, self.showLinks(remotePath + songPath))
+      $.get(`${remotePath}refresh/${target}/${songPath}`, that.showLinks(remotePath + songPath))
     }
   }
   cleanUp() {
@@ -91,12 +91,12 @@ class Helper {
   showLinks(debugLink: string): ((r: ExternalResult) => void) {
     this.cleanUp()
     this.externalDivs.prepend(span("Fetching links..."))
-    const self = this
+    const that = this
 
     function externalLinks(result: ExternalResult) {
-      self.cleanUp()
-      self.artistReconBox.val("")
-      self.albumReconBox.val("")
+      that.cleanUp()
+      that.artistReconBox.val("")
+      that.albumReconBox.val("")
       Object.entries(result).forEach(([entityName, externalLinksForEntity]) => {
         const ul = elem('ul', {'class': 'external-links'})
         const finalLine: string =
@@ -118,7 +118,7 @@ class Helper {
         fieldset.prepend(ul)
         fieldset.children('legend').remove()
         fieldset.prepend($(`<legend>${entityName} (${finalLine})</legend>`))
-        self.setLinkColor(fieldset)
+        that.setLinkColor(fieldset)
       })
     }
 

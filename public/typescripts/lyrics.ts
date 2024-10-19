@@ -44,12 +44,12 @@ class Helper {
       disable(instrumentalSongButton)
     })
 
-    const self = this
+    const that = this
 
     function setInstrumental(type: string): void {
       $.post(
         `lyrics/instrumental/${type}/${gplaylist.currentPlayingSong().file}`,
-        s => self.showLyrics(s as string),
+        s => that.showLyrics(s as string),
       )
     }
 
@@ -63,11 +63,11 @@ class Helper {
     setInterval(this.scrollLyrics.bind(this), 100)
 
     scrollableElement.scroll(function () { // When the user scrolls manually, reset the baselines
-      if (self.autoScroll.isFalse()) {
-        self.scrollBaseline = scrollableElement.scrollTop()!
-        self.timeBaseline = self.scrollBaseline && gplayer.percentageOfSongPlayed()
+      if (that.autoScroll.isFalse()) {
+        that.scrollBaseline = scrollableElement.scrollTop()!
+        that.timeBaseline = that.scrollBaseline && gplayer.percentageOfSongPlayed()
       }
-      self.autoScroll = false
+      that.autoScroll = false
     })
   }
   updateLyrics(): void {
@@ -121,10 +121,10 @@ export class Lyrics {
     this.helper.clearButtons()
     this.helper.autoScroll = true
     this.helper.lyricsContent.html("Fetching lyrics...")
-    const self = this
+    const that = this
     $.get("lyrics/" + song.file, function (l) {
-      self.helper.showLyrics(l)
-      self.helper.scrollLyrics()
+      that.helper.showLyrics(l)
+      that.helper.scrollLyrics()
     })
   }
 }
