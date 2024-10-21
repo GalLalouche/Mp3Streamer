@@ -24,10 +24,11 @@ object Main {
     val vimEdit = injector.instance[VimEdit]
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     val dir = IODirectory(IOUtils.decodeFile(args.view.single))
-    val (file, lines, initialValues) = vimEdit(injector.instance[Initializer].apply(dir))
+    val initialLines = injector.instance[Initializer].apply(dir)
+    val (file, lines) = vimEdit(initialLines)
     try {
       lines
-        .map(injector.instance[Parser].apply(initialValues))
+        .map(injector.instance[Parser].apply(initialLines.initialValues))
         .map(Fixer(dir, _))
         .get
       file.deleteOnExit()

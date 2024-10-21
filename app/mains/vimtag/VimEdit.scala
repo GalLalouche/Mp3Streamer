@@ -16,10 +16,10 @@ private class VimEdit @Inject() (cp: CommandsProvider, ec: ExecutionContext) {
   private val VimLocation = """"C:\Program Files\Neovim\bin\nvim-qt.exe""""
   private implicit val iec: ExecutionContext = ec
 
-  def apply(initialLines: InitialLines): (File, Future[Seq[String]], Map[String, InitialValues]) = {
+  def apply(initialLines: InitialLines): (File, Future[Seq[String]]) = {
     val temp = File.createTempFile("vimedit", "")
     temp.write(initialLines.lines.mkString("\n"))
-    (temp, inFile(temp, initialLines.startingEditLine), initialLines.initialValues)
+    (temp, inFile(temp, initialLines.startingEditLine))
   }
   private def inFile(file: File, startingEditLine: Int): Future[Seq[String]] = Future {
     val tempVimCode = SetupBindings.createFile()
