@@ -34,6 +34,7 @@ private object Fixer {
     val injector = Guice.createInjector(MainsModule.overrideWith(new ScalaModule {
       override def configure(): Unit =
         bind[StringFixer].toInstance(new StringFixer() {
+          protected override val ignoreLangDetectionErrors = true
           protected override def isExemptLanguage(lang: String): Boolean =
             parsedId3.flags(Flag.Asciify).isFalse || super.isExemptLanguage(lang)
         })

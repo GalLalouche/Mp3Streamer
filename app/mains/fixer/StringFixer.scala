@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils
 import resource._
 
 import scala.io.Source
+import scala.util.{Failure, Success}
 
 import common.LanguageString._
 import common.rich.RichT._
@@ -35,15 +36,25 @@ class StringFixer extends (String => String) {
   } catch {
     case e: Exception =>
       // TODO reuse this for Hebrew check as well?
-      val lang = DetectLanguage(s)
-      if (isExemptLanguage(lang)) {
-        scribe.trace(s"Could not asciify <$s>")
-        s
-      } else {
-        scribe.trace(s"Language <$lang> is not exempt")
-        throw e
+      DetectLanguage(s) match {
+        case Failure(exception) =>
+          if (ignoreLangDetectionErrors) {
+            scribe.warn(s"Failed to detect language for '$s'", exception)
+            s
+          } else
+            throw exception
+        case Success(lang) =>
+          if (isExemptLanguage(lang)) {
+            scribe.trace(s"Could not asciify <$s>")
+            s
+          } else {
+            scribe.trace(s"Language <$lang> is not exempt")
+            throw e
+          }
       }
   }
+
+  protected def ignoreLangDetectionErrors: Boolean = false
   // TODO reuse this for Hebrew check as well?
   protected def isExemptLanguage(lang: String): Boolean =
     // Japanese and Chinese. Life is too short to start asciing those.
