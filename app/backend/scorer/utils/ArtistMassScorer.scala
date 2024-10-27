@@ -2,15 +2,15 @@ package backend.scorer.utils
 
 import javax.inject.Inject
 
-import backend.recon.{Artist, ReconcilableFactory}
-import backend.scorer.{CachedModelScorer, ModelScore, OptionalModelScore}
+import backend.recon.ReconcilableFactory
+import backend.scorer.{CachedModelScorer, OptionalModelScore}
 import backend.scorer.utils.ArtistMassScorer.Update
-import models.{Genre, GenreFinder}
+import backend.scorer.utils.Scoreable.ScoreableImpl
+import models.{Artist, ArtistFactory, Genre, GenreFinder}
 
 import scala.concurrent.ExecutionContext
 
-import common.rich.func.MoreIteratorInstances.IteratorMonadPlus
-import scalaz.Scalaz.{ToBindOpsUnapply, ToFoldableOps, ToFunctorOpsUnapply}
+import scalaz.Scalaz.{ToBindOpsUnapply, ToFunctorOpsUnapply}
 import scalaz.State
 import scalaz.std.vector.vectorInstance
 import scalaz.syntax.traverse.ToTraverseOps
@@ -30,29 +30,27 @@ private class ArtistMassScorer @Inject() (
     reconcilableFactory: ReconcilableFactory,
     enumGenreFinder: GenreFinder,
     ec: ExecutionContext,
+    artistFactory: ArtistFactory,
+    impl: ScoreableImpl,
 ) {
   private implicit val iec: ExecutionContext = ec
-
+  private implicit val artistScoreable: Scoreable[Artist] = impl.artist
   def go(update: Update): Seq[String] = {
     def goGenre(g: Genre, artists: Iterable[Artist]): OrgModeWriterMonad = {
-      val filteredArtists: Iterable[(Artist, Option[ModelScore])] = for {
+      val filteredArtists: Iterable[Artist] = for {
         artist <- artists
-        score = scorer.explicitScore(artist)
+        score = scorer.explicitScore(artist.toRecon)
         if update.filterScore(score)
-      } yield (artist, score.toModelScore)
+      } yield artist
       if (filteredArtists.isEmpty) // Don't add genres without artists
         State.init[OrgModeWriter].void
       else
-        OrgModeWriterMonad.append(g.name) >> filteredArtists.toVector
-          .sortBy(_._1.name)
-          .iterator
-          .map(Function.tupled(OrgScoreFormatter.artist))
-          .traverse_(OrgModeWriterMonad.append(_) |> OrgModeWriterMonad.indent)
+        OrgModeWriterMonad.append(g.name) >> MassScorer(filteredArtists.toVector.sortBy(_.name))
     }
 
     reconcilableFactory.artistDirectories
       .groupBy(e => enumGenreFinder.apply(e.asInstanceOf[IODirectory]))
-      .mapValues(_.map(reconcilableFactory.toArtist))
+      .mapValues(_.map(artistFactory.fromDir(_)))
       .toVector
       .sortBy(_._1)
       .traverse(Function.tupled(goGenre))

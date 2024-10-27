@@ -6,30 +6,33 @@ import backend.scorer.utils.OrgScoreFormatter.{PrefixSeparator, ScoreSeparator}
 import scala.{util => su}
 import scala.util.{Failure, Success, Try}
 
+import common.rich.func.MoreTryInstances._
+import scalaz.Scalaz.ToApplyOps
+
 import common.rich.RichEnumeratum.richEnumeratum
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichOption.richOption
 import common.rich.primitives.RichString._
 
 private trait ScoreParserTemplate[A] {
-  def apply(line: String): Try[(A, Option[ModelScore])] = toTry(line)
+  def apply(line: String): Try[(A, OptionalModelScore)] = toTry(line)
 
   protected def prefix: String
   protected def entity(s: Seq[String]): Try[A]
-
-  private def toTry(s: String): su.Try[(A, Option[ModelScore])] = {
+  private def toTry(s: String): su.Try[(A, OptionalModelScore)] = {
     val split = s.split(s" $ScoreSeparator ")
     if (split.length != 2)
       return su.Failure(new Exception(s"Expected a string of the format 'A === B', got '$s'"))
-    for {
-      e <- prepare(split(0)).flatMap(entity)
-      s <- ModelScore
+
+    val e = prepare(split(0)).flatMap(entity)
+    val score =
+      ModelScore
         .withPrefixCaseInsensitive(split(1))
         .singleOpt
         .toTry(new Exception(s"Invalid on ambiguous score '${split(1)}'"))
         .map(_.toString)
         .map(OptionalModelScore.withName)
-    } yield (e, s.toModelScore)
+    e.tuple(score)
   }
 
   private val prefixOrg = "\\**".r.pattern

@@ -11,6 +11,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.ListT
 
+import common.rich.RichT.richT
+
 private[scorer] class AlbumScoreStorage @Inject() (
     protected override val ec: ExecutionContext,
     dbP: DbProvider,
@@ -43,4 +45,7 @@ private[scorer] class AlbumScoreStorage @Inject() (
   protected override def keyFilter(k: Album)(e: Rows) = e.artist === k.artist && e.title === k.title
   def loadAll: ListT[Future, (Artist, AlbumTitle, ModelScore)] =
     ListT(db.run(tableQuery.result).map(_.toList))
+
+  def allForArtist(a: Artist): Future[Seq[(AlbumTitle, ModelScore)]] =
+    db.run(tableQuery.filter(_.artist === a).map(_.toTuple(_.title, _.score)).result)
 }

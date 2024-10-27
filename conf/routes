@@ -85,6 +85,7 @@ GET           /ws/last_album                             backend.recent.RecentCo
 
 # Scorer
 GET           /score/*path                               backend.scorer.ScorerController.getScore(path)
+HEAD          /score/*path                               backend.scorer.ScorerController.setAllScores(path)
 
 # Doesn't make a whole of sense from a REST stand point, but it's easier than fiddling with
 # HTTP parameters combined with a suffix path.

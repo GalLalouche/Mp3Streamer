@@ -12,6 +12,8 @@ case class Album(
     year: Int,
     songs: Seq[Song],
 ) {
+  def toRecon: backend.recon.Album =
+    backend.recon.Album(title, year, backend.recon.Artist(artistName))
   /**
    * Returns the property if all songs share the same property, e.g., all songs in the album have
    * the same composer. Otherwise, returns None.

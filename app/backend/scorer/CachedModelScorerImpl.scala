@@ -57,7 +57,8 @@ private class CachedModelScorerImpl @Inject() (
   override def aggregateScore(f: FileRef): OptionalModelScore = {
     lazy val id3Song = mf.parseSong(f)
     val songTitle =
-      reconcilableFactory.songTitle(f).|>(toOption(f, "song")).getOrElse(id3Song.title)
+      reconcilableFactory.trySongInfo(f).|>(toOption(f, "song")).map(_._2).getOrElse(id3Song.title)
+
     val album: Album =
       reconcilableFactory.toAlbum(f.parent).|>(toOption(f, "album")).getOrElse(id3Song.release)
     val albumTitle = album.title

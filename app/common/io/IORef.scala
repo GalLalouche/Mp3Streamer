@@ -65,6 +65,7 @@ case class IOFile(file: File) extends IOPath(file) with FileRef {
 }
 object IOFile {
   def apply(str: String): IOFile = apply(new File(str))
+  def apply(betterFile: better.files.File): IOFile = apply(betterFile.toJava)
 }
 
 case class IODirectory(file: File) extends IOPath(file) with DirectoryRef {

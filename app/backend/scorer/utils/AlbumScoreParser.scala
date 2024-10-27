@@ -1,14 +1,14 @@
 package backend.scorer.utils
 
 import backend.recon.{Album, Artist}
- 
+
 import scala.util.{Failure, Success, Try}
 
 import common.rich.primitives.RichString._
 
 private object AlbumScoreParser extends ScoreParserTemplate[Album] {
   protected override val prefix = "ALBUM"
-  protected override def entity(sections: Seq[String]): Try[Album] = sections.toVector match {
+  override def entity(sections: Seq[String]): Try[Album] = sections.toVector match {
     case Vector(artist, titleYear) =>
       if (titleYear.matches(AlbumPattern)) {
         val year = titleYear.takeRight("2000)".length).dropRight(1).toInt

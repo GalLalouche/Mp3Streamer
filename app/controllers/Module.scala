@@ -1,7 +1,7 @@
 package controllers
 
 import backend.albums.filler.ExistingAlbumsModules
-import backend.logging.{ScribeConfigLoader, ScribeUtils}
+import backend.logging.ScribeUtils
 import backend.module.{RealInternetTalkerModule, RealModule}
 import com.google.common.annotations.VisibleForTesting
 import com.google.inject.util.Modules
@@ -24,7 +24,7 @@ class Module @VisibleForTesting() (level: Option[Level]) extends ScalaModule {
     levelToUse match {
       case Some(value) =>
         ScribeUtils.setRootLevel(value)
-        ScribeConfigLoader.go()
+      // ScribeConfigLoader.go()
       case None => ScribeUtils.noLogs()
     }
   }

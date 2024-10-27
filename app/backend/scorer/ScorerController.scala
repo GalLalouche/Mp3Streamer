@@ -3,6 +3,7 @@ package backend.scorer
 import javax.inject.Inject
 
 import controllers.{PlayActionConverter, UrlDecodeUtils}
+import models.TypeAliases.ArtistName
 import play.api.mvc.InjectedController
 
 class ScorerController @Inject() (
@@ -11,6 +12,8 @@ class ScorerController @Inject() (
     decoder: UrlDecodeUtils,
 ) extends InjectedController {
   def getScore(filePath: String) = converter.ok($.getScore(decoder.decode(filePath)))
+  def setAllScores(filePath: String) =
+    converter.noContent($.openScoreFile(decoder.decode(filePath)))
   def updateSongScore(filePath: String, score: String) = {
     val str = decoder.decode(filePath)
     scribe.info(s"Updating song score to <$score> for <$str>")

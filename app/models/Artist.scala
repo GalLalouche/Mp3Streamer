@@ -9,4 +9,5 @@ final case class Artist(name: ArtistName, private val _albums: Set[Album]) {
     )
     Artist(name, _albums ++ a._albums)
   }
+  def toRecon: backend.recon.Artist = backend.recon.Artist(name)
 }

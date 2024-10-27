@@ -1,7 +1,7 @@
 package backend.scorer.utils
 
 import backend.recon.{Album, Artist}
-import backend.scorer.ModelScore
+import backend.scorer.{ModelScore, OptionalModelScore}
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
@@ -9,7 +9,9 @@ import common.test.AuxSpecs
 class AlbumScoreParserTest extends FreeSpec with AuxSpecs {
   // FIXME Also test for empty
   private val albumAndScore =
-    Album("A Night at the Opera", 2002, Artist("Blind Guardian")) -> Option(ModelScore.Amazing)
+    Album("A Night at the Opera", 2002, Artist("Blind Guardian")) -> OptionalModelScore.Scored(
+      ModelScore.Amazing,
+    )
   "Parse album" in {
     AlbumScoreParser(
       "** ALBUM ; Blind Guardian ;;; A Night at the Opera (2002) === A",

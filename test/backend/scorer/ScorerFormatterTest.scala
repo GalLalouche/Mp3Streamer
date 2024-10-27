@@ -1,21 +1,22 @@
 package backend.scorer
 
-import backend.module.TestModuleConfiguration
+import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import backend.recon.{Album, Artist, ArtistReconStorage, StoredReconResult}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.{AsyncFreeSpec, OneInstancePerTest, Succeeded}
+import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 import org.scalatest.tags.Slow
 import play.api.libs.json.Json
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 import common.rich.func.BetterFutureInstances._
 import scalaz.Scalaz.{ToBindOps, ToTraverseOpsUnapply}
 import scalaz.std.vector.vectorInstance
 
+import common.io.MemoryRoot
 import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
 
 @Slow
@@ -25,7 +26,8 @@ class ScorerFormatterTest
     // Using EachAsync because https://github.com/scala/bug/issues/9304
     with BeforeAndAfterEachAsync
     with OneInstancePerTest {
-  private val injector = TestModuleConfiguration().injector
+  private val musicFinder: FakeMusicFinder = new FakeMusicFinder(new MemoryRoot)
+  private val injector = TestModuleConfiguration(_mf = musicFinder).injector
   implicit override def executionContext: ExecutionContext = injector.instance[ExecutionContext]
   private val song: Song = IOSong.read(getResourceFile("/models/song.mp3"))
   // Not using the extension methods here to avoid importing bugs from it.
@@ -43,8 +45,6 @@ class ScorerFormatterTest
 
   private val path = song.file.path
   "getScores" - {
-    // FIXME
-    "First test always passes for some reason?!" in Future(Succeeded)
     "Empty object on no score" in {
       $.getScore(path) shouldEventuallyReturn Json.obj()
     }
