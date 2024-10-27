@@ -28,7 +28,7 @@ private object DarkLyricsRetriever {
 
     override val hostPrefix: String = "http://www.darklyrics.com/lyrics"
     override def urlFor(s: Song): String =
-      s"$hostPrefix/${normalize(s.artistName)}/${normalize(s.albumName)}.html#${s.track}"
+      s"$hostPrefix/${normalize(s.artistName)}/${normalize(s.albumName)}.html#${s.trackNumber}"
   }
 
   @VisibleForTesting
@@ -42,7 +42,7 @@ private object DarkLyricsRetriever {
     private val Heading = Pattern.compile(".*<h3>.*")
     private val Div = Pattern.compile(".*<div.*")
     override def apply(html: Document, s: Song) = {
-      val currentTrack = Pattern.compile(s""".*a name="${s.track}".*""")
+      val currentTrack = Pattern.compile(s""".*a name="${s.trackNumber}".*""")
       val $ = html.toString
         .split("\n")
         .iterator

@@ -27,7 +27,7 @@ private object WeightedIndexable {
     override def secondaryTerms(t: Song) =
       Set(t.artistName, t.albumName, t.year.toString) ++ classicalMusicTerms(t)
     override def sortBy(s: Song): Product =
-      (s.artistName, s.title, s.year, s.performanceYear, s.albumName, s.track)
+      (s.artistName, s.title, s.year, s.performanceYear, s.albumName, s.trackNumber)
   }
   implicit object AlbumIndex extends WeightedIndexable[Album] {
     protected override def mainTerm(t: Album) = t.title

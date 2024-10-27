@@ -10,6 +10,6 @@ private[songs] class FollowingSong @Inject() (mf: MusicFinder) {
   def next(song: Song): Option[Song] =
     song.file.parent
       .|>(mf.getSongsInDir)
-      .sortBy(_.track)
-      .lift(song.track)
+      .sortBy(_.trackNumber)
+      .lift(song.trackNumber)
 }

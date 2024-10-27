@@ -31,7 +31,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
           composer = Some("Prokofiev"),
           orchestra = Some("Philharmonia Orchestra"),
           performanceYear = Some(2009),
-          track = track,
+          trackNumber = track,
           title = title,
           discNumber = discNumber,
           conductor = conductor,
@@ -106,7 +106,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
           year = 2000,
           artistName = "Some artist",
           albumName = "Some album",
-          track = track,
+          trackNumber = track,
           title = "whatever",
         ),
       )
@@ -135,7 +135,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
           year = 2000,
           artistName = "Some artist",
           albumName = "Some album",
-          track = track,
+          trackNumber = track,
           title = "whatever",
         ),
       )

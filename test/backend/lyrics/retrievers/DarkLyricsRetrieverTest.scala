@@ -6,7 +6,7 @@ class DarkLyricsRetrieverTest extends FreeSpec with LyricsSpec {
   private[retrievers] override def parser = DarkLyricsRetriever.parser
   "getUrl" in {
     DarkLyricsRetriever.url.urlFor(
-      factory.song(artistName = "foo bar", albumName = "bazz qux", track = 5),
+      factory.song(artistName = "foo bar", albumName = "bazz qux", trackNumber = 5),
     ) shouldReturn
       "http://www.darklyrics.com/lyrics/foobar/bazzqux.html#5"
   }

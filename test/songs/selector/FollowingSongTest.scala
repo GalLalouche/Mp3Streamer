@@ -18,8 +18,10 @@ class FollowingSongTest
   "next song" in {
     val injector = TestModuleConfiguration().injector
     val mf = injector.instance[FakeMusicFinder]
-    val song1 = mf.copySong(factory.song(albumName = "album", artistName = "artist", track = 1))
-    val song2 = mf.copySong(factory.song(albumName = "album", artistName = "artist", track = 2))
+    val song1 =
+      mf.copySong(factory.song(albumName = "album", artistName = "artist", trackNumber = 1))
+    val song2 =
+      mf.copySong(factory.song(albumName = "album", artistName = "artist", trackNumber = 2))
 
     val $ = injector.instance[FollowingSong]
 

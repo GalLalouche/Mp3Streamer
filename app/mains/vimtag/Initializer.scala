@@ -30,8 +30,8 @@ private class Initializer @Inject() (mf: MusicFinder, aux: IndividualInitializer
         .flatMap(mf.getOptionalSongsInDir)
         .ensuring(_.nonEmpty, s"No ${mf.extensions} files found in directory$unsupportedFilesMsg")
     private lazy val ordering: Ordering[OptionalSong] =
-      if (songFiles.forall(_.track.isDefined))
-        Ordering.by(_.toTuple(_.directory, _.track))
+      if (songFiles.forall(_.trackNumber.isDefined))
+        Ordering.by(_.toTuple(_.directory, _.trackNumber))
       else
         Ordering.by(_.file)
 
@@ -59,7 +59,7 @@ private class Initializer @Inject() (mf: MusicFinder, aux: IndividualInitializer
     def titles: Seq[String] = sequence(_.title.getOrElse(""))
     def tracks: Seq[TrackNumber] = songs.zipWithIndex
       .map(_.modifySecond(_ + 1))
-      .map(_.fold(_.track.getOrElse(_)))
+      .map(_.fold(_.trackNumber.getOrElse(_)))
     def discNumbers: Seq[String] = sequence(_.discNumber.getOrElse(""))
   }
 

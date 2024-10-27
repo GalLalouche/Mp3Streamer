@@ -12,7 +12,7 @@ trait Song {
   def title: SongTitle
   def artistName: String
   def albumName: AlbumTitle
-  def track: TrackNumber
+  def trackNumber: TrackNumber
   def year: Int
   def bitRate: String
   def duration: Duration
@@ -31,7 +31,7 @@ trait Song {
     title = Some(title),
     artistName = Some(artistName),
     albumName = Some(albumName),
-    track = Some(track),
+    trackNumber = Some(trackNumber),
     year = Some(year),
     discNumber = discNumber,
     composer = composer,
@@ -48,7 +48,7 @@ case class IOSong(
     title: SongTitle,
     artistName: String,
     albumName: AlbumTitle,
-    track: TrackNumber,
+    trackNumber: TrackNumber,
     year: Int,
     bitRate: String,
     duration: Duration,
@@ -72,7 +72,7 @@ case class MemorySong(
     title: SongTitle,
     artistName: String,
     albumName: AlbumTitle,
-    track: TrackNumber,
+    trackNumber: TrackNumber,
     year: Int,
     bitRate: String,
     duration: Duration,

@@ -63,7 +63,7 @@ class FixLabelsUtilsTest extends FreeSpec with AuxSpecs {
   }
 
   "newFileName" in {
-    val song = new FakeModelFactory().song(track = 2, title = "foo & the bar!?")
+    val song = new FakeModelFactory().song(trackNumber = 2, title = "foo & the bar!?")
     $.newFileName(song, "ape") shouldReturn "02 - foo & the bar!.ape"
   }
 }

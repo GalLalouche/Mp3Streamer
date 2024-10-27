@@ -17,7 +17,7 @@ class AlbumFactory @Inject() (mf: MusicFinder) {
     val songs =
       mf.getSongsInDir(dir)
         .ensuring(_.nonEmpty, s"Cannot create an album of an empty dir <$dir>")
-        .sortBy(_.track)
+        .sortBy(_.trackNumber)
     val firstSong = songs.head
     Album(
       dir = dir,

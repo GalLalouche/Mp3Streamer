@@ -12,7 +12,7 @@ import common.RichJsoup._
 private[retrievers] object AlbumParser extends SingleHostParser {
   override def source = Utils.Source
   override def apply(d: Document, s: Song): LyricParseResult =
-    d.selectSingleOpt("#lyrics_row_" + s.track)
+    d.selectSingleOpt("#lyrics_row_" + s.trackNumber)
       .mapHeadOrElse(
         Utils.elementToLyrics,
         LyricParseResult.NoLyrics,

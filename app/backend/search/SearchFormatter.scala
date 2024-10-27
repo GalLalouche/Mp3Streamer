@@ -40,7 +40,7 @@ private object SearchFormatter {
   // If not all songs have a disc number, returns None (i.e., ignores albums with bonus disc only).
   private def discNumbers(a: Album): Option[Seq[String]] =
     a.songs
-      .traverse(s => s.discNumber.map(_ -> s.track))
+      .traverse(s => s.discNumber.map(_ -> s.trackNumber))
       // Sort disc numbers by track order.
       .map(_.sortBy(_._2).map(_._1).distinct)
 }

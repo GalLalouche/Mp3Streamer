@@ -45,7 +45,7 @@ private[mains] class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
     set(FieldKey.TITLE, song.title)
     set(FieldKey.ALBUM, song.albumName)
     set(FieldKey.YEAR, song.year)
-    $.setField(FieldKey.TRACK, properTrackString(song.track))
+    $.setField(FieldKey.TRACK, properTrackString(song.trackNumber))
     // Not all track need to have a disc number property, e.g., bonus track.
     song.discNumber
       .filter(fixDiscNumber.const)
@@ -77,5 +77,5 @@ private[mains] class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
     requestedFileName.removeAll(InvalidFileCharacters).replaceAll(MultiSpace, " ")
 
   def newFileName(song: Song, extension: String): String =
-    s"${properTrackString(song.track)} - ${validFileName(song.title)}.$extension"
+    s"${properTrackString(song.trackNumber)} - ${validFileName(song.title)}.$extension"
 }

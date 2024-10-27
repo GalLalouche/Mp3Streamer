@@ -39,7 +39,7 @@ trait LyricsSpec extends DocumentSpecs { self: Suite =>
   protected[retrievers] def verifyError(htmlFileName: String): Assertion =
     parseDocument(htmlFileName) shouldBe a[LyricParseResult.Error]
   private def parseDocument(htmlFileName: String, trackNumber: TrackNumber = 1): LyricParseResult =
-    parser(getDocument(htmlFileName + ".html"), factory.song(track = trackNumber))
+    parser(getDocument(htmlFileName + ".html"), factory.song(trackNumber = trackNumber))
 }
 
 private object LyricsSpec {

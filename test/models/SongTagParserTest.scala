@@ -20,7 +20,7 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
           $.title shouldReturn "Hidden Track"
           $.artistName shouldReturn "Sentenced"
           $.albumName shouldReturn "Crimson"
-          $.track shouldReturn 12
+          $.trackNumber shouldReturn 12
           $.year shouldReturn 2000
           $.bitRate shouldReturn "192"
           $.duration shouldReturn 3.seconds
@@ -64,7 +64,7 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
         $.title shouldReturn "Hidden Track"
         $.artistName shouldReturn "Ben Folds Five"
         $.albumName shouldReturn "Whatever and Ever Amen"
-        $.track shouldReturn 1 // Track is actually equal to "01/08".
+        $.trackNumber shouldReturn 1 // Track is actually equal to "01/08".
         $.year shouldReturn 1997
         $.discNumber shouldReturn None
         $.trackGain shouldReturn None

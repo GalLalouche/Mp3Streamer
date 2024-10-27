@@ -10,7 +10,7 @@ case class OptionalSong(
     title: Option[String],
     artistName: Option[String],
     albumName: Option[AlbumTitle],
-    track: Option[TrackNumber],
+    trackNumber: Option[TrackNumber],
     year: Option[Int],
     discNumber: Option[String],
     composer: Option[String],
