@@ -1,8 +1,6 @@
 package backend.scorer
 
-import backend.recon.{Album, Artist}
-import backend.recon.Reconcilable.SongExtractor
-import models.Song
+import backend.recon.{Album, Artist, Track}
 
 import scala.language.higherKinds
 
@@ -13,14 +11,14 @@ import scalaz.syntax.bind._
 private class CompositeScorer[M[_]: Bind](
     // TODO handle live/studio version differences using two different scorer: one uses album one doesn't
     // TODO Also covers, by ignoring artist? This could lead to a further linking of multiple songs to a single source thereby creating my own private MusicBrainz :\
-    songScorer: Song => OptionT[M, ModelScore],
+    songScorer: Track => OptionT[M, ModelScore],
     albumScorer: Album => OptionT[M, ModelScore],
     artistScorer: Artist => OptionT[M, ModelScore],
 ) {
-  def apply(s: Song): M[FullInfoScore] = for {
-    songScore <- songScorer(s).run
-    albumScore <- albumScorer(s.release).run
-    artistScore <- artistScorer(s.artist).run
+  def apply(t: Track): M[FullInfoScore] = for {
+    songScore <- songScorer(t).run
+    albumScore <- albumScorer(t.album).run
+    artistScore <- artistScorer(t.artist).run
   } yield {
     def makeScored(source: ScoreSource)(score: ModelScore) = FullInfoScore.Scored(
       score,

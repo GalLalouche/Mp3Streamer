@@ -2,6 +2,7 @@ package mains.random_folder
 
 import javax.inject.Inject
 
+import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{CachedModelScorer, ModelScore}
 import models.MusicFinder
 
@@ -20,7 +21,7 @@ private class ScoreSummarizer @Inject() (
     val allScores =
       mf.getSongFilesInDir(outputDir)
         .view
-        .map(mf.parseSong)
+        .map(mf.parseSong(_).track)
         .flatMap(scorer.aggregateScore(_).toModelScore)
         .frequencies
     ModelScore.values.foreach(score =>

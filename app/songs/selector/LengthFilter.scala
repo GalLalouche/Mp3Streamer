@@ -24,7 +24,7 @@ private class LengthFilter(
   }
 
   // If a specific song has been explicitly scored, it overrides the length requirements.
-  private def hasExplicitSongScore(song: Song): Boolean = scorer.fullInfo(song) match {
+  private def hasExplicitSongScore(song: Song): Boolean = scorer.fullInfo(song.track) match {
     case FullInfoScore.Default => false
     case FullInfoScore.Scored(_, source, _, _, _) => source == ScoreSource.Song
   }

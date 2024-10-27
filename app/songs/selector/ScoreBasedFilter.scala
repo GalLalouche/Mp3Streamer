@@ -2,6 +2,7 @@ package songs.selector
 
 import javax.inject.Inject
 
+import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{CachedModelScorer, ScoreBasedProbability}
 import backend.scorer.FullInfoScore.Scored
 import models.Song
@@ -18,7 +19,7 @@ private class ScoreBasedFilter @Inject() (
 ) extends Filter[Song] {
   override def passes(song: Song): Boolean = {
     val percentage = scoreBasedProbability(song)
-    val fullInfoScore = cachedModelScorer.fullInfo(song)
+    val fullInfoScore = cachedModelScorer.fullInfo(song.track)
     val score = fullInfoScore.toOptionalModelScore
     val source = fullInfoScore.safeCast[Scored].map(_.source).getOrElse("N/A")
     val shortSongString = s"${song.artistName} - ${song.title} (${score.entryName}, $source)"

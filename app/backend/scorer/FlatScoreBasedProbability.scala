@@ -2,6 +2,7 @@ package backend.scorer
 
 import javax.inject.Singleton
 
+import backend.recon.Reconcilable.SongExtractor
 import models.Song
 
 import common.Percentage
@@ -59,7 +60,8 @@ import common.rich.primitives.RichDouble.richDouble
     assertIncreasedProbability(ModelScore.Amazing)
     $
   }
-  def apply(s: Song): Percentage = scorer.aggregateScore(s).toModelScore.fold(defaultScore)(apply)
+  def apply(s: Song): Percentage =
+    scorer.aggregateScore(s.track).toModelScore.fold(defaultScore)(apply)
   def apply(score: ModelScore): Percentage = probabilities(score)
 }
 

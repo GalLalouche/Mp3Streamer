@@ -2,22 +2,21 @@ package backend.scorer.storage
 
 import javax.inject.Inject
 
-import backend.recon.{Artist, SlickArtistReconStorage}
-import backend.recon.Reconcilable.SongExtractor
+import backend.recon.{Artist, SlickArtistReconStorage, Track}
 import backend.scorer.ModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
-import models.{AlbumTitle, Song, SongTitle}
+import models.{AlbumTitle, SongTitle}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import scalaz.ListT
 
-private[scorer] class SongScoreStorage @Inject() (
+private[scorer] class TrackScoreStorage @Inject() (
     protected override val ec: ExecutionContext,
     dbP: DbProvider,
     protected val artistStorage: SlickArtistReconStorage,
-) extends SlickStorageTemplateFromConf[Song, ModelScore](ec, dbP)
-    with StorageScorer[Song] {
+) extends SlickStorageTemplateFromConf[Track, ModelScore](ec, dbP)
+    with StorageScorer[Track] {
   import profile.api._
 
   private val mappers = new JdbcMappers()
@@ -40,10 +39,10 @@ private[scorer] class SongScoreStorage @Inject() (
   }
   protected override type EntityTable = Rows
   protected override val tableQuery = TableQuery[EntityTable]
-  protected override def toEntity(k: Song, v: ModelScore) =
+  protected override def toEntity(k: Track, v: ModelScore) =
     (k.artist.normalized, k.albumName.toLowerCase, k.title.toLowerCase, v)
   protected override def extractValue(e: (Artist, AlbumTitle, SongTitle, ModelScore)) = e._4
-  protected override def keyFilter(k: Song)(e: Rows) =
+  protected override def keyFilter(k: Track)(e: Rows) =
     e.artist === k.artist.normalized &&
       e.song === k.title.toLowerCase &&
       e.album === k.albumName.toLowerCase

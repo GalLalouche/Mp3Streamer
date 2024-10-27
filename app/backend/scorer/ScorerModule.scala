@@ -1,16 +1,16 @@
 package backend.scorer
 
-import backend.recon.{Album, Artist}
-import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, CompositeStorageScorer, SongScoreStorage, StorageScorer}
+import backend.recon.{Album, Artist, Track}
+import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, CompositeStorageScorer, StorageScorer, TrackScoreStorage}
 import com.google.inject.Provides
-import models.{MusicFinder, Song}
+import models.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
 
 object ScorerModule extends ScalaModule {
   override def configure(): Unit = {
     bind[StorageScorer[Artist]].to[ArtistScoreStorage]
     bind[StorageScorer[Album]].to[AlbumScoreStorage]
-    bind[StorageScorer[Song]].to[SongScoreStorage]
+    bind[StorageScorer[Track]].to[TrackScoreStorage]
     bind[FullInfoModelScorer].to[CompositeStorageScorer]
     bind[ScoreBasedProbability].to[FlatScoreBasedProbability]
     bind[CachedModelScorer].to[CachedModelScorerState]

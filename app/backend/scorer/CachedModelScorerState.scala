@@ -2,9 +2,8 @@ package backend.scorer
 
 import javax.inject.{Inject, Singleton}
 
-import backend.recon.{Album, Artist}
+import backend.recon.{Album, Artist, Track}
 import com.google.inject.Provider
-import models.Song
 
 import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
 import common.io.FileRef
@@ -18,7 +17,7 @@ import common.io.FileRef
 
   override def explicitScore(a: Artist) = updatable.current.explicitScore(a)
   override def explicitScore(a: Album) = updatable.current.explicitScore(a)
-  override def explicitScore(s: Song) = updatable.current.explicitScore(s)
+  override def explicitScore(s: Track) = updatable.current.explicitScore(s)
   override def aggregateScore(f: FileRef) = updatable.current.aggregateScore(f)
-  override def fullInfo(s: Song) = updatable.current.fullInfo(s)
+  override def fullInfo(s: Track) = updatable.current.fullInfo(s)
 }

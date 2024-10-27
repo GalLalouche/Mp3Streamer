@@ -2,7 +2,8 @@ package backend.scorer
 
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, ArtistReconStorage, StoredReconResult}
-import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, SongScoreStorage}
+import backend.recon.Reconcilable.SongExtractor
+import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest, Succeeded}
@@ -34,7 +35,7 @@ class ScorerFormatterTest
   private val artists = injector.instance[ArtistReconStorage]
   private val artistScores = injector.instance[ArtistScoreStorage]
   private val albumScores = injector.instance[AlbumScoreStorage]
-  private val songScores = injector.instance[SongScoreStorage]
+  private val songScores = injector.instance[TrackScoreStorage]
 
   // TODO extract these to a common method, accepting a bunch of tables
   protected override def beforeEach() =
@@ -49,7 +50,7 @@ class ScorerFormatterTest
     }
     "based on song" in {
       artists.store(artist, StoredReconResult.NoRecon) >>
-        songScores.store(song, ModelScore.Crappy) >>
+        songScores.store(song.track, ModelScore.Crappy) >>
         $.getScore(path) shouldEventuallyReturn Json.obj(
           "score" -> "Crappy",
           "source" -> "Song",
@@ -96,7 +97,7 @@ class ScorerFormatterTest
     }
     "for song overrides" in {
       artists.store(artist, StoredReconResult.NoRecon) >>
-        songScores.store(song, ModelScore.Meh) >>
+        songScores.store(song.track, ModelScore.Meh) >>
         $.updateSongScore(path, "Good") >>
         $.getScore(path) shouldEventuallyReturn Json.obj(
           "score" -> "Good",

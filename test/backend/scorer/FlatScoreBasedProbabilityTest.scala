@@ -1,6 +1,7 @@
 package backend.scorer
 
-import backend.recon.{Album, Artist}
+import backend.recon.{Album, Artist, Track}
+import backend.recon.Reconcilable.SongExtractor
 import models.{FakeModelFactory, Song}
 import org.scalatest.WordSpec
 import org.scalatest.mockito.MockitoSugar
@@ -32,15 +33,16 @@ class FlatScoreBasedProbabilityTest extends WordSpec with AuxSpecs with MockitoS
         val random = new Random
         def randomScore = ModelScore.random(random)
         val modelFactory = new FakeModelFactory
-        val songs = Vector.fill(20000)(modelFactory.song())
+        val songs = Vector.tabulate(20000)(i => modelFactory.song(title = i.toString))
+        val tracks = songs.mapBy(_.track)
         val songScores = songs.view.map(_.file: FileRef).map(_ -> randomScore).toMap
         object FakeModelScorer extends CachedModelScorer {
           override def explicitScore(a: Artist) = ???
           override def explicitScore(a: Album) = ???
-          override def explicitScore(s: Song) = ???
+          override def explicitScore(t: Track) = ???
           override def aggregateScore(f: FileRef) = songScores.get(f).toOptionalModelScore
-          override def aggregateScore(s: Song) = aggregateScore(s.file)
-          override def fullInfo(s: Song) = ???
+          override def aggregateScore(t: Track) = aggregateScore(tracks(t).file)
+          override def fullInfo(t: Track) = ???
         }
         val allFiles = songScores.keys.toVector
         val $ = FlatScoreBasedProbability.withoutAsserts(
