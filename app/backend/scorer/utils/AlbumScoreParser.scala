@@ -1,24 +1,23 @@
 package backend.scorer.utils
 
 import backend.recon.{Album, Artist}
-import backend.scorer.ModelScore
+ 
+import scala.util.{Failure, Success, Try}
 
-import scala.util.Try
+import common.rich.primitives.RichString._
 
-private object AlbumScoreParser {
-  private object Parser extends ParseUtils[(Album, Option[ModelScore])] {
-    private val prefix = """\**""".r
-    private val header = "ALBUM ;"
-    private val artist = ".* ;;;".r.map(_.dropRight(" ;;;".length)) ^^ Artist.apply
-    private val titleYear =
-      """.* \(\d{4}\)""".r ^^ { str =>
-        val year = str.takeRight("2000)".length).dropRight(1).toInt
-        val title = str.dropRight(" (2000)".length)
-        (title, year)
-      }
-    override val main = (prefix ~> header ~> artist) ~ titleYear ~ ("===" ~> score) ^^ {
-      case artistName ~ titleYear ~ score => Album(titleYear._1, titleYear._2, artistName) -> score
-    }
+private object AlbumScoreParser extends ScoreParserTemplate[Album] {
+  protected override val prefix = "ALBUM"
+  protected override def entity(sections: Seq[String]): Try[Album] = sections.toVector match {
+    case Vector(artist, titleYear) =>
+      if (titleYear.matches(AlbumPattern)) {
+        val year = titleYear.takeRight("2000)".length).dropRight(1).toInt
+        val title = titleYear.dropRight(" (2000)".length)
+        Success(Album(title, year, Artist(artist)))
+      } else
+        Failure(new Exception(s"Invalid album: '$titleYear'"))
+    case _ => Failure(new Exception(s"Invalid entry: '$sections'"))
   }
-  def apply(line: String): Try[(Album, Option[ModelScore])] = Parser.toTry(line)
+
+  private val AlbumPattern = """.* \(\d{4}\)""".r.pattern
 }

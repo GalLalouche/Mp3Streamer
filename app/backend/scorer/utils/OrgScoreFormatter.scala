@@ -5,8 +5,11 @@ import backend.scorer.ModelScore
 import backend.scorer.ModelScore._
 
 private object OrgScoreFormatter {
+  val PrefixSeparator = ";"
+  val SectionSeparator = ";;;"
+  val ScoreSeparator = "==="
   def artist(artist: Artist, score: Option[ModelScore]): String =
-    s"ARTIST ; ${artist.name} === ${score.orDefaultString}"
+    s"ARTIST $PrefixSeparator ${artist.name} $ScoreSeparator ${score.orDefaultString}"
   def album(album: Album, score: Option[ModelScore]): String =
-    s"ALBUM ; ${album.artistName} ;;;  ${album.title} (${album.year}) === ${score.orDefaultString}"
+    s"ALBUM $PrefixSeparator ${album.artistName} $SectionSeparator  ${album.title} (${album.year}) $ScoreSeparator ${score.orDefaultString}"
 }

@@ -1,18 +1,13 @@
 package backend.scorer.utils
 
 import backend.recon.Artist
-import backend.scorer.ModelScore
 
-import scala.util.Try
+import scala.util.{Failure, Success}
 
-private object ArtistScoreParser {
-  private object Parser extends ParseUtils[(Artist, Option[ModelScore])] {
-    private val prefix = """\**""".r
-    private val header = "ARTIST ;"
-    private val artistName = ".* ===".r.map(_.dropRight(4)) ^^ Artist.apply
-    override val main = (prefix ~> header ~> artistName) ~ score ^^ { case name ~ score =>
-      (name, score)
-    }
+private object ArtistScoreParser extends ScoreParserTemplate[Artist] {
+  protected override val prefix = "ARTIST"
+  protected override def entity(sections: Seq[String]) = sections.toVector match {
+    case Vector(a) => Success(Artist(a))
+    case _ => Failure(new Exception(s"Invalid entry: '$sections'"))
   }
-  def apply(line: String): Try[(Artist, Option[ModelScore])] = Parser.toTry(line)
 }

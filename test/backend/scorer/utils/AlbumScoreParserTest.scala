@@ -12,7 +12,7 @@ class AlbumScoreParserTest extends FreeSpec with AuxSpecs {
     Album("A Night at the Opera", 2002, Artist("Blind Guardian")) -> Option(ModelScore.Amazing)
   "Parse album" in {
     AlbumScoreParser(
-      "** ALBUM ; Blind Guardian ;;;  A Night at the Opera (2002) === A",
+      "** ALBUM ; Blind Guardian ;;; A Night at the Opera (2002) === A",
     ).get shouldReturn albumAndScore
   }
   "Bijective" in {
