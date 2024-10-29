@@ -4,6 +4,7 @@ import javax.inject.Inject
 
 import backend.FutureOption
 import backend.external.Host
+import backend.external.expansions.WikipediaAlbumFinder.SupportedLanguages
 import backend.recon.{Album, StringReconScorer}
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
@@ -11,8 +12,8 @@ import org.jsoup.nodes.Document
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.BetterFutureInstances._
+import common.rich.func.ToTransableOps.{toHoistIdOps, toUnrunOps}
 import common.rich.func.ToTraverseMonadPlusOps._
-import scalaz.OptionT
 import scalaz.std.vector.vectorInstance
 
 import common.RichJsoup._
@@ -43,27 +44,32 @@ private class WikipediaAlbumFinder @Inject() (
       it.downloadDocument(url)
         .map(_.find("span#redirectsub").forall(_.text != "Redirect page"))
     }
-    def findAlbum(d: Document, a: Album): FutureOption[Url] = OptionT {
-      val documentLanguage = d.selectSingle("html").attr("lang") match {
-        case "en" => "en"
-        case "he" => "he"
-        case _ => throw new AssertionError("Unsupported document language")
-      }
+    def findAlbum(d: Document, a: Album): FutureOption[Url] = {
       def score(linkName: String): Double = StringReconScorer(a.title, linkName)
-      d.selectIterator("a")
-        .filter(e => score(e.text) > 0.95)
-        .map(_.href)
-        .filter(_.nonEmpty)
-        // Remove external links, see https://stackoverflow.com/q/4071117/736508
-        .filterNot(_ contains "//")
-        .filterNot(_ contains "redlink=1")
-        .filterNot(_ contains "File:")
-        .map(s"https://$documentLanguage.wikipedia.org" + _ |> Url.parse)
-        .|>(_.toVector.ensuring(_.forall(_.isValid)))
-        .filterM(isNotRedirected(documentLanguage))
-        .map(_.headOption)
+      val lang = d.selectSingle("html").attr("lang")
+      for {
+        documentLanguage <- lang.optFilter(SupportedLanguages).hoistId
+        res <- d
+          .selectIterator("a")
+          .filter(e => score(e.text) > 0.95)
+          .map(_.href)
+          .filter(_.nonEmpty)
+          // Remove external links, see https://stackoverflow.com/q/4071117/736508
+          .filterNot(_ contains "//")
+          .filterNot(_ contains "redlink=1")
+          .filterNot(_ contains "File:")
+          .map(s"https://$documentLanguage.wikipedia.org" + _ |> Url.parse)
+          .|>(_.toVector.ensuring(_.forall(_.isValid)))
+          .filterM(isNotRedirected(documentLanguage))
+          .map(_.headOption)
+          .unrun
+      } yield res
     }
   }
 
   override def apply = sameHostExpanderHelper(documentToAlbumParser)
+}
+
+private object WikipediaAlbumFinder {
+  private val SupportedLanguages = Set("en", "he")
 }
