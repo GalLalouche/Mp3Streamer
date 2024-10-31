@@ -10,6 +10,7 @@ import play.api.libs.json.{Json, JsValue}
 import common.rich.func.ToMoreFoldableOps._
 import scalaz.std.option.optionInstance
 
+import common.io.JsonableSaver.Encoding
 import common.json.Jsonable
 import common.json.ToJsonableOps._
 import common.rich.RichT._
@@ -22,7 +23,7 @@ class JsonableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
   protected def jsonFileName[T: Manifest]: String =
     s"${manifest.runtimeClass.getSimpleName.removeAll(JsonableSaver.TrailingSlashes)}s.json"
   private def save[T: Manifest](js: JsValue): Unit =
-    workingDir.addFile(jsonFileName).write(js.toString)
+    workingDir.addFile(jsonFileName).write(js.toString.getBytes(Encoding))
 
   /**
    * All files of the same type will be saved in the same file. Last save overwrites previous save.
@@ -47,7 +48,7 @@ class JsonableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
     saveArray(dataAppender(loadArray))
 
   private def load[T: Manifest]: Option[JsValue] =
-    workingDir.getFile(jsonFileName).map(_.readAll |> Json.parse)
+    workingDir.getFile(jsonFileName).map(_.bytes).map(new String(_, Encoding) |> Json.parse)
   /** Loads the previously saved entries, or returns an empty list. */
   def loadArray[T: Jsonable: Manifest]: Seq[T] = load.mapHeadOrElse(_.parse[Seq[T]], Nil)
   def loadObjectOpt[T: Jsonable: Manifest]: Option[T] = load.map(_.parse[T])
@@ -62,4 +63,5 @@ class JsonableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
 
 private object JsonableSaver {
   private val TrailingSlashes = Pattern.compile("""\$""")
+  private val Encoding = "UTF-8"
 }
