@@ -1956,7 +1956,7 @@
       this._setOption("fullScreen", false)
     },
     _html_initMedia: function() {
-      this.htmlElement.media.src = this.status.src
+      this.htmlElement.media.src = this.status.offlineUrl || this.status.src
 
       if (this.options.preload !== 'none') {
         this._html_load(); // See function for comments
@@ -1969,7 +1969,7 @@
       $.each(this.formats, function(priority, format) {
         if (self.html.support[format] && song[format]) {
           self.status.src = song[format]
-          self.status.offline_url = song.offline_url
+          self.status.offlineUrl = song.offlineUrl
           self.status.format[format] = true
           self.status.formatType = format
           return false
@@ -2000,7 +2000,7 @@
         if (this.htmlElement.media.id === this.internal.video.id && !this.status.nativeVideoControls) {
           this.internal.video.jq.css({'width': '0px', 'height': '0px'})
         }
-        this.htmlElement.media.offline_url = undefined
+        this.htmlElement.media.offlineUrl = undefined
         this.htmlElement.media.pause()
       }
     },
@@ -2026,8 +2026,8 @@
 
       // Can happen when the blob was downloaded, but the song has not changed, e.g.,
       // pausing and then playing.
-      if (!this.htmlElement.media.src.startsWith("blob") && self.htmlElement.media.offline_url)
-        this.htmlElement.media.src = self.htmlElement.media.offline_url
+      if (!this.htmlElement.media.src.startsWith("blob") && self.htmlElement.media.offlineUrl)
+        this.htmlElement.media.src = self.htmlElement.media.offlineUrl
       this.htmlElement.media.play(); // Before currentTime attempt otherwise Firefox 4 Beta never loads.
 
       if (!isNaN(time)) {

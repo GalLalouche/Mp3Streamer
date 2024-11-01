@@ -57,7 +57,7 @@ $(function () {
   }
 
   function setState(state: PlaylistJson): void {
-    state.songs.forEach(song => song.offline_url = undefined)
+    state.songs.forEach(song => song.offlineUrl = undefined)
     gplayer.stop()
     gplaylist.setPlaylist(state.songs, false)
     gplaylist.select(state.currentIndex)

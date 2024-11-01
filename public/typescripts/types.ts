@@ -27,7 +27,11 @@ export interface Song {
   readonly mp3?: string
   readonly flac?: string
 
-  offline_url?: string
+  offlineUrl?: string
+}
+
+export function songPath(song: Song): string {
+  return song.mp3 ? song.mp3 : song.flac!
 }
 
 export type AlbumType = 'Album' | 'Live' | 'EP'

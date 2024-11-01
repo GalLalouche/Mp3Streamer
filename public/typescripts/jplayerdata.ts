@@ -1,5 +1,4 @@
 import * as NewAlbumInfo from './new_albums_info.js'
-import {FileDownloader} from './file_downloader.js'
 import {Lyrics} from './lyrics.js'
 import {External} from './external.js'
 import {getDebugAlbum, getDebugSong, isMuted, WAIT_DELAY} from './initialization.js'
@@ -7,6 +6,7 @@ import {Globals} from "./globals.js"
 import {gplaylist, Playlist, Song} from "./types.js"
 import {Volume} from "./volume.js"
 import {ScoreOps} from "./score.js"
+import {Local} from "./local.js"
 
 declare class JPlayerPlaylist extends Playlist {
   add(song: Song, playNow: boolean): void
@@ -33,7 +33,6 @@ interface PlaylistHacks {
 }
 
 $(function () {
-  const fileDownloader = new FileDownloader()
   const randomSongUrl = "data/randomSong"
   const JPLAYER_ID = "#jquery_jplayer_1"
   const playlist = new JPlayerPlaylist({
@@ -68,18 +67,11 @@ $(function () {
     const currentPlayingSong = playlist.currentPlayingSong()
     const media = getMedia()
     const songInfo = `${currentPlayingSong.artistName} - ${currentPlayingSong.title}`
-    // TODO extract/document
-    if (!currentPlayingSong.offline_url) {
-      const offline_promise = fileDownloader.download(media.src)
-      offline_promise.then(blob => {
-        console.log(`Blob for ${songInfo} downloaded`)
-        const offline_url = URL.createObjectURL(blob)
-        currentPlayingSong.offline_url = offline_url
-        if (currentPlayingSong.file === playlist.currentPlayingSong().file && !media.offline_url)
-          media.offline_url = offline_url
-      })
-    } else if (!media.offline_url)
-      media.offline_url = currentPlayingSong.offline_url
+    Local.setOfflineUrl(currentPlayingSong).then(function () {
+      assert(currentPlayingSong.offlineUrl !== undefined)
+      if (currentPlayingSong.file === playlist.currentPlayingSong().file && media && media.offlineUrl === undefined)
+        media.offlineUrl = currentPlayingSong.offlineUrl
+    })
     $(".jp-currently-playing").html(songInfo)
     document.title = songInfo
     $('#favicon').remove()

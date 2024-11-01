@@ -3,6 +3,10 @@ export const isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|Bla
 
 export function isMuted(): boolean {return window.location.pathname === "/mute"}
 
+export function isLocalHost(): boolean {
+  return window.location.host.toLowerCase().startsWith("localhost")
+}
+
 const EncodedPlus = encodeURIComponent("+")
 
 // Manually decode + to %2B, since otherwise it will be interpreted as a space

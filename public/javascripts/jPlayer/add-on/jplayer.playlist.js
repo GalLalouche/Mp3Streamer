@@ -387,7 +387,8 @@
       if (index < this.playlist.length) {
         this.current = index;
         this._highlight(displayIndex);
-        $(this.cssSelector.jPlayer).jPlayer("setMedia", this.playlist[this.current]);
+        return Local.maybePreLoad(this.playlist[this.current])
+            .then(s => $(this.cssSelector.jPlayer).jPlayer("setMedia", s));
       } else
         this.current = 0;
     },
@@ -397,8 +398,7 @@
       // index relates to end of array.
       if (index < this.playlist.length) {
         if (this.playlist.length) {
-          this.select(index);
-          $(this.cssSelector.jPlayer).jPlayer("play");
+          this.select(index).then(() => $(this.cssSelector.jPlayer).jPlayer("play"));
         }
       } else if (index === undefined)
         $(this.cssSelector.jPlayer).jPlayer("play");
