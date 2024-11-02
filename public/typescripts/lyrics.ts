@@ -13,11 +13,7 @@ export namespace Lyrics {
   }
 }
 
-let _helper: Helper | null
-
-function getHelper(): Helper {
-  return _helper || (_helper = new Helper())
-}
+const getHelper = lazy(() => new Helper())
 
 const HEBREW_REGEX = /[\u0590-\u05FF]/
 

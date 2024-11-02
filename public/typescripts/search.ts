@@ -10,11 +10,7 @@ export namespace Search {
   }
 }
 
-let _helper: Helper | null
-
-function getHelper(): Helper {
-  return _helper || (_helper = new Helper())
-}
+const getHelper = lazy(() => new Helper())
 
 const PLAY = "play"
 const ADD = "plus"

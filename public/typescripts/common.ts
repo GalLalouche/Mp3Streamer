@@ -13,6 +13,11 @@ function isValidUrl(urlString: string): boolean {
   return _URL_PATTERN.test(urlString)
 }
 
+function lazy<A>(ctor: () => A): () => A {
+  let obj: A | undefined = undefined
+  return () => obj || (obj = ctor())
+}
+
 // Copied from https://stackoverflow.com/a/30810322/736508
 // Comments removed for brevity.
 function copyTextToClipboard(text: string): void {

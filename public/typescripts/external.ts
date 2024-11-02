@@ -24,11 +24,7 @@ function href(target: string, name: string): string {
   return `<a target=_blank href="${target}">${name}</a>`
 }
 
-let _helper: Helper | null
-
-function getHelper(): Helper {
-  return _helper || (_helper = new Helper())
-}
+const getHelper = lazy(() => new Helper)
 
 class Helper {
   readonly externalDivs = $(".external")
