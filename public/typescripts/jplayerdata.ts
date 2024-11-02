@@ -5,7 +5,7 @@ import {getDebugAlbum, getDebugSong, isMuted, WAIT_DELAY} from './initialization
 import {Globals} from "./globals.js"
 import {gplaylist, Playlist, Song} from "./types.js"
 import {Volume} from "./volume.js"
-import {ScoreOps} from "./score.js"
+import {Score} from "./score.js"
 import {Local} from "./local.js"
 
 declare class JPlayerPlaylist extends Playlist {
@@ -83,7 +83,7 @@ $(function () {
     Lyrics.show(currentPlayingSong)
     External.show(currentPlayingSong)
     Volume.setPeak(currentPlayingSong)
-    ScoreOps.show(currentPlayingSong)
+    Score.show(currentPlayingSong)
     NewAlbumInfo.show(currentPlayingSong)
   }
   $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()

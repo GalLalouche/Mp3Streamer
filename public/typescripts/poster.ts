@@ -1,9 +1,11 @@
+import {ColorGetter} from "./color-utils.js"
+
 export const PLAYLIST_NAME_KEY = "playlist_name.js"
 
-export class Poster {
-  static rgbListeners: ((rgb: RGB) => void)[] = []
+export namespace Poster {
+  export let rgbListeners: ((rgb: RGB) => void)[] = []
   // TODO This *really* shouldn't be here, it's just that this button is near the poster :\
-  static playlistName: JQuery<HTMLElement>
+  export let playlistName: JQuery<HTMLElement>
 }
 
 $exposeGlobally!(Poster)
@@ -33,7 +35,7 @@ waitForElem("#jp_poster_0").then(p => $(p)).then(poster => {
   Poster.playlistName.val(localStorage.getItem(PLAYLIST_NAME_KEY)!)
 
   poster[0].addEventListener('load', async function () {
-    const rgb = await ColorGetter.getColorAsync(poster.attr("src")!)
+    const rgb = await ColorGetter.getColor(poster.attr("src")!)
     const color = rgb.makeLighter(0.5)
     document.body.style.backgroundColor = color.toString()
     Poster.rgbListeners.forEach(l => l(color))

@@ -213,7 +213,7 @@
         listItem += ")</span>";
       }
 
-      this.mediaMetadataHtml = mediaMetadataHtml
+      this.mediaMetadataHtml = PlaylistCustomizations.mediaMetadataHtml
       // The title is given next in the HTML otherwise the float:right on the free media corrupts in IE6/7
       listItem += this.mediaMetadataHtml(media)
       appendIcon(options.removeThisClass, "&times;")
@@ -223,7 +223,7 @@
 
       const result = $(listItem);
       result.prepend(img(media.poster).addClass("playlist-item-poster"))
-      getColorAsync(media.poster, rgb => {
+      ColorGetter.getColor(media.poster, rgb => {
         result.css('background-color', rgb.makeLighter(0.1).toString())
       })
       return result;

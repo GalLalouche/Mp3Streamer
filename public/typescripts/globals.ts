@@ -1,6 +1,6 @@
-export class Globals {
-  static playlist: any = {}
-  static player: any
+export namespace Globals {
+  export let playlist: any = {}
+  export let player: any
 }
 
 $exposeGlobally!(Globals)

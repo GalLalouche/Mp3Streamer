@@ -1,6 +1,21 @@
 import {LastAlbum} from "./last.js"
 import {Album, Artist, gplaylist, Song} from "./types.js"
 
+export namespace Search {
+  export function quickSearch(): void {
+    const helper = getHelper()
+    helper.clearResults()
+    helper.searchBox.focus()
+    scan()
+  }
+}
+
+let _helper: Helper | null
+
+function getHelper(): Helper {
+  return _helper || (_helper = new Helper())
+}
+
 const PLAY = "play"
 const ADD = "plus"
 const ADD_ENTIRE_ALBUM = "plus-square"
@@ -211,16 +226,6 @@ function scanPlus() {
   scan()
 }
 
-export class Search {
-  private static helper: Helper
-
-  static quickSearch(): void {
-    this.helper.clearResults()
-    this.helper.searchBox.focus()
-    scan()
-  }
-
-  static {
-    this.helper = Helper.create()
-  }
-}
+$(() => {
+  Helper.create()
+})

@@ -2,6 +2,7 @@ import {gplayer, Song} from "./types.js"
 
 const DEFAULT_GAIN = -10.0
 
+// This isn't a namespace since it actually makes sense as an object.
 export class Volume {
   // The volume that was preset by the user. Start at 20.0, so it could increase 5-fold.
   private static volumeBaseline: number = 20.0

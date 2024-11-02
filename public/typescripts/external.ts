@@ -2,20 +2,15 @@ import {gplaylist, Song} from "./types.js"
 import {match} from 'ts-pattern'
 import {Poster} from "./poster.js"
 
-export class External {
-  private static _helper: Helper | null
-  private static get helper(): Helper {
-    return this._helper || (this._helper = new Helper())
-  }
-
-  static show(song: Song): void {
+export namespace External {
+  export function show(song: Song): void {
     const externalUrl = remotePath + song.file
-    const that = this
-    $.get(externalUrl, this.helper.showLinks(externalUrl))
+    const helper = getHelper()
+    $.get(externalUrl, helper.showLinks(externalUrl))
       .fail(function () {
-        that.helper.cleanUp()
+        helper.cleanUp()
         // FIXME A better error message
-        that.helper.externalDivs.append(span("Error occurred while fetching links"))
+        helper.externalDivs.append(span("Error occurred while fetching links"))
       })
   }
 }
@@ -27,6 +22,12 @@ const RECON_REGEX = new RegExp(`^(.*/)?${HEXA}{8}-(?:${HEXA}{4}-){3}${HEXA}{12}$
 
 function href(target: string, name: string): string {
   return `<a target=_blank href="${target}">${name}</a>`
+}
+
+let _helper: Helper | null
+
+function getHelper(): Helper {
+  return _helper || (_helper = new Helper())
 }
 
 class Helper {

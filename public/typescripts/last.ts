@@ -1,5 +1,17 @@
 // A very simple module, showing the most recent album, so it can be easily added to the playlist.
 
+export namespace LastAlbum {
+  export function reopenLastAlbumWebsocketIfNeeded(): void {
+    if (
+      last_album_websocket === undefined ||
+      last_album_websocket.readyState === last_album_websocket.CLOSED
+    )
+      openLastAlbumConnection()
+  }
+
+  export function addNextNewAlbum(): void {shouldAddNextNewAlbum = true}
+}
+
 import openConnection from "./ws_common.js"
 import {Album, gplaylist} from "./types.js"
 
@@ -17,39 +29,28 @@ function addAlbum(album: Album): void {
   $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
 }
 
-export class LastAlbum {
-  private static shouldAddNextNewAlbum: boolean = false
-  private static lastAlbumText?: string = undefined
+let shouldAddNextNewAlbum: boolean = false
+let lastAlbumText: string | undefined = undefined
 
-  private static updateAlbum(album: Album): void {
-    const text = albumText(album)
-    if (text !== this.lastAlbumText && this.shouldAddNextNewAlbum) {
-      addAlbum(album)
-      this.shouldAddNextNewAlbum = false
-    }
-    console.log(`Updating last album: '${text}'`)
-    const albumElement = elem("span", text)
-    write(albumElement)
-    albumElement.find(".fa-" + ADD).click(() => addAlbum(album))
-    if (albumElement.custom_overflown())
-      albumElement.custom_tooltip(text)
-    this.lastAlbumText = text
+function updateAlbum(album: Album): void {
+  const text = albumText(album)
+  if (text !== lastAlbumText && shouldAddNextNewAlbum) {
+    addAlbum(album)
+    shouldAddNextNewAlbum = false
   }
+  console.log(`Updating last album: '${text}'`)
+  const albumElement = elem("span", text)
+  write(albumElement)
+  albumElement.find(".fa-" + ADD).click(() => addAlbum(album))
+  if (albumElement.custom_overflown())
+    albumElement.custom_tooltip(text)
+  lastAlbumText = text
+}
 
-  private static last_album_websocket?: WebSocket = undefined
+let last_album_websocket: WebSocket | undefined = undefined
 
-  private static openLastAlbumConnection(): void {
-    this.last_album_websocket =
-      openConnection("last_album", msg => this.updateAlbum(JSON.parse(msg.data)))
-  }
-
-  static reopenLastAlbumWebsocketIfNeeded(): void {
-    if (this.last_album_websocket === undefined ||
-      this.last_album_websocket.readyState === this.last_album_websocket.CLOSED)
-      this.openLastAlbumConnection()
-  }
-
-  static addNextNewAlbum(): void {this.shouldAddNextNewAlbum = true}
+function openLastAlbumConnection(): void {
+  last_album_websocket = openConnection("last_album", msg => updateAlbum(JSON.parse(msg.data)))
 }
 
 $(function () {

@@ -1,5 +1,24 @@
 import {gplayer, gplaylist, Song} from "./types.js"
 
+export namespace Lyrics {
+  export function show(song: Song): void {
+    const helper = getHelper()
+    helper.clearButtons()
+    helper.autoScroll = true
+    helper.lyricsContent.html("Fetching lyrics...")
+    $.get("lyrics/" + song.file, function (l) {
+      helper.showLyrics(l)
+      helper.scrollLyrics()
+    })
+  }
+}
+
+let _helper: Helper | null
+
+function getHelper(): Helper {
+  return _helper || (_helper = new Helper())
+}
+
 const HEBREW_REGEX = /[\u0590-\u05FF]/
 
 class Helper {
@@ -109,22 +128,5 @@ class Helper {
   clearButtons(): void {
     this.lyricsUrlBox.val("")
     this.lyricsUrlBox.trigger("keyup")
-  }
-}
-
-export class Lyrics {
-  private static _helper: Helper | null
-  private static get helper(): Helper {
-    return this._helper || (this._helper = new Helper())
-  }
-  static show(song: Song): void {
-    this.helper.clearButtons()
-    this.helper.autoScroll = true
-    this.helper.lyricsContent.html("Fetching lyrics...")
-    const that = this
-    $.get("lyrics/" + song.file, function (l) {
-      that.helper.showLyrics(l)
-      that.helper.scrollLyrics()
-    })
   }
 }
