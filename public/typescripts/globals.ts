@@ -3,4 +3,4 @@ export class Globals {
   static player: any
 }
 
-(window as any).Globals = Globals
+$exposeGlobally!(Globals)

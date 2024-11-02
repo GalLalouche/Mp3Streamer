@@ -18,7 +18,11 @@
     "sourceMap": true,
     "sourceRoot": "/ts",
 
-    "target": "es2020"
+    "target": "es2020",
+
+    "plugins": [
+      { "transform": "ts-macros" }
+    ]
   },
   "exclude": [
     "target"

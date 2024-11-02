@@ -23,4 +23,4 @@ export namespace Local {
     return song.offlineUrl
   }
 }
-(window as any).Local = Local
+$exposeGlobally!(Local)

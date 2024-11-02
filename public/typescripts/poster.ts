@@ -6,7 +6,7 @@ export class Poster {
   static playlistName: JQuery<HTMLElement>
 }
 
-(window as any).Poster = Poster
+$exposeGlobally!(Poster)
 
 waitForElem("#jp_poster_0").then(p => $(p)).then(poster => {
   function buttonAux(id: string, text: string): JQuery<HTMLElement> {

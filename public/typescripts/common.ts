@@ -223,6 +223,14 @@ async function waitForElem(selector: string): Promise<Element> {
   })
 }
 
+function $exposeGlobally(obj: any): void {
+  (window as any).obj = obj
+}
+
+function $exposeGloballyExplicit(name: string, obj: any): void {
+  (window as any)[name] = obj
+}
+
 // Type checkers
 function isString(e: any): e is string {
   return typeof e == "string"

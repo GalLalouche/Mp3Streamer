@@ -54,6 +54,6 @@ export class LastAlbum {
 
 $(function () {
   write(span("Fetching last album..."))
-  LastAlbum.reopenLastAlbumWebsocketIfNeeded();
-  (window as any).LastAlbum = LastAlbum
+  LastAlbum.reopenLastAlbumWebsocketIfNeeded()
+  $exposeGlobally!(LastAlbum)
 })

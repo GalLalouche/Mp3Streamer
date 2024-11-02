@@ -136,8 +136,8 @@ function makePlaylist(): Playlist {
   return result
 }
 
-export const gplaylist: Playlist = makePlaylist();
-(window as any).gplaylist = gplaylist
+export const gplaylist: Playlist = makePlaylist()
+$exposeGlobally!(gplaylist)
 
 export const gplayer = new class extends Player {
   private player(): JPlayerElement {return $("#jquery_jplayer_1") as unknown as JPlayerElement}
@@ -161,5 +161,5 @@ export const gplayer = new class extends Player {
     this.player().jPlayer("volume", v / 100.0)
   }
   override skip(seconds: number): void {this.player().jPlayer("play", seconds)}
-};
-(window as any).gplayer = gplayer
+}
+$exposeGlobally!(gplayer)

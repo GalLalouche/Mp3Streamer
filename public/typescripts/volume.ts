@@ -29,4 +29,4 @@ export class Volume {
   }
 }
 
-(window as any).Volume = Volume
+$exposeGlobally!(Volume)

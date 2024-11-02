@@ -23,5 +23,3 @@ export class FileDownloader {
     return blob
   }
 }
-
-(window as any).FileDownloader = FileDownloader

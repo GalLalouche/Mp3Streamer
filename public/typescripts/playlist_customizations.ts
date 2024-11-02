@@ -92,4 +92,4 @@ function mediaMetadataHtml(this: { options: any }, song: Song): string {
   )
 }
 
-(window as any).mediaMetadataHtml = mediaMetadataHtml
+$exposeGlobally!(mediaMetadataHtml)

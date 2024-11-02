@@ -38,5 +38,5 @@ class ColorGetter {
   }
 }
 
-(window as any).ColorGetter = ColorGetter;
-(window as any).getColorAsync = ColorGetter.getColorCallback.bind(ColorGetter)
+$exposeGlobally!(ColorGetter)
+$exposeGloballyExplicit!("getColorAsync", ColorGetter.getColorCallback.bind(ColorGetter))
