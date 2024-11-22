@@ -18,6 +18,8 @@ QuickJava.java
 RUNNING_PID
 dist
 jPlayer
+!jPlayer/add-on/jplayer.playlist.js
+!jPlayer/jquery.jplayer.js
 logs
 project/project
 project/target
