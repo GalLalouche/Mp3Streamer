@@ -171,7 +171,7 @@ class Helper {
   }
 
   static create(): Helper {
-    const result = new Helper()
+    const result = getHelper()
     result.updateTimeOfLastInput()
     // Blur search box after enough time has passed and it wasn't updated. By blurring the box,
     // keyboard shortcuts are Re-enabled. This way, after 10 minutes of playing, you can still press
