@@ -11,8 +11,8 @@ import {Local} from "./local.js"
 declare class JPlayerPlaylist extends Playlist {
   add(song: Song, playNow: boolean): void
   protected _next(): void
-  play(index: number): void
-  select(index: number): void
+  play(index: number): Promise<void>
+  select(index: number): Promise<void>
   prev(): void
   currentIndex(): number
   songs(): Song[]

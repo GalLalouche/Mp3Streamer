@@ -88,9 +88,9 @@ interface JPlayerElement {
 
 
 export abstract class Playlist {
-  clear(instant: boolean): void {this.setPlaylist([], instant)}
-  setPlaylist(playlist: Song[], instant: boolean): void {
-    this.clear(instant)
+  async clear(instant: boolean): Promise<void> {return this.setPlaylist([], instant)}
+  async setPlaylist(playlist: Song[], instant: boolean): Promise<void> {
+    await this.clear(instant)
     playlist.forEach(s => console.log(s))
     const that = this
     playlist.forEach(s => that.add(s, false))
@@ -102,8 +102,8 @@ export abstract class Playlist {
     for (let i = 0; i < count; i++)
       this._next()
   }
-  abstract play(index: number): void
-  abstract select(index: number): void
+  abstract play(index: number): Promise<void>
+  abstract select(index: number): Promise<void>
   abstract prev(): void
   abstract currentIndex(): number
   currentPlayingSong(): Song {return this.songs()[this.currentIndex()]}
@@ -125,12 +125,12 @@ function makePlaylist(): Playlist {
     override add(song: Song, playNow: boolean): void {pl().add(song, playNow)}
     override _next(): void {return pl().next()}
     override prev(): void {return pl().previous()}
-    override clear(): void {
+    override async clear(): Promise<void> {
       const instant = true
-      pl().setPlaylist([], instant)
+      return pl().setPlaylist([], instant)
     }
-    override play(index: number): void { pl().play(index)}
-    override select(index: number): void {return pl().select(index)}
+    override play(index: number): Promise<void> { return pl().play(index)}
+    override select(index: number): Promise<void> {return pl().select(index)}
   }
   $(function (): void {pl().getDisplayedIndex = result.getDisplayedIndex})
   return result

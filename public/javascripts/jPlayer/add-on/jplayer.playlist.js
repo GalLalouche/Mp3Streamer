@@ -134,9 +134,9 @@
       } else {
         this._refresh(function() {
           if (self.options.playlistOptions.autoPlay)
-            self.play(self.current)
+            return self.play(self.current)
           else
-            self.select(self.current)
+            return self.select(self.current)
         });
       }
     },
@@ -306,9 +306,9 @@
                 + this.playlist[index].artistName + "</span>" : ""));
       }
     },
-    setPlaylist: function(playlist, instant) {
+    setPlaylist: async function(playlist, instant) {
       this._initPlaylist(playlist);
-      this._init(instant);
+      await this._init(instant);
     },
     add: function(media, playNow) {
       const that = this
@@ -336,7 +336,7 @@
       else if (this.playlist.length === 1)
         this.select(0);
     },
-    remove: function(index, onEnd) {
+    remove: async function(index, onEnd) {
       const self = this
 
       if (index === undefined) {
@@ -389,8 +389,10 @@
         this._highlight(displayIndex);
         return Local.maybePreLoad(this.playlist[this.current])
             .then(s => $(this.cssSelector.jPlayer).jPlayer("setMedia", s));
-      } else
+      } else {
         this.current = 0;
+        return new Promise(f => f())
+      }
     },
     play: function(index) {
       if (index < 0)
@@ -398,10 +400,12 @@
       // index relates to end of array.
       if (index < this.playlist.length) {
         if (this.playlist.length) {
-          this.select(index).then(() => $(this.cssSelector.jPlayer).jPlayer("play"));
+          return this.select(index).then(() => $(this.cssSelector.jPlayer).jPlayer("play"));
         }
-      } else if (index === undefined)
+      } else if (index === undefined) {
         $(this.cssSelector.jPlayer).jPlayer("play");
+        return new Promise(f => f())
+      }
     },
     pause: function() {
       $(this.cssSelector.jPlayer).jPlayer("pause");

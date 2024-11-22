@@ -27,8 +27,8 @@ $(function () {
     for (const id of ids) {
       $dialog.append($('<button>', {
         text: id,
-        click: () => {
-          loadPlaylist(id)
+        click: async () => {
+          await loadPlaylist(id)
           $dialog.dialog("close")
         },
       })).appendBr()
@@ -39,9 +39,9 @@ $(function () {
     $dialog.dialog("open")
   }
 
-  function loadPlaylist(id: string): void {
-    $.get("playlist/" + id, function (playlist: PlaylistJson) {
-      setState(playlist)
+  async function loadPlaylist(id: string): Promise<void> {
+    $.get("playlist/" + id, async function (playlist: PlaylistJson) {
+      await setState(playlist)
     })
   }
 
@@ -56,11 +56,11 @@ $(function () {
     )
   }
 
-  function setState(state: PlaylistJson): void {
+  async function setState(state: PlaylistJson): Promise<void> {
     state.songs.forEach(song => song.offlineUrl = undefined)
     gplayer.stop()
-    gplaylist.setPlaylist(state.songs, false)
-    gplaylist.select(state.currentIndex)
+    await gplaylist.setPlaylist(state.songs, false)
+    await gplaylist.select(state.currentIndex)
     gplayer.skip(state.duration)
     Volume.setManualVolume(state.volume)
     // gplayer.playCurrentSong()
@@ -88,7 +88,7 @@ $(function () {
     saveBackup()
     $.toast("Backup successfully created")
   })
-  listenToClick("load_backup", function () {
+  listenToClick("load_backup", async function () {
     const item = localStorage.getItem(backupKey)
     if (!item) {
       $.toast("No backup to load!")
@@ -99,7 +99,7 @@ $(function () {
       console.log("Won't load empty backup")
       return
     }
-    setState(state)
+    await setState(state)
     Volume.setManualVolume(state.volume)
   })
 
