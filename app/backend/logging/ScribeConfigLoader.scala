@@ -5,7 +5,7 @@ import java.util.{Collections, Properties}
 import better.files.File
 import com.typesafe.config.ConfigFactory
 
-import scala.jdk.CollectionConverters.{asScalaIteratorConverter, mapAsScalaMapConverter}
+import scala.jdk.CollectionConverters.{iterableAsScalaIterableConverter, mapAsScalaMapConverter}
 
 import common.io.IODirectory
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
@@ -13,8 +13,11 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
 object ScribeConfigLoader {
   def go(): Unit = {
     val resources = getClass.getClassLoader.getResources("backend/logging")
+    // When running in production mode, this will also pull up all the resources from inside the
+    // compiled JAR for some reason.
+    val dirs = Collections.list(resources).asScala.filterNot(_.getFile.contains(".jar"))
     for {
-      resourceDir <- Collections.list(resources).iterator.asScala.singleOpt.iterator
+      resourceDir <- dirs.singleOpt
       if File(resourceDir).exists
       dir = IODirectory(resourceDir.getFile)
       file <- dir.files
