@@ -9,6 +9,7 @@ import scala.util.{Failure, Success, Try}
 
 import common.io.{DirectoryRef, FileRef}
 import common.rich.RichT._
+import common.rich.collections.RichSeq._
 import common.rich.primitives.RichOption.richOption
 
 class ReconcilableFactory @Inject() (val mf: MusicFinder) {
@@ -61,11 +62,7 @@ private object ReconcilableFactory {
   private val DashRegex = """\d+ - (.*)\.[^.]+""".r
   private val DotRegex = """\d+\. (.*)\.[^.]+""".r
 
-  // TODO: Move to ScalaCommon (Composite Regex)
   private val compositeGroupMatch = Vector(DashRegex, DotRegex)
   private def capture(s: String): Option[String] =
-    // TODO Move findFirst (a => Option(b))
-    compositeGroupMatch
-      .collectFirst(Function.unlift(_.findAllIn(s).optFilter(_.matchData.nonEmpty)))
-      .map(_.group(1))
+    compositeGroupMatch.firstSome(_.findAllIn(s).optFilter(_.matchData.nonEmpty)).map(_.group(1))
 }
