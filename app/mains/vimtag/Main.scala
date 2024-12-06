@@ -44,6 +44,7 @@ object Main {
   }
   private def handleException(e: Throwable): Unit = {
     e.printStackTrace()
+    System.gc()
     StdIn.readLine()
   }
 }
