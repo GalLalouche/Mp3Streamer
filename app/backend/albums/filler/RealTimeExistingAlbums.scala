@@ -44,10 +44,14 @@ private class RealTimeExistingAlbums @Inject() (
   private def getAlbums(artistName: ArtistName): Option[Set[Album]] =
     mf.findArtistDir(artistName).map(_.dirs.map(reconcilableFactory.toAlbum(_).get).toSet)
 
-  private def fallback(artistName: ArtistName): Option[Set[Album]] =
+  private def fallback(artistName: ArtistName): Option[Set[Album]] = timed(
+    s"Cannot find directory for <$artistName>, falling back to manual album search",
+    scribe.warn(_),
+  ) {
     mf.albumDirs
-      .filter(mf.getSongsInDir(_).head.artistName == artistName)
+      .filter(e => mf.getSongsInDir(e).head.artistName.toLowerCase == artistName)
       .toSet
       .map((e: DirectoryRef) => reconcilableFactory.toAlbum(e).get)
       .optFilter(_.nonEmpty)
+  }
 }
