@@ -1,12 +1,16 @@
 package common.concurrency
 
-import java.util.concurrent.{Callable, Executors}
+import java.util.concurrent.{Callable, LinkedBlockingQueue, ThreadPoolExecutor, TimeUnit}
 
 import scala.concurrent.ExecutionContext
 
 private class SingleThreadedJobQueue(queueName: String) {
-  private val queue = Executors.newFixedThreadPool(
-    1,
+  private val queue = new ThreadPoolExecutor(
+    0, // corePoolSize, i.e., minimum number of threads to keep alive.
+    1, // maximumPoolSize
+    1L, // keepAliveTime
+    TimeUnit.MINUTES,
+    new LinkedBlockingQueue[Runnable](),
     DaemonThreadFactory(s"<$queueName>'s single threaded job queue"),
   )
 
