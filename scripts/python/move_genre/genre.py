@@ -9,6 +9,7 @@ class Genre(Enum):
   AOR = auto()
   ART_ROCK = auto()
   BLUES_ROCK = auto()
+  BRITPOP = auto()
   CELTIC = auto()
   CHAMBAROQUE_POP = auto()
   CIRCUS_ROCK = auto()
@@ -47,6 +48,7 @@ class Genre(Enum):
   POST_PUNK_REVIVAL = auto()
   POST_ROCK = auto()
   PROG_FUSION = auto()
+  PROG_POP = auto
   PUNK = auto()
   ROCK = auto()
   ROCK_N_ROLL = auto()
@@ -109,6 +111,8 @@ class Genre(Enum):
       return "Art Rock"
     if self == Genre.BLUES_ROCK:
       return "Blues rock"
+    if self == Genre.BRITPOP:
+      return "Britpop"
     if self == Genre.CELTIC:
       return "Celtic"
     if self == Genre.CHAMBAROQUE_POP:
@@ -183,6 +187,8 @@ class Genre(Enum):
       return "Post-Rock"
     if self == Genre.PROG_FUSION:
       return "Prog Fusion"
+    if self == Genre.PROG_POP:
+      return "Progressive Pop"
     if self == Genre.PUNK:
       return "Punk"
     if self == Genre.ROCK:

@@ -100,7 +100,6 @@ $(function () {
       return
     }
     await setState(state)
-    Volume.setManualVolume(state.volume)
   })
 
   const ONE_MINUTE = 60 * 1000
