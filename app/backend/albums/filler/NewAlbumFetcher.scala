@@ -7,20 +7,22 @@ import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import com.google.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.DurationInt
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
 import common.rich.func.ToMoreMonadErrorOps._
 import scalaz.{-\/, \/-, OptionT}
 
-import common.concurrency.DaemonFixedPool
+import common.concurrency.DaemonExecutionContext
 import common.rich.RichT._
 
 @Singleton private class NewAlbumFetcher @Inject() (
     meta: MbArtistReconciler,
     reconciler: ReconcilerCacher[Artist],
 ) {
-  private implicit val ec: ExecutionContext = DaemonFixedPool(this.simpleName, 10)
+  private implicit val ec: ExecutionContext =
+    DaemonExecutionContext(this.simpleName, n = 10, keepAlive = 1.minute)
 
   private def getReconId(artist: Artist): OptionT[Future, ReconID] = reconciler(artist)
     .mapEitherMessage {

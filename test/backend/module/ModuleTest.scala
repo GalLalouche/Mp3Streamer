@@ -5,7 +5,7 @@ import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext
 
-import common.concurrency.DaemonFixedPool
+import common.concurrency.DaemonExecutionContext
 
 class ModuleTest extends ConfigurationModuleTestSpec {
   allRequiredBindingsSatisfied("Standalone", StandaloneModule)
@@ -17,7 +17,7 @@ class ModuleTest extends ConfigurationModuleTestSpec {
       new ScalaModule {
         override def configure() =
           // Execution context is provided by Play at runtime.
-          bind[ExecutionContext].toInstance(DaemonFixedPool.single("DummyExecutionContext"))
+          bind[ExecutionContext].toInstance(DaemonExecutionContext.single("DummyExecutionContext"))
       },
     ),
   )

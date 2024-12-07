@@ -44,6 +44,7 @@ private class RealTimeExistingAlbums @Inject() (
   private def getAlbums(artistName: ArtistName): Option[Set[Album]] =
     mf.findArtistDir(artistName).map(_.dirs.map(reconcilableFactory.toAlbum(_).get).toSet)
 
+  // TODO This should use an actor, to avoid thread hogging.
   private def fallback(artistName: ArtistName): Option[Set[Album]] = timed(
     s"Cannot find directory for <$artistName>, falling back to manual album search",
     scribe.warn(_),

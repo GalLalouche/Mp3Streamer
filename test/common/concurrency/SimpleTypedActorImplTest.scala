@@ -1,12 +1,13 @@
 package common.concurrency
 
-import backend.logging.ScribeUtils
-
 import java.util.concurrent.Semaphore
+
+import backend.logging.ScribeUtils
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
+
 import common.concurrency.SimpleTypedActorImplTest.asyncAcquire
 import common.test.AsyncAuxSpecs
 
@@ -71,7 +72,7 @@ class SimpleTypedActorImplTest extends AsyncFreeSpec with OneInstancePerTest wit
       }
       val $ = SimpleTypedActor.async[String, Int](
         "MyName",
-        asyncAcquire(map, appendToSb)(DaemonFixedPool("Async test pool", 1)),
+        asyncAcquire(map, appendToSb)(DaemonExecutionContext("Async test pool", 1)),
       )
 
       // 1 is requested before 2
