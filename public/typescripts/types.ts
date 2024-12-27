@@ -91,11 +91,12 @@ export abstract class Playlist {
   async clear(instant: boolean): Promise<void> {return this.setPlaylist([], instant)}
   async setPlaylist(playlist: Song[], instant: boolean): Promise<void> {
     await this.clear(instant)
-    playlist.forEach(s => console.log(s))
     const that = this
-    playlist.forEach(s => that.add(s, false))
+    for (const s of playlist) {
+      await that.add(s, false)
+    }
   }
-  abstract add(song: Song, playNow: boolean): void
+  abstract add(song: Song, playNow: boolean): Promise<void>
   protected abstract _next(): void
   next(count?: number): void {
     count = count || 1
@@ -122,7 +123,7 @@ function makePlaylist(): Playlist {
   const result = new class extends Playlist {
     override currentIndex() {return pl().current}
     override songs() {return pl().playlist}
-    override add(song: Song, playNow: boolean): void {pl().add(song, playNow)}
+    override add(song: Song, playNow: boolean): Promise<void> {return pl().add(song, playNow)}
     override _next(): void {return pl().next()}
     override prev(): void {return pl().previous()}
     override async clear(): Promise<void> {

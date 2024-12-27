@@ -312,13 +312,14 @@
     },
     add: function(media, playNow) {
       const that = this
+      const emptyPromise = new Promise(f => f())
       if ($.isArray(media)) {
         media.forEach(x => that.add(x))
-        return;
+        return emptyPromise
       }
       if (this.playlist.some(e => e.file === media.file)) {
         console.log(`Entry ${media.file} already exists in playlist; skipping`)
-        return
+        return emptyPromise
       }
       const playlistUl = $(this.cssSelector.playlist + " ul")
       playlistUl.prepend(this._createListItem(media)).find("li:first-child").hide()
@@ -332,9 +333,11 @@
       this.playlist.push(media);
 
       if (playNow)
-        this.play(this.playlist.length - 1);
+        return this.play(this.playlist.length - 1);
       else if (this.playlist.length === 1)
-        this.select(0);
+        return this.select(0);
+      else
+        return emptyPromise
     },
     remove: async function(index, onEnd) {
       const self = this

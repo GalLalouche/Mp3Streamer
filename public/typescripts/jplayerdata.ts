@@ -9,7 +9,7 @@ import {Score} from "./score.js"
 import {Local} from "./local.js"
 
 declare class JPlayerPlaylist extends Playlist {
-  add(song: Song, playNow: boolean): void
+  add(song: Song, playNow: boolean): Promise<void>
   protected _next(): void
   play(index: number): Promise<void>
   select(index: number): Promise<void>
@@ -90,7 +90,7 @@ $(function () {
 
   function loadNextRandom(playNow: boolean): void {
     $.get(randomSongUrl, function (data) {
-      playlist.add(data, playNow)
+      return playlist.add(data, playNow)
     })
   }
 
