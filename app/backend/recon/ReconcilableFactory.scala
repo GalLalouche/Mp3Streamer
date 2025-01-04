@@ -17,7 +17,9 @@ class ReconcilableFactory @Inject() (val mf: MusicFinder) {
   def toArtist(dir: DirectoryRef): Artist = Artist(mf.dirNameToArtist(dir.name))
   // This is Try so the error could be reserved.
   def toAlbum(dir: DirectoryRef): Try[Album] =
-    if (dir.name.take(4).exists(_.isDigit))
+    if (shouldIgnore(dir))
+      Failure(new IllegalArgumentException(s"'$dir' belongs to a Classical artist"))
+    else if (dir.name.take(4).exists(_.isDigit))
       dir.name.split(" ", 2) match {
         case Array(yearStr, title) =>
           Success(
@@ -44,16 +46,14 @@ class ReconcilableFactory @Inject() (val mf: MusicFinder) {
   def songTitle(f: FileRef): Try[String] =
     ReconcilableFactory.capture(f.name).toTry(new Exception(s"$f has invalid file name"))
   private val IgnoredFolders = Vector("Classical", "Musicals")
-  def artistDirectories: Seq[S#D] = {
-    val prefixLength = {
-      val $ = mf.baseDir.path
-      $.length + (if ($.endsWith("\\") || $.endsWith("/")) 0 else 1)
-    }
-    def ignore(dir: DirectoryRef): Boolean = {
-      val genrePrefix = dir.path.drop(prefixLength)
-      IgnoredFolders.exists(genrePrefix.startsWith)
-    }
-    mf.artistDirs.filterNot(ignore)
+  def artistDirectories: Seq[S#D] = mf.artistDirs.filterNot(shouldIgnore)
+  private val prefixLength = {
+    val $ = mf.baseDir.path
+    $.length + (if ($.endsWith("\\") || $.endsWith("/")) 0 else 1)
+  }
+  private def shouldIgnore(dir: DirectoryRef): Boolean = {
+    val genrePrefix = dir.path.drop(prefixLength)
+    IgnoredFolders.exists(genrePrefix.startsWith)
   }
   def albumDirectories: Seq[S#D] = mf.albumDirs(artistDirectories)
 }
