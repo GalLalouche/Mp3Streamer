@@ -3,6 +3,7 @@ package models
 import com.google.common.collect.BiMap
 import models.MusicFinder.DirectoryName
 
+import common.ds.Types.ViewSeq
 import common.io.{DirectoryRef, FileRef, RefSystem}
 import common.rich.RichT.richT
 
@@ -38,19 +39,20 @@ trait MusicFinder { self =>
   // Some artists have invalid directory characters in their name, so their directory won't match
   // the artist name. As a stupid hack, just aggregate them below.
   protected def invalidDirectoryNames: BiMap[DirectoryName, ArtistName]
-  def albumDirs: Seq[S#D] = albumDirs(genreDirs)
-  def albumDirs(startingFrom: Seq[S#D]): Seq[S#D] = startingFrom.view
+  def albumDirs: DirView = albumDirs(genreDirs)
+  def albumDirs(startingFrom: Seq[S#D]): DirView = startingFrom.view
     .flatMap(_.deepDirs)
     // Because some albums have, e.g., cover subdirectories
     .filter(_.files.exists(f => extensions.contains(f.extension)))
-    .toVector
-  def getSongFiles: Seq[S#F] = albumDirs.par.flatMap(getSongFilesInDir).seq
+  def getSongFiles: ViewSeq[S#F] = albumDirs.flatMap(getSongFilesInDir)
   def getSongFilesInDir(d: DirectoryRef): Seq[S#F] =
     d.asInstanceOf[S#D].files.filter(f => extensions.contains(f.extension))
   def parseSong(f: FileRef): Song { type F = S#F }
-  def getSongsInDir(d: DirectoryRef): Seq[Song { type F = S#F }] =
-    getSongFilesInDir(d).map(parseSong)
-  def getOptionalSongsInDir(d: DirectoryRef): Seq[OptionalSong]
+  def getSongsInDir(d: DirectoryRef): ViewSeq[Song { type F = S#F }] =
+    getSongFilesInDir(d).view.map(parseSong)
+  def getOptionalSongsInDir(d: DirectoryRef): ViewSeq[OptionalSong]
+
+  final type DirView = ViewSeq[S#D]
 }
 
 object MusicFinder {

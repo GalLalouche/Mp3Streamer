@@ -32,6 +32,6 @@ class FakeMusicFinder(val baseDir: MemoryDir) extends MusicFinder {
     copy(s, path.foldLeft(dirToAddSongsTo)(_ addSubDir _).addFile(s.file.name))
   override def parseSong(f: FileRef): MemorySong = pathToSongs(f.path)
   override def getOptionalSongsInDir(d: DirectoryRef) =
-    d.files.map(_.path).map(pathToSongs).map(_.toOptionalSong)
+    d.files.map(_.path).map(pathToSongs).map(_.toOptionalSong).view
   protected override val invalidDirectoryNames = ImmutableBiMap.of()
 }

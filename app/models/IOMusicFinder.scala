@@ -3,6 +3,7 @@ package models
 import com.google.common.collect.BiMap
 import models.MusicFinder.DirectoryName
 
+import common.ds.Types.ViewSeq
 import common.io.{DirectoryRef, FileRef, IODirectory, IOFile, IOSystem, JsonMapFile}
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
@@ -16,8 +17,8 @@ class IOMusicFinder extends MusicFinder {
   override val extensions = Set("mp3", "flac")
   override val unsupportedExtensions = Set("ape", "wma", "mp4", "wav", "aiff", "aac", "ogg", "m4a")
   override def parseSong(f: FileRef) = IOSong.read(f.asInstanceOf[IOFile].file)
-  override def getOptionalSongsInDir(d: DirectoryRef): Seq[OptionalSong] =
-    getSongFilesInDir(d).map(SongTagParser optionalSong _.file)
+  override def getOptionalSongsInDir(d: DirectoryRef): ViewSeq[OptionalSong] =
+    getSongFilesInDir(d).view.map(SongTagParser optionalSong _.file)
   protected override lazy val invalidDirectoryNames: BiMap[DirectoryName, ArtistName] =
     JsonMapFile.readJsonMap(getClass.getResourceAsStream("directory_renames.json")).toBiMap
 }
