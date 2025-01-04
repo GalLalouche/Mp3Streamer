@@ -92,5 +92,11 @@ export function show(song: Song): void {
       )),
     )
     fieldSet.append(b)
+  }).fail(function (e: any) {
+    fieldSet.empty()
+    fieldSet.append(elem("legend", `Fetching new albums FAILED...<br/>${e.statusText}<br/>${e.responseText}`))
+    const ignoreArtistButton = button("Ignore artist")
+    ignoreArtistButton.click(() => ignoreArtist(song))
+    fieldSet.append(ignoreArtistButton)
   })
 }
