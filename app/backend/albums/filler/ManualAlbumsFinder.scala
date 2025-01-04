@@ -28,8 +28,8 @@ import common.rich.RichT.richT
   ) {
     mf.albumDirs
       .filter(e => mf.getSongsInDir(e).head.artistName.toLowerCase == artistName)
-      .toSet
       .map((e: DirectoryRef) => reconcilableFactory.toAlbum(e).get)
+      .toSet
       .optFilter(_.nonEmpty)
   }
 }
