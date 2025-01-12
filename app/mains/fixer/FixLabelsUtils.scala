@@ -25,10 +25,16 @@ private[mains] class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
 
   private def properTrackString(track: TrackNumber): String = track.padLeftZeros(2)
   @VisibleForTesting
-  def getFixedTag(f: File, fixDiscNumber: Boolean): Tag =
+  private[fixer] def getFixedTag(f: File, fixDiscNumber: Boolean): Tag =
     getFixedTag(f, fixDiscNumber, AudioFileIO.read(f))
 
-  private val BonusTrackSuffixes = Vector("bonus", "bonus track").map("(" + _ + ")")
+  private val BonusTrackSuffixes = for {
+    str <- Vector("bonus", "bonus track")
+    (s, e) <- Vector(('(', ')'), ('[', ']'), ('<', '>))
+  } yield s"$s$str$e"
+  @VisibleForTesting
+  private[fixer] def isBonusTrack(s: String): Boolean = BonusTrackSuffixes.exists(s.endsWith)
+
   // If fixDiscNumber is false, it will be removed, unless the title indicates it is a bonus track.
   def getFixedTag(f: File, fixDiscNumber: Boolean, audioFile: AudioFile): Tag = {
     val song = SongTagParser(f, audioFile)
@@ -54,7 +60,7 @@ private[mains] class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
       .foreach($.setField(FieldKey.DISC_NO, _))
 
     val lowerCasedTitle = $.getFirst(FieldKey.TITLE).toLowerCase
-    if (BonusTrackSuffixes.exists(lowerCasedTitle.endsWith)) {
+    if (isBonusTrack(lowerCasedTitle)) {
       val titleWithoutLastParens = lowerCasedTitle.dropAfterLast('(').dropRight(2)
       set(FieldKey.TITLE, titleWithoutLastParens)
       $.setField(FieldKey.DISC_NO, "Bonus")

@@ -66,4 +66,13 @@ class FixLabelsUtilsTest extends FreeSpec with AuxSpecs {
     val song = new FakeModelFactory().song(trackNumber = 2, title = "foo & the bar!?")
     $.newFileName(song, "ape") shouldReturn "02 - foo & the bar!.ape"
   }
+
+  "isBonusTrack" in {
+    // Note that since this is an internal function, it expects a lower case string.
+    $.isBonusTrack("foo (bonus)") shouldReturn true
+    $.isBonusTrack("foo (bonus track)") shouldReturn true
+    $.isBonusTrack("foo [bonus]") shouldReturn true
+    $.isBonusTrack("foo [bonus track]") shouldReturn true
+    $.isBonusTrack("foo (bunos)") shouldReturn false
+  }
 }
