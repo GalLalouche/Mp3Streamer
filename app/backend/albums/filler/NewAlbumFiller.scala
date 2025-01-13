@@ -47,7 +47,7 @@ private[albums] class NewAlbumFiller @Inject() private (
           .freshness(a)
           .getOrElseF {
             scribe.trace(s"Storing new artist <$a>")
-            storage.reset(a)
+            storage.resetToEpoch(a)
           }
           .flatMap {
             case AlwaysFresh => ignore(s"Ignoring <$a> due to configuration")

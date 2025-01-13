@@ -3,7 +3,7 @@ package backend.albums
 import java.time.Duration
 import javax.inject.Inject
 
-import backend.albums.AlbumsModel.{ArtistAlbums, ModelResult, NonIgnoredArtist}
+import backend.albums.AlbumsModel.{ArtistAlbums, ModelResult, NonIgnoredArtist, Unreconciled}
 import backend.albums.filler.NewAlbumFiller
 import backend.albums.filler.storage.FilledStorage
 import backend.mb.AlbumType
@@ -17,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.BetterFutureInstances._
 import scalaz.ListT
-import scalaz.Scalaz.{ToBindOps, ToFunctorOpsUnapply}
+import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
 
 import common.rich.RichEnumeratum.richEnumeratum
 import common.rich.RichT.richT
@@ -42,14 +42,10 @@ private class AlbumsModel @Inject() (
     storage
       .isIgnored(artist)
       .flatMap {
-        case IgnoredReconResult.Ignored => Future.successful(true)
-        case IgnoredReconResult.NotIgnored => Future.successful(false)
-        case IgnoredReconResult.Missing => storage.newArtist(artist).>|(false)
+        case IgnoredReconResult.Ignored => Future.successful(AlbumsModel.IgnoredArtist)
+        case IgnoredReconResult.NotIgnored => albumsForArtist(artist).map(NonIgnoredArtist)
+        case IgnoredReconResult.Missing => storage.remove(artist) >| Unreconciled
       }
-      .ifM(
-        Future.successful(AlbumsModel.IgnoredArtist),
-        albumsForArtist(artist).map(NonIgnoredArtist),
-      )
   }
 
   def removeArtist(name: ArtistName): Future[_] = storage.remove(Artist(name))
@@ -70,4 +66,5 @@ private object AlbumsModel {
   sealed trait ArtistAlbums
   case class NonIgnoredArtist(albums: Seq[NewAlbum]) extends ArtistAlbums
   case object IgnoredArtist extends ArtistAlbums
+  case object Unreconciled extends ArtistAlbums
 }

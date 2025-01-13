@@ -10,7 +10,7 @@ import scala.concurrent.Future
 import scalaz.OptionT
 
 private[filler] trait CachedNewAlbumStorage extends FilledStorage {
-  def reset(a: Artist): Future[Freshness]
+  def resetToEpoch(a: Artist): Future[Freshness]
   def freshness(a: Artist): OptionT[Future, Freshness]
   def unremoveAll(a: Artist): Future[Unit]
   /**

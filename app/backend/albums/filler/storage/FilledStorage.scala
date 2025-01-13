@@ -11,7 +11,6 @@ import scalaz.ListT
 private[albums] trait FilledStorage {
   def all: ListT[Future, ArtistNewAlbums]
   def forArtist(a: Artist): Future[Seq[NewAlbum]]
-  def newArtist(artist: Artist): Future[Unit]
 
   // Remove vs. Ignore: remove is only temporary (usually until the next mega fetch), ignore is forever.
   // Reasons to remove: you're not going do anything with the artist/album this time.

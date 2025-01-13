@@ -35,16 +35,11 @@ private class CachedNewAlbumStorageImpl @Inject() (
   override def unremoveAll(a: Artist) = newAlbumStorage.unremoveAll(a)
   override def storeNew(albums: Seq[NewAlbumRecon], artists: Set[Artist]) =
     newAlbumStorage.storeNew(albums).`<*ByName`(artists.traverse(lastFetchTime.update))
-  override def newArtist(a: Artist) = reset(a).void
-  override def reset(a: Artist) = lastFetchTime.reset(a)
+  override def resetToEpoch(a: Artist) = lastFetchTime.resetToEpoch(a)
   override def remove(artist: Artist) = newAlbumStorage.remove(artist)
   override def ignore(artist: Artist) = lastFetchTime.ignore(artist)
-  override def isIgnored(artist: Artist) = lastFetchTime
-    .freshness(artist)
-    .run
-    .map(
-      IgnoredReconResult from _.map(_.localDateTime.isEmpty),
-    )
+  override def isIgnored(artist: Artist) =
+    lastFetchTime.freshness(artist).run.map(IgnoredReconResult from _.map(_.localDateTime.isEmpty))
   override def unignore(artist: Artist) = lastFetchTime.unignore(artist).void
   override def remove(artist: Artist, title: AlbumTitle) = newAlbumStorage.remove(artist, title)
   override def ignore(artist: Artist, title: AlbumTitle) = newAlbumStorage.ignore(artist, title)

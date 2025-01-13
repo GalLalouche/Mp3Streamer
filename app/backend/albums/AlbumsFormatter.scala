@@ -42,9 +42,10 @@ private class AlbumsFormatter @Inject() (
   }
   def albums: Future[JsValue] = $.albums.map(_.jsonify).run.map(JsArray.apply)
 
-  def forArtist(artistName: ArtistName): Future[JsValue] = $.forArtist(artistName).map {
-    case AlbumsModel.NonIgnoredArtist(albums) => fixTitles(albums).jsonify
-    case AlbumsModel.IgnoredArtist => JsString("IGNORED")
+  def forArtist(artistName: ArtistName): Future[Option[JsValue]] = $.forArtist(artistName).map {
+    case AlbumsModel.NonIgnoredArtist(albums) => Some(fixTitles(albums).jsonify)
+    case AlbumsModel.IgnoredArtist => Some(JsString("IGNORED"))
+    case AlbumsModel.Unreconciled => None
   }
   def removeArtist(artistName: ArtistName): Future[_] = $.removeArtist(artistName)
   def ignoreArtist(artistName: ArtistName): Future[_] = $.ignoreArtist(artistName)
