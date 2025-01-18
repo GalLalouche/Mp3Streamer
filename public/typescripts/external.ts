@@ -4,7 +4,7 @@ import {Poster} from "./poster.js"
 
 export namespace External {
   export function show(song: Song): void {
-    const externalUrl = remotePath + song.file
+    const externalUrl = REMOTE_PATH + song.file
     const helper = getHelper()
     $.get(externalUrl, helper.showLinks(externalUrl))
       .fail(function () {
@@ -13,9 +13,22 @@ export namespace External {
         helper.externalDivs.append(span("Error occurred while fetching links"))
       })
   }
+
+  export async function refreshRemote(song: Song): Promise<void> {
+    const refreshDisplay = song === gplaylist.currentPlayingSong()
+    return Promise.all(
+      (["artist", "album"] as const).map(target =>
+        refreshDisplay ?
+          getHelper().refresh(target as RefreshTarget)() :
+          $.get(refreshPath("artist", song), function () {
+            console.log(`Successfully refreshed ${song.file}'s ${target} links`)
+          }),
+      ),
+    ).void()
+  }
 }
 
-const remotePath = "external/"
+const REMOTE_PATH = "external/"
 const HEXA = "[a-f0-9]"
 // E.g., d8f63b51-73e0-4f65-8bd3-bcfe6892fb0e
 const RECON_REGEX = new RegExp(`^(.*/)?${HEXA}{8}-(?:${HEXA}{4}-){3}${HEXA}{12}$`)
@@ -65,12 +78,13 @@ class Helper {
       })
     })
   }
-  refresh(target: string): () => void {
+
+  refresh(target: RefreshTarget): () => Promise<void> {
     const that = this
     return function () {
-      const songPath = gplaylist.currentPlayingSong().file
+      const song = gplaylist.currentPlayingSong()
       // TODO showLinks should only fetch the links for the target.
-      $.get(`${remotePath}refresh/${target}/${songPath}`, that.showLinks(remotePath + songPath))
+      return toPromise($.get(refreshPath(target, song), that.showLinks(REMOTE_PATH + song.file)))
     }
   }
   cleanUp() {
@@ -137,9 +151,13 @@ class Helper {
     addIfNotEmpty(this.albumReconBox)
     if (!isEmptyObject(json)) {
       const songPath = gplaylist.currentPlayingSong().file
-      postJson(remotePath + "recons/" + songPath, json, this.showLinks(remotePath + songPath))
+      postJson(REMOTE_PATH + "recons/" + songPath, json, this.showLinks(REMOTE_PATH + songPath))
     }
   }
+}
+
+function refreshPath(target: RefreshTarget, song: Song): string {
+  return `${REMOTE_PATH}refresh/${target}/${song.file}`
 }
 
 interface Links {
@@ -158,6 +176,7 @@ function isError(r: Result): r is ExternalError {return 'error' in r}
 function isLinks(r: Result): r is Links {return 'timestamp' in r}
 
 type ExternalResult = Record<string, Result>
+type RefreshTarget = "artist" | "album"
 
 interface Link {
   extensions: Record<string, string>

@@ -134,7 +134,7 @@ Array.prototype.custom_max = function () {
   return max
 }
 
-function assert(condition: boolean, message?: string) {
+function assert(condition: boolean, message?: string): asserts condition is true {
   if (condition)
     return
   message = message || "Assertion failed"
@@ -226,6 +226,18 @@ async function waitForElem(selector: string): Promise<Element> {
       subtree: true,
     })
   })
+}
+
+async function toPromise(jqxhr: JQueryXHR): Promise<void> {
+  return jqxhr.then(() => {}).catch((e => {throw e}))
+}
+
+interface Promise<T> {
+  void(): Promise<void>
+}
+
+Promise.prototype.void = async function () {
+  await this
 }
 
 function $exposeGlobally(obj: any): void {

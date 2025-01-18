@@ -70,8 +70,8 @@ $(function () {
 
   function saveBackup() {
     const state = getState()
-    if (state.songs.length === 0) {
-      console.log("Won't save empty backup")
+    if (state.songs.length <= 1) {
+      console.log("Won't save trivial backup")
       return
     }
     state.volume = Volume.getVolumeBaseline()

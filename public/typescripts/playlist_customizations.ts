@@ -1,6 +1,8 @@
 // Since jplayer.playlist.js is too freaking big, this extracts (some of) my customization.
 
 import {gplaylist, Song} from "./types.js"
+import {External} from "./external.js"
+import {Score} from "./score.js"
 
 export namespace PlaylistCustomizations {
   export function formattedMetadata(song: Song): string {
@@ -83,13 +85,49 @@ $(function () {
     }
   })
   // Move to song on click.
-  playlistElement.on("click", playlistItem, function (e) {
+  playlistElement.on("click", playlistItem, async function (e) {
     if (e.target.localName !== "span" && e.target.localName !== "img")
       return // Only listens to clicks on the text or poster image, to avoid handling misclicks near the buttons.
     const listItem = $(this)
     const clickedIndex = playlist.getDisplayedIndex(listItem.index())
     if (gplaylist.currentIndex() === clickedIndex)
       return // Clicked song is currently playing.
-    playlist.play(clickedIndex)
+    return playlist.play(clickedIndex)
+  })
+
+  $("body").append(String.raw`
+    <ul id="contextMenu" class="ui-menu" style="display:none;">
+        <li><div><span class="ui-icon ui-icon-arrow-2-n-s"></span>Score</div></li>
+        <li><div><span class="ui-icon ui-icon-refresh"></span>Refresh</div></li>
+        <style>
+        .ui-menu {
+            width: 150px;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        }
+        .ui-icon {
+          transform: scale(1.5);
+        }
+        </style>
+    </ul>
+  `)
+  const contextMenu = $("#contextMenu").menu()
+  playlistElement.on("contextmenu", playlistItem, function (e) {
+    e.preventDefault() // Prevent the default context menu
+
+    contextMenu.show().position({my: "left top", at: `left+${e.pageX} top+${e.pageY}`, of: window})
+
+    const song = playlist.songs()[playlist.getDisplayedIndex($(this).index())]
+    contextMenu.one("click", "li", async function (e) {
+      switch (e.target.textContent) {
+        case "Score":
+          return Score.popup(song)
+        case "Refresh":
+          return External.refreshRemote(song)
+      }
+    })
+
+    $(document).one("click", () => $("#contextMenu").hide())
   })
 })
