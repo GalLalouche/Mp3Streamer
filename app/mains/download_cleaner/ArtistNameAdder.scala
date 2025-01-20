@@ -19,7 +19,7 @@ private class ArtistNameAdder @Inject() (mf: IOMusicFinder) extends Cleaner {
       val song = SongTagParser.optionalSong(mf.getSongFilesInDir(dir).head.file)
       val yearOption: Option[Int] = song.year
       val artistName = song.artistName.get
-      val originalTime = FileTime.fromMillis(dir.file.lastModified)
+      val originalTime = FileTime.fromMillis(dir.dir.lastModified)
       val dirName = dir.name
       val needsArtist = dirName.toLowerCase.contains(artistName.toLowerCase).isFalse
       lazy val year = yearOption.get.toString

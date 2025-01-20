@@ -4,6 +4,7 @@ import java.net.ConnectException
 import javax.inject.Inject
 
 import backend.FutureOption
+import better.files.FileExtensions
 import com.google.inject.Guice
 import io.lemonlabs.uri.Url
 import mains.{IOUtils, MainsModule}
@@ -86,7 +87,7 @@ private[mains] class FolderFixer @Inject() private (
     val destination = OptionT(Future(artistFinder(artist).map(_.asInstanceOf[IODirectory].dir)))
     val folderImage = downloadCover(folder)
     println("fixing directory")
-    val fixedDirectory = Future(fixLabels.fix(folder.cloneDir()))
+    val fixedDirectory = Future(fixLabels.fix(cloneDir(folder)))
     moveDirectory(artist, destination, folderImage, fixedDirectory)
       .listen(foobarGain.apply)
       .filterWithMessage(fixLabels.verify, "Failed to rename some files!")
@@ -94,6 +95,15 @@ private[mains] class FolderFixer @Inject() private (
       .>>(updateServer())
       .>|(println("--Done!--"))
       .get
+  }
+
+  private def cloneDir(dir: Directory): Directory = {
+    val newName = dir.name + "_clone"
+    val newDir = dir.parent.addSubDir(newName)
+    newDir.deleteAll() // delete previous directory if it exists
+
+    better.files.File(dir.toPath).copyTo(newDir.dir.toScala, overwrite = true)
+    newDir
   }
 }
 

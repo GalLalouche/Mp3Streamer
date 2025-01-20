@@ -25,7 +25,7 @@ private class PostersFormatter @Inject() (
     val width = image.getWidth
     lazy val tuple = s"($width X $height)"
     def warnOnCompositeGenres(s: String): Unit =
-      if (genreFinder(new IODirectory(file.getParent)).isFlat.isFalse)
+      if (genreFinder(IODirectory(file.getParent)).isFlat.isFalse)
         scribe.warn(s)
     if (height < 500 || width < 500)
       warnOnCompositeGenres(s"Image $file dimensions is too small: $tuple")

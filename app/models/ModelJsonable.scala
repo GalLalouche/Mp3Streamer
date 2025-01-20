@@ -57,7 +57,7 @@ object ModelJsonable {
 
   implicit object AlbumJsonifier extends OJsonable[Album] {
     override def jsonify(a: Album) = Json.obj(
-      "dir" -> a.dir.asInstanceOf[IODirectory].path,
+      "dir" -> a.dir.path,
       "title" -> a.title,
       "artistName" -> a.artistName,
       "year" -> a.year,
@@ -65,7 +65,7 @@ object ModelJsonable {
     )
     override def parse(json: JsObject): Album =
       Album(
-        new IODirectory(json.str("dir")),
+        IODirectory(json.str("dir")),
         title = json.str("title"),
         artistName = json.str("artistName"),
         year = json.int("year"),

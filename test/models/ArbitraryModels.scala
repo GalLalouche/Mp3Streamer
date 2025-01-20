@@ -9,6 +9,7 @@ import org.scalacheck.Arbitrary.arbitrary
 import scala.concurrent.duration.Duration
 
 import common.io.{IODirectory, IOFile}
+import common.rich.path.TempDirectory
 
 object ArbitraryModels {
   private implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])
@@ -47,13 +48,15 @@ object ArbitraryModels {
     opus,
     performanceYear,
   )
-  implicit lazy val arbAlbum: Gen[Album] = for {
-    filePath <- arbitrary[String]
-    title <- arbitrary[String]
-    artistName <- arbitrary[String]
-    year <- arbitrary[Int].map(_ % 3000)
-    songs <- arbitrary[Seq[Song]]
-  } yield Album(IODirectory(new File(filePath).getAbsoluteFile), title, artistName, year, songs)
+  implicit lazy val arbAlbum: Gen[Album] = {
+    val dir = TempDirectory()
+    for {
+      title <- arbitrary[String]
+      artistName <- arbitrary[String]
+      year <- arbitrary[Int].map(_ % 3000)
+      songs <- arbitrary[Seq[Song]]
+    } yield Album(IODirectory(dir), title, artistName, year, songs)
+  }
   implicit lazy val arbArtist: Gen[Artist] = for {
     name <- arbitrary[String]
     albums <- arbitrary[Set[Album]]
