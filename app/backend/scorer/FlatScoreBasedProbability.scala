@@ -16,7 +16,7 @@ import common.rich.primitives.RichDouble.richDouble
     map: ModelScore => Double,
     defaultScore: Percentage,
     scorer: CachedModelScorer,
-    songFiles: Seq[FileRef],
+    songFiles: IndexedSeq[FileRef],
     withAsserts: Boolean,
 ) extends ScoreBasedProbability {
   {
@@ -70,7 +70,7 @@ private object FlatScoreBasedProbability {
       map: ModelScore => Double,
       defaultScore: Percentage,
       scorer: CachedModelScorer,
-      songFiles: Seq[FileRef],
+      songFiles: IndexedSeq[FileRef],
   ) = new FlatScoreBasedProbability(
     map,
     defaultScore,
@@ -83,7 +83,7 @@ private object FlatScoreBasedProbability {
       map: ModelScore => Double,
       defaultScore: Percentage,
       scorer: CachedModelScorer,
-      songFiles: Seq[FileRef],
+      songFiles: IndexedSeq[FileRef],
   ): FlatScoreBasedProbability = new FlatScoreBasedProbability(
     map,
     defaultScore,

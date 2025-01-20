@@ -34,7 +34,7 @@ object ScorerModule extends ScalaModule {
       requiredProbability,
       defaultScore,
       scorer,
-      mf.getSongFiles,
+      mf.getSongFiles.toVector,
     )
   }
 }
