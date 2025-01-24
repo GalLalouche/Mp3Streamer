@@ -116,7 +116,12 @@ $(function () {
   playlistElement.on("contextmenu", playlistItem, function (e) {
     e.preventDefault() // Prevent the default context menu
 
-    contextMenu.show().position({my: "left top", at: `left+${e.pageX} top+${e.pageY}`, of: window})
+    contextMenu.css({
+      display: 'block',
+      top: e.pageY + 5,
+      left: e.pageX + 5,
+      position: 'absolute',
+    })
 
     const song = playlist.songs()[playlist.getDisplayedIndex($(this).index())]
     contextMenu.one("click", "li", async function (e) {
@@ -125,6 +130,8 @@ $(function () {
           return Score.popup(song)
         case "Refresh":
           return External.refreshRemote(song)
+        default:
+          throw new AssertionError("Unexpected selection: " + e.target.textContent)
       }
     })
 
