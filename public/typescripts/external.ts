@@ -20,7 +20,7 @@ export namespace External {
       (["artist", "album"] as const).map(target =>
         refreshDisplay ?
           getHelper().refresh(target as RefreshTarget)() :
-          $.get(refreshPath("artist", song), function () {
+          $.get(refreshPath(target, song), function () {
             console.log(`Successfully refreshed ${song.file}'s ${target} links`)
           }),
       ),
