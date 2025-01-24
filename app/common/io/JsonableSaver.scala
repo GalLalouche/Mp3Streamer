@@ -7,9 +7,9 @@ import javax.inject.Inject
 
 import play.api.libs.json.{Json, JsValue}
 
-import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
 
+import common.rich.func.MoreSeqInstances._
 import common.rich.func.ToMoreFoldableOps._
 import scalaz.std.option.optionInstance
 
@@ -56,7 +56,7 @@ class JsonableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
   def loadArray[T: Jsonable: Manifest]: Seq[T] = load.mapHeadOrElse(_.parse[Seq[T]], Nil)
   /** Same as above, but skips errors, which are returned as the second element of the tuple. */
   def loadArrayHandleErrors[T: Jsonable: Manifest]: (Seq[T], Seq[Throwable]) = load.mapHeadOrElse(
-    _.parse[Seq[Try[T]]] |> JsonableSaver.partitionEithers(_.toEither.swap),
+    _.parse[Seq[Try[T]]].map(_.toEither.swap).partitionEithers,
     (Nil, Nil),
   )
   def loadObjectOpt[T: Jsonable: Manifest]: Option[T] = load.map(_.parse[T])
@@ -73,15 +73,4 @@ class JsonableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
 private object JsonableSaver {
   private val TrailingSlashes = Pattern.compile("""\$""")
   private val Encoding = "UTF-8"
-
-  // TODO move to ScalaCommon
-  private def partitionEithers[A, B, C](f: A => Either[B, C])(xs: Seq[A]): (Seq[B], Seq[C]) = {
-    val bs = new ArrayBuffer[B](xs.size)
-    val cs = new ArrayBuffer[C](xs.size)
-    xs.map(f).foreach {
-      case Left(b) => bs += b
-      case Right(c) => cs += c
-    }
-    (bs.toVector, cs.toVector)
-  }
 }

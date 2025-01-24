@@ -95,6 +95,7 @@ class Genre(Enum):
   SPEED_METAL = auto()
   STONER_METAL = auto()
   SYMPHONIC_BLACK_METAL = auto()
+  SYMPHONIC_DEATH_METAL = auto()
   SYMPHONIC_METAL = auto()
   TECH_THRASH = auto()
   TECHNICAL_DEATH_METAL = auto()
@@ -282,6 +283,8 @@ class Genre(Enum):
       return "Stoner Metal"
     if self == Genre.SYMPHONIC_BLACK_METAL:
       return "Symphonic Black Metal"
+    if self == Genre.SYMPHONIC_DEATH_METAL:
+      return "Symphonic Death Metal"
     if self == Genre.SYMPHONIC_METAL:
       return "Symphonic Metal"
     if self == Genre.TECH_THRASH:
