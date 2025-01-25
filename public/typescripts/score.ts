@@ -65,6 +65,9 @@ function scoreSliderDialog(song: Song, scoreResult: ScoreResult): void {
         display: block;
         margin-top: 5px;
     }
+    .ui-dialog .ui-dialog-content {
+        padding-top: 0;
+    }
     `)
   $('head').append(style)
 
@@ -86,7 +89,7 @@ function scoreSliderDialog(song: Song, scoreResult: ScoreResult): void {
 
     const label = span({
       class: 'slider-label',
-      text: `${source} score`,
+      text: `${source} (${titleFor(source, song)}) score`,
       css: {marginLeft: '10px', marginBottom: '10px'},
     })
 
@@ -114,7 +117,7 @@ function scoreSliderDialog(song: Song, scoreResult: ScoreResult): void {
     autoOpen: true,
     width: 400,
     modal: true,
-    buttons: {"Close": function () {$(this).dialog('close')}},
+    title: "Editing score",
     close: () => {
       if (modified && song === gplaylist.currentPlayingSong())
         Score.show(song)
@@ -217,6 +220,17 @@ function scoreFor(result: ScoreResult, source: Source): Score {
       return result.album
     case "Song":
       return result.song
+  }
+}
+
+function titleFor(source: Source, song: Song): string {
+  switch (source) {
+    case "Artist":
+      return song.artistName
+    case "Album":
+      return song.albumName
+    case "Song":
+      return song.title
   }
 }
 
