@@ -97,8 +97,8 @@ $(function () {
 
   $("body").append(String.raw`
     <ul id="contextMenu" class="ui-menu" style="display:none;">
-        <li><div><span class="ui-icon ui-icon-arrow-2-n-s"></span>Score</div></li>
-        <li><div><span class="ui-icon ui-icon-refresh"></span>Refresh</div></li>
+        <li><div><span class="menu-icon fa fa-arrows-v"/></span> Score</div></li>
+        <li><div><span class="menu-icon fa fa-refresh"></span> Refresh</div></li>
         <style>
         .ui-menu {
             width: 150px;
@@ -106,8 +106,10 @@ $(function () {
             border: 1px solid #ccc;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
         }
-        .ui-icon {
-          transform: scale(1.5);
+        .menu-icon {
+            margin-right: 5px;
+            width: 15px;
+            text-align: center;
         }
         </style>
     </ul>
@@ -125,7 +127,7 @@ $(function () {
 
     const song = playlist.songs()[playlist.getDisplayedIndex($(this).index())]
     contextMenu.one("click", "li", async function (e) {
-      switch (e.target.textContent) {
+      switch (e.target.textContent.trim()) {
         case "Score":
           return Score.popup(song)
         case "Refresh":
