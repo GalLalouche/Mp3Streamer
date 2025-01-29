@@ -1,12 +1,14 @@
+// TODO this should be turned into a proper module probably, or at least add a comment as to why it isn't.
+import jqXHR = JQuery.jqXHR
+
 type Method = "POST" | "PUT"
 
-function ajaxJson(method: Method, url: string, data: object | string, success?: any): void {
-  $.ajax({
+function ajaxJson(method: Method, url: string, data: object | string, success?: any): jqXHR<any> {
+  return $.ajax({
     url: url,
     data: isString(data) ? data : JSON.stringify(data),
     type: method,
     contentType: "application/json; charset=utf-8",
-    dataType: "json",
     success: success,
     statusCode: {
       201: success,
@@ -14,12 +16,12 @@ function ajaxJson(method: Method, url: string, data: object | string, success?: 
   })
 }
 
-function postJson(url: string, data: object, success?: any): void {
-  ajaxJson("POST", url, data, success)
+function postJson(url: string, data: object, success?: any): jqXHR<any> {
+  return ajaxJson("POST", url, data, success)
 }
 
-function putJson(url: string, data: object, success?: any): void {
-  ajaxJson("PUT", url, data, success)
+function putJson(url: string, data: object, success?: any): jqXHR<any> {
+  return ajaxJson("PUT", url, data, success)
 }
 
 interface JQueryStatic {

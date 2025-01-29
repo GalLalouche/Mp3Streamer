@@ -17,7 +17,8 @@ class PlaylistController @Inject() (
     ec: ExecutionContext,
 ) extends InjectedController {
   private implicit val iec: ExecutionContext = ec
-  def set(id: String): Action[AnyContent] = converter.parseJson($.set(id, _).>|(Created(id)))
+  def set(id: String): Action[AnyContent] =
+    converter.parseJson($.set(id, _).>|(Created(id).as("text/plain")))
   def getIds: Action[AnyContent] = converter.ok($.getIds)
   def get(id: String): Action[AnyContent] =
     Action.async($.get(id).map(_.mapHeadOrElse(Ok(_), NotFound)))
