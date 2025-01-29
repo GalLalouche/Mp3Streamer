@@ -1,3 +1,9 @@
+/**
+ * Code related to loading and saving the playlist remotely or locally. If you want code related
+ * to the actual playlist, you probably want types.ts, playlist_customization.ts, or
+ * jplayer.playlist.js.
+ */
+
 import {PLAYLIST_NAME_KEY, Poster} from "./poster.js"
 import {gplayer, gplaylist, Song} from "./types.js"
 import {Volume} from "./volume.js"
