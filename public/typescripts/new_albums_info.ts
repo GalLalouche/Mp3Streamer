@@ -76,7 +76,8 @@ export function show(song: Song): void {
 
   fieldSet.empty()
   fieldSet.append(elem("legend", `Fetching new albums for artist...`))
-  $.get("new_albums/albums/" + song.artistName, function (albums: string | Album[]) {
+  const requestUrl = "new_albums/albums/" + song.artistName
+  $.get(requestUrl, function (albums: string | Album[]) {
     fieldSet.empty()
     if (albums !== "IGNORED") {
       showAlbums(albums as Album[])
@@ -94,7 +95,11 @@ export function show(song: Song): void {
     fieldSet.append(b)
   }).fail(function (e: any) {
     fieldSet.empty()
-    fieldSet.append(elem("legend", `Fetching new albums FAILED...<br/>${e.statusText}<br/>${e.responseText}`))
+    // For uncaught errors, the responseText is a big ass HTML with a stacktrace.
+    const errorMessage = e.responseText.length > 100
+      ? `<a href='${requestUrl}' target='_blank'>Click here for HTML</a>`
+      : `<br/>${e.responseText}`
+    fieldSet.append(elem("legend", `Fetching new albums FAILED... ${errorMessage}`))
     const ignoreArtistButton = button("Ignore artist")
     ignoreArtistButton.click(() => ignoreArtist(song))
     fieldSet.append(ignoreArtistButton)
