@@ -190,7 +190,13 @@ private class SlickNewAlbumStorage @Inject() (
           if (albums.size == 1)
             e.head
           else
-            throw new AssertionError(s"Could not extract a single album out of <$v>")
+            // This isn't the most elegant solution, as it crashes the entire request due to
+            // failures from the API side, but it ensures those releases are merged.
+            throw new Exception(
+              s"Could not extract a single album out of <$v>. " +
+                "This is probably caused by multiple release groups for the same album on " +
+                "MusicBrainz's side, which should be merged.",
+            )
         } else
           v.head
       }
