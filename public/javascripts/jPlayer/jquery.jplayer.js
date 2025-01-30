@@ -1968,6 +1968,7 @@
       // Always finds a format due to checks in setMedia()
       $.each(this.formats, function(priority, format) {
         if (self.html.support[format] && song[format]) {
+          self.song = song
           self.status.src = song[format]
           self.status.offlineUrl = song.offlineUrl
           self.status.format[format] = true
@@ -2028,7 +2029,14 @@
       // pausing and then playing.
       if (!this.htmlElement.media.src.startsWith("blob") && self.htmlElement.media.offlineUrl)
         this.htmlElement.media.src = self.htmlElement.media.offlineUrl
-      this.htmlElement.media.play(); // Before currentTime attempt otherwise Firefox 4 Beta never loads.
+      // Before currentTime attempt otherwise Firefox 4 Beta never loads.
+      this.htmlElement.media.play().catch(e => {
+        // Resetting the media and the song's offlineUrl is a hack to get around bad blob URLs.
+        self._resetMedia()
+        if (self.song)
+          delete self.song.offlineUrl
+        throw e
+      });
 
       if (!isNaN(time)) {
         try {

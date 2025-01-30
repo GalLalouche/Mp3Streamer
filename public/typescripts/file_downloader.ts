@@ -15,6 +15,7 @@ export class FileDownloader {
     const existing_request = this.requests.get(url)
     if (existing_request !== undefined)
       return existing_request
+    console.log(`Downloading ${url}`)
     const blob_promise = fetch(url).then(e => e.blob())
     this.requests.set(url, blob_promise)
     const blob = await blob_promise

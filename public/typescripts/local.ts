@@ -17,7 +17,7 @@ export namespace Local {
   export async function setOfflineUrl(song: Song): Promise<string> {
     if (song.offlineUrl === undefined) {
       const blob = await fileDownloader.download(songPath(song))
-      console.log(`Blob for ${song.file} downloaded`)
+      console.log(`Blob for ${song.file} set`)
       song.offlineUrl = URL.createObjectURL(blob)
     }
     return song.offlineUrl
