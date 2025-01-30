@@ -4,10 +4,10 @@
  * jplayer.playlist.js.
  */
 
-import {PLAYLIST_NAME_KEY, Poster} from "./poster.js"
-import {gplayer, gplaylist, Song} from "./types.js"
-import {Volume} from "./volume.js"
 import './jquery_common_xhr.js'
+import {PLAYLIST_NAME_KEY, Poster} from "./poster.js"
+import {Volume} from "./volume.js"
+import {gplayer, gplaylist, Song} from "./types.js"
 
 $(function () {
     class PlaylistJson {
@@ -90,6 +90,7 @@ $(function () {
         localStorage.setItem(PLAYLIST_NAME_KEY, playlistName)
         console.log(`Saving playlist ${playlistName} remotely`)
         return putJson(`playlist/${playlistName}`, state)
+          .toPromise()
           .void()
           .catch(
             (error: any) => {

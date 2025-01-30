@@ -228,10 +228,6 @@ async function waitForElem(selector: string): Promise<Element> {
   })
 }
 
-async function toPromise(jqxhr: JQueryXHR): Promise<void> {
-  return jqxhr.then(() => {}).catch((e => {throw e}))
-}
-
 interface Promise<T> {
   void(): Promise<void>
 }

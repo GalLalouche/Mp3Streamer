@@ -1,6 +1,7 @@
+import './jquery_common_xhr.js'
+import {Poster} from "./poster.js"
 import {gplaylist, Song} from "./types.js"
 import {match} from 'ts-pattern'
-import {Poster} from "./poster.js"
 
 export namespace External {
   export function show(song: Song): void {
@@ -84,7 +85,8 @@ class Helper {
     return function () {
       const song = gplaylist.currentPlayingSong()
       // TODO showLinks should only fetch the links for the target.
-      return toPromise($.get(refreshPath(target, song), that.showLinks(REMOTE_PATH + song.file)))
+      return $.get(refreshPath(target, song), that.showLinks(REMOTE_PATH + song.file))
+        .toPromise().void()
     }
   }
   cleanUp() {
