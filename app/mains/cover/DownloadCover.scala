@@ -95,10 +95,9 @@ private object DownloadCover {
   }
 
   def main(args: Array[String]): Unit = {
-    import scalaz.std.scalaFuture.futureInstance
-    import common.rich.func.ToMoreMonadErrorOps._
-
     import common.rich.RichFuture._
+    import common.rich.func.ToMoreMonadErrorOps._
+    import scalaz.std.scalaFuture.futureInstance
     val injector = Guice.createInjector(MainsModule)
     val folder = Directory(IOUtils.decodeFile(args.mkString(" ")))
     println("Downloading cover image for " + folder.path)

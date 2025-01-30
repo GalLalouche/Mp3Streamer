@@ -3,6 +3,7 @@ package mains.random_folder
 import java.io.File
 import javax.inject.Inject
 
+import backend.recon.Artist
 import models.{Genre, GenreFinder}
 import models.Genre.{Classical, Metal, NewAge}
 import play.api.libs.json.Json
@@ -37,8 +38,8 @@ private object FileFilters {
   private class FilterConfig(
       sde: SongDataExtractor,
       forbiddenGenres: Set[String],
-      allowedArtists: Set[String],
-      forbiddenArtists: Set[String],
+      allowedArtists: Set[Artist],
+      forbiddenArtists: Set[Artist],
       allowedAlbums: Set[String],
       forbiddenAlbums: Set[String],
   ) extends Filter[File] {
@@ -64,8 +65,8 @@ private object FileFilters {
     new FilterConfig(
       sde,
       forbiddenGenres = getSet("forbiddenGenres"),
-      allowedArtists = getSet("allowedArtists"),
-      forbiddenArtists = getSet("forbiddenArtists"),
+      allowedArtists = getSet("allowedArtists").map(Artist),
+      forbiddenArtists = getSet("forbiddenArtists").map(Artist),
       allowedAlbums = getSet("allowedAlbums"),
       forbiddenAlbums = getSet("forbiddenAlbums"),
     )

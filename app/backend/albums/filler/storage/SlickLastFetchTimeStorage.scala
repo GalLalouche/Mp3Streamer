@@ -24,6 +24,7 @@ private class SlickLastFetchTimeStorage @Inject() (
   override type Entity = (String, Option[LocalDateTime])
   protected class Rows(tag: Tag) extends Table[Entity](tag, "artist_last_album_update") {
     def name = column[String]("name", O.PrimaryKey)
+    def artist = name.mapTo[Artist]
     def artist_fk = foreignKey("artist_fk", name, artistStorage.tableQuery)(
       _.name,
       onUpdate = ForeignKeyAction.Cascade,

@@ -19,8 +19,11 @@ class IOMusicFinder extends MusicFinder {
   override def parseSong(f: FileRef) = IOSong.read(f.asInstanceOf[IOFile].file)
   override def getOptionalSongsInDir(d: DirectoryRef): ViewSeq[OptionalSong] =
     getSongFilesInDir(d).view.map(SongTagParser optionalSong _.file)
-  protected override lazy val invalidDirectoryNames: BiMap[DirectoryName, ArtistName] =
-    JsonMapFile.readJsonMap(getClass.getResourceAsStream("directory_renames.json")).toBiMap
+  protected override lazy val invalidDirectoryNames: BiMap[DirectoryName, backend.recon.Artist] =
+    JsonMapFile
+      .readJsonMap(getClass.getResourceAsStream("directory_renames.json"))
+      .mapValues(backend.recon.Artist(_))
+      .toBiMap
 }
 
 /**

@@ -54,6 +54,7 @@ private[backend] class SlickArtistReconStorage @Inject() (
     // TODO remove isIgnored
     def isIgnored = column[Boolean]("is_ignored", O.Default(false))
     def * = (name, reconId, isIgnored)
+    def artist = name.mapTo[Artist]
   }
   protected override type EntityTable = Rows
   val tableQuery = TableQuery[EntityTable]

@@ -4,7 +4,6 @@ import javax.inject.Inject
 
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import models.MusicFinder
-import models.TypeAliases.ArtistName
 
 import scala.concurrent.ExecutionContext
 
@@ -41,10 +40,10 @@ private class RealTimeExistingAlbums @Inject() (
   }
 
   override def albums: Artist => Set[Album] = artist =>
-    getAlbums(artist.normalize)
-      .orElse(manualAlbumsFinder.!(artist.normalize).get)
+    getAlbums(artist)
+      .orElse(manualAlbumsFinder.!(artist).get)
       .getOrThrow(s"Could not find albums for artist $artist")
 
-  private def getAlbums(artistName: ArtistName): Option[Set[Album]] =
-    mf.findArtistDir(artistName).map(_.dirs.map(reconcilableFactory.toAlbum(_).get).toSet)
+  private def getAlbums(artist: Artist): Option[Set[Album]] =
+    mf.findArtistDir(artist).map(_.dirs.map(reconcilableFactory.toAlbum(_).get).toSet)
 }

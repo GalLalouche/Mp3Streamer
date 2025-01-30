@@ -12,7 +12,7 @@ import backend.scorer.OptionalModelScore
 import backend.scorer.storage.ArtistScoreStorage
 import backend.storage.{DbProvider, JdbcMappers, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Guice
-import models.{AlbumTitle, ArtistName}
+import models.AlbumTitle
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import slick.ast.BaseTypedType
 
@@ -64,7 +64,7 @@ private class SlickNewAlbumStorage @Inject() (
       na.title.toLowerCase,
       na.albumType.toString,
       na.date,
-      na.artist.normalize,
+      na.artist,
       v.isRemoved,
       v.isIgnored,
     )
@@ -74,7 +74,7 @@ private class SlickNewAlbumStorage @Inject() (
     NewAlbum(
       title = e._2,
       date = e._4,
-      artist = Artist(e._5),
+      artist = e._5,
       albumType = AlbumType.withName(e._3),
     ),
     isRemoved = e._6,
@@ -85,17 +85,17 @@ private class SlickNewAlbumStorage @Inject() (
   private type IsRemoved = Boolean
   private type IsIgnored = Boolean
   protected override type Entity =
-    (ReconID, AlbumTitle, AlbumType, LocalDate, ArtistName, IsRemoved, IsIgnored)
+    (ReconID, AlbumTitle, AlbumType, LocalDate, Artist, IsRemoved, IsIgnored)
   protected class Rows(tag: Tag) extends Table[Entity](tag, "new_album") {
     def reconId = column[ReconID]("recon_id")
     def album = column[AlbumTitle]("album")
     // TODO why is this not an enum?
     def albumType = column[AlbumType]("type")
     def year = column[LocalDate]("epoch_day")
-    def artist = column[ArtistName]("artist")
+    def artist = column[Artist]("artist")
     def pk = primaryKey("album_artist_type", (album, artist, albumType))
     def artist_fk = foreignKey("artist_fk", artist, lastFetchTime.tableQuery)(
-      _.name,
+      _.artist,
       onUpdate = ForeignKeyAction.Cascade,
       onDelete = ForeignKeyAction.Cascade,
     )
@@ -112,11 +112,11 @@ private class SlickNewAlbumStorage @Inject() (
       .run(
         tableQuery
           .join(artistStorage.tableQuery)
-          .on(_.artist === _.name)
+          .on(_.artist === _.artist)
           .filterNot(e => e._1.isIgnored || shouldRemoveAlbum(e._1))
           .map(_._1)
           .joinLeft(artistScoreStorage.tableQuery)
-          .on(_.artist.mapTo[Artist] === _.artist)
+          .on(_.artist === _.artist)
           .result,
       )
       .map(
@@ -144,7 +144,7 @@ private class SlickNewAlbumStorage @Inject() (
   override def apply(a: Artist) = db
     .run(
       tableQuery
-        .filter(_.artist === a.name)
+        .filter(_.artist === a)
         .filterNot(shouldRemoveAlbum)
         .result,
     )
@@ -152,16 +152,16 @@ private class SlickNewAlbumStorage @Inject() (
   override def unremoveAll(a: Artist) = db
     .run(
       tableQuery
-        .filter(e => e.artist === a.normalize && e.isRemoved && !e.isIgnored)
+        .filter(e => e.artist === a && e.isRemoved && !e.isIgnored)
         .map(_.isRemoved)
         .update(false),
     )
     .void
   private def toPartialEntity(
       a: NewAlbumRecon,
-  ): (ReconID, AlbumTitle, AlbumType, LocalDate, ArtistName) = {
+  ): (ReconID, AlbumTitle, AlbumType, LocalDate, Artist) = {
     val na = a.newAlbum
-    (a.reconId, na.title.toLowerCase, na.albumType.toString, na.date, na.artist.normalize)
+    (a.reconId, na.title.toLowerCase, na.albumType.toString, na.date, na.artist)
   }
   private def existsWithADifferentReconID(a: NewAlbumRecon): Future[Boolean] = db
     // TODO there is some duplication here with the above in the definition of the primary key.
@@ -170,7 +170,7 @@ private class SlickNewAlbumStorage @Inject() (
         .filter { e =>
           val album = a.newAlbum
           e.album === album.title.toLowerCase &&
-          e.artist === album.artist.normalize &&
+          e.artist === album.artist &&
           e.albumType === album.albumType.entryName &&
           e.reconId =!= a.reconId
         }
@@ -216,13 +216,13 @@ private class SlickNewAlbumStorage @Inject() (
     } yield result
   }
   override def remove(artist: Artist) =
-    db.run(tableQuery.filter(e => e.artist === artist.normalize).map(_.isRemoved).update(true)).void
+    db.run(tableQuery.filter(e => e.artist === artist).map(_.isRemoved).update(true)).void
 
   private def updateAlbum(
       f: EntityTable => Rep[Boolean],
   )(artist: Artist, title: AlbumTitle): Future[Unit] = {
     val filter =
-      tableQuery.filter(e => e.artist === artist.normalize && e.album === title.toLowerCase)
+      tableQuery.filter(e => e.artist === artist && e.album === title.toLowerCase)
     for {
       albumExists <- db.run(filter.exists.result)
       _ <- Future
@@ -236,7 +236,7 @@ private class SlickNewAlbumStorage @Inject() (
   override def ignore(artist: Artist, title: AlbumTitle) =
     remove(artist, title) >> updateAlbum(_.isIgnored)(artist, title)
   override def deleteAll(artist: Artist) =
-    db.run(tableQuery.filter(e => e.artist === artist.normalize).delete).void
+    db.run(tableQuery.filter(e => e.artist === artist).delete).void
 }
 
 private object SlickNewAlbumStorage {

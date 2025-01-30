@@ -40,12 +40,12 @@ private[scorer] class TrackScoreStorage @Inject() (
   protected override type EntityTable = Rows
   protected override val tableQuery = TableQuery[EntityTable]
   protected override def toEntity(k: Track, v: ModelScore) =
-    (k.artist.normalized, k.albumName.toLowerCase, k.title.toLowerCase, v)
+    (k.artist, k.album.title.toLowerCase, k.title.toLowerCase, v)
   protected override def extractValue(e: (Artist, AlbumTitle, SongTitle, ModelScore)) = e._4
   protected override def keyFilter(k: Track)(e: Rows) =
-    e.artist === k.artist.normalized &&
+    e.artist === k.artist &&
       e.song === k.title.toLowerCase &&
-      e.album === k.albumName.toLowerCase
+      e.album === k.album.title.toLowerCase
   def loadAll: ListT[Future, (Artist, AlbumTitle, SongTitle, ModelScore)] =
     ListT(db.run(tableQuery.result).map(_.toList))
 }

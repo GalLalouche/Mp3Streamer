@@ -19,7 +19,7 @@ private class AlbumReconFiller @Inject() (
 private object AlbumReconFiller {
   private object Aux extends ReconFillerAux[Album] {
     override def musicBrainzPath = "release-group"
-    override def prettyPrint(r: Album) = s"${r.artistName} - ${r.title}"
+    override def prettyPrint(r: Album) = s"${r.artist.name} - ${r.title}"
     override def verify(r: Album, id: ReconID) = Future.successful(true)
   }
 }

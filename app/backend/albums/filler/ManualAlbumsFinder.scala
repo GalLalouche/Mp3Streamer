@@ -2,9 +2,9 @@ package backend.albums.filler
 
 import javax.inject.{Inject, Singleton}
 
-import backend.recon.{Album, ReconcilableFactory}
+import backend.recon.{Album, Artist, ReconcilableFactory}
+import backend.recon.Reconcilable.SongExtractor
 import models.MusicFinder
-import models.TypeAliases.ArtistName
 
 import scala.concurrent.Future
 
@@ -17,17 +17,17 @@ import common.rich.RichT.richT
     timed: TimedLogger,
     mf: MusicFinder,
     reconcilableFactory: ReconcilableFactory,
-) extends SimpleTypedActor[ArtistName, Option[Set[Album]]] {
-  override def !(m: => ArtistName): Future[Option[Set[Album]]] = delegate ! m
+) extends SimpleTypedActor[Artist, Option[Set[Album]]] {
+  override def !(m: => Artist): Future[Option[Set[Album]]] = delegate ! m
 
   private val delegate = SimpleTypedActor("ManualAlbumsFinder", fallback)
 
-  private def fallback(artistName: ArtistName): Option[Set[Album]] = timed(
-    s"Cannot find directory for <$artistName>, falling back to manual album search",
+  private def fallback(artist: Artist): Option[Set[Album]] = timed(
+    s"Cannot find directory for <$artist>, falling back to manual album search",
     scribe.warn(_),
   ) {
     mf.albumDirs
-      .filter(e => mf.getSongsInDir(e).head.artistName.toLowerCase == artistName)
+      .filter(e => mf.getSongsInDir(e).head.artist == artist)
       .map((e: DirectoryRef) => reconcilableFactory.toAlbum(e).get)
       .toSet
       .optFilter(_.nonEmpty)

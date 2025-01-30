@@ -42,14 +42,16 @@ private class AlbumsFormatter @Inject() (
   }
   def albums: Future[JsValue] = $.albums.map(_.jsonify).run.map(JsArray.apply)
 
-  def forArtist(artistName: ArtistName): Future[Option[JsValue]] = $.forArtist(artistName).map {
-    case AlbumsModel.NonIgnoredArtist(albums) => Some(fixTitles(albums).jsonify)
-    case AlbumsModel.IgnoredArtist => Some(JsString("IGNORED"))
-    case AlbumsModel.Unreconciled => None
-  }
-  def removeArtist(artistName: ArtistName): Future[_] = $.removeArtist(artistName)
-  def ignoreArtist(artistName: ArtistName): Future[_] = $.ignoreArtist(artistName)
-  def unignoreArtist(artistName: ArtistName): Future[Seq[NewAlbum]] = $.unignoreArtist(artistName)
+  def forArtist(artistName: ArtistName): Future[Option[JsValue]] =
+    $.forArtist(Artist(artistName)).map {
+      case AlbumsModel.NonIgnoredArtist(albums) => Some(fixTitles(albums).jsonify)
+      case AlbumsModel.IgnoredArtist => Some(JsString("IGNORED"))
+      case AlbumsModel.Unreconciled => None
+    }
+  def removeArtist(artistName: ArtistName): Future[_] = $.removeArtist(Artist(artistName))
+  def ignoreArtist(artistName: ArtistName): Future[_] = $.ignoreArtist(Artist(artistName))
+  def unignoreArtist(artistName: ArtistName): Future[Seq[NewAlbum]] =
+    $.unignoreArtist(Artist(artistName))
 
   private def extractAlbum(json: JsValue): (Artist, String) =
     Artist(json.str("artistName")) -> json.str("title")

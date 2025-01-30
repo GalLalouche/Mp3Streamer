@@ -15,14 +15,14 @@ private class PreCachedExistingAlbumsFactory @Inject() (
   def from(albums: Seq[DirectoryRef]) = new PreCachedExistingAlbums(
     albums
       .map(reconcilableFactory.toAlbum(_).get)
-      .groupBy(_.artist.normalized)
+      .groupBy(_.artist)
       .mapValues(_.toSet)
       .view
       .force,
   )
 
   def singleArtist(artist: Artist): PreCachedExistingAlbums = {
-    val artistDir = mf.findArtistDir(artist.name).get
+    val artistDir = mf.findArtistDir(artist).get
     from(artistDir.dirs.mapIf(_.isEmpty).to(Vector(artistDir)))
   }
 }

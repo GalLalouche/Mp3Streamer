@@ -3,6 +3,7 @@ package mains.random_folder
 import java.io.File
 import javax.inject.Inject
 
+import backend.recon.Artist
 import mains.random_folder
 import models.GenreFinder
 
@@ -14,7 +15,7 @@ import common.rich.primitives.RichBoolean._
 private class SongDataExtractor @Inject() (genreFinder: GenreFinder) {
   private def go(artistDir: Directory, album: String) = random_folder.SongData(
     genre = genreFinder(IODirectory(artistDir)),
-    artist = artistDir.name.toLowerCase,
+    artist = Artist(artistDir.name),
     album = album.toLowerCase,
   )
   def apply(f: File): SongData = {

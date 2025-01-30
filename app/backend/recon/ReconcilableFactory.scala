@@ -14,7 +14,7 @@ import common.rich.primitives.RichOption.richOption
 
 class ReconcilableFactory @Inject() (val mf: MusicFinder) {
   type S = mf.S
-  def toArtist(dir: DirectoryRef): Artist = Artist(mf.dirNameToArtist(dir.name))
+  def toArtist(dir: DirectoryRef): Artist = mf.dirNameToArtist(dir.name)
   // This is Try so the error could be reserved.
   def toAlbum(dir: DirectoryRef): Try[Album] =
     if (shouldIgnore(dir))

@@ -15,7 +15,7 @@ private class FilterExistingAlbums @Inject() (
 ) {
   def apply(artist: Artist, allAlbums: Seq[NewAlbum]): Seq[NewAlbum] =
     try {
-      val albumTitles = ea.albums(artist.normalized).map(_.title)
+      val albumTitles = ea.albums(artist).map(_.title)
       allAlbums
         .filter(a => albumTitles.fornone(stringReconScorer(_, a.title) > 0.95))
         .filter(_.isReleased(clock))

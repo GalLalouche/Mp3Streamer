@@ -8,7 +8,7 @@ import monocle.macros.Lenses
 case class OptionalSong(
     file: String,
     title: Option[String],
-    artistName: Option[String],
+    artistName: Option[ArtistName],
     albumName: Option[AlbumTitle],
     trackNumber: Option[TrackNumber],
     year: Option[Int],

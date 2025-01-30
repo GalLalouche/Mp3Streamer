@@ -40,18 +40,18 @@ private class CachedModelScorerImpl @Inject() (
   private lazy val artistScores: Map[Artist, ModelScore] =
     artistScorer.loadAll.run.get.toMap
   private val aux = new CompositeScorer[Id](
-    // FIXME This whole normalize BS should really stop :\ The class itself should always be normalized, or not.
     explicitScore(_).toModelScore.hoistId,
     explicitScore(_).toModelScore.hoistId,
     explicitScore(_).toModelScore.hoistId,
   )
   override def explicitScore(a: Artist): OptionalModelScore =
-    artistScores.get(a.normalized).toOptionalModelScore
+    artistScores.get(a).toOptionalModelScore
   override def explicitScore(a: Album): OptionalModelScore =
-    albumScores.get((a.artist.normalized, a.title.toLowerCase)).toOptionalModelScore
+    // FIXME a.title.toLowercase should be avoided
+    albumScores.get((a.artist, a.title.toLowerCase)).toOptionalModelScore
   override def explicitScore(t: Track): OptionalModelScore =
     songScores
-      .get((t.artist.normalized, t.album.normalized.title, t.title.toLowerCase))
+      .get((t.artist, t.album.title.toLowerCase, t.title.toLowerCase))
       .toOptionalModelScore
 
   override def aggregateScore(f: FileRef): OptionalModelScore = {
@@ -61,7 +61,7 @@ private class CachedModelScorerImpl @Inject() (
     val album: Album =
       reconcilableFactory.toAlbum(f.parent).|>(toOption(f, "album")).getOrElse(id3Song.release)
     val albumTitle = album.title
-    val artist = album.artist.normalized
+    val artist = album.artist
     songScores
       .get((artist, albumTitle, songTitle))
       .orElse(albumScores.get((artist, albumTitle)))

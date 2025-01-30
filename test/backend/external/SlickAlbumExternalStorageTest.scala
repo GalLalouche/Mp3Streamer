@@ -61,7 +61,7 @@ class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
   }
   "Delete all links by artist" in {
     val value1 = Vector(link1) -> AlwaysFresh
-    val album2 = album.copy(title = "sophomore effort")
+    val album2 = new Album("sophomore effort", album.year, album.artist)
     val value2 = Vector(link2) -> DatedFreshness(LocalDateTime.now)
     val expected =
       Vector((album.normalize, value1._1, value1._2), (album2.normalize, value2._1, value2._2))
