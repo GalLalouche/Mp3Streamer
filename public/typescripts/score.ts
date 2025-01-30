@@ -7,7 +7,7 @@ export namespace Score {
     fieldset.on('change', 'select', async function () {
       const newScore = $(this).val() as Score
       const source = $(this).attr('source')!.toLowerCase() as Source
-      return setScore(gplaylist.currentPlayingSong(), source as Source, newScore)
+      return setScore(gplaylist.currentPlayingSong(), source, newScore)
     })
   }
 

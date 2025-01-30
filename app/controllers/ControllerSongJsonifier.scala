@@ -11,7 +11,11 @@ import common.json.{JsonableOverrider, OJsonable, OJsonableOverrider}
 import common.json.RichJson._
 import common.rich.RichT._
 
-// TODO document the difference between this implementation Models.Jsonable
+/**
+ * Jsonifies a song in a format that is more palatable to the client:
+ *   - `file` is encoded and decoded as URL
+ *   - Adds other relevant paths such as stream path and posters
+ */
 class ControllerSongJsonifier @Inject() (urlPathUtils: UrlPathUtils) {
   implicit val songJsonable: OJsonable[Song] =
     JsonableOverrider[Song](new OJsonableOverrider[Song] {
@@ -25,7 +29,7 @@ class ControllerSongJsonifier @Inject() (urlPathUtils: UrlPathUtils) {
           ("file" -> JsString(urlPathUtils.encodePath(s))) +
           (s.file.extension -> JsString("/stream/download/" + urlPathUtils.encodePath(s)))
         $.joinOption(posterPath)((j, p) => j + ("poster" -> JsString("/posters/" + p)))
-          .append("compopser" -> s.composer)
+          .append("composer" -> s.composer)
           .append("conductor" -> s.conductor)
           .append("orchestra" -> s.orchestra)
           .append("opus" -> s.opus)

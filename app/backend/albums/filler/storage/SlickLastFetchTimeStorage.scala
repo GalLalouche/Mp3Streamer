@@ -15,8 +15,6 @@ private class SlickLastFetchTimeStorage @Inject() (
     dbP: DbProvider,
     protected val artistStorage: SlickArtistReconStorage,
 ) extends SlickSingleKeyColumnStorageTemplateFromConf[Artist, Option[LocalDateTime]](ec, dbP) {
-
-  private implicit val iec: ExecutionContext = ec
   import profile.api._
 
   override type Id = String

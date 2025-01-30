@@ -10,7 +10,7 @@ trait Song {
   type F <: FileRef
   def file: F
   def title: SongTitle
-  def artistName: String
+  def artistName: ArtistName
   def albumName: AlbumTitle
   def trackNumber: TrackNumber
   def year: Int
@@ -46,7 +46,7 @@ trait Song {
 case class IOSong(
     file: IOFile,
     title: SongTitle,
-    artistName: String,
+    artistName: ArtistName,
     albumName: AlbumTitle,
     trackNumber: TrackNumber,
     year: Int,
@@ -70,7 +70,7 @@ object IOSong {
 case class MemorySong(
     file: MemoryFile,
     title: SongTitle,
-    artistName: String,
+    artistName: ArtistName,
     albumName: AlbumTitle,
     trackNumber: TrackNumber,
     year: Int,
