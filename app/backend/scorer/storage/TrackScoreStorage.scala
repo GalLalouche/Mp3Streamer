@@ -2,13 +2,14 @@ package backend.scorer.storage
 
 import javax.inject.Inject
 
-import backend.recon.{Artist, SlickArtistReconStorage, Track}
+import backend.recon.{Artist, SlickArtistReconStorage, Track, YearlessAlbum, YearlessTrack}
 import backend.scorer.ModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
 import models.{AlbumTitle, SongTitle}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import common.rich.func.BetterFutureInstances._
 import scalaz.ListT
 
 private[scorer] class TrackScoreStorage @Inject() (
@@ -24,6 +25,7 @@ private[scorer] class TrackScoreStorage @Inject() (
 
   private implicit val iec: ExecutionContext = ec
 
+  // TODO can this use YearlessTrack?
   protected override type Entity = (Artist, AlbumTitle, SongTitle, ModelScore)
   protected class Rows(tag: Tag) extends Table[Entity](tag, "song_score") {
     def artist = column[Artist]("artist")
@@ -46,6 +48,7 @@ private[scorer] class TrackScoreStorage @Inject() (
     e.artist === k.artist &&
       e.song === k.title.toLowerCase &&
       e.album === k.album.title.toLowerCase
-  def loadAll: ListT[Future, (Artist, AlbumTitle, SongTitle, ModelScore)] =
+  def loadAll: ListT[Future, (YearlessTrack, ModelScore)] =
     ListT(db.run(tableQuery.result).map(_.toList))
+      .map(e => (YearlessTrack(e._3, YearlessAlbum(e._2, e._1)), e._4))
 }

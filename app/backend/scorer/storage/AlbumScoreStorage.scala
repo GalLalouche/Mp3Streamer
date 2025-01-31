@@ -2,13 +2,14 @@ package backend.scorer.storage
 
 import javax.inject.Inject
 
-import backend.recon.{Album, Artist, SlickArtistReconStorage}
+import backend.recon.{Album, Artist, SlickArtistReconStorage, YearlessAlbum}
 import backend.scorer.ModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
 import models.AlbumTitle
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import common.rich.func.BetterFutureInstances._
 import scalaz.ListT
 
 private[scorer] class AlbumScoreStorage @Inject() (
@@ -24,6 +25,7 @@ private[scorer] class AlbumScoreStorage @Inject() (
 
   private implicit val iec: ExecutionContext = ec
 
+  // TODO can this use YearlessAlbum?
   protected override type Entity = (Artist, AlbumTitle, ModelScore)
   protected class Rows(tag: Tag) extends Table[Entity](tag, "album_score") {
     def artist = column[Artist]("artist")
@@ -41,6 +43,6 @@ private[scorer] class AlbumScoreStorage @Inject() (
   protected override def toEntity(k: Album, v: ModelScore) = (k.artist, k.title, v)
   protected override def extractValue(e: (Artist, AlbumTitle, ModelScore)) = e._3
   protected override def keyFilter(k: Album)(e: Rows) = e.artist === k.artist && e.title === k.title
-  def loadAll: ListT[Future, (Artist, AlbumTitle, ModelScore)] =
-    ListT(db.run(tableQuery.result).map(_.toList))
+  def loadAll: ListT[Future, (YearlessAlbum, ModelScore)] =
+    ListT(db.run(tableQuery.result).map(_.toList)).map(e => YearlessAlbum(e._2, e._1) -> e._3)
 }

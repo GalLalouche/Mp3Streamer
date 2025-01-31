@@ -2,10 +2,10 @@ package backend.scorer
 
 import javax.inject.Inject
 
-import backend.recon.{Album, Artist, ReconcilableFactory, Track}
+import backend.recon.{Album, Artist, ReconcilableFactory, Track, YearlessAlbum, YearlessTrack}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
-import models.{AlbumTitle, MusicFinder, SongTitle}
+import models.MusicFinder
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
@@ -27,18 +27,15 @@ private class CachedModelScorerImpl @Inject() (
     artistScorer: ArtistScoreStorage,
     albumScorer: AlbumScoreStorage,
     songScorer: TrackScoreStorage,
-    reconcilableFactory: ReconcilableFactory,
+    reconFactory: ReconcilableFactory,
     mf: MusicFinder,
     ec: ExecutionContext,
 ) extends CachedModelScorer {
   private implicit val iec: ExecutionContext = ec
 
-  private lazy val songScores: Map[(Artist, AlbumTitle, SongTitle), ModelScore] =
-    songScorer.loadAll.run.get.map(e => (e._1, e._2.toLowerCase, e._3.toLowerCase) -> e._4).toMap
-  private lazy val albumScores: Map[(Artist, AlbumTitle), ModelScore] =
-    albumScorer.loadAll.run.get.map(e => (e._1, e._2.toLowerCase) -> e._3).toMap
-  private lazy val artistScores: Map[Artist, ModelScore] =
-    artistScorer.loadAll.run.get.toMap
+  private lazy val songScores: Map[YearlessTrack, ModelScore] = songScorer.loadAll.run.get.toMap
+  private lazy val albumScores: Map[YearlessAlbum, ModelScore] = albumScorer.loadAll.run.get.toMap
+  private lazy val artistScores: Map[Artist, ModelScore] = artistScorer.loadAll.run.get.toMap
   private val aux = new CompositeScorer[Id](
     explicitScore(_).toModelScore.hoistId,
     explicitScore(_).toModelScore.hoistId,
@@ -47,24 +44,20 @@ private class CachedModelScorerImpl @Inject() (
   override def explicitScore(a: Artist): OptionalModelScore =
     artistScores.get(a).toOptionalModelScore
   override def explicitScore(a: Album): OptionalModelScore =
-    // FIXME a.title.toLowercase should be avoided
-    albumScores.get((a.artist, a.title.toLowerCase)).toOptionalModelScore
+    albumScores.get(a.toYearless).toOptionalModelScore
   override def explicitScore(t: Track): OptionalModelScore =
-    songScores
-      .get((t.artist, t.album.title.toLowerCase, t.title.toLowerCase))
-      .toOptionalModelScore
+    songScores.get(t.toYearless).toOptionalModelScore
 
   override def aggregateScore(f: FileRef): OptionalModelScore = {
     lazy val id3Song = mf.parseSong(f)
     val songTitle =
-      reconcilableFactory.songTitle(f).|>(toOption(f, "song")).getOrElse(id3Song.title)
-    val album: Album =
-      reconcilableFactory.toAlbum(f.parent).|>(toOption(f, "album")).getOrElse(id3Song.release)
-    val albumTitle = album.title
+      reconFactory.songTitle(f).|>(toOption(f, "song")).getOrElse(id3Song.title)
+    val album: YearlessAlbum =
+      reconFactory.toAlbum(f.parent).|>(toOption(f, "album")).getOrElse(id3Song.release).toYearless
     val artist = album.artist
     songScores
-      .get((artist, albumTitle, songTitle))
-      .orElse(albumScores.get((artist, albumTitle)))
+      .get(YearlessTrack(songTitle, album))
+      .orElse(albumScores.get(album))
       .orElse(artistScores.get(artist))
       .toOptionalModelScore
   }

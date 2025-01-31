@@ -23,6 +23,7 @@ case class Artist(name: ArtistName) extends Reconcilable {
 
 class Album(val title: AlbumTitle, val year: Int, val artist: Artist) extends Reconcilable {
   override def normalize: String = s"${artist.normalize} - ${title.toLowerCase}"
+  def toYearless = YearlessAlbum(title, artist)
 
   override def equals(other: Any): Boolean = other match {
     case that: Album =>
@@ -36,9 +37,24 @@ object Album {
   def apply(title: AlbumTitle, year: Int, artist: Artist) = new Album(title, year, artist)
 }
 
+/** An album without a year. Used in places where we want to do comparisons which ignore years. */
+class YearlessAlbum(val title: AlbumTitle, val artist: Artist) {
+  override def equals(other: Any): Boolean = other match {
+    case that: YearlessAlbum =>
+      title.equalsIgnoreCase(that.title) && artist == that.artist
+    case _ => false
+  }
+  override def hashCode(): Int = Objects.hashCode(title.toLowerCase, artist)
+  override def toString = s"YearlessAlbum($title, $artist)"
+}
+object YearlessAlbum {
+  def apply(title: AlbumTitle, artist: Artist) = new YearlessAlbum(title, artist)
+}
+
 class Track(val title: SongTitle, val album: Album) extends Reconcilable {
   private lazy val normalized = title.toLowerCase
   def artist: Artist = album.artist
+  def toYearless = YearlessTrack(title, album.toYearless)
   override def normalize: String = ???
 
   private def canEqual(other: Any): Boolean = other.isInstanceOf[Track]
@@ -57,7 +73,24 @@ class Track(val title: SongTitle, val album: Album) extends Reconcilable {
   override def toString = s"Track($title, $album)"
 }
 object Track {
-  def apply(title: SongTitle, album: Album): Track = new Track(title, album)
+  def apply(title: SongTitle, album: Album) = new Track(title, album)
+}
+
+/**
+ * A track whose album is without a year. Used in places where we want to do comparisons which
+ * ignore years.
+ */
+class YearlessTrack(val title: SongTitle, val album: YearlessAlbum) {
+  override def equals(other: Any): Boolean = other match {
+    case that: YearlessTrack =>
+      title.equalsIgnoreCase(that.title) && album == that.album
+    case _ => false
+  }
+  override def hashCode(): Int = Objects.hashCode(title.toLowerCase, album)
+  override def toString = s"YearlessTrack($title, $album)"
+}
+object YearlessTrack {
+  def apply(title: SongTitle, album: YearlessAlbum) = new YearlessTrack(title, album)
 }
 
 object Reconcilable {
