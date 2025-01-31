@@ -1,7 +1,7 @@
 package backend.search
 
 import backend.search.WeightedIndexable.ops._
-import models.{Artist, FakeModelFactory, Song}
+import models.{ArtistDir, FakeModelFactory, Song}
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
@@ -24,7 +24,10 @@ class WeightedIndexableTest extends FreeSpec with AuxSpecs {
     )
     .asInstanceOf[Song]
   "Artist" in {
-    Artist("foo foo bar", Set(factory.album(title = "should be ignored"))).terms shouldMultiSetEqual
+    ArtistDir(
+      "foo foo bar",
+      Set(factory.album(title = "should be ignored")),
+    ).terms shouldMultiSetEqual
       Vector("foo" -> 1.0, "bar" -> 1.0)
   }
   "song" - {

@@ -3,7 +3,7 @@ package backend.search
 import javax.inject.Inject
 
 import com.google.inject.Singleton
-import models.{AlbumDir, Artist, Song}
+import models.{AlbumDir, ArtistDir, Song}
 
 import scala.concurrent.Future
 
@@ -18,6 +18,6 @@ private class SearchState @Inject() (
     proxyFactory.initialize(() => index.create())
   def update(): Future[Unit] = updater.update()
 
-  def search(terms: Seq[String]): (Seq[Song], Seq[AlbumDir], Seq[Artist]) =
+  def search(terms: Seq[String]): (Seq[Song], Seq[AlbumDir], Seq[ArtistDir]) =
     updater.current.search(terms)
 }

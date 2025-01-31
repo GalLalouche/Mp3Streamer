@@ -8,7 +8,11 @@ import models.TypeAliases.{AlbumTitle, ArtistName}
 sealed trait Reconcilable {
   def normalize: String
 }
-
+/**
+ * An Artist (contrast with [[models.ArtistDir]]) is the external world entity representing an
+ * artist. In other words, while an [[models.ArtistDir]] has to physically exist on the filesystem,
+ * an artist can represent artists which don't have any albums or directories downloaded.
+ */
 // Note that this is only a case class for interoperability with Slick. its implementation of
 // hashcode and equals are different from the default ones!
 case class Artist(name: ArtistName) extends Reconcilable {

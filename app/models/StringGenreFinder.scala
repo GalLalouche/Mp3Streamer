@@ -2,7 +2,7 @@ package models
 
 import javax.inject.{Inject, Singleton}
 
-import backend.recon.{Artist => BRArtist}
+import backend.recon.Artist
 
 import common.TimedLogger
 import common.io.DirectoryRef
@@ -10,9 +10,9 @@ import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichOption.richOption
 
 @Singleton private class StringGenreFinder @Inject() (mf: MusicFinder, timedLogger: TimedLogger) {
-  private lazy val artistDirs: Map[BRArtist, mf.S#D] = timedLogger("Fetching artistDirs") {
+  private lazy val artistDirs: Map[Artist, mf.S#D] = timedLogger("Fetching artistDirs") {
     mf.artistDirs
-  }.mapBy(BRArtist apply _.name)
+  }.mapBy(Artist apply _.name)
 
   def forArtist(artist: backend.recon.Artist): Option[StringGenre] =
     artistDirs.get(artist).map(forDir)

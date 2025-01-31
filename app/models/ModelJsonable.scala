@@ -73,11 +73,11 @@ object ModelJsonable {
       )
   }
 
-  implicit object ArtistJsonifier extends OJsonable[Artist] {
-    override def jsonify(a: Artist) = Json.obj("name" -> a.name, "albums" -> a.albums.jsonify)
-    override def parse(json: JsObject): Artist = {
+  implicit object ArtistDirJsonifier extends OJsonable[ArtistDir] {
+    override def jsonify(a: ArtistDir) = Json.obj("name" -> a.name, "albums" -> a.albums.jsonify)
+    override def parse(json: JsObject): ArtistDir = {
       val albums: Seq[AlbumDir] = json.value("albums").parse[Seq[AlbumDir]]
-      Artist(json.str("name"), albums.toSet)
+      ArtistDir(json.str("name"), albums.toSet)
     }
   }
 }

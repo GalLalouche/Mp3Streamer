@@ -1,6 +1,6 @@
 package models
 
-import backend.recon.{Artist => BRArtist}
+import backend.recon.Artist
 import com.google.common.collect.BiMap
 import models.MusicFinder.DirectoryName
 
@@ -30,15 +30,14 @@ trait MusicFinder { self =>
     def getDirs(xs: Seq[String]): Seq[S#D] = xs.view.map(getDir).flatMap(_.dirs)
     getDirs(genresWithSubGenres).flatMap(_.dirs) ++ getDirs(flatGenres)
   }
-  // TODO this naming ambiguity has got to go!
-  def findArtistDir(artist: BRArtist): Option[S#D] =
+  def findArtistDir(artist: Artist): Option[S#D] =
     artistDirs.find(dir => artist == dirNameToArtist(dir.name))
 
-  def dirNameToArtist(name: DirectoryName): BRArtist =
-    BRArtist(name).optionOrKeep(invalidDirectoryNames.get(_).opt)
+  def dirNameToArtist(name: DirectoryName): Artist =
+    Artist(name).optionOrKeep(invalidDirectoryNames.get(_).opt)
   // Some artists have invalid directory characters in their name, so their directory won't match
   // the artist name. As a stupid hack, just aggregate them below.
-  protected def invalidDirectoryNames: BiMap[DirectoryName, BRArtist]
+  protected def invalidDirectoryNames: BiMap[DirectoryName, Artist]
   def albumDirs: DirView = albumDirs(genreDirs)
   def albumDirs(startingFrom: Seq[S#D]): DirView = startingFrom.view
     .flatMap(_.deepDirs)

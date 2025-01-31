@@ -6,7 +6,7 @@ import javax.inject.Inject
 import backend.search.SearchFormatter._
 import controllers.UrlPathUtils
 import models.{AlbumDir, ModelJsonable}
-import models.ModelJsonable.{ArtistJsonifier, SongJsonifier}
+import models.ModelJsonable.{ArtistDirJsonifier, SongJsonifier}
 import play.api.libs.json.{JsObject, Json}
 
 import common.rich.func.MoreTraverseInstances._

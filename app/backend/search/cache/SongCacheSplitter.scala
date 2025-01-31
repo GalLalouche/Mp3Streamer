@@ -2,7 +2,7 @@ package backend.search.cache
 
 import javax.inject.Inject
 
-import models.{AlbumDir, Artist, Song}
+import models.{AlbumDir, ArtistDir, Song}
 
 import common.TimedLogger
 import common.io.{IODirectory, IOFile, JsonableSaver}
@@ -20,7 +20,7 @@ private class SongCacheSplitter @Inject() (
   def apply(cs: SongCache)(implicit
       songJsonable: Jsonable[Song],
       albumJsonable: Jsonable[AlbumDir],
-      artistJsonable: Jsonable[Artist],
+      artistJsonable: Jsonable[ArtistDir],
   ): Unit = {
     val songs = cs.songs <| jsonableSaver.saveArray
     val albums =
@@ -38,7 +38,7 @@ private class SongCacheSplitter @Inject() (
         }
         .toSet <| jsonableSaver.saveArray
 
-    val artists = albums.groupBy(_.artistName).map(Function.tupled(Artist.apply))
-    jsonableSaver.saveArray[Artist](artists)
+    val artists = albums.groupBy(_.artistName).map(Function.tupled(ArtistDir.apply))
+    jsonableSaver.saveArray[ArtistDir](artists)
   }
 }

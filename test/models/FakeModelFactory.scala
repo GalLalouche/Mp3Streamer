@@ -60,8 +60,8 @@ class FakeModelFactory {
     opus,
     performanceYear,
   )
-  def artist(name: ArtistName = "artist", albums: Seq[AlbumDir] = Nil): Artist =
-    Artist(name, albums.toSet)
+  def artist(name: ArtistName = "artist", albums: Seq[AlbumDir] = Nil): ArtistDir =
+    ArtistDir(name, albums.toSet)
   implicit val arbSong: Arbitrary[MemorySong] = Arbitrary(
     for {
       title <- arbitrary[SongTitle]
