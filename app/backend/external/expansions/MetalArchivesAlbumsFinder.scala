@@ -29,7 +29,7 @@ private class MetalArchivesAlbumsFinder @Inject() (sameHostExpanderHelper: SameH
     }
     override def findAlbum(d: Document, a: Album): FutureOption[Url] =
       d.selectIterator(".display.discog tr td a")
-        .find(_.text.toLowerCase == a.title.toLowerCase)
+        .find(_.text.equalsIgnoreCase(a.title))
         .map(_.href)
         .map(Url.parse)
         .hoistId

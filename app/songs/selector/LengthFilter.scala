@@ -3,6 +3,7 @@ package songs.selector
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{CachedModelScorer, FullInfoScore, ScoreSource}
 import models.{Genre, GenreFinder, Song}
+import org.apache.commons.lang3.StringUtils
 
 import scala.concurrent.duration.Duration
 
@@ -16,7 +17,7 @@ private class LengthFilter(
 ) extends Filter[Song] {
   override def passes(song: Song): Boolean = genreFinder.forArtist(song.artist) match {
     // Special exempt for grind subgenres, because, well, you know.
-    case Some(Genre.Metal(subgenre)) if subgenre.toLowerCase.contains("grind").isFalse =>
+    case Some(Genre.Metal(subgenre)) if StringUtils.containsIgnoreCase(subgenre, "grind").isFalse =>
       song.duration >= minLength || hasExplicitSongScore(song)
     case _ => true
   }

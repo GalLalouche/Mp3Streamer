@@ -11,6 +11,7 @@ import scalaz.syntax.apply.ToApplyOps
 import common.concurrency.SimpleTypedActor
 import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
 import common.rich.RichT._
+import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichString._
 
 /** Encodes audio files files to mp3. Also handles caching. */
@@ -26,7 +27,7 @@ class Mp3Encoder @Inject() (
   private val actor = SimpleTypedActor.unique("Mp3Encoder", encodeFileIfNeeded)
 
   private def encodeFileIfNeeded(f: FileRef) =
-    f.mapIf(_.extension.toLowerCase != "mp3").to(encode(_))
+    f.mapIf(_.extension.equalsIgnoreCase("mp3").isFalse).to(encode(_))
 
   private def encode(file: FileRef): FileRef = {
     require(file.exists)

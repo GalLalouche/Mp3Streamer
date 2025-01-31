@@ -86,7 +86,7 @@ private object DownloadCover {
 
   private def fileMover(f: FolderImage)(outputDirectory: Directory): Unit = {
     val file = f.file.asInstanceOf[IOFile].file
-    if (file.parent == outputDirectory && file.name.toLowerCase == "folder.jpg") {
+    if (file.parent == outputDirectory && file.name.equalsIgnoreCase("folder.jpg")) {
       RichFileUtils.rename(file, "folder.jpg") // canonize casing
       return // This can happen if a local file named folder.jpg is chosen.
     }

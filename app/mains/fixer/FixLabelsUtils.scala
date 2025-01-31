@@ -38,7 +38,7 @@ private[mains] class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
   // If fixDiscNumber is false, it will be removed, unless the title indicates it is a bonus track.
   def getFixedTag(f: File, fixDiscNumber: Boolean, audioFile: AudioFile): Tag = {
     val song = SongTagParser(f, audioFile)
-    val $ = if (f.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
+    val $ = if (f.extension.equalsIgnoreCase("flac")) new FlacTag else new ID3v24Tag
 
     @tailrec
     def set(key: FieldKey, a: Any): Unit = a match {

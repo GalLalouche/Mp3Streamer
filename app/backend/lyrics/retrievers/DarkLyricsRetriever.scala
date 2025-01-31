@@ -35,7 +35,7 @@ private object DarkLyricsRetriever {
   private[retrievers] val parser: SingleHostParser = new SingleHostParser {
     private val BreakLinesOrNewLinePattern = Pattern.compile("""((<br>)|\n)""")
     private def isInstrumental(html: String) =
-      html.removeAll(BreakLinesOrNewLinePattern).toLowerCase == "<i>[instrumental]</i>"
+      html.removeAll(BreakLinesOrNewLinePattern).equalsIgnoreCase("<i>[instrumental]</i>")
 
     override val source: String = "DarkLyrics"
     // HTML is structured for shit, so might as well parse it by hand.

@@ -25,6 +25,6 @@ object OptionalModelScore {
   def withName(name: String): OptionalModelScore =
     if (name == Default.toString) Default else Scored(ModelScore.withName(name))
   def withNameInsensitive(name: String): OptionalModelScore =
-    if (name.toLowerCase == Default.toString.toLowerCase) Default
+    if (name.equalsIgnoreCase(Default.toString)) Default
     else Scored(ModelScore.withNameInsensitive(name))
 }

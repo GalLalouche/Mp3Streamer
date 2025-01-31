@@ -44,7 +44,7 @@ private object Fixer {
       val audioFile = AudioFileIO.read(file)
       val existingTag = audioFile.getTag
       val newTag = {
-        val $ = if (file.extension.toLowerCase == "flac") new FlacTag else new ID3v24Tag
+        val $ = if (file.extension.equalsIgnoreCase("flac")) new FlacTag else new ID3v24Tag
         def setOption(fieldKey: FieldKey, f: ParsedId3 => ParsedTag[_]): Unit =
           $.setOption(fieldKey, f(parsedId3).get(fieldKey, existingTag))
 

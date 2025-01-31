@@ -1,5 +1,7 @@
 package backend.recon
 
+import java.util.Objects
+
 import models.{Song, SongTitle}
 import models.TypeAliases.{AlbumTitle, ArtistName}
 
@@ -20,26 +22,18 @@ case class Artist(name: ArtistName) extends Reconcilable {
 }
 
 class Album(val title: AlbumTitle, val year: Int, val artist: Artist) extends Reconcilable {
-  private lazy val normalized = title.toLowerCase
   override def normalize: String = s"${artist.normalize} - ${title.toLowerCase}"
 
-  private def canEqual(other: Any): Boolean = other.isInstanceOf[Album]
   override def equals(other: Any): Boolean = other match {
     case that: Album =>
-      that.canEqual(this) &&
-      normalized == that.normalized &&
-      year == that.year &&
-      artist == that.artist
+      title.equalsIgnoreCase(that.title) && year == that.year && artist == that.artist
     case _ => false
   }
-  override def hashCode(): Int = {
-    val state = Seq(normalized, year, artist)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
-  }
+  override def hashCode(): Int = Objects.hashCode(title.toLowerCase, year, artist)
   override def toString = s"Album($title, $year, $artist)"
 }
 object Album {
-  def apply(title: AlbumTitle, year: Int, artist: Artist): Album = new Album(title, year, artist)
+  def apply(title: AlbumTitle, year: Int, artist: Artist) = new Album(title, year, artist)
 }
 
 class Track(val title: SongTitle, val album: Album) extends Reconcilable {

@@ -5,6 +5,7 @@ import java.nio.file.attribute.FileTime
 import javax.inject.Inject
 
 import models.{IOMusicFinder, SongTagParser}
+import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 
 import common.io.IODirectory
 import common.rich.RichT.richT
@@ -21,7 +22,7 @@ private class ArtistNameAdder @Inject() (mf: IOMusicFinder) extends Cleaner {
       val artistName = song.artistName.get
       val originalTime = FileTime.fromMillis(dir.dir.lastModified)
       val dirName = dir.name
-      val needsArtist = dirName.toLowerCase.contains(artistName.toLowerCase).isFalse
+      val needsArtist = containsIgnoreCase(dirName, artistName).isFalse
       lazy val year = yearOption.get.toString
       val needsYear = yearOption.isDefined && dirName.contains(year).isFalse
       val newName = (needsArtist, needsYear) match {

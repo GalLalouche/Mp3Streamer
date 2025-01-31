@@ -13,7 +13,7 @@ object ScribeUtils {
    * built-in levels.
    */
   def parseLevel(level: String): Option[Level] =
-    if (level.toLowerCase == "off")
+    if (level.equalsIgnoreCase("off"))
       None
     else
       Some(Level.get(level).getOrThrow(new IllegalArgumentException(s"Invalid level <$level>")))
