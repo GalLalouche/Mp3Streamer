@@ -5,7 +5,7 @@ import javax.inject.Inject
 import common.io.DirectoryRef
 
 class AlbumFactory @Inject() (mf: MusicFinder) {
-  def fromSong(s: Song): Album = Album(
+  def fromSong(s: Song): AlbumDir = AlbumDir(
     dir = s.file.parent,
     title = s.albumName,
     artistName = s.artistName,
@@ -13,13 +13,13 @@ class AlbumFactory @Inject() (mf: MusicFinder) {
     songs = mf.getSongsInDir(s.file.parent),
   )
 
-  def fromDir(dir: DirectoryRef): Album = {
+  def fromDir(dir: DirectoryRef): AlbumDir = {
     val songs =
       mf.getSongsInDir(dir)
         .ensuring(_.nonEmpty, s"Cannot create an album of an empty dir <$dir>")
         .sortBy(_.trackNumber)
     val firstSong = songs.head
-    Album(
+    AlbumDir(
       dir = dir,
       title = firstSong.albumName,
       artistName = firstSong.artistName,
@@ -29,6 +29,6 @@ class AlbumFactory @Inject() (mf: MusicFinder) {
   }
 
   implicit class AlbumFactorySongOps(private val $ : Song) {
-    def album: Album = fromSong($)
+    def album: AlbumDir = fromSong($)
   }
 }

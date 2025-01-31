@@ -4,8 +4,13 @@ import monocle.macros.Lenses
 
 import common.io.DirectoryRef
 
+/**
+ * An album directory (contrast with [[backend.recon.Album]]) is a concrete directory containing
+ * music files. In other words, an AlbumDir has to physically exist on the filesystem, as well as
+ * all of its song.
+ */
 @Lenses
-case class Album(
+case class AlbumDir(
     dir: DirectoryRef,
     title: AlbumTitle,
     artistName: ArtistName,

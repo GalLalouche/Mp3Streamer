@@ -48,17 +48,17 @@ object ArbitraryModels {
     opus,
     performanceYear,
   )
-  implicit lazy val arbAlbum: Gen[Album] = {
+  implicit lazy val arbAlbumDir: Gen[AlbumDir] = {
     val dir = TempDirectory()
     for {
       title <- arbitrary[String]
       artistName <- arbitrary[String]
       year <- arbitrary[Int].map(_ % 3000)
       songs <- arbitrary[Seq[Song]]
-    } yield Album(IODirectory(dir), title, artistName, year, songs)
+    } yield AlbumDir(IODirectory(dir), title, artistName, year, songs)
   }
   implicit lazy val arbArtist: Gen[Artist] = for {
     name <- arbitrary[String]
-    albums <- arbitrary[Set[Album]]
+    albums <- arbitrary[Set[AlbumDir]]
   } yield Artist(name, albums)
 }

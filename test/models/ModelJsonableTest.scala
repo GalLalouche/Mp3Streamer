@@ -9,6 +9,6 @@ import common.JsonableSpecs
 @Slow
 class ModelJsonableTest extends JsonableSpecs {
   propJsonTest[Song]()
-  propJsonTest[Album]()
+  propJsonTest[AlbumDir]()
   propJsonTest[Artist]()
 }

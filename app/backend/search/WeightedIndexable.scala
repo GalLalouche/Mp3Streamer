@@ -1,7 +1,7 @@
 package backend.search
 
 import backend.search.WeightedIndexable._
-import models.{Album, Artist, Song}
+import models.{AlbumDir, Artist, Song}
 import simulacrum.typeclass
 
 @typeclass private trait WeightedIndexable[T] {
@@ -29,11 +29,11 @@ private object WeightedIndexable {
     override def sortBy(s: Song): Product =
       (s.artistName, s.title, s.year, s.performanceYear, s.albumName, s.trackNumber)
   }
-  implicit object AlbumIndex extends WeightedIndexable[Album] {
-    protected override def mainTerm(t: Album) = t.title
-    protected override def secondaryTerms(t: Album) =
+  implicit object AlbumIndex extends WeightedIndexable[AlbumDir] {
+    protected override def mainTerm(t: AlbumDir) = t.title
+    protected override def secondaryTerms(t: AlbumDir) =
       t.songs.flatMap(SongIndexer.secondaryTerms).toSet
-    override def sortBy(a: Album): Product = (a.artistName, a.year, a.title)
+    override def sortBy(a: AlbumDir): Product = (a.artistName, a.year, a.title)
   }
   implicit object ArtistIndex extends WeightedIndexable[Artist] {
     protected override def mainTerm(t: Artist) = t.name

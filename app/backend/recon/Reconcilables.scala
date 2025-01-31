@@ -21,6 +21,11 @@ case class Artist(name: ArtistName) extends Reconcilable {
   override def hashCode(): Int = normalize.hashCode
 }
 
+/**
+ * An Album (contrast with [[models.AlbumDir]]) is the external world entity representing an album.
+ * In other words, while an [[models.AlbumDir]] has to physically exist on the filesystem, a release
+ * can represent albums which haven't yet been downloaded.
+ */
 class Album(val title: AlbumTitle, val year: Int, val artist: Artist) extends Reconcilable {
   override def normalize: String = s"${artist.normalize} - ${title.toLowerCase}"
   def toYearless = YearlessAlbum(title, artist)

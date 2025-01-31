@@ -62,7 +62,7 @@ private class SongFormatter @Inject() (
   def randomFlacSong(): ShouldEncodeMp3Reader = group(songSelectorState.randomFlacSong())
 
   private def songsInAlbum(path: String): Seq[Song] =
-    urlPathUtils.parseFile(path) |> IODirectory.apply |> albumFactory.fromDir |> Album.songs.get
+    urlPathUtils.parseFile(path) |> IODirectory.apply |> albumFactory.fromDir |> AlbumDir.songs.get
   def album(path: String): ShouldEncodeMp3Reader = songsInAlbum(path)
   def discNumber(path: String, requestedDiscNumber: String): ShouldEncodeMp3Reader =
     songsInAlbum(path).filter(_.discNumber.contains(requestedDiscNumber)).ensuring(_.nonEmpty)

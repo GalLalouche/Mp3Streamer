@@ -4,8 +4,8 @@ import javax.inject.Inject
 
 import controllers.websockets.PlayWebSocketRegistryFactory
 import controllers.websockets.WebSocketRef.WebSocketRefReader
-import models.Album
-import models.ModelJsonable.AlbumJsonifier
+import models.AlbumDir
+import models.ModelJsonable.AlbumDirJsonifier
 import play.api.libs.json.JsValue
 import rx.lang.scala.Observable
 
@@ -20,7 +20,7 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
 private class RecentFormatter @Inject() (
     ec: ExecutionContext,
     recentAlbums: RecentAlbums,
-    @NewDir newAlbumObservable: Observable[Album],
+    @NewDir newAlbumObservable: Observable[AlbumDir],
     webSocketFactory: PlayWebSocketRegistryFactory,
 ) {
   private def sinceDays(d: Int): Future[JsValue] = Future(recentAlbums.sinceDays(d)).map(_.jsonify)

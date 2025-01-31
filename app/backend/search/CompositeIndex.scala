@@ -3,14 +3,14 @@ package backend.search
 import backend.search.CompositeIndex.Finder
 import backend.search.ProductOrdering.Impl
 import backend.search.WeightedIndexable.ops._
-import models.{Album, Artist, Song}
+import models.{AlbumDir, Artist, Song}
 import models.ModelJsonable._
 
 import common.json.Jsonable
 
 /** Index for songs, albums and artists. */
-private class CompositeIndex(songs: Index[Song], albums: Index[Album], artists: Index[Artist]) {
-  def search(terms: Seq[String]): (Seq[Song], Seq[Album], Seq[Artist]) = {
+private class CompositeIndex(songs: Index[Song], albums: Index[AlbumDir], artists: Index[Artist]) {
+  def search(terms: Seq[String]): (Seq[Song], Seq[AlbumDir], Seq[Artist]) = {
     val finder = new Finder(terms)
     (finder(songs), finder(albums), finder(artists))
   }
