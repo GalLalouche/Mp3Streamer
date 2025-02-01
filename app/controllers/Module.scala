@@ -1,8 +1,8 @@
 package controllers
 
-import backend.albums.filler.ExistingAlbumsModules
 import backend.logging.{ScribeConfigLoader, ScribeUtils}
 import backend.module.{RealInternetTalkerModule, RealModule}
+import backend.new_albums.filler.ExistingAlbumsModules
 import com.google.common.annotations.VisibleForTesting
 import com.google.inject.util.Modules
 import net.codingwell.scalaguice.ScalaModule

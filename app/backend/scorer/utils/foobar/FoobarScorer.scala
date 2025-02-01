@@ -3,8 +3,8 @@ package backend.scorer.utils.foobar
 import java.io.File
 import javax.inject.Inject
 
-import backend.albums.filler.ArtistReconPusher
 import backend.mb.MbArtistReconciler
+import backend.new_albums.filler.ArtistReconPusher
 import backend.recon.{Artist, ArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{FullInfoModelScorer, FullInfoScore, OptionalModelScore, ScoreSource}

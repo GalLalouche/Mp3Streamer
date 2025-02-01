@@ -60,14 +60,14 @@ DELETE        /playlist/:id                              playlist.PlaylistContro
 GET           /index/index                               backend.search.IndexController.index()
 
 # Albums (Lazy, because ExistingAlbums takes a while to load)
-GET           /new_albums/index.html                     @backend.albums.AlbumsController.index
-GET           /new_albums/albums/                        @backend.albums.AlbumsController.albums
-GET           /new_albums/albums/*artist                 @backend.albums.AlbumsController.forArtist(artist)
-PUT           /new_albums/artist/remove/*artist          @backend.albums.AlbumsController.removeArtist(artist)
-PUT           /new_albums/artist/ignore/*artist          @backend.albums.AlbumsController.ignoreArtist(artist)
-PUT           /new_albums/artist/unignore/*artist        @backend.albums.AlbumsController.unignoreArtist(artist)
-PUT           /new_albums/album/remove                   @backend.albums.AlbumsController.removeAlbum
-PUT           /new_albums/album/ignore                   @backend.albums.AlbumsController.ignoreAlbum
+GET           /new_albums/index.html                     backend.new_albums.NewAlbumsController.index
+GET           /new_albums/albums/                        backend.new_albums.NewAlbumsController.albums
+GET           /new_albums/albums/*artist                 backend.new_albums.NewAlbumsController.forArtist(artist)
+PUT           /new_albums/artist/remove/*artist          backend.new_albums.NewAlbumsController.removeArtist(artist)
+PUT           /new_albums/artist/ignore/*artist          backend.new_albums.NewAlbumsController.ignoreArtist(artist)
+PUT           /new_albums/artist/unignore/*artist        backend.new_albums.NewAlbumsController.unignoreArtist(artist)
+PUT           /new_albums/album/remove                   backend.new_albums.NewAlbumsController.removeAlbum
+PUT           /new_albums/album/ignore                   backend.new_albums.NewAlbumsController.ignoreAlbum
 
 # Recent
 GET           /recent/albums/                            backend.recent.RecentController.recent(amount: Int = 10)

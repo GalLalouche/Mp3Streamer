@@ -2,10 +2,10 @@ package backend.module
 
 import java.util.logging.LogManager
 
-import backend.albums.NewAlbumModule
 import backend.external.ExternalModule
 import backend.lyrics.LyricsModule
 import backend.mb.MbModule
+import backend.new_albums.NewAlbumsModule
 import backend.recent.RecentModule
 import backend.recon.ReconModule
 import backend.scorer.ScorerModule
@@ -23,7 +23,7 @@ object AllModules extends ScalaModule {
     install(ExternalModule)
     install(LyricsModule)
     install(MbModule)
-    install(NewAlbumModule)
+    install(NewAlbumsModule)
     install(RecentModule)
     install(ReconModule)
     install(ScorerModule)

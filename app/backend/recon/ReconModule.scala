@@ -1,6 +1,6 @@
 package backend.recon
 
-import backend.albums.filler.VerifiedMbArtistReconciler
+import backend.new_albums.filler.VerifiedMbArtistReconciler
 import com.google.inject.Provides
 import net.codingwell.scalaguice.ScalaModule
 

@@ -3,9 +3,9 @@ package backend.scorer.utils.foobar
 import java.io.File
 import javafx.stage.WindowEvent
 
-import backend.albums.filler.ExistingAlbumsModules
 import backend.logging.ScribeUtils
 import backend.module.StandaloneModule
+import backend.new_albums.filler.ExistingAlbumsModules
 import better.files
 import better.files.FileMonitor
 import com.google.inject.Guice
