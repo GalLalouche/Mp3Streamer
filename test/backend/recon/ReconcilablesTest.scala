@@ -1,5 +1,6 @@
 package backend.recon
 
+import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
@@ -14,4 +15,7 @@ class ReconcilablesTest extends FreeSpec with AuxSpecs {
       a1.toString shouldNot be(a2.toString)
     }
   }
+
+object ReconcilablesTest {
+  implicit val arbitraryArtist: Arbitrary[Artist] = Arbitrary(Gen.alphaNumStr.map(Artist))
 }
