@@ -88,4 +88,5 @@ trait DirectoryRef extends PathRef { self =>
     require(ps._2.nonEmpty, s"<$dir> is not a parent of <$this>")
     ps._1.toList
   }
+  def clear(): DirectoryRef
 }

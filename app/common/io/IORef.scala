@@ -90,6 +90,10 @@ class IODirectory private (val dir: Directory) extends IOPath(dir.dir) with Dire
 
   override def hashCode(): Int = dir.hashCode()
   override def toString = s"IODirectory($dir)"
+  override def clear(): IODirectory = {
+    dir.clear()
+    this
+  }
 }
 object IODirectory {
   def apply(file: File): IODirectory = apply(Directory(file))
