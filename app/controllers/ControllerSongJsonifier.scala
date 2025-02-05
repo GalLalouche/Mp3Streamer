@@ -2,11 +2,10 @@ package controllers
 
 import javax.inject.Inject
 
-import models.{IOSong, ModelJsonable, Poster, Song}
+import models.{IOSong, ModelJsonable, PosterLookup, Song}
 import models.ModelJsonable.SongJsonifier
 import play.api.libs.json.{JsObject, JsString}
 
-import common.io.IOFile
 import common.json.{JsonableOverrider, OJsonable, OJsonableOverrider}
 import common.json.RichJson._
 import common.rich.RichT._
@@ -16,13 +15,13 @@ import common.rich.RichT._
  *   - `file` is encoded and decoded as URL
  *   - Adds other relevant paths such as stream path and posters
  */
-class ControllerSongJsonifier @Inject() (urlPathUtils: UrlPathUtils) {
+class ControllerSongJsonifier @Inject() (urlPathUtils: UrlPathUtils, posterLookup: PosterLookup) {
   implicit val songJsonable: OJsonable[Song] =
     JsonableOverrider[Song](new OJsonableOverrider[Song] {
       override def jsonify(s: Song, original: => JsObject) = {
         val posterPath =
           urlPathUtils
-            .encodePath(Poster.getCoverArt(s.asInstanceOf[IOSong]) |> IOFile.apply)
+            .encodePath(posterLookup.getCoverArt(s.asInstanceOf[IOSong]))
             // It's possible the playlist contains files which have already been deleted.
             .onlyIf(s.file.exists)
         val $ = original +

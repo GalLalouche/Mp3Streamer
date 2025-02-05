@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 import com.google.inject.assistedinject.Assisted
 import me.tongfei.progressbar.ProgressBar
-import models.{IOSong, Poster}
+import models.{IOSong, PosterLookup}
 import org.apache.commons.io.FileUtils
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.audio.exceptions.{CannotWriteException, UnableToRenameFileException}
@@ -31,6 +31,7 @@ import common.rich.primitives.RichInt._
 private class RandomFolderCreator @Inject() (
     @Seed seed: Long,
     @Assisted songSelector: MultiStageSongSelector[IOSystem],
+    posterLookup: PosterLookup,
 ) {
   private val random = new Random(seed)
   private val tempDirectoryName = System.getenv("TEMP_LARGE").ensuring(_ != null)
@@ -69,7 +70,9 @@ private class RandomFolderCreator @Inject() (
     if (audioFile.getTag.hasField(FieldKey.COVER_ART).isFalse)
       try {
         audioFile.getTag.setField(
-          StandardArtwork.createArtworkFromFile(Poster.getCoverArt(IOSong.read(f))),
+          StandardArtwork.createArtworkFromFile(
+            posterLookup.getCoverArt(IOSong.read(f)).asInstanceOf[IOFile].file,
+          ),
         )
         audioFile.commit()
       } catch {
