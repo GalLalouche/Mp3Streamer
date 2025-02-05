@@ -16,7 +16,7 @@ private class PlaylistFormatter @Inject() (
 ) {
   private implicit val iec: ExecutionContext = ec
   import songJsonifier.songJsonable
-  def getIds: Future[JsArray] = $.getIds.map(_.toVector.jsonifyArray)
+  def getIds: Future[JsArray] = $.getIds.map(_.toVector.sorted.jsonifyArray)
   def get(id: String): Future[Option[JsValue]] = $.get(id).map(_.map(_.jsonify))
   def set(id: String, value: JsValue): Future[Unit] = $.set(id, value.parse[Playlist])
   def remove(id: String): Future[Boolean] = $.remove(id)

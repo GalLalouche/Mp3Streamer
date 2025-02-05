@@ -76,6 +76,16 @@ sealed abstract class MemoryDir(val path: String) extends DirectoryRef with Memo
       filesByName -= name
     hasFile
   }
+  override def clear(): MemoryDir = {
+    filesByName.clear()
+    dirsByName.values.foreach(_.clean())
+    dirsByName.clear()
+    this
+  }
+  private def clean(): Unit = {
+    filesByName.clear()
+    dirsByName.values.foreach(_.clean())
+  }
 }
 private case class SubDir(parent: MemoryDir, name: String)
     extends MemoryDir(parent.path + "/" + name) {

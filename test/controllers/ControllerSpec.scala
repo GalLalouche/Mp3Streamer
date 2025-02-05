@@ -14,14 +14,15 @@ import play.api.libs.ws.{BodyWritable, WSClient, WSResponse}
 import play.api.mvc.Result
 
 import scala.concurrent.{ExecutionContext, Future}
+
 import common.rich.RichFuture._
 import common.rich.collections.RichSet._
 import common.test.AuxSpecs
 
-trait ControllerSpec extends AuxSpecs with GuiceOneServerPerSuite with BeforeAndAfterAll { self: TestSuite =>
-  override protected def beforeAll(): Unit = {
+trait ControllerSpec extends AuxSpecs with GuiceOneServerPerSuite with BeforeAndAfterAll {
+  self: TestSuite =>
+  protected override def beforeAll(): Unit =
     Module.defaultLogLevel = None
-  }
   // Play, being moronic as usual, will initialize an application even if the test is to be excluded,
   // resulting in poor performance.
   // TODO create new issue in github https://github.com/playframework/playframework/issues/new
@@ -67,9 +68,13 @@ trait ControllerSpec extends AuxSpecs with GuiceOneServerPerSuite with BeforeAnd
   lazy val encodedSong: String = PlayUrlPathUtils.encodePath(song)
   def get(path: String): Future[WSResponse] =
     app.injector.instanceOf[WSClient].url(s"http://localhost:$port/$path").get()
+  def delete(path: String): Future[WSResponse] =
+    app.injector.instanceOf[WSClient].url(s"http://localhost:$port/$path").delete()
   def post(path: String): Future[WSResponse] = post(path, "")
   def post[B: BodyWritable](path: String, body: B = ""): Future[WSResponse] =
     app.injector.instanceOf[WSClient].url(s"http://localhost:$port/$path").post(body)
+  def put[B: BodyWritable](path: String, body: B = ""): Future[WSResponse] =
+    app.injector.instanceOf[WSClient].url(s"http://localhost:$port/$path").put(body)
 
   override def fakeApplication() =
     GuiceApplicationBuilder()
