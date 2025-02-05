@@ -25,7 +25,6 @@ trait MusicFinder { self =>
   private def getDir(name: String) = baseDir.getDir(name).get
   private def allGenres = genresWithSubGenres ++ flatGenres
   def genreDirsWithSubGenres: Seq[S#D] = genresWithSubGenres.map(getDir)
-  def genreDirs: Seq[S#D] = allGenres.sorted.map(getDir)
   def artistDirs: Seq[S#D] = {
     def getDirs(xs: Seq[String]): Seq[S#D] = xs.view.map(getDir).flatMap(_.dirs)
     getDirs(genresWithSubGenres).flatMap(_.dirs) ++ getDirs(flatGenres)
@@ -39,6 +38,7 @@ trait MusicFinder { self =>
   // the artist name. As a stupid hack, just aggregate them below.
   protected def invalidDirectoryNames: BiMap[DirectoryName, Artist]
   def albumDirs: DirView = albumDirs(genreDirs)
+  private def genreDirs: Seq[S#D] = allGenres.sorted.map(getDir)
   def albumDirs(startingFrom: Seq[S#D]): DirView = startingFrom.view
     .flatMap(_.deepDirs)
     // Because some albums have, e.g., cover subdirectories

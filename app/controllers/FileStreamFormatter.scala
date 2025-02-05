@@ -8,7 +8,7 @@ import scalaz.std.option.optionInstance
 import common.io.FileRef
 import common.rich.primitives.RichString._
 
-class FileStreamFormatter {
+private class FileStreamFormatter {
   def apply(file: FileRef, mimeType: String, range: Option[String]): StreamResult = {
     // assumed format: [bytes=<start>-]
     def parseRange(s: String): Long = s.takeAfterLast('=').takeWhile(_.isDigit).toLong

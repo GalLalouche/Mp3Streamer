@@ -23,20 +23,11 @@ import common.rich.RichTime.RichLocalDateTime
 private[new_albums] class NewAlbumFiller @Inject() private (
     storage: CachedNewAlbumStorage,
     fetcher: NewAlbumFetcher,
-    ea: PreCachedExistingAlbums,
     clock: Clock,
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
-  // TODO code duplication with RefreshableRetriever
-  private val finisher = SimpleTypedActor.async[(Seq[NewAlbumRecon], Set[Artist]), AddedAlbumCount](
-    "CacherFiller finisher",
-    Function.tupled(storage.storeNew),
-  )
-  private def ignore(reason: String) = {
-    scribe.trace(reason)
-    Future.successful(0: AddedAlbumCount)
-  }
+
   def update(maxAge: Duration, maxCachedAlbums: Int)(a: Artist): Future[AddedAlbumCount] =
     storage
       .forArtist(a)
@@ -64,4 +55,14 @@ private[new_albums] class NewAlbumFiller @Inject() private (
           }
           .listen(stored => if (stored > 0) scribe.debug(s"Stored <$stored> new albums.")),
       )
+
+  // TODO code duplication with RefreshableRetriever
+  private val finisher = SimpleTypedActor.async[(Seq[NewAlbumRecon], Set[Artist]), AddedAlbumCount](
+    "CacherFiller finisher",
+    Function.tupled(storage.storeNew),
+  )
+  private def ignore(reason: String) = {
+    scribe.trace(reason)
+    Future.successful(0: AddedAlbumCount)
+  }
 }

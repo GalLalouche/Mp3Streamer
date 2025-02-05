@@ -35,6 +35,4 @@ class ControllerSongJsonifier @Inject() (posterLookup: PosterLookup) {
     override def parse(obj: JsObject, unused: => Song) =
       SongJsonifier.parse(obj + ("file" -> JsString(PlayUrlDecoder(obj.str("file")))))
   })(ModelJsonable.SongJsonifier)
-
-  def apply(s: Song): JsObject = songJsonable.jsonify(s)
 }

@@ -6,7 +6,7 @@ import play.api.mvc.InjectedController
 
 import scala.concurrent.ExecutionContext
 
-class Posters @Inject() (
+class PostersController @Inject() (
     ec: ExecutionContext,
     $ : PostersFormatter,
 ) extends InjectedController {

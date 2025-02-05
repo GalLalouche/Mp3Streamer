@@ -30,7 +30,7 @@ GET           /stream/download/*path                     controllers.StreamerCon
 #GET         /stream/play/*path                       controllers.Streamer.playSong(path)
 
 # Posters
-GET           /posters/*path                             controllers.Posters.image(path)
+GET           /posters/*path                             controllers.PostersController.image(path)
 
 # Lyrics
 GET           /lyrics/*path                              backend.lyrics.LyricsController.get(path)

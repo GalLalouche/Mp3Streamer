@@ -4,13 +4,13 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 import com.google.common.annotations.VisibleForTesting
-import models.RichTag._
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
 
 import scala.concurrent.duration.Duration
 import scala.util.Try
 
+import common.RichTag._
 import common.io.IOFile
 import common.rich.RichT._
 import common.rich.collections.RichIterator._

@@ -7,7 +7,7 @@ import io.lemonlabs.uri.Url
 import mains.{BrowserUtils, IOUtils, MainsModule}
 import mains.cover.DownloadCover._
 import mains.cover.image.ImageAPISearch
-import models.{AlbumFactory, MusicFinder}
+import models.{AlbumDirFactory, MusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -23,7 +23,7 @@ import common.rich.path.RichFile.richFile
 private[mains] class DownloadCover @Inject() (
     ec: ExecutionContext,
     mf: MusicFinder,
-    albumFactory: AlbumFactory,
+    albumFactory: AlbumDirFactory,
     imageFinder: ImageAPISearch,
     imageDownloader: ImageDownloader,
     imageSelector: ImageSelector,

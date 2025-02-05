@@ -20,7 +20,7 @@ import common.json.ToJsonableOps._
 import common.rich.RichT._
 
 private class SongFormatter @Inject() (
-    albumFactory: AlbumFactory,
+    albumFactory: AlbumDirFactory,
     groups: SongGroups,
     songSelectorState: SongSelectorState,
     followingSong: FollowingSong,

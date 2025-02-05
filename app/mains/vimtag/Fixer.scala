@@ -4,7 +4,6 @@ import com.google.inject.Guice
 import mains.MainsModule
 import mains.fixer.{FixLabelsUtils, FolderFixer, StringFixer}
 import mains.vimtag.Flag.RemoveFeat
-import models.RichTag._
 import models.SongTagParser
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import net.codingwell.scalaguice.ScalaModule
@@ -13,6 +12,7 @@ import org.jaudiotagger.tag.FieldKey
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
 
+import common.RichTag._
 import common.guice.RichModule.richModule
 import common.io.{DirectoryRef, IODirectory}
 import common.rich.RichT.richT

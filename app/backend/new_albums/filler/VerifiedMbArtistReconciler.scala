@@ -10,6 +10,10 @@ import scala.concurrent.ExecutionContext
 import common.rich.func.BetterFutureInstances.betterFutureInstances
 import common.rich.func.RichOptionT.richOptionT
 
+/**
+ * Reconciles artists, with an added verification that the downloaded album match those in
+ * MusicBrainz, thus avoiding false positives.
+ */
 class VerifiedMbArtistReconciler @Inject() (
     artistReconciler: MbArtistReconciler,
     verifier: ArtistReconVerifier,

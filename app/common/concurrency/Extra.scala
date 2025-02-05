@@ -15,7 +15,7 @@ sealed trait Extra extends SimpleActor[Unit] {
 object Extra {
   def apply(name: String)(f: => Any): Extra =
     new SimpleTypedActorImpl[Unit, Unit](name, _ => f) with Extra {
-      final override def !(): Future[Unit] = this
+      override def !(): Future[Unit] = this
         .!(())
         // Since it's possible no one will use the Extra output, it's important to log this!
         .listenError(scribe.error(s"Extra <$name> failed", _))

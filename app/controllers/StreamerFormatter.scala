@@ -3,7 +3,6 @@ package controllers
 import javax.inject.Inject
 
 import decoders.Mp3Encoder
-import play.api.mvc.InjectedController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -13,7 +12,7 @@ private class StreamerFormatter @Inject() (
     encoder: Mp3Encoder,
     helper: FileStreamFormatter,
     ec: ExecutionContext,
-) extends InjectedController {
+) {
   private implicit val iec: ExecutionContext = ec
   def apply(path: String, range: Option[String], needsEncoding: Boolean): Future[StreamResult] = {
     val file = IOFile(path)

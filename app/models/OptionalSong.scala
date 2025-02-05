@@ -23,18 +23,6 @@ case class OptionalSong(
 }
 
 object OptionalSong {
-  def empty(file: String): OptionalSong = OptionalSong(
-    file = file,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-  )
+  def empty(file: String): OptionalSong =
+    OptionalSong(file = file, None, None, None, None, None, None, None, None, None, None, None)
 }

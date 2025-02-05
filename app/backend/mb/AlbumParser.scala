@@ -7,7 +7,6 @@ import backend.recon.{Artist, ReconID}
 import mains.fixer.StringFixer
 import play.api.libs.json.{JsObject, JsValue}
 
-import common.CompositeDateFormat
 import common.json.RichJson._
 import common.rich.RichT.richT
 import common.rich.RichTime.OrderingLocalDate

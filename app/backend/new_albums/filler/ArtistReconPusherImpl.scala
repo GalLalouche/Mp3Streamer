@@ -2,7 +2,7 @@ package backend.new_albums.filler
 
 import javax.inject.Inject
 
-import backend.recon.{Artist, ArtistReconStorage, ReconID}
+import backend.recon.{Artist, ArtistReconPusher, ArtistReconStorage, ReconID}
 import backend.recon.StoredReconResult.HasReconResult
 import models.TypeAliases.ArtistName
 

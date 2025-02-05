@@ -1,14 +1,15 @@
-package common
+package backend.mb
 
 import java.time.{LocalDate, LocalDateTime, Year, YearMonth}
 import java.time.format.DateTimeFormatter
 
+import backend.mb.CompositeDateFormat.Parser
+
 import scala.util.Try
 
-import common.CompositeDateFormat.Parser
 import common.rich.collections.RichTraversableOnce._
 
-object CompositeDateFormat {
+private object CompositeDateFormat {
   private def toParser[T](pattern: String)(implicit ev: LocalDateTimeable[T]): Parser = source =>
     Try(ev.parse(source, DateTimeFormatter.ofPattern(pattern))).map(ev.toLocalDateTime).toOption
   private type Parser = String => Option[LocalDateTime]

@@ -1,9 +1,9 @@
 package decoders
 
-import models.RichTag._
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.{FieldKey, Tag}
 
+import common.RichTag._
 import common.io.IOFile
 
 private object TagCopier {

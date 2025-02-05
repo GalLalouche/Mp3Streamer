@@ -16,7 +16,13 @@ import common.rich.path.Directory
  *
  * Should look something like this
  *
- * ------ Rock || Metal || Jazz || New Age Folk Pop || Black Hard Classic || Death Prog || Doom
+ * {{{
+ * ------
+ * Rock           || Metal         || Jazz || New Age
+ * Folk | Pop     || Black | Death
+ * Hard | Classic || Death | Prog
+ *                || Doom
+ * }}}
  */
 private object NewArtistFolderCreator {
   def selectGenreDirAndPopupBrowser(name: ArtistName): Future[Directory] = {
