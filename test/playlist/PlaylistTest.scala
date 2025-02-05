@@ -10,7 +10,7 @@ import scala.concurrent.duration.Duration
 import common.JsonableSpecs
 
 class PlaylistTest extends JsonableSpecs {
-  import Playlist.PlaylistStateJsonable
+  import Playlist.playlistJsonable
   import models.ModelJsonable.SongJsonifier
 
   private implicit val arbPlaylistQueue: Arbitrary[Playlist] = Arbitrary(for {

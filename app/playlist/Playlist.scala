@@ -23,7 +23,7 @@ private object Playlist {
   import common.json.Jsonable
   import common.json.RichJson._
 
-  implicit def PlaylistStateJsonable(implicit songJsonable: Jsonable[Song]): Jsonable[Playlist] =
+  implicit def playlistJsonable(implicit songJsonable: Jsonable[Song]): Jsonable[Playlist] =
     new Jsonable[Playlist] {
       override def jsonify(ps: Playlist): JsObject = Json.obj(
         "songs" -> ps.songs.jsonify,
@@ -31,9 +31,9 @@ private object Playlist {
         "currentIndex" -> ps.currentIndex,
       )
       override def parse(json: JsValue): Playlist = Playlist(
-        songs = json.value("songs").parse[Seq[Song]],
+        songs = json.array("songs").parse[Song],
         currentIndex = json.int("currentIndex"),
-        currentDuration = Duration.apply(json.int("duration"), TimeUnit.SECONDS),
+        currentDuration = Duration.apply(json.double("duration").toInt, TimeUnit.SECONDS),
       )
     }
 }
