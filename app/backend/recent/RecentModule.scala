@@ -3,7 +3,7 @@ package backend.recent
 import javax.inject.Singleton
 
 import com.google.inject.Provides
-import models.{AlbumDir, AlbumFactory}
+import models.{AlbumDir, AlbumDirFactory}
 import net.codingwell.scalaguice.ScalaPrivateModule
 import rx.lang.scala.{Observable, Observer}
 
@@ -22,5 +22,5 @@ object RecentModule extends ScalaPrivateModule {
 
   @Provides
   @Singleton
-  private def subject(albumFactory: AlbumFactory): DirToAlbum = PipeSubject(albumFactory.fromDir)
+  private def subject(albumFactory: AlbumDirFactory): DirToAlbum = PipeSubject(albumFactory.fromDir)
 }

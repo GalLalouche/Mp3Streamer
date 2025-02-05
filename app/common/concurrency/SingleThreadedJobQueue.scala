@@ -11,7 +11,7 @@ private class SingleThreadedJobQueue(queueName: String) {
   private lazy val asExecutionContext: ExecutionContext = new ExecutionContext {
     override def execute(runnable: Runnable): Unit = queue.submit(runnable)
     override def reportFailure(cause: Throwable): Unit = {
-      println(s"Error @ $queueName")
+      scribe.error(s"Error @ $queueName", cause)
       cause.printStackTrace()
     }
   }

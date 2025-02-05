@@ -4,15 +4,7 @@ import javax.inject.Inject
 
 import common.io.DirectoryRef
 
-class AlbumFactory @Inject() (mf: MusicFinder) {
-  def fromSong(s: Song): AlbumDir = AlbumDir(
-    dir = s.file.parent,
-    title = s.albumName,
-    artistName = s.artistName,
-    year = s.year,
-    songs = mf.getSongsInDir(s.file.parent),
-  )
-
+class AlbumDirFactory @Inject() (mf: MusicFinder) {
   def fromDir(dir: DirectoryRef): AlbumDir = {
     val songs =
       mf.getSongsInDir(dir)
@@ -31,4 +23,12 @@ class AlbumFactory @Inject() (mf: MusicFinder) {
   implicit class AlbumFactorySongOps(private val $ : Song) {
     def album: AlbumDir = fromSong($)
   }
+
+  private def fromSong(s: Song): AlbumDir = AlbumDir(
+    dir = s.file.parent,
+    title = s.albumName,
+    artistName = s.artistName,
+    year = s.year,
+    songs = mf.getSongsInDir(s.file.parent),
+  )
 }

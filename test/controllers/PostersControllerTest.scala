@@ -2,17 +2,16 @@ package controllers
 
 import org.scalatest.FreeSpec
 import org.scalatest.tags.Slow
-import play.api.test._
 
 import common.rich.path.RichFile._
 
 @Slow
-class PostersTest extends FreeSpec with ControllerSpec {
-  private lazy val $ = app.injector.instanceOf[Posters]
+class PostersControllerTest extends FreeSpec with ControllerSpec {
+  private lazy val $ = app.injector.instanceOf[PostersController]
 
   "image" in {
     val file = getResourceFile("poster.jpg")
-    val result = $.image(file.getCanonicalPath).apply(FakeRequest())
+    val result = get("posters/" + file.getCanonicalPath)
     result.getBytes shouldReturn file.bytes
   }
 }

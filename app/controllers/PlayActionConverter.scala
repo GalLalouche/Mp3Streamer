@@ -42,7 +42,7 @@ class PlayActionConverter @Inject() (
   object Resultable {
     implicit def writableEv[A: Writeable]: Resultable[A] = Ok(_)
     implicit val anyEv: Resultable[Any] = (_: Any) => NoContent
-    implicit val streamResultEv: Resultable[StreamResult] = sr => {
+    private[controllers] implicit val streamResultEv: Resultable[StreamResult] = sr => {
       val source = Source
         .fromPublisher(IterateeStreams.enumeratorToPublisher(Enumerator.fromStream(sr.inputStream)))
         .map(ByteString.apply)

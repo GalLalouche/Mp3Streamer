@@ -3,7 +3,7 @@ package backend.recent
 import java.time.{Clock, LocalDate}
 import javax.inject.Inject
 
-import models.{AlbumDir, AlbumFactory, MusicFinder}
+import models.{AlbumDir, AlbumDirFactory, MusicFinder}
 
 import scala.Ordering.Implicits._
 
@@ -16,7 +16,11 @@ import common.io.{DirectoryRef, FileRef}
 import common.rich.RichT._
 import common.rich.RichTime._
 
-private class RecentAlbums @Inject() (mf: MusicFinder, albumFactory: AlbumFactory, clock: Clock) {
+private class RecentAlbums @Inject() (
+    mf: MusicFinder,
+    albumFactory: AlbumDirFactory,
+    clock: Clock,
+) {
   // recent doesn't care about songs.
   private def makeAlbum(dir: DirectoryRef) = albumFactory.fromDir(dir).copy(songs = Nil)
   private def go(amount: Int)(dirs: Seq[DirectoryRef]) = dirs
