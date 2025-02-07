@@ -20,11 +20,11 @@ class SongController @Inject() (
   def randomMp3Song = run($.randomMp3Song())
   def randomFlacSong = run($.randomFlacSong())
 
-  def album(path: String) = run($.album(decoder.decode(path)))
+  def album(path: String) = run($.album(decoder.apply(path)))
   def discNumber(path: String, requestedDiscNumber: String) = run(
-    $.discNumber(decoder.decode(path), requestedDiscNumber),
+    $.discNumber(decoder.apply(path), requestedDiscNumber),
   )
 
-  def song(path: String) = run($.song(decoder.decode(path)))
-  def nextSong(path: String) = run($.nextSong(decoder.decode(path)))
+  def song(path: String) = run($.song(decoder.apply(path)))
+  def nextSong(path: String) = run($.nextSong(decoder.apply(path)))
 }

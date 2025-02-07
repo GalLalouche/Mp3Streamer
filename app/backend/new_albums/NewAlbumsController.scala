@@ -24,15 +24,15 @@ class NewAlbumsController @Inject() (
   private implicit val iec: ExecutionContext = ec
   def albums = converter.ok($.albums)
   def forArtist(artistName: ArtistName) = Action.async(
-    $.forArtist(decoder.decode(artistName)).map(
+    $.forArtist(decoder.apply(artistName)).map(
       _.mapHeadOrElse(Ok(_), NotFound(s"Artist <$artistName> is not reconciled")),
     ),
   )
 
-  def removeArtist(artist: ArtistName) = converter.noContent($.removeArtist(decoder.decode(artist)))
-  def ignoreArtist(artist: ArtistName) = converter.noContent($.ignoreArtist(decoder.decode(artist)))
+  def removeArtist(artist: ArtistName) = converter.noContent($.removeArtist(decoder.apply(artist)))
+  def ignoreArtist(artist: ArtistName) = converter.noContent($.ignoreArtist(decoder.apply(artist)))
   def unignoreArtist(artist: ArtistName) =
-    converter.noContent($.unignoreArtist(decoder.decode(artist)))
+    converter.noContent($.unignoreArtist(decoder.apply(artist)))
 
   def removeAlbum() = converter.parseJson($.removeAlbum)
   def ignoreAlbum() = converter.parseJson($.ignoreAlbum)

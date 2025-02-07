@@ -10,19 +10,19 @@ class ScorerController @Inject() (
     converter: PlayActionConverter,
     decoder: UrlDecodeUtils,
 ) extends InjectedController {
-  def getScore(filePath: String) = converter.ok($.getScore(decoder.decode(filePath)))
+  def getScore(filePath: String) = converter.ok($.getScore(decoder.apply(filePath)))
   def updateSongScore(filePath: String, score: String) = {
-    val str = decoder.decode(filePath)
+    val str = decoder.apply(filePath)
     scribe.info(s"Updating song score to <$score> for <$str>")
     converter.noContent($.updateSongScore(str, score))
   }
   def updateAlbumScore(filePath: String, score: String) = {
-    val str = decoder.decode(filePath)
+    val str = decoder.apply(filePath)
     scribe.info(s"Updating album score to <$score> for <$str>")
     converter.noContent($.updateAlbumScore(str, score))
   }
   def updateArtistScore(filePath: String, score: String) = {
-    val str = decoder.decode(filePath)
+    val str = decoder.apply(filePath)
     scribe.info(s"Updating artist score to <$score> for <$str>")
     converter.noContent($.updateArtistScore(str, score))
   }

@@ -13,5 +13,5 @@ class Posters @Inject() (
 ) extends InjectedController {
   private implicit val iec: ExecutionContext = ec
 
-  def image(path: String) = Action(Ok.sendFile($.image(decoder.decode(path))))
+  def image(path: String) = Action(Ok.sendFile($.image(decoder.apply(path))))
 }

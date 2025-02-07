@@ -65,7 +65,7 @@ trait ControllerSpec extends AuxSpecs with GuiceOneServerPerSuite with BeforeAnd
     def getString: String = new String(getBytes, "UTF-8")
   }
   lazy val song: Song = IOSong.read(getResourceFile("/models/song.mp3"))
-  lazy val encodedSong: String = PlayUrlPathUtils.encodePath(song)
+  lazy val encodedSong: String = PlayUrlEncoder.apply(song)
   def get(path: String): Future[WSResponse] =
     app.injector.instanceOf[WSClient].url(s"http://localhost:$port/$path").get()
   def delete(path: String): Future[WSResponse] =

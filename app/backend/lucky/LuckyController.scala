@@ -10,6 +10,6 @@ class LuckyController @Inject() (
     converter: PlayActionConverter,
     urlDecodeUtils: UrlDecodeUtils,
 ) extends InjectedController {
-  def search(query: String) = converter.ok($.search(urlDecodeUtils.decode(query)))
-  def redirect(query: String) = converter.redirect($.search(urlDecodeUtils.decode(query)))
+  def search(query: String) = converter.ok($.search(urlDecodeUtils.apply(query)))
+  def redirect(query: String) = converter.redirect($.search(urlDecodeUtils.apply(query)))
 }

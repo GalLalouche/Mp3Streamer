@@ -63,7 +63,7 @@ class PlaylistControllerTest extends FreeSpec with ControllerSpec with BeforeAnd
     val result = get("playlist/" + name).get
     if (result.status != 200)
       fail(s"Get failed!:\n" + result.body)
-    val json = result.body |> decoder.decode |> Json.parse
+    val json = result.body |> decoder.apply |> Json.parse
     json.parse[Playlist]
   }
 

@@ -15,28 +15,30 @@ import common.rich.RichT._
  *   - `file` is encoded and decoded as URL
  *   - Adds other relevant paths such as stream path and posters
  */
-class ControllerSongJsonifier @Inject() (urlPathUtils: UrlPathUtils, posterLookup: PosterLookup) {
-  implicit val songJsonable: OJsonable[Song] =
-    JsonableOverrider[Song](new OJsonableOverrider[Song] {
-      override def jsonify(s: Song, original: => JsObject) = {
-        val posterPath =
-          urlPathUtils
-            .encodePath(posterLookup.getCoverArt(s.asInstanceOf[IOSong]))
-            // It's possible the playlist contains files which have already been deleted.
-            .onlyIf(s.file.exists)
-        val $ = original +
-          ("file" -> JsString(urlPathUtils.encodePath(s))) +
-          (s.file.extension -> JsString("/stream/download/" + urlPathUtils.encodePath(s)))
-        $.joinOption(posterPath)((j, p) => j + ("poster" -> JsString("/posters/" + p)))
-          .append("composer" -> s.composer)
-          .append("conductor" -> s.conductor)
-          .append("orchestra" -> s.orchestra)
-          .append("opus" -> s.opus)
-          .append("performanceYear" -> s.performanceYear)
-      }
-      override def parse(obj: JsObject, unused: => Song) =
-        SongJsonifier.parse(obj + ("file" -> JsString(urlPathUtils.decode(obj.str("file")))))
-    })(ModelJsonable.SongJsonifier)
+class ControllerSongJsonifier @Inject() (
+    encoder: UrlEncoderUtils,
+    decoder: UrlDecodeUtils,
+    posterLookup: PosterLookup,
+) {
+  implicit val songJsonable: OJsonable[Song] = JsonableOverrider(new OJsonableOverrider[Song] {
+    override def jsonify(s: Song, original: => JsObject) = {
+      val posterPath =
+        encoder(posterLookup.getCoverArt(s.asInstanceOf[IOSong]))
+          // It's possible the playlist contains files which have already been deleted.
+          .onlyIf(s.file.exists)
+      val $ = original +
+        ("file" -> JsString(encoder(s))) +
+        (s.file.extension -> JsString("/stream/download/" + encoder(s)))
+      $.joinOption(posterPath)((j, p) => j + ("poster" -> JsString("/posters/" + p)))
+        .append("composer" -> s.composer)
+        .append("conductor" -> s.conductor)
+        .append("orchestra" -> s.orchestra)
+        .append("opus" -> s.opus)
+        .append("performanceYear" -> s.performanceYear)
+    }
+    override def parse(obj: JsObject, unused: => Song) =
+      SongJsonifier.parse(obj + ("file" -> JsString(decoder(obj.str("file")))))
+  })(ModelJsonable.SongJsonifier)
 
   def apply(s: Song): JsObject = songJsonable.jsonify(s)
 }

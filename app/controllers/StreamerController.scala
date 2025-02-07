@@ -16,7 +16,7 @@ class StreamerController @Inject() (
 ) extends InjectedController {
   def download(path: String) = converter.parse(
     _.toTuple(_.headers.get("Range"), PlayControllerUtils.shouldEncodeMp3),
-  ) { case (range, shouldEncode) => $(decoder.decode(path), range, shouldEncode) }
+  ) { case (range, shouldEncode) => $(decoder.apply(path), range, shouldEncode) }
 
   // for debugging; plays the song in the browser instead of downloading it
   // "Temporarily" (07/05/22) disabled, because IntelliJ and Play don't want to play nicely.
