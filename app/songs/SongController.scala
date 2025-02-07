@@ -2,7 +2,7 @@ package songs
 
 import javax.inject.Inject
 
-import controllers.{PlayActionConverter, PlayControllerUtils, UrlDecodeUtils}
+import controllers.{PlayActionConverter, PlayControllerUtils, PlayUrlDecoder}
 import play.api.mvc._
 import songs.SongFormatter.ShouldEncodeMp3Reader
 
@@ -10,7 +10,6 @@ import songs.SongFormatter.ShouldEncodeMp3Reader
 class SongController @Inject() (
     $ : SongFormatter,
     converter: PlayActionConverter,
-    decoder: UrlDecodeUtils,
 ) extends InjectedController {
   private def run(r: ShouldEncodeMp3Reader): Action[AnyContent] =
     converter.parse(PlayControllerUtils.shouldEncodeMp3)(r.run)
@@ -20,11 +19,11 @@ class SongController @Inject() (
   def randomMp3Song = run($.randomMp3Song())
   def randomFlacSong = run($.randomFlacSong())
 
-  def album(path: String) = run($.album(decoder.apply(path)))
+  def album(path: String) = run($.album(PlayUrlDecoder(path)))
   def discNumber(path: String, requestedDiscNumber: String) = run(
-    $.discNumber(decoder.apply(path), requestedDiscNumber),
+    $.discNumber(PlayUrlDecoder(path), requestedDiscNumber),
   )
 
-  def song(path: String) = run($.song(decoder.apply(path)))
-  def nextSong(path: String) = run($.nextSong(decoder.apply(path)))
+  def song(path: String) = run($.song(PlayUrlDecoder(path)))
+  def nextSong(path: String) = run($.nextSong(PlayUrlDecoder(path)))
 }

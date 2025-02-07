@@ -15,20 +15,16 @@ import common.rich.RichT._
  *   - `file` is encoded and decoded as URL
  *   - Adds other relevant paths such as stream path and posters
  */
-class ControllerSongJsonifier @Inject() (
-    encoder: UrlEncoderUtils,
-    decoder: UrlDecodeUtils,
-    posterLookup: PosterLookup,
-) {
+class ControllerSongJsonifier @Inject() (posterLookup: PosterLookup) {
   implicit val songJsonable: OJsonable[Song] = JsonableOverrider(new OJsonableOverrider[Song] {
     override def jsonify(s: Song, original: => JsObject) = {
       val posterPath =
-        encoder(posterLookup.getCoverArt(s.asInstanceOf[IOSong]))
+        PlayUrlEncoder(posterLookup.getCoverArt(s.asInstanceOf[IOSong]))
           // It's possible the playlist contains files which have already been deleted.
           .onlyIf(s.file.exists)
       val $ = original +
-        ("file" -> JsString(encoder(s))) +
-        (s.file.extension -> JsString("/stream/download/" + encoder(s)))
+        ("file" -> JsString(PlayUrlEncoder(s))) +
+        (s.file.extension -> JsString("/stream/download/" + PlayUrlEncoder(s)))
       $.joinOption(posterPath)((j, p) => j + ("poster" -> JsString("/posters/" + p)))
         .append("composer" -> s.composer)
         .append("conductor" -> s.conductor)
@@ -37,7 +33,7 @@ class ControllerSongJsonifier @Inject() (
         .append("performanceYear" -> s.performanceYear)
     }
     override def parse(obj: JsObject, unused: => Song) =
-      SongJsonifier.parse(obj + ("file" -> JsString(decoder(obj.str("file")))))
+      SongJsonifier.parse(obj + ("file" -> JsString(PlayUrlDecoder(obj.str("file")))))
   })(ModelJsonable.SongJsonifier)
 
   def apply(s: Song): JsObject = songJsonable.jsonify(s)
