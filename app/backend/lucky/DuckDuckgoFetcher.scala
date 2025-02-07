@@ -29,7 +29,7 @@ private class DuckDuckgoFetcher @Inject() (it: InternetTalker, decoder: UrlDecod
       .drop(UrlPrefix.length)
       .mapIf(_.contains(RutPrefix))
       .to(s => s.take(s.indexOf(RutPrefix)))
-      .|>(decoder.decode)
+      .|>(decoder.apply)
 }
 
 private object DuckDuckgoFetcher {

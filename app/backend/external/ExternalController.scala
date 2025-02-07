@@ -10,8 +10,8 @@ class ExternalController @Inject() (
     converter: PlayActionConverter,
     decoder: UrlDecodeUtils,
 ) extends InjectedController {
-  def get(path: String) = converter.ok($.get(decoder.decode(path)))
-  def refreshArtist(path: String) = converter.ok($.refreshArtist(decoder.decode(path)))
-  def refreshAlbum(path: String) = converter.ok($.refreshAlbum(decoder.decode(path)))
-  def updateRecon(path: String) = converter.parseJson($.updateRecon(decoder.decode(path), _))
+  def get(path: String) = converter.ok($.get(decoder(path)))
+  def refreshArtist(path: String) = converter.ok($.refreshArtist(decoder(path)))
+  def refreshAlbum(path: String) = converter.ok($.refreshAlbum(decoder(path)))
+  def updateRecon(path: String) = converter.parseJson($.updateRecon(decoder(path), _))
 }
