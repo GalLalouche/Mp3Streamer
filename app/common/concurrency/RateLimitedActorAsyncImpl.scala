@@ -15,22 +15,22 @@ private class RateLimitedActorAsyncImpl[Msg, Result](
   private val ec: ExecutionContext = SingleThreadedJobQueue.executionContext(name)
   private val lastRun = new AtomicLong(0)
   private val i = new AtomicInteger(0)
-  def !(m: => Msg): Future[Result] = RichFuture.fromCallback(c =>
+  def !(m: => Msg): Future[Result] = RichFuture.fromCallback(callback =>
     ec.execute { () =>
       val now = System.currentTimeMillis()
       val index = i.incrementAndGet()
       scribe.trace(s"<$index>: <$now>")
       val l = lastRun.getAndSet(now)
       val sleepTime = l - now + rateLimit.toMillis
-      if (sleepTime >= 0) {
+      if (sleepTime > 0) {
         scribe.trace(s"<$i>: Now: <$now>, last run time: <$l>, sleeping for <$sleepTime>")
         Thread.sleep(sleepTime)
       }
       scribe.trace(s"<$i> start @ ${System.currentTimeMillis()}")
-      lastRun.set(System.currentTimeMillis())
       val $ = Await.result(f(m), Duration.Inf)
+      lastRun.set(System.currentTimeMillis())
       scribe.trace(s"<$i> done  @ ${System.currentTimeMillis()}")
-      c($)
+      callback($)
     },
   )
 }
