@@ -3,7 +3,6 @@ package backend.lyrics
 import backend.lyrics.retrievers.{InstrumentalArtistStorage, RetrievedLyricsResult}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
-import controllers.UrlPathUtils
 import io.lemonlabs.uri.Url
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -36,7 +35,7 @@ class LyricsFormatterTest
     TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).injector
   private val $ = injector.instance[LyricsFormatter]
   private val song: Song = IOSong.read(getResourceFile("/models/song.mp3"))
-  private val encodedSong: String = injector.instance[UrlPathUtils].encodePath(song)
+  private val songPath: String = song.file.path
 
   private def setup(s: Storage[_, _]) = s.utils.clearOrCreateTable()
   override def beforeEach(): Future[_] = {
@@ -47,7 +46,7 @@ class LyricsFormatterTest
       setup(injector.instance[LyricsStorage])
   }
 
-  private def getLyricsForSong: Future[String] = $.get(encodedSong)
+  private def getLyricsForSong: Future[String] = $.get(songPath)
 
   "get" - {
     "With URL" in {
@@ -55,12 +54,12 @@ class LyricsFormatterTest
       injector
         .instance[LyricsStorage]
         .store(song, HtmlLyrics("foo", "bar", LyricsUrl.Url(Url.parse("http://bazz.com")))) >>
-        $.get(encodedSong) shouldEventuallyReturn expected
+        $.get(songPath) shouldEventuallyReturn expected
     }
     def testCaseObject(lu: LyricsUrl): Unit =
       ("With " + lu.toString) in {
         injector.instance[LyricsStorage].store(song, HtmlLyrics("foo", "bar", lu)) >>
-          $.get(encodedSong) shouldEventuallyReturn "bar<br><br>Source: foo"
+          $.get(songPath) shouldEventuallyReturn "bar<br><br>Source: foo"
       }
     def isUrl: LyricsUrl => Boolean = {
       case LyricsUrl.Url(_) => true
@@ -84,7 +83,7 @@ class LyricsFormatterTest
             LyricsUrl.Url(Url.parse("https://www.azlyrics.com/lyrics/Foobar")),
           ),
         ) >>
-        $.push(encodedSong, Url.parse("https://www.azlyrics.com/lyrics/Foobar"))
+        $.push(songPath, Url.parse("https://www.azlyrics.com/lyrics/Foobar"))
           .map(_ should startWith("Ascending in sectarian rapture")) >>
         getLyricsForSong.map(_ should startWith("Ascending in sectarian rapture"))
     }
@@ -92,24 +91,20 @@ class LyricsFormatterTest
       val cache = mock[LyricsCache]
       when(cache.parse(Url.parse("bar"), song))
         .thenReturn(Future.successful(RetrievedLyricsResult.Error(new Exception("Oopsy <daisy>"))))
-      new LyricsFormatter(
-        injector.instance[ExecutionContext],
-        cache,
-        injector.instance[UrlPathUtils],
-      )
-        .push(encodedSong, Url.parse("bar")) shouldEventuallyReturn "Oopsy &lt;daisy&gt;"
+      new LyricsFormatter(injector.instance[ExecutionContext], cache)
+        .push(songPath, Url.parse("bar")) shouldEventuallyReturn "Oopsy &lt;daisy&gt;"
     }
   }
 
   "setInstrumentalSong" in {
-    $.setInstrumentalSong(encodedSong).shouldEventuallyReturn(Htmls.InstrumentalSongHtml) >>
+    $.setInstrumentalSong(songPath).shouldEventuallyReturn(Htmls.InstrumentalSongHtml) >>
       getLyricsForSong.shouldEventuallyReturn(Htmls.InstrumentalSongHtml)
   }
 
   "setInstrumentalArtist" in {
     // Make all HTML retrievers fail
     urlToResponseMapper.const(FakeWSResponse(status = Status.NOT_FOUND))
-    $.setInstrumentalArtist(encodedSong).shouldEventuallyReturn(Htmls.InstrumentalArtistHtml) >>
+    $.setInstrumentalArtist(songPath).shouldEventuallyReturn(Htmls.InstrumentalArtistHtml) >>
       getLyricsForSong.shouldEventuallyReturn(Htmls.InstrumentalArtistHtml)
   }
 }

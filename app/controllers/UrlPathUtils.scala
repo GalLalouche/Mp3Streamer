@@ -1,10 +1,8 @@
 package controllers
 
-import java.io.File
-
 import models.Song
 
-import common.io.{FileRef, PathRef}
+import common.io.PathRef
 
 trait UrlPathUtils extends UrlDecodeUtils {
   /**
@@ -14,11 +12,4 @@ trait UrlPathUtils extends UrlDecodeUtils {
   def encodePath(s: Song): String = encodePath(s.file)
   def encodePath(f: PathRef): String
   override def decode(s: String): String
-
-  // These shouldn't be used by formatters. Instead, the controllers should use UrlPathUtils to
-  // decode the path before sending it to the formatter, since it's the controller's job to handle
-  // decoding.
-  @deprecated def parseSong(path: String): Song
-  @deprecated def parseFile(path: String): File
-  @deprecated def parseFileRef(path: String): FileRef
 }

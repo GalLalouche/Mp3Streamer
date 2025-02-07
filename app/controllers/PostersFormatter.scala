@@ -12,12 +12,8 @@ import common.io.IODirectory
 import common.rich.RichT.richT
 import common.rich.primitives.RichBoolean.richBoolean
 
-private class PostersFormatter @Inject() (
-    urlPathUtils: UrlPathUtils,
-    ec: ExecutionContext,
-    genreFinder: GenreFinder,
-) {
-  def image(path: String): File = urlPathUtils.parseFile(path).<|(validate)
+private class PostersFormatter @Inject() (ec: ExecutionContext, genreFinder: GenreFinder) {
+  def image(path: String): File = new File(path).<|(validate)
 
   private def validate(file: File): Unit = ec.execute { () =>
     val image = ImageIO.read(file)

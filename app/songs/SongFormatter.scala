@@ -1,8 +1,9 @@
 package songs
 
+import java.io.File
 import javax.inject.Inject
 
-import controllers.{ControllerSongJsonifier, UrlPathUtils}
+import controllers.ControllerSongJsonifier
 import decoders.Mp3Encoder
 import models._
 import play.api.libs.json.JsValue
@@ -24,7 +25,6 @@ private class SongFormatter @Inject() (
     songSelectorState: SongSelectorState,
     followingSong: FollowingSong,
     encoder: Mp3Encoder,
-    urlPathUtils: UrlPathUtils,
     songJsonifier: ControllerSongJsonifier,
 ) {
   import songJsonifier.songJsonable
@@ -62,14 +62,14 @@ private class SongFormatter @Inject() (
   def randomFlacSong(): ShouldEncodeMp3Reader = group(songSelectorState.randomFlacSong())
 
   private def songsInAlbum(path: String): Seq[Song] =
-    urlPathUtils.parseFile(path) |> IODirectory.apply |> albumFactory.fromDir |> AlbumDir.songs.get
+    new File(path) |> IODirectory.apply |> albumFactory.fromDir |> AlbumDir.songs.get
   def album(path: String): ShouldEncodeMp3Reader = songsInAlbum(path)
   def discNumber(path: String, requestedDiscNumber: String): ShouldEncodeMp3Reader =
     songsInAlbum(path).filter(_.discNumber.contains(requestedDiscNumber)).ensuring(_.nonEmpty)
 
-  def song(path: String): ShouldEncodeMp3Reader = group(urlPathUtils.parseSong(path))
+  def song(path: String): ShouldEncodeMp3Reader = group(IOSong.read(new File(path)))
   def nextSong(path: String): ShouldEncodeMp3Reader =
-    followingSong.next(urlPathUtils.parseSong(path)).get
+    followingSong.next(IOSong.read(new File(path))).get
 }
 
 object SongFormatter {

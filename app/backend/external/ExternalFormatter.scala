@@ -1,12 +1,12 @@
 package backend.external
 
+import java.io.File
 import javax.inject.Inject
 
 import backend.external.extensions.SearchExtension
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon.ReconID
-import controllers.UrlPathUtils
-import models.Song
+import models.{IOSong, Song}
 import play.api.libs.json.{Json, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -21,7 +21,6 @@ private class ExternalFormatter @Inject() (
     ec: ExecutionContext,
     external: MbExternalLinksProvider,
     jsonifier: ExternalJsonifier,
-    urlPathUtils: UrlPathUtils,
 ) {
   private implicit val iec: ExecutionContext = ec
 
@@ -39,19 +38,18 @@ private class ExternalFormatter @Inject() (
     } yield Json.obj("Artist" -> artistJson, "Album" -> albumJson)
   }
 
-  def get(path: String): Future[JsValue] =
-    getLinks(urlPathUtils.parseSong(path))
+  def get(path: String): Future[JsValue] = getLinks(IOSong.read(new File(path)))
 
   def refreshArtist(path: String): Future[JsValue] = refresh(path, external.deleteArtist)
   def refreshAlbum(path: String): Future[JsValue] = refresh(path, external.deleteAlbum)
 
   private def refresh(path: String, deleteAction: Song => Future[_]): Future[JsValue] = {
-    val song = urlPathUtils.parseSong(path)
+    val song = IOSong.read(new File(path))
     deleteAction(song) >> getLinks(song)
   }
   def updateRecon(path: String, json: JsValue): Future[JsValue] = {
     def getReconId(s: String) = json.ostr(s).map(ReconID.validateOrThrow)
-    val song: Song = urlPathUtils.parseSong(path)
+    val song: Song = IOSong.read(new File(path))
     val updatedRecon = UpdatedRecon.fromOptionals(getReconId("artist"), getReconId("album"))
     external.updateRecon(song)(updatedRecon) >> getLinks(song)
   }

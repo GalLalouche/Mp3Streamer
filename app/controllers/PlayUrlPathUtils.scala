@@ -1,11 +1,8 @@
 package controllers
 
-import java.io.File
 import java.net.{URLDecoder, URLEncoder}
 
-import models.IOSong
-
-import common.io.{IOFile, PathRef}
+import common.io.PathRef
 import common.rich.RichT._
 import common.rich.primitives.RichString._
 
@@ -31,8 +28,4 @@ private object PlayUrlPathUtils extends UrlPathUtils {
     val fixedPath = s.mapIf(_ contains SpaceEncoding).to(_.simpleReplace("+", EncodedPlus))
     URLDecoder.decode(fixedPath, Encoding)
   }
-
-  override def parseSong(path: String): IOSong = IOSong.read(parseFile(path))
-  override def parseFile(path: String): File = new File(decode(path))
-  override def parseFileRef(path: String): IOFile = IOFile(parseFile(path))
 }
