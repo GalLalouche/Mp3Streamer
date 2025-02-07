@@ -1,11 +1,11 @@
 package backend.lyrics
 
+import java.io.File
 import javax.inject.Inject
 
 import backend.lyrics.retrievers.RetrievedLyricsResult
-import controllers.UrlPathUtils
 import io.lemonlabs.uri.Url
-import models.Song
+import models.{IOSong, Song}
 import play.twirl.api.utils.StringEscapeUtils
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -13,26 +13,23 @@ import scala.concurrent.{ExecutionContext, Future}
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 
-private class LyricsFormatter @Inject() (
-    ec: ExecutionContext,
-    backend: LyricsCache,
-    urlPathUtils: UrlPathUtils,
-) {
+private class LyricsFormatter @Inject() (ec: ExecutionContext, backend: LyricsCache) {
   private implicit val iec: ExecutionContext = ec
 
-  def get(path: String): Future[String] = backend
-    .find(urlPathUtils.parseSong(path))
-    .map(LyricsFormatter.toString)
-    // .listenError(_.printStackTrace())
-    .orElse("Failed to get lyrics :(")
+  def get(path: String): Future[String] =
+    backend
+      .find(IOSong.read(new File(path)))
+      .map(LyricsFormatter.toString)
+      // .listenError(_.printStackTrace())
+      .orElse("Failed to get lyrics :(")
   def push(path: String, url: Url): Future[String] =
-    backend.parse(url, urlPathUtils.parseSong(path)).map {
+    backend.parse(url, IOSong.read(new File(path))).map {
       case RetrievedLyricsResult.RetrievedLyrics(l) => LyricsFormatter.toString(l)
       case RetrievedLyricsResult.Error(e) => StringEscapeUtils.escapeXml11(e.getMessage)
       case RetrievedLyricsResult.NoLyrics => "No lyrics were found :("
     }
   private def setInstrumentalAux(path: String, f: Song => Future[Instrumental]) =
-    f(urlPathUtils.parseSong(path)).map(LyricsFormatter.toString)
+    f(IOSong.read(new File(path))).map(LyricsFormatter.toString)
   def setInstrumentalSong(path: String): Future[String] =
     setInstrumentalAux(path, backend.setInstrumentalSong)
   def setInstrumentalArtist(path: String): Future[String] =

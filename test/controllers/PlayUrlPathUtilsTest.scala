@@ -25,13 +25,4 @@ class PlayUrlPathUtilsTest extends FreeSpec with AuxSpecs {
       $.decode($.encodePath(song)) shouldReturn song.file.path
     }
   }
-  "parseFile" - {
-    "with + in file name" - {
-      "as +" in $.parseFile("Foo%20+%20Bar").toString.shouldReturn("Foo + Bar")
-      "as %2B" in $.parseFile("Foo%20%2B%20Bar").toString.shouldReturn("Foo + Bar")
-      "as %2B when string contains +" in $.parseFile("Foo+%2B+Bar").toString
-        .shouldReturn("Foo + Bar")
-      "without %2B it should mean space" in $.parseFile("Foo+Bar").toString.shouldReturn("Foo Bar")
-    }
-  }
 }
