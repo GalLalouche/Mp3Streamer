@@ -2,6 +2,7 @@ package backend.logging
 
 import scribe.{Level, Logger}
 
+import common.rich.RichT.richT
 import common.rich.primitives.RichOption.richOption
 
 object ScribeUtils {
@@ -22,11 +23,10 @@ object ScribeUtils {
   def setLevel(path: String, level: String): Unit =
     setLevel(if (path == "") Logger.root else scribe.Logger(path), parseLevel(level))
 
-  private def setLevel(logger: Logger, level: Option[Level]): Unit = {
+  private def setLevel(logger: Logger, level: Option[Level]): Unit =
     logger
       .clearHandlers()
       .clearModifiers()
-    level.foreach(l => logger.withHandler(minimumLevel = Some(l)))
-    logger.replace()
-  }
+      .joinOption(level)((logger, level) => logger.withHandler(minimumLevel = Some(level)))
+      .replace()
 }
