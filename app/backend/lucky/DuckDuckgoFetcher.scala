@@ -3,7 +3,7 @@ package backend.lucky
 import javax.inject.Inject
 
 import backend.lucky.DuckDuckgoFetcher.{QueryPrefix, RutPrefix, UrlPrefix}
-import controllers.UrlDecodeUtils
+import controllers.PlayUrlDecoder
 import org.jsoup.Jsoup
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -13,7 +13,7 @@ import common.io.InternetTalker
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
-private class DuckDuckgoFetcher @Inject() (it: InternetTalker, decoder: UrlDecodeUtils) {
+private class DuckDuckgoFetcher @Inject() (it: InternetTalker) {
   private implicit val iec: ExecutionContext = it
   def search(query: String): Future[String] =
     it.useWs(_.url(s"$QueryPrefix$query").withFollowRedirects(false).get)
@@ -29,7 +29,7 @@ private class DuckDuckgoFetcher @Inject() (it: InternetTalker, decoder: UrlDecod
       .drop(UrlPrefix.length)
       .mapIf(_.contains(RutPrefix))
       .to(s => s.take(s.indexOf(RutPrefix)))
-      .|>(decoder.apply)
+      .|>(PlayUrlDecoder.apply)
 }
 
 private object DuckDuckgoFetcher {

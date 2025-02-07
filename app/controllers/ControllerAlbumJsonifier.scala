@@ -11,7 +11,7 @@ import scalaz.syntax.traverse.ToTraverseOps
 import common.json.{JsonableOverrider, OJsonable}
 import common.json.RichJson._
 
-class ControllerAlbumJsonifier @Inject() (encoder: UrlEncoderUtils) {
+class ControllerAlbumJsonifier @Inject() {
   implicit val albumJsonable: OJsonable[AlbumDir] =
     JsonableOverrider.oJsonify[AlbumDir]((a, original) =>
       original
@@ -21,7 +21,7 @@ class ControllerAlbumJsonifier @Inject() (encoder: UrlEncoderUtils) {
         .append("opus" -> a.opus)
         .append("orchestra" -> a.orchestra)
         .append("performanceYear" -> a.performanceYear)
-        .append("dir" -> Some(encoder(a.dir))),
+        .append("dir" -> Some(PlayUrlEncoder(a.dir))),
     )(ModelJsonable.AlbumDirJsonifier)
 }
 

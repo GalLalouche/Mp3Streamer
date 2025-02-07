@@ -1,7 +1,7 @@
 package playlist
 
 import backend.module.TestModuleConfiguration
-import controllers.{ControllerSpec, UrlDecodeUtils}
+import controllers.{ControllerSpec, PlayUrlDecoder}
 import models.ModelJsonable.SongJsonifier
 import org.scalatest.{BeforeAndAfterEach, FreeSpec}
 import org.scalatest.tags.Slow
@@ -20,7 +20,6 @@ class PlaylistControllerTest extends FreeSpec with ControllerSpec with BeforeAnd
     GuiceApplicationBuilder().overrides(TestModuleConfiguration().module).build
 
   private lazy val inj = app.injector
-  private val decoder = inj.instanceOf[UrlDecodeUtils]
 
   protected override def afterEach(): Unit =
     inj
@@ -63,7 +62,7 @@ class PlaylistControllerTest extends FreeSpec with ControllerSpec with BeforeAnd
     val result = get("playlist/" + name).get
     if (result.status != 200)
       fail(s"Get failed!:\n" + result.body)
-    val json = result.body |> decoder.apply |> Json.parse
+    val json = result.body |> PlayUrlDecoder.apply |> Json.parse
     json.parse[Playlist]
   }
 

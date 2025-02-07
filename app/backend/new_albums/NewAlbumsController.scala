@@ -2,7 +2,7 @@ package backend.new_albums
 
 import javax.inject.Inject
 
-import controllers.{PlayActionConverter, UrlDecodeUtils}
+import controllers.{PlayActionConverter, PlayUrlDecoder}
 import models.TypeAliases.ArtistName
 import play.api.mvc.InjectedController
 
@@ -18,21 +18,20 @@ import scalaz.std.option.optionInstance
 class NewAlbumsController @Inject() (
     $ : NewAlbumsFormatter,
     converter: PlayActionConverter,
-    decoder: UrlDecodeUtils,
     ec: ExecutionContext,
 ) extends InjectedController {
   private implicit val iec: ExecutionContext = ec
   def albums = converter.ok($.albums)
   def forArtist(artistName: ArtistName) = Action.async(
-    $.forArtist(decoder.apply(artistName)).map(
+    $.forArtist(PlayUrlDecoder(artistName)).map(
       _.mapHeadOrElse(Ok(_), NotFound(s"Artist <$artistName> is not reconciled")),
     ),
   )
 
-  def removeArtist(artist: ArtistName) = converter.noContent($.removeArtist(decoder.apply(artist)))
-  def ignoreArtist(artist: ArtistName) = converter.noContent($.ignoreArtist(decoder.apply(artist)))
+  def removeArtist(artist: ArtistName) = converter.noContent($.removeArtist(PlayUrlDecoder(artist)))
+  def ignoreArtist(artist: ArtistName) = converter.noContent($.ignoreArtist(PlayUrlDecoder(artist)))
   def unignoreArtist(artist: ArtistName) =
-    converter.noContent($.unignoreArtist(decoder.apply(artist)))
+    converter.noContent($.unignoreArtist(PlayUrlDecoder(artist)))
 
   def removeAlbum() = converter.parseJson($.removeAlbum)
   def ignoreAlbum() = converter.parseJson($.ignoreAlbum)
