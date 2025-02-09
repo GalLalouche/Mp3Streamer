@@ -1,6 +1,7 @@
 package common.io
 
 import java.io.InputStream
+import java.nio.file.Paths
 import java.time.LocalDateTime
 
 import common.rich.RichT._
@@ -67,6 +68,8 @@ trait DirectoryRef extends PathRef { self =>
   def dirs: Seq[S#D]
   def files: Seq[S#F]
   def paths: Seq[S#P] = dirs.++(files).asInstanceOf[Seq[S#P]]
+  def isDescendant(path: String): Boolean =
+    Paths.get(path).normalize().startsWith(Paths.get(this.path).normalize())
   def deepDirs: Seq[S#D] = {
     val d = dirs
     d ++ d.flatMap(_.deepDirs).asInstanceOf[Seq[S#D]]

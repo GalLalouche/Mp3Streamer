@@ -8,7 +8,7 @@ import scala.collection.mutable
 import common.io.{DirectoryRef, FileRef, MemoryDir, MemoryFile, MemorySystem}
 import common.rich.RichT._
 
-class FakeMusicFinder(val baseDir: MemoryDir) extends MusicFinder {
+class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder {
   override type S = MemorySystem
   override val extensions = Set("mp3")
   override val unsupportedExtensions = Set()

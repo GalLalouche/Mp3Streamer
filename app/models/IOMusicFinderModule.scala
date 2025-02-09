@@ -1,10 +1,13 @@
 package models
 
-import com.google.inject.Provides
 import net.codingwell.scalaguice.ScalaModule
 
-class IOMusicFinderModule(mf: => IOMusicFinder) extends ScalaModule {
-  @Provides private def musicFinder(mf: IOMusicFinder): MusicFinder = mf
-  @Provides private def musicFinder: IOMusicFinder = mf
+import common.io.{BaseDirectory, DirectoryRef, IODirectory}
+
+object IOMusicFinderModule extends ScalaModule {
+  private[models] val BaseDir: IODirectory = IODirectory("G:/media/music")
+  override def configure(): Unit = {
+    bind[DirectoryRef].annotatedWith[BaseDirectory].toInstance(BaseDir)
+    bind[MusicFinder].to[IOMusicFinder]
+  }
 }
-object IOMusicFinderModule extends IOMusicFinderModule(IOMusicFinder)
