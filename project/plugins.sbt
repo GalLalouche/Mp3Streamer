@@ -5,3 +5,4 @@ resolvers += "Typesafe repository".at("https://repo.typesafe.com/typesafe/ivy-re
 
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.8.22")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.6")
+addSbtPlugin("io.spray" % "sbt-revolver" % "0.10.0")

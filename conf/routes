@@ -21,7 +21,7 @@ GET           /data/randomSong/mp3                       songs.SongController.ra
 GET           /data/randomSong/flac                      songs.SongController.randomFlacSong
 GET           /data/albums/*path                         songs.SongController.album(path)
 GET           /data/discs/:disc/*path                    songs.SongController.discNumber(path, disc)
-GET           /data/songs/*path                          songs.SongController.song(path)
+GET           /data/song/*path                           songs.SongController.song(path)
 GET           /data/nextSong                             songs.SongController.nextSong(path)
 
 # Streamer

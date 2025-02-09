@@ -98,7 +98,7 @@ $(function () {
   const debugStartAlbum = getDebugAlbum()
   if (debugStartSong) {
     console.log(`Adding debug song <${debugStartSong}>`)
-    $.get("/data/songs/" + debugStartSong, data => gplaylist.add(data, true))
+    $.get("/data/song/" + debugStartSong, data => gplaylist.add(data, true))
   } else if (debugStartAlbum) {
     console.log(`Adding debug album <${debugStartAlbum}>`)
     // No idea why this is reversed in the playlist :|

@@ -67,7 +67,7 @@ private class CachedModelScorerImpl @Inject() (
   private def toOption[A](fileRef: FileRef, subject: String)(t: Try[A]): Option[A] = t match {
     case Failure(exception) =>
       if (fileRef.path.contains("Classical").isFalse)
-        scribe.debug(
+        scribe.trace(
           s"Could not parse <$subject> from <$fileRef> because: <${exception.getMessage}>",
         )
       None

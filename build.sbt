@@ -15,6 +15,7 @@ addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.2.4")
 Compile / doc / sources := Seq.empty
 Compile / packageDoc / publishArtifact := false
 
+val http4sVersion = "0.23.30"
 resolvers ++= Seq(
   "Typesafe Ivy Repository".at("https://repo.typesafe.com/typesafe/ivy-releases/"),
   "Typesafe Maven Repository".at("https://repo.typesafe.com/typesafe/maven-releases/"),
@@ -72,9 +73,18 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-core" % scalazVersion,
   "org.xerial" % "sqlite-jdbc" % "3.32.3.2",
   ("org.me" %% "scalacommon" % "1.0").changing(),
+
+  // http4s stuff
+  "org.http4s" %% "http4s-ember-client" % http4sVersion,
+  "org.http4s" %% "http4s-ember-server" % http4sVersion,
+  "org.http4s" %% "http4s-dsl" % http4sVersion,
 )
 
 scalacOptions += "-Ypartial-unification"
+lazy val runHttp4s = taskKey[Unit]("Test")
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, LauncherJarPlugin)
-  .settings(scalacOptions -= "-deprecation") // Fuck your deprecation bullshit.
+  .settings(
+    scalacOptions -= "-deprecation",
+    reStart / mainClass := Some("http4s.Main"),
+  ) // Fuck your deprecation bullshit.
