@@ -2,7 +2,7 @@ package backend.search
 
 import javax.inject.Inject
 
-import backend.recent.{NewDir, RecentController}
+import backend.recent.NewDir
 import backend.search.cache.SongCacheUpdater
 import rx.lang.scala.Observer
 import songs.selector.SongSelectorState
@@ -22,7 +22,6 @@ private class Indexer @Inject() (
     searchState: SearchState,
     songSelectorState: SongSelectorState,
     songCacheUpdater: SongCacheUpdater,
-    recentController: RecentController,
     @NewDir newDirObserver: Observer[DirectoryRef],
 ) {
   def index(): Future[_] =
@@ -33,7 +32,6 @@ private class Indexer @Inject() (
       .doOnCompleted {
         songSelectorState.update()
         searchState.update()
-        recentController.update()
       }
       .toFuture[Vector]
 }

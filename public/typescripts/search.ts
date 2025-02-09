@@ -2,11 +2,11 @@ import {LastAlbum} from "./last.js"
 import {Album, Artist, gplaylist, Song} from "./types.js"
 
 export namespace Search {
-  export function quickSearch(): void {
+  export async function quickSearch(): Promise<void> {
     const helper = getHelper()
     helper.clearResults()
     helper.searchBox.focus()
-    scan()
+    return scan()
   }
 }
 
@@ -212,14 +212,13 @@ class Helper {
   }
 }
 
-function scan() {
-  LastAlbum.reopenLastAlbumWebsocketIfNeeded()
-  $.get("index/index")
+async function scan() {
+  return $.get("index/index").toPromise()
 }
 
-function scanPlus() {
-  LastAlbum.addNextNewAlbum()
-  scan()
+async function scanPlus() {
+  await LastAlbum.addNextNewAlbum()
+  await scan()
 }
 
 $(() => {

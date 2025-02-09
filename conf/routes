@@ -47,9 +47,6 @@ GET           /external/*path                            backend.external.Extern
 # Searcher
 GET           /search/*path                              backend.search.SearchController.search(path)
 
-# Web sockets
-GET           /ws/console                                controllers.websockets.ConsoleSocket.accept
-
 # Playlist
 GET           /playlist/                                 playlist.PlaylistController.getIds
 GET           /playlist/:id                              playlist.PlaylistController.get(id)
@@ -76,9 +73,6 @@ GET           /recent/double/                            backend.recent.RecentCo
 GET           /recent/double/:amount                     backend.recent.RecentController.double(amount: Int)
 GET           /recent/last                               backend.recent.RecentController.last
 GET           /recent/since/:duration                    backend.recent.RecentController.since(duration)
-# Not realy a GET, but this makes it easier to invoke from the browser
-GET           /recent/last/debug                         backend.recent.RecentController.debugLast()
-GET           /ws/last_album                             backend.recent.RecentController.accept
 
 # Scorer
 GET           /score/*path                               backend.scorer.ScorerController.getScore(path)
