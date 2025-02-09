@@ -37,6 +37,7 @@ private class PostersFormatter @Inject() (
   }
 
   private def validate(file: File): Unit = ec.execute { () =>
+    require(file.exists)
     val image = ImageIO.read(file)
     val height = image.getHeight
     val width = image.getWidth

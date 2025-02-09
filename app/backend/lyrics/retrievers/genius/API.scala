@@ -1,5 +1,6 @@
 package backend.lyrics.retrievers.genius
 
+import java.net.HttpURLConnection
 import javax.inject.Inject
 
 import backend.FutureOption
@@ -8,7 +9,6 @@ import backend.recon.StringReconScorer
 import com.google.common.annotations.VisibleForTesting
 import io.lemonlabs.uri.Url
 import models.Song
-import play.api.http.Status
 import play.api.libs.json.{JsObject, Json}
 
 import scala.concurrent.ExecutionContext
@@ -28,7 +28,7 @@ private class API @Inject() (
     val query = (split(song.artistName) ++ split(song.title)).mkString("+")
     it.get(Url(s"https://api.genius.com/search?access_token=$accessToken&q=$query"))
       .map(e =>
-        if (e.status != Status.OK) {
+        if (e.status != HttpURLConnection.HTTP_OK) {
           scribe.info(s"Got status code <${e.status}> from genius\nMessage body\n: ${e.body}")
           None
         } else

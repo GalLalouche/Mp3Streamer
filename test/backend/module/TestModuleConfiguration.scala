@@ -15,7 +15,7 @@ import slick.util.AsyncExecutor
 import scala.concurrent.ExecutionContext
 
 import common.guice.RichModule.richModule
-import common.io.{DirectoryRef, InternetTalker, MemoryRoot, RootDirectory}
+import common.io.{BaseDirectory, DirectoryRef, InternetTalker, MemoryRoot, RootDirectory}
 import common.io.WSAliases._
 import common.rich.RichT._
 
@@ -49,6 +49,7 @@ case class TestModuleConfiguration(
       new ScalaModule {
         override def configure(): Unit = {
           bind[MemoryRoot].annotatedWith[RootDirectory].toInstance(_root)
+          bind[DirectoryRef].annotatedWith[BaseDirectory].toInstance(_root)
           bind[ExecutionContext].toInstance(_ec)
           bind[FakeMusicFinder].toInstance(_mf.opt.getOrElse(new FakeMusicFinder(_root)))
           bind[DbProvider].toInstance(new DbProvider {

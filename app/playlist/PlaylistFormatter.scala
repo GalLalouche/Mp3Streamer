@@ -1,6 +1,6 @@
 package playlist
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import controllers.ControllerSongJsonifier
 import play.api.libs.json.{JsArray, JsValue}
@@ -10,7 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import common.json.ToJsonableOps.{jsonifyArray, jsonifySingle, parseJsValue}
 
 private class PlaylistFormatter @Inject() (
-    @Singleton $ : PlaylistModel,
+    $ : PlaylistModel,
     songJsonifier: ControllerSongJsonifier,
     ec: ExecutionContext,
 ) {

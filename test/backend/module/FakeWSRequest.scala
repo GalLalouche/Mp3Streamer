@@ -24,7 +24,7 @@ private case class FakeWSRequest private (
     calc: Option[WSSignatureCalculator] = None,
     auth: Option[(String, String, WSAuthScheme)] = None,
     followRedirects: Option[Boolean] = None,
-    requestTimeout: Option[Int] = None,
+    requestTimeout: Option[Duration] = None,
     virtualHost: Option[String] = None,
     proxyServer: Option[WSProxyServer] = None,
 ) extends WSRequest {
@@ -66,6 +66,7 @@ private case class FakeWSRequest private (
   override def head() = ???
   override def options() = ???
   override def execute(method: String) = ???
+  override def withUrl(url: String): FakeWSRequest = copy(u = Url.parse(url))
 }
 
 private object FakeWSRequest {

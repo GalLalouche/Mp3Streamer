@@ -6,7 +6,6 @@ import javax.inject.Inject
 import backend.lyrics.retrievers.RetrievedLyricsResult
 import io.lemonlabs.uri.Url
 import models.{IOSong, Song}
-import play.twirl.api.utils.StringEscapeUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -1,11 +1,11 @@
 package backend.mb
 
+import java.net.HttpURLConnection
 import javax.inject.{Inject, Singleton}
 
 import backend.mb.JsonDownloader.Input
-import play.api.http.Status
 import play.api.libs.json._
-import play.api.libs.ws.JsonBodyReadables._
+import play.api.libs.ws.JsonBodyReadables.readableAsJson
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
@@ -50,7 +50,7 @@ private class JsonDownloader @Inject() (it: InternetTalker) {
         .addHttpHeaders("User-Agent" -> "Mp3Streamer (glpkmtg@gmail.com)")
         .get,
     ).filterWithMessageF(
-      _.status == Status.OK,
+      _.status == HttpURLConnection.HTTP_OK,
       m => s"HTTP response wasn't 200, was <${m.status}>: " + m.body,
     ).map(_.body[JsValue].as[JsObject])
 }

@@ -1,0 +1,26 @@
+package songs
+
+import javax.inject.Inject
+
+import cats.effect.IO
+import http4s.Http4sUtils.{decodePath, jsonEncoder, shouldEncodeMp3}
+import org.http4s.{HttpRoutes, Request}
+import org.http4s.dsl.io._
+
+import scalaz.Reader
+
+/** Handles fetch requests of JSON information. */
+class SongHttpRoutes @Inject() ($ : SongFormatter) {
+  val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
+    case req @ GET -> Root / "randomSong" / "mp3" => Ok(run(req, $.randomMp3Song()))
+    case req @ GET -> Root / "randomSong" / "flac" => Ok(run(req, $.randomFlacSong()))
+    case req @ GET -> Root / "randomSong" => Ok(run(req, $.randomSong()))
+    case req @ GET -> "albums" /: path => Ok(run(req, $.album(decodePath(path))))
+    case req @ GET -> "discs" /: disc /: path => Ok(run(req, $.discNumber(decodePath(path), disc)))
+    case req @ GET -> "song" /: path => Ok(run(req, $.song(decodePath(path))))
+    case req @ GET -> "nextSong" /: path => Ok(run(req, $.nextSong(decodePath(path))))
+  }
+
+  private def run[A](req: Request[IO], reader: Reader[Boolean, A]): A =
+    reader.run(shouldEncodeMp3(req))
+}
