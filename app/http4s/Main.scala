@@ -1,6 +1,7 @@
 package http4s
 
 import java.util.concurrent.Executors
+import javax.inject.Inject
 
 import backend.external.ExternalHttpRoutes
 import backend.lucky.LuckyHttpRoutes
@@ -25,6 +26,47 @@ import songs.SongHttpRoutes
 
 import scala.concurrent.ExecutionContext
 
+private class Main @Inject() (
+    application: ApplicationHttpRoutes,
+    asset: AssetHttpRoutes,
+    song: SongHttpRoutes,
+    external: ExternalHttpRoutes,
+    index: IndexHttpRoutes,
+    lucky: LuckyHttpRoutes,
+    lyrics: LyricsHttpRoutes,
+    newAlbum: NewAlbumHttpRoutes,
+    playlist: PlaylistHttpRoutes,
+    posters: PostersHttpRoutes,
+    recent: RecentHttpRoutes,
+    score: ScoreHttpRoutes,
+    search: SearchHttpRoutes,
+    stream: StreamHttpRoutes,
+) {
+  lazy val app = {
+    val routes = Router(
+      "" -> application.routes,
+      "" -> asset.routes,
+      "data" -> song.routes,
+      "external" -> external.routes,
+      "index" -> index.routes,
+      "lucky" -> lucky.routes,
+      "lyrics" -> lyrics.routes,
+      "new_albums" -> newAlbum.routes,
+      "playlist" -> playlist.httpRoutes,
+      "posters" -> posters.httpRoutes,
+      "recent" -> recent.routes,
+      "score" -> score.routes,
+      "search" -> search.routes,
+      "stream" -> stream.routes,
+    )
+
+    ErrorHandling.Custom
+      .recoverWith(routes) { case t: Throwable =>
+        OptionT.liftF(IO(t.printStackTrace()) >> InternalServerError(t.getMessage))
+      }
+      .orNotFound
+  }
+}
 object Main extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     val injector = Guice.createInjector(
@@ -37,32 +79,11 @@ object Main extends IOApp {
         )
       },
     )
-    lazy val app = Router(
-      "" -> injector.instance[ApplicationHttpRoutes].routes,
-      "" -> injector.instance[AssetHttpRoutes].routes,
-      "data" -> injector.instance[SongHttpRoutes].routes,
-      "external" -> injector.instance[ExternalHttpRoutes].routes,
-      "index" -> injector.instance[IndexHttpRoutes].routes,
-      "lucky" -> injector.instance[LuckyHttpRoutes].routes,
-      "lyrics" -> injector.instance[LyricsHttpRoutes].routes,
-      "new_albums" -> injector.instance[NewAlbumHttpRoutes].routes,
-      "playlist" -> injector.instance[PlaylistHttpRoutes].routes,
-      "posters" -> injector.instance[PostersHttpRoutes].routes,
-      "recent" -> injector.instance[RecentHttpRoutes].routes,
-      "score" -> injector.instance[ScoreHttpRoutes].routes,
-      "search" -> injector.instance[SearchHttpRoutes].routes,
-      "stream" -> injector.instance[StreamHttpRoutes].routes,
-    )
-
-    lazy val withErrorHandling = ErrorHandling.Custom
-      .recoverWith(app) { case t: Throwable =>
-        OptionT.liftF(IO(t.printStackTrace()) >> InternalServerError(t.getMessage))
-      }
-      .orNotFound
+    val app = injector.instance[Main].app
     EmberServerBuilder
       .default[IO]
       .withPort(port"9001")
-      .withHttpApp(withErrorHandling)
+      .withHttpApp(app)
       .build
       .useForever
   }

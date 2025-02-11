@@ -25,7 +25,7 @@ object Http4sUtils {
     EntityEncoder[F, Chunk[Byte]]
       .contramap[J](Chunk array _.toString.getBytes("UTF8"))
       .withContentType(`Content-Type`(MediaType.application.json))
-  implicit def jsonDecoder[F[_]: Concurrent]: EntityDecoder[F, JsValue] =
+  implicit def jsonDecoder[F[_]: Concurrent, J <: JsValue]: EntityDecoder[F, JsValue] =
     EntityDecoder.text[F].map(Json.parse)
   def parseJson[F[_]: MonadThrow: Concurrent, A](req: Request[F], f: JsValue => A): F[A] =
     req.as[JsValue].map(f)

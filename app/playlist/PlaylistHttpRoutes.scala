@@ -2,8 +2,9 @@ package playlist
 
 import javax.inject.Inject
 
-import cats.effect.IO
-import org.http4s.HttpRoutes
+import http4s.Http4sUtils.{fromFuture, fromFutureIO, jsonEncoder, parseJson}
+import http4s.RouteProvider
+import http4s.RouteProvider.Routes
 import org.http4s.dsl.io._
 
 import scala.concurrent.ExecutionContext
@@ -15,10 +16,9 @@ import scalaz.Scalaz.{optionInstance, ToFunctorOps}
 class PlaylistHttpRoutes @Inject() (
     $ : PlaylistFormatter,
     ec: ExecutionContext,
-) {
-  import http4s.Http4sUtils._
+) extends RouteProvider {
   private implicit val iec: ExecutionContext = ec
-  val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
+  override val routes: Routes = {
     case GET -> Root => Ok(fromFuture($.getIds))
     case GET -> Root / id => fromFutureIO($.get(id).map(_.mapHeadOrElse(f => Ok(f), NotFound(""))))
     case req @ PUT -> Root / id => Created(parseJson(req, $.set(id, _) >| id))
