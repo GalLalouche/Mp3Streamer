@@ -12,9 +12,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFoldableOps._
-import common.rich.func.ToMoreFunctorOps._
 import common.rich.func.ToMoreMonadErrorOps._
 import scalaz.{-\/, \/-}
+import scalaz.Scalaz.ToBindOps
 import scalaz.std.option.optionInstance
 import scalaz.syntax.functor.ToFunctorOps
 
@@ -44,9 +44,9 @@ private class LyricsCache @Inject() (
   )
   def find(s: Song): Future[Lyrics] = cache(s)
   def parse(url: Url, s: Song): Future[RetrievedLyricsResult] = {
-    def aux(parser: PassiveParser): Future[RetrievedLyricsResult] = parser.parse(url, s).listen {
-      case RetrievedLyricsResult.RetrievedLyrics(l) => cache.replace(s, l)
-      case _ => ()
+    def aux(parser: PassiveParser): Future[RetrievedLyricsResult] = parser.parse(url, s) >>! {
+      case RetrievedLyricsResult.RetrievedLyrics(l) => cache.replace(s, l).run
+      case _ => Future.successful(())
     }
     def check(pp: PassiveParser): Option[PassiveParser] = pp.optFilter(_.doesUrlMatchHost(url))
     check(htmlComposites)
