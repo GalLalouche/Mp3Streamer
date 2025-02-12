@@ -17,6 +17,7 @@ import com.google.inject.Guice
 import controllers.{ApplicationHttpRoutes, AssetHttpRoutes, PostersHttpRoutes, StreamHttpRoutes}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import net.codingwell.scalaguice.ScalaModule
+import org.http4s.HttpApp
 import org.http4s.dsl.io._
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.Router
@@ -42,7 +43,7 @@ private class Main @Inject() (
     search: SearchHttpRoutes,
     stream: StreamHttpRoutes,
 ) {
-  lazy val app = {
+  lazy val app: HttpApp[IO] = {
     val routes = Router(
       "" -> application.routes,
       "" -> asset.routes,
@@ -52,8 +53,8 @@ private class Main @Inject() (
       "lucky" -> lucky.routes,
       "lyrics" -> lyrics.routes,
       "new_albums" -> newAlbum.routes,
-      "playlist" -> playlist.httpRoutes,
-      "posters" -> posters.httpRoutes,
+      "playlist" -> playlist.routes,
+      "posters" -> posters.routes,
       "recent" -> recent.routes,
       "score" -> score.routes,
       "search" -> search.routes,
@@ -79,11 +80,10 @@ object Main extends IOApp {
         )
       },
     )
-    val app = injector.instance[Main].app
     EmberServerBuilder
       .default[IO]
-      .withPort(port"9001")
-      .withHttpApp(app)
+      .withPort(port"9000")
+      .withHttpApp(injector.instance[Main].app)
       .build
       .useForever
   }

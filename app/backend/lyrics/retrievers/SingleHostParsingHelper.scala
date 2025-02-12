@@ -1,5 +1,6 @@
 package backend.lyrics.retrievers
 
+import java.net.HttpURLConnection
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -7,7 +8,6 @@ import backend.lyrics.{HtmlLyrics, Instrumental, LyricsUrl}
 import backend.lyrics.retrievers.SingleHostParsingHelper._
 import io.lemonlabs.uri.Url
 import models.Song
-import play.api.http.Status
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -25,7 +25,7 @@ private class SingleHostParsingHelper @Inject() (it: InternetTalker) {
     it
       .getAsBrowser(url)
       .map(response =>
-        if (response.status == Status.NOT_FOUND)
+        if (response.status == HttpURLConnection.HTTP_NOT_FOUND)
           RetrievedLyricsResult.NoLyrics
         else if (response.status >= 300) {
           scribe.warn(s"Got error code <${response.status}> for <$url>")

@@ -18,5 +18,6 @@ if __name__ == '__main__':
                           ).stdout
   if isinstance(output, bytes):
     output = output.decode('utf-8')
-  attributes = [format(l.strip()) for l in output.splitlines() if l.startswith("[info] * Attributed")]
+  attributes = [format(l.strip()) for l in output.splitlines() if
+                l.startswith("[info] * Attributed")]
   print("\n".join(sorted(attributes)))

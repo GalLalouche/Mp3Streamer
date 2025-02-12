@@ -5,26 +5,19 @@ import java.net.URLEncoder
 import backend.module.TestModuleConfiguration
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
-import com.google.inject.{Guice, Injector, Module, Provides}
+import com.google.inject.{Guice, Injector, Module}
 import http4s.Http4sUtils.{jsonDecoder, jsonEncoder}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import net.codingwell.scalaguice.ScalaModule
 import org.http4s.{EntityDecoder, EntityEncoder, Method, Request, Uri}
 import org.http4s.client.Client
 import org.scalatest.Suite
 import play.api.libs.json.JsValue
 
-import common.io.{BaseDirectory, DirectoryRef, RootDirectory}
 import common.test.AuxSpecs
 
 trait Http4sSpecs extends AuxSpecs { self: Suite =>
-  protected def module: Module = new ScalaModule {
-    override def configure(): Unit =
-      install(TestModuleConfiguration().module)
-    @Provides @BaseDirectory private def provideBaseDir(
-        @RootDirectory rootDir: DirectoryRef,
-    ): DirectoryRef = rootDir
-  }
+  protected def baseTestModule: TestModuleConfiguration = TestModuleConfiguration()
+  protected def module: Module = baseTestModule.module
   protected final lazy val injector: Injector = Guice.createInjector(module)
   private lazy val app = injector.instance[Main].app
   def encode(s: String): String = URLEncoder.encode(s, "UTF-8")

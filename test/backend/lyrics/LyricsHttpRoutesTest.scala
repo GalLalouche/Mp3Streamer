@@ -1,16 +1,15 @@
 package backend.lyrics
 
 import backend.lyrics.retrievers.InstrumentalArtistStorage
-import backend.module.{FakeWSResponse, TestModuleConfiguration}
+import backend.module.FakeWSResponse
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
 import cats.effect.unsafe.implicits.global
-import com.google.inject.Module
 import http4s.Http4sSpecs
 import io.lemonlabs.uri.Url
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.http4s.Status
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpec}
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FreeSpec, OneInstancePerTest}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.tags.Slow
 
@@ -20,7 +19,6 @@ import common.rich.func.BetterFutureInstances._
 import scalaz.syntax.bind.ToBindOps
 
 import common.{MutablePartialFunction, RichUrl}
-import common.guice.RichModule.richModule
 import common.rich.RichFuture._
 import common.rich.path.RichFile.richFile
 
@@ -30,32 +28,23 @@ class LyricsHttpRoutesTest
     with MockitoSugar
     with Http4sSpecs
     with BeforeAndAfterAll
-    with BeforeAndAfter {
+    with BeforeAndAfter
+    with OneInstancePerTest {
   // Modified by some tests
   private val urlToResponseMapper = MutablePartialFunction.empty[Url, FakeWSResponse]
   private implicit lazy val iec: ExecutionContext = injector.instance[ExecutionContext]
-  protected override def module: Module =
-    super.module.overrideWith(
-      TestModuleConfiguration(_urlToResponseMapper = urlToResponseMapper).module,
-    )
+  protected override def baseTestModule =
+    super.baseTestModule.copy(_urlToResponseMapper = urlToResponseMapper)
 
   lazy val song: Song = IOSong.read(getResourceFile("/models/song.mp3"))
   lazy val encodedSong: String = encode(song.file.path)
-  protected override def beforeAll(): Unit = {
-    super.beforeAll()
+
+  before {
     val artistStorage = injector.instance[ArtistReconStorage]
     (artistStorage.utils.clearOrCreateTable() >>
       artistStorage.store(Artist(song.artistName), StoredReconResult.NoRecon) >>
       injector.instance[LyricsStorage].utils.createTable() >>
       injector.instance[InstrumentalArtistStorage].utils.createTable()).get
-  }
-  before {
-    urlToResponseMapper.clear()
-  }
-
-  after {
-    (injector.instance[LyricsStorage].utils.clearTable() >>
-      injector.instance[InstrumentalArtistStorage].utils.clearTable()).get
   }
 
   private def getLyricsForSong: String = get[String]("lyrics/" + encodedSong)
@@ -65,9 +54,7 @@ class LyricsHttpRoutesTest
       .instance[LyricsStorage]
       .store(song, HtmlLyrics("foo", "bar", LyricsUrl.Url(Url.parse("http://foo.com"))))
       .get
-    get[String](
-      "lyrics/" + encodedSong,
-    ) shouldReturn """bar<br><br>Source: <a href="http://foo.com" target="_blank">foo</a>"""
+    getLyricsForSong shouldReturn """bar<br><br>Source: <a href="http://foo.com" target="_blank">foo</a>"""
   }
 
   "push" in {

@@ -1,5 +1,7 @@
 package backend.module
 
+import java.net.URI
+
 import akka.util.ByteString
 import play.api.libs.ws.WSCookie
 
@@ -20,4 +22,5 @@ case class FakeWSResponse(
   override def bodyAsBytes = ByteString(bytes)
   override def headers = allHeaders
   override def bodyAsSource = ???
+  override def uri: URI = ???
 }
