@@ -21,7 +21,7 @@ class PosterHttpRoutesTest extends FreeSpec with Http4sSpecs {
   })
   "image" in {
     val file = getResourceFile("poster.jpg")
-    val result = getBytes("posters/" + encode(file.getAbsolutePath))
+    val result = getBytes("posters/" + encoder(file.getAbsolutePath))
     result shouldReturn file.bytes
   }
 }

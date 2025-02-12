@@ -8,7 +8,7 @@ import com.google.inject.util.Modules
 import net.codingwell.scalaguice.ScalaModule
 import scribe.Level
 
-// Has to be a class for Play to instantiate. The main constructor should only be used by tests.
+// The primary constructor should only be used by tests.
 class Module @VisibleForTesting() (level: Option[Level]) extends ScalaModule {
   def this() = this(Module.defaultLogLevel)
   override def configure(): Unit = {

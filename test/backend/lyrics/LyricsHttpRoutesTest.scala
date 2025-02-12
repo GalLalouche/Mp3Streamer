@@ -37,7 +37,7 @@ class LyricsHttpRoutesTest
     super.baseTestModule.copy(_urlToResponseMapper = urlToResponseMapper)
 
   lazy val song: Song = IOSong.read(getResourceFile("/models/song.mp3"))
-  lazy val encodedSong: String = encode(song.file.path)
+  lazy val encodedSong: String = encoder(song.file.path)
 
   before {
     val artistStorage = injector.instance[ArtistReconStorage]

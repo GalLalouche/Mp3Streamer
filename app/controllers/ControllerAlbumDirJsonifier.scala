@@ -1,5 +1,7 @@
 package controllers
 
+import javax.inject.Inject
+
 import models.{AlbumDir, ModelJsonable}
 
 import common.rich.func.MoreTraverseInstances._
@@ -14,7 +16,7 @@ import common.json.RichJson._
  * Adds classical music information, as well as encoding dir path. This is a class and not a
  * singleton object to decouple formatters from controller code.
  */
-class ControllerAlbumDirJsonifier {
+class ControllerAlbumDirJsonifier @Inject() (encoder: Encoder) {
   implicit val albumDirJsonable: OJsonable[AlbumDir] =
     JsonableOverrider.oJsonify[AlbumDir]((a, original) =>
       original
@@ -24,7 +26,7 @@ class ControllerAlbumDirJsonifier {
         .append("opus" -> a.opus)
         .append("orchestra" -> a.orchestra)
         .append("performanceYear" -> a.performanceYear)
-        .append("dir" -> Some(PlayUrlEncoder(a.dir))),
+        .append("dir" -> Some(encoder(a.dir))),
     )(ModelJsonable.AlbumDirJsonifier)
 }
 

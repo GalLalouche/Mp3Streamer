@@ -3,7 +3,6 @@ package backend.lucky
 import javax.inject.Inject
 
 import backend.lucky.DuckDuckgoFetcher.{QueryPrefix, RutPrefix, UrlPrefix}
-import controllers.PlayUrlDecoder
 import org.jsoup.Jsoup
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,7 +28,6 @@ private class DuckDuckgoFetcher @Inject() (it: InternetTalker) {
       .drop(UrlPrefix.length)
       .mapIf(_.contains(RutPrefix))
       .to(s => s.take(s.indexOf(RutPrefix)))
-      .|>(PlayUrlDecoder.apply)
 }
 
 private object DuckDuckgoFetcher {

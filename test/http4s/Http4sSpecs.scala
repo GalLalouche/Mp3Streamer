@@ -1,11 +1,10 @@
 package http4s
 
-import java.net.URLEncoder
-
 import backend.module.TestModuleConfiguration
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import com.google.inject.{Guice, Injector, Module}
+import controllers.Encoder
 import http4s.Http4sUtils.{jsonDecoder, jsonEncoder}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.http4s.{EntityDecoder, EntityEncoder, Method, Request, Uri}
@@ -20,8 +19,8 @@ trait Http4sSpecs extends AuxSpecs { self: Suite =>
   protected def module: Module = baseTestModule.module
   protected final lazy val injector: Injector = Guice.createInjector(module)
   private lazy val app = injector.instance[Main].app
-  def encode(s: String): String = URLEncoder.encode(s, "UTF-8")
-  def encodeUri(s: String): Uri = Uri.unsafeFromString(encode(s))
+  protected final lazy val encoder = injector.instance[Encoder]
+  def encodeUri(s: String): Uri = Uri.unsafeFromString(encoder(s))
 
   def makeRequest[A: EntityDecoder[IO, *]](request: Request[IO]): IO[A] =
     Client.fromHttpApp(app).expect[A](request)

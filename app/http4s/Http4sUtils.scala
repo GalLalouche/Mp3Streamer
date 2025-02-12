@@ -1,7 +1,7 @@
 package http4s
 
 import java.io.File
-import java.net.URLDecoder
+import java.net.{URLDecoder, URLEncoder}
 
 import cats.MonadThrow
 import cats.effect.{Concurrent, IO}
@@ -26,6 +26,7 @@ object Http4sUtils {
     // e.g., as in some/action/some_path, the resulting "some_path" would actually be rendered as
     // "/some_path".
     decode(path.renderString).mapIf(s => s.contains(':') && s.startsWith("/")).to(_.tail)
+  def encode(s: String): String = URLEncoder.encode(s, "UTF-8")
 
   // Adapted from https://kutt.it/VFkQP8. I'm not using that one though since its JSON version
   // apparently clashes with the one I'm currently using ¯\_(ツ)_/¯.

@@ -11,8 +11,6 @@ import scalaz.Reader
 
 /** Handles fetch requests of JSON information. */
 class SongHttpRoutes @Inject() ($ : SongFormatter) {
-  private def run[A](req: Request[IO], reader: Reader[Boolean, A]): A =
-    reader.run(shouldEncodeMp3(req))
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case req @ GET -> Root / "randomSong" / "mp3" => Ok(run(req, $.randomMp3Song()))
     case req @ GET -> Root / "randomSong" / "flac" => Ok(run(req, $.randomFlacSong()))
@@ -22,4 +20,7 @@ class SongHttpRoutes @Inject() ($ : SongFormatter) {
     case req @ GET -> "song" /: path => Ok(run(req, $.song(decodePath(path))))
     case req @ GET -> "nextSong" /: path => Ok(run(req, $.nextSong(decodePath(path))))
   }
+
+  private def run[A](req: Request[IO], reader: Reader[Boolean, A]): A =
+    reader.run(shouldEncodeMp3(req))
 }
