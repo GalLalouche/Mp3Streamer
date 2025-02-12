@@ -3,23 +3,23 @@ package songs
 import javax.inject.Inject
 
 import cats.effect.IO
-import http4s.Http4sUtils.{decodePath, jsonEncoder, ShouldEncodeMp3}
-import org.http4s.HttpRoutes
+import http4s.Http4sUtils.{decodePath, jsonEncoder, shouldEncodeMp3}
+import org.http4s.{HttpRoutes, Request}
 import org.http4s.dsl.io._
 
 import scalaz.Reader
 
 /** Handles fetch requests of JSON information. */
 class SongHttpRoutes @Inject() ($ : SongFormatter) {
-  private def run[A](reader: Reader[Boolean, A]): A = reader.run(ShouldEncodeMp3)
+  private def run[A](req: Request[IO], reader: Reader[Boolean, A]): A =
+    reader.run(shouldEncodeMp3(req))
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
-    case GET -> Root / "randomSong" / "mp3" => Ok(run($.randomMp3Song()))
-    case GET -> Root / "randomSong" / "flac" => Ok(run($.randomFlacSong()))
-    case GET -> Root / "randomSong" => Ok(run($.randomSong()))
-    case GET -> "albums" /: path => Ok(run($.album(decodePath(path))))
-    case GET -> "discs" /: disc /: path => Ok(run($.discNumber(decodePath(path), disc)))
-    // TODO shouldn't be plural
-    case GET -> "song" /: path => Ok(run($.song(decodePath(path))))
-    case GET -> "nextSong" /: path => Ok(run($.nextSong(decodePath(path))))
+    case req @ GET -> Root / "randomSong" / "mp3" => Ok(run(req, $.randomMp3Song()))
+    case req @ GET -> Root / "randomSong" / "flac" => Ok(run(req, $.randomFlacSong()))
+    case req @ GET -> Root / "randomSong" => Ok(run(req, $.randomSong()))
+    case req @ GET -> "albums" /: path => Ok(run(req, $.album(decodePath(path))))
+    case req @ GET -> "discs" /: disc /: path => Ok(run(req, $.discNumber(decodePath(path), disc)))
+    case req @ GET -> "song" /: path => Ok(run(req, $.song(decodePath(path))))
+    case req @ GET -> "nextSong" /: path => Ok(run(req, $.nextSong(decodePath(path))))
   }
 }
