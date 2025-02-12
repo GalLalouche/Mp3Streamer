@@ -6,8 +6,8 @@ import scala.concurrent.ExecutionContext
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
-import common.rich.func.ToMoreFunctorOps._
 import common.rich.func.ToMoreMonadErrorOps._
+import scalaz.Scalaz.ToBindOps
 
 import common.storage.{Storage, StoreMode}
 
@@ -21,14 +21,13 @@ class OnlineRetrieverCacher[Key, Value](
 )(implicit ec: ExecutionContext)
     extends Retriever[Key, Value]
     with Storage[Key, Value] {
-  override def apply(k: Key) = localStorage.load(k) |||| onlineRetriever(k)
-    .listen(
-      localStorage
-        .store(k, _)
-        .mapError(
-          new Exception("Cacher failed to write recon. This usually indicates a race condition.", _),
-        ),
-    )
+  override def apply(k: Key) = localStorage.load(k) |||| onlineRetriever(k).>>!(
+    localStorage
+      .store(k, _)
+      .mapError(
+        new Exception("Cacher failed to write recon. This usually indicates a race condition.", _),
+      ),
+  )
   // delegate all methods to localStorage
   // Use explicit type for implicit inference
   override def update(k: Key, v: Value) = localStorage.update(k, v)
