@@ -1,13 +1,14 @@
-package backend.scorer
+package http4s.routes
 
 import javax.inject.Inject
 
+import backend.scorer.ScorerFormatter
 import cats.effect.IO
-import http4s.Http4sUtils.{decodePath, fromFuture, jsonEncoder}
+import http4s.routes.Http4sUtils.{decodePath, fromFuture, jsonEncoder}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 
-class ScoreHttpRoutes @Inject() ($ : ScorerFormatter) {
+private class ScoreHttpRoutes @Inject() ($ : ScorerFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> path => Ok(fromFuture($.getScore(decodePath(path))))
     // Doesn't make a whole of sense from a REST stand point, but it's easier than fiddling with

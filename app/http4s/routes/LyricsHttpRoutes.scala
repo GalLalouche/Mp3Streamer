@@ -1,14 +1,15 @@
-package backend.lyrics
+package http4s.routes
 
 import javax.inject.Inject
 
+import backend.lyrics.LyricsFormatter
 import cats.effect.IO
-import http4s.Http4sUtils.{decodePath, fromFuture, parseText}
+import http4s.routes.Http4sUtils.{decodePath, fromFuture, parseText}
 import io.lemonlabs.uri.Url
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 
-class LyricsHttpRoutes @Inject() ($ : LyricsFormatter) {
+private class LyricsHttpRoutes @Inject() ($ : LyricsFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> path => Ok(fromFuture($.get(decodePath(path))))
     case req @ POST -> "push" /: path =>

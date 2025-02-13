@@ -19,7 +19,7 @@ import common.rich.RichTime.{OrderingLocalDate, RichClock}
 import common.rich.primitives.RichBoolean._
 
 @Lenses
-private case class NewAlbum(
+case class NewAlbum(
     title: AlbumTitle,
     date: LocalDate,
     artist: Artist,

@@ -1,4 +1,4 @@
-package http4s
+package http4s.routes
 
 import java.io.File
 import java.net.{URLDecoder, URLEncoder}
@@ -16,7 +16,7 @@ import scala.concurrent.Future
 
 import common.rich.RichT.richT
 
-object Http4sUtils {
+private object Http4sUtils {
   def fromFuture[A](f: => Future[A]): IO[A] = IO.fromFuture(IO(f))
   def fromFutureIO[A](f: => Future[IO[A]]): IO[A] = IO.fromFuture(IO(f)).flatten
 
@@ -48,6 +48,7 @@ object Http4sUtils {
     req.as[String].map(f)
   def parseText[A](req: Request[IO], f: String => Future[A]): IO[A] =
     req.as[String].flatMap(s => fromFuture(f(s)))
+
   def sendFile[F[_]: Files: MonadThrow](req: Request[F])(file: File): F[Response[F]] =
     StaticFile
       .fromString(file.getAbsolutePath, Some(req))

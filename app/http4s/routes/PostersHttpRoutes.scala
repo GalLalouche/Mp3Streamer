@@ -1,16 +1,16 @@
-package controllers
+package http4s.routes
 
 import javax.inject.Inject
 
 import cats.effect.IO
-import http4s.Http4sUtils
+import controllers.PostersFormatter
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 
 import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
 import scalaz.Scalaz.optionInstance
 
-class PostersHttpRoutes @Inject() ($ : PostersFormatter) {
+private class PostersHttpRoutes @Inject() ($ : PostersFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] { case req @ GET -> path =>
     val decoded = Http4sUtils.decodePath(path)
     $.image(decoded).mapHeadOrElse(

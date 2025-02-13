@@ -1,9 +1,10 @@
-package controllers
+package http4s.routes
 
 import javax.inject.Inject
 
 import cats.effect.IO
-import http4s.Http4sUtils.{decodePath, fromFuture, shouldEncodeMp3}
+import controllers.{StreamerFormatter, StreamResult}
+import http4s.routes.Http4sUtils.{decodePath, fromFuture, shouldEncodeMp3}
 import org.http4s.{Header, Headers, HttpRoutes, MediaType, Response, Status}
 import org.http4s.dsl.io._
 import org.http4s.headers.{`Content-Length`, `Content-Type`}
@@ -12,7 +13,7 @@ import org.typelevel.ci.CIString
 
 import common.rich.collections.RichTraversableOnce._
 
-class StreamHttpRoutes @Inject() ($ : StreamerFormatter) {
+private class StreamHttpRoutes @Inject() ($ : StreamerFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] { case req @ GET -> "download" /: path =>
     val range = req.headers.get(CIString("Range")).map(_.toList.single.value)
     fromFuture($(decodePath(path), range, shouldEncodeMp3(req))).map(toResponse)

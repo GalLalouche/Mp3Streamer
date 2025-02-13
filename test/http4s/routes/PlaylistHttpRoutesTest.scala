@@ -1,20 +1,19 @@
-package playlist
+package http4s.routes
 
 import cats.effect.unsafe.implicits.global
-import http4s.Http4sSpecs
-import http4s.Http4sUtils.decode
 import models.ModelJsonable.SongJsonifier
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.{BeforeAndAfterEach, FreeSpec}
 import org.scalatest.tags.Slow
 import play.api.libs.json.{JsArray, Json, JsString}
+import playlist.{Playlist, PlaylistTest}
 
 import common.io.{DirectoryRef, RootDirectory}
 import common.json.ToJsonableOps.{jsonifySingle, parseJsValue}
 import common.rich.RichT.richT
 
 @Slow
-class PlaylistHttpRoutesTest extends FreeSpec with Http4sSpecs with BeforeAndAfterEach {
+private class PlaylistHttpRoutesTest extends FreeSpec with Http4sSpecs with BeforeAndAfterEach {
   protected override def afterEach(): Unit = injector.instance[DirectoryRef, RootDirectory].clear()
 
   "set then get" in {
@@ -48,7 +47,7 @@ class PlaylistHttpRoutesTest extends FreeSpec with Http4sSpecs with BeforeAndAft
   }
 
   private def getPlaylist(name: String): Playlist = {
-    val json = get[String]("playlist/" + name) |> decode |> Json.parse
+    val json = get[String]("playlist/" + name) |> Http4sUtils.decode |> Json.parse
     json.parse[Playlist]
   }
 

@@ -1,16 +1,17 @@
-package songs
+package http4s.routes
 
 import javax.inject.Inject
 
 import cats.effect.IO
-import http4s.Http4sUtils.{decodePath, jsonEncoder, shouldEncodeMp3}
+import http4s.routes.Http4sUtils.{decodePath, jsonEncoder, shouldEncodeMp3}
 import org.http4s.{HttpRoutes, Request}
 import org.http4s.dsl.io._
+import songs.SongFormatter
 
 import scalaz.Reader
 
 /** Handles fetch requests of JSON information. */
-class SongHttpRoutes @Inject() ($ : SongFormatter) {
+private class SongHttpRoutes @Inject() ($ : SongFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case req @ GET -> Root / "randomSong" / "mp3" => Ok(run(req, $.randomMp3Song()))
     case req @ GET -> Root / "randomSong" / "flac" => Ok(run(req, $.randomFlacSong()))

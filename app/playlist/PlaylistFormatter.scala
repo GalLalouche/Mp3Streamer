@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import common.json.ToJsonableOps.{jsonifyArray, jsonifySingle, parseJsValue}
 
-private class PlaylistFormatter @Inject() (
+class PlaylistFormatter @Inject() (
     $ : PlaylistModel,
     songJsonifier: ControllerSongJsonifier,
     ec: ExecutionContext,

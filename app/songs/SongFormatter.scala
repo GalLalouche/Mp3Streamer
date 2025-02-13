@@ -19,7 +19,7 @@ import common.json.JsonWriteable
 import common.json.ToJsonableOps._
 import common.rich.RichT._
 
-private class SongFormatter @Inject() (
+class SongFormatter @Inject() (
     albumFactory: AlbumDirFactory,
     groups: SongGroups,
     songSelectorState: SongSelectorState,

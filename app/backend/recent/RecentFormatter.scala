@@ -10,10 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import common.json.ToJsonableOps._
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
-private class RecentFormatter @Inject() (
-    ec: ExecutionContext,
-    recentAlbums: RecentAlbums,
-) {
+class RecentFormatter @Inject() (ec: ExecutionContext, recentAlbums: RecentAlbums) {
   private def sinceDays(d: Int): Future[JsValue] = Future(recentAlbums.sinceDays(d)).map(_.jsonify)
   private def sinceMonths(m: Int): Future[JsValue] =
     Future(recentAlbums.sinceMonths(m)).map(_.jsonify)

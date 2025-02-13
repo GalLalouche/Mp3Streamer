@@ -1,22 +1,24 @@
-package http4s
+package http4s.routes
 
 import backend.module.TestModuleConfiguration
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import com.google.inject.{Guice, Injector, Module}
 import controllers.Encoder
-import http4s.Http4sUtils.{jsonDecoder, jsonEncoder}
+import http4s.{Http4sModule, Main}
+import http4s.routes.Http4sUtils.{jsonDecoder, jsonEncoder}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.http4s.{EntityDecoder, EntityEncoder, Method, Request, Uri}
 import org.http4s.client.Client
 import org.scalatest.Suite
 import play.api.libs.json.JsValue
 
+import common.guice.RichModule.richModule
 import common.test.AuxSpecs
 
-trait Http4sSpecs extends AuxSpecs { self: Suite =>
+private trait Http4sSpecs extends AuxSpecs { self: Suite =>
   protected def baseTestModule: TestModuleConfiguration = TestModuleConfiguration()
-  protected def module: Module = baseTestModule.module
+  protected def module: Module = Http4sModule.overrideWith(baseTestModule.module)
   protected final lazy val injector: Injector = Guice.createInjector(module)
   private lazy val app = injector.instance[Main].app
   protected final lazy val encoder = injector.instance[Encoder]

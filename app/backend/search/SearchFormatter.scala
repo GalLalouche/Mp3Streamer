@@ -9,10 +9,7 @@ import play.api.libs.json.{JsObject, Json}
 
 import common.json.ToJsonableOps._
 
-private class SearchFormatter @Inject() (
-    state: SearchState,
-    albumJsonifier: ControllerAlbumDirJsonifier,
-) {
+class SearchFormatter @Inject() (state: SearchState, albumJsonifier: ControllerAlbumDirJsonifier) {
   import albumJsonifier.albumDirJsonable
   def search(path: String): JsObject = {
     val terms = URLDecoder.decode(path, "UTF-8").split(" ").map(_.toLowerCase)

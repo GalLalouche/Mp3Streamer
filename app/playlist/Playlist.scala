@@ -9,7 +9,7 @@ import scala.concurrent.duration.Duration
 
 import common.json.ToJsonableOps._
 
-private case class Playlist(songs: Seq[Song], currentIndex: Int, currentDuration: Duration) {
+case class Playlist(songs: Seq[Song], currentIndex: Int, currentDuration: Duration) {
   require(
     currentIndex < songs.length && currentIndex >= 0,
     s"currentIndex <$currentIndex> out of range (0-${songs.length})",

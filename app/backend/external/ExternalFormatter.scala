@@ -17,7 +17,7 @@ import scalaz.syntax.bind.ToBindOps
 import common.json.RichJson._
 import common.rich.RichT._
 
-private class ExternalFormatter @Inject() (
+class ExternalFormatter @Inject() (
     ec: ExecutionContext,
     external: MbExternalLinksProvider,
     jsonifier: ExternalJsonifier,

@@ -23,7 +23,7 @@ import common.rich.RichT._
 
 // FIXME This module returns StringFixed titles, but then we try to remove/ignore those entities, the name
 //  doesn't match the name in the database. A simple solution could be to use the original recon ID for that.
-private class NewAlbumsFormatter @Inject() (
+class NewAlbumsFormatter @Inject() (
     ec: ExecutionContext,
     $ : NewAlbumsModel,
     stringFixer: StringFixer,

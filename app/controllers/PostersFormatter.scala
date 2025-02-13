@@ -13,7 +13,7 @@ import common.io.{BaseDirectory, DirectoryRef, IODirectory}
 import common.rich.path.RichFile.richFile
 import common.rich.primitives.RichBoolean.richBoolean
 
-private class PostersFormatter @Inject() (
+class PostersFormatter @Inject() (
     ec: ExecutionContext,
     genreFinder: GenreFinder,
     @BaseDirectory baseDir: DirectoryRef,

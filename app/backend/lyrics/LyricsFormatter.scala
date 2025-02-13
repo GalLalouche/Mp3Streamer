@@ -12,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
 
-private class LyricsFormatter @Inject() (ec: ExecutionContext, backend: LyricsCache) {
+class LyricsFormatter @Inject() (ec: ExecutionContext, backend: LyricsCache) {
   private implicit val iec: ExecutionContext = ec
 
   def get(path: String): Future[String] =

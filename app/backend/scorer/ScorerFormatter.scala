@@ -12,10 +12,7 @@ import common.json.JsonWriteable
 import common.json.ToJsonableOps._
 
 /** Fetches and updates scores for songs, albums, and artists. */
-private class ScorerFormatter @Inject() (
-    modelScorer: FullInfoModelScorer,
-    ec: ExecutionContext,
-) {
+class ScorerFormatter @Inject() (modelScorer: FullInfoModelScorer, ec: ExecutionContext) {
   import ScorerFormatter.SongScoreJsonable
   private implicit val iec: ExecutionContext = ec
   def getScore(filePath: String): Future[JsValue] =

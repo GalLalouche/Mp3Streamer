@@ -2,7 +2,7 @@ package backend.lucky
 
 import javax.inject.Inject
 
-import http4s.Http4sUtils.decode
+import controllers.Decoder
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -11,7 +11,11 @@ import scala.concurrent.{ExecutionContext, Future}
  * DuckDuckGo or Google's "I'm feeling lucky" quick search. So this is I'm feeling lucky as a
  * service, which does the traversal in the backend.
  */
-private class LuckyFormatter @Inject() ($ : DuckDuckgoFetcher, ec: ExecutionContext) {
+class LuckyFormatter @Inject() (
+    $ : DuckDuckgoFetcher,
+    decoder: Decoder,
+    ec: ExecutionContext,
+) {
   private implicit val iec: ExecutionContext = ec
-  def search(query: String): Future[String] = $.search(query).map(decode)
+  def search(query: String): Future[String] = $.search(query).map(decoder.apply)
 }

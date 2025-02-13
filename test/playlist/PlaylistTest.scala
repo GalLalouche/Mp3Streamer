@@ -16,7 +16,7 @@ class PlaylistTest extends JsonableSpecs {
   propJsonTest[Playlist]()
 }
 
-private object PlaylistTest {
+object PlaylistTest {
   implicit val arbPlaylist: Arbitrary[Playlist] = Arbitrary(for {
     numberOfSongs <- Gen.choose(1, 20)
     songs <- Gen.listOfN(numberOfSongs, ArbitraryModels.arbSong)

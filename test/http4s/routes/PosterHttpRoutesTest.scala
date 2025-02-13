@@ -1,9 +1,8 @@
-package controllers
+package http4s.routes
 
 import java.io.File
 
 import com.google.inject
-import http4s.Http4sSpecs
 import net.codingwell.scalaguice.ScalaModule
 import org.scalatest.FreeSpec
 import org.scalatest.tags.Slow
@@ -13,7 +12,7 @@ import common.io.{BaseDirectory, DirectoryRef, IODirectory}
 import common.rich.path.RichFile.richFile
 
 @Slow
-class PosterHttpRoutesTest extends FreeSpec with Http4sSpecs {
+private class PosterHttpRoutesTest extends FreeSpec with Http4sSpecs {
   protected override lazy val module: inject.Module = super.module.overrideWith(new ScalaModule {
     override def configure(): Unit = bind[DirectoryRef]
       .annotatedWith[BaseDirectory]

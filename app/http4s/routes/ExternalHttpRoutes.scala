@@ -1,14 +1,14 @@
-package backend.external
+package http4s.routes
 
 import javax.inject.Inject
 
+import backend.external.ExternalFormatter
 import cats.effect.IO
-import http4s.Http4sUtils
-import http4s.Http4sUtils.{decodePath, fromFuture, jsonEncoder}
+import http4s.routes.Http4sUtils.{decodePath, fromFuture, jsonEncoder}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 
-class ExternalHttpRoutes @Inject() ($ : ExternalFormatter) {
+private[http4s] class ExternalHttpRoutes @Inject() ($ : ExternalFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> "refresh" /: "artist" /: path => Ok(fromFuture($.refreshArtist(decodePath(path))))
     case GET -> "refresh" /: "album" /: path => Ok(fromFuture($.refreshAlbum(decodePath(path))))

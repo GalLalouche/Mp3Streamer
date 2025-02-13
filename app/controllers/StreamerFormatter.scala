@@ -8,7 +8,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import common.io.IOFile
 
-private class StreamerFormatter @Inject() (
+class StreamerFormatter @Inject() (
     encoder: Mp3Encoder,
     helper: FileStreamFormatter,
     ec: ExecutionContext,

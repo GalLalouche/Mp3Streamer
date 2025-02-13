@@ -1,9 +1,10 @@
-package backend.new_albums
+package http4s.routes
 
 import javax.inject.Inject
 
+import backend.new_albums.NewAlbumsFormatter
 import cats.effect.IO
-import http4s.Http4sUtils.{fromFuture, fromFutureIO, jsonEncoder, parseJson}
+import http4s.routes.Http4sUtils.{fromFuture, fromFutureIO, jsonEncoder, parseJson}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 
@@ -16,7 +17,7 @@ import scalaz.std.option.optionInstance
  * A web interface to new albums finder. Displays new albums and can update the current file /
  * ignoring policy.
  */
-class NewAlbumHttpRoutes @Inject() ($ : NewAlbumsFormatter, ec: ExecutionContext) {
+private class NewAlbumHttpRoutes @Inject() ($ : NewAlbumsFormatter, ec: ExecutionContext) {
   private implicit val iec: ExecutionContext = ec
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     // FIXME fix this

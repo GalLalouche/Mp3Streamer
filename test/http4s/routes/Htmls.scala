@@ -1,4 +1,4 @@
-package backend.lyrics
+package http4s.routes
 
 private object Htmls {
   val InstrumentalSongHtml =

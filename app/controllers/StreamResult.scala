@@ -2,7 +2,7 @@ package controllers
 
 import java.io.InputStream
 
-private case class StreamResult(
+case class StreamResult(
     status: Int,
     headers: Map[String, String],
     mimeType: String,
