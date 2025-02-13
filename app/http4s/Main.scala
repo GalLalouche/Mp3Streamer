@@ -1,6 +1,5 @@
 package http4s
 
-import java.util.concurrent.Executors
 import javax.inject.Inject
 
 import backend.external.ExternalHttpRoutes
@@ -16,7 +15,6 @@ import com.comcast.ip4s._
 import com.google.inject.Guice
 import controllers.{ApplicationHttpRoutes, AssetHttpRoutes, PostersHttpRoutes, StreamHttpRoutes}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import net.codingwell.scalaguice.ScalaModule
 import org.http4s.HttpApp
 import org.http4s.dsl.io._
 import org.http4s.ember.server.EmberServerBuilder
@@ -24,8 +22,6 @@ import org.http4s.server.Router
 import org.http4s.server.middleware.ErrorHandling
 import playlist.PlaylistHttpRoutes
 import songs.SongHttpRoutes
-
-import scala.concurrent.ExecutionContext
 
 private class Main @Inject() (
     application: ApplicationHttpRoutes,
@@ -71,16 +67,7 @@ private class Main @Inject() (
 
 object Main extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
-    val injector = Guice.createInjector(
-      new controllers.Module,
-      new ScalaModule {
-        override def configure(): Unit = bind[ExecutionContext].toInstance(
-          ExecutionContext.fromExecutorService(
-            Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors * 2),
-          ),
-        )
-      },
-    )
+    val injector = Guice.createInjector(Http4sModule)
     EmberServerBuilder
       .default[IO]
       .withPort(port"9000")
