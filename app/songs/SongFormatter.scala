@@ -4,9 +4,9 @@ import java.io.File
 import javax.inject.Inject
 
 import controllers.ControllerSongJsonifier
-import decoders.Mp3Encoder
 import models._
 import play.api.libs.json.JsValue
+import song_encoder.Mp3Encoder
 import songs.SongFormatter.ShouldEncodeMp3Reader
 import songs.selector.{FollowingSong, SongSelectorState}
 

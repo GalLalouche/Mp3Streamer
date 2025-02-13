@@ -1,4 +1,4 @@
-package decoders
+package song_encoder
 
 import java.util.regex.Pattern
 import javax.inject.{Inject, Singleton}
@@ -14,11 +14,11 @@ import common.rich.RichT._
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichString._
 
-/** Encodes audio files files to mp3. Also handles caching. */
+/** Encodes audio files to mp3. Also handles caching. */
 @Singleton // Needed for unique actor
 class Mp3Encoder @Inject() (
     @RootDirectory rootDirectory: DirectoryRef,
-    encoder: Encoder,
+    encoder: SongEncoder,
     ec: ExecutionContext,
 ) extends SimpleTypedActor[FileRef, FileRef] {
   private implicit val iec: ExecutionContext = ec

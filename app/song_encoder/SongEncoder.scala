@@ -1,11 +1,11 @@
-package decoders
+package song_encoder
 
 import com.google.inject.ImplementedBy
 
 import common.io.FileRef
 
 @ImplementedBy(classOf[DbPowerampCodec])
-private trait Encoder {
+private trait SongEncoder {
   /**
    * Decodes an audio file to a different format
    * @param srcFile

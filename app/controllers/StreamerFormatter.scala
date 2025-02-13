@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
-import decoders.Mp3Encoder
+import song_encoder.Mp3Encoder
 
 import scala.concurrent.{ExecutionContext, Future}
 

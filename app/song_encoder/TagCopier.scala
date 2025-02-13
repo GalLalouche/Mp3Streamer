@@ -1,4 +1,4 @@
-package decoders
+package song_encoder
 
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.{FieldKey, Tag}

@@ -1,4 +1,4 @@
-package decoders
+package song_encoder
 
 import java.io.{File, IOException}
 import javax.inject.Inject
@@ -9,7 +9,7 @@ import common.TimedLogger
 import common.io.{FileRef, IOFile}
 import common.rich.path.RichFile._
 
-private class DbPowerampCodec @Inject() (timed: TimedLogger) extends Encoder {
+private class DbPowerampCodec @Inject() (timed: TimedLogger) extends SongEncoder {
   // Do this less hackishly
   private val converterFile = new File("G:/Media/Tools/dBpoweramp/CoreConverter.exe")
   private def quote(o: Any): String = s""""$o""""
