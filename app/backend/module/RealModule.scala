@@ -5,7 +5,7 @@ import javax.inject.Singleton
 
 import backend.storage.DbProvider
 import com.google.inject.Provides
-import models.IOMusicFinderModule
+import models.IOModelsModule
 import net.codingwell.scalaguice.ScalaModule
 import org.sqlite.SQLiteConfig
 import slick.jdbc.{JdbcProfile, SQLiteProfile}
@@ -50,7 +50,7 @@ object RealModule extends ScalaModule with ModuleUtils {
     requireBinding[InternetTalker]
 
     install(AllModules)
-    install(IOMusicFinderModule)
+    install(IOModelsModule)
   }
 
   @Provides @Singleton @RootDirectory private def rootDirectory: DirectoryRef =

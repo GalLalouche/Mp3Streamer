@@ -1,4 +1,4 @@
-package controllers
+package formatter
 
 import javax.inject.Inject
 
@@ -17,8 +17,8 @@ import common.rich.RichT._
  */
 class ControllerSongJsonifier @Inject() (
     posterLookup: PosterLookup,
-    encoder: Encoder,
-    decoder: Decoder,
+    encoder: UrlEncoder,
+    decoder: UrlDecoder,
 ) {
   implicit val songJsonable: OJsonable[Song] = JsonableOverrider(new OJsonableOverrider[Song] {
     override def jsonify(s: Song, original: => JsObject) = {

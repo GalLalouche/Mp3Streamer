@@ -2,7 +2,7 @@ package playlist
 
 import javax.inject.Inject
 
-import controllers.ControllerSongJsonifier
+import formatter.ControllerSongJsonifier
 import play.api.libs.json.{JsArray, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}

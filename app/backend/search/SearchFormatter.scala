@@ -3,7 +3,7 @@ package backend.search
 import java.net.URLDecoder
 import javax.inject.Inject
 
-import controllers.ControllerAlbumDirJsonifier
+import formatter.ControllerAlbumDirJsonifier
 import models.ModelJsonable.{ArtistDirJsonifier, SongJsonifier}
 import play.api.libs.json.{JsObject, Json}
 

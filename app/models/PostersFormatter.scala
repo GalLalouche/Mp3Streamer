@@ -1,11 +1,10 @@
-package controllers
+package models
 
 import java.io.File
 import javax.imageio.ImageIO
 import javax.inject.Inject
 
-import controllers.PostersFormatter.AllowedExtensions
-import models.GenreFinder
+import models.PostersFormatter.AllowedExtensions
 
 import scala.concurrent.ExecutionContext
 

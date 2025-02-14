@@ -9,7 +9,6 @@ import backend.new_albums.NewAlbumsModule
 import backend.recent.RecentModule
 import backend.recon.ReconModule
 import backend.scorer.ScorerModule
-import controllers.ControllerModule
 import net.codingwell.scalaguice.ScalaModule
 import songs.SongsModule
 
@@ -19,8 +18,8 @@ object AllModules extends ScalaModule {
   LogManager.getLogManager.readConfiguration(getClass.getResourceAsStream("/logging.properties"))
 
   override def configure(): Unit = {
-    install(GoogleModule)
     install(ExternalModule)
+    install(GoogleModule)
     install(LyricsModule)
     install(MbModule)
     install(NewAlbumsModule)
@@ -28,7 +27,5 @@ object AllModules extends ScalaModule {
     install(ReconModule)
     install(ScorerModule)
     install(SongsModule)
-
-    install(ControllerModule)
   }
 }

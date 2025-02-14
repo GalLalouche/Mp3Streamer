@@ -4,7 +4,7 @@ import backend.module.TestModuleConfiguration
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import com.google.inject.{Guice, Injector, Module}
-import controllers.Encoder
+import formatter.UrlEncoder
 import http4s.{Http4sModule, Main}
 import http4s.routes.Http4sUtils.{jsonDecoder, jsonEncoder}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
@@ -21,7 +21,7 @@ private trait Http4sSpecs extends AuxSpecs { self: Suite =>
   protected def module: Module = Http4sModule.overrideWith(baseTestModule.module)
   protected final lazy val injector: Injector = Guice.createInjector(module)
   private lazy val app = injector.instance[Main].app
-  protected final lazy val encoder = injector.instance[Encoder]
+  protected final lazy val encoder = injector.instance[UrlEncoder]
   def encodeUri(s: String): Uri = Uri.unsafeFromString(encoder(s))
 
   def makeRequest[A: EntityDecoder[IO, *]](request: Request[IO]): IO[A] =

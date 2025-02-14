@@ -3,7 +3,7 @@ package songs
 import java.io.File
 import javax.inject.Inject
 
-import controllers.ControllerSongJsonifier
+import formatter.ControllerSongJsonifier
 import models._
 import play.api.libs.json.JsValue
 import song_encoder.Mp3Encoder

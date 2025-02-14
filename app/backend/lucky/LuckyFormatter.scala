@@ -2,7 +2,7 @@ package backend.lucky
 
 import javax.inject.Inject
 
-import controllers.Decoder
+import formatter.UrlDecoder
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
  */
 class LuckyFormatter @Inject() (
     $ : DuckDuckgoFetcher,
-    decoder: Decoder,
+    decoder: UrlDecoder,
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec

@@ -1,4 +1,4 @@
-package controllers
+package formatter
 
 import backend.logging.{ScribeConfigLoader, ScribeUtils}
 import backend.module.{RealInternetTalkerModule, RealModule}
@@ -8,16 +8,20 @@ import com.google.inject.util.Modules
 import net.codingwell.scalaguice.ScalaModule
 import scribe.Level
 
+import scala.concurrent.ExecutionContext
+
 /**
- * Requires an additional binding of [[ExecutionContext]], since some server framerworks, e.g.,
- * play, provide it on their own.
+ * Since formatters are almost the highest level module in this project (only below the actual
+ * server), this module contains almost all the required functionality. It is basically missing
+ * ExecutionContext, since some frameworks, e.g., Play, supply their own.
  */
-class ServerModule @VisibleForTesting() (level: Option[Level]) extends ScalaModule {
-  def this() = this(ServerModule.defaultLogLevel)
+class FormatterModule @VisibleForTesting() (level: Option[Level]) extends ScalaModule {
+  def this() = this(FormatterModule.defaultLogLevel)
   override def configure(): Unit = {
     install(Modules.`override`(RealModule).`with`(ExistingAlbumsModules.lazyAlbums))
     install(RealInternetTalkerModule.nonDaemonic)
     setScribeLogging()
+    requireBinding(classOf[ExecutionContext])
   }
 
   private def setScribeLogging(): Unit = {
@@ -33,7 +37,7 @@ class ServerModule @VisibleForTesting() (level: Option[Level]) extends ScalaModu
   }
 }
 
-private object ServerModule {
+private object FormatterModule {
   /** Should only be used for testing! Set `None` for no logs. */
-  private[controllers] var defaultLogLevel: Option[Level] = Some(Level.Debug)
+  private[formatter] var defaultLogLevel: Option[Level] = Some(Level.Debug)
 }

@@ -1,4 +1,4 @@
-package controllers
+package formatter
 
 import javax.inject.Inject
 
@@ -16,7 +16,7 @@ import common.json.RichJson._
  * Adds classical music information, as well as encoding dir path. This is a class and not a
  * singleton object to decouple formatters from controller code.
  */
-class ControllerAlbumDirJsonifier @Inject() (encoder: Encoder) {
+class ControllerAlbumDirJsonifier @Inject() (encoder: UrlEncoder) {
   implicit val albumDirJsonable: OJsonable[AlbumDir] =
     JsonableOverrider.oJsonify[AlbumDir]((a, original) =>
       original

@@ -2,15 +2,15 @@ package http4s.routes
 
 import cats.effect.IO
 import com.google.inject.{Provides, Singleton}
-import controllers.{Decoder, Encoder}
+import formatter.{UrlDecoder, UrlEncoder}
 import net.codingwell.scalaguice.ScalaModule
 import org.http4s.HttpRoutes
 import org.http4s.server.Router
 
 private[http4s] object RoutesModule extends ScalaModule {
   override def configure(): Unit = {
-    bind[Encoder].toInstance(Http4sUtils.encode)
-    bind[Decoder].toInstance(Http4sUtils.decode)
+    bind[UrlEncoder].toInstance(Http4sUtils.encode)
+    bind[UrlDecoder].toInstance(Http4sUtils.decode)
   }
 
   @Provides @Singleton private def provideRoutes(

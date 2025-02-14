@@ -3,7 +3,7 @@ package http4s.routes
 import javax.inject.Inject
 
 import cats.effect.IO
-import controllers.PostersFormatter
+import models.PostersFormatter
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 

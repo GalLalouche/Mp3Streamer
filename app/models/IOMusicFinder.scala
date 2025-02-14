@@ -9,7 +9,7 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 /** Can be extended to override its values in tests */
 class IOMusicFinder(@BaseDirectory override val baseDir: IODirectory) extends MusicFinder {
-  def this() = this(IOMusicFinderModule.BaseDir)
+  def this() = this(IOModelsModule.BaseDir)
   final override type S = IOSystem
   protected override def genresWithSubGenres: Seq[String] = Vector("Rock", "Metal")
   override def flatGenres: Seq[String] = Vector("New Age", "Jazz", "Musicals", "Classical")
