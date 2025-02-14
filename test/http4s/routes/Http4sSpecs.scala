@@ -8,7 +8,7 @@ import controllers.Encoder
 import http4s.{Http4sModule, Main}
 import http4s.routes.Http4sUtils.{jsonDecoder, jsonEncoder}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.http4s.{EntityDecoder, EntityEncoder, Method, Request, Uri}
+import org.http4s.{EntityDecoder, EntityEncoder, Method, Request, Response, Uri}
 import org.http4s.client.Client
 import org.scalatest.Suite
 import play.api.libs.json.JsValue
@@ -28,6 +28,12 @@ private trait Http4sSpecs extends AuxSpecs { self: Suite =>
     Client.fromHttpApp(app).expect[A](request)
 
   /** Blocking. */
+  def getRaw(path: String): Response[IO] =
+    Client
+      .fromHttpApp(app)
+      .run(Request[IO](method = Method.GET, uri = Uri.unsafeFromString(path)))
+      .use(IO.pure)
+      .unsafeRunSync()
   def get[A: EntityDecoder[IO, *]](path: String): A =
     makeRequest[A](Request[IO](method = Method.GET, uri = Uri.unsafeFromString(path)))
       .unsafeRunSync()
