@@ -1,4 +1,4 @@
-package controllers
+package stream
 
 import java.io.InputStream
 

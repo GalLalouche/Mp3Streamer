@@ -3,13 +3,13 @@ package http4s.routes
 import javax.inject.Inject
 
 import cats.effect.IO
-import controllers.{StreamerFormatter, StreamResult}
 import http4s.routes.Http4sUtils.{decodePath, fromFuture, shouldEncodeMp3}
 import org.http4s.{Header, Headers, HttpRoutes, MediaType, Response, Status}
 import org.http4s.dsl.io._
 import org.http4s.headers.{`Content-Length`, `Content-Type`}
 import org.http4s.implicits.http4sSelectSyntaxOne
 import org.typelevel.ci.CIString
+import stream.{StreamerFormatter, StreamResult}
 
 import common.rich.collections.RichTraversableOnce._
 

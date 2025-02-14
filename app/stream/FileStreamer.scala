@@ -1,4 +1,4 @@
-package controllers
+package stream
 
 import java.net.HttpURLConnection
 
@@ -8,7 +8,7 @@ import scalaz.std.option.optionInstance
 import common.io.FileRef
 import common.rich.primitives.RichString._
 
-private class FileStreamFormatter {
+private object FileStreamer {
   def apply(file: FileRef, mimeType: String, range: Option[String]): StreamResult = {
     // assumed format: [bytes=<start>-]
     def parseRange(s: String): Long = s.takeAfterLast('=').takeWhile(_.isDigit).toLong
