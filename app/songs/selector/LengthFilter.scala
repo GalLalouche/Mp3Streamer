@@ -2,7 +2,8 @@ package songs.selector
 
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{CachedModelScorer, FullInfoScore, ScoreSource}
-import models.{Genre, GenreFinder, Song}
+import genre.{Genre, GenreFinder}
+import models.Song
 import org.apache.commons.lang3.StringUtils
 
 import scala.concurrent.duration.Duration

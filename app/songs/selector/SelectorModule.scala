@@ -2,7 +2,8 @@ package songs.selector
 
 import backend.scorer.CachedModelScorer
 import com.google.inject.Provides
-import models.{GenreFinder, MusicFinder}
+import genre.GenreFinder
+import models.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext

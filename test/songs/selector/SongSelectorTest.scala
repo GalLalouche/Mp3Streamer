@@ -4,7 +4,8 @@ import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import backend.recon.{Album, Artist, Track}
 import backend.scorer.{CachedModelScorer, ModelScore, OptionalModelScore, ScoreBasedProbability}
 import com.google.inject.Guice
-import models.{FakeModelFactory, GenreFinder, MemorySong, Song}
+import genre.GenreFinder
+import models.{FakeModelFactory, MemorySong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import net.codingwell.scalaguice.ScalaModule
 import org.scalacheck.Arbitrary._

@@ -5,7 +5,7 @@ import javax.inject.Inject
 import backend.recon.{Artist, ReconcilableFactory}
 import backend.scorer.{CachedModelScorer, ModelScore, OptionalModelScore}
 import backend.scorer.utils.ArtistMassScorer.Update
-import models.{Genre, GenreFinder}
+import genre.{Genre, GenreFinder}
 
 import scala.concurrent.ExecutionContext
 

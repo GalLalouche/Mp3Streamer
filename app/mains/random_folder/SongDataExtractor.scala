@@ -4,8 +4,8 @@ import java.io.File
 import javax.inject.Inject
 
 import backend.recon.Artist
+import genre.GenreFinder
 import mains.random_folder
-import models.GenreFinder
 
 import common.io.IODirectory
 import common.rich.path.Directory

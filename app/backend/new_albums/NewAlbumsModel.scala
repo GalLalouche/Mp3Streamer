@@ -9,7 +9,8 @@ import backend.new_albums.filler.NewAlbumFiller
 import backend.new_albums.filler.storage.FilledStorage
 import backend.recon.{Artist, IgnoredReconResult}
 import backend.scorer.OptionalModelScore
-import models.{AlbumTitle, Genre, GenreFinder}
+import genre.{Genre, GenreFinder}
+import models.AlbumTitle
 import shapeless.syntax.std.tuple.productTupleOps
 
 import scala.concurrent.{ExecutionContext, Future}

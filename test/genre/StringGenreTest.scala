@@ -1,4 +1,4 @@
-package models
+package genre
 
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import com.google.inject.Guice

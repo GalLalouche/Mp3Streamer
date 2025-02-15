@@ -1,4 +1,4 @@
-package models
+package genre
 
 sealed class Genre(val name: String) extends Ordered[Genre] {
   def isFlat: Boolean = this match {

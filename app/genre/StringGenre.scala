@@ -1,4 +1,4 @@
-package models
+package genre
 
 /**
  * Used by [[EnumGenre]] to provide hard-coded genres.

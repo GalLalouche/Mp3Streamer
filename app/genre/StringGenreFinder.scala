@@ -1,8 +1,9 @@
-package models
+package genre
 
 import javax.inject.{Inject, Singleton}
 
 import backend.recon.Artist
+import models.MusicFinder
 
 import common.TimedLogger
 import common.io.DirectoryRef

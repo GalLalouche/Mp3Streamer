@@ -1,6 +1,6 @@
-package models
+package genre
 
-import models.Genre._
+import genre.Genre._
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs

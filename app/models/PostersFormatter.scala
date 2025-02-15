@@ -4,6 +4,7 @@ import java.io.File
 import javax.imageio.ImageIO
 import javax.inject.Inject
 
+import genre.GenreFinder
 import models.PostersFormatter.AllowedExtensions
 
 import scala.concurrent.ExecutionContext

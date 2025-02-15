@@ -1,4 +1,4 @@
-package models
+package genre
 
 import javax.inject.Inject
 

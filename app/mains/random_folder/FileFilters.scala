@@ -4,8 +4,8 @@ import java.io.File
 import javax.inject.Inject
 
 import backend.recon.Artist
-import models.{Genre, GenreFinder}
-import models.Genre.{Classical, Metal, NewAge}
+import genre.{Genre, GenreFinder}
+import genre.Genre.{Classical, Metal, NewAge}
 import play.api.libs.json.Json
 
 import common.Filter
