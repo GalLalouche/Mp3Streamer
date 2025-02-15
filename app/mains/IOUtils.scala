@@ -10,14 +10,14 @@ import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichString._
 
 private object IOUtils {
-  /** Opens windows explorer with the file in focus */
+  /** Opens Windows explorer with the file in focus */
   def focus(f: File): Unit =
     Runtime.getRuntime.exec(
       s"""explorer.exe /select,"${f.getAbsolutePath.simpleReplace("/", "\\")}"""",
     )
 
   /**
-   * Windows can't pass unicode path names correctly it seems, instead it replaces the unicode
+   * Windows can't parse Unicode path names correctly it seems, instead it replaces the Unicode
    * characters with "?".
    */
   def decodeFile(path: String): File = {

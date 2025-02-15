@@ -16,7 +16,7 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 /**
  * Wraps [[SongCacheUpdater]] so it updates [[SearchState] and [[SongSearchState]] at the end, as
- * well as update the recent directories observer.
+ * well as update the recent directory observer.
  */
 private class Indexer @Inject() (
     searchState: SearchState,

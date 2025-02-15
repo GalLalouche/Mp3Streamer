@@ -7,8 +7,6 @@ import backend.scorer.{CachedModelScorer, ModelScore, OptionalModelScore}
 import backend.scorer.utils.ArtistMassScorer.Update
 import genre.{Genre, GenreFinder}
 
-import scala.concurrent.ExecutionContext
-
 import common.rich.func.MoreIteratorInstances.IteratorMonadPlus
 import scalaz.Scalaz.{ToBindOpsUnapply, ToFoldableOps, ToFunctorOpsUnapply}
 import scalaz.State
@@ -29,10 +27,7 @@ private class ArtistMassScorer @Inject() (
     scorer: CachedModelScorer,
     reconcilableFactory: ReconcilableFactory,
     enumGenreFinder: GenreFinder,
-    ec: ExecutionContext,
 ) {
-  private implicit val iec: ExecutionContext = ec
-
   def go(update: Update): Seq[String] = {
     def goGenre(g: Genre, artists: Iterable[Artist]): OrgModeWriterMonad = {
       val filteredArtists: Iterable[(Artist, Option[ModelScore])] = for {

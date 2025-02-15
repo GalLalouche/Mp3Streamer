@@ -25,7 +25,7 @@ private object Http4sUtils {
     // Paths in http4s are matched using case GET -> path, meaning they might contain a leading
     // e.g., as in some/action/some_path, the resulting "some_path" would actually be rendered as
     // "/some_path".
-    decode(path.renderString).mapIf(s => s.startsWith("/")).to(_.tail)
+    decode(path.renderString).mapIf(_.startsWith("/")).to(_.tail)
   def encode(s: String): String = URLEncoder.encode(s, "UTF-8")
 
   // Adapted from https://kutt.it/VFkQP8. I'm not using that one though since its JSON version

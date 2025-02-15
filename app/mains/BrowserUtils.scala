@@ -7,7 +7,6 @@ import scala.sys.process.Process
 import common.Urls
 
 private object BrowserUtils {
-  private val Query = "q"
   def pointBrowserTo(query: Url): Unit =
     Process(
       """C:\Program Files\Google\Chrome\Application\chrome.exe """ + query.toStringPunycode,

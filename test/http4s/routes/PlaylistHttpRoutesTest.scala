@@ -1,6 +1,7 @@
 package http4s.routes
 
 import cats.effect.unsafe.implicits.global
+import formatter.UrlDecoder
 import models.ModelJsonable.SongJsonifier
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.{BeforeAndAfterEach, FreeSpec}
@@ -47,7 +48,7 @@ private class PlaylistHttpRoutesTest extends FreeSpec with Http4sSpecs with Befo
   }
 
   private def getPlaylist(name: String): Playlist = {
-    val json = get[String]("playlist/" + name) |> Http4sUtils.decode |> Json.parse
+    val json = get[String]("playlist/" + name) |> injector.instance[UrlDecoder].apply |> Json.parse
     json.parse[Playlist]
   }
 

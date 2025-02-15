@@ -8,7 +8,7 @@ import common.rich.collections.RichTraversableOnce._
 
 sealed case class Host private (name: String, url: Url) extends EnumEntry
 object Host extends Enum[Host] {
-  // TODO why aren't these case objects?
+  // Can't be case objects since they extend a case class.
   object AllMusic extends Host("AllMusic", Url.parse("www.allmusic.com"))
   object Bandcamp extends Host("Bandcamp", Url.parse("bandcamp.com"))
   object Facebook extends Host("Facebook", Url.parse("www.facebook.com"))
