@@ -1,11 +1,13 @@
-package models
+package mains
 
 import java.io.File
+
+import models.{AlbumTitle, ArtistName, Song, TrackNumber}
 
 import monocle.macros.Lenses
 
 @Lenses
-case class OptionalSong(
+private case class OptionalSong(
     file: String,
     title: Option[String],
     artistName: Option[ArtistName],
@@ -22,7 +24,22 @@ case class OptionalSong(
   def directory: String = new File(file).getParent
 }
 
-object OptionalSong {
+private object OptionalSong {
   def empty(file: String): OptionalSong =
     OptionalSong(file = file, None, None, None, None, None, None, None, None, None, None, None)
+
+  def from(song: Song): OptionalSong = OptionalSong(
+    file = song.file.path,
+    title = Some(song.title),
+    artistName = Some(song.artistName),
+    albumName = Some(song.albumName),
+    trackNumber = Some(song.trackNumber),
+    year = Some(song.year),
+    discNumber = song.discNumber,
+    composer = song.composer,
+    conductor = song.conductor,
+    orchestra = song.orchestra,
+    opus = song.opus,
+    performanceYear = song.performanceYear,
+  )
 }

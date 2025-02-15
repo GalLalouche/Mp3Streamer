@@ -1,10 +1,11 @@
 package mains.vimtag
 
 import backend.module.FakeMusicFinder
+import mains.{OptionalSong, OptionalSongFinder}
 import models.{FakeModelFactory, SongTitle, TrackNumber}
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 
-import common.io.MemoryRoot
+import common.io.{DirectoryRef, MemoryRoot}
 import common.test.AuxSpecs
 
 abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualParser)
@@ -12,6 +13,10 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
     with AuxSpecs
     with OneInstancePerTest {
   private val mf = new FakeMusicFinder(new MemoryRoot)
+  private val osf = new OptionalSongFinder {
+    override def apply(d: DirectoryRef): Seq[OptionalSong] =
+      d.files.map(mf.parseSong).map(OptionalSong.from)
+  }
   private val factory = new FakeModelFactory
   "A non-interactive initializer-parser couple returns the correct ID3" in {
     def newSong(
@@ -61,7 +66,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
     )
 
     val parser = new Parser(ip)
-    val initializer = new Initializer(mf, ii)
+    val initializer = new Initializer(mf, osf, ii)
 
     val initial = initializer.apply(s1.file.parent)
     val res = parser(initial.initialValues)(initial.lines)
@@ -116,7 +121,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
     val dir = newSong(3, "a").file.parent
 
     val parser = new Parser(ip)
-    val initializer = new Initializer(mf, ii)
+    val initializer = new Initializer(mf, osf, ii)
 
     val initial = initializer.apply(dir)
     val res = parser(initial.initialValues)(initial.lines)
@@ -146,7 +151,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
     val dir = newSong(2, "b", "d").file.parent.parent
 
     val parser = new Parser(ip)
-    val initializer = new Initializer(mf, ii)
+    val initializer = new Initializer(mf, osf, ii)
 
     val initial = initializer.apply(dir)
     val res = parser(initial.initialValues)(initial.lines)

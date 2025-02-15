@@ -6,7 +6,7 @@ import musicfinder.MusicFinder
 
 import scala.collection.mutable
 
-import common.io.{DirectoryRef, FileRef, MemoryDir, MemoryFile, MemorySystem}
+import common.io.{FileRef, MemoryDir, MemoryFile, MemorySystem}
 import common.rich.RichT._
 
 class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder {
@@ -32,7 +32,7 @@ class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder {
   def copySong(path: Seq[String], s: MemorySong): MemorySong =
     copy(s, path.foldLeft(dirToAddSongsTo)(_ addSubDir _).addFile(s.file.name))
   override def parseSong(f: FileRef): MemorySong = pathToSongs(f.path)
-  override def getOptionalSongsInDir(d: DirectoryRef) =
-    d.files.map(_.path).map(pathToSongs).map(_.toOptionalSong).view
+  // override def getOptionalSongsInDir(d: DirectoryRef) =
+  //  d.files.map(_.path).map(pathToSongs).map(OptionalSong.from).view
   protected override val invalidDirectoryNames = ImmutableBiMap.of()
 }

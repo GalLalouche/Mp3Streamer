@@ -12,7 +12,7 @@ import org.jaudiotagger.tag.FieldKey
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
 
-import common.RichTag._
+import common.TagUtils._
 import common.guice.RichModule.richModule
 import common.io.{DirectoryRef, IODirectory}
 import common.rich.RichT.richT

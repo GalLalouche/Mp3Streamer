@@ -2,7 +2,7 @@ package musicfinder
 
 import backend.recon.Artist
 import com.google.common.collect.BiMap
-import models.{OptionalSong, Song}
+import models.Song
 import musicfinder.MusicFinder.DirectoryName
 
 import common.ds.Types.ViewSeq
@@ -50,7 +50,6 @@ trait MusicFinder { self =>
   def parseSong(f: FileRef): Song { type F = S#F }
   def getSongsInDir(d: DirectoryRef): ViewSeq[Song { type F = S#F }] =
     getSongFilesInDir(d).view.map(parseSong)
-  def getOptionalSongsInDir(d: DirectoryRef): ViewSeq[OptionalSong]
 
   final type DirView = ViewSeq[S#D]
 }

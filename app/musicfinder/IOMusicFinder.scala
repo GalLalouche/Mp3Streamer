@@ -1,11 +1,10 @@
 package musicfinder
 
 import com.google.common.collect.BiMap
-import models.{IOSong, OptionalSong, SongTagParser}
+import models.IOSong
 import musicfinder.MusicFinder.DirectoryName
 
-import common.ds.Types.ViewSeq
-import common.io.{BaseDirectory, DirectoryRef, FileRef, IODirectory, IOFile, IOSystem, JsonMapFile}
+import common.io.{BaseDirectory, FileRef, IODirectory, IOFile, IOSystem, JsonMapFile}
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 /** Can be extended to override its values in tests */
@@ -18,8 +17,6 @@ class IOMusicFinder(@BaseDirectory override val baseDir: IODirectory) extends Mu
   override val extensions = IOMusicFinder.extensions
   override val unsupportedExtensions = IOMusicFinder.unsupportedExtensions
   override def parseSong(f: FileRef) = IOSong.read(f.asInstanceOf[IOFile].file)
-  override def getOptionalSongsInDir(d: DirectoryRef): ViewSeq[OptionalSong] =
-    getSongFilesInDir(d).view.map(SongTagParser optionalSong _.file)
   protected override def invalidDirectoryNames: BiMap[DirectoryName, backend.recon.Artist] =
     IOMusicFinder.invalidDirectoryNames
 }

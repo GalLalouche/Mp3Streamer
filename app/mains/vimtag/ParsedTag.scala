@@ -2,7 +2,7 @@ package mains.vimtag
 
 import org.jaudiotagger.tag.{FieldKey, Tag}
 
-import common.RichTag._
+import common.TagUtils._
 
 private sealed trait ParsedTag[+A] {
   def get(fieldKey: FieldKey, originalTag: Tag): Option[String]

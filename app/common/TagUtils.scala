@@ -4,7 +4,7 @@ import org.jaudiotagger.tag.{FieldKey, Tag}
 
 import common.rich.RichT._
 
-object RichTag {
+object TagUtils {
   implicit class richTag(private val $ : Tag) extends AnyVal {
     private def filterNonEmpty(s: String): Option[String] = s.trim.optFilter(_.nonEmpty)
     def setOption(key: FieldKey, o: Option[Any]): Unit =

@@ -2,9 +2,10 @@ package mains.vimtag
 
 import javax.inject.Inject
 
+import mains.{OptionalSong, OptionalSongFinder}
 import mains.vimtag.Initializer.InitialLines
-import models.OptionalSong
 import models.TypeAliases.TrackNumber
+import musicfinder.MusicFinder
 
 import common.rich.func.ToMoreMonoidOps.monoidFilter
 import scalaz.std.string.stringInstance
@@ -15,10 +16,13 @@ import common.rich.RichT._
 import common.rich.RichTuple.richTuple2
 import common.rich.collections.RichSeq._
 import common.rich.primitives.RichBoolean.richBoolean
-import musicfinder.MusicFinder
 
 /** Sets up the initial lines and writes usage instructions. */
-private class Initializer @Inject() (mf: MusicFinder, aux: IndividualInitializer) {
+private class Initializer @Inject() (
+    mf: MusicFinder,
+    optionalSongFinder: OptionalSongFinder,
+    aux: IndividualInitializer,
+) {
   private class Extractor(dir: DirectoryRef) {
     private def unsupportedFilesMsg = {
       val unsupportedFiles =
@@ -26,9 +30,10 @@ private class Initializer @Inject() (mf: MusicFinder, aux: IndividualInitializer
       s"; However, it did contain unsupported files with extensions: $unsupportedFiles"
         .monoidFilter(unsupportedFiles.nonEmpty)
     }
+
     private lazy val songFiles =
       (dir +: dir.dirs)
-        .flatMap(mf.getOptionalSongsInDir)
+        .flatMap(optionalSongFinder.apply)
         .ensuring(_.nonEmpty, s"No ${mf.extensions} files found in directory$unsupportedFilesMsg")
     private lazy val ordering: Ordering[OptionalSong] =
       if (songFiles.forall(_.trackNumber.isDefined))

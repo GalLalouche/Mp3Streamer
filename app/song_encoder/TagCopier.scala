@@ -3,7 +3,7 @@ package song_encoder
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.{FieldKey, Tag}
 
-import common.RichTag._
+import common.TagUtils._
 import common.io.IOFile
 
 private object TagCopier {
