@@ -13,7 +13,7 @@ import common.rich.primitives.RichBoolean.richBoolean
 
 /** Wraps a python process for detecting languages, so multiple calls are cheaper. */
 private class PythonLanguageDetector private {
-  def detect(s: String): String = {
+  def detect(s: String): String = synchronized {
     val outStream = process.getOutputStream
     outStream.write(s"$s\n".getBytes(Encoding))
     if (process.getErrorStream.available() > 0)

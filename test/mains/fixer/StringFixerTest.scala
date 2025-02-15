@@ -1,6 +1,7 @@
 package mains.fixer
 
 import org.scalatest.FreeSpec
+import org.scalatest.tagobjects.Slow
 
 import common.test.AuxSpecs
 
@@ -119,7 +120,8 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
     verifyFix("100°", "100 Degrees")
   }
 
-  "Asian languages" in {
+  // Slow, since it uses external python program
+  "Asian languages" taggedAs Slow in {
     verifyEmptyFix("センチメートル")
     verifyEmptyFix("アン")
     verifyEmptyFix("한국")
