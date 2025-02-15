@@ -4,7 +4,7 @@ import java.time.Clock
 import java.util.UUID
 
 import backend.storage.DbProvider
-import models.IOModelsModule
+import musicfinder.IOMusicFinderModule
 import net.codingwell.scalaguice.ScalaModule
 import slick.jdbc.{H2Profile, JdbcProfile}
 
@@ -26,6 +26,6 @@ object NonPersistentModule extends ScalaModule {
 
     install(RealInternetTalkerModule.daemonic)
     install(AllModules)
-    install(IOModelsModule)
+    install(IOMusicFinderModule)
   }
 }

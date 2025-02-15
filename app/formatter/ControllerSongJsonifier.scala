@@ -2,8 +2,9 @@ package formatter
 
 import javax.inject.Inject
 
-import models.{IOSong, ModelJsonable, PosterLookup, Song}
+import models.{IOSong, ModelJsonable, Song}
 import models.ModelJsonable.SongJsonifier
+import musicfinder.PosterLookup
 import play.api.libs.json.{JsObject, JsString}
 
 import common.json.{JsonableOverrider, OJsonable, OJsonableOverrider}

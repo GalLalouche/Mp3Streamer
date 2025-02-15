@@ -3,7 +3,7 @@ package backend.new_albums.filler
 import javax.inject.Inject
 
 import backend.recon.{Artist, ReconcilableFactory}
-import models.MusicFinder
+import musicfinder.MusicFinder
 
 import common.io.DirectoryRef
 import common.rich.RichT._

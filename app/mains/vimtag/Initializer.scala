@@ -3,7 +3,7 @@ package mains.vimtag
 import javax.inject.Inject
 
 import mains.vimtag.Initializer.InitialLines
-import models.{MusicFinder, OptionalSong}
+import models.OptionalSong
 import models.TypeAliases.TrackNumber
 
 import common.rich.func.ToMoreMonoidOps.monoidFilter
@@ -15,6 +15,7 @@ import common.rich.RichT._
 import common.rich.RichTuple.richTuple2
 import common.rich.collections.RichSeq._
 import common.rich.primitives.RichBoolean.richBoolean
+import musicfinder.MusicFinder
 
 /** Sets up the initial lines and writes usage instructions. */
 private class Initializer @Inject() (mf: MusicFinder, aux: IndividualInitializer) {

@@ -3,7 +3,8 @@ package backend.recent
 import java.time.{Clock, LocalDate}
 import javax.inject.Inject
 
-import models.{AlbumDir, AlbumDirFactory, MusicFinder}
+import models.{AlbumDir, AlbumDirFactory}
+import musicfinder.MusicFinder
 
 import scala.Ordering.Implicits._
 

@@ -4,8 +4,8 @@ import backend.module.{CleanModule, StandaloneModule}
 import backend.new_albums.filler.storage.FillerStorageModule
 import backend.recon.{Artist, ReconcilableFactory}
 import com.google.inject.{Guice, Injector, Module, Provides, Singleton}
-import models.IOModelsModule
 import models.TypeAliases.ArtistName
+import musicfinder.IOMusicFinderModule
 import net.codingwell.scalaguice.ScalaModule
 
 import common.TimedLogger
@@ -39,7 +39,7 @@ object ExistingAlbumsModules {
     Guice.createInjector(overridenModule.overrideWith(new ScalaModule {
       override def configure(): Unit = {
         install(existingAlbumsModule)
-        install(IOModelsModule)
+        install(IOMusicFinderModule)
         install(FillerStorageModule)
       }
     }))

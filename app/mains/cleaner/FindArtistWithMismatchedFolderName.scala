@@ -7,10 +7,11 @@ import backend.recon.{Artist, ReconcilableFactory}
 import backend.recon.Reconcilable.SongExtractor
 import com.google.inject.Guice
 import me.tongfei.progressbar.ProgressBar
-import models.{IOMusicFinder, SongTagParser}
+import models.SongTagParser
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 import common.io.DirectoryRef
+import musicfinder.IOMusicFinder
 
 private class FindArtistWithMismatchedFolderName @Inject() (
     mf: IOMusicFinder,

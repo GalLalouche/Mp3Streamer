@@ -1,4 +1,4 @@
-package models
+package musicfinder
 
 import backend.module.FakeMusicFinder
 import org.scalatest.{FreeSpec, OneInstancePerTest}

@@ -10,7 +10,7 @@ import io.lemonlabs.uri.Url
 import mains.{IOUtils, MainsModule}
 import mains.cover.{CoverException, DownloadCover}
 import mains.fixer.FolderFixer.TempLarge
-import models.{ArtistFinder, IOMusicFinder}
+import musicfinder.{ArtistFinder, IOMusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}

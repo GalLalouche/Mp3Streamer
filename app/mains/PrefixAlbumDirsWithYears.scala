@@ -2,7 +2,7 @@ package mains
 
 import javax.inject.Inject
 
-import models.MusicFinder
+import musicfinder.MusicFinder
 
 import common.io.IODirectory
 import common.rich.collections.RichTraversableOnce._

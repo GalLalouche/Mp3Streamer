@@ -2,6 +2,8 @@ package models
 
 import javax.inject.Inject
 
+import musicfinder.MusicFinder
+
 import common.io.DirectoryRef
 
 class AlbumDirFactory @Inject() (mf: MusicFinder) {

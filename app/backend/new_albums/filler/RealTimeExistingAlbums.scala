@@ -3,7 +3,7 @@ package backend.new_albums.filler
 import javax.inject.Inject
 
 import backend.recon.{Album, Artist, ReconcilableFactory}
-import models.MusicFinder
+import musicfinder.MusicFinder
 
 import scala.concurrent.ExecutionContext
 

@@ -1,8 +1,9 @@
-package models
+package musicfinder
 
 import backend.recon.Artist
 import com.google.common.collect.BiMap
-import models.MusicFinder.DirectoryName
+import models.{OptionalSong, Song}
+import musicfinder.MusicFinder.DirectoryName
 
 import common.ds.Types.ViewSeq
 import common.io.{DirectoryRef, FileRef, RefSystem}

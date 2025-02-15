@@ -7,7 +7,7 @@ import backend.storage.DbProvider
 import com.google.inject.{Guice, Module, Provides}
 import com.google.inject.util.Modules
 import io.lemonlabs.uri.Url
-import models.PosterLookup
+import musicfinder.PosterLookup
 import net.codingwell.scalaguice.ScalaModule
 import slick.jdbc.{H2Profile, JdbcProfile}
 import slick.util.AsyncExecutor

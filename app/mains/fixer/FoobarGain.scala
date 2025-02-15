@@ -3,7 +3,7 @@ package mains.fixer
 import javax.inject.Inject
 
 import mains.fixer.FoobarGain._
-import models.IOMusicFinder
+import musicfinder.IOMusicFinder
 
 import scala.sys.process._
 

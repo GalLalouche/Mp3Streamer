@@ -3,7 +3,7 @@ package backend.recon
 import javax.inject.Inject
 
 import backend.recon.Reconcilable.SongExtractor
-import models.MusicFinder
+import musicfinder.MusicFinder
 
 import scala.util.{Failure, Success, Try}
 

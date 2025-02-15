@@ -1,6 +1,7 @@
 package songs.selector
 
-import models.{MusicFinder, Song}
+import models.Song
+import musicfinder.MusicFinder
 import songs.selector.MultiStageSongSelector.fileFilterSetter
 
 import scala.annotation.tailrec

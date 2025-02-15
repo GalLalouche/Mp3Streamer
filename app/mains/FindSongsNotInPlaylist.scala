@@ -3,7 +3,7 @@ package mains
 import java.io.File
 import java.time.Duration
 
-import models.IOMusicFinder
+import musicfinder.IOMusicFinder
 
 import common.rich.func.ToMoreMonoidOps._
 import common.rich.func.ToTraverseMonadPlusOps._

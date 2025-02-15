@@ -3,7 +3,7 @@ package genre
 import javax.inject.{Inject, Singleton}
 
 import backend.recon.Artist
-import models.MusicFinder
+import musicfinder.MusicFinder
 
 import common.TimedLogger
 import common.io.DirectoryRef

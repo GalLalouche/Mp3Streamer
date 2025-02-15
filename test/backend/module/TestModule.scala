@@ -5,7 +5,7 @@ import java.util.logging.LogManager
 
 import backend.logging.ScribeUtils
 import com.google.inject.Provides
-import models.MusicFinder
+import musicfinder.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
 
 import common.FakeClock

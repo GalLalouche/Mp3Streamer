@@ -1,7 +1,8 @@
 package backend.module
 
 import com.google.common.collect.ImmutableBiMap
-import models.{MemorySong, MusicFinder}
+import models.MemorySong
+import musicfinder.MusicFinder
 
 import scala.collection.mutable
 

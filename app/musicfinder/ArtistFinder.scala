@@ -1,9 +1,10 @@
-package models
+package musicfinder
 
 import javax.inject.Inject
 
 import mains.fixer.StringFixer
-import models.ArtistFinder.{DotSuffixes, IllegalWindowCharactersPattern}
+import models.ArtistName
+import musicfinder.ArtistFinder.{DotSuffixes, IllegalWindowCharactersPattern}
 
 import common.io.DirectoryRef
 import common.rich.primitives.RichString._

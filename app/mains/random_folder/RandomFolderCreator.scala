@@ -5,7 +5,8 @@ import javax.inject.Inject
 
 import com.google.inject.assistedinject.Assisted
 import me.tongfei.progressbar.ProgressBar
-import models.{IOSong, PosterLookup}
+import models.IOSong
+import musicfinder.PosterLookup
 import org.apache.commons.io.FileUtils
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.audio.exceptions.{CannotWriteException, UnableToRenameFileException}

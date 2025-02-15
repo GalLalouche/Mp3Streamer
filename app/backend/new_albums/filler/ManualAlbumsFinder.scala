@@ -4,7 +4,7 @@ import javax.inject.{Inject, Singleton}
 
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import backend.recon.Reconcilable.SongExtractor
-import models.MusicFinder
+import musicfinder.MusicFinder
 
 import scala.concurrent.Future
 

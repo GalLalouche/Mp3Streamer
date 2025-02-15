@@ -3,7 +3,7 @@ package backend.scorer
 import backend.recon.{Album, Artist, Track}
 import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, CompositeStorageScorer, StorageScorer, TrackScoreStorage}
 import com.google.inject.Provides
-import models.MusicFinder
+import musicfinder.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
 
 object ScorerModule extends ScalaModule {

@@ -1,6 +1,8 @@
-package models
+package musicfinder
 
 import java.util.regex.Pattern
+
+import models.{IOSong, Song}
 
 import common.io.{DirectoryRef, FileRef}
 import common.rich.primitives.RichString._

@@ -4,7 +4,8 @@ import java.io.File
 import java.util.regex.Pattern
 import javax.inject.Inject
 
-import models.{IOMusicFinder, IOSong}
+import models.IOSong
+import musicfinder.IOMusicFinder
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 

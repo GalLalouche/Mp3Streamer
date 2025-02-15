@@ -2,7 +2,8 @@ package songs.selector
 
 import javax.inject.Inject
 
-import models.{MusicFinder, Song}
+import models.Song
+import musicfinder.MusicFinder
 
 import scala.annotation.tailrec
 import scala.util.Random

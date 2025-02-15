@@ -1,11 +1,11 @@
-package models
+package musicfinder
 
 import java.io.File
 import javax.imageio.ImageIO
 import javax.inject.Inject
 
 import genre.GenreFinder
-import models.PostersFormatter.AllowedExtensions
+import musicfinder.PostersFormatter.AllowedExtensions
 
 import scala.concurrent.ExecutionContext
 

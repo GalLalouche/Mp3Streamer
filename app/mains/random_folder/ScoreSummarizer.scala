@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{CachedModelScorer, ModelScore}
-import models.MusicFinder
+import musicfinder.MusicFinder
 
 import common.Percentage
 import common.io.IODirectory

@@ -4,7 +4,8 @@ import java.nio.file.Files
 import java.nio.file.attribute.FileTime
 import javax.inject.Inject
 
-import models.{IOMusicFinder, SongTagParser}
+import models.SongTagParser
+import musicfinder.IOMusicFinder
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 
 import common.io.IODirectory

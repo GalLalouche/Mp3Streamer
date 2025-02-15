@@ -5,7 +5,7 @@ import javax.inject.Inject
 import backend.recon.{Album, Artist, ReconcilableFactory, Track, YearlessAlbum, YearlessTrack}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
-import models.MusicFinder
+import musicfinder.MusicFinder
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}

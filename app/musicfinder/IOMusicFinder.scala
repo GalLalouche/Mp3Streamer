@@ -1,7 +1,8 @@
-package models
+package musicfinder
 
 import com.google.common.collect.BiMap
-import models.MusicFinder.DirectoryName
+import models.{IOSong, OptionalSong, SongTagParser}
+import musicfinder.MusicFinder.DirectoryName
 
 import common.ds.Types.ViewSeq
 import common.io.{BaseDirectory, DirectoryRef, FileRef, IODirectory, IOFile, IOSystem, JsonMapFile}
@@ -9,7 +10,7 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 /** Can be extended to override its values in tests */
 class IOMusicFinder(@BaseDirectory override val baseDir: IODirectory) extends MusicFinder {
-  def this() = this(IOModelsModule.BaseDir)
+  def this() = this(IOMusicFinderModule.BaseDir)
   final override type S = IOSystem
   protected override def genresWithSubGenres: Seq[String] = Vector("Rock", "Metal")
   override def flatGenres: Seq[String] = Vector("New Age", "Jazz", "Musicals", "Classical")

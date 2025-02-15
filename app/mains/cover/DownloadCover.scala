@@ -7,7 +7,8 @@ import io.lemonlabs.uri.Url
 import mains.{BrowserUtils, IOUtils, MainsModule}
 import mains.cover.DownloadCover._
 import mains.cover.image.ImageAPISearch
-import models.{AlbumDirFactory, MusicFinder}
+import models.AlbumDirFactory
+import musicfinder.MusicFinder
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
