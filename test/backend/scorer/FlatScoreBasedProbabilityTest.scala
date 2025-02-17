@@ -12,7 +12,7 @@ import scala.util.Random
 
 import common.io.FileRef
 import common.rich.RichEnumeratum.richEnumeratum
-import common.rich.RichRandom.richRandom
+import common.rich.RichRandomSpecVer.richRandomSpecVer
 import common.rich.collections.RichTraversableOnce._
 import common.test.AuxSpecs
 

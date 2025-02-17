@@ -18,7 +18,7 @@ import scalaz.std.option.optionInstance
 import scalaz.syntax.apply.ToApplyOps
 
 import common.rich.RichT._
-import common.storage.{ColumnMappers, StringSerializable}
+import common.storage.{ColumnMappersSpecVer, StringSerializable}
 
 // TODO replace with composition
 private abstract class SlickExternalStorage[R <: Reconcilable](
@@ -60,7 +60,7 @@ private abstract class SlickExternalStorage[R <: Reconcilable](
     }
   // Can't use the type alias because it messes up the type inference.
   protected implicit val markedLinksColumns: JdbcType[Traversable[MarkedLink[R]]] =
-    new ColumnMappers().traversable
+    new ColumnMappersSpecVer().traversable
   protected def toFreshness(o: Option[LocalDateTime]): Freshness =
     o.mapHeadOrElse(DatedFreshness, AlwaysFresh)
   protected override type Id = String

@@ -12,7 +12,7 @@ import scala.concurrent.duration._
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
-import scalaz.syntax.monadError.ToMonadErrorOps
+import scalaz.Scalaz.ToMonadErrorOps
 
 import common.concurrency.SimpleTypedActor
 import common.io.InternetTalker

@@ -16,7 +16,7 @@ import scala.concurrent.ExecutionContext
 import common.concurrency.report.ReportObserver
 import common.io.JsonableSaver
 import common.rich.RichFuture.richFuture
-import common.rich.RichObservable.richObservable
+import common.rich.RichObservableSpecVer.richObservableSpecVer
 import common.rich.RichT.richT
 
 private[search] class SongCacheUpdater @Inject() (

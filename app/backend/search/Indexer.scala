@@ -11,6 +11,7 @@ import scala.concurrent.Future
 
 import common.io.DirectoryRef
 import common.rich.RichObservable.richObservable
+import common.rich.RichObservableSpecVer.richObservableSpecVer
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 

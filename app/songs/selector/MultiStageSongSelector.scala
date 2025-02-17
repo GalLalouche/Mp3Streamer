@@ -12,7 +12,7 @@ import monocle.Setter
 
 import common.{Filter, TimedLogger}
 import common.io.RefSystem
-import common.rich.RichRandom.richRandom
+import common.rich.RichRandomSpecVer.richRandomSpecVer
 import common.rich.primitives.RichBoolean.richBoolean
 
 /**

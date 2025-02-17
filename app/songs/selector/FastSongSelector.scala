@@ -10,7 +10,7 @@ import scala.util.Random
 
 import common.TimedLogger
 import common.io.DirectoryRef
-import common.rich.RichRandom.richRandom
+import common.rich.RichRandomSpecVer.richRandomSpecVer
 
 /**
  * Sacrifices uniform distribution for lower latency while waiting for update to complete (since

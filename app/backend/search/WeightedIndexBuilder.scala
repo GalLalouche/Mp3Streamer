@@ -3,8 +3,8 @@ package backend.search
 import backend.search.WeightedIndexable.ops._
 
 import common.rich.func.MoreIterableInstances._
-import common.rich.func.MoreSetInstances._
 import scalaz.Semigroup
+import scalaz.std.set.setMonoid
 import scalaz.syntax.functor.ToFunctorOps
 
 import common.ds.Trie
