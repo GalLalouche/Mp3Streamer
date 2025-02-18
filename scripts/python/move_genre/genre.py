@@ -13,11 +13,10 @@ class Genre(Enum):
   CELTIC = auto()
   CHAMBAROQUE_POP = auto()
   CIRCUS_ROCK = auto()
+  CLASSICAL_PROG = auto()
   CLASSIC_POP = auto()
   CLASSIC_ROCK = auto()
-  CLASSICAL_PROG = auto()
   CROSS_OVER_PROG = auto()
-  PROGRESSIVE_HARD_ROCK = auto()
   DARK_CABARET = auto()
   DARK_FOLK = auto()
   EMO = auto()
@@ -25,8 +24,8 @@ class Genre(Enum):
   FOLK_ROCK = auto()
   GLAM_ROCK = auto()
   GOTHIC_ROCK = auto()
-  HARD_ROCK_REVIVAL = auto()
   HARD_ROCK = auto()
+  HARD_ROCK_REVIVAL = auto()
   HEAVY_PSYCH = auto()
   INDIE = auto()
   INDIE_FOLK = auto()
@@ -47,12 +46,14 @@ class Genre(Enum):
   POST_HARDCORE = auto()
   POST_PUNK_REVIVAL = auto()
   POST_ROCK = auto()
+  PROGRESSIVE_HARD_ROCK = auto()
   PROG_FUSION = auto()
   PROG_POP = auto
   PUNK = auto()
   ROCK = auto()
   ROCK_N_ROLL = auto()
   ROCK_PROGRESSIVO_ITALIANO = auto()
+  SCREAMO = auto()
   SHOEGAZE = auto()
   SOFT_ROCK = auto()
   SYMPHONIC_PROG = auto()
@@ -200,6 +201,8 @@ class Genre(Enum):
       return "Rock Progressivo Italiano"
     if self == Genre.PROGRESSIVE_HARD_ROCK:
       return "Progressive Hard Rock"
+    if self == Genre.SCREAMO:
+      return "Screamo"
     if self == Genre.SHOEGAZE:
       return "Shoegaze"
     if self == Genre.SOFT_ROCK:
