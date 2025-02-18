@@ -29,7 +29,7 @@ resolvers ++= Seq(
 val akkaVersion = "2.6.1"
 val monocleVersion = "1.5.0"
 val scalazVersion = "7.2.18"
-val guiceVersion = "4.2.0"
+val guiceVersion = "6.0.0"
 val playStandaloneVersion = "2.1.11"
 libraryDependencies ++= Seq(
   // noinspection SbtDependencyVersionInspection (Newer JDK version).
@@ -46,7 +46,6 @@ libraryDependencies ++= Seq(
   "com.outr" %% "scribe" % "3.15.2",
   "com.typesafe" % "config" % "1.4.3",
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
-  "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
   "com.typesafe.play" %% "play-ahc-ws-standalone" % playStandaloneVersion,
   "com.typesafe.play" %% "play-ws-standalone-json" % playStandaloneVersion,
   "com.typesafe.slick" %% "slick" % "3.3.3",
@@ -59,10 +58,10 @@ libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-io" % "1.3.2",
   "org.apache.commons" % "commons-lang3" % "3.17.0",
   "org.jsoup" % "jsoup" % "1.12.1",
-  "org.mockito" % "mockito-all" % "1.10.19" % "test",
   "org.playframework" %% "play-json" % "3.0.4",
   "org.scala-lang.modules" %% "scala-swing" % "3.0.0",
-  "org.scalacheck" %% "scalacheck" % "1.18.1" % "test",
+  "org.openjfx" % "javafx" % "21.0.6",
+  "org.openjfx" % "javafx-controls" % "21.0.6",
   "org.scalafx" %% "scalafx" % "17.0.1-R26",
   "org.scalamacros" % ("paradise_" + scalaVersionStr) % "2.1.1", // For some reason, it uses the full binary version
   "org.scalatest" %% "scalatest" % "3.0.4",
@@ -70,6 +69,12 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-core" % scalazVersion,
   "org.xerial" % "sqlite-jdbc" % "3.49.0.0",
   ("org.me" %% "scalacommon" % "1.0").changing(),
+  // Test stuff
+  "com.softwaremill.sttp.client3" %% "core" % "3.10.3" % Test,
+  "com.softwaremill.sttp.client3" %% "play2-json" % "3.10.3" % Test,
+  "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
+  "org.mockito" % "mockito-core" % "5.15.2" % Test,
+  "org.scalacheck" %% "scalacheck" % "1.18.1" % Test,
 
   // http4s stuff
   "org.http4s" %% "http4s-ember-client" % http4sVersion,

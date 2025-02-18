@@ -3,7 +3,7 @@ package backend.external.expansions
 import backend.recon.{Album, Artist}
 import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.ScalaModule
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 
