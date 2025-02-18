@@ -3,14 +3,22 @@ package backend.recent
 import javax.inject.Inject
 
 import models.ModelJsonable.AlbumDirJsonifier
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsNull, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
+
+import common.rich.func.BetterFutureInstances._
+import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
+import scalaz.Scalaz.{optionInstance, ToBindOps}
 
 import common.json.ToJsonableOps._
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
-class RecentFormatter @Inject() (ec: ExecutionContext, recentAlbums: RecentAlbums) {
+class RecentFormatter @Inject() (
+    ec: ExecutionContext,
+    recentAlbums: RecentAlbums,
+    lastAlbumState: LastAlbumState,
+) {
   private def sinceDays(d: Int): Future[JsValue] = Future(recentAlbums.sinceDays(d)).map(_.jsonify)
   private def sinceMonths(m: Int): Future[JsValue] =
     Future(recentAlbums.sinceMonths(m)).map(_.jsonify)
@@ -29,5 +37,7 @@ class RecentFormatter @Inject() (ec: ExecutionContext, recentAlbums: RecentAlbum
 
   def all(amount: Int): Future[JsValue] = Future(recentAlbums.all(amount)).map(_.jsonify)
   def double(amount: Int): Future[JsValue] = Future(recentAlbums.double(amount)).map(_.jsonify)
-  def last: Future[JsValue] = Future(recentAlbums.all(1).single.jsonify)
+  def updateLast(): Future[JsValue] =
+    Future(recentAlbums.all(1).single).>>!(lastAlbumState.set).map(_.jsonify)
+  def getLastState: JsValue = lastAlbumState.get().mapHeadOrElse(_.jsonify, JsNull)
 }

@@ -2,7 +2,11 @@
 
 export namespace LastAlbum {
   export async function addNextNewAlbum(): Promise<void> {
-    return $.get("recent/last", album => updateAlbum(album, true)).toPromise()
+    const getLast: Album = await $.get("recent/get_last").toPromise()
+    const getLastText = albumText(getLast)
+    return getLastText != lastAlbumText
+      ? updateAlbum(getLast, true)
+      : $.get("recent/update_last", album => updateAlbum(album, true)).toPromise()
   }
 }
 
