@@ -3,7 +3,7 @@ package server
 import formatter.UrlDecoder
 import models.ModelJsonable.SongJsonifier
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.BeforeAndAfterEach
+import org.scalatest.OneInstancePerTest
 import org.scalatest.tags.Slow
 import play.api.libs.json.{JsArray, Json, JsString}
 import playlist.{Playlist, PlaylistTest}
@@ -14,13 +14,10 @@ import scala.concurrent.Future
 import common.rich.func.BetterFutureInstances._
 import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
 
-import common.io.{DirectoryRef, RootDirectory}
 import common.json.ToJsonableOps.{jsonifySingle, parseJsValue}
 
 @Slow
-private class PlaylistTest extends Http4sEndToEndSpecs with BeforeAndAfterEach {
-  protected override def afterEach(): Unit = injector.instance[DirectoryRef, RootDirectory].clear()
-
+private class PlaylistTest extends Http4sEndToEndSpecs with OneInstancePerTest {
   "set then get" in {
     putArbPlaylist("foobar") >>= (playlist =>
       checkAll(
@@ -28,6 +25,17 @@ private class PlaylistTest extends Http4sEndToEndSpecs with BeforeAndAfterEach {
         getPlaylists shouldEventuallyReturn Vector("foobar"),
       ),
     )
+  }
+
+  "override" in {
+    for {
+      _ <- putArbPlaylist("foobar")
+      pl1 <- putArbPlaylist("foobar")
+      result <- checkAll(
+        getPlaylist("foobar") shouldEventuallyReturn pl1,
+        getPlaylists shouldEventuallyReturn Vector("foobar"),
+      )
+    } yield result
   }
 
   "set multiple playlists and get" in {
