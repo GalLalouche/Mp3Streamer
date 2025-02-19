@@ -14,9 +14,9 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
     recentAlbums: RecentAlbums,
 ) {
   private val updater: UpdatableProxy[Option[AlbumDir]] =
-    factory(None, () => Some(recentAlbums.all(1).single))
+    factory(None, () => Some(recentAlbums.all(1).single), "LastAlbumState")
   def update(): Future[Unit] = updater.update()
-  private[recent] def set(albumDir: AlbumDir) = updater.set(Some(albumDir))
+  private[recent] def set(albumDir: AlbumDir): Future[Unit] = updater.set(Some(albumDir));
   update()
   def get(): Option[AlbumDir] = updater.current
 }

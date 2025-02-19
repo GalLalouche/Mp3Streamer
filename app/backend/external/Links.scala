@@ -12,6 +12,7 @@ object BaseLink {
   def iso[R1 <: Reconcilable, R2 <: Reconcilable]: Iso[BaseLink[R1], BaseLink[R2]] =
     Iso[BaseLink[R1], BaseLink[R2]](_.copy())(_.copy())
 }
+
 private[external] case class MarkedLink[R <: Reconcilable](link: Url, host: Host, mark: LinkMark) {
   def isNew = mark == LinkMark.New
   def toBase: BaseLink[R] = BaseLink(link, host)

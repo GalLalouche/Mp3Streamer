@@ -1,22 +1,22 @@
 import {Album, Song} from "./types.js"
 
 function confirm(title: string, action: () => void): void {
-  let dialog = $(`<div title="Really ${title}?">Are you sure?</div>`)
-  dialog.dialog({
-    resizable: false,
-    height: "auto",
-    width: 400,
-    modal: true,
-    buttons: {
-      OK: function () {
-        action()
-        $(this).dialog("close")
+  $(`<div title="Really ${title}?">Are you sure?</div>`)
+    .dialog({
+      resizable: false,
+      height: "auto",
+      width: 400,
+      modal: true,
+      buttons: {
+        OK: function () {
+          action()
+          $(this).dialog("close")
+        },
+        Cancel: function () {
+          $(this).dialog("close")
+        },
       },
-      Cancel: function () {
-        $(this).dialog("close")
-      },
-    },
-  })
+    })
 }
 
 function ignoreAlbum(artist: string, album: string, elementToRemove: JQuery<HTMLElement>): void {

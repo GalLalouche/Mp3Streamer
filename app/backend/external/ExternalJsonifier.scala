@@ -33,8 +33,8 @@ private class ExternalJsonifier @Inject() (implicit ec: ExecutionContext) {
     "main" -> link.link.toStringPunycode,
     "extensions" -> Json.obj(link.extensions.map(toJson).toVector: _*),
   )
-  private def toJson(linkses: Traversable[ExtendedLink[_]]): JsObject =
-    linkses
+  private def toJson(links: Traversable[ExtendedLink[_]]): JsObject =
+    links
       .filterAndSortBy(_.host, Hosts)
       // Filter non-new Wikidata, because they aren't shown in the client.
       .filter(e => e.host != Wikidata || e.isNew || e.hasText)

@@ -26,7 +26,8 @@ import common.test.{AsyncAuxSpecs, BeforeAndAfterAllAsync}
 
 /**
  * A test that is not coupled with any specific server implementation, e.g., http4s vs Play.
- * Instead, it initializes an HTTP server and just makes plain old HTTP requests to it.
+ * Instead, it initializes an HTTP server and just makes plain old HTTP requests to it. Mind you,
+ * this not actually a proper "end-to-end" test, since, for example, it will write to disk.
  */
 private abstract class EndToEndTest
     extends AsyncFreeSpec

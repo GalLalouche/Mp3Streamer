@@ -13,8 +13,9 @@ sealed trait Reconcilable {
  * artist. In other words, while an [[models.ArtistDir]] has to physically exist on the filesystem,
  * an artist can represent artists which don't have any albums or directories downloaded.
  */
-// Note that this is only a case class for interoperability with Slick. its implementation of
+// Note that this is only a case class for interoperability with Slick. Its implementation of
 // hashcode and equals are different from the default ones!
+// TODO why not use a case insensitive string here?
 case class Artist(name: ArtistName) extends Reconcilable {
   override def normalize: String = name.toLowerCase
 

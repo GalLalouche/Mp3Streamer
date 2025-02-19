@@ -9,6 +9,6 @@ case class StreamResult(
     inputStream: InputStream,
     contentLength: Long,
 ) {
-  def withHeaders(first: (String, String), rest: (String, String)*): StreamResult =
+  def addHeaders(first: (String, String), rest: (String, String)*): StreamResult =
     copy(headers = headers ++ (first +: rest))
 }

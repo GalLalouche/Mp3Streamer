@@ -11,7 +11,7 @@ import scalaz.syntax.bind.ToBindOps
 
 class SlickInstrumentalArtistStorageTest extends AsyncFreeSpec with StorageSetup {
   protected override val config = TestModuleConfiguration()
-  val injector = config.injector
+  private val injector = config.injector
   protected override def storage: InstrumentalArtistStorage =
     injector.instance[SlickInstrumentalArtistStorage]
   private val artistName = "foo"

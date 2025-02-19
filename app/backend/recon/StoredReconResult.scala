@@ -5,7 +5,6 @@ sealed trait StoredReconResult {
 }
 
 object StoredReconResult {
-  // Because some artists explicitly have no recon ID, e.g., Magentic.
   case object NoRecon extends StoredReconResult {
     override val isIgnored = true
   }

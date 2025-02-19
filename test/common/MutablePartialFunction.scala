@@ -1,8 +1,8 @@
 package common
 
 /**
- * A partial function that can mutated to support new arguments. Can be more useful than a mutable
- * Map since it also supports a mutating const (i.e., default) changes.
+ * A partial function that can be mutated to support new arguments. Can be more useful than a
+ * mutable Map since it also supports a mutating const (i.e., default) changes.
  */
 // TODO move to common
 class MutablePartialFunction[A, B] extends PartialFunction[A, B] {

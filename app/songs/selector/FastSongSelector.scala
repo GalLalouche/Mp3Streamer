@@ -22,14 +22,16 @@ private class FastSongSelector @Inject() (
     random: Random,
 ) extends SongSelector {
   final override def randomSong(): Song = timedLogger.apply("fastRandomSong", scribe.debug(_)) {
-    @tailrec def go(dir: DirectoryRef): Song =
-      if (dir.dirs.isEmpty) {
+    @tailrec def go(dir: DirectoryRef): Song = {
+      val dirs = dir.dirs
+      if (dirs.isEmpty) {
         val songs = mf.getSongsInDir(dir).toVector
         if (songs.isEmpty)
           throw new NoSuchElementException(s"No songs in dir without subdirectories <$dir>")
         random.select(songs)
       } else
-        go(random.select(dir.dirs.toVector))
+        go(random.select(dirs.toVector))
+    }
     try
       go(random.select(mf.genreDirsWithSubGenres.toVector))
     catch {

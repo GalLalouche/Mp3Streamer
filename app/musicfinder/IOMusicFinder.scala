@@ -7,7 +7,7 @@ import musicfinder.MusicFinder.DirectoryName
 import common.io.{BaseDirectory, FileRef, IODirectory, IOFile, IOSystem, JsonMapFile}
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
-/** Can be extended to override its values in tests */
+/** Can be extended to override its values in scripts. */
 class IOMusicFinder(@BaseDirectory override val baseDir: IODirectory) extends MusicFinder {
   def this() = this(IOMusicFinderModule.BaseDir)
   final override type S = IOSystem
@@ -21,10 +21,6 @@ class IOMusicFinder(@BaseDirectory override val baseDir: IODirectory) extends Mu
     IOMusicFinder.invalidDirectoryNames
 }
 
-/**
- * The actual locations, as opposed to mocked ones. This is used by scripts as well as the real
- * controllers.
- */
 object IOMusicFinder {
   private lazy val invalidDirectoryNames: BiMap[DirectoryName, backend.recon.Artist] =
     JsonMapFile

@@ -2,7 +2,6 @@ package backend.mb
 
 import java.time.{LocalDate, Year, YearMonth}
 
-import backend.mb.AlbumParser._
 import backend.recon.{Artist, ReconID}
 import mains.fixer.StringFixer
 import play.api.libs.json.{JsObject, JsValue}
@@ -13,18 +12,7 @@ import common.rich.RichTime.OrderingLocalDate
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
 
-private class AlbumParser {
-  private def parseDate(js: JsValue): Option[LocalDate] = {
-    val $ = js
-      .ostr(ReleaseDate)
-      .flatMap(DateFormatter.parse)
-      .map(_.toLocalDate)
-    if (js.has(ReleaseDate) && $.isEmpty)
-      // TODO replace logging with ADT Result type
-      scribe.warn(s"Could not parse $ReleaseDate from <$js>")
-    $
-  }
-
+private object AlbumParser {
   def parseReleaseGroup(json: JsObject): Option[MbAlbumMetadata] = for {
     date <- parseDate(json)
     albumType <- json.ostr("primary-type").flatMap(AlbumType.withNameOption)
@@ -41,6 +29,17 @@ private class AlbumParser {
       albumType = if (secondaryTypes.nonEmpty) AlbumType.Live else albumType,
       reconId = ReconID.validateOrThrow(json.str("id")),
     )
+  }
+
+  private def parseDate(js: JsValue): Option[LocalDate] = {
+    val $ = js
+      .ostr(ReleaseDate)
+      .flatMap(DateFormatter.parse)
+      .map(_.toLocalDate)
+    if (js.has(ReleaseDate) && $.isEmpty)
+      // TODO replace logging with ADT Result type
+      scribe.warn(s"Could not parse $ReleaseDate from <$js>")
+    $
   }
 
   def artistCredits(json: JsObject): Seq[(Artist, ReconID)] = json
@@ -65,9 +64,7 @@ private class AlbumParser {
 
   def releaseGroups(js: JsValue): Seq[MbAlbumMetadata] =
     js.objects("release-groups").flatMap(parseReleaseGroup)
-}
 
-private object AlbumParser {
   private val ReleaseDate = "first-release-date"
   private val ValidPrimaryTypes = Set("Album", "EP", "Live")
   private def fixQuotes(s: String): String =

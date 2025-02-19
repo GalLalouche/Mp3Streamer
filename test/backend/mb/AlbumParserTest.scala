@@ -11,7 +11,7 @@ import play.api.libs.json.{JsObject, Json}
 import common.test.AuxSpecs
 
 class AlbumParserTest extends FreeSpec with AuxSpecs {
-  private val $ = new AlbumParser
+  private val $ = AlbumParser
   private def parse(s: String): Option[MbAlbumMetadata] =
     $.parseReleaseGroup(Json.parse(s.stripMargin).as[JsObject])
   "valid input" in {

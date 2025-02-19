@@ -11,6 +11,7 @@ object ReconModule extends ScalaModule {
     bind[ArtistReconStorage].to[SlickArtistReconStorage]
     bind[AlbumReconStorage].to[SlickAlbumReconStorage]
   }
+
   @Provides private def artistReconcilerCacher(
       artistReconStorage: ArtistReconStorage,
       mbArtistReconciler: VerifiedMbArtistReconciler,

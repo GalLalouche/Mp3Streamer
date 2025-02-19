@@ -2,7 +2,7 @@ package backend.lucky
 
 import javax.inject.Inject
 
-import backend.lucky.DuckDuckgoFetcher.{QueryPrefix, RutPrefix, UrlPrefix}
+import backend.lucky.DuckDuckgoFetcher.QueryPrefix
 import org.jsoup.Jsoup
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,7 +16,14 @@ private class DuckDuckgoFetcher @Inject() (it: InternetTalker) {
   private implicit val iec: ExecutionContext = it
   def search(query: String): Future[String] =
     it.useWs(_.url(s"$QueryPrefix$query").withFollowRedirects(false).get)
-      .map(_.body |> parse)
+      .map(DuckDuckgoFetcher parse _.body)
+
+}
+
+private object DuckDuckgoFetcher {
+  private val QueryPrefix = "https://duckduckgo.com/?q=\\"
+  private val UrlPrefix = "0; url=/l/?uddg="
+  private val RutPrefix = "&rut"
 
   private def parse(s: String): String =
     Jsoup
@@ -28,10 +35,4 @@ private class DuckDuckgoFetcher @Inject() (it: InternetTalker) {
       .drop(UrlPrefix.length)
       .mapIf(_.contains(RutPrefix))
       .to(s => s.take(s.indexOf(RutPrefix)))
-}
-
-private object DuckDuckgoFetcher {
-  private val QueryPrefix = "https://duckduckgo.com/?q=\\"
-  private val UrlPrefix = "0; url=/l/?uddg="
-  private val RutPrefix = "&rut"
 }

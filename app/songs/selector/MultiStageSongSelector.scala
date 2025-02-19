@@ -26,8 +26,7 @@ class MultiStageSongSelector[Sys <: RefSystem](private val songs: IndexedSeq[Sys
     private val songFilter: Filter[Song],
     private val timedLogger: TimedLogger,
 ) extends SongSelector {
-  final override def randomSong(): Song =
-    timedLogger("Selecting a random song")(randomSongImpl())
+  final override def randomSong(): Song = timedLogger("Selecting a random song")(randomSongImpl())
 
   @tailrec private def randomSongImpl(): Song = {
     val file = random.select(songs)

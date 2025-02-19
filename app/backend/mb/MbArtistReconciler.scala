@@ -14,7 +14,6 @@ import common.json.RichJson._
 
 private[backend] class MbArtistReconciler @Inject() (
     ec: ExecutionContext,
-    parser: AlbumParser,
     downloader: JsonDownloader,
 ) extends Reconciler[Artist] {
   private implicit val iec: ExecutionContext = ec
@@ -29,5 +28,5 @@ private[backend] class MbArtistReconciler @Inject() (
 
   // TODO Extract this to another module, this shouldn't be here
   def getAlbumsMetadata(artistKey: ReconID): Future[Seq[MbAlbumMetadata]] =
-    downloader("release-group", "artist" -> artistKey.id).map(parser.releaseGroups)
+    downloader("release-group", "artist" -> artistKey.id).map(AlbumParser.releaseGroups)
 }
