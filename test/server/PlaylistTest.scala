@@ -1,10 +1,10 @@
 package server
 
+import com.google.inject.Module
 import formatter.UrlDecoder
 import models.ModelJsonable.SongJsonifier
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.OneInstancePerTest
-import org.scalatest.tags.Slow
+import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.{JsArray, Json, JsString}
 import playlist.{Playlist, PlaylistTest}
 import sttp.client3.UriContext
@@ -14,10 +14,13 @@ import scala.concurrent.Future
 import common.rich.func.BetterFutureInstances._
 import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
 
+import common.io.{DirectoryRef, RootDirectory}
 import common.json.ToJsonableOps.{jsonifySingle, parseJsValue}
 
-@Slow
-private class PlaylistTest extends Http4sEndToEndSpecs with OneInstancePerTest {
+private class PlaylistTest(serverModule: Module)
+    extends HttpServerSpecs(serverModule)
+    with BeforeAndAfterEach {
+  override def afterEach(): Unit = injector.instance[DirectoryRef, RootDirectory].clear()
   "set then get" in {
     putArbPlaylist("foobar") >>= (playlist =>
       checkAll(

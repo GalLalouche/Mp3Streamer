@@ -22,7 +22,9 @@ import common.rich.primitives.RichString._
 
 /** Saves in json format to a file. */
 class JsonableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
-  private val workingDir = rootDirectory.addSubDir("data").addSubDir("json")
+  // This is a def and not a val, as the directory might change, e.g., it might be deleted. This
+  // happens in tests, but can also happen in production (in theory anyway).
+  private def workingDir = rootDirectory.addSubDir("data").addSubDir("json")
   protected def jsonFileName[T: Manifest]: String =
     s"${manifest.runtimeClass.getSimpleName.removeAll(JsonableSaver.TrailingSlashes)}s.json"
   private def save[T: Manifest](js: JsValue): Unit =
