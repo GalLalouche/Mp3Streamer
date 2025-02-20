@@ -14,18 +14,15 @@ class Http4sServer @Inject() (main: Main, ec: ExecutionContext, timedLogger: Tim
     extends Server {
   private implicit val iec: ExecutionContext = ec
   override def start(port: Int): Future[RunningServer] =
-    if (true)
-      Future {
-        val x = timedLogger("Creating main", println) {
-          Main.run(main, Port.fromInt(port).get)
+    Future {
+      val resource = timedLogger("Creating main", println) {
+        Main.run(main, Port.fromInt(port).get)
+      }
+      resource.allocated
+    }.flatMap(_.unsafeToFuture())
+      .map { case (_, shutdown) =>
+        new RunningServer {
+          override def stop(): Future[Unit] = shutdown.unsafeToFuture()
         }
-        x.allocated
-      }.flatMap(_.unsafeToFuture())
-        .map { case (_, shutdown) =>
-          new RunningServer {
-            override def stop(): Future[Unit] = shutdown.unsafeToFuture()
-          }
-        }
-    else
-      Future.successful(() => Future.successful(()))
+      }
 }
