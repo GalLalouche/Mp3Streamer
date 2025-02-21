@@ -9,11 +9,11 @@ import org.http4s.dsl.io._
 import org.http4s.headers.{`Content-Length`, `Content-Type`}
 import org.http4s.implicits.http4sSelectSyntaxOne
 import org.typelevel.ci.CIString
-import stream.{StreamerFormatter, StreamResult}
+import stream.{StreamFormatter, StreamResult}
 
 import common.rich.collections.RichTraversableOnce._
 
-private class StreamHttpRoutes @Inject() ($ : StreamerFormatter) {
+private class StreamHttpRoutes @Inject() ($ : StreamFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] { case req @ GET -> "download" /: path =>
     val range = req.headers.get(CIString("Range")).map(_.toList.single.value)
     fromFuture($(decodePath(path), range, shouldEncodeMp3(req))).map(toResponse)
