@@ -9,35 +9,27 @@ import musicfinder.PostersFormatter.AllowedExtensions
 
 import scala.concurrent.ExecutionContext
 
-import common.io.{BaseDirectory, DirectoryRef, IODirectory}
-import common.rich.path.RichFile.richFile
+import common.io.{FileDownloadValidator, IODirectory}
 import common.rich.primitives.RichBoolean.richBoolean
 
 class PostersFormatter @Inject() (
     ec: ExecutionContext,
     genreFinder: GenreFinder,
-    @BaseDirectory baseDir: DirectoryRef,
+    fileDownloadValidator: FileDownloadValidator,
 ) {
   def image(path: String): Option[File] = {
-    require(
-      baseDir.isDescendant(path),
-      s"Can only download posters from the music directory <${baseDir.path}>, but path was <$path>",
-    )
     val file = new File(path)
+    fileDownloadValidator(file, AllowedExtensions)
     if (file.exists().isFalse)
       return None
     require(file.isFile, s"File <$file> is a directory")
-    require(
-      AllowedExtensions(file.extension),
-      s"Can only download image files, but extension was <${file.extension}>",
-    )
 
     validate(file)
     Some(file)
   }
 
   private def validate(file: File): Unit = ec.execute { () =>
-    require(file.exists)
+    assert(file.exists)
     val image = ImageIO.read(file)
     val height = image.getHeight
     val width = image.getWidth
