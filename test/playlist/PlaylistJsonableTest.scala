@@ -9,14 +9,14 @@ import scala.concurrent.duration.Duration
 
 import common.JsonableSpecs
 
-class PlaylistTest extends JsonableSpecs {
-  import PlaylistTest.arbPlaylist
+class PlaylistJsonableTest extends JsonableSpecs {
+  import PlaylistJsonableTest.arbPlaylist
   import models.ModelJsonable.SongJsonifier
 
   propJsonTest[Playlist]()
 }
 
-object PlaylistTest {
+object PlaylistJsonableTest {
   implicit val arbPlaylist: Arbitrary[Playlist] = Arbitrary(for {
     numberOfSongs <- Gen.choose(1, 20)
     songs <- Gen.listOfN(numberOfSongs, ArbitraryModels.arbSong)

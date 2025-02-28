@@ -6,7 +6,7 @@ import models.ModelJsonable.SongJsonifier
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.{JsArray, Json, JsString}
-import playlist.{Playlist, PlaylistTest}
+import playlist.{Playlist, PlaylistJsonableTest}
 import sttp.client3.UriContext
 
 import scala.concurrent.Future
@@ -64,7 +64,7 @@ private class PlaylistTest(serverModule: Module)
   }
 
   private def putArbPlaylist(name: String): Future[Playlist] = {
-    val $ = PlaylistTest.arbPlaylist.arbitrary.sample.get
+    val $ = PlaylistJsonableTest.arbPlaylist.arbitrary.sample.get
     (putJson(uri"playlist/$name", $.jsonify) shouldEventuallyReturn name) >| $
   }
 
