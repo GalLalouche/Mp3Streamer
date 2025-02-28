@@ -15,11 +15,14 @@ private class AssetHttpRoutes @Inject() {
     case req @ GET -> "assets" /: path => asset(req, decodePath(path))
     case req @ GET -> "js" /: path => asset(req, "javascripts\\" + decodePath(path))
     case req @ GET -> "ts" /: path =>
-      Http4sUtils.sendFile(req)(new File("target/web/public/main/typescripts/" + decodePath(path)))
+      val p = decodePath(path)
+      val pathPrefix = if (p.endsWith("ts")) "public/" else "target/web/public/main/"
+      val file = new File(s"$pathPrefix/typescripts/$p")
+      Http4sUtils.sendFileOrNotFound(req, file)
   }
 }
 
 private object AssetHttpRoutes {
   private def asset(req: Request[IO], path: String): IO[Response[IO]] =
-    Http4sUtils.sendFile(req)(new File("public\\" + path))
+    Http4sUtils.sendFileOrNotFound(req, new File("public\\" + path))
 }

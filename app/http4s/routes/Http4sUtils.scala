@@ -9,6 +9,7 @@ import cats.implicits.toFunctorOps
 import fs2.Chunk
 import fs2.io.file.Files
 import org.http4s.{EntityDecoder, EntityEncoder, MediaType, Request, Response, StaticFile, Uri}
+import org.http4s.dsl.io._
 import org.http4s.headers.{`Content-Type`, `User-Agent`, Referer}
 import play.api.libs.json.{Json, JsValue}
 
@@ -49,10 +50,13 @@ private object Http4sUtils {
   def parseText[A](req: Request[IO], f: String => Future[A]): IO[A] =
     req.as[String].flatMap(s => fromFuture(f(s)))
 
-  def sendFile[F[_]: Files: MonadThrow](req: Request[F])(file: File): F[Response[F]] =
-    StaticFile
-      .fromString(file.getAbsolutePath, Some(req))
-      .getOrElseF(throw new AssertionError("Missing files should be handled by the formatter"))
+  def sendFileOrNotFound(req: Request[IO], file: File): IO[Response[IO]] =
+    if (file.exists()) sendFile(req)(file) else NotFound(s"File <$file> was not found")
+
+  def sendFile[F[_]: Files: MonadThrow](req: Request[F])(file: File): F[Response[F]] = {
+    lazy val msg = s"Missing files should be handled by the formatter; missing file is <$file>"
+    StaticFile.fromString(file.getAbsolutePath, Some(req)).getOrElseF(throw new AssertionError(msg))
+  }
 
   def shouldEncodeMp3[F[_]](request: Request[F]): Boolean =
     request.headers.get[`User-Agent`].exists(_.product.value.toLowerCase.contains("Chrome")) ||
