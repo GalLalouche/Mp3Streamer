@@ -3,7 +3,9 @@ package common.io
 import java.io.File
 import javax.inject.Inject
 
-import common.rich.path.RichFile.richFile
+import better.files.FileExtensions
+
+import common.rich.primitives.RichOption.richOption
 
 /**
  * Validates that the file is in the music directory, and has a required extension. This ensures
@@ -22,7 +24,7 @@ class FileDownloadValidator @Inject() (@BaseDirectory baseDir: DirectoryRef) {
       baseDir.isDescendant(path),
       s"Can only download file from the music directory <${baseDir.path}>, but path was <$path>",
     )
-    val extension = file.extension
+    val extension = file.toScala.extension.getOrThrow(s"File <$file> has no extension").tail
     require(
       allowedExtensions.contains(extension),
       s"Can only download files with extension <${allowedExtensions.mkString("[", ",", "]")}>, " +
