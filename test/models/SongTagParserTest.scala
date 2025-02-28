@@ -4,6 +4,7 @@ import better.files.FileExtensions
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 import org.scalatest.FreeSpec
+import org.scalatest.OptionValues.convertOptionToValuable
 
 import scala.concurrent.duration.DurationInt
 
@@ -48,13 +49,13 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
       }
       "non-empty optionals" in {
         val $ : Song = SongTagParser(getSong("songWithMoreInfo.mp3"))
-        $.discNumber.get shouldReturn "Foobar"
-        $.trackGain.get shouldReturn -1.25
-        $.opus.get shouldReturn "Op. 42"
-        $.composer.get shouldReturn "Traditional"
-        $.conductor.get shouldReturn "yes"
-        $.orchestra.get shouldReturn "no"
-        $.performanceYear.get shouldReturn 1995
+        $.discNumber.value shouldReturn "Foobar"
+        $.trackGain.value shouldReturn -1.25
+        $.opus.value shouldReturn "Op. 42"
+        $.composer.value shouldReturn "Traditional"
+        $.conductor.value shouldReturn "yes"
+        $.orchestra.value shouldReturn "no"
+        $.performanceYear.value shouldReturn 1995
       }
     }
 
@@ -71,13 +72,13 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
       }
       "with optionals" in {
         val $ = SongTagParser(getSong("flacWithMoreInfo.flac"))
-        $.discNumber.get shouldReturn "1/2"
-        $.trackGain.get shouldReturn 1.25
-        $.opus.get shouldReturn "BWV 16"
-        $.composer.get shouldReturn "Ben Folds"
-        $.conductor.get shouldReturn "Condi"
-        $.orchestra.get shouldReturn "Orci"
-        $.performanceYear.get shouldReturn 1999
+        $.discNumber.value shouldReturn "1/2"
+        $.trackGain.value shouldReturn 1.25
+        $.opus.value shouldReturn "BWV 16"
+        $.composer.value shouldReturn "Ben Folds"
+        $.conductor.value shouldReturn "Condi"
+        $.orchestra.value shouldReturn "Orci"
+        $.performanceYear.value shouldReturn 1999
       }
     }
   }

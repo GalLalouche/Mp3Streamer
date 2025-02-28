@@ -5,7 +5,7 @@ Compile / unmanagedSourceDirectories := Vector(baseDirectory.value / "app")
 Compile / resourceDirectory := baseDirectory.value / "conf"
 Test / unmanagedSourceDirectories := Vector(baseDirectory.value / "test")
 Test / resourceDirectory := baseDirectory.value / "test-resources"
-val scalaVersionStr = "2.12.15"
+val scalaVersionStr = "2.12.20"
 scalaVersion := scalaVersionStr
 version := "1.0-SNAPSHOT"
 
@@ -53,7 +53,7 @@ libraryDependencies ++= Seq(
   "io.lemonlabs" %% "scala-uri" % "3.0.0",
   "io.reactivex" %% "rxscala" % "0.27.0",
   "me.tongfei" % "progressbar" % "0.10.1",
-  "my.net.jthink" % "jaudiotagger" % "2.2.9-SNAPSHOT",
+  "my.net.jthink" % "jaudiotagger" % "3.0.3-SNAPSHOT",
   "net.codingwell" %% "scala-guice" % "4.2.1",
   "org.apache.commons" % "commons-io" % "1.3.2",
   "org.apache.commons" % "commons-lang3" % "3.17.0",
@@ -83,6 +83,7 @@ libraryDependencies ++= Seq(
 )
 
 scalacOptions += "-Ypartial-unification"
+libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 lazy val runHttp4s = taskKey[Unit]("Test")
 lazy val root = (project in file("."))
   .settings(
