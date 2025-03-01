@@ -3,7 +3,7 @@ package backend.scorer
 import java.io.File
 import javax.inject.Inject
 
-import models.{Song, SongTagParser}
+import models.{IOSongTagParser, Song}
 import play.api.libs.json.{Json, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,12 +16,12 @@ class ScorerFormatter @Inject() (modelScorer: FullInfoModelScorer, ec: Execution
   import ScorerFormatter.SongScoreJsonable
   private implicit val iec: ExecutionContext = ec
   def getScore(filePath: String): Future[JsValue] =
-    modelScorer(SongTagParser(new File(filePath))).map(_.jsonify)
+    modelScorer(IOSongTagParser(new File(filePath))).map(_.jsonify)
   private def update(
       f: (Song, OptionalModelScore) => Future[Unit],
       filePath: String,
       score: String,
-  ) = f(SongTagParser(new File(filePath)), OptionalModelScore.withNameInsensitive(score))
+  ) = f(IOSongTagParser(new File(filePath)), OptionalModelScore.withNameInsensitive(score))
   def updateSongScore(filePath: String, score: String): Future[Unit] =
     update(modelScorer.updateSongScore, filePath, score)
   def updateAlbumScore(filePath: String, score: String): Future[Unit] =

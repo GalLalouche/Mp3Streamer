@@ -18,7 +18,7 @@ import common.rich.collections.RichTraversableOnce._
 import common.rich.path.RichFile._
 import common.rich.primitives.RichOption._
 
-object SongTagParser {
+object IOSongTagParser {
   def apply(file: File): IOSong = apply(file, AudioFileIO.read(file))
   def apply(file: File, audioFile: AudioFile): IOSong = {
     val (tag, header) = audioFile.toTuple(_.getTag, _.getAudioHeader)

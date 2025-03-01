@@ -28,5 +28,5 @@ case class IOSong(
 }
 
 object IOSong {
-  def read(f: File): IOSong = SongTagParser(f)
+  def read(f: File): IOSong = IOSongTagParser(f)
 }

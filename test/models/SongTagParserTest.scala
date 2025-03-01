@@ -17,7 +17,7 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
     "parse id3tag" - {
       "mp3" - {
         "common" in {
-          val $ = SongTagParser(getSong("song.mp3"))
+          val $ = IOSongTagParser(getSong("song.mp3"))
           $.title shouldReturn "Hidden Track"
           $.artistName shouldReturn "Sentenced"
           $.albumName shouldReturn "Crimson"
@@ -31,7 +31,7 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
         }
       }
       "parse year correctly" in {
-        SongTagParser(getSong("songWithFullDate.mp3")).year shouldReturn 1999
+        IOSongTagParser(getSong("songWithFullDate.mp3")).year shouldReturn 1999
       }
       "parse year from directory if no year tag" in {
         val existingFile = getResourceFile("song.mp3")
@@ -45,10 +45,10 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
         audioFile.setTag(tag)
         audioFile.commit()
 
-        SongTagParser(copiedFile).year shouldReturn 2020
+        IOSongTagParser(copiedFile).year shouldReturn 2020
       }
       "non-empty optionals" in {
-        val $ : Song = SongTagParser(getSong("songWithMoreInfo.mp3"))
+        val $ : Song = IOSongTagParser(getSong("songWithMoreInfo.mp3"))
         $.discNumber.value shouldReturn "Foobar"
         $.trackGain.value shouldReturn -1.25
         $.opus.value shouldReturn "Op. 42"
@@ -61,7 +61,7 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
 
     "flac" - {
       "regular" in {
-        val $ = SongTagParser(getSong("flacSong.flac"))
+        val $ = IOSongTagParser(getSong("flacSong.flac"))
         $.title shouldReturn "Hidden Track"
         $.artistName shouldReturn "Ben Folds Five"
         $.albumName shouldReturn "Whatever and Ever Amen"
@@ -71,7 +71,7 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
         $.trackGain shouldReturn None
       }
       "with optionals" in {
-        val $ = SongTagParser(getSong("flacWithMoreInfo.flac"))
+        val $ = IOSongTagParser(getSong("flacWithMoreInfo.flac"))
         $.discNumber.value shouldReturn "1/2"
         $.trackGain.value shouldReturn 1.25
         $.opus.value shouldReturn "BWV 16"
@@ -85,16 +85,16 @@ class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
 
   "extractYearFromName" - {
     "No year in name" in {
-      SongTagParser.extractYearFromName("foobar") shouldReturn None
+      IOSongTagParser.extractYearFromName("foobar") shouldReturn None
     }
     "year in name" in {
-      SongTagParser.extractYearFromName("blah blah 1234 blah") shouldReturn Some(1234)
+      IOSongTagParser.extractYearFromName("blah blah 1234 blah") shouldReturn Some(1234)
     }
     "multiple same years succeeds" in {
-      SongTagParser.extractYearFromName("blah 5678 blah 5678 blah") shouldReturn Some(5678)
+      IOSongTagParser.extractYearFromName("blah 5678 blah 5678 blah") shouldReturn Some(5678)
     }
     "multiple years returns None" in {
-      SongTagParser.extractYearFromName("blah 5678 blah 1234 blah") shouldReturn None
+      IOSongTagParser.extractYearFromName("blah 5678 blah 1234 blah") shouldReturn None
     }
   }
 }

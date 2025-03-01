@@ -4,7 +4,7 @@ import com.google.inject.Guice
 import mains.MainsModule
 import mains.fixer.{FixLabelsUtils, FolderFixer, StringFixer}
 import mains.vimtag.Flag.RemoveFeat
-import models.SongTagParser
+import models.IOSongTagParser
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import net.codingwell.scalaguice.ScalaModule
 import org.jaudiotagger.audio.AudioFileIO
@@ -79,7 +79,7 @@ private object Fixer {
       if (fixFolder.isFalse && renameFiles) // FixFolder renames files anyway
         RichFileUtils.rename(
           file,
-          injector.instance[FixLabelsUtils].newFileName(SongTagParser.apply(file), file.extension),
+          injector.instance[FixLabelsUtils].newFileName(IOSongTagParser.apply(file), file.extension),
         )
       else if (file.parent != ioDir.dir)
         RichFileUtils.move(file, ioDir.dir)

@@ -5,7 +5,7 @@ import java.util.regex.Pattern
 import javax.inject.Inject
 
 import com.google.common.annotations.VisibleForTesting
-import models.{Song, SongTagParser, TrackNumber}
+import models.{IOSongTagParser, Song, TrackNumber}
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.jaudiotagger.tag.flac.FlacTag
@@ -13,7 +13,7 @@ import org.jaudiotagger.tag.id3.ID3v24Tag
 
 import scala.annotation.tailrec
 
-import common.rich.RichT.{richT, _}
+import common.rich.RichT._
 import common.rich.path.RichFile.richFile
 import common.rich.primitives.RichInt.Rich
 import common.rich.primitives.RichString.richString
@@ -37,7 +37,7 @@ private[mains] class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
 
   // If fixDiscNumber is false, it will be removed, unless the title indicates it is a bonus track.
   def getFixedTag(f: File, fixDiscNumber: Boolean, audioFile: AudioFile): Tag = {
-    val song = SongTagParser(f, audioFile)
+    val song = IOSongTagParser(f, audioFile)
     val $ = if (f.extension.equalsIgnoreCase("flac")) new FlacTag else new ID3v24Tag
 
     @tailrec

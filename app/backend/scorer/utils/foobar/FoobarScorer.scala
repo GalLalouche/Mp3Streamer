@@ -7,7 +7,7 @@ import backend.mb.MbArtistReconciler
 import backend.recon.{Artist, ArtistReconPusher, ArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{FullInfoModelScorer, FullInfoScore, OptionalModelScore, ScoreSource}
-import models.{Song, SongTagParser}
+import models.{IOSongTagParser, Song}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scalafx.scene.Node
@@ -38,7 +38,7 @@ private class FoobarScorer @Inject() (
   private implicit val iec: ExecutionContext = ec
   // Uses the "Now Playing Simple" plugin, which writes the currently playing song to a file.
   private def currentlyPlayingSong(nowPlayingSimpleOutput: File): Future[Song] =
-    Future(SongTagParser(new File(nowPlayingSimpleOutput.readAll)))
+    Future(IOSongTagParser(new File(nowPlayingSimpleOutput.readAll)))
   private def makeScore(
       song: Song,
       source: ScoreSource,

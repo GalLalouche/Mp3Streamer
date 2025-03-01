@@ -6,7 +6,7 @@ import backend.lyrics.{HtmlLyrics, LyricsUrl}
 import backend.module.StandaloneModule
 import com.google.inject.Guice
 import io.lemonlabs.uri.Url
-import models.SongTagParser
+import models.IOSongTagParser
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import net.codingwell.scalaguice.ScalaModule
 import org.scalatest.{Assertion, AsyncFreeSpec, Suite}
@@ -26,7 +26,7 @@ trait LyricsRetrieverIntegrationTemplate extends AsyncFreeSpec with AsyncAuxSpec
   ): Future[Assertion] = {
     val injector = Guice.createInjector(StandaloneModule, extraModule)
     val $ = injector.instance[R]
-    val song = SongTagParser(new File(file))
+    val song = IOSongTagParser(new File(file))
     $.get(song) shouldEventuallyReturn RetrievedLyricsResult.RetrievedLyrics(
       HtmlLyrics(
         source = source,

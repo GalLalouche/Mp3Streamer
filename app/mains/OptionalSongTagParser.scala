@@ -2,7 +2,7 @@ package mains
 
 import java.io.File
 
-import models.SongTagParser
+import models.IOSongTagParser
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
@@ -15,13 +15,13 @@ private object OptionalSongTagParser {
     if (tag == null)
       OptionalSong.empty(file.path)
     else {
-      val year = SongTagParser.extractYear(file, tag)
+      val year = IOSongTagParser.extractYear(file, tag)
       OptionalSong(
         file = file.path,
         title = tag.firstNonEmpty(FieldKey.TITLE),
         artistName = tag.firstNonEmpty(FieldKey.ARTIST),
         albumName = tag.firstNonEmpty(FieldKey.ALBUM),
-        trackNumber = tag.firstNonEmpty(FieldKey.TRACK).map(SongTagParser.parseTrack),
+        trackNumber = tag.firstNonEmpty(FieldKey.TRACK).map(IOSongTagParser.parseTrack),
         year = year,
         discNumber = tag.firstNonEmpty(FieldKey.DISC_NO),
         composer = tag.firstNonEmpty(FieldKey.COMPOSER),
