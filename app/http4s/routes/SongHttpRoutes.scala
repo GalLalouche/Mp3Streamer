@@ -16,8 +16,8 @@ private class SongHttpRoutes @Inject() ($ : SongFormatter) {
     case req @ GET -> Root / "randomSong" / "mp3" => Ok(run(req, $.randomMp3Song()))
     case req @ GET -> Root / "randomSong" / "flac" => Ok(run(req, $.randomFlacSong()))
     case req @ GET -> Root / "randomSong" => Ok(run(req, $.randomSong()))
-    case req @ GET -> "albums" /: path => Ok(run(req, $.album(decodePath(path))))
-    case req @ GET -> "discs" /: disc /: path => Ok(run(req, $.discNumber(decodePath(path), disc)))
+    case req @ GET -> "album" /: path => Ok(run(req, $.album(decodePath(path))))
+    case req @ GET -> "disc" /: disc /: path => Ok(run(req, $.discNumber(decodePath(path), disc)))
     case req @ GET -> "song" /: path => Ok(run(req, $.song(decodePath(path))))
     case req @ GET -> "nextSong" /: path => Ok(run(req, $.nextSong(decodePath(path))))
   }

@@ -36,18 +36,18 @@ class Helper {
     this.results.on("click", '#song-results .fa', function (e) {
       const song = getData(this)
       const isPlay = e.target.classList.contains("fa-play")
-      $.get("data/songs/" + song.file, e => gplaylist.add(e, isPlay))
+      $.get("data/song/" + song.file, e => gplaylist.add(e, isPlay))
     })
     this.results.on("click", `.album-result .fa-${ADD_ENTIRE_ALBUM}`, function (e) {
       if (e.target !== this) // Prevents clicks on anything other than that selector.
         return
       const album = getData(this)
-      $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
+      $.get("data/album/" + album.dir, e => gplaylist.add(e, false))
     })
     this.results.on("click", `.album-result .fa-${ADD_DISC}`, function () {
       const album = getData(this)
       const discNumber = $(this).closest("td").text()
-      $.get(`data/discs/${discNumber}/${album.dir}`, e => gplaylist.add(e, false))
+      $.get(`data/disc/${discNumber}/${album.dir}`, e => gplaylist.add(e, false))
     })
     this.results.on("click", `.album-result .fa-${DOWNLOAD_FILE}`, function () {
       const album = getData(this)

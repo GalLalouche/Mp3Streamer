@@ -23,7 +23,7 @@ function albumText(album: Album): string {
 }
 
 function addAlbum(album: Album): void {
-  $.get("data/albums/" + album.dir, e => gplaylist.add(e, false))
+  $.get("data/album/" + album.dir, e => gplaylist.add(e, false))
 }
 
 let lastAlbumText: string | undefined = undefined
