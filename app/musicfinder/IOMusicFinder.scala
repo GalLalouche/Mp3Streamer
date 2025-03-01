@@ -16,7 +16,7 @@ class IOMusicFinder(@BaseDirectory override val baseDir: IODirectory) extends Mu
 
   override val extensions = IOMusicFinder.extensions
   override val unsupportedExtensions = IOMusicFinder.unsupportedExtensions
-  override def parseSong(f: FileRef) = IOSong.read(f.asInstanceOf[IOFile].file)
+  override def parseSong(f: FileRef): IOSong = IOSong.read(f.asInstanceOf[IOFile].file)
   protected override def invalidDirectoryNames: BiMap[DirectoryName, backend.recon.Artist] =
     IOMusicFinder.invalidDirectoryNames
 }

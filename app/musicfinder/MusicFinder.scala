@@ -47,9 +47,8 @@ trait MusicFinder { self =>
   def getSongFiles: ViewSeq[S#F] = albumDirs.flatMap(getSongFilesInDir)
   def getSongFilesInDir(d: DirectoryRef): Seq[S#F] =
     d.asInstanceOf[S#D].files.filter(f => extensions.contains(f.extension))
-  def parseSong(f: FileRef): Song { type F = S#F }
-  def getSongsInDir(d: DirectoryRef): ViewSeq[Song { type F = S#F }] =
-    getSongFilesInDir(d).view.map(parseSong)
+  def parseSong(f: FileRef): Song
+  def getSongsInDir(d: DirectoryRef): ViewSeq[Song] = getSongFilesInDir(d).view.map(parseSong)
 
   final type DirView = ViewSeq[S#D]
 }

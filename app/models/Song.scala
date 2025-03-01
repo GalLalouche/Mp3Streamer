@@ -5,8 +5,7 @@ import scala.concurrent.duration.Duration
 import common.io.FileRef
 
 trait Song {
-  type F <: FileRef
-  def file: F
+  def file: FileRef
   def title: SongTitle
   def artistName: ArtistName
   def albumName: AlbumTitle

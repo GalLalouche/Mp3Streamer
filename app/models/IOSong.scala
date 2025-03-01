@@ -23,9 +23,7 @@ case class IOSong(
     orchestra: Option[String],
     opus: Option[String],
     performanceYear: Option[Int],
-) extends Song {
-  override type F = IOFile
-}
+) extends Song
 
 object IOSong {
   def read(f: File): IOSong = IOSongTagParser(f)

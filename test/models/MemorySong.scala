@@ -21,6 +21,4 @@ case class MemorySong(
     orchestra: Option[String],
     opus: Option[String],
     performanceYear: Option[Int],
-) extends Song {
-  override type F = MemoryFile
-}
+) extends Song
