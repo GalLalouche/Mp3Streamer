@@ -5,6 +5,8 @@ import java.io.File
 import com.google.common.annotations.VisibleForTesting
 import org.jline.utils.Levenshtein
 
+import scala.sys.process.Process
+
 import common.io.{DirectoryRef, IODirectory, PathRef}
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichString._
@@ -12,9 +14,7 @@ import common.rich.primitives.RichString._
 private object IOUtils {
   /** Opens Windows explorer with the file in focus */
   def focus(f: File): Unit =
-    Runtime.getRuntime.exec(
-      s"""explorer.exe /select,"${f.getAbsolutePath.simpleReplace("/", "\\")}"""",
-    )
+    Process(s"""explorer.exe /select,"${f.getAbsolutePath.simpleReplace("/", "\\")}"""").!
 
   /**
    * Windows can't parse Unicode path names correctly it seems, instead it replaces the Unicode

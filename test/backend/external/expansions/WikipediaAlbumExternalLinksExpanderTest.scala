@@ -17,7 +17,7 @@ class WikipediaAlbumExternalLinksExpanderTest
     with DocumentSpecs
     with AsyncAuxSpecs {
   private val config: TestModuleConfiguration =
-    TestModuleConfiguration().copy(_urlToBytesMapper = PartialFunction(getBytes))
+    TestModuleConfiguration().copy(_urlToBytesMapper = { case x => getBytes(x) })
 
   private val $ : WikipediaAlbumExternalLinksExpander =
     config.injector.instance[WikipediaAlbumExternalLinksExpander]

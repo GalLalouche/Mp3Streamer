@@ -26,7 +26,7 @@ class SlickInstrumentalArtistStorageTest extends AsyncFreeSpec with StorageSetup
   "store and load" in {
     storage.load(artistName).shouldEventuallyReturnNone() >>
       storage.store(artistName) >>
-      storage.load(artistName).mapValue(_ shouldReturn ())
+      storage.load(artistName).mapValue(_ shouldReturn Unit)
   }
   "delete" in {
     storage.store(artistName) >> storage.delete(artistName).run >>

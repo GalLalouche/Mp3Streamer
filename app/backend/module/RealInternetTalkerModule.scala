@@ -1,7 +1,7 @@
 package backend.module
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
+import akka.stream.Materializer
 import com.google.inject.{Module, Provides}
 import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
 import net.codingwell.scalaguice.ScalaPrivateModule
@@ -13,12 +13,12 @@ import common.guice.ModuleUtils
 import common.io.InternetTalker
 import common.io.WSAliases.WSClient
 
-private class RealInternetTalkerModule private (am: ActorMaterializer)
+private class RealInternetTalkerModule private (am: Materializer)
     extends ScalaPrivateModule
     with ModuleUtils {
   override def configure(): Unit = {
     requireBinding[ExecutionContext]
-    bind[ActorMaterializer].toInstance(am)
+    bind[Materializer].toInstance(am)
 
     requireBinding[ExecutionContext]
     expose[InternetTalker]
@@ -26,7 +26,7 @@ private class RealInternetTalkerModule private (am: ActorMaterializer)
 
   @Provides private def internetTalker(
       _ec: ExecutionContext,
-      materializer: ActorMaterializer,
+      materializer: Materializer,
   ): InternetTalker = new InternetTalker {
     override def execute(runnable: Runnable) = _ec.execute(runnable)
     override def reportFailure(cause: Throwable) = _ec.reportFailure(cause)
@@ -42,12 +42,12 @@ object RealInternetTalkerModule {
   val warningOnlyDaemonicConfig: Config = warningOnlyConfig
     .withValue("akka.daemonic", ConfigValueFactory.fromAnyRef(true))
   def daemonic: Module = new RealInternetTalkerModule(
-    ActorMaterializer()(
+    Materializer(
       ActorSystem.create("Standalone-Config-WS-System", warningOnlyDaemonicConfig),
     ),
   )
 
   def nonDaemonic: Module = new RealInternetTalkerModule(
-    ActorMaterializer()(ActorSystem.create("RealConfigWS-System", warningOnlyConfig)),
+    Materializer(ActorSystem.create("RealConfigWS-System", warningOnlyConfig)),
   )
 }

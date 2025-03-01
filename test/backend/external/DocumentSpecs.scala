@@ -16,5 +16,5 @@ trait DocumentSpecs extends AuxSpecs { self: Suite =>
     "UTF-8",
   )
   def getBytes(path: String): Array[Byte] = getResourceFile(path).bytes
-  def getBytes(url: Url): Array[Byte] = getBytes(url.toStringPunycode)
+  def getBytes: PartialFunction[Url, Array[Byte]] = { case url => getBytes(url.toStringPunycode) }
 }

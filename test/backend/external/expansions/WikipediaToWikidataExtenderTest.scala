@@ -7,7 +7,7 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
 
 class WikipediaToWikidataExtenderTest extends FreeSpec with DocumentSpecs {
-  private val config = TestModuleConfiguration().copy(_urlToBytesMapper = PartialFunction(getBytes))
+  private val config = TestModuleConfiguration().copy(_urlToBytesMapper = { case x => getBytes(x) })
   private val $ = config.injector.instance[WikipediaToWikidataExtenderFactory]
   "Extracts wikidata item" in {
     $.parse(getDocument("wikipedia-discography.html")) shouldReturn

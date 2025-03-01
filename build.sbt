@@ -83,10 +83,11 @@ libraryDependencies ++= Seq(
 )
 
 scalacOptions += "-Ypartial-unification"
+scalacOptions += "-deprecation"
+
 libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 lazy val runHttp4s = taskKey[Unit]("Test")
 lazy val root = (project in file("."))
   .settings(
-    scalacOptions -= "-deprecation",
     reStart / mainClass := Some("http4s.Main"),
-  ) // Fuck your deprecation bullshit.
+  )
