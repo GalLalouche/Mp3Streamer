@@ -1,8 +1,10 @@
 package common.concurrency
 
-import java.util.concurrent.{LinkedBlockingQueue, ThreadPoolExecutor, TimeUnit}
+import java.util.concurrent.{LinkedBlockingQueue, ThreadFactory, ThreadPoolExecutor, TimeUnit}
 
 import scala.concurrent.duration.Duration
+
+import common.rich.RichT.richT
 
 private object DaemonBoundPool {
   def apply(name: String, n: Int, keepAliveTime: Duration = Duration.Zero) = new ThreadPoolExecutor(
@@ -11,6 +13,9 @@ private object DaemonBoundPool {
     keepAliveTime.toNanos,
     TimeUnit.NANOSECONDS,
     new LinkedBlockingQueue[Runnable](),
-    DaemonThreadFactory(s"<$name>'s ${if (n == 1) "single" else s"$n"}-threaded job queue"),
+    new ThreadFactory {
+      val threadName = s"<$name>'s ${if (n == 1) "single" else s"$n"}-threaded job queue"
+      override def newThread(r: Runnable) = new Thread(r, threadName).<|(_.setDaemon(true))
+    },
   )
 }

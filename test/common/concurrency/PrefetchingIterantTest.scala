@@ -4,19 +4,18 @@ import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import common.rich.func.{RichOptionT, RichStreamT}
 import common.rich.func.BetterFutureInstances._
-import common.rich.func.RichOptionT
 import common.rich.func.RichStreamT.richStreamT
 import scalaz.OptionT
 
+import common.concurrency.Iterant.fromStream
 import common.test.AsyncAuxSpecs
 
 class PrefetchingIterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
   implicit override def executionContext: ExecutionContext = ThreadlessContext
-  private val actor = new TogellableProducer
-  private val $ = Iterant.prefetching(Iterant.fromProducer(actor), 10)
 
-  private class TogellableProducer extends AsyncProducer[Int] {
+  private class TogellableProducer extends SimpleTypedActor[Unit, Option[Int]] {
     var counter = 1
     private var stopped = false
     def stop(): Unit = stopped = true
@@ -29,6 +28,10 @@ class PrefetchingIterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
         RichOptionT.pointSome.apply($).run
       }
   }
+
+  private val actor = new TogellableProducer
+
+  private val $ = Iterant.prefetching(fromStream(RichStreamT.fillM(OptionT(actor.!(Unit)))), 10)
 
   "starts on creation" in {
     actor.stop()
