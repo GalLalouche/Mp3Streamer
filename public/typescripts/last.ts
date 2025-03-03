@@ -1,16 +1,31 @@
 // A very simple module, showing the most recent album, so it can be easily added to the playlist.
 
+import {Album, gplaylist} from "./types.js"
+import {Try, tryF} from "./try.js"
+
 export namespace LastAlbum {
   export async function addNextNewAlbum(): Promise<void> {
-    const getLast: Album = await $.get("recent/get_last").toPromise()
-    const getLastText = albumText(getLast)
-    return getLastText != lastAlbumText
-      ? updateAlbum(getLast, true)
-      : $.get("recent/update_last", album => updateAlbum(album, true)).toPromise()
+    const last = await updateLastAlbum()
+    const lastText = albumText(last)
+    if (lastText != lastAlbumText)
+      updateAlbum(last, true)
   }
 }
 
-import {Album, gplaylist} from "./types.js"
+async function getLastAlbum(): Promise<Album> {
+  const last: Try<Album> = await tryF($.get("recent/get_last").toPromise())
+  return last == null || last instanceof Error ? forceUpdate() : last
+}
+
+async function updateLastAlbum(): Promise<Album> {
+  const last = await getLastAlbum()
+  const getLastText = albumText(last)
+  return getLastText != lastAlbumText ? last : forceUpdate()
+}
+
+async function forceUpdate(): Promise<Album> {
+  return $.get("recent/update_last").toPromise()
+}
 
 const ADD = "plus"
 
@@ -43,6 +58,5 @@ function updateAlbum(album: Album, addToPlaylist: boolean): void {
 
 $(function () {
   write(span("Fetching last album..."))
-  $.get("recent/last", album => updateAlbum(album, false))
-  $exposeGlobally!(LastAlbum)
+  getLastAlbum().then(album => updateAlbum(album, false))
 })
