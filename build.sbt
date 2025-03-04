@@ -31,6 +31,7 @@ val monocleVersion = "1.5.0"
 val scalazVersion = "7.2.18"
 val guiceVersion = "6.0.0"
 val playStandaloneVersion = "2.1.11"
+val scribeVersion = "3.15.2"
 libraryDependencies ++= Seq(
   // noinspection SbtDependencyVersionInspection (Newer JDK version).
   "ch.qos.logback" % "logback-core" % "1.3.15",
@@ -43,7 +44,8 @@ libraryDependencies ++= Seq(
   "com.google.inject.extensions" % "guice-assistedinject" % guiceVersion,
   "com.h2database" % "h2" % "1.4.196",
   "com.jsuereth" %% "scala-arm" % "2.0",
-  "com.outr" %% "scribe" % "3.15.2",
+  "com.outr" %% "scribe" % scribeVersion,
+  "com.outr" %% "scribe-slf4j" % scribeVersion,
   "com.typesafe" % "config" % "1.4.3",
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.play" %% "play-ahc-ws-standalone" % playStandaloneVersion,
