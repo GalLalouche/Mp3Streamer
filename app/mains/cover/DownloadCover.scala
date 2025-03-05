@@ -1,6 +1,6 @@
 package mains.cover
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import com.google.inject.Guice
 import io.lemonlabs.uri.Url

@@ -1,6 +1,6 @@
 package backend.external.mark
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import backend.external.{Host, LinkMark, MarkedLink}
 import backend.recon.Reconcilable

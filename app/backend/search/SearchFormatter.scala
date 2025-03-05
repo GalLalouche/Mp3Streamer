@@ -1,8 +1,8 @@
 package backend.search
 
 import java.net.URLDecoder
-import javax.inject.Inject
 
+import com.google.inject.Inject
 import formatter.ControllerAlbumDirJsonifier
 import models.ModelJsonable.{ArtistDirJsonifier, SongJsonifier}
 import play.api.libs.json.{JsObject, Json}

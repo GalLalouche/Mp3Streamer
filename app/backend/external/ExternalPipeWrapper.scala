@@ -1,7 +1,6 @@
 package backend.external
 
 import java.time.{Clock, Duration}
-import javax.inject.Inject
 
 import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
@@ -10,6 +9,7 @@ import backend.external.recons.LinkRetrievers
 import backend.recon.{Reconcilable, ReconcilerCacher, ReconID}
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.storage.{ComposedFreshnessStorage, RefreshableRetriever}
+import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 

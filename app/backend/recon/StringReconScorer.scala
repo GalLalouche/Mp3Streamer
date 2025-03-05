@@ -1,7 +1,6 @@
 package backend.recon
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import mains.fixer.StringFixer
 
 import common.LanguageString._

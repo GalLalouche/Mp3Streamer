@@ -1,7 +1,6 @@
 package backend.recent
 
-import javax.inject.{Inject, Singleton}
-
+import com.google.inject.{Inject, Singleton}
 import models.AlbumDir
 
 import scala.concurrent.Future

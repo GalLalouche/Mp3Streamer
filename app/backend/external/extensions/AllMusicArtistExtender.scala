@@ -1,9 +1,8 @@
 package backend.external.extensions
 
-import javax.inject.Inject
-
 import backend.external.{Host, MarkedLink}
 import backend.recon.Artist
+import com.google.inject.Inject
 
 private class AllMusicArtistExtender @Inject() (helper: StaticExtenderHelper)
     extends LinkExtender[Artist] {

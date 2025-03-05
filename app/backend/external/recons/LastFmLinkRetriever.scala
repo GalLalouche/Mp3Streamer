@@ -1,7 +1,7 @@
 package backend.external.recons
 
 import java.net.HttpURLConnection
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import backend.FutureOption
 import backend.external.{BaseLink, Host}

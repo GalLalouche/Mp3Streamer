@@ -1,7 +1,7 @@
 package backend.module
 
 import java.time.Clock
-import javax.inject.Singleton
+import com.google.inject.Singleton
 
 import backend.storage.DbProvider
 import com.google.inject.Provides

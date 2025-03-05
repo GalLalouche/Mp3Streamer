@@ -1,7 +1,6 @@
 package playlist
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import formatter.ControllerSongJsonifier
 import play.api.libs.json.{JsArray, JsValue}
 

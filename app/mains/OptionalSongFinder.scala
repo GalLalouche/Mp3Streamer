@@ -1,9 +1,8 @@
 package mains
 
 import java.io.File
-import javax.inject.Inject
 
-import com.google.inject.ImplementedBy
+import com.google.inject.{ImplementedBy, Inject}
 import musicfinder.MusicFinder
 
 import common.io.DirectoryRef

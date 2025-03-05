@@ -1,9 +1,8 @@
 package backend.search
 
-import javax.inject.Inject
-
 import backend.recent.{LastAlbumState, NewDir}
 import backend.search.cache.SongCacheUpdater
+import com.google.inject.Inject
 import rx.lang.scala.Observer
 import songs.selector.SongSelectorState
 

@@ -1,8 +1,7 @@
 package backend.scorer
 
-import javax.inject.Singleton
-
 import backend.recon.Reconcilable.SongExtractor
+import com.google.inject.Singleton
 import models.Song
 
 import common.Percentage

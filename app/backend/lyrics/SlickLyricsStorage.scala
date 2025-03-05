@@ -1,9 +1,8 @@
 package backend.lyrics
 
-import javax.inject.{Inject, Singleton}
-
 import backend.lyrics.LyricsUrl.{DefaultEmpty, ManualEmpty, OldData, Url}
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
+import com.google.inject.{Inject, Singleton}
 import models.Song
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType

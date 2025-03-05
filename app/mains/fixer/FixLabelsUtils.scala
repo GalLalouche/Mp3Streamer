@@ -2,9 +2,9 @@ package mains.fixer
 
 import java.io.File
 import java.util.regex.Pattern
-import javax.inject.Inject
 
 import com.google.common.annotations.VisibleForTesting
+import com.google.inject.Inject
 import models.{IOSongTagParser, Song, TrackNumber}
 import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
 import org.jaudiotagger.tag.{FieldKey, Tag}

@@ -1,10 +1,10 @@
 package backend.new_albums.filler
 
 import java.time.Clock
-import javax.inject.Inject
 
 import backend.new_albums.NewAlbum
 import backend.recon.{Artist, StringReconScorer}
+import com.google.inject.Inject
 
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 

@@ -1,8 +1,7 @@
 package backend.mb
 
-import javax.inject.Inject
-
 import backend.recon.{Album, Reconciler, ReconID}
+import com.google.inject.Inject
 import play.api.libs.json.JsObject
 
 import scala.concurrent.{ExecutionContext, Future}

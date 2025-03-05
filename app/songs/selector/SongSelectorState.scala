@@ -1,7 +1,6 @@
 package songs.selector
 
-import javax.inject.{Inject, Provider, Singleton}
-
+import com.google.inject.{Inject, Provider, Singleton}
 import models.Song
 import musicfinder.MusicFinder
 

@@ -1,8 +1,7 @@
 package http4s.routes
 
-import javax.inject.Inject
-
 import cats.effect.IO
+import com.google.inject.Inject
 import musicfinder.PostersFormatter
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._

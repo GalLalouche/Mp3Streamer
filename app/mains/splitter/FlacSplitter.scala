@@ -1,7 +1,7 @@
 package mains.splitter
 
 import java.io.File
-import javax.inject.Inject
+import com.google.inject.Inject
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 

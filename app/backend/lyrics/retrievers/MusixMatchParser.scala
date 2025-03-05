@@ -1,8 +1,7 @@
 package backend.lyrics.retrievers
 
-import javax.inject.Inject
-
 import com.google.common.annotations.VisibleForTesting
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import models.Song
 import org.jsoup.nodes.Document

@@ -1,14 +1,13 @@
 package backend.new_albums.filler.storage
 
 import java.time.{Clock, LocalDateTime, ZoneOffset}
-import javax.inject.Inject
 
 import backend.FutureOption
 import backend.module.StandaloneModule
 import backend.new_albums.filler.storage.LastFetchTimeImpl.prependUnit
 import backend.recon.{Artist, ArtistReconStorage}
 import backend.storage.{ComposedFreshnessStorage, DatedFreshness, Freshness}
-import com.google.inject.Guice
+import com.google.inject.{Guice, Inject}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -1,13 +1,13 @@
 package backend.new_albums.filler
 
 import java.time.{Clock, Duration}
-import javax.inject.{Inject, Singleton}
 
 import backend.mb.AlbumType
 import backend.new_albums.AddedAlbumCount
 import backend.new_albums.filler.storage.CachedNewAlbumStorage
 import backend.recon.Artist
 import backend.storage.{AlwaysFresh, DatedFreshness}
+import com.google.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.Ordered.orderingToOrdered

@@ -1,6 +1,6 @@
 package backend.scorer
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import backend.recon.{Album, Artist, ReconcilableFactory, Track, YearlessAlbum, YearlessTrack}
 import backend.recon.Reconcilable.SongExtractor

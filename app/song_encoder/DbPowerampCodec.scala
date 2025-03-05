@@ -1,7 +1,8 @@
 package song_encoder
 
 import java.io.{File, IOException}
-import javax.inject.Inject
+
+import com.google.inject.Inject
 
 import scala.sys.process.{Process, ProcessLogger}
 

@@ -1,9 +1,8 @@
 package backend.new_albums.filler
 
-import javax.inject.Inject
-
 import backend.mb.GetReleaseGroupArtists
 import backend.recon.{Album, ArtistReconStorage, ReconID, StoredReconResult}
+import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 

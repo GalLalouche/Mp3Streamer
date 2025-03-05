@@ -1,7 +1,7 @@
 package common.io
 
 import java.io.File
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import better.files.FileExtensions
 

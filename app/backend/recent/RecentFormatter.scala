@@ -1,6 +1,6 @@
 package backend.recent
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import models.ModelJsonable.AlbumDirJsonifier
 import play.api.libs.json.{JsNull, JsValue}

@@ -1,11 +1,11 @@
 package backend.external
 
 import java.time.format.DateTimeFormatter
-import javax.inject.Inject
 
 import backend.external.ExternalJsonifier._
 import backend.external.Host.{Wikidata, Wikipedia}
 import backend.external.extensions.{ExtendedLink, LinkExtension}
+import com.google.inject.Inject
 import play.api.libs.json.{JsObject, Json, JsString}
 import play.api.libs.json.Json.JsValueWrapper
 

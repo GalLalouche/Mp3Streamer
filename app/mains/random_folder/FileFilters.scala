@@ -1,9 +1,9 @@
 package mains.random_folder
 
 import java.io.File
-import javax.inject.Inject
 
 import backend.recon.Artist
+import com.google.inject.Inject
 import genre.{Genre, GenreFinder}
 import genre.Genre.{Classical, Metal, NewAge}
 import play.api.libs.json.Json

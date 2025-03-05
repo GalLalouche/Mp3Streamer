@@ -1,12 +1,12 @@
 package backend.lyrics.retrievers.genius
 
 import java.net.HttpURLConnection
-import javax.inject.Inject
 
 import backend.FutureOption
 import backend.lyrics.retrievers.genius.API._
 import backend.recon.StringReconScorer
 import com.google.common.annotations.VisibleForTesting
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import models.Song
 import play.api.libs.json.{JsObject, Json}

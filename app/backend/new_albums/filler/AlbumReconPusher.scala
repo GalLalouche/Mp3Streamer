@@ -1,9 +1,8 @@
 package backend.new_albums.filler
 
-import javax.inject.Inject
-
 import backend.recon.{Album, AlbumReconStorage, ReconID}
 import backend.recon.StoredReconResult.HasReconResult
+import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 

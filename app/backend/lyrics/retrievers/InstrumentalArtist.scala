@@ -1,8 +1,7 @@
 package backend.lyrics.retrievers
 
-import javax.inject.Inject
-
 import backend.lyrics.Instrumental
+import com.google.inject.Inject
 import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}

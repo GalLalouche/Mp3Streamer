@@ -1,6 +1,6 @@
 package songs.selector
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{CachedModelScorer, ScoreBasedProbability}

@@ -1,6 +1,6 @@
 package mains.cover.image
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import mains.cover.ImageSource
 

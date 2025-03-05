@@ -1,8 +1,8 @@
 package mains.vimtag
 
 import java.io.File
-import javax.inject.Inject
 
+import com.google.inject.Inject
 import mains.vimtag.Initializer.InitialLines
 import mains.vimtag.VimEdit._
 

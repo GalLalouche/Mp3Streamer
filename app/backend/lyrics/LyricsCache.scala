@@ -1,10 +1,9 @@
 package backend.lyrics
 
-import javax.inject.Inject
-
 import backend.lyrics.LyricsUrl.ManualEmpty
 import backend.lyrics.retrievers._
 import backend.storage.OnlineRetrieverCacher
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import models.Song
 

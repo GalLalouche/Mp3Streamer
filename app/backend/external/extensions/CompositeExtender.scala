@@ -1,9 +1,8 @@
 package backend.external.extensions
 
-import javax.inject.Inject
-
 import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
+import com.google.inject.Inject
 
 import common.rich.func.ToMoreFoldableOps._
 import scalaz.std.option.optionInstance

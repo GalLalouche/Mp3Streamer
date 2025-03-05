@@ -1,7 +1,6 @@
 package backend.search
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import models.{AlbumDir, ArtistDir, Song}
 import models.ModelJsonable.{AlbumDirJsonifier, ArtistDirJsonifier, SongJsonifier}
 

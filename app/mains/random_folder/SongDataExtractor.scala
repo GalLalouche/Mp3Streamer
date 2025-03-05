@@ -1,9 +1,9 @@
 package mains.random_folder
 
 import java.io.File
-import javax.inject.Inject
 
 import backend.recon.Artist
+import com.google.inject.Inject
 import genre.GenreFinder
 import mains.random_folder
 

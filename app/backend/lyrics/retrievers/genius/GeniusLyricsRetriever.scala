@@ -1,9 +1,8 @@
 package backend.lyrics.retrievers.genius
 
-import javax.inject.Inject
-
 import backend.lyrics.retrievers.{HtmlRetriever, SingleHostParsingHelper}
 import backend.lyrics.retrievers.RetrievedLyricsResult.NoLyrics
+import com.google.inject.Inject
 
 import scala.concurrent.ExecutionContext
 

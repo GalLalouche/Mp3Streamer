@@ -1,9 +1,8 @@
 package http4s.routes
 
-import javax.inject.Inject
-
 import backend.external.ExternalFormatter
 import cats.effect.IO
+import com.google.inject.Inject
 import http4s.routes.Http4sUtils.{decodePath, fromFuture, jsonEncoder}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._

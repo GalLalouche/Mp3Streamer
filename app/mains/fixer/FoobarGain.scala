@@ -1,7 +1,6 @@
 package mains.fixer
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import mains.fixer.FoobarGain._
 import musicfinder.IOMusicFinder
 

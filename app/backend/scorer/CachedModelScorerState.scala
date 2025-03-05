@@ -1,9 +1,7 @@
 package backend.scorer
 
-import javax.inject.{Inject, Singleton}
-
 import backend.recon.{Album, Artist, Track}
-import com.google.inject.Provider
+import com.google.inject.{Inject, Provider, Singleton}
 
 import scala.concurrent.ExecutionContext
 

@@ -1,10 +1,10 @@
 package backend.new_albums.filler.storage
 
 import java.time.LocalDateTime
-import javax.inject.Inject
 
 import backend.recon.{Artist, SlickArtistReconStorage}
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
+import com.google.inject.Inject
 import slick.ast.{BaseTypedType, ScalaBaseType}
 
 import scala.concurrent.ExecutionContext

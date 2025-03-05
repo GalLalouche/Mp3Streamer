@@ -1,9 +1,9 @@
 package http4s.routes
 
 import java.io.File
-import javax.inject.Inject
 
 import cats.effect.IO
+import com.google.inject.Inject
 import http4s.routes.AssetHttpRoutes.asset
 import http4s.routes.Http4sUtils.decodePath
 import org.http4s.{HttpRoutes, MediaType, Request, Response}

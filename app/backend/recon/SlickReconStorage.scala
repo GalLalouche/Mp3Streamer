@@ -1,6 +1,6 @@
 package backend.recon
 
-import javax.inject.{Inject, Singleton}
+import com.google.inject.{Inject, Singleton}
 
 import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
 import backend.storage.{DbProvider, IsomorphicSlickStorage, SlickStorageTemplateFromConf}

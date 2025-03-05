@@ -1,6 +1,6 @@
 package backend.recon
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import org.jline.utils.Levenshtein
 

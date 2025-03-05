@@ -1,11 +1,9 @@
 package backend.lyrics.retrievers
 
-import javax.inject.{Inject, Singleton}
-
 import backend.module.StandaloneModule
 import backend.recon.SlickArtistReconStorage
 import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
-import com.google.inject.Guice
+import com.google.inject.{Guice, Inject, Singleton}
 import models.TypeAliases.ArtistName
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import slick.ast.{BaseTypedType, ScalaBaseType}

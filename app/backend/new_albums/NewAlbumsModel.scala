@@ -1,7 +1,6 @@
 package backend.new_albums
 
 import java.time.Duration
-import javax.inject.Inject
 
 import backend.mb.AlbumType
 import backend.new_albums.NewAlbumsModel.{ArtistAlbums, ModelResult, NonIgnoredArtist, Unreconciled}
@@ -9,6 +8,7 @@ import backend.new_albums.filler.NewAlbumFiller
 import backend.new_albums.filler.storage.FilledStorage
 import backend.recon.{Artist, IgnoredReconResult}
 import backend.scorer.OptionalModelScore
+import com.google.inject.Inject
 import genre.{Genre, GenreFinder}
 import models.AlbumTitle
 import shapeless.syntax.std.tuple.productTupleOps

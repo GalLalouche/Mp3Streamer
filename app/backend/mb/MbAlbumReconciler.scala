@@ -1,9 +1,8 @@
 package backend.mb
 
-import javax.inject.Inject
-
 import backend.OptionRetriever
 import backend.recon.{Album, AlbumReconScorer, Artist, Reconciler, ReconID}
+import com.google.inject.Inject
 import play.api.libs.json.{JsObject, JsValue}
 
 import scala.concurrent.ExecutionContext

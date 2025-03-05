@@ -1,11 +1,10 @@
 package mains.fixer
 
 import java.net.ConnectException
-import javax.inject.Inject
 
 import backend.FutureOption
 import better.files.FileExtensions
-import com.google.inject.Guice
+import com.google.inject.{Guice, Inject}
 import io.lemonlabs.uri.Url
 import mains.{IOUtils, MainsModule}
 import mains.cover.{CoverException, DownloadCover}

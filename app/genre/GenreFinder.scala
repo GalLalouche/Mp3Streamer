@@ -1,6 +1,6 @@
 package genre
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import common.io.DirectoryRef
 

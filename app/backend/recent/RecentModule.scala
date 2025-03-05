@@ -1,8 +1,6 @@
 package backend.recent
 
-import javax.inject.Singleton
-
-import com.google.inject.Provides
+import com.google.inject.{Provides, Singleton}
 import models.{AlbumDir, AlbumDirFactory}
 import net.codingwell.scalaguice.ScalaPrivateModule
 import rx.lang.scala.{Observable, Observer}

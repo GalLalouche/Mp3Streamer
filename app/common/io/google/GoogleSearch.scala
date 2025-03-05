@@ -1,7 +1,6 @@
 package common.io.google
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import play.api.libs.json.JsObject
 
 import scala.concurrent.{ExecutionContext, Future}

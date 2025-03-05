@@ -2,7 +2,7 @@ package backend.external.expansions
 
 import java.net.HttpURLConnection
 import java.util.regex.Pattern
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import backend.external.BaseLink
 import backend.external.expansions.AllMusicHelper._

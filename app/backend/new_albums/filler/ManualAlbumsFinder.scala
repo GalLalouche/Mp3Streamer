@@ -1,9 +1,8 @@
 package backend.new_albums.filler
 
-import javax.inject.{Inject, Singleton}
-
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import backend.recon.Reconcilable.SongExtractor
+import com.google.inject.{Inject, Singleton}
 import musicfinder.MusicFinder
 
 import scala.concurrent.Future

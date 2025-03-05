@@ -1,11 +1,9 @@
 package http4s
 
-import javax.inject.Inject
-
 import cats.data.OptionT
 import cats.effect.{ExitCode, IO, IOApp, Resource}
 import com.comcast.ip4s._
-import com.google.inject.{Guice, Provider}
+import com.google.inject.{Guice, Inject, Provider}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.http4s.{HttpApp, HttpRoutes}
 import org.http4s.dsl.io._

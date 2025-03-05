@@ -1,9 +1,9 @@
 package mains.cover
 
 import java.awt.{Color, Font}
-import javax.inject.Inject
 import javax.swing.{BorderFactory, JLabel, SpringLayout, SwingConstants}
 
+import com.google.inject.Inject
 import com.google.inject.assistedinject.Assisted
 import mains.SwingUtils._
 

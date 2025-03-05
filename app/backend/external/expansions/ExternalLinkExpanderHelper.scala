@@ -1,9 +1,8 @@
 package backend.external.expansions
 
-import javax.inject.Inject
-
 import backend.external.{BaseLink, BaseLinks}
 import backend.recon.Reconcilable
+import com.google.inject.Inject
 import org.jsoup.nodes.Document
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -1,11 +1,11 @@
 package backend.external
 
 import java.io.File
-import javax.inject.Inject
 
 import backend.external.extensions.SearchExtension
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon.ReconID
+import com.google.inject.Inject
 import models.{IOSong, Song}
 import play.api.libs.json.{Json, JsValue}
 

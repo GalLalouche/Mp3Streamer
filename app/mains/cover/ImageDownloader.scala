@@ -1,7 +1,7 @@
 package mains.cover
 
 import java.awt.Image
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import backend.Retriever
 import mains.SwingUtils._

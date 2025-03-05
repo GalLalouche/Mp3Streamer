@@ -1,7 +1,6 @@
 package backend.lucky
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 

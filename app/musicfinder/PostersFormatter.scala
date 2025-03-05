@@ -2,8 +2,8 @@ package musicfinder
 
 import java.io.File
 import javax.imageio.ImageIO
-import javax.inject.Inject
 
+import com.google.inject.Inject
 import genre.GenreFinder
 import musicfinder.PostersFormatter.AllowedExtensions
 

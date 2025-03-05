@@ -1,7 +1,6 @@
 package backend.new_albums.filler.storage
 
 import java.time.LocalDate
-import javax.inject.Inject
 
 import backend.mb.AlbumType
 import backend.module.StandaloneModule
@@ -11,7 +10,7 @@ import backend.recon.{Artist, ReconID, SlickArtistReconStorage}
 import backend.scorer.OptionalModelScore
 import backend.scorer.storage.ArtistScoreStorage
 import backend.storage.{DbProvider, JdbcMappers, SlickSingleKeyColumnStorageTemplateFromConf}
-import com.google.inject.Guice
+import com.google.inject.{Guice, Inject}
 import models.AlbumTitle
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import slick.ast.BaseTypedType

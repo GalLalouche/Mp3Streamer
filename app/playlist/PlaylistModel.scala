@@ -1,7 +1,6 @@
 package playlist
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import models.ModelJsonable.SongJsonifier
 import play.api.libs.json.JsObject
 import playlist.PlaylistModel._

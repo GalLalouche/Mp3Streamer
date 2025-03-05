@@ -1,10 +1,9 @@
 package backend.scorer.utils
 
-import javax.inject.Inject
-
 import backend.recon.{Artist, ReconcilableFactory}
 import backend.scorer.{CachedModelScorer, ModelScore, OptionalModelScore}
 import backend.scorer.utils.ArtistMassScorer.Update
+import com.google.inject.Inject
 import genre.{Genre, GenreFinder}
 
 import common.rich.func.MoreIteratorInstances.IteratorMonadPlus

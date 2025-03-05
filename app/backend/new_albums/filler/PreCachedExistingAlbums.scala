@@ -1,8 +1,7 @@
 package backend.new_albums.filler
 
-import javax.inject.Singleton
-
 import backend.recon.{Album, Artist}
+import com.google.inject.Singleton
 
 @Singleton private class PreCachedExistingAlbums(override val albums: Map[Artist, Set[Album]])
     extends ExistingAlbums {

@@ -2,10 +2,10 @@ package backend.lyrics.retrievers
 
 import java.net.HttpURLConnection
 import java.util.regex.Pattern
-import javax.inject.Inject
 
 import backend.lyrics.{HtmlLyrics, Instrumental, LyricsUrl}
 import backend.lyrics.retrievers.SingleHostParsingHelper._
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import models.Song
 

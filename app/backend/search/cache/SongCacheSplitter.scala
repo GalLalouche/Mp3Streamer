@@ -1,6 +1,6 @@
 package backend.search.cache
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import models.{AlbumDir, ArtistDir, Song}
 

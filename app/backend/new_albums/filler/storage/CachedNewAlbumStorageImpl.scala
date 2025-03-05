@@ -1,12 +1,10 @@
 package backend.new_albums.filler.storage
 
-import javax.inject.Inject
-
 import backend.module.StandaloneModule
 import backend.new_albums.ArtistNewAlbums
 import backend.new_albums.filler.{FilterExistingAlbums, NewAlbumRecon}
 import backend.recon.{Artist, IgnoredReconResult}
-import com.google.inject.Guice
+import com.google.inject.{Guice, Inject}
 import models.AlbumTitle
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 

@@ -1,6 +1,6 @@
 package songs.selector
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import models.Song
 import musicfinder.MusicFinder

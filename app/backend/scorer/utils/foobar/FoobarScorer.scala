@@ -1,12 +1,12 @@
 package backend.scorer.utils.foobar
 
 import java.io.File
-import javax.inject.Inject
 
 import backend.mb.MbArtistReconciler
 import backend.recon.{Artist, ArtistReconPusher, ArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{FullInfoModelScorer, FullInfoScore, OptionalModelScore, ScoreSource}
+import com.google.inject.Inject
 import models.{IOSongTagParser, Song}
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -1,6 +1,6 @@
 package mains.cover
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.swing.Frame

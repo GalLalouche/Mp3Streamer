@@ -1,6 +1,6 @@
 package backend.mb
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import backend.recon.{Artist, ReconID}
 

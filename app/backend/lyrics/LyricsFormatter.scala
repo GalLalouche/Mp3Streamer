@@ -1,9 +1,9 @@
 package backend.lyrics
 
 import java.io.File
-import javax.inject.Inject
 
 import backend.lyrics.retrievers.RetrievedLyricsResult
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import models.{IOSong, Song}
 

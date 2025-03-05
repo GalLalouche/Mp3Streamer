@@ -1,8 +1,8 @@
 package stream
 
 import java.io.File
-import javax.inject.Inject
 
+import com.google.inject.Inject
 import musicfinder.MusicFinder
 import song_encoder.Mp3Encoder
 

@@ -1,9 +1,8 @@
 package backend.lyrics
 
-import javax.inject.Inject
-
 import backend.lyrics.retrievers.InstrumentalArtistStorage
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import models.Song
 

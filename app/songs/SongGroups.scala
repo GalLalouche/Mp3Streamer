@@ -1,6 +1,6 @@
 package songs
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import models.Song
 

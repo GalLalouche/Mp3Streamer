@@ -1,7 +1,8 @@
 package song_encoder
 
 import java.util.regex.Pattern
-import javax.inject.{Inject, Singleton}
+
+import com.google.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
 

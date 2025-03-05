@@ -1,6 +1,6 @@
 package backend.scorer.utils
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import backend.recon.{Album, Artist}
 import backend.scorer.{CachedModelScorer, ModelScore}

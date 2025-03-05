@@ -1,7 +1,6 @@
 package backend.scorer
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import models.Song
 
 import scala.concurrent.ExecutionContext

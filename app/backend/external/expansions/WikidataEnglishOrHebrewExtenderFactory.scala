@@ -1,10 +1,9 @@
 package backend.external.expansions
 
-import javax.inject.Inject
-
 import backend.external.{BaseLink, Host}
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 

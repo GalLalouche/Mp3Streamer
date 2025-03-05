@@ -1,8 +1,6 @@
 package backend.search
 
-import javax.inject.Inject
-
-import com.google.inject.Singleton
+import com.google.inject.{Inject, Singleton}
 import models.{AlbumDir, ArtistDir, Song}
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -1,8 +1,7 @@
 package backend.external
 
-import javax.inject.Inject
-
 import backend.recon.{Reconcilable, ReconID}
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.{Document, Element}
 

@@ -1,9 +1,8 @@
 package backend.new_albums.filler
 
-import javax.inject.Inject
-
 import backend.mb.MbArtistReconciler
 import backend.recon.{Artist, ArtistReconStorage, ReconID}
+import com.google.inject.Inject
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}

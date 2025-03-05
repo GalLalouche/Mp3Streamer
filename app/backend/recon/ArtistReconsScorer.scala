@@ -1,6 +1,6 @@
 package backend.recon
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 class ArtistReconsScorer @Inject() (stringReconScorer: StringReconScorer)
     extends ReconScorer[Artist] {

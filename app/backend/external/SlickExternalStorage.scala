@@ -1,10 +1,10 @@
 package backend.external
 
 import java.time.LocalDateTime
-import javax.inject.{Inject, Singleton}
 
 import backend.recon.{Album, Artist, Reconcilable}
 import backend.storage.{AlwaysFresh, DatedFreshness, DbProvider, Freshness, SlickSingleKeyColumnStorageTemplateFromConf}
+import com.google.inject.{Inject, Singleton}
 import io.lemonlabs.uri.Url
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.JdbcType

@@ -1,7 +1,7 @@
 package backend.external.expansions
 
 import java.util.regex.Pattern
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import backend.external.{BaseLink, Host}
 import backend.recon.Reconcilable

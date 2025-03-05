@@ -1,8 +1,7 @@
 package backend.lyrics.retrievers
 
-import javax.inject.Inject
-
 import backend.lyrics.retrievers.genius.GeniusLyricsRetriever
+import com.google.inject.Inject
 
 import scala.concurrent.ExecutionContext
 

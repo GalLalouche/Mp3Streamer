@@ -1,7 +1,7 @@
 package backend.recent
 
 import java.time.{Clock, LocalDate}
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import models.{AlbumDir, AlbumDirFactory}
 import musicfinder.MusicFinder

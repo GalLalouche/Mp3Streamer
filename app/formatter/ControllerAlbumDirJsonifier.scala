@@ -1,7 +1,6 @@
 package formatter
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import models.{AlbumDir, ModelJsonable}
 
 import common.rich.func.MoreTraverseInstances._

@@ -1,7 +1,6 @@
 package mains
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import musicfinder.MusicFinder
 
 import common.io.IODirectory

@@ -1,7 +1,6 @@
 package musicfinder
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import mains.fixer.StringFixer
 import models.ArtistName
 import musicfinder.ArtistFinder.{DotSuffixes, IllegalWindowCharactersPattern}

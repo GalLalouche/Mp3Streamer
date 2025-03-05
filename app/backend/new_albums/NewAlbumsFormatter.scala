@@ -1,8 +1,7 @@
 package backend.new_albums
 
-import javax.inject.Inject
-
 import backend.recon.Artist
+import com.google.inject.Inject
 import mains.fixer.StringFixer
 import models.TypeAliases.ArtistName
 import play.api.libs.json.{JsArray, Json, JsString, JsValue}

@@ -2,8 +2,8 @@ package mains.fixer
 
 import java.io.File
 import java.util.regex.Pattern
-import javax.inject.Inject
 
+import com.google.inject.Inject
 import models.IOSong
 import musicfinder.IOMusicFinder
 import org.jaudiotagger.audio.AudioFileIO

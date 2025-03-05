@@ -1,7 +1,6 @@
 package mains.vimtag
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import mains.{OptionalSong, OptionalSongFinder}
 import mains.vimtag.Initializer.InitialLines
 import models.TypeAliases.TrackNumber

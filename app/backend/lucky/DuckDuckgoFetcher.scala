@@ -1,8 +1,7 @@
 package backend.lucky
 
-import javax.inject.Inject
-
 import backend.lucky.DuckDuckgoFetcher.QueryPrefix
+import com.google.inject.Inject
 import org.jsoup.Jsoup
 
 import scala.concurrent.{ExecutionContext, Future}

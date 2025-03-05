@@ -1,11 +1,9 @@
 package mains.cleaner
 
-import javax.inject.Inject
-
 import backend.module.StandaloneModule
 import backend.recon.{Artist, ReconcilableFactory}
 import backend.recon.Reconcilable.SongExtractor
-import com.google.inject.Guice
+import com.google.inject.{Guice, Inject}
 import me.tongfei.progressbar.ProgressBar
 import models.IOSongTagParser
 import musicfinder.IOMusicFinder

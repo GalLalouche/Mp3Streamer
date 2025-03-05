@@ -1,6 +1,6 @@
 package common.concurrency
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 

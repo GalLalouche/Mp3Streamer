@@ -1,9 +1,8 @@
 package mains.random_folder
 
-import javax.inject.Inject
-
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{CachedModelScorer, ModelScore}
+import com.google.inject.Inject
 import musicfinder.MusicFinder
 
 import common.Percentage

@@ -1,6 +1,6 @@
 package backend.lyrics.retrievers.bandcamp
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import backend.FutureOption
 import backend.external.{Host, MbHtmlLinkExtractorHelper}

@@ -1,7 +1,7 @@
 package backend.mb
 
 import java.net.HttpURLConnection
-import javax.inject.{Inject, Singleton}
+import com.google.inject.{Inject, Singleton}
 
 import backend.mb.JsonDownloader.Input
 import play.api.libs.json._

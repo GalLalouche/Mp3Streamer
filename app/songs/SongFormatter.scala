@@ -1,7 +1,7 @@
 package songs
 
 import java.io.File
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import formatter.ControllerSongJsonifier
 import models._

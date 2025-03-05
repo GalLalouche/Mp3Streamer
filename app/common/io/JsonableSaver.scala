@@ -3,8 +3,8 @@ package common.io
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
 import java.util.regex.Pattern
-import javax.inject.Inject
 
+import com.google.inject.Inject
 import play.api.libs.json.{Json, JsValue}
 
 import scala.util.Try

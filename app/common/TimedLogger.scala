@@ -1,6 +1,6 @@
 package common
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 class TimedLogger @Inject() {
   def apply[T](task: String, logger: String => Unit = scribe.trace(_))(f: => T): T = {

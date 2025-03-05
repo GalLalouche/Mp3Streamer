@@ -1,13 +1,12 @@
 package backend.external
 
-import javax.inject.Inject
-
 import backend.external.expansions.CompositeSameHostExpander
 import backend.external.extensions._
 import backend.external.recons.LinkRetrievers
 import backend.new_albums.filler.storage.NewAlbumCleaner
 import backend.recon._
 import backend.recon.Reconcilable._
+import com.google.inject.Inject
 import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -1,8 +1,7 @@
 package backend.lyrics.retrievers.bandcamp
 
-import javax.inject.Inject
-
 import backend.lyrics.retrievers.{PassiveParser, SingleHostParsingHelper}
+import com.google.inject.Inject
 
 private[retrievers] class BandcampParser @Inject() (helper: SingleHostParsingHelper)
     extends PassiveParser {

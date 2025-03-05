@@ -1,10 +1,9 @@
 package backend.external.expansions
 
-import javax.inject.Inject
-
 import backend.FutureOption
 import backend.external.BaseLink
 import backend.recon.{Album, Artist}
+import com.google.inject.Inject
 
 import scala.concurrent.ExecutionContext
 

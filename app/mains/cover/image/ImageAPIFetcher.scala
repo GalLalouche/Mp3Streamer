@@ -1,7 +1,6 @@
 package mains.cover.image
 
-import javax.inject.Inject
-
+import com.google.inject.Inject
 import mains.cover.image.ImageAPIFetcher.ResultsPerQuery
 import play.api.libs.json.JsObject
 

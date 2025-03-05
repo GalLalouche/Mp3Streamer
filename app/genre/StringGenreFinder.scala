@@ -1,8 +1,7 @@
 package genre
 
-import javax.inject.{Inject, Singleton}
-
 import backend.recon.Artist
+import com.google.inject.{Inject, Singleton}
 import musicfinder.MusicFinder
 
 import common.TimedLogger

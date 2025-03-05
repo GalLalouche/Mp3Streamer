@@ -1,7 +1,7 @@
 package backend.scorer
 
 import java.io.File
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import models.{IOSongTagParser, Song}
 import play.api.libs.json.{Json, JsValue}

@@ -1,6 +1,6 @@
 package backend.scorer.storage
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import backend.recon.{Artist, SlickArtistReconStorage, Track, YearlessAlbum, YearlessTrack}
 import backend.scorer.ModelScore

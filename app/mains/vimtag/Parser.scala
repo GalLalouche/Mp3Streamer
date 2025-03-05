@@ -1,6 +1,6 @@
 package mains.vimtag
 
-import javax.inject.Inject
+import com.google.inject.Inject
 
 import scalaz.std.tuple.tuple2Bitraverse
 import scalaz.syntax.bifunctor.ToBifunctorOps

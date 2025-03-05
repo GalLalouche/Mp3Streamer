@@ -1,8 +1,8 @@
 package mains.random_folder
 
 import java.io.File
-import javax.inject.Inject
 
+import com.google.inject.Inject
 import com.google.inject.assistedinject.Assisted
 import me.tongfei.progressbar.ProgressBar
 import models.IOSong

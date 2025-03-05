@@ -1,9 +1,9 @@
 package backend.lyrics.retrievers
 
 import java.util.regex.Pattern
-import javax.inject.Inject
 
 import com.google.common.annotations.VisibleForTesting
+import com.google.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
 

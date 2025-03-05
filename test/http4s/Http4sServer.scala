@@ -1,9 +1,8 @@
 package http4s
 
-import javax.inject.Inject
-
 import cats.effect.unsafe.implicits.global
 import com.comcast.ip4s.Port
+import com.google.inject.Inject
 import server.{RunningServer, Server}
 
 import scala.concurrent.{ExecutionContext, Future}
