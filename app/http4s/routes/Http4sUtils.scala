@@ -19,6 +19,7 @@ import common.rich.RichT.richT
 
 private object Http4sUtils {
   def fromFuture[A](f: => Future[A]): IO[A] = IO.fromFuture(IO(f))
+  def fromFutureBlocking[A](f: => Future[A]): IO[A] = IO.fromFuture(IO.blocking(f))
   def fromFutureIO[A](f: => Future[IO[A]]): IO[A] = IO.fromFuture(IO(f)).flatten
 
   def decode(s: String): String = URLDecoder.decode(s, "UTF-8")
