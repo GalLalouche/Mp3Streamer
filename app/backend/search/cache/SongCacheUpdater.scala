@@ -1,22 +1,12 @@
 package backend.search.cache
 
 import com.google.inject.Inject
-
-import backend.logging.ScribeUtils
-import backend.module.StandaloneModule
-import com.google.inject.Guice
 import models.ModelJsonable
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
-import scribe.Level
-
-import scala.concurrent.ExecutionContext
 
 import common.concurrency.report.ReportObserver
 import common.io.JsonableSaver
-import common.rich.RichFuture.richFuture
-import common.rich.RichObservableSpecVer.richObservableSpecVer
 import common.rich.RichT.richT
 
 private[search] class SongCacheUpdater @Inject() (
@@ -52,14 +42,5 @@ private[search] class SongCacheUpdater @Inject() (
       override def onError(t: Throwable) = throw t
     })
     $
-  }
-}
-
-private object SongCacheUpdater {
-  def main(args: Array[String]): Unit = {
-    val injector = Guice.createInjector(StandaloneModule)
-    ScribeUtils.setRootLevel(Level.Trace)
-    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    injector.instance[SongCacheUpdater].go().toFuture[Vector].get
   }
 }
