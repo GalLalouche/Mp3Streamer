@@ -1,10 +1,9 @@
 package backend.external.mark
 
-import com.google.inject.Inject
-
 import backend.external.{Host, LinkMark, MarkedLink}
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
+import com.google.inject.Inject
 import org.jsoup.nodes.Document
 
 import scala.concurrent.Future
@@ -23,7 +22,7 @@ private class WikidataNameMarkerFactory @Inject() (implicit it: InternetTalker) 
 
 private object WikidataNameMarkerFactory {
   @VisibleForTesting def extract(d: Document): String = {
-    val title = d.selectSingle(".wikibase-title-label").text
+    val title = d.selectSingle("#content .wikibase-title-label").text
     val description = d.selectSingle(".wikibase-entitytermsview-heading-description").text
     s"$title ($description)"
   }
