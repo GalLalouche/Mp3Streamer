@@ -1,15 +1,14 @@
 package backend.recon
 
+import backend.module.TestModuleConfiguration
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.{Assertion, FreeSpec}
 
 import common.test.AuxSpecs
 
 // Golden tests to verify album recon scores. It's machine learning for morons, basically.
 class AlbumReconScorerTest extends FreeSpec with AuxSpecs {
-  private val $ = new AlbumReconScorer(
-    StringReconScorer,
-    new ArtistReconsScorer(StringReconScorer),
-  )
+  private val $ = TestModuleConfiguration().injector.instance[AlbumReconScorer]
 
   "Golden tests" - {
     def testingName(s1: String, s2: String): Double = ignoreArtist(s1 -> 2000, s2 -> 2000)

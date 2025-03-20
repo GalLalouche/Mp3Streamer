@@ -21,6 +21,7 @@ import common.rich.RichT._
 private class API @Inject() (
     @AccessToken accessToken: String,
     it: InternetTalker,
+    scorer: StringReconScorer,
 ) {
   private implicit val ec: ExecutionContext = it
 
@@ -32,7 +33,7 @@ private class API @Inject() (
           scribe.info(s"Got status code <${e.status}> from genius\nMessage body\n: ${e.body}")
           None
         } else
-          Json.parse(e.body).as[JsObject].|>(parse(song, _).map(Url.parse)),
+          Json.parse(e.body).as[JsObject].|>(parse(song, _, scorer).map(Url.parse)),
       )
   }
 }
@@ -41,14 +42,15 @@ private object API {
   import common.json.RichJson._
 
   private def split(s: String) = s.split(" ")
-  @VisibleForTesting def parse(song: Song, json: JsObject): Option[String] = for {
+  @VisibleForTesting def parse(
+      song: Song,
+      json: JsObject,
+      scorer: StringReconScorer,
+  ): Option[String] = for {
     firstHit <- (json / "response").objects("hits").headOption
     result = firstHit / "result"
     artist = (result / "primary_artist").str("name")
     title = result.str("title")
-    if StringReconScorer(artist, song.artistName) >= 0.9 && StringReconScorer(
-      title,
-      song.title,
-    ) >= 0.9
+    if scorer(artist, song.artistName) >= 0.9 && scorer(title, song.title) >= 0.9
   } yield result.str("url")
 }

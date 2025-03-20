@@ -34,6 +34,7 @@ private[mains] class FolderFixer @Inject() private (
     it: InternetTalker,
     foobarGain: FoobarGain,
     downloader: DownloadCover,
+    stringFixer: StringFixer,
 ) {
   private implicit val iec: ExecutionContext = it
 
@@ -47,7 +48,7 @@ private[mains] class FolderFixer @Inject() private (
       destination ||||
         NewArtistFolderCreator
           .selectGenreDirAndPopupBrowser(artist)
-          .map(_.addSubDir(StringFixer(artist)))
+          .map(_.addSubDir(stringFixer(artist)))
     folderImageMover <- folderImage
     fixed <- fixedDirectory
   } yield {

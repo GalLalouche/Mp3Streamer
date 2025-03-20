@@ -93,7 +93,7 @@ class StringFixer extends (String => String) {
   }
 }
 
-object StringFixer extends StringFixer() {
+object StringFixer {
   @VisibleForTesting
   private[fixer] val lowerCaseWords = Vector(
     "'em",

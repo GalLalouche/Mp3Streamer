@@ -1,11 +1,14 @@
 package backend.recon
 
+import backend.module.TestModuleConfiguration
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.FreeSpec
 
 import common.test.AuxSpecs
 
 class StringReconScorerTest extends FreeSpec with AuxSpecs {
-  private val $ = StringReconScorer
+  private val $ = TestModuleConfiguration().injector.instance[StringReconScorer]
+
   def verifyLowReconScore(str1: String, str2: String): Unit =
     s"<$str1> and <$str2> should have a low recon score" in {
       $(str1, str2) should be <= 0.9
@@ -14,6 +17,7 @@ class StringReconScorerTest extends FreeSpec with AuxSpecs {
     s"<$str1> and <$str2> should have a high recon score" in {
       $(str1, str2) should be > 0.9
     }
+
   "An empty string has a low recon score" - {
     verifyLowReconScore("", "   ")
   }

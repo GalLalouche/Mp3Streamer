@@ -30,7 +30,7 @@ class StringReconScorer @Inject() (stringFixer: StringFixer) extends ((String, S
   private def filterHebrew(s: String): String = s.split(" ").filter(_.hasHebrew).mkString(" ")
 }
 
-object StringReconScorer extends StringReconScorer(StringFixer) {
+object StringReconScorer {
   private val badWords = Set("and", "ep")
   private def sameAndNonEmpty(s1: String, s2: String) = {
     val trim = s1.trim

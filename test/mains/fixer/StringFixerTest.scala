@@ -1,12 +1,14 @@
 package mains.fixer
 
+import backend.module.TestModuleConfiguration
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.FreeSpec
 import org.scalatest.tagobjects.Slow
 
 import common.test.AuxSpecs
 
 class StringFixerTest extends FreeSpec with AuxSpecs {
-  private val $ = StringFixer
+  private val $ = TestModuleConfiguration().injector.instance[StringFixer]
 
   private def verifyFix(original: String, fix: String): Unit = $(original) shouldReturn fix
   private def verifyEmptyFix(original: String): Unit = verifyFix(original, original)
@@ -61,7 +63,7 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
     verifyFix("Rock 'Em like a rock", "Rock 'em Like a Rock")
   }
   "Is sorted" in {
-    $.lowerCaseWords.sorted shouldReturn $.lowerCaseWords
+    StringFixer.lowerCaseWords.sorted shouldReturn StringFixer.lowerCaseWords
   }
   "With dots" in {
     Vector("F.F.S.", "f.f.s.").foreach(verifyFix(_, "F.F.S."))

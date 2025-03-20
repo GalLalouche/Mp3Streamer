@@ -34,7 +34,7 @@ class NewAlbumsFormatter @Inject() (
   private implicit object ArtistAlbumsJsonable extends JsonWriteable[NewAlbumsModel.ModelResult] {
     override def jsonify(a: NewAlbumsModel.ModelResult) = Json.obj(
       "genre" -> a.genre.mapHeadOrElse(_.name, "N/A"),
-      "name" -> StringFixer(a.artist.name), // Name is stored normalized.
+      "name" -> stringFixer(a.artist.name), // Name is stored normalized.
       "artistScore" -> a.artistScore.entryName,
       "albums" -> fixTitles(a.albums).jsonify,
     )

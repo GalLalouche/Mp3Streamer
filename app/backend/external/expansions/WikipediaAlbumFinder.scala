@@ -25,6 +25,7 @@ import common.rich.primitives.RichString._
 private class WikipediaAlbumFinder @Inject() (
     sameHostExpanderHelper: SameHostExpanderHelper,
     it: InternetTalker,
+    stringReconScorer: StringReconScorer,
 ) extends SameHostExpander {
   private implicit val iec: ExecutionContext = it
   override val host = Host.Wikipedia
@@ -44,7 +45,7 @@ private class WikipediaAlbumFinder @Inject() (
         .map(_.find("span#redirectsub").forall(_.text != "Redirect page"))
     }
     def findAlbum(d: Document, a: Album): FutureOption[Url] = {
-      def score(linkName: String): Double = StringReconScorer(a.title, linkName)
+      def score(linkName: String): Double = stringReconScorer(a.title, linkName)
       val lang = d.selectSingle("html").attr("lang")
       for {
         documentLanguage <- lang.optFilter(SupportedLanguages).hoistId
