@@ -20,8 +20,10 @@ object ScribeUtils {
       Some(Level.get(level).getOrThrow(new IllegalArgumentException(s"Invalid level <$level>")))
 
   // Use path "" for root.
-  def setLevel(path: String, level: String): Unit =
-    setLevel(if (path == "") Logger.root else scribe.Logger(path), parseLevel(level))
+  def setLevel(path: String, level: Level): Unit = setLevel(path, Some(level))
+  def setLevel(path: String, level: String): Unit = setLevel(path, parseLevel(level))
+  private def setLevel(path: String, level: Option[Level]): Unit =
+    setLevel(if (path == "") Logger.root else scribe.Logger(path), level)
 
   private def setLevel(logger: Logger, level: Option[Level]): Unit =
     logger
