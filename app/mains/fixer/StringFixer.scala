@@ -3,11 +3,11 @@ package mains.fixer
 import java.util.regex.Pattern
 
 import com.google.common.annotations.VisibleForTesting
+import com.google.inject.Inject
 import org.apache.commons.lang3.StringUtils
 import resource._
 
 import scala.io.Source
-import scala.util.{Failure, Success}
 
 import common.LanguageString._
 import common.rich.RichT._
@@ -17,7 +17,7 @@ import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichOption.richOption
 import common.rich.primitives.RichString._
 
-class StringFixer extends (String => String) {
+class StringFixer @Inject() (detectLanguage: DetectLanguage) extends (String => String) {
   import StringFixer._
 
   def asciiNormalize(s: String): String = try {
@@ -36,14 +36,14 @@ class StringFixer extends (String => String) {
   } catch {
     case e: Exception =>
       // TODO reuse this for Hebrew check as well?
-      DetectLanguage(s) match {
-        case Failure(exception) =>
+      detectLanguage(s) match {
+        case Left(exception) =>
           if (ignoreLangDetectionErrors) {
             scribe.warn(s"Failed to detect language for '$s'", exception)
             s
           } else
             throw exception
-        case Success(lang) =>
+        case Right(lang) =>
           if (isExemptLanguage(lang)) {
             scribe.trace(s"Could not asciify <$s>")
             s

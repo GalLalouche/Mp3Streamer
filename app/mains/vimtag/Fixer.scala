@@ -1,8 +1,8 @@
 package mains.vimtag
 
-import com.google.inject.Guice
+import com.google.inject.{Guice, Provides}
 import mains.MainsModule
-import mains.fixer.{FixLabelsUtils, FolderFixer, StringFixer}
+import mains.fixer.{DetectLanguage, FixLabelsUtils, FolderFixer, StringFixer}
 import mains.vimtag.Flag.RemoveFeat
 import models.IOSongTagParser
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
@@ -32,12 +32,12 @@ private object Fixer {
     val renameFiles = parsedId3.flags(Flag.RenameFiles)
     val fixFolder = parsedId3.flags(Flag.FixFolder)
     val injector = Guice.createInjector(MainsModule.overrideWith(new ScalaModule {
-      override def configure(): Unit =
-        bind[StringFixer].toInstance(new StringFixer() {
+      @Provides private def provideStringFixer(dl: DetectLanguage): StringFixer =
+        new StringFixer(dl) {
           protected override val ignoreLangDetectionErrors = true
           protected override def isExemptLanguage(lang: String): Boolean =
             parsedId3.flags(Flag.Asciify).isFalse || super.isExemptLanguage(lang)
-        })
+        }
     }))
     for ((individual, index) <- parsedId3.songId3s.zipWithIndex) {
       val file = ioDir.getFile(individual.relativeFileName).get.file

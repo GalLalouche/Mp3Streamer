@@ -1,9 +1,13 @@
 package mains.fixer
 
-import scala.util.Try
+import java.io.IOException
 
-private object DetectLanguage {
-  def apply(s: String): Try[String] = Try(languageDetector.detect(s))
+import com.google.inject.{Inject, Singleton}
 
-  private lazy val languageDetector = PythonLanguageDetector.create()
+import scala.concurrent.duration.Duration
+
+@Singleton class DetectLanguage @Inject() private (@DetectLanguageTimeout timeout: Duration) {
+  def apply(s: String): Either[IOException, String] = languageDetector.detect(s)
+
+  private lazy val languageDetector = PythonLanguageDetector.create(timeout)
 }

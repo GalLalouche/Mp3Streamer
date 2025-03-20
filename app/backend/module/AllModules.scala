@@ -9,6 +9,7 @@ import backend.new_albums.NewAlbumsModule
 import backend.recent.RecentModule
 import backend.recon.ReconModule
 import backend.scorer.ScorerModule
+import mains.fixer.FixerModule
 import net.codingwell.scalaguice.ScalaModule
 import songs.SongsModule
 
@@ -19,6 +20,7 @@ object AllModules extends ScalaModule {
 
   override def configure(): Unit = {
     install(ExternalModule)
+    install(FixerModule)
     install(GoogleModule)
     install(LyricsModule)
     install(MbModule)
