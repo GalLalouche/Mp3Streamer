@@ -75,6 +75,7 @@ class Genre(Enum):
   FLACK_METAL = auto()
   FOLK_METAL = auto()
   FUNERAL_DEATHDOOM = auto()
+  GOTHIC_DOOM_METAL = auto()
   GOTHIC_METAL = auto()
   HAIR_METAL = auto()
   HEAVY_METAL = auto()
@@ -244,6 +245,8 @@ class Genre(Enum):
       return "Folk Metal"
     if self == Genre.FUNERAL_DEATHDOOM:
       return "Funeral DeathDoom"
+    if self == Genre.GOTHIC_DOOM_METAL:
+      return "Gothic Doom"
     if self == Genre.GOTHIC_METAL:
       return "Gothic Metal"
     if self == Genre.HAIR_METAL:
