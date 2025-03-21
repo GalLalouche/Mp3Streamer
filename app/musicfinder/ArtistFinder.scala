@@ -9,12 +9,13 @@ import common.io.DirectoryRef
 import common.rich.primitives.RichString._
 
 class ArtistFinder @Inject() (mf: MusicFinder, stringFixer: StringFixer) {
-  def apply(artist: ArtistName): Option[DirectoryRef] = {
+  def normalizeArtistName(name: ArtistName): String =
+    stringFixer(name)
+      .removeAll(DotSuffixes)
+      .removeAll(IllegalWindowCharactersPattern)
+  def apply(name: ArtistName): Option[DirectoryRef] = {
     // See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
-    val canonicalArtistFolderName =
-      stringFixer(artist).toLowerCase
-        .removeAll(DotSuffixes)
-        .removeAll(IllegalWindowCharactersPattern)
+    val canonicalArtistFolderName = normalizeArtistName(name).toLowerCase
 
     println(s"finding matching folder for artist <$canonicalArtistFolderName>")
     mf.findArtistDir(backend.recon.Artist(canonicalArtistFolderName))
