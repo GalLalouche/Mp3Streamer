@@ -5,7 +5,7 @@ import java.nio.file.attribute.FileTime
 
 import com.google.inject.Inject
 import mains.OptionalSongTagParser
-import musicfinder.IOMusicFinder
+import musicfinder.{ArtistFinder, IOMusicFinder}
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 
 import common.io.IODirectory
@@ -14,13 +14,13 @@ import common.rich.path.RichFileUtils
 import common.rich.primitives.RichBoolean.richBoolean
 
 /** Adds the artist name to the folder if it doesn't contain it already. */
-private class ArtistNameAdder @Inject() (mf: IOMusicFinder) extends Cleaner {
+private class ArtistNameAdder @Inject() (mf: IOMusicFinder, af: ArtistFinder) extends Cleaner {
   override def apply(dir: IODirectory): Unit = dir.dirs.foreach(go)
   private def go(dir: IODirectory): Unit =
     try {
       val song = OptionalSongTagParser(mf.getSongFilesInDir(dir).head.file)
       val yearOption: Option[Int] = song.year
-      val artistName = song.artistName.get
+      val artistName = af.normalizeArtistName(song.artistName.get)
       val originalTime = FileTime.fromMillis(dir.dir.lastModified)
       val dirName = dir.name
       val needsArtist = containsIgnoreCase(dirName, artistName).isFalse
