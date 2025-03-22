@@ -1,5 +1,7 @@
 package models
 
+import monocle.Lens
+
 /**
  * An artist directory (contrast with [[backend.recon.Artist]]) is a concrete directory containing
  * album directories (or, in rare cases, it might be a single album artist whose artist directory
@@ -8,4 +10,9 @@ package models
  */
 final case class ArtistDir(name: ArtistName, private val _albums: Set[AlbumDir]) {
   lazy val albums: Seq[AlbumDir] = _albums.toSeq.sortBy(e => (e.year, e.title))
+}
+object ArtistDir {
+  val albums: Lens[ArtistDir, Seq[AlbumDir]] = Lens[ArtistDir, Seq[AlbumDir]](_.albums)(albums =>
+    artist => new ArtistDir(artist.name, albums.toSet),
+  )
 }
