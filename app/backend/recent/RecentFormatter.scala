@@ -1,7 +1,6 @@
 package backend.recent
 
 import com.google.inject.Inject
-
 import models.ModelJsonable.AlbumDirJsonifier
 import play.api.libs.json.{JsNull, JsValue}
 
@@ -36,6 +35,7 @@ class RecentFormatter @Inject() (
   private implicit val iec: ExecutionContext = ec
 
   def all(amount: Int): Future[JsValue] = Future(recentAlbums.all(amount)).map(_.jsonify)
+  def double: Future[JsValue] = double(10)
   def double(amount: Int): Future[JsValue] = Future(recentAlbums.double(amount)).map(_.jsonify)
   def updateLast(): Future[JsValue] =
     Future(recentAlbums.all(1).single).>>!(lastAlbumState.set).map(_.jsonify)

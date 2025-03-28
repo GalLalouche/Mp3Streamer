@@ -13,7 +13,7 @@ private class RecentHttpRoutes @Inject() ($ : RecentFormatter, ec: ExecutionCont
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> Root / "albums" => Ok(fromFuture($.all(0)))
     case GET -> Root / "albums" / IntVar(amount) => Ok(fromFuture($.all(amount)))
-    case GET -> Root / "double" => Ok(fromFuture($.double(0)))
+    case GET -> Root / "double" => Ok(fromFuture($.double))
     case GET -> Root / "double" / IntVar(amount) => Ok(fromFuture($.double(amount)))
     case GET -> Root / "get_last" => Ok($.getLastState)
     case GET -> Root / "update_last" => Ok(fromFuture($.updateLast()))
