@@ -7,13 +7,13 @@ import org.scalatest.FreeSpec
 import common.test.AuxSpecs
 
 class WeightedIndexableTest extends FreeSpec with AuxSpecs {
-  val factory = new FakeModelFactory
-  val song = factory
+  private val factory = new FakeModelFactory
+  private val song = factory
     .song(title = "foo bar", artistName = "quxx", year = 1999, albumName = "bazz bazz")
     .asInstanceOf[Song]
-  val classicalSong = factory
+  private val classicalSong = factory
     .song(
-      title = "foo bar",
+      title = "foo, bar",
       artistName = "bar quxx",
       year = 1999,
       albumName = "bazz bazz",
@@ -27,8 +27,7 @@ class WeightedIndexableTest extends FreeSpec with AuxSpecs {
     ArtistDir(
       "foo foo bar",
       Set(factory.album(title = "should be ignored")),
-    ).terms shouldMultiSetEqual
-      Vector("foo" -> 1.0, "bar" -> 1.0)
+    ).terms shouldMultiSetEqual Vector("foo" -> 1.0, "bar" -> 1.0)
   }
   "song" - {
     "regular song" in {
