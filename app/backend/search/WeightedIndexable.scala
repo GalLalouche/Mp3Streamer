@@ -1,16 +1,26 @@
 package backend.search
 
+import java.util.StringTokenizer
+
 import backend.search.WeightedIndexable._
 import models.{AlbumDir, ArtistDir, Song}
 import simulacrum.typeclass
 
+import scala.collection.mutable
+
 @typeclass private trait WeightedIndexable[T] {
   protected def mainTerm(t: T): String
   protected def secondaryTerms(t: T): Iterable[String]
-  private def split(s: String) = s.toLowerCase.split(" ")
+  private def split(s: String): Set[String] = {
+    val st = new StringTokenizer(s.toLowerCase, "!?,. ")
+    val $ = mutable.Set[String]()
+    while (st.hasMoreTokens)
+      $ += st.nextToken()
+    $.toSet
+  }
   private def weigh(s: Set[String], weight: Double) = s.map(_ -> weight)
   def terms(t: T): Iterable[(String, Double)] = {
-    val primaryTerms = split(mainTerm(t)).toSet
+    val primaryTerms = split(mainTerm(t))
     weigh(primaryTerms, PrimaryWeight) ++
       weigh(secondaryTerms(t).flatMap(split).toSet.filterNot(primaryTerms), SecondaryWeight)
   }
