@@ -2,12 +2,12 @@ package backend.external.expansions
 
 import java.net.HttpURLConnection
 import java.util.regex.Pattern
-import com.google.inject.Inject
 
 import backend.external.BaseLink
 import backend.external.expansions.AllMusicHelper._
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
@@ -18,6 +18,7 @@ import common.rich.func.ToMoreMonadErrorOps._
 
 import common.RichJsoup._
 import common.io.InternetTalker
+import common.rich.primitives.RichBoolean
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 
@@ -31,7 +32,7 @@ private class AllMusicHelper @Inject() (
 
   // TODO this should only be invoked once, from the external pipe
   def isValidLink(u: Url): Future[Boolean] =
-    it.downloadDocument(u).map(d => hasRating(d) && hasStaffReview(d))
+    it.downloadDocument(u).map(RichBoolean.and(hasRating, hasStaffReview))
   def isCanonical(link: String): Boolean = canonicalRe.findAllMatchIn(link).hasNext
 
   def canonize[R <: Reconcilable](link: BaseLink[R]): Future[BaseLink[R]] = {
