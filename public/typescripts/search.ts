@@ -216,7 +216,7 @@ async function scan() {
   return $.get("index/index").toPromise()
 }
 
-async function scanPlus() {
+export async function scanPlus() {
   await LastAlbum.addNextNewAlbum()
   await scan()
 }

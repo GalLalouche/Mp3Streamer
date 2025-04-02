@@ -1,5 +1,5 @@
 import {gplayer, gplaylist, Song} from "./types.js"
-import {Search} from "./search.js"
+import {scanPlus, Search} from "./search.js"
 
 $(function () {
   $(document).keypress(function (e) {
@@ -43,6 +43,11 @@ $(function () {
       case 's':
         Search.quickSearch()
         e.preventDefault()
+        break
+      case 'S':
+        scanPlus()
+        e.preventDefault()
+        break
     }
   })
 
