@@ -64,8 +64,8 @@ $(function () {
       if ((same("artistName") && same("albumName") && currentSong.track + 1 === nextSong.track).isFalse())
         return
     }
-    $.get("data/nextSong?path=" + gplaylist.last().file, function (song) {
-      gplaylist.add(song, false)
+    $.get("data/nextSong/" + gplaylist.last().file, async function (song) {
+      return gplaylist.add(song, false)
     })
   }
 
