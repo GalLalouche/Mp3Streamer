@@ -28,6 +28,7 @@ private object AlbumParser {
       releaseDate = date,
       albumType = if (secondaryTypes.nonEmpty) AlbumType.Live else albumType,
       reconId = ReconID.validateOrThrow(json.str("id")),
+      disambiguation = json.str("disambiguation").optFilter(_.nonEmpty),
     )
   }
 
@@ -57,7 +58,7 @@ private object AlbumParser {
     .array("releases")
     .value
     .flatMap(_ / "release-group" |> parseReleaseGroup)
-    .groupBy(_.toTuple(_.title, _.albumType))
+    .groupBy(_.toTuple(_.title, _.albumType, _.disambiguation))
     .values
     .map(extractSingleRelease)
     .toVector

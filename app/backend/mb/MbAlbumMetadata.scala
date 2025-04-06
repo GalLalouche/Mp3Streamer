@@ -16,6 +16,7 @@ private[backend] case class MbAlbumMetadata(
     releaseDate: LocalDate,
     albumType: AlbumType,
     reconId: ReconID,
+    disambiguation: Option[String],
 ) {
   assert(title.doesNotContainMatch(StringFixer.SpecialQuotes))
   assert(title.doesNotContainMatch(StringFixer.SpecialApostrophes))
