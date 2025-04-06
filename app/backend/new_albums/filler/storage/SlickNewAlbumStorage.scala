@@ -160,7 +160,13 @@ private class SlickNewAlbumStorage @Inject() (
       a: NewAlbumRecon,
   ): (ReconID, AlbumTitle, AlbumType, LocalDate, Artist) = {
     val na = a.newAlbum
-    (a.reconId, na.title.toLowerCase, na.albumType.toString, na.date, na.artist)
+    (
+      a.reconId,
+      na.title.toLowerCase.joinOption(a.disambiguation)((title, disambi) => s"$title ($disambi)"),
+      na.albumType.toString,
+      na.date,
+      na.artist,
+    )
   }
   private def existsWithADifferentReconID(a: NewAlbumRecon): Future[Boolean] = db
     // TODO there is some duplication here with the above in the definition of the primary key.
@@ -181,7 +187,7 @@ private class SlickNewAlbumStorage @Inject() (
     ^(exists(e.reconId), existsWithADifferentReconID(e))(_ neither _)
   override def storeNew(albums: Seq[NewAlbumRecon]): Future[AddedAlbumCount] = {
     val withoutDups = albums
-      .groupBy(_.toTuple(_.newAlbum.artist, _.newAlbum.title))
+      .groupBy(_.toTuple(_.newAlbum.artist, _.newAlbum.title, _.disambiguation))
       .mapValues { e =>
         val v = e.toVector
         if (v.size > 1) {
@@ -220,8 +226,7 @@ private class SlickNewAlbumStorage @Inject() (
   private def updateAlbum(
       f: EntityTable => Rep[Boolean],
   )(artist: Artist, title: AlbumTitle): Future[Unit] = {
-    val filter =
-      tableQuery.filter(e => e.artist === artist && e.album === title.toLowerCase)
+    val filter = tableQuery.filter(e => e.artist === artist && e.album === title.toLowerCase)
     for {
       albumExists <- db.run(filter.exists.result)
       _ <- Future

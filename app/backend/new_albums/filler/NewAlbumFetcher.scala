@@ -49,5 +49,5 @@ import common.rich.RichT._
 
 private object NewAlbumFetcher {
   private def toReconned(artist: Artist)(meta: MbAlbumMetadata): NewAlbumRecon =
-    NewAlbumRecon(NewAlbum.from(artist, meta), meta.reconId)
+    NewAlbumRecon(NewAlbum.from(artist, meta), meta.reconId, meta.disambiguation)
 }
