@@ -2,6 +2,7 @@ package http4s
 
 import cats.data.OptionT
 import cats.effect.{ExitCode, IO, IOApp, Resource}
+import cats.effect.unsafe.IORuntimeConfig
 import com.comcast.ip4s._
 import com.google.inject.{Guice, Inject, Provider}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
@@ -23,6 +24,9 @@ private class Main @Inject() (routes: Provider[HttpRoutes[IO]]) {
 }
 
 private object Main extends IOApp {
+  protected override def runtimeConfig: IORuntimeConfig =
+    super.runtimeConfig.copy(cpuStarvationCheckThreshold = 1)
+
   override def run(args: List[String]): IO[ExitCode] = {
     val injector = Guice.createInjector(Http4sModule)
     run(injector.instance[Main], port"9000").useForever
