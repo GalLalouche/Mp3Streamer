@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext
 
 private class RecentHttpRoutes @Inject() ($ : RecentFormatter, ec: ExecutionContext) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
-    case GET -> Root / "albums" => Ok(fromFuture($.all(0)))
+    case GET -> Root / "albums" => Ok(fromFuture($.all(10)))
     case GET -> Root / "albums" / IntVar(amount) => Ok(fromFuture($.all(amount)))
     case GET -> Root / "double" => Ok(fromFuture($.double))
     case GET -> Root / "double" / IntVar(amount) => Ok(fromFuture($.double(amount)))
