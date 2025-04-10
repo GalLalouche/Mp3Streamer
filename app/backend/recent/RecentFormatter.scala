@@ -11,7 +11,6 @@ import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
 import scalaz.Scalaz.{optionInstance, ToBindOps}
 
 import common.json.ToJsonableOps._
-import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 class RecentFormatter @Inject() (
     ec: ExecutionContext,
@@ -37,7 +36,6 @@ class RecentFormatter @Inject() (
   def all(amount: Int): Future[JsValue] = Future(recentAlbums.all(amount)).map(_.jsonify)
   def double: Future[JsValue] = double(10)
   def double(amount: Int): Future[JsValue] = Future(recentAlbums.double(amount)).map(_.jsonify)
-  def updateLast(): Future[JsValue] =
-    Future(recentAlbums.all(1).single).>>!(lastAlbumState.set).map(_.jsonify)
+  def updateLast(): Future[JsValue] = recentAlbums.last.>>!(lastAlbumState.set).map(_.jsonify)
   def getLastState: JsValue = lastAlbumState.get().mapHeadOrElse(_.jsonify, JsNull)
 }
