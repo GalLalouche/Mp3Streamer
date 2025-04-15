@@ -1,12 +1,12 @@
 package mains.fixer
 
-import java.io.File
 import java.util.regex.Pattern
 
 import com.google.common.annotations.VisibleForTesting
 import com.google.inject.Inject
+import mains.fixer.FixLabelsUtils.{BonusTrackSuffixes, InvalidFileCharacters, MultiSpace, NumberFollowedBySlash}
 import models.{IOSongTagParser, Song, TrackNumber}
-import org.jaudiotagger.audio.{AudioFile, AudioFileIO}
+import org.jaudiotagger.audio.AudioFile
 import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.jaudiotagger.tag.flac.FlacTag
 import org.jaudiotagger.tag.id3.ID3v24Tag
@@ -19,26 +19,10 @@ import common.rich.primitives.RichInt.Rich
 import common.rich.primitives.RichString.richString
 
 private[mains] class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
-  private val NumberFollowedBySlash = Pattern.compile("""\d+[/\\].*""")
-  private val InvalidFileCharacters = Pattern.compile("""[:\\/*?|<>"]""")
-  private val MultiSpace = Pattern.compile(" +")
-
-  private def properTrackString(track: TrackNumber): String = track.padLeftZeros(2)
-  @VisibleForTesting
-  private[fixer] def getFixedTag(f: File, fixDiscNumber: Boolean): Tag =
-    getFixedTag(f, fixDiscNumber, AudioFileIO.read(f))
-
-  private val BonusTrackSuffixes = for {
-    str <- Vector("bonus", "bonus track")
-    (s, e) <- Vector(('(', ')'), ('[', ']'), ('<', '>))
-  } yield s"$s$str$e"
-  @VisibleForTesting
-  private[fixer] def isBonusTrack(s: String): Boolean = BonusTrackSuffixes.exists(s.endsWith)
-
   // If fixDiscNumber is false, it will be removed, unless the title indicates it is a bonus track.
-  def getFixedTag(f: File, fixDiscNumber: Boolean, audioFile: AudioFile): Tag = {
-    val song = IOSongTagParser(f, audioFile)
-    val $ = if (f.extension.equalsIgnoreCase("flac")) new FlacTag else new ID3v24Tag
+  def getFixedTag(audioFile: AudioFile, fixDiscNumber: Boolean): Tag = {
+    val song = IOSongTagParser(audioFile)
+    val $ = if (audioFile.getFile.extension.equalsIgnoreCase("flac")) new FlacTag else new ID3v24Tag
 
     @tailrec
     def set(key: FieldKey, a: Any): Unit = a match {
@@ -79,9 +63,26 @@ private[mains] class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
 
     $
   }
+
+  @VisibleForTesting
+  private[fixer] def isBonusTrack(s: String): Boolean = BonusTrackSuffixes.exists(s.endsWith)
+
   def validFileName(requestedFileName: String): String =
     requestedFileName.removeAll(InvalidFileCharacters).replaceAll(MultiSpace, " ")
 
   def newFileName(song: Song, extension: String): String =
     s"${properTrackString(song.trackNumber)} - ${validFileName(song.title)}.$extension"
+
+  private def properTrackString(track: TrackNumber): String = track.padLeftZeros(2)
+}
+
+private object FixLabelsUtils {
+  private val NumberFollowedBySlash = Pattern.compile("""\d+[/\\].*""")
+  private val InvalidFileCharacters = Pattern.compile("""[:\\/*?|<>"]""")
+  private val MultiSpace = Pattern.compile(" +")
+
+  private val BonusTrackSuffixes = for {
+    str <- Vector("bonus", "bonus track")
+    (s, e) <- Vector(('(', ')'), ('[', ']'), ('<', '>))
+  } yield s"$s$str$e"
 }

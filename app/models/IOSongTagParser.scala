@@ -19,23 +19,22 @@ import common.rich.path.RichFile._
 import common.rich.primitives.RichOption._
 
 object IOSongTagParser {
-  def apply(file: File): IOSong = apply(file, AudioFileIO.read(file))
-  def apply(file: File, audioFile: AudioFile): IOSong = {
+  def apply(file: File): IOSong = apply(AudioFileIO.read(file))
+  def apply(audioFile: AudioFile): IOSong = {
+    val file = audioFile.getFile
     val (tag, header) = audioFile.toTuple(_.getTag, _.getAudioHeader)
-    val year = extractYear(file, tag).getOrThrow(s"No year in <$file>")
     IOSong(
       file = IOFile(file),
       title = tag.getFirst(FieldKey.TITLE),
       artistName = tag.getFirst(FieldKey.ARTIST),
       albumName = tag.getFirst(FieldKey.ALBUM),
       trackNumber = parseTrack(tag.getFirst(FieldKey.TRACK)),
-      year = year,
+      year = extractYear(file, tag).getOrThrow(s"No year in <$file>"),
       bitRate = header.getBitRate,
       duration = Duration(header.getTrackLength, TimeUnit.SECONDS),
       size = file.length,
       discNumber = tag.firstNonEmpty(FieldKey.DISC_NO),
-      trackGain =
-        tag.firstNonEmpty(FieldKey.REPLAYGAIN_TRACK_GAIN).flatMap(parseReplayGain(_).toOption),
+      trackGain = tag.firstNonEmpty(FieldKey.REPLAYGAIN_TRACK_GAIN).flatMap(parseReplayGain),
       composer = tag.firstNonEmpty(FieldKey.COMPOSER),
       conductor = tag.firstNonEmpty(FieldKey.CONDUCTOR),
       orchestra = tag.firstNonEmpty(FieldKey.ORCHESTRA),
@@ -45,7 +44,7 @@ object IOSongTagParser {
   }
 
   // FLAC tag supports proper custom tag fetching, but MP3 tags have to be parsed manually
-  private def parseReplayGain(s: String): Try[Double] = Try(s.split(' ').head.toDouble)
+  private def parseReplayGain(s: String): Option[Double] = Try(s.split(' ').head.toDouble).toOption
 
   def parseTrack(s: String): TrackNumber =
     s.takeWhile(_.isDigit).toInt // takeWhile handles "01/08" formats.

@@ -28,7 +28,7 @@ import common.rich.primitives.RichString._
 private class FixLabels @Inject() (mf: IOMusicFinder, fixLabelsUtils: FixLabelsUtils) {
   private def fixFile(f: File, fixDiscNumber: Boolean): Unit = {
     val audioFile = AudioFileIO.read(f)
-    val newTag = fixLabelsUtils.getFixedTag(f, fixDiscNumber, audioFile)
+    val newTag = fixLabelsUtils.getFixedTag(audioFile, fixDiscNumber)
     audioFile.delete()
     audioFile.setTag(newTag)
     audioFile.commit()
