@@ -13,7 +13,7 @@ import common.rich.path.RichFile._
 import common.rich.primitives.RichString._
 
 private class VimEdit @Inject() (cp: CommandsProvider, ec: ExecutionContext) {
-  private val VimLocation = """"C:\Program Files\Neovim\bin\nvim-qt.exe""""
+  private val VimLocation = """C:\Program Files\neovim-qt 0.2.19\bin\nvim-qt.exe"""
   private implicit val iec: ExecutionContext = ec
 
   def apply(initialLines: InitialLines): (File, Future[Seq[String]]) = {
