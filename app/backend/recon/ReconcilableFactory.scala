@@ -3,6 +3,8 @@ package backend.recon
 import com.google.inject.Inject
 
 import backend.recon.Reconcilable.SongExtractor
+import com.google.common.annotations.VisibleForTesting
+import models.{SongTitle, TrackNumber}
 import musicfinder.MusicFinder
 
 import scala.util.{Failure, Success, Try}
@@ -43,8 +45,10 @@ class ReconcilableFactory @Inject() (val mf: MusicFinder) {
         mf.parseSong(mf.getSongFilesInDir(dir).headOption.getOrThrow(s"Problem with $dir")).release,
       )
 
-  def songTitle(f: FileRef): Try[String] =
+  def trySongInfo(f: FileRef): Try[(TrackNumber, SongTitle)] =
     ReconcilableFactory.capture(f.name).toTry(new Exception(s"$f has invalid file name"))
+  def songInfo(f: FileRef): (TrackNumber, SongTitle) =
+    trySongInfo(f).getOrElse(mf.parseSong(f).toTuple(_.trackNumber, _.title))
   private val IgnoredFolders = Vector("Classical", "Musicals")
   def artistDirectories: Seq[S#D] = mf.artistDirs.filterNot(shouldIgnore)
   private val prefixLength = {
@@ -59,10 +63,13 @@ class ReconcilableFactory @Inject() (val mf: MusicFinder) {
 }
 
 private object ReconcilableFactory {
-  private val DashRegex = """\d+ - (.*)\.[^.]+""".r
-  private val DotRegex = """\d+\. (.*)\.[^.]+""".r
+  private val DashRegex = """(\d+) - (.*)\.[^.]+""".r
+  private val DotRegex = """(\d+)\. (.*)\.[^.]+""".r
 
   private val compositeGroupMatch = Vector(DashRegex, DotRegex)
-  private def capture(s: String): Option[String] =
-    compositeGroupMatch.firstSome(_.findAllIn(s).optFilter(_.matchData.nonEmpty)).map(_.group(1))
+  @VisibleForTesting
+  def capture(fileName: String): Option[(TrackNumber, SongTitle)] =
+    compositeGroupMatch
+      .firstSome(_.findAllIn(fileName).optFilter(_.matchData.nonEmpty))
+      .map(_.toTuple(_.group(1).toInt, _.group(2)))
 }
