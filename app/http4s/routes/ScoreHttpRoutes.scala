@@ -10,7 +10,7 @@ import org.http4s.dsl.io._
 private class ScoreHttpRoutes @Inject() ($ : ScorerFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> path => Ok(fromFuture($.getScore(decodePath(path))))
-    // Doesn't make a whole of sense from a REST stand point, but it's easier than fiddling with
+    // Doesn't make a whole of sense from a REST standpoint, but it's easier than fiddling with
     // HTTP parameters combined with a suffix path.
     case PUT -> "song" /: score /: path =>
       fromFuture($.updateSongScore(decodePath(path), score)) >> NoContent()
