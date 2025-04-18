@@ -65,8 +65,8 @@ private object FileFilters {
     new FilterConfig(
       sde,
       forbiddenGenres = getSet("forbiddenGenres"),
-      allowedArtists = getSet("allowedArtists").map(Artist),
-      forbiddenArtists = getSet("forbiddenArtists").map(Artist),
+      allowedArtists = getSet("allowedArtists").map(Artist.apply),
+      forbiddenArtists = getSet("forbiddenArtists").map(Artist.apply),
       allowedAlbums = getSet("allowedAlbums"),
       forbiddenAlbums = getSet("forbiddenAlbums"),
     )

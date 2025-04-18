@@ -5,6 +5,8 @@ import java.util.Objects
 import models.{Song, SongTitle}
 import models.TypeAliases.{AlbumTitle, ArtistName}
 
+import monocle.macros.Lenses
+
 sealed trait Reconcilable {
   def normalize: String
 }
@@ -16,6 +18,7 @@ sealed trait Reconcilable {
 // Note that this is only a case class for interoperability with Slick. Its implementation of
 // hashcode and equals are different from the default ones!
 // TODO why not use a case insensitive string here?
+@Lenses
 case class Artist(name: ArtistName) extends Reconcilable {
   override def normalize: String = name.toLowerCase
 
