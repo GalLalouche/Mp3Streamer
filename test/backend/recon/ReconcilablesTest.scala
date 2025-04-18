@@ -27,5 +27,5 @@ class ReconcilablesTest extends FreeSpec with AuxSpecs {
 }
 
 object ReconcilablesTest {
-  implicit val arbitraryArtist: Arbitrary[Artist] = Arbitrary(Gen.alphaNumStr.map(Artist))
+  implicit val arbitraryArtist: Arbitrary[Artist] = Arbitrary(Gen.alphaNumStr.map(Artist.apply))
 }
