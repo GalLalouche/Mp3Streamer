@@ -1,5 +1,7 @@
 package models
 
+import backend.recon.Album
+
 import monocle.macros.Lenses
 
 import common.io.DirectoryRef
@@ -17,6 +19,8 @@ case class AlbumDir(
     year: Int,
     songs: Seq[Song],
 ) {
+  def toRecon: Album = Album(title, year, backend.recon.Artist(artistName))
+
   def composer: Option[String] = uniformProperty(_.composer)
   def conductor: Option[String] = uniformProperty(_.conductor)
   def opus: Option[String] = uniformProperty(_.opus)

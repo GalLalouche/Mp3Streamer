@@ -13,11 +13,15 @@ export namespace Score {
 
   export function show(song: Song): void {
     clearScores()
-    $.get("score/" + song.file, score => updateScore(score))
+    $.get("score/" + song.file, score => updateScore(song, score))
   }
 
   export function popup(song: Song): void {
     $.get("score/" + song.file, scoreResult => scoreSliderDialog(song, scoreResult))
+  }
+
+  export function openScoreFile(song: Song): void {
+    $.ajax({url: "score/" + song.file, type: "PATCH"})
   }
 }
 
@@ -133,7 +137,7 @@ function clearScores(): void {
   fieldset.append($("<div>Waiting for score...<\div>"))
 }
 
-function updateScore(score: ScoreResult): void {
+function updateScore(song: Song, score: ScoreResult): void {
   function scoreMenu(key: keyof ScoreResult): JQuery<HTMLElement> {
     const result = $("<select>")
     for (const s of ["Default", "Crappy", "Meh", "Okay", "Good", "Great", "Amazing"]) {
@@ -152,6 +156,7 @@ function updateScore(score: ScoreResult): void {
     .append(scoreMenu("song"))
     .append(scoreMenu("album"))
     .append(scoreMenu("artist"))
+    .append(button("Open score file").on("click", () => Score.openScoreFile(song)))
 }
 
 let fieldset: JQuery<HTMLElement>

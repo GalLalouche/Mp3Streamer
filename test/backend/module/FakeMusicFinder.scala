@@ -15,6 +15,7 @@ class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder {
   override val unsupportedExtensions = Set()
   protected override def genresWithSubGenres: Seq[String] = Vector("music")
   override def flatGenres: Seq[String] = Nil
+  override def genreDirs: Seq[MemoryDir] = super.genreDirs
   private val dirToAddSongsTo = baseDir.addSubDir(genresWithSubGenres.head)
   private val pathToSongs = mutable.HashMap[String, MemorySong]()
 

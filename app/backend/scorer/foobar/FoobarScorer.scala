@@ -1,4 +1,4 @@
-package backend.scorer.utils.foobar
+package backend.scorer.foobar
 
 import java.io.File
 
