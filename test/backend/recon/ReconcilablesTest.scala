@@ -1,9 +1,15 @@
 package backend.recon
 
-import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Arbitrary
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Gen.choose
 import org.scalatest.FreeSpec
 
+import scalaz.Scalaz.ToApplyOps
+
 import common.test.AuxSpecs
+import common.test.GenInstances.MonadGen
+import common.test.MoreGen.nonEmptyAlphaNumString
 
 class ReconcilablesTest extends FreeSpec with AuxSpecs {
   "Artist" - {
@@ -27,5 +33,10 @@ class ReconcilablesTest extends FreeSpec with AuxSpecs {
 }
 
 object ReconcilablesTest {
-  implicit val arbitraryArtist: Arbitrary[Artist] = Arbitrary(Gen.alphaNumStr.map(Artist.apply))
+  implicit val arbitraryArtist: Arbitrary[Artist] =
+    Arbitrary(nonEmptyAlphaNumString.map(Artist.apply))
+  implicit val arbitraryAlbum: Arbitrary[Album] =
+    Arbitrary((nonEmptyAlphaNumString |@| choose(1000, 9999) |@| arbitrary[Artist])(Album.apply))
+  implicit val arbitraryTrack: Arbitrary[Track] =
+    Arbitrary((nonEmptyAlphaNumString |@| arbitrary[Album])(Track.apply))
 }

@@ -1,4 +1,4 @@
-package backend.scorer.utils
+package backend.scorer.file
 
 import backend.recon.Artist
 

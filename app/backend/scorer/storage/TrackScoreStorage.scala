@@ -12,6 +12,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import common.rich.func.BetterFutureInstances._
 import scalaz.ListT
 
+import common.rich.RichT.richT
+
 private[scorer] class TrackScoreStorage @Inject() (
     protected override val ec: ExecutionContext,
     dbP: DbProvider,
@@ -51,4 +53,6 @@ private[scorer] class TrackScoreStorage @Inject() (
   def loadAll: ListT[Future, (YearlessTrack, ModelScore)] =
     ListT(db.run(tableQuery.result).map(_.toList))
       .map(e => (YearlessTrack(e._3, YearlessAlbum(e._2, e._1)), e._4))
+  def allForArtist(a: Artist): Future[Seq[(AlbumTitle, SongTitle, ModelScore)]] =
+    db.run(tableQuery.filter(_.artist === a).map(_.toTuple(_.album, _.song, _.score)).result)
 }

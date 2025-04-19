@@ -1,4 +1,4 @@
-package backend.scorer.utils
+package backend.scorer.file
 
 import backend.recon.{Album, Artist}
 
@@ -8,9 +8,9 @@ import common.rich.primitives.RichString._
 
 private object AlbumScoreParser extends ScoreParserTemplate[Album] {
   protected override val prefix = "ALBUM"
-  protected override def entity(sections: Seq[String]): Try[Album] = sections.toVector match {
+  override def entity(sections: Seq[String]): Try[Album] = sections.toVector match {
     case Vector(artist, titleYear) =>
-      if (titleYear.matches(AlbumPattern)) {
+      if (titleYear.matches(YearPattern)) {
         val year = titleYear.takeRight("2000)".length).dropRight(1).toInt
         val title = titleYear.dropRight(" (2000)".length)
         Success(Album(title, year, Artist(artist)))
@@ -19,5 +19,5 @@ private object AlbumScoreParser extends ScoreParserTemplate[Album] {
     case _ => Failure(new Exception(s"Invalid entry: '$sections'"))
   }
 
-  private val AlbumPattern = """.* \(\d{4}\)""".r.pattern
+  private val YearPattern = """.* \(\d{4}\)""".r.pattern
 }

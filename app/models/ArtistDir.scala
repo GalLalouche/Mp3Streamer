@@ -1,5 +1,7 @@
 package models
 
+import backend.recon.Artist
+
 import monocle.Lens
 
 /**
@@ -10,6 +12,7 @@ import monocle.Lens
  */
 final case class ArtistDir(name: ArtistName, private val _albums: Set[AlbumDir]) {
   lazy val albums: Seq[AlbumDir] = _albums.toSeq.sortBy(e => (e.year, e.title))
+  def toRecon: Artist = Artist(name)
 }
 object ArtistDir {
   val albums: Lens[ArtistDir, Seq[AlbumDir]] = Lens[ArtistDir, Seq[AlbumDir]](_.albums)(albums =>

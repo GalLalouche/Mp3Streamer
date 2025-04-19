@@ -7,12 +7,27 @@ import com.google.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process.stringSeqToProcess
 
+import common.rich.func.BetterFutureInstances._
+import scalaz.Scalaz.ToBindOps
+
 import common.VimLauncher.VimLocation
 import common.rich.path.RichFile.richFile
 
 /** Launches vim as an external application for editing files. */
 class VimLauncher @Inject() private (ec: ExecutionContext) {
   private implicit val iec: ExecutionContext = ec
+
+  /**
+   * Creates a temporary file containing the input lines, and returns a [[Future]] containing the
+   * file lines which will complete when the editor has been closed.
+   */
+  def withLines(lines: Seq[String], fileSuffix: String): Future[Seq[String]] = for {
+    temp <- Future(File.createTempFile("vim_temp_file", fileSuffix))
+    result <- Future(temp.write(lines.mkString("\n"))) >> withFile(temp, Nil)
+  } yield {
+    temp.deleteOnExit()
+    result
+  }
 
   /**
    * If a file already exists, just return a [[Future]] containing the file lines which will

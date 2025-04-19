@@ -39,7 +39,7 @@ trait MusicFinder { self =>
   // the artist name. As a stupid hack, just aggregate them below.
   protected def invalidDirectoryNames: BiMap[DirectoryName, Artist]
   def albumDirs: DirView = albumDirs(genreDirs)
-  private def genreDirs: Seq[S#D] = allGenres.sorted.map(getDir)
+  protected def genreDirs: Seq[S#D] = allGenres.sorted.map(getDir)
   def albumDirs(startingFrom: Seq[S#D]): DirView = startingFrom.view
     .flatMap(_.deepDirs)
     // Because some albums have, e.g., cover subdirectories

@@ -9,11 +9,14 @@ export namespace Score {
       const source = $(this).attr('source')!.toLowerCase() as Source
       return setScore(gplaylist.currentPlayingSong(), source, newScore)
     })
+    fieldset.on('click', 'button', async function () {
+      $.ajax({url: "score/" + gplaylist.currentPlayingSong().file, type: "PATCH"})
+    })
   }
 
   export function show(song: Song): void {
     clearScores()
-    $.get("score/" + song.file, score => updateScore(score))
+    $.get("score/" + song.file, score => updateScore(song, score))
   }
 
   export function popup(song: Song): void {
@@ -133,7 +136,7 @@ function clearScores(): void {
   fieldset.append($("<div>Waiting for score...<\div>"))
 }
 
-function updateScore(score: ScoreResult): void {
+function updateScore(song: Song, score: ScoreResult): void {
   function scoreMenu(key: keyof ScoreResult): JQuery<HTMLElement> {
     const result = $("<select>")
     for (const s of ["Default", "Crappy", "Meh", "Okay", "Good", "Great", "Amazing"]) {
@@ -142,16 +145,21 @@ function updateScore(score: ScoreResult): void {
         option.attr("selected", "selected")
       result.append(option)
     }
-    result.attr('source', key.capitalize())
+    result.attr('source', key.capitalize()).css("margin-left", "20px")
     return div().append(span(`${key}`)).append(result)
   }
 
   fieldset.empty()
   fieldset
+    .css("display", "flex")
     .append(elem("legend", score.score ? `${score.score} (from ${score.source})` : "No score"))
-    .append(scoreMenu("song"))
-    .append(scoreMenu("album"))
-    .append(scoreMenu("artist"))
+    .append(
+      div({style: "display: flex; flex-direction: column;"})
+        .append(scoreMenu("song"))
+        .append(scoreMenu("album"))
+        .append(scoreMenu("artist")),
+    )
+    .append(button("Open score file").css("margin-left", "20px"))
 }
 
 let fieldset: JQuery<HTMLElement>

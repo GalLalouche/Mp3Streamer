@@ -2,6 +2,7 @@ package backend.scorer
 
 import backend.recon.{Album, Artist, Track}
 import backend.recon.Reconcilable._
+import backend.scorer.file.FileScorer
 import backend.scorer.storage.StorageScorer
 import com.google.inject.Inject
 import models.Song
@@ -17,10 +18,11 @@ private class ScorerModel @Inject() (
     artistScorer: StorageScorer[Artist],
     cachedModelScorerState: CachedModelScorerState,
     ec: ExecutionContext,
+    fileScorer: FileScorer,
 ) extends FullInfoModelScorer {
-  private implicit val iec: ExecutionContext = ec
   override def apply(s: Song): Future[FullInfoScore] = aux(s.track)
 
+  private implicit val iec: ExecutionContext = ec
   private val aux =
     new CompositeScorer[Future](trackScorer.apply, albumScorer.apply, artistScorer.apply)
 
@@ -30,4 +32,6 @@ private class ScorerModel @Inject() (
     albumScorer.updateScore(song.release, score) >> cachedModelScorerState.update()
   override def updateArtistScore(song: Song, score: OptionalModelScore): Future[Unit] =
     artistScorer.updateScore(song.artist, score) >> cachedModelScorerState.update()
+
+  def openScoreFile(song: Song): Future[Unit] = fileScorer(song) >> cachedModelScorerState.update()
 }

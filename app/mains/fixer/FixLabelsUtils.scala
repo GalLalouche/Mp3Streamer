@@ -18,7 +18,7 @@ import common.rich.path.RichFile.richFile
 import common.rich.primitives.RichInt.Rich
 import common.rich.primitives.RichString.richString
 
-private[mains] class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
+class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
   // If fixDiscNumber is false, it will be removed, unless the title indicates it is a bonus track.
   def getFixedTag(audioFile: AudioFile, fixDiscNumber: Boolean): Tag = {
     val song = IOSongTagParser(audioFile)
