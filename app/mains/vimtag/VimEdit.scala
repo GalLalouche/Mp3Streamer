@@ -7,28 +7,29 @@ import mains.vimtag.Initializer.InitialLines
 import mains.vimtag.VimEdit._
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.sys.process._
 
-import common.rich.path.RichFile._
+import common.VimLauncher
+import common.rich.path.RichFile.richFile
 import common.rich.primitives.RichString._
 
-private class VimEdit @Inject() (cp: CommandsProvider, ec: ExecutionContext) {
-  private val VimLocation = """C:\Program Files\neovim-qt 0.2.19\bin\nvim-qt.exe"""
+private class VimEdit @Inject() (
+    cp: CommandsProvider,
+    launcher: VimLauncher,
+    ec: ExecutionContext,
+) {
   private implicit val iec: ExecutionContext = ec
 
   def apply(initialLines: InitialLines): (File, Future[Seq[String]]) = {
-    val temp = File.createTempFile("vimedit", "")
-    temp.write(initialLines.lines.mkString("\n"))
-    (temp, inFile(temp, initialLines.startingEditLine))
+    val file = File.createTempFile("vimEdit", ".id3tbl")
+    file.write(initialLines.lines.mkString("\n"))
+    (file, makeArgs(initialLines.startingEditLine).flatMap(launcher.withFile(file, _)))
   }
-  private def inFile(file: File, startingEditLine: Int): Future[Seq[String]] = Future {
+
+  private def makeArgs(startingEditLine: Int): Future[Seq[String]] = Future {
     val tempVimCode = SetupBindings.createFile()
     val loadMacros = Vector("--", "-S", tempVimCode.getAbsolutePath.quote)
     val commands = cp.get ++ Vector(NormalCommand(s"${startingEditLine}G"))
-    val formattedCommands = (commands.map(_.asCommandString) ++ loadMacros).mkString(" ", " ", "")
-
-    Vector(VimLocation + formattedCommands, file.path).!!
-    file.lines.toVector
+    commands.map(_.asCommandString) ++ loadMacros
   }
 }
 
