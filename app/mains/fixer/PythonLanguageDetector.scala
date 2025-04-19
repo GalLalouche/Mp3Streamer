@@ -73,8 +73,8 @@ private class PythonLanguageDetector private (timeout: Duration) {
           if (shouldTerminate)
             PythonLanguageDetector.this.synchronized {
               if (shouldTerminate) {
-                scribe.trace(s"Terminating Python language detection process after $timeout idle")
-                $.destroy()
+                scribe.info(s"Terminating Python language detection process after $timeout idle")
+                $.destroyForcibly()
                 break
               }
             }
