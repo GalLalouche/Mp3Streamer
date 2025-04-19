@@ -1,7 +1,7 @@
 package backend.scorer.utils
 
 import backend.recon.{Album, Artist}
- 
+
 import scala.util.{Failure, Success, Try}
 
 import common.rich.primitives.RichString._

@@ -12,22 +12,22 @@ import common.json.JsonWriteable
 import common.json.ToJsonableOps._
 
 /** Fetches and updates scores for songs, albums, and artists. */
-class ScorerFormatter @Inject() (modelScorer: FullInfoModelScorer, ec: ExecutionContext) {
+class ScorerFormatter @Inject() ($ : ScorerModel, ec: ExecutionContext) {
   import ScorerFormatter.SongScoreJsonable
   private implicit val iec: ExecutionContext = ec
   def getScore(filePath: String): Future[JsValue] =
-    modelScorer(IOSongTagParser(new File(filePath))).map(_.jsonify)
+    $(IOSongTagParser(new File(filePath))).map(_.jsonify)
   private def update(
       f: (Song, OptionalModelScore) => Future[Unit],
       filePath: String,
       score: String,
   ) = f(IOSongTagParser(new File(filePath)), OptionalModelScore.withNameInsensitive(score))
   def updateSongScore(filePath: String, score: String): Future[Unit] =
-    update(modelScorer.updateSongScore, filePath, score)
+    update($.updateSongScore, filePath, score)
   def updateAlbumScore(filePath: String, score: String): Future[Unit] =
-    update(modelScorer.updateAlbumScore, filePath, score)
+    update($.updateAlbumScore, filePath, score)
   def updateArtistScore(filePath: String, score: String): Future[Unit] =
-    update(modelScorer.updateArtistScore, filePath, score)
+    update($.updateArtistScore, filePath, score)
 }
 
 private object ScorerFormatter {

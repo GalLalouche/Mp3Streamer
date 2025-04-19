@@ -1,7 +1,7 @@
 package backend.scorer
 
 import backend.recon.{Album, Artist, Track}
-import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, CompositeStorageScorer, StorageScorer, TrackScoreStorage}
+import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, StorageScorer, TrackScoreStorage}
 import com.google.inject.Provides
 import musicfinder.MusicFinder
 import net.codingwell.scalaguice.ScalaModule
@@ -11,10 +11,9 @@ object ScorerModule extends ScalaModule {
     bind[StorageScorer[Artist]].to[ArtistScoreStorage]
     bind[StorageScorer[Album]].to[AlbumScoreStorage]
     bind[StorageScorer[Track]].to[TrackScoreStorage]
-    bind[FullInfoModelScorer].to[CompositeStorageScorer]
     bind[ScoreBasedProbability].to[FlatScoreBasedProbability]
     bind[CachedModelScorer].to[CachedModelScorerState]
-    bind[ModelScorer].to[ModelScorerImpl]
+    bind[FullInfoModelScorer].to[ScorerModel]
   }
 
   @Provides private def provideScoreBasedProbability(

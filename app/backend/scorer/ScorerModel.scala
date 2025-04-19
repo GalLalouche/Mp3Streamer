@@ -1,20 +1,17 @@
-package backend.scorer.storage
-
-import com.google.inject.Inject
+package backend.scorer
 
 import backend.recon.{Album, Artist, Track}
 import backend.recon.Reconcilable._
-import backend.scorer.{CachedModelScorerState, CompositeScorer, FullInfoModelScorer, FullInfoScore, OptionalModelScore}
+import backend.scorer.storage.StorageScorer
+import com.google.inject.Inject
 import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.higherKinds
 
 import common.rich.func.BetterFutureInstances._
 import scalaz.Scalaz.ToBindOpsUnapply
 
-/** Scores a song by trying multiple sources, from most specific score to least specific. */
-private[scorer] class CompositeStorageScorer @Inject() (
+private class ScorerModel @Inject() (
     trackScorer: StorageScorer[Track],
     albumScorer: StorageScorer[Album],
     artistScorer: StorageScorer[Artist],
@@ -27,10 +24,10 @@ private[scorer] class CompositeStorageScorer @Inject() (
   private val aux =
     new CompositeScorer[Future](trackScorer.apply, albumScorer.apply, artistScorer.apply)
 
-  override def updateSongScore(song: Song, score: OptionalModelScore) =
+  override def updateSongScore(song: Song, score: OptionalModelScore): Future[Unit] =
     trackScorer.updateScore(song.track, score) >> cachedModelScorerState.update()
-  override def updateAlbumScore(song: Song, score: OptionalModelScore) =
+  override def updateAlbumScore(song: Song, score: OptionalModelScore): Future[Unit] =
     albumScorer.updateScore(song.release, score) >> cachedModelScorerState.update()
-  override def updateArtistScore(song: Song, score: OptionalModelScore) =
+  override def updateArtistScore(song: Song, score: OptionalModelScore): Future[Unit] =
     artistScorer.updateScore(song.artist, score) >> cachedModelScorerState.update()
 }
