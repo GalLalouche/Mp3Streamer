@@ -1,7 +1,7 @@
 package backend.recon
 
 import backend.FutureOption
-import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
+import backend.recon.StoredReconResult.{HasReconResult, StoredNull}
 import backend.storage.CachableStorage
 
 import scala.concurrent.Future
@@ -17,7 +17,7 @@ trait ReconStorage[R <: Reconcilable]
     StoreMode.Update,
     key,
     {
-      case NoRecon => StoredReconResult.unignored(reconId)
+      case StoredNull => StoredReconResult.unignored(reconId)
       case HasReconResult(_, isIgnored) => HasReconResult(reconId, isIgnored)
     },
     default = StoredReconResult.unignored(reconId),

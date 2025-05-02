@@ -19,7 +19,7 @@ class SlickInstrumentalArtistStorageTest extends AsyncFreeSpec with StorageSetup
   override def beforeEach() = {
     val artistStorage = injector.instance[ArtistReconStorage]
     artistStorage.utils.clearOrCreateTable() >>
-      artistStorage.store(Artist(artistName), StoredReconResult.NoRecon) >>
+      artistStorage.store(Artist(artistName), StoredReconResult.StoredNull) >>
       super.beforeEach()
   }
 

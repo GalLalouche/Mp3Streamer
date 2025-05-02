@@ -18,7 +18,7 @@ private class AlbumReconVerifier @Inject() (
   def apply(artist: Album, id: ReconID): Future[Boolean] =
     for {
       storedArtistRecon <- artistReconStorage.load(artist.artist).get.map {
-        case StoredReconResult.NoRecon =>
+        case StoredReconResult.StoredNull =>
           throw new IllegalArgumentException(
             s"Cannot validate album <$artist> with no reconciled artist",
           )

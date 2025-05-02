@@ -3,11 +3,12 @@ package backend.new_albums.filler
 import backend.mb.{MbAlbumMetadata, MbArtistReconciler}
 import backend.new_albums.NewAlbum
 import backend.recon.{Artist, ReconcilerCacher, ReconID}
-import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
+import backend.recon.StoredReconResult.{HasReconResult, StoredNull}
 import com.google.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.DurationInt
+import scala.util.{Failure, Success}
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
@@ -26,8 +27,10 @@ import common.rich.RichT._
 
   private def getReconId(artist: Artist): OptionT[Future, ReconID] = reconciler(artist)
     .mapEitherMessage {
-      case NoRecon => -\/("No recon")
-      case HasReconResult(reconId, isIgnored) => if (isIgnored) -\/("Ignored") else \/-(reconId)
+      case Failure(e) => -\/("Failed online recon")
+      case Success(StoredNull) => -\/("No recon")
+      case Success(HasReconResult(reconId, isIgnored)) =>
+        if (isIgnored) -\/("Ignored") else \/-(reconId)
     }
     .foldEither(
       _.fold(

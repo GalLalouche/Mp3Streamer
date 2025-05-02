@@ -20,7 +20,7 @@ class LyricsBridge @Inject() (
   private implicit val iec: ExecutionContext = ec
   def setup(song: Song): Future[Unit] =
     artistStorage.utils.clearOrCreateTable() >>
-      artistStorage.store(Artist(song.artistName), StoredReconResult.NoRecon) >>
+      artistStorage.store(Artist(song.artistName), StoredReconResult.StoredNull) >>
       lyricsStorage.utils.createTable() >>
       instrumentalArtistStorage.utils.createTable().void
   def store(song: Song, source: String, html: String, url: Url): Future[Unit] =

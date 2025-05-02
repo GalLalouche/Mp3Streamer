@@ -7,11 +7,12 @@ import backend.external.expansions.ExternalLinkExpander
 import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.LinkRetrievers
 import backend.recon.{Reconcilable, ReconcilerCacher, ReconID}
-import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
+import backend.recon.StoredReconResult.{HasReconResult, StoredNull}
 import backend.storage.{ComposedFreshnessStorage, RefreshableRetriever}
 import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
@@ -37,8 +38,10 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
     onlineRetriever = new ExternalPipe[R](
       r =>
         reconciler(r).mapEitherMessage {
-          case NoRecon => -\/(s"Couldn't reconcile <$r>")
-          case HasReconResult(reconId, _) => \/-(reconId)
+          case Failure(e) => -\/(s"Failed to retrieve recon ID from online source for <$r>")
+          case Success(StoredNull) =>
+            -\/(s"Storage contained null for <$r>, i.e., past recon attempts failed")
+          case Success(HasReconResult(reconId, _)) => \/-(reconId)
         },
       provider,
       standaloneReconcilers,

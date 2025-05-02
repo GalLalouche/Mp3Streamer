@@ -1,9 +1,8 @@
 package backend.recon
 
-import com.google.inject.{Inject, Singleton}
-
-import backend.recon.StoredReconResult.{HasReconResult, NoRecon}
+import backend.recon.StoredReconResult.{HasReconResult, StoredNull}
 import backend.storage.{DbProvider, IsomorphicSlickStorage, SlickStorageTemplateFromConf}
+import com.google.inject.{Inject, Singleton}
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.{JdbcProfile, JdbcType}
 
@@ -25,7 +24,7 @@ private class SlickReconStorageAux(profile: JdbcProfile)(implicit ec: ExecutionC
   def isIgnored(srr: OptionT[Future, StoredReconResult]): Future[IgnoredReconResult] =
     srr.map(_.isIgnored).run.map(IgnoredReconResult.from)
   def toStoredReconResult(reconId: Option[ReconID], isIgnored: Boolean): StoredReconResult =
-    reconId.mapHeadOrElse(HasReconResult(_, isIgnored), NoRecon)
+    reconId.mapHeadOrElse(HasReconResult(_, isIgnored), StoredNull)
 }
 
 @Singleton
@@ -59,7 +58,7 @@ private[backend] class SlickArtistReconStorage @Inject() (
   protected override type EntityTable = Rows
   val tableQuery = TableQuery[EntityTable]
   protected override def toEntity(a: Artist, v: StoredReconResult) = v match {
-    case NoRecon => (a.normalize, None, true)
+    case StoredNull => (a.normalize, None, true)
     case StoredReconResult.HasReconResult(reconId, isIgnored) =>
       (a.normalize, Some(reconId), isIgnored)
   }
@@ -103,7 +102,7 @@ private[backend] class SlickAlbumReconStorage @Inject() (
     val albumKey = a.normalize
     val artistKey = a.artist.normalize
     v match {
-      case NoRecon => (albumKey, artistKey, None, true)
+      case StoredNull => (albumKey, artistKey, None, true)
       case HasReconResult(reconId, isIgnored) => (albumKey, artistKey, Some(reconId), isIgnored)
     }
   }
@@ -111,7 +110,7 @@ private[backend] class SlickAlbumReconStorage @Inject() (
   protected override def keyFilter(a: Album)(e: EntityTable) =
     e.artist === a.artist.normalize && e.album === a.normalize
   protected override def extractValue(e: Entity) =
-    e._3.mapHeadOrElse(HasReconResult(_, e._4), NoRecon)
+    e._3.mapHeadOrElse(HasReconResult(_, e._4), StoredNull)
   override def cachedStorage = db
     .run(tableQuery.map(_.toTuple(_.album, _.reconId, _.isIgnored)).result)
     .map(_.map(e => e._1 -> (e._2, e._3)).toMap)

@@ -5,7 +5,7 @@ sealed trait StoredReconResult {
 }
 
 object StoredReconResult {
-  case object NoRecon extends StoredReconResult {
+  case object StoredNull extends StoredReconResult {
     override val isIgnored = true
   }
   // TODO better name for isIgnored

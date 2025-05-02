@@ -2,13 +2,15 @@ package backend.storage
 
 import backend.Retriever
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
 import common.rich.func.ToMoreMonadErrorOps._
 import scalaz.Scalaz.ToBindOps
 
+import common.rich.RichFuture.richFuture
 import common.storage.{Storage, StoreMode}
 
 /**
@@ -19,15 +21,18 @@ class OnlineRetrieverCacher[Key, Value](
     localStorage: Storage[Key, Value],
     onlineRetriever: Retriever[Key, Value],
 )(implicit ec: ExecutionContext)
-    extends Retriever[Key, Value]
-    with Storage[Key, Value] {
-  override def apply(k: Key) = localStorage.load(k) |||| onlineRetriever(k).>>!(
+    extends Storage[Key, Value] {
+  /**
+   * Returns [[Failure]] if the online retrieval failed. Storage failed are dealt with in the
+   * storage layer.
+   */
+  def apply(k: Key): Future[Try[Value]] = (localStorage.load(k) |||| onlineRetriever(k).>>!(
     localStorage
       .store(k, _)
       .mapError(
         new Exception("Cacher failed to write recon. This usually indicates a race condition.", _),
       ),
-  )
+  )).toTry
   // delegate all methods to localStorage
   // Use explicit type for implicit inference
   override def update(k: Key, v: Value) = localStorage.update(k, v)

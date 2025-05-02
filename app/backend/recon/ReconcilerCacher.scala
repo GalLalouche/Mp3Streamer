@@ -11,5 +11,5 @@ class ReconcilerCacher[Key <: Reconcilable](repo: ReconStorage[Key], online: Rec
 ) extends OnlineRetrieverCacher[Key, StoredReconResult](
       localStorage = repo,
       onlineRetriever =
-        online(_).map[StoredReconResult](StoredReconResult.unignored) | StoredReconResult.NoRecon,
+        online(_).map[StoredReconResult](StoredReconResult.unignored) | StoredReconResult.StoredNull,
     )

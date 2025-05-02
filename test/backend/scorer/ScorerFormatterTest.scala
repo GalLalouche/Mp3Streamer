@@ -49,7 +49,7 @@ class ScorerFormatterTest
       $.getScore(path) shouldEventuallyReturn Json.obj()
     }
     "based on song" in {
-      artists.store(artist, StoredReconResult.NoRecon) >>
+      artists.store(artist, StoredReconResult.StoredNull) >>
         songScores.store(song.track, ModelScore.Crappy) >>
         $.getScore(path) shouldEventuallyReturn Json.obj(
           "score" -> "Crappy",
@@ -60,7 +60,7 @@ class ScorerFormatterTest
         )
     }
     "based on album" in {
-      artists.store(artist, StoredReconResult.NoRecon) >>
+      artists.store(artist, StoredReconResult.StoredNull) >>
         albumScores.store(album, ModelScore.Meh) >>
         $.getScore(path) shouldEventuallyReturn Json.obj(
           "score" -> "Meh",
@@ -71,7 +71,7 @@ class ScorerFormatterTest
         )
     }
     "based on artist" in {
-      artists.store(artist, StoredReconResult.NoRecon) >>
+      artists.store(artist, StoredReconResult.StoredNull) >>
         artistScores.store(artist, ModelScore.Okay) >>
         $.getScore(path) shouldEventuallyReturn Json.obj(
           "score" -> "Okay",
@@ -85,7 +85,7 @@ class ScorerFormatterTest
 
   "updateScore" - {
     "for song new" in {
-      artists.store(artist, StoredReconResult.NoRecon) >>
+      artists.store(artist, StoredReconResult.StoredNull) >>
         $.updateSongScore(path, "Okay") >>
         $.getScore(path) shouldEventuallyReturn Json.obj(
           "score" -> "Okay",
@@ -96,7 +96,7 @@ class ScorerFormatterTest
         )
     }
     "for song overrides" in {
-      artists.store(artist, StoredReconResult.NoRecon) >>
+      artists.store(artist, StoredReconResult.StoredNull) >>
         songScores.store(song.track, ModelScore.Meh) >>
         $.updateSongScore(path, "Good") >>
         $.getScore(path) shouldEventuallyReturn Json.obj(
@@ -108,7 +108,7 @@ class ScorerFormatterTest
         )
     }
     "for album new" in {
-      artists.store(artist, StoredReconResult.NoRecon) >>
+      artists.store(artist, StoredReconResult.StoredNull) >>
         $.updateAlbumScore(path, "Amazing") >>
         $.getScore(path) shouldEventuallyReturn Json.obj(
           "score" -> "Amazing",
@@ -119,7 +119,7 @@ class ScorerFormatterTest
         )
     }
     "for album overrides" in {
-      artists.store(artist, StoredReconResult.NoRecon) >>
+      artists.store(artist, StoredReconResult.StoredNull) >>
         albumScores.store(album, ModelScore.Meh) >>
         $.updateAlbumScore(path, "Amazing") >>
         $.getScore(path) shouldEventuallyReturn Json.obj(
@@ -131,7 +131,7 @@ class ScorerFormatterTest
         )
     }
     "for artist new" in {
-      artists.store(artist, StoredReconResult.NoRecon) >>
+      artists.store(artist, StoredReconResult.StoredNull) >>
         $.updateArtistScore(path, "Great") >>
         $.getScore(path) shouldEventuallyReturn Json.obj(
           "score" -> "Great",
@@ -142,7 +142,7 @@ class ScorerFormatterTest
         )
     }
     "for artist overrides" in {
-      artists.store(artist, StoredReconResult.NoRecon) >>
+      artists.store(artist, StoredReconResult.StoredNull) >>
         artistScores.store(artist, ModelScore.Meh) >>
         $.updateArtistScore(path, "Good") >>
         $.getScore(path) shouldEventuallyReturn Json.obj(

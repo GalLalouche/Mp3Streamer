@@ -17,6 +17,7 @@ import scalaz.Scalaz.ToBindOps
 import scalaz.std.option.optionInstance
 import scalaz.syntax.functor.ToFunctorOps
 
+import common.rich.RichFuture.RichTryFuture
 import common.rich.RichT._
 
 // TODO test
@@ -41,7 +42,7 @@ private class LyricsCache @Inject() (
       case _ => -\/("No lyrics retrieved :(")
     },
   )
-  def find(s: Song): Future[Lyrics] = cache(s)
+  def find(s: Song): Future[Lyrics] = cache(s).fromTry
   def parse(url: Url, s: Song): Future[RetrievedLyricsResult] = {
     def aux(parser: PassiveParser): Future[RetrievedLyricsResult] = parser.parse(url, s) >>! {
       case RetrievedLyricsResult.RetrievedLyrics(l) => cache.replace(s, l).run
