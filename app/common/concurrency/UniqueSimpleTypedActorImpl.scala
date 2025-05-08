@@ -14,9 +14,9 @@ private class UniqueSimpleTypedActorImpl[Msg, Result](
     f: Msg => Result,
 ) extends SimpleTypedActor[Msg, Result] {
   private val messages: util.Map[Msg, Future[Result]] = new util.HashMap()
-  private implicit val service: ExecutionContext = SingleThreadedJobQueue.executionContext(name)
+  protected implicit val ec: ExecutionContext = SingleThreadedJobQueue.executionContext(name)
   private def clear(m: Msg): Unit = synchronized(messages.remove(m).ensuring(_ != null))
-  override def !(m: => Msg): Future[Result] = synchronized {
+  final override def !(m: => Msg): Future[Result] = synchronized {
     lazy val msg = m
     messages.compute(
       msg,

@@ -1,6 +1,6 @@
 package common.concurrency
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps.toMoreMonadErrorOps
@@ -15,9 +15,19 @@ sealed trait Extra extends SimpleActor[Unit] {
 object Extra {
   def apply(name: String)(f: => Any): Extra =
     new SimpleTypedActorImpl[Unit, Unit](name, _ => f) with Extra {
-      override def !(): Future[Unit] = this
-        .!(())
-        // Since it's possible no one will use the Extra output, it's important to log this!
-        .listenError(scribe.error(s"Extra <$name> failed", _))
+      override def !(): Future[Unit] = go(this, name)
     }
+
+  def unique(name: String)(f: => Any): Extra =
+    new UniqueSimpleTypedActorImpl[Unit, Unit](name, _ => f) with Extra {
+      override def !(): Future[Unit] = go(this, name)
+    }
+
+  private def go(actor: SimpleTypedActor[Unit, Unit], name: String)(implicit
+      ec: ExecutionContext,
+  ): Future[Unit] =
+    actor
+      .!(())
+      // Since it's possible no one will use the Extra output, it's important to log this!
+      .listenError(scribe.error(s"Extra <$name> failed", _))
 }
