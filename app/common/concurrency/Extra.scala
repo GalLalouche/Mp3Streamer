@@ -21,6 +21,7 @@ object Extra {
   def unique(name: String)(f: => Any): Extra =
     new UniqueSimpleTypedActorImpl[Unit, Unit](name, _ => f) with Extra {
       override def !(): Future[Unit] = go(this, name)
+      protected override def describeMessage(m: Unit): String = "Extra request"
     }
 
   private def go(actor: SimpleTypedActor[Unit, Unit], name: String)(implicit

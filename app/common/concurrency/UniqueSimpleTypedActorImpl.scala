@@ -25,9 +25,11 @@ private class UniqueSimpleTypedActorImpl[Msg, Result](
           // TODO clear in cases of failures too
           Future(f(msg)).listen(clear(msg).const)
         else {
-          scribe.trace(s"Ignoring non-unique msg <$msg>")
+          scribe.trace(s"$name: Ignoring non-unique msg <${describeMessage(msg)}>")
           result
         },
     )
   }
+
+  protected def describeMessage(m: Msg): String = s"msg <$m>"
 }
