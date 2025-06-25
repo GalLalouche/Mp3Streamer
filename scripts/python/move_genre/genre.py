@@ -10,6 +10,7 @@ class Genre(Enum):
   ART_ROCK = auto()
   BLUES_ROCK = auto()
   BRITPOP = auto()
+  BRUTAL_PROG = auto()
   CELTIC = auto()
   CHAMBAROQUE_POP = auto()
   CIRCUS_ROCK = auto()
@@ -46,6 +47,7 @@ class Genre(Enum):
   POST_HARDCORE = auto()
   POST_PUNK_REVIVAL = auto()
   POST_ROCK = auto()
+  PROGRESSIVE_FOLK = auto()
   PROGRESSIVE_HARD_ROCK = auto()
   PROG_FUSION = auto()
   PROG_POP = auto
@@ -61,11 +63,12 @@ class Genre(Enum):
   # Metal
   ATMOSPHERIC_BLACK_METAL = auto()
   AVANTGARDE_METAL = auto()
-  BLACK_METAL = auto()
-  BLACK_N_ROLL = auto()
   BLACKENED_SPEED_METAL = auto()
   BLACKENED_THRASH = auto()
   BLACKGAZE = auto()
+  BLACK_METAL = auto()
+  BLACK_N_ROLL = auto()
+  COSMIC_BLACK_METAL = auto()
   DANCE_METAL = auto()
   DEATH_METAL = auto()
   DJENT = auto()
@@ -116,6 +119,8 @@ class Genre(Enum):
       return "Blues rock"
     if self == Genre.BRITPOP:
       return "Britpop"
+    if self == Genre.BRUTAL_PROG:
+      return "Brutal Prog"
     if self == Genre.CELTIC:
       return "Celtic"
     if self == Genre.CHAMBAROQUE_POP:
@@ -200,6 +205,8 @@ class Genre(Enum):
       return "Rock n' Roll"
     if self == Genre.ROCK_PROGRESSIVO_ITALIANO:
       return "Rock Progressivo Italiano"
+    if self == Genre.PROGRESSIVE_FOLK:
+      return "Progressive Folk"
     if self == Genre.PROGRESSIVE_HARD_ROCK:
       return "Progressive Hard Rock"
     if self == Genre.SCREAMO:
@@ -227,6 +234,8 @@ class Genre(Enum):
       return "Blackened Thrash"
     if self == Genre.BLACKGAZE:
       return "Blackgaze"
+    if self == Genre.COSMIC_BLACK_METAL:
+      return "Cosmic Black Metal"
     if self == Genre.DANCE_METAL:
       return "Dance Metal"
     if self == Genre.DEATH_METAL:
