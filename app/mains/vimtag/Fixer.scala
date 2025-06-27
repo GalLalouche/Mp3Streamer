@@ -31,6 +31,7 @@ private object Fixer {
       parsedId3.songId3s.hasSameValues(_.discNumber).isFalse
     val renameFiles = parsedId3.flags(Flag.RenameFiles)
     val fixFolder = parsedId3.flags(Flag.FixFolder)
+    val replaceExisting = parsedId3.flags(Flag.ReplaceExisting)
     val injector = Guice.createInjector(MainsModule.overrideWith(new ScalaModule {
       @Provides private def provideStringFixer(dl: DetectLanguage): StringFixer =
         new StringFixer(dl) {
@@ -76,7 +77,8 @@ private object Fixer {
       AudioFileIO.delete(audioFile)
       audioFile.setTag(newTag)
       audioFile.commit()
-      if (fixFolder.isFalse && renameFiles) // FixFolder renames files anyway
+      // FolderFixer renames files anyway
+      if (fixFolder.isFalse && replaceExisting.isFalse && renameFiles)
         RichFileUtils.rename(
           file,
           injector.instance[FixLabelsUtils].newFileName(IOSongTagParser.apply(file), file.extension),
@@ -85,7 +87,9 @@ private object Fixer {
         RichFileUtils.move(file, ioDir.dir)
     }
     ioDir.dir.dirs.filter(_.deepPaths.isEmpty).foreach(_.dir.delete())
-    if (fixFolder)
+    if (replaceExisting)
+      injector.instance[FolderFixer].replace(ioDir.dir)
+    else if (fixFolder)
       injector.instance[FolderFixer].run(ioDir.dir)
   }
 }

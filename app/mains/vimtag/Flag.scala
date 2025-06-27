@@ -66,6 +66,14 @@ private object Flag extends Enum[Flag] {
           s"Runs FolderFixer after successfully changing the ID3 tags; supersedes ${RenameFiles.flag}",
         mnemonic = "ff",
       )
+  object ReplaceExisting
+      extends Flag(
+        flag = "<REPLACE_EXISTING>",
+        onByDefault = false,
+        comment =
+          s"Replaces an existing folder (will fail if there isn't one); supersedes ${FixFolder.flag}",
+        mnemonic = "re",
+      )
 
   def defaultInstructions: Seq[String] = {
     val flagInstructions =
