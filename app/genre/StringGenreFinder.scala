@@ -2,6 +2,7 @@ package genre
 
 import backend.recon.Artist
 import com.google.inject.{Inject, Singleton}
+import genre.Genre.Musicals
 import musicfinder.MusicFinder
 
 import common.TimedLogger
@@ -10,9 +11,8 @@ import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichOption.richOption
 
 @Singleton private class StringGenreFinder @Inject() (mf: MusicFinder, timedLogger: TimedLogger) {
-  private lazy val artistDirs: Map[Artist, mf.S#D] = timedLogger("Fetching artistDirs") {
-    mf.artistDirs
-  }.mapBy(Artist apply _.name)
+  private lazy val artistDirs: Map[Artist, mf.S#D] =
+    timedLogger("Fetching artistDirs")(mf.artistDirs).mapBy(Artist apply _.name)
 
   def forArtist(artist: backend.recon.Artist): Option[StringGenre] =
     artistDirs.get(artist).map(forDir)
@@ -24,9 +24,8 @@ import common.rich.primitives.RichOption.richOption
     )
     val relativeDir = dir.relativize(mf.baseDir.asInstanceOf[dir.S#D])
     if (relativeDir.isEmpty)
-      return StringGenre.Flat(
-        dir.name.ensuring(_ == "Musicals"),
-      ) // Single album musicals, e.g., Grease
+      // Single album musicals, e.g., Grease
+      return StringGenre.Flat(dir.name.ensuring(_ == Musicals.name))
     val parentsFromBaseDir = relativeDir.reverse
     val topDirName = parentsFromBaseDir.head.name
     if (mf.flatGenres contains topDirName)

@@ -27,16 +27,16 @@ object FindSongsNotInPlaylist {
     val file = musicFiles.baseDir.addFile("playlist.m3u8").file
     if (Duration.ofMillis(System.currentTimeMillis() - file.lastModified()).toHours > 1)
       throw new IllegalStateException("Please update the playlist file.")
-    val playlistSongs = file // UTF-8 helps deal with Hebrew songs
-      .lines.toList
-      // removes UTF-BOM at least until I fix it in ScalaCommon
-      .mapIf(_.head.head.toInt == UtfBytemarkPrefix)
-      .to(e => e.tail :+ e.head.drop(1))
-      .mapIf(_.head == "#")
-      .to(_.tail) // Newer version of Foobar2000 decided to add # to file header :\
-      .map(s"${musicFiles.baseDir.path}/".+)
-      .map(normalizePath)
-      .toSet
+    val playlistSongs =
+      file.lines.toList
+        // removes UTF-BOM at least until I fix it in ScalaCommon
+        .mapIf(_.head.head.toInt == UtfBytemarkPrefix)
+        .to(e => e.tail :+ e.head.drop(1))
+        .mapIf(_.head == "#")
+        .to(_.tail) // Newer version of Foobar2000 decided to add # to file header :\
+        .map(s"${musicFiles.baseDir.path}/".+)
+        .map(normalizePath)
+        .toSet
     println(s"playlist songs |${playlistSongs.size}|")
     val realSongs = musicFiles.getSongFiles.map(_.path |> normalizePath).toSet
     println(s"actual songs |${realSongs.size}|")
