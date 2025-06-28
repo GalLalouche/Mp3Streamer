@@ -5,16 +5,17 @@ import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.{Clock, LocalDateTime, ZoneId}
 
+import better.files.{File => BFile, FileExtensions}
+
 import common.rich.RichT._
 import common.rich.path.{Directory, RichFile}
 
 private[this] object FileUtils {
   private val currentZone = Clock.systemDefaultZone().getZone
-  def lastModified(f: File): LocalDateTime =
-    LocalDateTime.ofInstant(
-      Files.readAttributes(f.toPath, classOf[BasicFileAttributes]).lastModifiedTime().toInstant,
-      currentZone,
-    )
+  def lastModified(f: File): LocalDateTime = LocalDateTime.ofInstant(
+    Files.readAttributes(f.toPath, classOf[BasicFileAttributes]).lastModifiedTime().toInstant,
+    currentZone,
+  )
 }
 
 trait IOSystem extends RefSystem {
@@ -26,13 +27,15 @@ trait IOSystem extends RefSystem {
 
 abstract class IOPath(f: File) extends PathRef {
   override type S = IOSystem
+  val file: File = f
+  def better: BFile = file.toScala
   override def path = f.getAbsolutePath.replace(File.separatorChar, '/')
   override def name = f.getName
   override def parent = IODirectory(f.getParent)
 }
 
 /** For production; actual files on the disk */
-case class IOFile(file: File) extends IOPath(file) with FileRef {
+case class IOFile(_file: File) extends IOPath(_file) with FileRef {
   private lazy val rich = RichFile(file)
   override def bytes: Array[Byte] = rich.bytes
   override def write(bs: Array[Byte]) = {
