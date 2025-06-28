@@ -3,7 +3,6 @@ package mains.fixer
 import java.net.ConnectException
 
 import backend.FutureOption
-import better.files.FileExtensions
 import com.google.inject.{Guice, Inject}
 import io.lemonlabs.uri.Url
 import mains.{IOUtils, MainsModule}
@@ -87,7 +86,7 @@ private[mains] class FolderFixer @Inject() private (
       fixedDirectory: Future[FixedDirectory],
   ): Future[Directory] = for {
     artistDir <- destination.getOrThrow(s"Could not find artist directory for <$artist>")
-    _ = println(s"Found artist dir: <${artistDir.dir.dir.getAbsolutePath}>")
+    _ = println(s"Found artist dir: <${artistDir.file.getAbsolutePath}>")
     fixedDir <- fixedDirectory
   } yield {
     val oldDir =
@@ -98,7 +97,7 @@ private[mains] class FolderFixer @Inject() private (
     println("Copying folder.jpg")
     val folderImage =
       oldDir.getFile("folder.jpg").getOrThrow(s"Could not find folder.jpg in <$oldDir>")
-    folderImage.file.toScala.copyToDirectory(fixedDir.dir.dir.toScala)
+    folderImage.better.copyToDirectory(fixedDir.dir.better)
 
     moveFolderToTemp(RichFileUtils.rename(oldDir.dir, oldDir.dir.name + " (OLD)"))
     println("Moving fixed directory to artist directory")
@@ -141,7 +140,7 @@ private[mains] class FolderFixer @Inject() private (
     val newDir = dir.parent.addSubDir(newName)
     newDir.deleteAll() // delete previous directory if it exists
 
-    better.files.File(dir.toPath).copyTo(newDir.dir.toScala, overwrite = true)
+    dir.better.copyTo(newDir.better, overwrite = true)
     newDir
   }
 
