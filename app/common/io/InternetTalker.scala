@@ -1,7 +1,5 @@
 package common.io
 
-import java.util.concurrent.TimeUnit
-
 import backend.Retriever
 import com.google.inject.{Inject, Provider}
 import io.lemonlabs.uri.Url
@@ -36,14 +34,14 @@ class InternetTalker @Inject() (wsClientProver: Provider[WSClient], ec: Executio
   final def asBrowser[T](
       url: Url,
       f: Retriever[WSRequest, T],
-      timeoutInSeconds: Int = -1,
-  ): Future[T] =
-    useWs(
+      timeout: Duration = Duration.Zero,
+  ): Future[T] = useWs(
+    f.compose(
       _.url(url.toStringPunycode)
         .addHttpHeaders("user-agent" -> InternetTalker.AgentUrl)
-        .mapIf(timeoutInSeconds > 0)
-        .to(_.withRequestTimeout(Duration.apply(timeoutInSeconds, TimeUnit.SECONDS))) |> f,
-    )
+        .joinOption(timeout.optFilter(_.length > 0))(_.withRequestTimeout(_)),
+    ),
+  )
   final def downloadDocument(url: Url, decodeUtf: Boolean = false): Future[Document] =
     asBrowser(url, _.document(decodeUtf))
   final def get(url: Url): Future[WSResponse] = useWs(_.url(url.toStringPunycode).get())

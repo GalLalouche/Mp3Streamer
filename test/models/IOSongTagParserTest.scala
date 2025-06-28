@@ -10,7 +10,7 @@ import scala.concurrent.duration.DurationInt
 
 import common.test.{AuxSpecs, DirectorySpecs}
 
-class SongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
+class IOSongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
   private def getSong(location: String) = getResourceFile(location)
 
   "apply" - {

@@ -7,6 +7,7 @@ import com.google.inject.Inject
 import mains.SwingUtils._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.DurationInt
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
@@ -34,7 +35,7 @@ private class ImageDownloader @Inject() (it: InternetTalker, ec: ExecutionContex
   def withOutput(outputDirectory: DirectoryRef): Retriever[ImageSource, FolderImage] = {
     case UrlSource(url, width, height) =>
       it
-        .asBrowser(url, _.bytes, timeoutInSeconds = 5)
+        .asBrowser(url, _.bytes, 5 seconds)
         .map { bytes =>
           val file = outputDirectory.addFile(System.currentTimeMillis() + "img.jpg").write(bytes)
           folderImage(file, local = false, w = width, h = height, ImageSource.toImage(file))

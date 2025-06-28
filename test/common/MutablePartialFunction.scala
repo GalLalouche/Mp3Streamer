@@ -4,7 +4,7 @@ package common
  * A partial function that can be mutated to support new arguments. Can be more useful than a
  * mutable Map since it also supports a mutating const (i.e., default) changes.
  */
-// TODO move to common
+// TODO move to ScalaCommon
 class MutablePartialFunction[A, B] extends PartialFunction[A, B] {
   private var pf: PartialFunction[A, B] = PartialFunction.empty
   def +=(pf: PartialFunction[A, B]): this.type = {

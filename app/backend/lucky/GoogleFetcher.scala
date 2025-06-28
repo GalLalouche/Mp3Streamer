@@ -19,17 +19,16 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 /**
  * I don't actually use this anymore, since the API returned garbage results (the first result was
- * different than the top level Google result), so I'm keeping it here for reference.
+ * different from the top level Google result), so I'm keeping it here for reference.
  */
 private class GoogleFetcher @Inject() (
     it: InternetTalker,
     googleSearch: GoogleSearch,
     ec: ExecutionContext,
 ) {
-  def search(query: String): Future[String] =
-    googleSearch(query, resultsPerQuery = 7).map(
-      _.array("items").log(_.value.mkString("\n")).apply(0).str("link"),
-    )
+  def search(query: String): Future[String] = googleSearch(query, resultsPerQuery = 7).map(
+    _.array("items").log(_.value.mkString("\n")).apply(0).str("link"),
+  )
 
   private implicit val iec: ExecutionContext = ec
 

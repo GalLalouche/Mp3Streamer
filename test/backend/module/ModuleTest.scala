@@ -11,12 +11,12 @@ class ModuleTest extends ConfigurationModuleTestSpec {
   allRequiredBindingsSatisfied("Standalone", StandaloneModule)
   allRequiredBindingsSatisfied("CleanModule", CleanModule)
   allRequiredBindingsSatisfied(
-    "ControllerUtils",
+    "FormatterModule",
     Modules.combine(
       new formatter.FormatterModule(level = None),
       new ScalaModule {
         override def configure() =
-          // Execution context is provided by Play at runtime.
+          // Execution context Will be provided at runtime by the runtime module (play/http4s).
           bind[ExecutionContext].toInstance(DaemonExecutionContext.single("DummyExecutionContext"))
       },
     ),

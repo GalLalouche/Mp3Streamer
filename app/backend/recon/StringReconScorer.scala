@@ -22,7 +22,7 @@ class StringReconScorer @Inject() (stringFixer: StringFixer) extends ((String, S
 
   private def canonize(s: String): String = s.toLowerCase
     .split(' ')
-    .filterNot(badWords)
+    .filterNot(BadWords)
     .mkString(" ")
     .filter(_.isLetterOrDigit)
     .tryOrKeep(stringFixer.asciiNormalize)
@@ -31,7 +31,7 @@ class StringReconScorer @Inject() (stringFixer: StringFixer) extends ((String, S
 }
 
 object StringReconScorer {
-  private val badWords = Set("and", "ep")
+  private val BadWords = Set("and", "ep")
   private def sameAndNonEmpty(s1: String, s2: String) = {
     val trim = s1.trim
     trim.nonEmpty && trim == s2.trim
