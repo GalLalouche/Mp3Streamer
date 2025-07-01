@@ -1,10 +1,9 @@
 package backend.scorer.storage
 
-import com.google.inject.Inject
-
 import backend.recon.{Album, Artist, SlickArtistReconStorage, YearlessAlbum}
 import backend.scorer.ModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
+import com.google.inject.Inject
 import models.AlbumTitle
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,9 +41,11 @@ private[scorer] class AlbumScoreStorage @Inject() (
   }
   protected override type EntityTable = Rows
   protected override val tableQuery = TableQuery[EntityTable]
-  protected override def toEntity(k: Album, v: ModelScore) = (k.artist, k.title, v)
+  protected override def toEntity(k: Album, v: ModelScore) = (k.artist, k.title.toLowerCase, v)
   protected override def extractValue(e: (Artist, AlbumTitle, ModelScore)) = e._3
-  protected override def keyFilter(k: Album)(e: Rows) = e.artist === k.artist && e.title === k.title
+  // TODO use an AlbumTitle case class or CIString?
+  protected override def keyFilter(k: Album)(e: Rows) =
+    e.artist === k.artist && e.title === k.title.toLowerCase
   def loadAll: ListT[Future, (YearlessAlbum, ModelScore)] =
     ListT(db.run(tableQuery.result).map(_.toList)).map(e => YearlessAlbum(e._2, e._1) -> e._3)
   def allForArtist(a: Artist): Future[Seq[(AlbumTitle, ModelScore)]] =
