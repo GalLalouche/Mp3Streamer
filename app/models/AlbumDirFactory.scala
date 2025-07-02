@@ -4,12 +4,13 @@ import com.google.inject.Inject
 import musicfinder.MusicFinder
 
 import common.io.DirectoryRef
+import common.rich.RichT.richT
 
 class AlbumDirFactory @Inject() (mf: MusicFinder) {
   def fromDir(dir: DirectoryRef): AlbumDir = {
     val songs =
       mf.getSongsInDir(dir)
-        .ensuring(_.nonEmpty, s"Cannot create an album of an empty dir <$dir>")
+        .requiring(_.nonEmpty, s"Cannot create an album of an empty dir <$dir>")
         .sortBy(_.trackNumber)
     val firstSong = songs.head
     AlbumDir(

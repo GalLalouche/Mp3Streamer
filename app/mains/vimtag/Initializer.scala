@@ -33,7 +33,7 @@ private class Initializer @Inject() (
     private lazy val songFiles =
       (dir +: dir.dirs)
         .flatMap(optionalSongFinder.apply)
-        .ensuring(_.nonEmpty, s"No ${mf.extensions} files found in directory$unsupportedFilesMsg")
+        .requiring(_.nonEmpty, s"No ${mf.extensions} files found in directory$unsupportedFilesMsg")
     private lazy val ordering: Ordering[OptionalSong] =
       if (songFiles.forall(_.trackNumber.isDefined))
         Ordering.by(_.toTuple(_.directory, _.trackNumber))
@@ -57,7 +57,7 @@ private class Initializer @Inject() (
 
     private def sequence(f: OptionalSong => String): Seq[String] = songs.map(f(_))
     private def relativize(s: String): String = s
-      .ensuring(_.startsWith(dir.path), s"Directory: <${dir.path}> is not a prefix to file <$s>")
+      .requiring(_.startsWith(dir.path), s"Directory: <${dir.path}> is not a prefix to file <$s>")
       .drop(dir.path.length)
       .stripPrefix("/")
     def files: Seq[String] = sequence(_.file |> relativize)
