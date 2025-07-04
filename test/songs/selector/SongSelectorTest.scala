@@ -2,7 +2,7 @@ package songs.selector
 
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import backend.recon.{Album, Artist, Track}
-import backend.scorer.{CachedModelScorer, ModelScore, OptionalModelScore, ScoreBasedProbability}
+import backend.score.{CachedModelScorer, ModelScore, OptionalModelScore, ScoreBasedProbability}
 import com.google.inject.Guice
 import genre.GenreFinder
 import models.{FakeModelFactory, MemorySong, Song}

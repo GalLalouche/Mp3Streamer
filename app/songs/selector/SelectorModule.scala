@@ -1,6 +1,6 @@
 package songs.selector
 
-import backend.scorer.CachedModelScorer
+import backend.score.CachedModelScorer
 import com.google.inject.Provides
 import genre.GenreFinder
 import musicfinder.MusicFinder

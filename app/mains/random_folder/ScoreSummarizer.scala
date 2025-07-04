@@ -1,7 +1,7 @@
 package mains.random_folder
 
 import backend.recon.Reconcilable.SongExtractor
-import backend.scorer.{CachedModelScorer, ModelScore}
+import backend.score.{CachedModelScorer, ModelScore}
 import com.google.inject.Inject
 import musicfinder.SongDirectoryParser
 

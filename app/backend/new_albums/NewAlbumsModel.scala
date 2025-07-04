@@ -7,7 +7,7 @@ import backend.new_albums.NewAlbumsModel.{ArtistAlbums, ModelResult, NonIgnoredA
 import backend.new_albums.filler.NewAlbumFiller
 import backend.new_albums.filler.storage.FilledStorage
 import backend.recon.{Artist, IgnoredReconResult}
-import backend.scorer.OptionalModelScore
+import backend.score.OptionalModelScore
 import com.google.inject.Inject
 import genre.{Genre, GenreFinder}
 import models.AlbumTitle

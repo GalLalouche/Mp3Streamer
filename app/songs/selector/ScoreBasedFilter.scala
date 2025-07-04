@@ -1,10 +1,9 @@
 package songs.selector
 
-import com.google.inject.Inject
-
 import backend.recon.Reconcilable.SongExtractor
-import backend.scorer.{CachedModelScorer, ScoreBasedProbability}
-import backend.scorer.FullInfoScore.Scored
+import backend.score.{CachedModelScorer, ScoreBasedProbability}
+import backend.score.FullInfoScore.Scored
+import com.google.inject.Inject
 import models.Song
 
 import scala.util.Random

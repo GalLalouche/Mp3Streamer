@@ -8,7 +8,7 @@ import backend.mb.MbModule
 import backend.new_albums.NewAlbumsModule
 import backend.recent.RecentModule
 import backend.recon.ReconModule
-import backend.scorer.ScorerModule
+import backend.score.ScorerModule
 import mains.fixer.FixerModule
 import net.codingwell.scalaguice.ScalaModule
 import songs.SongsModule

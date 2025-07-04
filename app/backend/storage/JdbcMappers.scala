@@ -1,7 +1,7 @@
 package backend.storage
 
 import backend.recon.Artist
-import backend.scorer.ModelScore
+import backend.score.ModelScore
 import slick.ast.BaseTypedType
 import slick.jdbc.JdbcProfile
 

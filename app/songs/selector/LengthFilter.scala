@@ -1,7 +1,7 @@
 package songs.selector
 
 import backend.recon.Reconcilable.SongExtractor
-import backend.scorer.{CachedModelScorer, FullInfoScore, ScoreSource}
+import backend.score.{CachedModelScorer, FullInfoScore, ScoreSource}
 import genre.{Genre, GenreFinder}
 import models.Song
 import org.apache.commons.lang3.StringUtils

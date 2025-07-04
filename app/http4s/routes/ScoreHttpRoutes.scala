@@ -1,6 +1,6 @@
 package http4s.routes
 
-import backend.scorer.ScorerFormatter
+import backend.score.ScorerFormatter
 import cats.effect.IO
 import com.google.inject.Inject
 import http4s.routes.Http4sUtils.{decodePath, fromFuture, jsonEncoder}
