@@ -16,7 +16,7 @@ import slick.util.AsyncExecutor
 import scala.concurrent.ExecutionContext
 
 import common.guice.RichModule.richModule
-import common.io.{BaseDirectory, DirectoryRef, InternetTalker, MemoryRoot, RootDirectory}
+import common.io.{BaseDirectory, DirectoryRef, MemoryRoot, RootDirectory}
 import common.io.WSAliases._
 import common.rich.RichT._
 
@@ -69,12 +69,7 @@ case class TestModuleConfiguration(
         }
 
         @Provides
-        private def provideInternetTalker(_ec: ExecutionContext): InternetTalker =
-          new InternetTalker {
-            override def execute(runnable: Runnable) = _ec.execute(runnable)
-            override def reportFailure(cause: Throwable) = _ec.reportFailure(cause)
-            protected override def createWsClient(): WSClient = new FakeWSClient(getRequest)
-          }
+        private def provideWSClient: WSClient = new FakeWSClient(getRequest)
       },
     )
     .overrideWith(new ScalaModule {
