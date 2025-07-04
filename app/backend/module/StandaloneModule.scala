@@ -12,7 +12,6 @@ class StandaloneModule(random: Random) extends ScalaModule {
 
     install(RealInternetTalkerModule.daemonic)
     install(RealModule)
-    install(AllModules)
   }
 }
 object StandaloneModule extends StandaloneModule(Random)

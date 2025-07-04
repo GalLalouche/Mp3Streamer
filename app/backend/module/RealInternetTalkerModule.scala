@@ -4,34 +4,13 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.google.inject.{Module, Provides}
 import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
-import net.codingwell.scalaguice.ScalaPrivateModule
+import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
-import scala.concurrent.ExecutionContext
-
-import common.guice.ModuleUtils
-import common.io.InternetTalker
 import common.io.WSAliases.WSClient
 
-private class RealInternetTalkerModule private (am: Materializer)
-    extends ScalaPrivateModule
-    with ModuleUtils {
-  override def configure(): Unit = {
-    requireBinding[ExecutionContext]
-    bind[Materializer].toInstance(am)
-
-    requireBinding[ExecutionContext]
-    expose[InternetTalker]
-  }
-
-  @Provides private def internetTalker(
-      _ec: ExecutionContext,
-      materializer: Materializer,
-  ): InternetTalker = new InternetTalker {
-    override def execute(runnable: Runnable) = _ec.execute(runnable)
-    override def reportFailure(cause: Throwable) = _ec.reportFailure(cause)
-    protected override def createWsClient(): WSClient = StandaloneAhcWSClient()(materializer)
-  }
+private class RealInternetTalkerModule private (am: Materializer) extends ScalaModule {
+  @Provides private def provideWSClient(): WSClient = StandaloneAhcWSClient()(am)
 }
 
 object RealInternetTalkerModule {

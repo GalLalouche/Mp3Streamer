@@ -3,6 +3,7 @@ package common.io
 import java.util.concurrent.TimeUnit
 
 import backend.Retriever
+import com.google.inject.{Inject, Provider}
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
@@ -15,13 +16,17 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 
 /** Things that talk to the outside world. Spo-o-o-o-ky IO! */
-trait InternetTalker extends ExecutionContext {
-  // TODO replace inheritance with composition
-  private implicit def ec: ExecutionContext = this
-  protected def createWsClient(): WSClient
+class InternetTalker @Inject() (
+    wsClientProver: Provider[WSClient],
+    ec: ExecutionContext,
+) extends ExecutionContext {
+  override def execute(runnable: Runnable): Unit = ec.execute(runnable)
+  override def reportFailure(cause: Throwable): Unit = ec.reportFailure(cause)
+
+  private implicit def iec: ExecutionContext = ec
 
   def useWs[T](f: Retriever[WSClient, T]): Future[T] = {
-    val client = createWsClient()
+    val client = wsClientProver.get()
     val $ =
       try f(client)
       catch {
