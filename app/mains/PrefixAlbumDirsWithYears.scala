@@ -1,17 +1,17 @@
 package mains
 
 import com.google.inject.Inject
-import musicfinder.MusicFinder
+import musicfinder.SongDirectoryParser
 
 import common.io.IODirectory
 import common.rich.collections.RichTraversableOnce._
 import common.rich.path.{Directory, RichFileUtils}
 
-private class PrefixAlbumDirsWithYears @Inject() (mf: MusicFinder) {
+private class PrefixAlbumDirsWithYears @Inject() (songDirectoryParser: SongDirectoryParser) {
   def addYears(d: Directory): Unit = d.dirs.filterNot(hasYear).foreach(addYear)
 
   private def addYear(d: Directory): Unit = try {
-    val songs = mf.getSongsInDir(IODirectory(d))
+    val songs = songDirectoryParser(IODirectory(d))
     val year = songs.map(_.year).toSet.single
     RichFileUtils.rename(d, s"$year ${d.name}")
   } catch {

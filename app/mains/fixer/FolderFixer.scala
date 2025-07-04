@@ -10,7 +10,7 @@ import mains.{IOUtils, MainsModule}
 import mains.cover.{CoverException, DownloadCover}
 import mains.fixer.FolderFixer.{Overwrite, TempLarge}
 import models.ArtistName
-import musicfinder.{ArtistFinder, IOMusicFinder}
+import musicfinder.{ArtistFinder, SongDirectoryParser}
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,7 +31,7 @@ import common.rich.primitives.RichOption.richOption
 
 private[mains] class FolderFixer @Inject() private (
     fixLabels: FixLabels,
-    mf: IOMusicFinder,
+    songDirectoryParser: SongDirectoryParser,
     artistFinder: ArtistFinder,
     it: InternetTalker,
     foobarGain: FoobarGain,
@@ -132,7 +132,7 @@ private[mains] class FolderFixer @Inject() private (
   }
 
   private def findArtistDirectory(folder: Directory): (ArtistName, FutureOption[IODirectory]) = {
-    val artist = mf.getSongsInDir(IODirectory(folder)).head.artistName
+    val artist = songDirectoryParser(IODirectory(folder)).head.artistName
     (artist, OptionT(Future(artistFinder(artist).map(_.asInstanceOf[IODirectory]))))
   }
 

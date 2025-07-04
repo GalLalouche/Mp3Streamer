@@ -15,7 +15,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
   private val mf = new FakeMusicFinder(new MemoryRoot)
   private val osf = new OptionalSongFinder {
     override def apply(d: DirectoryRef): Seq[OptionalSong] =
-      d.files.map(mf.parseSong).map(OptionalSong.from)
+      d.files.map(mf.apply).map(OptionalSong.from)
   }
   private val factory = new FakeModelFactory
   "A non-interactive initializer-parser couple returns the correct ID3" in {

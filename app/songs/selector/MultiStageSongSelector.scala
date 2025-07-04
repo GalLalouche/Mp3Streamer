@@ -1,6 +1,6 @@
 package songs.selector
 
-import models.Song
+import models.{Song, SongTagParser}
 import musicfinder.MusicFinder
 import songs.selector.MultiStageSongSelector.fileFilterSetter
 
@@ -21,6 +21,7 @@ import common.rich.primitives.RichBoolean.richBoolean
  */
 class MultiStageSongSelector[Sys <: RefSystem](private val songs: IndexedSeq[Sys#F])(
     private val musicFinder: MusicFinder,
+    private val songTagParser: SongTagParser,
     private val random: Random,
     private val fileFilter: Filter[Sys#F],
     private val songFilter: Filter[Song],
@@ -33,7 +34,7 @@ class MultiStageSongSelector[Sys <: RefSystem](private val songs: IndexedSeq[Sys
     if (fileFilter.passes(file).isFalse)
       randomSongImpl()
     else {
-      val song = musicFinder.parseSong(file)
+      val song = songTagParser(file)
       if (songFilter.passes(song)) song else randomSongImpl()
     }
   }
@@ -51,6 +52,7 @@ object MultiStageSongSelector {
       ss =>
         new MultiStageSongSelector[Sys](ss.songs)(
           ss.musicFinder,
+          ss.songTagParser,
           ss.random,
           f(ss.fileFilter),
           ss.songFilter,
@@ -62,6 +64,7 @@ object MultiStageSongSelector {
       ss =>
         new MultiStageSongSelector[Sys](ss.songs)(
           ss.musicFinder,
+          ss.songTagParser,
           ss.random,
           ss.fileFilter,
           f(ss.songFilter),

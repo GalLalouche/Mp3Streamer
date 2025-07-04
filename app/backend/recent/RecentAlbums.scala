@@ -3,7 +3,7 @@ package backend.recent
 import java.time.{Clock, LocalDate}
 
 import com.google.inject.Inject
-import models.{AlbumDir, AlbumDirFactory}
+import models.{AlbumDir, AlbumDirFactory, SongTagParser}
 import musicfinder.MusicFinder
 
 import scala.Ordering.Implicits._
@@ -21,6 +21,7 @@ import common.rich.RichTime._
 
 private class RecentAlbums @Inject() (
     mf: MusicFinder,
+    songTagParser: SongTagParser,
     albumFactory: AlbumDirFactory,
     clock: Clock,
 ) {
@@ -44,7 +45,7 @@ private class RecentAlbums @Inject() (
   def sinceMonths(m: Int): Seq[AlbumDir] = since(_.minusMonths(m))
   private def isDoubleAlbum(dir: DirectoryRef): Boolean = {
     val songs = mf.getSongFilesInDir(dir).sortBy(_.name)
-    def discNumber(s: FileRef) = mf.parseSong(s).discNumber
+    def discNumber(s: FileRef) = songTagParser(s).discNumber
     ^(discNumber(songs.head), discNumber(songs.last))(_ != _).getOrElse(false)
   }
 }

@@ -1,15 +1,15 @@
 package models
 
 import com.google.inject.Inject
-import musicfinder.MusicFinder
+import musicfinder.SongDirectoryParser
 
 import common.io.DirectoryRef
 import common.rich.RichT.richT
 
-class AlbumDirFactory @Inject() (mf: MusicFinder) {
+class AlbumDirFactory @Inject() (songDirectoryParser: SongDirectoryParser) {
   def fromDir(dir: DirectoryRef): AlbumDir = {
     val songs =
-      mf.getSongsInDir(dir)
+      songDirectoryParser(dir)
         .requiring(_.nonEmpty, s"Cannot create an album of an empty dir <$dir>")
         .sortBy(_.trackNumber)
     val firstSong = songs.head
@@ -31,6 +31,6 @@ class AlbumDirFactory @Inject() (mf: MusicFinder) {
     title = s.albumName,
     artistName = s.artistName,
     year = s.year,
-    songs = mf.getSongsInDir(s.file.parent),
+    songs = songDirectoryParser(s.file.parent),
   )
 }

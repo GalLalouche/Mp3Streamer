@@ -1,11 +1,10 @@
 package backend.scorer
 
-import com.google.inject.Inject
-
 import backend.recon.{Album, Artist, ReconcilableFactory, Track, YearlessAlbum, YearlessTrack}
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
-import musicfinder.MusicFinder
+import com.google.inject.Inject
+import models.SongTagParser
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
@@ -28,7 +27,7 @@ private class CachedModelScorerImpl @Inject() (
     albumScorer: AlbumScoreStorage,
     songScorer: TrackScoreStorage,
     reconFactory: ReconcilableFactory,
-    mf: MusicFinder,
+    songTagParser: SongTagParser,
     ec: ExecutionContext,
 ) extends CachedModelScorer {
   private implicit val iec: ExecutionContext = ec
@@ -49,7 +48,7 @@ private class CachedModelScorerImpl @Inject() (
     songScores.get(t.toYearless).toOptionalModelScore
 
   override def aggregateScore(f: FileRef): OptionalModelScore = {
-    lazy val id3Song = mf.parseSong(f)
+    lazy val id3Song = songTagParser(f)
     val songTitle =
       reconFactory.trySongInfo(f).|>(toOption(f, "song")).map(_._2).getOrElse(id3Song.title)
     val album =

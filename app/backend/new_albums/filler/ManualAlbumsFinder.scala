@@ -3,7 +3,7 @@ package backend.new_albums.filler
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import backend.recon.Reconcilable.SongExtractor
 import com.google.inject.{Inject, Singleton}
-import musicfinder.MusicFinder
+import musicfinder.{MusicFinder, SongDirectoryParser}
 
 import scala.concurrent.Future
 
@@ -15,6 +15,7 @@ import common.rich.RichT.richT
 @Singleton private class ManualAlbumsFinder @Inject() (
     timed: TimedLogger,
     mf: MusicFinder,
+    songDirectoryParser: SongDirectoryParser,
     reconcilableFactory: ReconcilableFactory,
 ) extends SimpleTypedActor[Artist, Option[Set[Album]]] {
   override def !(m: => Artist): Future[Option[Set[Album]]] = delegate ! m
@@ -26,7 +27,7 @@ import common.rich.RichT.richT
     scribe.warn(_),
   ) {
     mf.albumDirs
-      .filter(e => mf.getSongsInDir(e).head.artist == artist)
+      .filter(songDirectoryParser(_).head.artist == artist)
       .map((e: DirectoryRef) => reconcilableFactory.toAlbum(e).get)
       .toSet
       .optFilter(_.nonEmpty)

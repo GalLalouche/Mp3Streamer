@@ -3,14 +3,14 @@ package mains.random_folder
 import backend.recon.Reconcilable.SongExtractor
 import backend.scorer.{CachedModelScorer, ModelScore}
 import com.google.inject.Inject
-import musicfinder.MusicFinder
+import musicfinder.SongDirectoryParser
 
 import common.Percentage
 import common.io.IODirectory
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class ScoreSummarizer @Inject() (
-    mf: MusicFinder,
+    songDirectoryParser: SongDirectoryParser,
     scorer: CachedModelScorer,
 ) {
   def summary(
@@ -18,9 +18,8 @@ private class ScoreSummarizer @Inject() (
       totalSongs: Int,
   ): Unit = {
     val allScores =
-      mf.getSongFilesInDir(outputDir)
-        .view
-        .map(mf.parseSong(_).track)
+      songDirectoryParser(outputDir)
+        .map(_.track)
         .flatMap(scorer.aggregateScore(_).toModelScore)
         .frequencies
     ModelScore.values.foreach(score =>

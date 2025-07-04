@@ -1,14 +1,12 @@
 package mains.cover
 
-import com.google.inject.Inject
-
-import com.google.inject.Guice
+import com.google.inject.{Guice, Inject}
 import io.lemonlabs.uri.Url
 import mains.{BrowserUtils, IOUtils, MainsModule}
 import mains.cover.DownloadCover._
 import mains.cover.image.ImageAPISearch
 import models.AlbumDirFactory
-import musicfinder.MusicFinder
+import musicfinder.SongDirectoryParser
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -23,7 +21,7 @@ import common.rich.path.RichFile.richFile
 
 private[mains] class DownloadCover @Inject() (
     ec: ExecutionContext,
-    mf: MusicFinder,
+    songDirectoryParser: SongDirectoryParser,
     albumFactory: AlbumDirFactory,
     imageFinder: ImageAPISearch,
     imageDownloader: ImageDownloader,
@@ -42,7 +40,7 @@ private[mains] class DownloadCover @Inject() (
    *   temporary files.
    */
   def apply(albumDir: Directory): Future[Directory => Unit] = {
-    val album = mf.getSongsInDir(IODirectory(albumDir)).head.album
+    val album = songDirectoryParser(IODirectory(albumDir)).head.album
     val searchUrl = Url
       .parse("https://www.google.com/search")
       .withQueryString(

@@ -7,6 +7,7 @@ import backend.storage.DbProvider
 import com.google.inject.{Guice, Module, Provides}
 import com.google.inject.util.Modules
 import io.lemonlabs.uri.Url
+import models.SongTagParser
 import musicfinder.PosterLookup
 import net.codingwell.scalaguice.ScalaModule
 import slick.jdbc.{H2Profile, JdbcProfile}
@@ -52,6 +53,7 @@ case class TestModuleConfiguration(
           bind[DirectoryRef].annotatedWith[BaseDirectory].toInstance(_root)
           bind[ExecutionContext].toInstance(_ec)
           bind[FakeMusicFinder].toInstance(_mf.opt.getOrElse(new FakeMusicFinder(_root)))
+          bind[SongTagParser].to[FakeMusicFinder]
           bind[DbProvider].toInstance(new DbProvider {
             override lazy val profile: JdbcProfile = H2Profile
             override lazy val db: profile.backend.DatabaseDef = {

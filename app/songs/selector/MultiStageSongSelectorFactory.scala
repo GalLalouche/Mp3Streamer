@@ -1,7 +1,7 @@
 package songs.selector
 
 import com.google.inject.Inject
-
+import models.SongTagParser
 import musicfinder.MusicFinder
 
 import scala.util.Random
@@ -11,6 +11,7 @@ import common.io.RefSystem
 
 class MultiStageSongSelectorFactory @Inject() (
     musicFinder: MusicFinder,
+    songTagParser: SongTagParser,
     random: Random,
     scoreBasedFilter: ScoreBasedFilter,
     lengthFilter: LengthFilter,
@@ -19,6 +20,7 @@ class MultiStageSongSelectorFactory @Inject() (
   def withSongs[Sys <: RefSystem](songs: IndexedSeq[Sys#F]): MultiStageSongSelector[Sys] =
     new MultiStageSongSelector(songs)(
       musicFinder,
+      songTagParser,
       random,
       Filter.always,
       lengthFilter && scoreBasedFilter,

@@ -1,10 +1,9 @@
 package backend.recon
 
-import com.google.inject.Inject
-
 import backend.recon.Reconcilable.SongExtractor
 import com.google.common.annotations.VisibleForTesting
-import models.{SongTitle, TrackNumber}
+import com.google.inject.Inject
+import models.{SongTagParser, SongTitle, TrackNumber}
 import musicfinder.MusicFinder
 
 import scala.util.{Failure, Success, Try}
@@ -14,7 +13,7 @@ import common.rich.RichT._
 import common.rich.collections.RichSeq._
 import common.rich.primitives.RichOption.richOption
 
-class ReconcilableFactory @Inject() (val mf: MusicFinder) {
+class ReconcilableFactory @Inject() (val mf: MusicFinder, songTagParser: SongTagParser) {
   type S = mf.S
   def toArtist(dir: DirectoryRef): Artist = mf.dirNameToArtist(dir.name)
   // This is Try so the error could be reserved.
@@ -42,13 +41,13 @@ class ReconcilableFactory @Inject() (val mf: MusicFinder) {
       }
     else
       Success(
-        mf.parseSong(mf.getSongFilesInDir(dir).headOption.getOrThrow(s"Problem with $dir")).release,
+        songTagParser(mf.getSongFilesInDir(dir).headOption.getOrThrow(s"Problem with $dir")).release,
       )
 
   def trySongInfo(f: FileRef): Try[(TrackNumber, SongTitle)] =
     ReconcilableFactory.capture(f.name).toTry(new Exception(s"$f has invalid file name"))
   def songInfo(f: FileRef): (TrackNumber, SongTitle) =
-    trySongInfo(f).getOrElse(mf.parseSong(f).toTuple(_.trackNumber, _.title))
+    trySongInfo(f).getOrElse(songTagParser(f).toTuple(_.trackNumber, _.title))
   private val IgnoredFolders = Vector("Classical", "Musicals")
   def artistDirectories: Seq[S#D] = mf.artistDirs.filterNot(shouldIgnore)
   private val prefixLength = {

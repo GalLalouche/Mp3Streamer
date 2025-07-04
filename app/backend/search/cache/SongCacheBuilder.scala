@@ -3,6 +3,7 @@ package backend.search.cache
 import java.time.Clock
 
 import com.google.inject.Inject
+import models.SongTagParser
 import musicfinder.MusicFinder
 import rx.lang.scala.Observable
 
@@ -14,6 +15,7 @@ import common.rich.RichTime.RichClock
 
 private class SongCacheBuilder @Inject() (
     mf: MusicFinder,
+    songTagParser: SongTagParser,
     clock: Clock,
     timedLogger: TimedLogger,
 ) {
@@ -32,5 +34,5 @@ private class SongCacheBuilder @Inject() (
     )
 
   private def extractSongMetadata(f: FileRef) =
-    TimestampedSong(clock.getLocalDateTime, mf.parseSong(f))
+    TimestampedSong(clock.getLocalDateTime, songTagParser(f))
 }

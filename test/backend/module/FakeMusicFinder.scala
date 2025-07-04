@@ -1,7 +1,7 @@
 package backend.module
 
 import com.google.common.collect.ImmutableBiMap
-import models.MemorySong
+import models.{MemorySong, SongTagParser}
 import musicfinder.MusicFinder
 
 import scala.collection.mutable
@@ -9,7 +9,7 @@ import scala.collection.mutable
 import common.io.{FileRef, MemoryDir, MemoryFile, MemorySystem}
 import common.rich.RichT._
 
-class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder {
+class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder with SongTagParser {
   override type S = MemorySystem
   override val extensions = Set("mp3")
   override val unsupportedExtensions = Set()
@@ -32,8 +32,6 @@ class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder {
   /** Adds a song under the requested directory name. */
   def copySong(path: Seq[String], s: MemorySong): MemorySong =
     copy(s, path.foldLeft(dirToAddSongsTo)(_ addSubDir _).addFile(s.file.name))
-  override def parseSong(f: FileRef): MemorySong = pathToSongs(f.path)
-  // override def getOptionalSongsInDir(d: DirectoryRef) =
-  //  d.files.map(_.path).map(pathToSongs).map(OptionalSong.from).view
+  override def apply(f: FileRef): MemorySong = pathToSongs(f.path)
   protected override val invalidDirectoryNames = ImmutableBiMap.of()
 }

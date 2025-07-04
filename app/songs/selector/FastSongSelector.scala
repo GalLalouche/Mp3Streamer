@@ -1,9 +1,8 @@
 package songs.selector
 
 import com.google.inject.Inject
-
 import models.Song
-import musicfinder.MusicFinder
+import musicfinder.{MusicFinder, SongDirectoryParser}
 
 import scala.annotation.tailrec
 import scala.util.Random
@@ -18,6 +17,7 @@ import common.rich.RichRandomSpecVer.richRandomSpecVer
  */
 private class FastSongSelector @Inject() (
     mf: MusicFinder,
+    songDirectoryParser: SongDirectoryParser,
     timedLogger: TimedLogger,
     random: Random,
 ) extends SongSelector {
@@ -25,7 +25,7 @@ private class FastSongSelector @Inject() (
     @tailrec def go(dir: DirectoryRef): Song = {
       val dirs = dir.dirs
       if (dirs.isEmpty) {
-        val songs = mf.getSongsInDir(dir).toVector
+        val songs = songDirectoryParser(dir).toVector
         if (songs.isEmpty)
           throw new NoSuchElementException(s"No songs in dir without subdirectories <$dir>")
         random.select(songs)

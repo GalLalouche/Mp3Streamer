@@ -5,7 +5,7 @@ import java.util.regex.Pattern
 
 import com.google.inject.Inject
 import models.IOSong
-import musicfinder.IOMusicFinder
+import musicfinder.{IOMusicFinder, SongDirectoryParser}
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
@@ -25,7 +25,11 @@ import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 
 /** Fixes ID3 tags on mp3 and flac files to proper casing, delete unused tags, etc. */
-private class FixLabels @Inject() (mf: IOMusicFinder, fixLabelsUtils: FixLabelsUtils) {
+private class FixLabels @Inject() (
+    mf: IOMusicFinder,
+    songDirParser: SongDirectoryParser,
+    fixLabelsUtils: FixLabelsUtils,
+) {
   private def fixFile(f: File, fixDiscNumber: Boolean): Unit = {
     val audioFile = AudioFileIO.read(f)
     val newTag = fixLabelsUtils.getFixedTag(audioFile, fixDiscNumber)
@@ -68,7 +72,7 @@ private class FixLabels @Inject() (mf: IOMusicFinder, fixLabelsUtils: FixLabelsU
     musicFiles.foreach(f => f.renameTo(new File(f.parent, newFileName(f))))
 
     val expectedName = {
-      val (year, album) = mf.getSongsInDir(ioDir).map(_.toTuple(_.year, _.albumName)).toSet.single
+      val (year, album) = songDirParser(ioDir).map(_.toTuple(_.year, _.albumName)).toSet.single
       // In addition to regular file name limitations, a directory name cannot end in ".".
       s"$year ${fixLabelsUtils.validFileName(album).removeAll(FixLabels.EndingDots)}"
     }

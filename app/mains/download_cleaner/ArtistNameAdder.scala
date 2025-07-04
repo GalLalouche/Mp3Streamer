@@ -6,6 +6,7 @@ import java.nio.file.attribute.FileTime
 
 import com.google.inject.Inject
 import mains.OptionalSongTagParser
+import models.SongTagParser
 import musicfinder.{ArtistFinder, IOMusicFinder}
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 
@@ -16,7 +17,11 @@ import common.rich.path.RichFileUtils
 import common.rich.primitives.RichBoolean.richBoolean
 
 /** Adds the artist name to the folder if it doesn't contain it already. */
-private class ArtistNameAdder @Inject() (mf: IOMusicFinder, af: ArtistFinder) extends Cleaner {
+private class ArtistNameAdder @Inject() (
+    mf: IOMusicFinder,
+    af: ArtistFinder,
+    songTagParser: SongTagParser,
+) extends Cleaner {
   override def apply(dir: IODirectory): Unit = dir.dirs.foreach(go)
   private def go(dir: IODirectory): Unit = try {
     val song = OptionalSongTagParser(getSongFile(dir))
@@ -46,9 +51,8 @@ private class ArtistNameAdder @Inject() (mf: IOMusicFinder, af: ArtistFinder) ex
     if (songFiles.isEmpty) {
       val nestedFiles = dir.dirs.flatMap(mf.getSongFilesInDir)
       if (
-        nestedFiles.nonEmpty && nestedFiles.hasSameValues(
-          mf.parseSong(_).toTuple(_.artistName, _.albumName),
-        )
+        nestedFiles.nonEmpty &&
+        nestedFiles.hasSameValues(songTagParser(_).toTuple(_.artistName, _.albumName))
       )
         nestedFiles.head.file
       else
