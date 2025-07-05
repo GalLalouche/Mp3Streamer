@@ -1,9 +1,9 @@
 package mains.cover
 
 import java.awt.Image
-import com.google.inject.Inject
 
 import backend.Retriever
+import com.google.inject.Inject
 import mains.SwingUtils._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -27,10 +27,10 @@ private object ImageDownloader {
 }
 
 /** Downloads images and saves them to a directory; local image sources will be noop-ed. */
-private class ImageDownloader @Inject() (it: InternetTalker) {
+private class ImageDownloader @Inject() (it: InternetTalker, ec: ExecutionContext) {
   import ImageDownloader._
 
-  private implicit val iec: ExecutionContext = it
+  private implicit val iec: ExecutionContext = ec
   def withOutput(outputDirectory: DirectoryRef): Retriever[ImageSource, FolderImage] = {
     case UrlSource(url, width, height) =>
       it

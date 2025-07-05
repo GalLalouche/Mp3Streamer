@@ -12,8 +12,9 @@ class GoogleSearch @Inject() private (
     @ApiKey apiKey: String,
     @ApiID apiID: String,
     it: InternetTalker,
+    ec: ExecutionContext,
 ) {
-  private implicit val iec: ExecutionContext = it
+  private implicit val iec: ExecutionContext = ec
   def apply(
       terms: String,
       resultsPerQuery: Int,

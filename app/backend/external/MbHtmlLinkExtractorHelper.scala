@@ -12,8 +12,12 @@ import common.io.InternetTalker
 import common.rich.RichT._
 
 /** Because MusicBrainz's API *still* doesn't allow for url-rel in release-groups. */
-private[backend] class MbHtmlLinkExtractorHelper @Inject() (it: InternetTalker) {
-  private implicit val iec: ExecutionContext = it
+private[backend] class MbHtmlLinkExtractorHelper @Inject() (
+    it: InternetTalker,
+    ec: ExecutionContext,
+) {
+  private implicit val iec: ExecutionContext = ec
+
   def apply[R <: Reconcilable](metadataType: String)(id: ReconID): Future[BaseLinks[R]] = {
     def extractLink(e: Element): Option[BaseLink[R]] = {
       val url = Url.parse(e.selectSingle("a").href.mapIf(_.startsWith("//")).to("https:" + _))

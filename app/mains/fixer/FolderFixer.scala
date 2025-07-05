@@ -37,8 +37,9 @@ private[mains] class FolderFixer @Inject() private (
     foobarGain: FoobarGain,
     downloader: DownloadCover,
     stringFixer: StringFixer,
+    ec: ExecutionContext,
 ) {
-  private implicit val iec: ExecutionContext = it
+  private implicit val iec: ExecutionContext = ec
 
   def run(folder: Directory): Unit = {
     val (artist, destination) = findArtistDirectory(folder)

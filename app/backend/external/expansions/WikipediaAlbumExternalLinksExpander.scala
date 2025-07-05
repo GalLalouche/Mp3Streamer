@@ -1,12 +1,12 @@
 package backend.external.expansions
 
 import java.util.regex.Pattern
-import com.google.inject.Inject
 
 import backend.external.{BaseLink, BaseLinks, Host}
 import backend.external.expansions.WikipediaAlbumExternalLinksExpander._
 import backend.recon.Album
 import com.google.common.annotations.VisibleForTesting
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
@@ -27,6 +27,7 @@ private class WikipediaAlbumExternalLinksExpander @Inject() (
     it: InternetTalker,
     allMusicHelper: AllMusicHelper,
     expanderHelper: ExternalLinkExpanderHelper,
+    ec: ExecutionContext,
 ) extends ExternalLinkExpander[Album]
     // Use ops and instance traits since IntelliJ thinks the code doesn't compile and therefore will remove
     // ops and instance imports on optimization.
@@ -35,7 +36,7 @@ private class WikipediaAlbumExternalLinksExpander @Inject() (
     with ToMoreFoldableOps
     with ToMoreMonadErrorOps
     with ToTraverseMonadPlusOps {
-  private implicit val iec: ExecutionContext = it
+  private implicit val iec: ExecutionContext = ec
   override val sourceHost = Host.Wikipedia
   override val potentialHostsExtracted = Vector(Host.AllMusic)
 

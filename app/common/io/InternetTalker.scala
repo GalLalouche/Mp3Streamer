@@ -16,13 +16,7 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 
 /** Things that talk to the outside world. Spo-o-o-o-ky IO! */
-class InternetTalker @Inject() (
-    wsClientProver: Provider[WSClient],
-    ec: ExecutionContext,
-) extends ExecutionContext {
-  override def execute(runnable: Runnable): Unit = ec.execute(runnable)
-  override def reportFailure(cause: Throwable): Unit = ec.reportFailure(cause)
-
+class InternetTalker @Inject() (wsClientProver: Provider[WSClient], ec: ExecutionContext) {
   private implicit def iec: ExecutionContext = ec
 
   def useWs[T](f: Retriever[WSClient, T]): Future[T] = {

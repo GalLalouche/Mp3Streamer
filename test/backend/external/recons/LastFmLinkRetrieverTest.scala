@@ -9,14 +9,19 @@ import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.AsyncFreeSpec
 
+import scala.concurrent.ExecutionContext
+
 import common.io.InternetTalker
 import common.rich.RichT._
 import common.test.AsyncAuxSpecs
 
 class LastFmLinkRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentSpecs {
   private val config = new TestModuleConfiguration
-  private def create(config: TestModuleConfiguration): LastFmLinkRetriever =
-    new LastFmLinkRetriever(config.injector.instance[InternetTalker], millisBetweenRedirects = 1)
+  private def create(cfg: TestModuleConfiguration): LastFmLinkRetriever = new LastFmLinkRetriever(
+    cfg.injector.instance[InternetTalker],
+    millisBetweenRedirects = 1,
+    cfg.injector.instance[ExecutionContext],
+  )
   "404" in {
     val c = config.copy(_urlToResponseMapper =
       FakeWSResponse(status = HttpURLConnection.HTTP_NOT_FOUND).partialConst,

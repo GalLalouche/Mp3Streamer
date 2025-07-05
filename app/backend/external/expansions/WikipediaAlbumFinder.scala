@@ -26,8 +26,9 @@ private class WikipediaAlbumFinder @Inject() (
     sameHostExpanderHelper: SameHostExpanderHelper,
     it: InternetTalker,
     stringReconScorer: StringReconScorer,
+    ec: ExecutionContext,
 ) extends SameHostExpander {
-  private implicit val iec: ExecutionContext = it
+  private implicit val iec: ExecutionContext = ec
   override val host = Host.Wikipedia
   override val qualityRank = 2 // Parsing wikipedia for links is pretty error-prone.
 

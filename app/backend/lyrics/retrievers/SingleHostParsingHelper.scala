@@ -18,8 +18,8 @@ import common.io.InternetTalker
 import common.io.RichWSResponse._
 import common.rich.primitives.RichString._
 
-private class SingleHostParsingHelper @Inject() (it: InternetTalker) {
-  private implicit val iec: ExecutionContext = it
+private class SingleHostParsingHelper @Inject() (it: InternetTalker, ec: ExecutionContext) {
+  private implicit val iec: ExecutionContext = ec
 
   def apply(p: SingleHostParser)(url: Url, s: Song): Future[RetrievedLyricsResult] =
     it

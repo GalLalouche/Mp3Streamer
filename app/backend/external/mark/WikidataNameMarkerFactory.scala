@@ -6,17 +6,18 @@ import com.google.common.annotations.VisibleForTesting
 import com.google.inject.Inject
 import org.jsoup.nodes.Document
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 import common.RichJsoup._
 import common.io.InternetTalker
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 
-private class WikidataNameMarkerFactory @Inject() (implicit it: InternetTalker) {
+private class WikidataNameMarkerFactory @Inject() (it: InternetTalker, ec: ExecutionContext) {
+  private implicit val iec: ExecutionContext = ec
   def create[R <: Reconcilable]: ExternalLinkMarker[R] = new ExternalLinkMarker[R] {
     override def host = Host.Wikidata
-    override def apply(l: MarkedLink[R]) = WikidataNameMarkerFactory(l)
+    override def apply(l: MarkedLink[R]) = WikidataNameMarkerFactory(l, it)
   }
 }
 
@@ -28,7 +29,8 @@ private object WikidataNameMarkerFactory {
   }
   private def apply[R <: Reconcilable](
       l: MarkedLink[R],
-  )(implicit it: InternetTalker): Future[LinkMark] =
+      it: InternetTalker,
+  )(implicit ec: ExecutionContext): Future[LinkMark] =
     if (l.isNew.isFalse) Future.successful(l.mark)
     else it.downloadDocument(l.link).map(extract(_) |> LinkMark.Text.apply)
 }

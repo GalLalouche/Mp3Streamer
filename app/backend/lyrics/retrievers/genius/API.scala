@@ -22,8 +22,9 @@ private class API @Inject() (
     @AccessToken accessToken: String,
     it: InternetTalker,
     scorer: StringReconScorer,
+    ec: ExecutionContext,
 ) {
-  private implicit val ec: ExecutionContext = it
+  private implicit val iec: ExecutionContext = ec
 
   def getLyricUrl(song: Song): FutureOption[Url] = OptionT {
     val query = (split(song.artistName) ++ split(song.title)).mkString("+")

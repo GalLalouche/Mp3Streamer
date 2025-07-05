@@ -12,8 +12,8 @@ import common.rich.func.RichOptionT._
 
 import common.io.InternetTalker
 
-private class SameHostExpanderHelper @Inject() (it: InternetTalker) {
-  private implicit val iec: ExecutionContext = it
+private class SameHostExpanderHelper @Inject() (it: InternetTalker, ec: ExecutionContext) {
+  private implicit val iec: ExecutionContext = ec
 
   def apply(
       documentToAlbumParser: DocumentToAlbumParser,

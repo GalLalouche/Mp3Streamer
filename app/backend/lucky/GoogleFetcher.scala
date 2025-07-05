@@ -24,13 +24,14 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
 private class GoogleFetcher @Inject() (
     it: InternetTalker,
     googleSearch: GoogleSearch,
+    ec: ExecutionContext,
 ) {
   def search(query: String): Future[String] =
     googleSearch(query, resultsPerQuery = 7).map(
       _.array("items").log(_.value.mkString("\n")).apply(0).str("link"),
     )
 
-  private implicit val iec: ExecutionContext = it
+  private implicit val iec: ExecutionContext = ec
 
   // Manually call google.com using I'm feeling lucky syntax and see if it redirects. The API call
   // is probably smarter, but I'm keeping this as reference.

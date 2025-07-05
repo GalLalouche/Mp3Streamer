@@ -22,10 +22,8 @@ import common.rich.primitives.RichBoolean
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 
-private class AllMusicHelper @Inject() (
-    it: InternetTalker,
-) {
-  private implicit val iec: ExecutionContext = it
+private class AllMusicHelper @Inject() (it: InternetTalker, ec: ExecutionContext) {
+  private implicit val iec: ExecutionContext = ec
   private val canonicalLink = Pattern.compile("[a-zA-Z\\-0-9]+-mw\\d+")
   private val allmusicPrefix = "(?:http://www.)?allmusic.com/album/"
   private val canonicalRe = s"$allmusicPrefix($canonicalLink)".r

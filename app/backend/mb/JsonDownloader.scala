@@ -19,8 +19,8 @@ import common.io.InternetTalker
 import common.rich.primitives.RichBoolean._
 
 @Singleton
-private class JsonDownloader @Inject() (it: InternetTalker) {
-  private implicit val ec: ExecutionContext = it
+private class JsonDownloader @Inject() (it: InternetTalker, ec: ExecutionContext) {
+  private implicit val iec: ExecutionContext = ec
 
   def apply(method: String, params: (String, String)*): Future[JsObject] =
     actor ! Input(method, params, times = 1)
