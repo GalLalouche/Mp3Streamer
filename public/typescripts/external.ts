@@ -116,7 +116,7 @@ class Helper {
         case "Artist":
           return buildResult(song.artistName, "artist")
         case "Album":
-          return buildResult(song.albumName, "release_group")
+          return buildResult(`${song.artistName} ${song.albumName}`, "release_group")
       }
     }
 
