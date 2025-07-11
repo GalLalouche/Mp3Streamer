@@ -44,8 +44,12 @@ class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
       .foreach($.setField(FieldKey.DISC_NO, _))
 
     val lowerCasedTitle = $.getFirst(FieldKey.TITLE).toLowerCase
-    if (isBonusTrack(lowerCasedTitle)) {
-      val titleWithoutLastParens = lowerCasedTitle.dropAfterLast('(').dropRight(2)
+    bonusTrackParens(lowerCasedTitle).foreach { p =>
+      val titleWithoutLastParens = lowerCasedTitle.dropAfterLast(p).dropRight(2)
+      assert(
+        titleWithoutLastParens.length < lowerCasedTitle.length - 2,
+        s"Invalid bonus parens character $p in $titleWithoutLastParens",
+      )
       set(FieldKey.TITLE, titleWithoutLastParens)
       $.setField(FieldKey.DISC_NO, "Bonus")
     }
@@ -65,7 +69,9 @@ class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
   }
 
   @VisibleForTesting
-  private[fixer] def isBonusTrack(s: String): Boolean = BonusTrackSuffixes.exists(s.endsWith)
+  // Returns the bracket type ('(', '[', '<') if bonus, otherwise, returns None
+  private[fixer] def bonusTrackParens(s: String): Option[Char] =
+    BonusTrackSuffixes.find(s endsWith _._2).map(_._1)
 
   def validFileName(requestedFileName: String): String =
     requestedFileName.removeAll(InvalidFileCharacters).replaceAll(MultiSpace, " ")
@@ -84,5 +90,5 @@ private object FixLabelsUtils {
   private val BonusTrackSuffixes = for {
     str <- Vector("bonus", "bonus track")
     (s, e) <- Vector(('(', ')'), ('[', ']'), ('<', '>))
-  } yield s"$s$str$e"
+  } yield (s, s"$s$str$e")
 }

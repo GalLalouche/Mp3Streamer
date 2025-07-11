@@ -37,6 +37,12 @@ class FixLabelsUtilsTest extends FreeSpec with AuxSpecs {
           getTagValue(tag)(FieldKey.DISC_NO) shouldReturn "Bonus"
           getTagValue(tag)(FieldKey.TITLE) shouldReturn "Hidden Track"
         }
+        "Bonus track suffix is added to disc number (brackets)" in {
+          val tag =
+            $.getFixedTag(getSongFile("songWithBonusTrackNameBrackets.mp3"), fixDiscNumber = false)
+          getTagValue(tag)(FieldKey.DISC_NO) shouldReturn "Bonus"
+          getTagValue(tag)(FieldKey.TITLE) shouldReturn "Hidden Track"
+        }
       }
       "When asked to fix discNumber" - {
         "String is unmodified" in {
@@ -70,10 +76,10 @@ class FixLabelsUtilsTest extends FreeSpec with AuxSpecs {
 
   "isBonusTrack" in {
     // Note that since this is an internal function, it expects a lower case string.
-    $.isBonusTrack("foo (bonus)") shouldReturn true
-    $.isBonusTrack("foo (bonus track)") shouldReturn true
-    $.isBonusTrack("foo [bonus]") shouldReturn true
-    $.isBonusTrack("foo [bonus track]") shouldReturn true
-    $.isBonusTrack("foo (bunos)") shouldReturn false
+    $.bonusTrackParens("foo (bonus)") shouldReturn Some('(')
+    $.bonusTrackParens("foo (bonus track)") shouldReturn Some('(')
+    $.bonusTrackParens("foo [bonus]") shouldReturn Some('[')
+    $.bonusTrackParens("foo [bonus track]") shouldReturn Some('[')
+    $.bonusTrackParens("foo (bunos)") shouldReturn None
   }
 }
