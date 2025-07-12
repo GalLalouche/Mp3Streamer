@@ -1,7 +1,11 @@
 package musicfinder
 
 import backend.module.FakeMusicFinder
+import backend.recon.Artist
+import com.google.common.collect.ImmutableBiMap
+import musicfinder.MusicFinder.DirectoryName
 import org.scalatest.{FreeSpec, OneInstancePerTest}
+import org.scalatest.OptionValues._
 
 import common.io.MemoryRoot
 import common.rich.collections.RichTraversableOnce._
@@ -14,6 +18,8 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
     override def flatGenres = Vector("d")
     (genresWithSubGenres ++ flatGenres).foreach(root.addSubDir)
     override val extensions = Set("mp3", "flac")
+    override val invalidDirectoryNames: ImmutableBiMap[DirectoryName, Artist] =
+      ImmutableBiMap.of("foo", Artist("bar"))
   }
 
   "getSongFilters" - {
@@ -69,6 +75,17 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
       d.addSubDir("d'").addSubDir("d''") // Flat artist without songs
 
       mf.albumDirs shouldMultiSetEqual Vector(artistWithSong, subGenreWithSong, flatArtistWithSong)
+    }
+  }
+
+  "findArtistDir" - {
+    "basic artist dir" in {
+      val c = root.addSubDir("a").addSubDir("b").addSubDir("c")
+      mf.findArtistDir(Artist("c")).value shouldReturn c
+    }
+    "Invalid directory name" in {
+      val foo = root.addSubDir("a").addSubDir("b").addSubDir("foo")
+      mf.findArtistDir(Artist("BaR")).value shouldReturn foo
     }
   }
 }

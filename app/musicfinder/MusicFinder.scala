@@ -29,8 +29,10 @@ trait MusicFinder { self =>
     def getDirs(xs: Seq[String]): Seq[S#D] = xs.view.map(getDir).flatMap(_.dirs)
     getDirs(genresWithSubGenres).flatMap(_.dirs) ++ getDirs(flatGenres)
   }
-  def findArtistDir(artist: Artist): Option[S#D] =
-    artistDirs.find(dir => artist == dirNameToArtist(dir.name))
+  def findArtistDir(artist: Artist): Option[S#D] = {
+    val expectedFolderName = invalidDirectoryNames.inverse.getOrDefault(artist, artist.name)
+    artistDirs.find(_.name.equalsIgnoreCase(expectedFolderName))
+  }
 
   def dirNameToArtist(name: DirectoryName): Artist =
     Artist(name).optionOrKeep(invalidDirectoryNames.get(_).opt)
