@@ -1,6 +1,6 @@
 package backend.new_albums
 
-import backend.recon.Artist
+import backend.recon.{Artist, ReconID}
 import com.google.inject.Inject
 import mains.fixer.StringFixer
 import models.TypeAliases.ArtistName
@@ -20,8 +20,6 @@ import common.json.RichJson._
 import common.json.ToJsonableOps._
 import common.rich.RichT._
 
-// FIXME This module returns StringFixed titles, but then we try to remove/ignore those entities, the name
-//  doesn't match the name in the database. A simple solution could be to use the original recon ID for that.
 class NewAlbumsFormatter @Inject() (
     ec: ExecutionContext,
     $ : NewAlbumsModel,
@@ -54,12 +52,8 @@ class NewAlbumsFormatter @Inject() (
 
   private def extractAlbum(json: JsValue): (Artist, String) =
     Artist(json.str("artistName")) -> json.str("title")
-  def removeAlbum(json: JsValue): Future[_] = {
-    val (artist, album) = extractAlbum(json)
-    $.removeAlbum(artist, album)
-  }
-  def ignoreAlbum(json: JsValue): Future[_] = {
-    val (artist, album) = extractAlbum(json)
-    $.ignoreAlbum(artist, album)
-  }
+  def removeAlbum(albumReconId: String): Future[_] =
+    $.removeAlbum(ReconID.validateOrThrow(albumReconId))
+  def ignoreAlbum(albumReconId: String): Future[_] =
+    $.ignoreAlbum(ReconID.validateOrThrow(albumReconId))
 }

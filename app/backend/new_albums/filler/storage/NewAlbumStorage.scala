@@ -3,7 +3,6 @@ package backend.new_albums.filler.storage
 import backend.new_albums.{AddedAlbumCount, ArtistNewAlbums, NewAlbum}
 import backend.new_albums.filler.NewAlbumRecon
 import backend.recon.{Artist, ReconID}
-import models.AlbumTitle
 
 import scala.concurrent.Future
 
@@ -24,6 +23,6 @@ private trait NewAlbumStorage extends Storage[ReconID, StoredNewAlbum] with NewA
   def storeNew(albums: Seq[NewAlbumRecon]): Future[AddedAlbumCount]
 
   def remove(artist: Artist): Future[Unit]
-  def remove(artist: Artist, title: AlbumTitle): Future[Unit]
-  def ignore(artist: Artist, title: AlbumTitle): Future[Unit]
+  def removeAlbum(reconID: ReconID): Future[Unit]
+  def ignoreAlbum(reconID: ReconID): Future[Unit]
 }

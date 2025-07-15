@@ -6,11 +6,10 @@ import backend.mb.AlbumType
 import backend.new_albums.NewAlbumsModel.{ArtistAlbums, ModelResult, NonIgnoredArtist, Unreconciled}
 import backend.new_albums.filler.NewAlbumFiller
 import backend.new_albums.filler.storage.FilledStorage
-import backend.recon.{Artist, IgnoredReconResult}
+import backend.recon.{Artist, IgnoredReconResult, ReconID}
 import backend.score.OptionalModelScore
 import com.google.inject.Inject
 import genre.{Genre, GenreFinder}
-import models.AlbumTitle
 import shapeless.syntax.std.tuple.productTupleOps
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -50,8 +49,8 @@ private class NewAlbumsModel @Inject() (
   def ignoreArtist(artist: Artist): Future[_] = storage.ignore(artist)
   def unignoreArtist(artist: Artist): Future[Seq[NewAlbum]] =
     storage.unignore(artist) >> albumsForArtist(artist)
-  def removeAlbum(artist: Artist, title: AlbumTitle): Future[_] = storage.remove(artist, title)
-  def ignoreAlbum(artist: Artist, title: AlbumTitle): Future[_] = storage.ignore(artist, title)
+  def removeAlbum(reconID: ReconID): Future[_] = storage.removeAlbum(reconID)
+  def ignoreAlbum(reconID: ReconID): Future[_] = storage.ignore(reconID)
 }
 
 private object NewAlbumsModel {

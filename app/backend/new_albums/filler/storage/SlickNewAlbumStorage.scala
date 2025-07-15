@@ -75,6 +75,7 @@ private class SlickNewAlbumStorage @Inject() (
       date = e._4,
       artist = e._5,
       albumType = AlbumType.withName(e._3),
+      reconID = e._1,
     ),
     isRemoved = e._6,
     isIgnored = e._7,
@@ -225,20 +226,19 @@ private class SlickNewAlbumStorage @Inject() (
 
   private def updateAlbum(
       f: EntityTable => Rep[Boolean],
-  )(artist: Artist, title: AlbumTitle): Future[Unit] = {
-    val filter = tableQuery.filter(e => e.artist === artist && e.album === title.toLowerCase)
+  )(reconID: ReconID): Future[Unit] = {
+    val filter = tableQuery.filter(_.reconId === reconID)
     for {
       albumExists <- db.run(filter.exists.result)
       _ <- Future
-        .failed(new IllegalArgumentException(s"Could not find album <${artist.name} - $title>"))
+        .failed(new IllegalArgumentException(s"Could not find album with ID <${reconID.id}>"))
         .whenMLazy(albumExists.isFalse)
       _ <- db.run(filter.map(f).update(true))
     } yield ()
   }
-  override def remove(artist: Artist, title: AlbumTitle) =
-    updateAlbum(_.isRemoved)(artist, title)
-  override def ignore(artist: Artist, title: AlbumTitle) =
-    remove(artist, title) >> updateAlbum(_.isIgnored)(artist, title)
+  override def removeAlbum(reconID: ReconID) = updateAlbum(_.isRemoved)(reconID)
+  override def ignoreAlbum(reconID: ReconID) =
+    removeAlbum(reconID) >> updateAlbum(_.isIgnored)(reconID)
   override def deleteAll(artist: Artist) =
     db.run(tableQuery.filter(e => e.artist === artist).delete).void
 }

@@ -44,6 +44,9 @@ export interface Album {
   readonly date: Date
   readonly albumType: AlbumType
 
+  // Relevant for new albums
+  readonly reconID?: string
+
   // Classical music fields
   readonly composer?: string
   readonly conductor?: string
@@ -51,6 +54,7 @@ export interface Album {
   readonly orchestra?: string
   readonly performanceYear?: number
   readonly discNumbers?: string[]
+
 }
 
 export interface Artist {

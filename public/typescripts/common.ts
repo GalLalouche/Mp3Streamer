@@ -141,6 +141,10 @@ function assert(condition: boolean, message?: string): asserts condition is true
   throw typeof Error === "undefined" ? message : new Error(message)
 }
 
+function assertDefined<A>(e: A | undefined): asserts e is A {
+  assert(isDefined(e))
+}
+
 class AssertionError extends Error {
   constructor(message?: string) {
     super(message || "AssertionError")
@@ -255,4 +259,8 @@ function isObject(e: any): e is object {
 
 function isFunction(e: any): e is Function {
   return typeof e == "function"
+}
+
+function isDefined<A>(e: A | undefined): e is A {
+  return e !== undefined
 }

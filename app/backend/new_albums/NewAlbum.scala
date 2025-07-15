@@ -4,7 +4,7 @@ import java.time.{Clock, LocalDate}
 import java.time.format.DateTimeFormatter
 
 import backend.mb.{AlbumType, MbAlbumMetadata}
-import backend.recon.{Album, Artist}
+import backend.recon.{Album, Artist, ReconID}
 import mains.fixer.StringFixer
 import models.TypeAliases.AlbumTitle
 import play.api.libs.json.{JsObject, Json}
@@ -24,6 +24,7 @@ case class NewAlbum(
     date: LocalDate,
     artist: Artist,
     albumType: AlbumType,
+    reconID: ReconID,
 ) {
   def isReleased(clock: Clock): Boolean = date <= clock.getLocalDate
 
@@ -34,7 +35,7 @@ case class NewAlbum(
 
 private object NewAlbum {
   def from(a: Artist, mb: MbAlbumMetadata): NewAlbum =
-    NewAlbum(mb.title, mb.releaseDate, a, mb.albumType)
+    NewAlbum(mb.title, mb.releaseDate, a, mb.albumType, mb.reconId)
 
   implicit object NewAlbumJsonable extends OJsonable[NewAlbum] {
     override def jsonify(a: NewAlbum) = Json.obj(
@@ -42,12 +43,14 @@ private object NewAlbum {
       "date" -> DateFormat.format(a.date),
       "artistName" -> a.artist.name,
       "albumType" -> a.albumType.toString,
+      "reconID" -> a.reconID.id,
     )
     override def parse(json: JsObject) = NewAlbum(
       title = json.str("title"),
       date = LocalDate.from(DateFormat.parse(json.str("date"))),
       artist = Artist(json.str("artistName")),
       albumType = AlbumType.withName(json.str("albumType")),
+      reconID = ReconID.validateOrThrow(json.str("reconID")),
     )
 
     private val DateFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd")

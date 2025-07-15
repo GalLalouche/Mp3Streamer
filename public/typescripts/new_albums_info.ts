@@ -19,14 +19,10 @@ function confirm(title: string, action: () => void): void {
     })
 }
 
-function ignoreAlbum(artist: string, album: string, elementToRemove: JQuery<HTMLElement>): void {
+function ignoreAlbum(artist: string, album: string, reconID: string, elementToRemove: JQuery<HTMLElement>): void {
   confirm(
     `ignore ${artist} - ${album}`,
-    () => putJson(
-      '/new_albums/album/ignore',
-      {artistName: artist, title: album},
-      () => elementToRemove.remove(),
-    ),
+    () => $.put(`/new_albums/album/ignore/${reconID}`, () => elementToRemove.remove()),
   )
 }
 
@@ -68,7 +64,9 @@ export function show(song: Song): void {
                        ${dateString} ${album.title} (${album.albumType}) <button>Ignore</button>
                      </span></li>`,
       )
-      li.on('click', 'button', () => ignoreAlbum(song.artistName, album.title, li))
+      const reconID = album.reconID
+      assertDefined(reconID)
+      li.on('click', 'button', () => ignoreAlbum(song.artistName, album.title, reconID, li))
       ul.append(li)
     })
     fieldSet.append(ul)

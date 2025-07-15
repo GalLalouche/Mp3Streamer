@@ -1,8 +1,7 @@
 package backend.new_albums.filler.storage
 
 import backend.new_albums.{ArtistNewAlbums, NewAlbum}
-import backend.recon.{Artist, IgnoredReconResult}
-import models.TypeAliases.AlbumTitle
+import backend.recon.{Artist, IgnoredReconResult, ReconID}
 
 import scala.concurrent.Future
 
@@ -22,6 +21,6 @@ private[new_albums] trait FilledStorage {
   def ignore(artist: Artist): Future[Unit]
   def isIgnored(artist: Artist): Future[IgnoredReconResult]
   def unignore(artist: Artist): Future[Unit]
-  def remove(artist: Artist, title: AlbumTitle): Future[Unit]
-  def ignore(artist: Artist, title: AlbumTitle): Future[Unit]
+  def removeAlbum(reconID: ReconID): Future[Unit]
+  def ignore(reconID: ReconID): Future[Unit]
 }

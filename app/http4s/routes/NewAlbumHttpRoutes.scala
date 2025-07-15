@@ -3,7 +3,7 @@ package http4s.routes
 import backend.new_albums.NewAlbumsFormatter
 import cats.effect.IO
 import com.google.inject.Inject
-import http4s.routes.Http4sUtils.{fromFuture, fromFutureIO, jsonEncoder, parseJson}
+import http4s.routes.Http4sUtils.{fromFuture, fromFutureIO, jsonEncoder}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 
@@ -31,9 +31,9 @@ private class NewAlbumHttpRoutes @Inject() ($ : NewAlbumsFormatter, ec: Executio
       fromFuture($.ignoreArtist(artist)) *> NoContent()
     case PUT -> Root / "artist" / "unignore" / artist =>
       fromFuture($.unignoreArtist(artist)) *> NoContent()
-    case req @ PUT -> Root / "album" / "remove" =>
-      parseJson(req, json => fromFuture($.removeAlbum(json)) >> NoContent())
-    case req @ PUT -> Root / "album" / "ignore" =>
-      parseJson(req, json => fromFuture($.ignoreAlbum(json)) >> NoContent())
+    case req @ PUT -> Root / "album" / "remove" / albumReconId =>
+      fromFuture($.removeAlbum(albumReconId)) *> NoContent()
+    case req @ PUT -> Root / "album" / "ignore" / albumReconId =>
+      fromFuture($.ignoreAlbum(albumReconId)) *> NoContent()
   }
 }
