@@ -10,7 +10,7 @@ import mains.{IOUtils, MainsModule}
 import mains.cover.{CoverException, DownloadCover}
 import mains.fixer.FolderFixer.{Overwrite, TempLarge}
 import models.ArtistName
-import musicfinder.{ArtistFinder, SongDirectoryParser}
+import musicfinder.{ArtistFinder, ArtistNameNormalizer, SongDirectoryParser}
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,6 +33,7 @@ private[mains] class FolderFixer @Inject() private (
     fixLabels: FixLabels,
     songDirectoryParser: SongDirectoryParser,
     artistFinder: ArtistFinder,
+    artistNameNormalizer: ArtistNameNormalizer,
     it: InternetTalker,
     foobarGain: FoobarGain,
     downloader: DownloadCover,
@@ -74,7 +75,7 @@ private[mains] class FolderFixer @Inject() private (
       destination ||||
         NewArtistFolderCreator
           .selectGenreDirAndPopupBrowser(artist)
-          .map(_.addSubDir(stringFixer(artistFinder.normalizeArtistName(artist))))
+          .map(_.addSubDir(stringFixer(artistNameNormalizer(artist))))
     folderImageMover <- folderImage
     fixed <- fixedDirectory
   } yield {

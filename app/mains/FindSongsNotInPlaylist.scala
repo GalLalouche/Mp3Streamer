@@ -3,7 +3,10 @@ package mains
 import java.io.File
 import java.time.Duration
 
-import musicfinder.IOMusicFinder
+import backend.module.StandaloneModule
+import com.google.inject.Guice
+import musicfinder.{ArtistNameNormalizer, IOMusicFinder}
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 import common.rich.func.ToMoreMonoidOps._
 import common.rich.func.ToTraverseMonadPlusOps._
@@ -16,14 +19,15 @@ import common.rich.primitives.RichString._
 
 // finds songs that are in the music directory but are not saved in the playlist file
 object FindSongsNotInPlaylist {
-  private val musicFiles = new IOMusicFinder {
-    override val extensions =
-      Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg", "m4a")
-    override val unsupportedExtensions = Set()
-  }
   private val UtfBytemarkPrefix = 65279
   private def normalizePath(s: String) = s.toLowerCase.simpleReplace("""\""", "/")
   def main(args: Array[String]): Unit = {
+    val artistNameNormalizer = Guice.createInjector(StandaloneModule).instance[ArtistNameNormalizer]
+    val musicFiles = new IOMusicFinder(artistNameNormalizer) {
+      override val extensions =
+        Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg", "m4a")
+      override val unsupportedExtensions = Set()
+    }
     val file = musicFiles.baseDir.addFile("playlist.m3u8").file
     if (Duration.ofMillis(System.currentTimeMillis() - file.lastModified()).toHours > 1)
       throw new IllegalStateException("Please update the playlist file.")

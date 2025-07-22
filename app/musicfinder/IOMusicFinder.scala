@@ -1,14 +1,20 @@
 package musicfinder
 
 import com.google.common.collect.BiMap
+import com.google.inject.Inject
+import models.ArtistName
 import musicfinder.MusicFinder.DirectoryName
 
 import common.io.{BaseDirectory, IODirectory, IOSystem, JsonMapFile}
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 /** Can be extended to override its values in scripts. */
-class IOMusicFinder(@BaseDirectory override val baseDir: IODirectory) extends MusicFinder {
-  def this() = this(IOMusicFinderModule.BaseDir)
+class IOMusicFinder @Inject() (
+    @BaseDirectory override val baseDir: IODirectory,
+    artistNameNormalizer: ArtistNameNormalizer,
+) extends MusicFinder {
+  protected def this(artistNameNormalizer: ArtistNameNormalizer) =
+    this(IOMusicFinderModule.BaseDir, artistNameNormalizer)
   final override type S = IOSystem
   protected override def genresWithSubGenres: Seq[String] = Vector("Rock", "Metal")
   override def flatGenres: Seq[String] = Vector("New Age", "Jazz", "Musicals", "Classical")
@@ -17,10 +23,12 @@ class IOMusicFinder(@BaseDirectory override val baseDir: IODirectory) extends Mu
   override val unsupportedExtensions = IOMusicFinder.unsupportedExtensions
   protected override def invalidDirectoryNames: BiMap[DirectoryName, backend.recon.Artist] =
     IOMusicFinder.invalidDirectoryNames
+  protected override def normalizeArtistName(name: ArtistName): DirectoryName =
+    artistNameNormalizer(name)
 }
 
 object IOMusicFinder {
-  private lazy val invalidDirectoryNames: BiMap[DirectoryName, backend.recon.Artist] =
+  lazy val invalidDirectoryNames: BiMap[DirectoryName, backend.recon.Artist] =
     JsonMapFile
       .readJsonMap(getClass.getResourceAsStream("directory_renames.json"))
       .mapValues(backend.recon.Artist(_))

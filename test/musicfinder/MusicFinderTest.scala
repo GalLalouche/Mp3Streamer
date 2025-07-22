@@ -3,6 +3,7 @@ package musicfinder
 import backend.module.FakeMusicFinder
 import backend.recon.Artist
 import com.google.common.collect.ImmutableBiMap
+import models.ArtistName
 import musicfinder.MusicFinder.DirectoryName
 import org.scalatest.{FreeSpec, OneInstancePerTest}
 import org.scalatest.OptionValues._
@@ -20,6 +21,11 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
     override val extensions = Set("mp3", "flac")
     override val invalidDirectoryNames: ImmutableBiMap[DirectoryName, Artist] =
       ImmutableBiMap.of("foo", Artist("bar"))
+    override def normalizeArtistName(x: ArtistName) = x match {
+      case "foo" => "FOO"
+      case "moo" => "bazz"
+      case x => x
+    }
   }
 
   "getSongFilters" - {
@@ -82,6 +88,10 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
     "basic artist dir" in {
       val c = root.addSubDir("a").addSubDir("b").addSubDir("c")
       mf.findArtistDir(Artist("c")).value shouldReturn c
+    }
+    "Normalized directory name" in {
+      val foo = root.addSubDir("a").addSubDir("b").addSubDir("bazz")
+      mf.findArtistDir(Artist("moo")).value shouldReturn foo
     }
     "Invalid directory name" in {
       val foo = root.addSubDir("a").addSubDir("b").addSubDir("foo")

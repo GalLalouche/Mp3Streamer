@@ -2,6 +2,7 @@ package musicfinder
 
 import backend.recon.Artist
 import com.google.common.collect.BiMap
+import models.ArtistName
 import musicfinder.MusicFinder.DirectoryName
 
 import common.ds.Types.ViewSeq
@@ -30,9 +31,12 @@ trait MusicFinder { self =>
     getDirs(genresWithSubGenres).flatMap(_.dirs) ++ getDirs(flatGenres)
   }
   def findArtistDir(artist: Artist): Option[S#D] = {
-    val expectedFolderName = invalidDirectoryNames.inverse.getOrDefault(artist, artist.name)
+    val expectedFolderName =
+      invalidDirectoryNames.inverse.getOrDefault(artist, normalizeArtistName(artist.name))
     artistDirs.find(_.name.equalsIgnoreCase(expectedFolderName))
   }
+
+  protected def normalizeArtistName(name: ArtistName): DirectoryName
 
   def dirNameToArtist(name: DirectoryName): Artist =
     Artist(name).optionOrKeep(invalidDirectoryNames.get(_).opt)
