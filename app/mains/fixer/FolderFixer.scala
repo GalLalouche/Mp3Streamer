@@ -74,7 +74,7 @@ private[mains] class FolderFixer @Inject() private (
       destination ||||
         NewArtistFolderCreator
           .selectGenreDirAndPopupBrowser(artist)
-          .map(_.addSubDir(stringFixer(artist)))
+          .map(_.addSubDir(stringFixer(artistFinder.normalizeArtistName(artist))))
     folderImageMover <- folderImage
     fixed <- fixedDirectory
   } yield {
