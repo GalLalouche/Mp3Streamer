@@ -74,7 +74,7 @@ export function show(song: Song): void {
 
   fieldSet.empty()
   fieldSet.append(elem("legend", `Fetching new albums for artist...`))
-  const requestUrl = "new_albums/albums/" + song.artistName
+  const requestUrl = "new_albums/albums/" + encodeURI(song.artistName)
   $.get(requestUrl, function (albums: string | Album[]) {
     fieldSet.empty()
     if (albums !== "IGNORED") {
