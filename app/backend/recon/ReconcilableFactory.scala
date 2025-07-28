@@ -18,6 +18,7 @@ class ReconcilableFactory @Inject() (
     songDirectoryParser: SongDirectoryParser,
 ) {
   private type S = mf.S
+  @deprecated("The logic here is wrong as many artists have different folder names")
   def toArtist(dir: DirectoryRef): Artist = mf.dirNameToArtist(dir.name)
   // This is Try so the error could be reserved.
   def toAlbum(dir: DirectoryRef): Try[Album] =

@@ -1,7 +1,6 @@
 package backend.search.cache
 
 import com.google.inject.Inject
-
 import models.{AlbumDir, ArtistDir, Song}
 
 import common.TimedLogger

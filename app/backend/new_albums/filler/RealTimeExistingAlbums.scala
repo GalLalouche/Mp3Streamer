@@ -10,6 +10,12 @@ import common.TimedLogger
 import common.rich.RichFuture.richFuture
 import common.rich.primitives.RichOption.richOption
 
+/**
+ * By RealTime, we mean that nothing is actually cached, rather, the artist and albums are fetched
+ * from disk everytime these methods are called. Not very good performance, but ensure results are
+ * up to date, which makes it better for a running server (or at least easier, since we don't have
+ * to invalidate caches).
+ */
 private class RealTimeExistingAlbums @Inject() (
     reconcilableFactory: ReconcilableFactory,
     mf: MusicFinder,
