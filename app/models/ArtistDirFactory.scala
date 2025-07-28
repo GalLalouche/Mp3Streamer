@@ -14,8 +14,8 @@ class ArtistDirFactory @Inject() (
   def fromSong(song: Song): ArtistDir = {
     val artist = flu.validFileName(song.artistName.toLowerCase).toLowerCase
     @tailrec def go(file: PathRef): ArtistDir = file match {
-      case ref: DirectoryRef if ref.name.toLowerCase == artist =>
-        ArtistDir(ref.name, ref.dirs.map(af.fromDir).toSet)
+      case ref: DirectoryRef if ref.name.equalsIgnoreCase(artist) =>
+        ArtistDir(ref, ref.name, ref.dirs.map(af.fromDir).toSet)
       case _ => go(file.parent)
     }
     go(song.file)

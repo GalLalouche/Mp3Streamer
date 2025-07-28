@@ -60,8 +60,12 @@ class FakeModelFactory {
     opus,
     performanceYear,
   )
-  def artist(name: ArtistName = "artist", albums: Seq[AlbumDir] = Nil): ArtistDir =
-    ArtistDir(name, albums.toSet)
+  def artist(
+      dirName: String = UUID.randomUUID().toString,
+      name: ArtistName = "artist",
+      albums: Seq[AlbumDir] = Nil,
+  ): ArtistDir =
+    ArtistDir(root.addSubDir(dirName), name, albums.toSet)
   implicit val arbSong: Arbitrary[MemorySong] = Arbitrary(
     for {
       title <- arbitrary[SongTitle]

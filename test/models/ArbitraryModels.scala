@@ -52,6 +52,7 @@ object ArbitraryModels {
     opus,
     performanceYear,
   )
+  // TODO Doing IO here to create an actual directory is silly
   implicit lazy val arbAlbumDir: Gen[AlbumDir] = {
     val dir = TempDirectory()
     for {
@@ -61,8 +62,11 @@ object ArbitraryModels {
       songs <- arbitrary[Seq[Song]]
     } yield AlbumDir(IODirectory(dir), title, artistName, year, songs)
   }
-  implicit lazy val arbArtist: Gen[ArtistDir] = for {
-    name <- arbitraryString
-    albums <- arbitrary[Set[AlbumDir]]
-  } yield ArtistDir(name, albums)
+  implicit lazy val arbArtist: Gen[ArtistDir] = {
+    val dir = TempDirectory()
+    for {
+      name <- arbitraryString
+      albums <- arbitrary[Set[AlbumDir]]
+    } yield ArtistDir(IODirectory(dir), name, albums)
+  }
 }

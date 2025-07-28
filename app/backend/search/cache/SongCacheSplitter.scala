@@ -37,7 +37,9 @@ private class SongCacheSplitter @Inject() (
         }
         .toSet <| jsonableSaver.saveArray
 
-    val artists = albums.groupBy(_.artistName).map(Function.tupled(ArtistDir.apply))
+    val artists = albums.groupBy(_.toTuple(_.dir.parent, _.artistName)).map {
+      case ((dir, artistName), albums) => ArtistDir(dir, artistName, albums)
+    }
     jsonableSaver.saveArray[ArtistDir](artists)
   }
 }
