@@ -66,6 +66,7 @@ class JsonableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
   def loadObject[T: Jsonable: Manifest]: T =
     load.getOrThrow(new FileNotFoundException(s"Couldn't find file for type <$manifest>")).parse[T]
 
+  def exists[T: Jsonable: Manifest]: Boolean = lastUpdateTime.isDefined
   // Require T: Jsonable, otherwise T will always be inferred as Nothing
   def lastUpdateTime[T: Jsonable: Manifest]: Option[LocalDateTime] =
     workingDir.getFile(jsonFileName).map(_.lastModified)

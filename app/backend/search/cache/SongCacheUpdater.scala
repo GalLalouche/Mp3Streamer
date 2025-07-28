@@ -1,7 +1,7 @@
 package backend.search.cache
 
 import com.google.inject.Inject
-import models.ModelJsonable
+import models.{AlbumDir, ArtistDir, ModelJsonable, Song}
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
 
@@ -33,7 +33,13 @@ private[search] class SongCacheUpdater @Inject() (
           $.onCompleted()
           if (original == result) {
             scribe.info("No change in cache.")
-            return
+            if (
+              saver.exists[ArtistDir] && saver.exists[AlbumDir] && saver.exists[Song] && saver
+                .exists[SongCache]
+            )
+              return
+            else
+              scribe.info("Some indices are missing, recreating everything.")
           }
           original
             .getDeleted(result)
