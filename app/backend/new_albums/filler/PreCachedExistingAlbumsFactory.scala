@@ -2,13 +2,14 @@ package backend.new_albums.filler
 
 import backend.recon.{Artist, ReconcilableFactory}
 import com.google.inject.Inject
-import musicfinder.MusicFinder
+import musicfinder.ArtistDirsIndex
 
 import common.io.DirectoryRef
-import common.rich.RichT._
+import common.rich.RichT.richT
+import common.rich.primitives.RichOption.richOption
 
 private class PreCachedExistingAlbumsFactory @Inject() (
-    mf: MusicFinder,
+    artistDirsIndex: ArtistDirsIndex,
     reconcilableFactory: ReconcilableFactory,
 ) {
   def from(albums: Seq[DirectoryRef]) = new PreCachedExistingAlbums(
@@ -21,7 +22,9 @@ private class PreCachedExistingAlbumsFactory @Inject() (
   )
 
   def singleArtist(artist: Artist): PreCachedExistingAlbums = {
-    val artistDir = mf.findArtistDir(artist).get
-    from(artistDir.dirs.mapIf(_.isEmpty).to(Vector(artistDir)))
+    val artistDir: DirectoryRef = artistDirsIndex
+      .forArtist(artist)
+      .getOrThrow(s"Could not find directory for artist <${artist.name}>")
+    from((artistDir.dirs: Seq[DirectoryRef]).mapIf(_.isEmpty).to(Vector(artistDir)))
   }
 }

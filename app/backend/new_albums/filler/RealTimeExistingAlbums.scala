@@ -2,7 +2,8 @@ package backend.new_albums.filler
 
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import com.google.inject.Inject
-import musicfinder.{MusicFinder, SongDirectoryParser}
+import musicfinder.{ArtistDirsIndex, MusicFinder}
+import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
 
 import scala.concurrent.ExecutionContext
 
@@ -18,8 +19,8 @@ import common.rich.primitives.RichOption.richOption
  */
 private class RealTimeExistingAlbums @Inject() (
     reconcilableFactory: ReconcilableFactory,
+    artistDirsIndex: ArtistDirsIndex,
     mf: MusicFinder,
-    dirParser: SongDirectoryParser,
     timed: TimedLogger,
     manualAlbumsFinder: ManualAlbumsFinder,
     ec: ExecutionContext,
@@ -27,14 +28,14 @@ private class RealTimeExistingAlbums @Inject() (
   private implicit val iec: ExecutionContext = ec
   override def artists: Iterable[Artist] = timed("Fetching artists (lazy)", scribe.info(_)) {
     reconcilableFactory.artistDirectories.flatMap { artistDir =>
-      val albumDirs = artistDir.dirs
-      // "Standard" artists have albums prefixed with release year.
-      if (albumDirs.exists(_.name.take(4).forall(_.isDigit)))
-        Vector(reconcilableFactory.toArtist(artistDir))
-      else // Non-standard artists, e.g., DT Sides, don't.
-        albumDirs.map(dir =>
-          Artist(dirParser(dir).headOption.getOrThrow(s"Problem with $artistDir").artistName),
-        )
+      lazy val albumDir = artistDir.dirs.headOption.getOrThrow(s"Problem with $artistDir")
+      artistDirsIndex.forDir(artistDir) match {
+        case SingleArtist(artist) => Vector(artist)
+        case MultipleArtists(artists) => artists
+        case NoMatch =>
+          scribe.warn(s"Artist directory <${artistDir.path}> does not appear in index")
+          Vector(reconcilableFactory.extractArtistFromAlbumDir(albumDir))
+      }
     }.toVector
   }
 
@@ -44,5 +45,5 @@ private class RealTimeExistingAlbums @Inject() (
       .getOrThrow(s"Could not find albums for artist $artist")
 
   private def getAlbums(artist: Artist): Option[Set[Album]] =
-    mf.findArtistDir(artist).map(_.dirs.map(reconcilableFactory.toAlbum(_).get).toSet)
+    artistDirsIndex.forArtist(artist).map(_.dirs.map(reconcilableFactory.toAlbum(_).get).toSet)
 }

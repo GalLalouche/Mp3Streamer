@@ -1,6 +1,5 @@
 package backend.module
 
-import com.google.common.collect.ImmutableBiMap
 import models.{ArtistName, MemorySong, SongTagParser}
 import musicfinder.MusicFinder
 import musicfinder.MusicFinder.DirectoryName
@@ -34,6 +33,5 @@ class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder with 
   def copySong(path: Seq[String], s: MemorySong): MemorySong =
     copy(s, path.foldLeft(dirToAddSongsTo)(_ addSubDir _).addFile(s.file.name))
   override def apply(f: FileRef): MemorySong = pathToSongs(f.path)
-  protected override val invalidDirectoryNames = ImmutableBiMap.of()
   protected override def normalizeArtistName(name: ArtistName): DirectoryName = name
 }

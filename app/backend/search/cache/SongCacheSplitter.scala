@@ -2,6 +2,7 @@ package backend.search.cache
 
 import com.google.inject.Inject
 import models.{AlbumDir, ArtistDir, Song}
+import musicfinder.ArtistDirsIndex
 
 import common.TimedLogger
 import common.io.{IODirectory, IOFile, JsonableSaver}
@@ -14,6 +15,7 @@ import common.rich.RichT.richT
  */
 private class SongCacheSplitter @Inject() (
     jsonableSaver: JsonableSaver,
+    artistDirsIndexState: ArtistDirsIndex,
     timedLogger: TimedLogger,
 ) {
   def apply(cs: SongCache)(implicit
@@ -40,6 +42,7 @@ private class SongCacheSplitter @Inject() (
     val artists = albums.groupBy(_.toTuple(_.dir.parent, _.artistName)).map {
       case ((dir, artistName), albums) => ArtistDir(dir, artistName, albums)
     }
+    artistDirsIndexState.update(artists)
     jsonableSaver.saveArray[ArtistDir](artists)
   }
 }

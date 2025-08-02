@@ -52,7 +52,9 @@ object ArbitraryModels {
     opus,
     performanceYear,
   )
-  // TODO Doing IO here to create an actual directory is silly
+  // TODO Doing IO here to create an actual directory is silly, but many Jsonables create an
+  //  IODirectory from the path, so it needs to be a real directory... A better solution would be
+  //  to inject a filesystem or something.
   implicit lazy val arbAlbumDir: Gen[AlbumDir] = {
     val dir = TempDirectory()
     for {

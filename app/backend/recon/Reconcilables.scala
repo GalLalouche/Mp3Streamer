@@ -108,7 +108,7 @@ object YearlessTrack {
 
 object Reconcilable {
   implicit class SongExtractor(s: Song) {
-    lazy val artist = new Artist(s.artistName)
+    lazy val artist: Artist = Artist(s.artistName)
     lazy val release = new Album(s.albumName, s.year, artist)
     lazy val track = new Track(s.title, release)
   }

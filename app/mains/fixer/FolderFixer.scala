@@ -3,6 +3,8 @@ package mains.fixer
 import java.net.ConnectException
 
 import backend.FutureOption
+import backend.recon.Artist
+import backend.recon.Reconcilable.SongExtractor
 import better.files.File.CopyOptions
 import com.google.inject.{Guice, Inject}
 import io.lemonlabs.uri.Url
@@ -10,7 +12,7 @@ import mains.{IOUtils, MainsModule}
 import mains.cover.{CoverException, DownloadCover}
 import mains.fixer.FolderFixer.{Overwrite, TempLarge}
 import models.ArtistName
-import musicfinder.{ArtistFinder, ArtistNameNormalizer, SongDirectoryParser}
+import musicfinder.{ArtistDirsIndex, ArtistNameNormalizer, SongDirectoryParser}
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +34,7 @@ import common.rich.primitives.RichOption.richOption
 private[mains] class FolderFixer @Inject() private (
     fixLabels: FixLabels,
     songDirectoryParser: SongDirectoryParser,
-    artistFinder: ArtistFinder,
+    artistDirsIndex: ArtistDirsIndex,
     artistNameNormalizer: ArtistNameNormalizer,
     it: InternetTalker,
     foobarGain: FoobarGain,
@@ -47,7 +49,7 @@ private[mains] class FolderFixer @Inject() private (
     val folderImage = downloadCover(folder)
     println("fixing directory")
     val fixedDirectory = Future(fixLabels.fix(cloneDir(folder)))
-    moveDirectory(artist, destination.map(_.dir), folderImage, fixedDirectory)
+    moveDirectory(artist.name, destination.map(_.dir), folderImage, fixedDirectory)
       .map(finish(folder, _))
       .>>(updateServer())
       .get
@@ -60,13 +62,13 @@ private[mains] class FolderFixer @Inject() private (
    */
   def replace(folder: Directory): Unit = {
     val (artist, destination) = findArtistDirectory(folder)
-    replaceDirectory(artist, destination, Future(fixLabels.fix(cloneDir(folder))))
+    replaceDirectory(artist.name, destination, Future(fixLabels.fix(cloneDir(folder))))
       .map(finish(folder, _))
       .get
   }
 
   private def moveDirectory(
-      artist: String,
+      artist: ArtistName,
       destination: FutureOption[Directory],
       folderImage: Future[Directory => Unit],
       fixedDirectory: Future[FixedDirectory],
@@ -133,9 +135,9 @@ private[mains] class FolderFixer @Inject() private (
       .listenError(e => println("Failed to update server: " + e.getMessage))
   }
 
-  private def findArtistDirectory(folder: Directory): (ArtistName, FutureOption[IODirectory]) = {
-    val artist = songDirectoryParser(IODirectory(folder)).head.artistName
-    (artist, OptionT(Future(artistFinder(artist).map(_.asInstanceOf[IODirectory]))))
+  private def findArtistDirectory(folder: Directory): (Artist, FutureOption[IODirectory]) = {
+    val artist = songDirectoryParser(IODirectory(folder)).head.artist
+    (artist, OptionT(Future(artistDirsIndex.forArtist(artist).map(_.asInstanceOf[IODirectory]))))
   }
 
   private def cloneDir(dir: Directory): Directory = {

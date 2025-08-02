@@ -6,14 +6,17 @@ import backend.recon.Reconcilable.SongExtractor
 import com.google.inject.{Guice, Inject}
 import me.tongfei.progressbar.ProgressBar
 import models.IOSongTagParser
-import musicfinder.IOMusicFinder
+import musicfinder.{ArtistDirsIndex, IOMusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+
+import scala.collection.mutable.ArrayBuffer
 
 import common.io.DirectoryRef
 
 private class FindArtistWithMismatchedFolderName @Inject() (
     mf: IOMusicFinder,
     rf: ReconcilableFactory,
+    artistDirsIndex: ArtistDirsIndex,
 ) {
   def go: (ProgressBar, Seq[(Artist, DirectoryRef)]) = {
     val pb = new ProgressBar("Traversing directories", mf.artistDirs.length)
@@ -22,7 +25,11 @@ private class FindArtistWithMismatchedFolderName @Inject() (
       for {
         artistDir <- mf.artistDirs
         _ = pb.step()
-        artist = rf.toArtist(artistDir)
+        artist = ???
+        // artistDirsIndex
+        //  .forDir(artistDir)
+        //  .asInstanceOf[SingleArtist]
+        //  .artist
         mismatchedArtist <-
           artistDir.deepDirs
             .+:(artistDir)
@@ -44,12 +51,15 @@ private object FindArtistWithMismatchedFolderName {
         .createInjector(StandaloneModule)
         .instance[FindArtistWithMismatchedFolderName]
         .go
-    println(
-      dirs
-        .map { case (a, d) => s""""${d.name}" -> "${a.name}",""" }
-        .toVector
-        .mkString("\n"),
-    )
+
+    val buffer = new ArrayBuffer[String]()
+    for ((a, d) <- dirs) {
+      val s = s""""${d.name}" -> "${a.name}","""
+      buffer += s
+      println(s)
+    }
+    println("Summary:")
+    println(buffer.mkString("\n"))
     pb.close()
   }
 }
