@@ -71,6 +71,7 @@ object IOFile {
 }
 
 class IODirectory private (val dir: Directory) extends IOPath(dir.dir) with DirectoryRef {
+  override def hasParent = dir.dir.getParent != null
   override def addFile(name: String) = IOFile(dir.addFile(name))
   private def optionalFile(name: String): Option[File] =
     Option(new File(dir.dir, name)).filter(_.exists)
@@ -82,7 +83,6 @@ class IODirectory private (val dir: Directory) extends IOPath(dir.dir) with Dire
   override def dirs = dir.dirs.map(new IODirectory(_))
   override def files = dir.files.map(IOFile.apply)
   override def lastModified: LocalDateTime = dir.dir |> FileUtils.lastModified
-  override def hasParent = dir.dir.getParentFile != null
   override def deepDirs: Seq[IODirectory] = dir.deepDirs.map(new IODirectory(_))
   override def deepFiles: Seq[IOFile] = dir.deepFiles.map(new IOFile(_))
 

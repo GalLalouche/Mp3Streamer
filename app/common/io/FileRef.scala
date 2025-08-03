@@ -19,8 +19,10 @@ trait PathRef {
   def path: String
   def name: String
   override def toString: String = s"${this.simpleName}: $path"
+  /** Will throw on root. */
   def parent: S#D
   def parents: Seq[S#D]
+  def hasParent: Boolean
 }
 
 /** Must exist. */
@@ -56,6 +58,7 @@ trait FileRef extends PathRef {
   def delete: Boolean
 
   override def parents = parent +: parent.parents.asInstanceOf[Seq[S#D]]
+  override val hasParent = true
 }
 
 /** Must exist. */
@@ -76,7 +79,6 @@ trait DirectoryRef extends PathRef { self =>
   }
   def deepFiles: Seq[S#F] = files ++ dirs.flatMap(_.deepFiles).asInstanceOf[Seq[S#F]]
   def lastModified: LocalDateTime
-  def hasParent: Boolean
   // TODO freaking unfoldables already
   override def parents =
     Stream
