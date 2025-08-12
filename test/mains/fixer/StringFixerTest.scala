@@ -128,4 +128,8 @@ class StringFixerTest extends FreeSpec with AuxSpecs {
     verifyEmptyFix("アン")
     verifyEmptyFix("한국")
   }
+
+  "Ellipsis" in {
+    verifyFix("…And the blind one came", "...And the Blind One Came")
+  }
 }

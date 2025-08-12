@@ -24,7 +24,8 @@ class StringFixer @Inject() (detectLanguage: DetectLanguage) extends (String => 
     if (s.isWhitespaceOrEmpty)
       return s
     val withoutSpecialCharacters =
-      s.replaceAll(SpecialQuotes, "'") |> normalizeDashesAndApostrophes |> StringUtils.stripAccents
+      s.replaceAll(SpecialQuotes, "'")
+        .replace("…", "...") |> normalizeDashesAndApostrophes |> StringUtils.stripAccents
     withoutSpecialCharacters.keepAscii
       .mapIf(_.length < withoutSpecialCharacters.length)
       .to(
