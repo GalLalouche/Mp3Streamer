@@ -33,10 +33,7 @@ private object AlbumParser {
   }
 
   private def parseDate(js: JsValue): Option[LocalDate] = {
-    val $ = js
-      .ostr(ReleaseDate)
-      .flatMap(DateFormatter.parse)
-      .map(_.toLocalDate)
+    val $ = js.ostr(ReleaseDate).flatMap(DateFormatter.parse).map(_.toLocalDate)
     if (js.has(ReleaseDate) && $.isEmpty)
       // TODO replace logging with ADT Result type
       scribe.warn(s"Could not parse $ReleaseDate from <$js>")

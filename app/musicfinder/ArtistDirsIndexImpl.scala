@@ -21,7 +21,7 @@ import common.rich.primitives.RichBoolean.richBoolean
 private class ArtistDirsIndexImpl(
     dirToArtist: Map[DirectoryRef, Either[Artist, Seq[Artist]]],
     // This isn't a BiMap! Some dirs contain multiple artists (in which case, they won't be
-    // represented in the above Map.
+    // represented in the above Map).
     artistToDir: Map[Artist, DirectoryRef],
 ) {
   def forDir(dir: DirectoryRef): ArtistDirResult =

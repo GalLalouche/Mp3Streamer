@@ -2,8 +2,8 @@ package backend.new_albums.filler
 
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import com.google.inject.Inject
-import musicfinder.{ArtistDirsIndex, MusicFinder}
 import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
+import musicfinder.ArtistDirsIndex
 
 import scala.concurrent.ExecutionContext
 
@@ -20,7 +20,6 @@ import common.rich.primitives.RichOption.richOption
 private class RealTimeExistingAlbums @Inject() (
     reconcilableFactory: ReconcilableFactory,
     artistDirsIndex: ArtistDirsIndex,
-    mf: MusicFinder,
     timed: TimedLogger,
     manualAlbumsFinder: ManualAlbumsFinder,
     ec: ExecutionContext,

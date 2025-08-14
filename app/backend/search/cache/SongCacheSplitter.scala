@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import models.{AlbumDir, ArtistDir, Song}
 import musicfinder.ArtistDirsIndex
 
-import common.TimedLogger
 import common.io.{IODirectory, IOFile, JsonableSaver}
 import common.json.Jsonable
 import common.rich.RichT.richT
@@ -16,7 +15,6 @@ import common.rich.RichT.richT
 private class SongCacheSplitter @Inject() (
     jsonableSaver: JsonableSaver,
     artistDirsIndexState: ArtistDirsIndex,
-    timedLogger: TimedLogger,
 ) {
   def apply(cs: SongCache)(implicit
       songJsonable: Jsonable[Song],

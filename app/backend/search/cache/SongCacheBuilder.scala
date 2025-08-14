@@ -7,10 +7,13 @@ import models.SongTagParser
 import musicfinder.MusicFinder
 import rx.lang.scala.Observable
 
+import scalaz.Scalaz.ToBooleanOpsFromBoolean
+
 import common.TimedLogger
 import common.concurrency.report.ReportObservable
 import common.concurrency.report.ReportObservable.ReportObservable
 import common.io.FileRef
+import common.rich.RichT.richT
 import common.rich.RichTime.RichClock
 
 private class SongCacheBuilder @Inject() (
@@ -19,18 +22,15 @@ private class SongCacheBuilder @Inject() (
     clock: Clock,
     timedLogger: TimedLogger,
 ) {
-  def updating(cache: SongCache): ReportObservable[TimestampedSong, SongCache] =
+  def updating(sc: SongCache): ReportObservable[TimestampedSong, SongCache] =
     ReportObservable.filteringAggregator(
       observable = {
         val songFiles = timedLogger("fetching song files", scribe.info(_))(
           Observable.from(mf.getSongFiles.toVector),
         )
-        songFiles.map { f =>
-          val needsUpdate = cache.needsUpdate(f)
-          (needsUpdate, if (needsUpdate) extractSongMetadata(f) else cache.get(f).get)
-        }
+        songFiles.map(f => sc.needsUpdate(f) :-> (_.fold(extractSongMetadata(f), sc.get(f).get)))
       },
-      finisher = SongCache.apply,
+      finisher = SongCache.from,
     )
 
   private def extractSongMetadata(f: FileRef) =

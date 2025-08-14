@@ -26,8 +26,7 @@ private[search] class SongCacheUpdater @Inject() (
       builder.updating(original)(new ReportObserver[TimestampedSong, SongCache] {
         override def onStep(a: TimestampedSong) = {
           $.onNext(a)
-          // TODO replace with logger
-          println(a)
+          scribe.trace(a.toString)
         }
         override def onComplete(result: SongCache): Unit = {
           $.onCompleted()
