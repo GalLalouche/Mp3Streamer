@@ -2,10 +2,12 @@ package musicfinder
 
 import backend.module.TestModuleConfiguration
 import backend.recon.Artist
+import genre.GenreFinder
 import models.ArtistDir
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.FreeSpec
 import org.scalatest.Inspectors.forAll
+import org.scalatest.OptionValues._
 
 import scala.concurrent.ExecutionContext
 
@@ -32,7 +34,7 @@ class ArtistDirsIndexTest extends FreeSpec with AuxSpecs {
           ArtistToDirectory(Artist("moo"), dir2),
         ),
       )
-    new ArtistDirsIndex(saver, injector.instance[ExecutionContext])
+    new ArtistDirsIndex(saver, injector.instance[GenreFinder], injector.instance[ExecutionContext])
   }
 
   "initial value" - {
@@ -71,5 +73,20 @@ class ArtistDirsIndexTest extends FreeSpec with AuxSpecs {
     "no match" in {
       forAll(Vector(dir1, dir2, dir3))($.forDir(_) shouldReturn ArtistDirResult.NoMatch)
     }
+  }
+
+  "update with repeats" in {
+    val saver = new JsonableSaver(new MemoryRoot)
+    val dir1 = IODirectory(TempDirectory())
+    val dir2 = IODirectory(TempDirectory())
+    lazy val $ = setup(saver)
+    $.update(
+      Vector(
+        ArtistDir(dir1, "foo", Set()),
+        ArtistDir(dir1, "FoO", Set()),
+        ArtistDir(dir2, "Bar", Set()),
+      ),
+    )
+    $.forArtist(Artist("fOo")).value shouldReturn dir1
   }
 }

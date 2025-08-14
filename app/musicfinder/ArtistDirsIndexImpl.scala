@@ -1,6 +1,7 @@
 package musicfinder
 
 import backend.recon.Artist
+import genre.GenreFinder
 import models.ArtistDir
 import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
 
@@ -8,6 +9,8 @@ import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
 import scalaz.Scalaz.{optionInstance, ToFunctorOps}
 
 import common.io.{DirectoryRef, JsonableSaver}
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rich.primitives.RichBoolean.richBoolean
 
 /**
  * Unfortunately, this isn't as trivial `Artist(dir.name)`, since many artists have a directory name
@@ -28,8 +31,30 @@ private class ArtistDirsIndexImpl(
 
 private object ArtistDirsIndexImpl {
   def load(saver: JsonableSaver): ArtistDirsIndexImpl = from(saver.loadArray[ArtistToDirectory])
-  def from(artistDirs: Iterable[ArtistDir], saver: JsonableSaver): ArtistDirsIndexImpl = {
-    val artistToDirectories = artistDirs.view.map(ArtistToDirectory.from).toVector
+  def from(
+      artistDirs: Iterable[ArtistDir],
+      saver: JsonableSaver,
+      genreFinder: GenreFinder,
+  ): ArtistDirsIndexImpl = {
+    val artistToDirectories =
+      artistDirs.view
+        .map(ArtistToDirectory.from)
+        .groupBy(_.artist)
+        .map { case (a, dirs) =>
+          val dir = dirs.view.map(_.dir).toVector.distinct match {
+            case Vector(dir) => dir
+            case dirs =>
+              if (dirs.existsNot(genreFinder.isClassical))
+                // Classical tracks are often sorted by composer, not (performing) artist.
+                scribe.debug(s"Multiple dirs found for artist <$a>: $dirs")
+              // Having multiple dirs for a single artists can stem from them being listed in a
+              // split in another artist's directory, or song files appearing at the top level.
+              // So we just take the biggest directory in this case.
+              dirs.minBy(_.deepFiles.size)
+          }
+          ArtistToDirectory(a, dir)
+        }
+        .toVector
     saver.saveArray(artistToDirectories)
     from(artistToDirectories)
   }
@@ -37,14 +62,20 @@ private object ArtistDirsIndexImpl {
   private def from(
       artistToDirectories: Seq[ArtistToDirectory],
   )(implicit di: DummyImplicit): ArtistDirsIndexImpl = {
-    val dirToArtist =
+    val dirToArtist: Map[DirectoryRef, Either[Artist, Vector[Artist]]] =
       artistToDirectories
         .groupBy(_.dir)
-        .mapValues(_.view.map(_.artist).toVector match {
-          case Vector(e) => Left(e)
-          case v => Right(v.ensuring(_.nonEmpty))
-        })
-    val artistToDir = dirToArtist.flatMap(e => e._2.swap.toOption.strengthR(e._1))
+        .map { case (k, v) =>
+          k -> (v.view.map(_.artist).toVector match {
+            case Vector(e) => Left(e)
+            case v =>
+              if (v.allUnique.isFalse)
+                scribe.warn(s"Multiple repeating artists found for directory <$k>")
+              Right(v.ensuring(_.nonEmpty))
+          })
+        }
+    val artistToDir: Map[Artist, DirectoryRef] =
+      dirToArtist.flatMap(e => e._2.swap.toOption.strengthR(e._1))
     new ArtistDirsIndexImpl(dirToArtist, artistToDir)
   }
 }

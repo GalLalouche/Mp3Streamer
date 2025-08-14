@@ -1,6 +1,7 @@
 package genre
 
 import com.google.inject.Inject
+import genre.Genre.Classical
 
 import common.io.DirectoryRef
 
@@ -9,6 +10,7 @@ class GenreFinder @Inject() (stringGenreFinder: StringGenreFinder) {
     stringGenreFinder.forArtist(artist).map(from)
 
   def apply(dir: DirectoryRef): Genre = from(stringGenreFinder.forDir(dir))
+  def isClassical(dir: DirectoryRef): Boolean = dir.parents.exists(_.name == Classical.name)
 
   import Genre._
 
