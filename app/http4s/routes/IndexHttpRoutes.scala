@@ -15,7 +15,9 @@ import scalaz.Scalaz.ToFunctorOps
 /** Used for updating the search index from the client. */
 private class IndexHttpRoutes @Inject() ($ : IndexFormatter, ec: ExecutionContext) {
   private implicit val iec: ExecutionContext = ec
-  val routes: HttpRoutes[IO] = HttpRoutes.of[IO] { case GET -> Root / "index" =>
-    Ok(fromFuture($.index() >| "Done"))
+  private object ForceMatcher extends FlagQueryParamMatcher("force")
+  val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
+    case GET -> Root / "index" :? ForceMatcher(forceRefresh) =>
+      Ok(fromFuture($.index(forceRefresh) >| "Done"))
   }
 }

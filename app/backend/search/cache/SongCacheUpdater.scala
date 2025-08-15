@@ -19,7 +19,7 @@ private[search] class SongCacheUpdater @Inject() (
 ) {
   import ModelJsonable._
 
-  def go(): Observable[TimestampedSong] = {
+  def go(forceRefresh: Boolean): Observable[TimestampedSong] = {
     val original = saver.loadObject[SongCache]
     val $ = ReplaySubject[TimestampedSong]()
     ec.execute(() =>
@@ -34,10 +34,13 @@ private[search] class SongCacheUpdater @Inject() (
           if (original == result) {
             scribe.info("No change in cache.")
             if (
-              saver.exists[ArtistDir] && saver.exists[AlbumDir] && saver.exists[Song] && saver
-                .exists[SongCache]
+              saver.exists[ArtistDir] && saver.exists[AlbumDir] && saver.exists[Song] &&
+              saver.exists[SongCache]
             )
-              return
+              if (forceRefresh)
+                scribe.info("Force refresh requested, recreating everything")
+              else
+                return
             else
               scribe.info("Some indices are missing, recreating everything.")
           }

@@ -15,4 +15,6 @@ object SimpleActor {
     new SimpleTypedActorImpl(name, f).void
   def async[Msg](name: String, f: Msg => Future[Any]): SimpleActor[Msg] =
     new SimpleTypedActorAsyncImpl(name, f).void
+  def unique[Msg](name: String, f: Msg => Any): SimpleActor[Msg] =
+    new UniqueSimpleTypedActorImpl(name, f).void
 }

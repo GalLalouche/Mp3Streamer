@@ -6,6 +6,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFunctorOps._
+import scalaz.Scalaz.ToFunctorOps
 
 import common.rich.RichT._
 
@@ -30,6 +31,8 @@ private class UniqueSimpleTypedActorImpl[Msg, Result](
         },
     )
   }
+
+  def void: SimpleActor[Msg] = UniqueSimpleTypedActorImpl.this.!(_).void
 
   protected def describeMessage(m: Msg): String = s"msg <$m>"
 }

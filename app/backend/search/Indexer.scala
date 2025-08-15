@@ -5,5 +5,5 @@ import com.google.inject.Inject
 import scala.concurrent.Future
 
 private class Indexer @Inject() (uniqifier: IndexerUniqifier) {
-  def index(): Future[_] = uniqifier.go()
+  def index(forceRefresh: Boolean): Future[_] = uniqifier.go(forceRefresh)
 }

@@ -12,7 +12,7 @@ import scala.util.Success
 import common.rich.func.BetterFutureInstances._
 import scalaz.Scalaz.ToBindOps
 
-import common.concurrency.Extra
+import common.concurrency.SimpleActor
 import common.io.DirectoryRef
 import common.rich.RichFuture.richFuture
 import common.rich.RichObservable.richObservable
@@ -32,18 +32,21 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
-  private val uniqueExtra = Extra.unique("Indexer extra uniqifier") {
-    val $ = Promise[Unit]()
-    songCacheUpdater
-      .go()
-      .groupByBuffer(_.song.toTuple(_.artistName, _.albumName))
-      .doOnNext(newDirObserver onNext _._2.mapSingle(_.file.parent))
-      .doOnCompleted($.complete(Success(Unit)))
-      .doOnCompleted(
-        songSelectorState.update() >> searchState.update() >> lastAlbumState.update(),
-      )
-      .subscribe()
-    $.future.get
-  }
-  def go(): Future[Unit] = uniqueExtra ! ()
+  private val uniqueExtra = SimpleActor.unique[Boolean](
+    "Indexer extra uniqifier",
+    forceRefresh => {
+      val $ = Promise[Unit]()
+      songCacheUpdater
+        .go(forceRefresh)
+        .groupByBuffer(_.song.toTuple(_.artistName, _.albumName))
+        .doOnNext(newDirObserver onNext _._2.mapSingle(_.file.parent))
+        .doOnCompleted($.complete(Success(Unit)))
+        .doOnCompleted(
+          songSelectorState.update() >> searchState.update() >> lastAlbumState.update(),
+        )
+        .subscribe()
+      $.future.get
+    },
+  )
+  def go(forceRefresh: Boolean): Future[Unit] = uniqueExtra ! forceRefresh
 }
