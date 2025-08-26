@@ -1,6 +1,8 @@
 package backend.logging
 
 import scribe.{Level, Logger}
+import scribe.format.Formatter
+import scribe.output.format.ANSIOutputFormat
 
 import common.rich.RichT.richT
 import common.rich.primitives.RichOption.richOption
@@ -29,6 +31,12 @@ object ScribeUtils {
     logger
       .clearHandlers()
       .clearModifiers()
-      .joinOption(level)((logger, level) => logger.withHandler(minimumLevel = Some(level)))
+      .joinOption(level)((logger, level) =>
+        logger.withHandler(
+          minimumLevel = Some(level),
+          formatter = Formatter.enhanced,
+          outputFormat = ANSIOutputFormat,
+        ),
+      )
       .replace()
 }
