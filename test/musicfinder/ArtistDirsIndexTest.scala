@@ -43,6 +43,9 @@ class ArtistDirsIndexTest extends FreeSpec with AuxSpecs {
       $.forDir(dir1) shouldReturn ArtistDirResult.MultipleArtists(
         Vector(Artist("foo"), Artist("bar")),
       )
+      $.forArtist(Artist("foo")).value shouldReturn dir1
+      $.forArtist(Artist("bar")).value shouldReturn dir1
+      $.forArtist(Artist("moo")).value shouldReturn dir2
     }
     "single" in {
       $.forDir(dir2) shouldReturn ArtistDirResult.SingleArtist(Artist("moo"))
@@ -84,9 +87,12 @@ class ArtistDirsIndexTest extends FreeSpec with AuxSpecs {
       Vector(
         ArtistDir(dir1, "foo", Set()),
         ArtistDir(dir1, "FoO", Set()),
-        ArtistDir(dir2, "Bar", Set()),
+        ArtistDir(dir1, "bAR", Set()),
+        ArtistDir(dir2, "Moo", Set()),
       ),
     )
     $.forArtist(Artist("fOo")).value shouldReturn dir1
+    $.forArtist(Artist("bar")).value shouldReturn dir1
+    $.forArtist(Artist("MOO")).value shouldReturn dir2
   }
 }

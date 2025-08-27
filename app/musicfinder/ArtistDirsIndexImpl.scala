@@ -6,9 +6,10 @@ import models.ArtistDir
 import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
 
 import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
-import scalaz.Scalaz.{optionInstance, ToFunctorOps}
+import scalaz.Scalaz.optionInstance
 
 import common.io.{DirectoryRef, JsonableSaver}
+import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichBoolean.richBoolean
 
@@ -59,11 +60,9 @@ private object ArtistDirsIndexImpl {
     from(artistToDirectories)
   }
 
-  private def from(
-      artistToDirectories: Seq[ArtistToDirectory],
-  )(implicit di: DummyImplicit): ArtistDirsIndexImpl = {
-    val dirToArtist: Map[DirectoryRef, Either[Artist, Vector[Artist]]] =
-      artistToDirectories
+  private def from(artistToDirectories: Seq[ArtistToDirectory])(implicit di: DummyImplicit) =
+    new ArtistDirsIndexImpl(
+      dirToArtist = artistToDirectories
         .groupBy(_.dir)
         .map { case (k, v) =>
           k -> (v.view.map(_.artist).toVector match {
@@ -73,9 +72,17 @@ private object ArtistDirsIndexImpl {
                 scribe.warn(s"Multiple repeating artists found for directory <$k>")
               Right(v.ensuring(_.nonEmpty))
           })
-        }
-    val artistToDir: Map[Artist, DirectoryRef] =
-      dirToArtist.flatMap(e => e._2.swap.toOption.strengthR(e._1))
-    new ArtistDirsIndexImpl(dirToArtist, artistToDir)
-  }
+        },
+      // TuplePLenses requires explicit types here for some reason :\
+      artistToDir = artistToDirectories.groupBy(_.artist).map(e => e._1 :-> toSingle(e._2)),
+    )
+
+  private def toSingle(xs: Seq[ArtistToDirectory])(artist: Artist): DirectoryRef =
+    xs.view.map(_.dir).toVector match {
+      case Vector(x) => x
+      case v =>
+        throw new IllegalArgumentException(
+          s"Expected a single directory for <$artist>, but found <$v>",
+        )
+    }
 }
