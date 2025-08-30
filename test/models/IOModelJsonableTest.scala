@@ -1,27 +1,36 @@
 package models
 
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.arbitrary
+import org.scalatest.OneInstancePerTest
+import org.scalatest.tags.Slow
 
 import scala.concurrent.duration.Duration
 
-import common.io.MemoryRoot
+import common.JsonableSpecs
+import common.io.{IODirectory, IOFile, IOPathRefFactory}
+import common.rich.path.TempDirectory
 
-object ArbitraryModels {
-  private implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])
+@Slow
+class IOModelJsonableTest extends JsonableSpecs with OneInstancePerTest {
+  import IOModelJsonableTest._
+  private val mj = new ModelJsonable(ModelJsonable.IOSongJsonParser, IOPathRefFactory)
+  import mj._
+  propJsonTest[Song]()
+  propJsonTest[AlbumDir]()
+  propJsonTest[ArtistDir]()
+}
+
+private object IOModelJsonableTest {
   // Avoids generating nonsense characters which can mess up JSON parsing
   private val arbitraryString: Gen[String] = arbitrary[String].map(_.filterNot(_.toInt < 60))
   private val arbitraryStringOpt: Gen[Option[String]] =
     Arbitrary.arbOption[String](Arbitrary(arbitraryString)).arbitrary
-  private val arbitraryFileName = Gen.nonEmptyStringOf(Gen.alphaNumChar)
-  private def arbitraryFile(implicit root: MemoryRoot) =
-    arbitraryFileName.filterNot(root.getDir(_).isDefined).map(root.addFile)
-  private def arbitraryDirectory(implicit root: MemoryRoot) =
-    arbitraryFileName.filterNot(root.getFile(_).isDefined).map(root.addSubDir)
-  implicit def arbSong(implicit root: MemoryRoot): Gen[Song] = for {
-    file <- arbitraryFile
+  private implicit lazy val arbSong: Gen[Song] = for {
+    filePath <- arbitraryString
     title <- arbitraryString
     artistName <- arbitraryString
     albumName <- arbitraryString
@@ -37,8 +46,8 @@ object ArbitraryModels {
     orchestra <- arbitraryStringOpt
     opus <- arbitraryStringOpt
     performanceYear <- arbitrary[Option[Int]].map(_.map(_ % 3000))
-  } yield MemorySong(
-    file,
+  } yield IOSong(
+    IOFile(new File(filePath).getAbsoluteFile),
     title,
     artistName,
     albumName,
@@ -55,17 +64,21 @@ object ArbitraryModels {
     opus,
     performanceYear,
   )
-  implicit def arbAlbumDir(implicit root: MemoryRoot): Gen[AlbumDir] = for {
-    albumDirName <- arbitraryFileName
-    dir <- arbitraryDirectory.map(_.addSubDir(albumDirName))
-    title <- arbitraryString
-    artistName <- arbitraryString
-    year <- arbitrary[Int].map(_ % 3000)
-    songs <- arbitrary[Seq[Song]]
-  } yield AlbumDir(dir, title, artistName, year, songs)
-  implicit def arbArtist(implicit root: MemoryRoot): Gen[ArtistDir] = for {
-    dir <- arbitraryDirectory
-    name <- arbitraryString
-    albums <- arbitrary[Set[AlbumDir]]
-  } yield ArtistDir(dir, name, albums)
+  private implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])
+  private implicit lazy val arbAlbumDir: Gen[AlbumDir] = {
+    val dir = TempDirectory()
+    for {
+      title <- arbitraryString
+      artistName <- arbitraryString
+      year <- arbitrary[Int].map(_ % 3000)
+      songs <- arbitrary[Seq[Song]]
+    } yield AlbumDir(IODirectory(dir), title, artistName, year, songs)
+  }
+  private implicit lazy val arbArtist: Gen[ArtistDir] = {
+    val dir = TempDirectory()
+    for {
+      name <- arbitraryString
+      albums <- arbitrary[Set[AlbumDir]]
+    } yield ArtistDir(IODirectory(dir), name, albums)
+  }
 }

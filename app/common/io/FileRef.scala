@@ -25,6 +25,12 @@ trait PathRef {
   def hasParent: Boolean
 }
 
+trait PathRefFactory {
+  def parsePath(path: String): PathRef
+  def parseFilePath(path: String): FileRef
+  def parseDirPath(path: String): DirectoryRef
+}
+
 /** Must exist. */
 trait FileRef extends PathRef {
   type S <: RefSystem

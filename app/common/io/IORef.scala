@@ -1,6 +1,6 @@
 package common.io
 
-import java.io.{File, FileInputStream, InputStream}
+import java.io.{File, FileInputStream, InputStream, IOException}
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.{Clock, LocalDateTime, ZoneId}
@@ -25,13 +25,27 @@ trait IOSystem extends RefSystem {
   override type D = IODirectory
 }
 
-abstract class IOPath(f: File) extends PathRef {
+sealed abstract class IOPath(f: File) extends PathRef {
   override type S = IOSystem
   val file: File = f
   def better: BFile = file.toScala
   override def path = f.getAbsolutePath.replace(File.separatorChar, '/')
   override def name = f.getName
   override def parent = IODirectory(f.getParent)
+}
+
+object IOPathRefFactory extends PathRefFactory {
+  override def parsePath(path: String): IOPath = {
+    val file = new File(path)
+    if (file.isDirectory)
+      IODirectory(file)
+    else if (file.isFile)
+      IOFile(file)
+    else
+      throw new IOException(s"Path <$path> is not a valid file or directory")
+  }
+  override def parseFilePath(path: String): IOFile = parsePath(path).asInstanceOf[IOFile]
+  override def parseDirPath(path: String): IODirectory = parsePath(path).asInstanceOf[IODirectory]
 }
 
 /** For production; actual files on the disk */

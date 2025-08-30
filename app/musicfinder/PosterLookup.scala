@@ -2,7 +2,7 @@ package musicfinder
 
 import java.util.regex.Pattern
 
-import models.{IOSong, Song}
+import models.Song
 
 import common.io.{DirectoryRef, FileRef}
 import common.rich.primitives.RichString._
@@ -13,7 +13,7 @@ trait PosterLookup {
 
 object PosterLookup {
   object IOPosterLookup extends PosterLookup {
-    override def getCoverArt(s: Song): FileRef = getCoverArt(s.asInstanceOf[IOSong].file.parent)
+    override def getCoverArt(s: Song): FileRef = getCoverArt(s.file.parent)
 
     // Searches for a folder image recursively up the folder tree.
     private def getCoverArt(dir: DirectoryRef): FileRef =

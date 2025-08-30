@@ -1,8 +1,7 @@
 package backend.search
 
 import com.google.inject.Inject
-import models.{AlbumDir, ArtistDir, Song}
-import models.ModelJsonable.{AlbumDirJsonifier, ArtistDirJsonifier, SongJsonifier}
+import models.{AlbumDir, ArtistDir, ModelJsonable, Song}
 
 import scala.collection.mutable
 
@@ -14,7 +13,12 @@ import common.TimedLogger
 import common.io.{FileRef, JsonableSaver}
 import common.json.Jsonable
 
-private class CompositeIndexFactory @Inject() (saver: JsonableSaver, timedLogger: TimedLogger) {
+private class CompositeIndexFactory @Inject() (
+    saver: JsonableSaver,
+    timedLogger: TimedLogger,
+    mj: ModelJsonable,
+) {
+  import mj._
   def create() = timedLogger("Creating index", scribe.info(_)) {
     val indexBuilder = WeightedIndexBuilder
     val flyweightSongs = mutable.Map[FileRef, Song]()
@@ -48,7 +52,7 @@ private class CompositeIndexFactory @Inject() (saver: JsonableSaver, timedLogger
         )
         result.map(implicitly[Flyweight[T]].replaceWithCached)
       }
-    new CompositeIndex(loadIndex[Song], loadIndex[AlbumDir], loadIndex[ArtistDir])
+    new CompositeIndex(loadIndex[Song], loadIndex[AlbumDir], loadIndex[ArtistDir], mj)
   }
 }
 

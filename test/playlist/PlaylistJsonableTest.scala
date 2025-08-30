@@ -2,22 +2,30 @@ package playlist
 
 import java.util.concurrent.TimeUnit
 
-import models.ArbitraryModels
+import backend.module.TestModuleConfiguration
+import com.google.inject.Injector
+import models.{ArbitraryModels, ModelJsonable}
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalacheck.{Arbitrary, Gen}
+import playlist.Playlist.playlistJsonable
+import playlist.PlaylistJsonableTest.arbPlaylist
 
 import scala.concurrent.duration.Duration
 
 import common.JsonableSpecs
+import common.io.MemoryRoot
 
 class PlaylistJsonableTest extends JsonableSpecs {
-  import PlaylistJsonableTest.arbPlaylist
-  import models.ModelJsonable.SongJsonifier
+  private val injector: Injector = TestModuleConfiguration().injector
+  private val mj = injector.instance[ModelJsonable]
+  import mj._
+  private implicit val root: MemoryRoot = injector.instance[MemoryRoot]
 
   propJsonTest[Playlist]()
 }
 
 object PlaylistJsonableTest {
-  implicit val arbPlaylist: Arbitrary[Playlist] = Arbitrary(for {
+  implicit def arbPlaylist(implicit root: MemoryRoot): Arbitrary[Playlist] = Arbitrary(for {
     numberOfSongs <- Gen.choose(1, 20)
     songs <- Gen.listOfN(numberOfSongs, ArbitraryModels.arbSong)
     currentIndex <- Gen.choose(0, numberOfSongs - 1)

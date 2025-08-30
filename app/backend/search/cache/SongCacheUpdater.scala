@@ -16,8 +16,9 @@ private[search] class SongCacheUpdater @Inject() (
     splitter: SongCacheSplitter,
     builder: SongCacheBuilder,
     ec: ExecutionContext,
+    mj: ModelJsonable,
 ) {
-  import ModelJsonable._
+  import mj._
 
   def go(forceRefresh: Boolean): Observable[TimestampedSong] = {
     val original = saver.loadObject[SongCache]
@@ -49,7 +50,6 @@ private[search] class SongCacheUpdater @Inject() (
             .foreach(deleted => scribe.info("Deleted files:\n" + deleted.mkString("\n")))
 
           saver.saveObject(result)
-          import ModelJsonable._
           splitter(result)
         }
         override def onError(t: Throwable) = throw t

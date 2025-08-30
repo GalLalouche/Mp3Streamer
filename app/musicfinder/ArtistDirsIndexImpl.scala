@@ -9,6 +9,7 @@ import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
 import scalaz.Scalaz.optionInstance
 
 import common.io.{DirectoryRef, JsonableSaver}
+import common.json.Jsonable
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichBoolean.richBoolean
@@ -31,12 +32,13 @@ private class ArtistDirsIndexImpl(
 }
 
 private object ArtistDirsIndexImpl {
-  def load(saver: JsonableSaver): ArtistDirsIndexImpl = from(saver.loadArray[ArtistToDirectory])
+  def load(saver: JsonableSaver)(implicit json: Jsonable[ArtistToDirectory]): ArtistDirsIndexImpl =
+    from(saver.loadArray[ArtistToDirectory])
   def from(
       artistDirs: Iterable[ArtistDir],
       saver: JsonableSaver,
       genreFinder: GenreFinder,
-  ): ArtistDirsIndexImpl = {
+  )(implicit json: Jsonable[ArtistToDirectory]): ArtistDirsIndexImpl = {
     val artistToDirectories =
       artistDirs.view
         .map(ArtistToDirectory.from)
@@ -56,6 +58,7 @@ private object ArtistDirsIndexImpl {
           ArtistToDirectory(a, dir)
         }
         .toVector
+
     saver.saveArray(artistToDirectories)
     from(artistToDirectories)
   }

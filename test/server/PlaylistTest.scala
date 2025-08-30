@@ -2,7 +2,7 @@ package server
 
 import com.google.inject.Module
 import formatter.UrlDecoder
-import models.ModelJsonable.SongJsonifier
+import models.ModelJsonable
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.{JsArray, Json, JsString}
@@ -14,7 +14,7 @@ import scala.concurrent.Future
 import common.rich.func.BetterFutureInstances._
 import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
 
-import common.io.{DirectoryRef, RootDirectory}
+import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
 import common.json.ToJsonableOps.{jsonifySingle, parseJsValue}
 
 private class PlaylistTest(serverModule: Module)
@@ -63,6 +63,10 @@ private class PlaylistTest(serverModule: Module)
     )
   }
 
+  // TODO check both IO and memory?
+  private val mj = injector.instance[ModelJsonable]
+  import mj._
+  private implicit val root: MemoryRoot = injector.instance[MemoryRoot]
   private def putArbPlaylist(name: String): Future[Playlist] = {
     val $ = PlaylistJsonableTest.arbPlaylist.arbitrary.sample.get
     (putJson(uri"playlist/$name", $.jsonify) shouldEventuallyReturn name) >| $

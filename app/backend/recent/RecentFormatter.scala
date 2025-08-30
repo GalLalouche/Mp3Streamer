@@ -1,7 +1,7 @@
 package backend.recent
 
 import com.google.inject.Inject
-import models.ModelJsonable.AlbumDirJsonifier
+import models.ModelJsonable
 import play.api.libs.json.{JsNull, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,7 +16,10 @@ class RecentFormatter @Inject() (
     ec: ExecutionContext,
     recentAlbums: RecentAlbums,
     lastAlbumState: LastAlbumState,
+    mj: ModelJsonable,
 ) {
+  import mj.albumDirJsonifier
+
   private def sinceDays(d: Int): Future[JsValue] = Future(recentAlbums.sinceDays(d)).map(_.jsonify)
   private def sinceMonths(m: Int): Future[JsValue] =
     Future(recentAlbums.sinceMonths(m)).map(_.jsonify)

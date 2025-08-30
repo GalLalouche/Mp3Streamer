@@ -11,21 +11,22 @@ import org.scalatest.OptionValues._
 
 import scala.concurrent.ExecutionContext
 
-import common.io.{IODirectory, JsonableSaver, MemoryRoot}
-import common.rich.path.TempDirectory
+import common.io.{DirectoryRef, JsonableSaver, MemoryRoot, PathRefFactory}
 import common.test.AuxSpecs
 
 class ArtistDirsIndexTest extends FreeSpec with AuxSpecs {
   private val injector = TestModuleConfiguration().injector
+  private implicit val factory: PathRefFactory = injector.instance[PathRefFactory]
+  private val root = injector.instance[MemoryRoot]
 
-  private var dir1: IODirectory = _
-  private var dir2: IODirectory = _
-  private var dir3: IODirectory = _
+  private var dir1: DirectoryRef = _
+  private var dir2: DirectoryRef = _
+  private var dir3: DirectoryRef = _
 
   private def setup(saver: JsonableSaver): ArtistDirsIndex = {
-    dir1 = IODirectory(TempDirectory())
-    dir2 = IODirectory(TempDirectory())
-    dir3 = IODirectory(TempDirectory())
+    dir1 = root.addSubDir("dir1")
+    dir2 = root.addSubDir("dir2")
+    dir3 = root.addSubDir("dir3")
     saver
       .saveArray(
         Vector(
@@ -34,7 +35,12 @@ class ArtistDirsIndexTest extends FreeSpec with AuxSpecs {
           ArtistToDirectory(Artist("moo"), dir2),
         ),
       )
-    new ArtistDirsIndex(saver, injector.instance[GenreFinder], injector.instance[ExecutionContext])
+    new ArtistDirsIndex(
+      saver,
+      injector.instance[GenreFinder],
+      injector.instance[ExecutionContext],
+      factory,
+    )
   }
 
   "initial value" - {
@@ -57,8 +63,8 @@ class ArtistDirsIndexTest extends FreeSpec with AuxSpecs {
 
   "updated" - {
     val saver = new JsonableSaver(new MemoryRoot)
-    val dir4 = IODirectory(TempDirectory())
-    val dir5 = IODirectory(TempDirectory())
+    val dir4 = root.addSubDir("dir4")
+    val dir5 = root.addSubDir("dir5")
     lazy val $ = setup(saver)
     $.update(
       Vector(
@@ -80,8 +86,8 @@ class ArtistDirsIndexTest extends FreeSpec with AuxSpecs {
 
   "update with repeats" in {
     val saver = new JsonableSaver(new MemoryRoot)
-    val dir1 = IODirectory(TempDirectory())
-    val dir2 = IODirectory(TempDirectory())
+    val dir1 = root.addSubDir("dir1")
+    val dir2 = root.addSubDir("dir2")
     lazy val $ = setup(saver)
     $.update(
       Vector(

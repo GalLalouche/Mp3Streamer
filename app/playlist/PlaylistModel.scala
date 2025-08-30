@@ -1,7 +1,7 @@
 package playlist
 
 import com.google.inject.Inject
-import models.ModelJsonable.SongJsonifier
+import models.{ModelJsonable, Song}
 import play.api.libs.json.JsObject
 import playlist.PlaylistModel._
 
@@ -11,12 +11,18 @@ import common.rich.func.MoreMapInstances.basicMonoid
 import common.rich.func.ToMoreMonoidOps.toMoreMonoidOptionOps
 
 import common.io.JsonableSaver
-import common.json.OJsonable
+import common.json.{Jsonable, OJsonable}
+import common.json.OJsonable.MapJsonable
 import common.json.ToJsonableOps._
 import common.rich.RichT.richT
 
-private class PlaylistModel @Inject() (ec: ExecutionContext, saver: JsonableSaver) {
+private class PlaylistModel @Inject() (
+    ec: ExecutionContext,
+    saver: JsonableSaver,
+    mj: ModelJsonable,
+) {
   private implicit val iec: ExecutionContext = ec
+  import mj.songJsonifier
   def getIds: Future[Set[String]] = loadOrZero.map(_.keys.toSet)
   def get(id: String): Future[Option[Playlist]] = loadOrZero.map(_.get(id))
   def set(id: String, value: Playlist): Future[Unit] = modify(e => ((), e + (id -> value)))
@@ -32,12 +38,12 @@ private class PlaylistModel @Inject() (ec: ExecutionContext, saver: JsonableSave
 }
 
 private object PlaylistModel {
-  import OJsonable.MapJsonable
   // For the JsonSaver file name.
   private case class PlaylistMap(s: Map[String, Playlist])
-  private implicit val AutoPlaylistJsonable: OJsonable[PlaylistMap] = new OJsonable[PlaylistMap] {
-    override def jsonify(a: PlaylistMap): JsObject = a.s.ojsonify
-    override def parse(json: JsObject): PlaylistMap = PlaylistMap(json.parse[State])
-  }
+  private implicit def autoPlaylistJsonable(implicit sj: Jsonable[Song]): OJsonable[PlaylistMap] =
+    new OJsonable[PlaylistMap] {
+      override def jsonify(a: PlaylistMap): JsObject = a.s.ojsonify
+      override def parse(json: JsObject): PlaylistMap = PlaylistMap(json.parse[State])
+    }
   private type State = Map[String, Playlist]
 }

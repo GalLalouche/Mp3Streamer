@@ -25,7 +25,7 @@ class JsonableSaverTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   import common.io.JsonableSaverTest._
 
   private val c = TestModuleConfiguration()
-  private val root = c.injector.instance[MemoryRoot, RootDirectory]
+  private val root = c.injector.instance[MemoryRoot]
 
   private val $ = c.injector.instance[JsonableSaver]
   private val p1 = Person(1, "name1")

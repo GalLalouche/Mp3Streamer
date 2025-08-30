@@ -32,8 +32,7 @@ class TestModule extends ScalaModule with ModuleUtils {
 
   @Provides
   @RootDirectory
-  private def provideMemoryRoot(@RootDirectory directoryRef: MemoryRoot): DirectoryRef =
-    directoryRef
+  private def provideMemoryRoot(directoryRef: MemoryRoot): DirectoryRef = directoryRef
 
   @Provides
   private def provideMusicFinder(mf: FakeMusicFinder): MusicFinder = mf

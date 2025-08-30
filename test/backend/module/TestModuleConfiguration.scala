@@ -7,6 +7,7 @@ import backend.storage.DbProvider
 import com.google.inject.{Guice, Module, Provides}
 import com.google.inject.util.Modules
 import io.lemonlabs.uri.Url
+import models.ModelJsonable.SongParser
 import models.SongTagParser
 import musicfinder.PosterLookup
 import net.codingwell.scalaguice.ScalaModule
@@ -16,7 +17,7 @@ import slick.util.AsyncExecutor
 import scala.concurrent.ExecutionContext
 
 import common.guice.RichModule.richModule
-import common.io.{BaseDirectory, DirectoryRef, MemoryRoot, RootDirectory}
+import common.io.{BaseDirectory, DirectoryRef, MemoryRoot, PathRefFactory, RootDirectory}
 import common.io.WSAliases._
 import common.rich.RichT._
 
@@ -49,7 +50,9 @@ case class TestModuleConfiguration(
       new TestModule,
       new ScalaModule {
         override def configure(): Unit = {
-          bind[MemoryRoot].annotatedWith[RootDirectory].toInstance(_root)
+          bind[MemoryRoot].toInstance(_root)
+          bind[SongParser].to[MemorySongParser]
+          bind[PathRefFactory].to[MemoryPathRefFactory]
           bind[DirectoryRef].annotatedWith[BaseDirectory].toInstance(_root)
           bind[ExecutionContext].toInstance(_ec)
           bind[FakeMusicFinder].toInstance(_mf.opt.getOrElse(new FakeMusicFinder(_root)))

@@ -1,8 +1,7 @@
 package formatter
 
 import com.google.inject.Inject
-import models.{IOSong, ModelJsonable, Song}
-import models.ModelJsonable.SongJsonifier
+import models.{ModelJsonable, Song}
 import musicfinder.PosterLookup
 import play.api.libs.json.{JsObject, JsString}
 
@@ -19,11 +18,12 @@ class ControllerSongJsonifier @Inject() (
     posterLookup: PosterLookup,
     encoder: UrlEncoder,
     decoder: UrlDecoder,
+    mj: ModelJsonable,
 ) {
   implicit val songJsonable: OJsonable[Song] = JsonableOverrider(new OJsonableOverrider[Song] {
     override def jsonify(s: Song, original: => JsObject) = {
       val posterPath =
-        encoder(posterLookup.getCoverArt(s.asInstanceOf[IOSong]))
+        encoder(posterLookup.getCoverArt(s))
           // It's possible the playlist contains files which have already been deleted.
           .onlyIf(s.file.exists)
       val $ = original +
@@ -37,6 +37,6 @@ class ControllerSongJsonifier @Inject() (
         .append("performanceYear" -> s.performanceYear)
     }
     override def parse(obj: JsObject, unused: => Song) =
-      SongJsonifier.parse(obj + ("file" -> JsString(decoder(obj.str("file")))))
-  })(ModelJsonable.SongJsonifier)
+      mj.songJsonifier.parse(obj + ("file" -> JsString(decoder(obj.str("file")))))
+  })(mj.songJsonifier)
 }

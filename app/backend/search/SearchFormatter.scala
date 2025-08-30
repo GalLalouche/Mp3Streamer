@@ -4,7 +4,7 @@ import java.net.URLDecoder
 
 import com.google.inject.Inject
 import formatter.ControllerAlbumDirJsonifier
-import models.ModelJsonable.{ArtistDirJsonifier, SongJsonifier}
+import models.ModelJsonable
 import play.api.libs.json.{JsObject, Json}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -15,9 +15,13 @@ class SearchFormatter @Inject() (
     state: SearchState,
     albumJsonifier: ControllerAlbumDirJsonifier,
     ec: ExecutionContext,
+    mj: ModelJsonable,
 ) {
-  private implicit val iec: ExecutionContext = ec
   import albumJsonifier.albumDirJsonable
+  import mj.{artistDirJsonifier, songJsonifier}
+
+  private implicit val iec: ExecutionContext = ec
+
   def search(path: String): Future[JsObject] = {
     val terms = URLDecoder.decode(path, "UTF-8").split(" ").map(_.toLowerCase)
     state.search(terms).map { case (songs, albums, artists) =>

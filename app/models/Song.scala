@@ -22,5 +22,4 @@ trait Song {
   def orchestra: Option[String]
   def opus: Option[String] // Needs to be a string to support BWV, Kochel number, etc.
   def performanceYear: Option[Int]
-
 }

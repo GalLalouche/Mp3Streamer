@@ -1,7 +1,8 @@
 package songs
 
-import models.{IOSong, TrackNumber}
+import models.{IOSong, ModelJsonable, Song, TrackNumber}
 
+import common.json.OJsonable
 import common.rich.RichT._
 import common.rich.path.Directory
 
@@ -24,11 +25,11 @@ private object SongGroupsUpdater {
   def main(args: Array[String]): Unit = {
     import backend.module.StandaloneModule
     import com.google.inject.Guice
-    import models.ModelJsonable._
     import net.codingwell.scalaguice.InjectorExtensions._
 
     val injector = Guice.createInjector(StandaloneModule)
     val sg = injector.instance[SongGroups]
+    implicit val sj: OJsonable[Song] = injector.instance[ModelJsonable].songJsonifier
     def append(g: SongGroup): Unit = (g :: sg.load.toList).toSet |> sg.save
     val group: SongGroup =
       trackNumbers("""G:\Media\Music\Rock\Punk\Pistolita\2010 The Paper Boy""", 1, 2)

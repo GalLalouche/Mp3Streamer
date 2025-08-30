@@ -14,7 +14,7 @@ trait MemorySystem extends RefSystem {
   override type F = MemoryFile
   override type D = MemoryDir
 }
-trait MemoryPath extends PathRef {
+sealed trait MemoryPath extends PathRef {
   override type S = MemorySystem
 }
 
@@ -96,4 +96,7 @@ class MemoryRoot extends MemoryDir("/") {
   override def parent = throw new UnsupportedOperationException("MemoryRoot has no parent")
   override def hasParent = false
   override val path = s"root(${System.identityHashCode(this)})/"
+}
+object MemoryRoot {
+  private val PathRegex = """root\((\d+)\)//(.*)""".r
 }
