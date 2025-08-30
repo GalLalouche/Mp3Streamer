@@ -12,7 +12,6 @@ private[external] object ExpansionsModule extends ScalaModule {
 
   @Provides private def albumLinkExpanders(
       f: WikidataEnglishOrHebrewExtenderFactory,
-      w: WikipediaAlbumExternalLinksExpander,
       w2w: WikipediaToWikidataExtenderFactory,
-  ): Traversable[ExternalLinkExpander[Album]] = Vector(f.create, w2w.create, w)
+  ): Traversable[ExternalLinkExpander[Album]] = Vector(f.create, w2w.create)
 }
