@@ -13,7 +13,7 @@ import common.rich.RichT.richT
 
 private[search] class SongCacheUpdater @Inject() (
     saver: JsonableSaver,
-    splitter: SongCacheSplitter,
+    splitter: SongCacheSaver,
     builder: SongCacheBuilder,
     ec: ExecutionContext,
     mj: ModelJsonable,
@@ -50,7 +50,7 @@ private[search] class SongCacheUpdater @Inject() (
             .foreach(deleted => scribe.info("Deleted files:\n" + deleted.mkString("\n")))
 
           saver.saveObject(result)
-          splitter(result)
+          splitter(result.songs)
         }
         override def onError(t: Throwable) = throw t
       }),

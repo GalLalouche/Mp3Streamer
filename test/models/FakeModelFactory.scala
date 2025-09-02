@@ -10,8 +10,7 @@ import scala.concurrent.duration.Duration
 
 import common.io.MemoryRoot
 
-class FakeModelFactory {
-  private val root = new MemoryRoot
+class FakeModelFactory(root: MemoryRoot = new MemoryRoot) {
   def album(
       dirName: String = UUID.randomUUID().toString,
       title: AlbumTitle = "album",
@@ -19,7 +18,7 @@ class FakeModelFactory {
       year: Int = 2000,
       songs: Seq[Song] = Nil,
   ) = AlbumDir(
-    root.addSubDir(dirName),
+    root.addSubDir(artistName).addSubDir(title),
     title = title,
     artistName = artistName,
     year = year,
@@ -43,7 +42,7 @@ class FakeModelFactory {
       opus: Option[String] = None,
       performanceYear: Option[Int] = None,
   ): MemorySong = MemorySong(
-    root.addFile(filePath),
+    root.addSubDir(artistName).addSubDir(albumName).addFile(filePath),
     title,
     artistName,
     albumName,
