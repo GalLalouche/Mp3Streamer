@@ -1,15 +1,16 @@
 package song_encoder
 
+import java.io.File
+
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.{FieldKey, Tag}
 
 import common.TagUtils._
-import common.io.IOFile
 
 private object TagCopier {
-  def apply(input: IOFile, output: IOFile): Unit = {
-    val fields = TagCopier.getFields(AudioFileIO.read(input.asInstanceOf[IOFile].file).getTag)
-    val audioFile = AudioFileIO.read(output.asInstanceOf[IOFile].file)
+  def apply(input: File, output: File): Unit = {
+    val fields = TagCopier.getFields(AudioFileIO.read(input).getTag)
+    val audioFile = AudioFileIO.read(output)
     val outputTag = audioFile.getTag
     fields.foreach(_ set outputTag)
     audioFile.setTag(outputTag)

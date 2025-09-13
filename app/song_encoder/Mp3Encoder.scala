@@ -34,14 +34,12 @@ class Mp3Encoder @Inject() (
     require(file.exists)
     val outputFileName = file.path.removeAll(Mp3Encoder.PathChars).toLowerCase + ".mp3"
     outputDir.files.find(_.name == outputFileName).filter(_.size > 0).getOrElse {
-      val $ = outputDir.addFile(outputFileName)
-      encoder.encode(file, $, Mp3)
-      $
+      outputDir.addFile(outputFileName).<|(encoder.encode(file, _))
     }
   }
 
   /**
-   * Encode the file to an mp3 format. The file will only be created if its matching output doesn't
+   * Encode the file to an MP3 format. The file will only be created if its matching output doesn't
    * already exist.
    *
    * @return
