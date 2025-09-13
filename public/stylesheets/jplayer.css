@@ -55,6 +55,10 @@ span.jp-playlist-item {
   left: 800px;
   float: right;
   margin-top: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  white-space: nowrap;
 }
 
 #search {

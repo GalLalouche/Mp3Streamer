@@ -86,7 +86,7 @@ const li = (config: object) => elem("li", config)
 const div = elemFactory('div')
 const img = (src: string) => elem('img').attr("src", src)
 const br = elemFactory('br')
-const icon = (name: string) => `<i class="fa fa-${name}"/>`
+const icon = (name: string) => `<i class="fa fa-${name}"></i>`
 const table = elemFactory('table')
 const td = elemFactory('td')
 const tr = elemFactory('tr')
