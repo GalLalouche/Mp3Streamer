@@ -13,7 +13,7 @@ import org.scalatest.AsyncFreeSpec
 import common.rich.func.BetterFutureInstances._
 import scalaz.syntax.bind.ToBindOps
 
-class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
+private class SlickAlbumExternalStorageTest extends AsyncFreeSpec with StorageSetup {
   protected override val config: TestModuleConfiguration = new TestModuleConfiguration
   protected override val storage: AlbumExternalStorage =
     config.injector.instance[SlickAlbumExternalStorage]

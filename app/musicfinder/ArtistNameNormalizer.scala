@@ -13,8 +13,8 @@ class ArtistNameNormalizer @Inject() (stringFixer: StringFixer) {
 }
 
 private object ArtistNameNormalizer {
-  // A windows folder name cannot end in '.'.
+  // A Windows folder name cannot end in '.'.
   private val DotSuffixes = """\.*$""".r.pattern
-  // A windows folder name cannot contain '<', '>', ':', '"', '/', '\', '\', '|', '?', '*'.
+  // A Windows folder name cannot contain '<', '>', ':', '"', '/', '\', '\', '|', '?', '*'.
   private val IllegalWindowCharactersPattern = """[<>:"/\\|?*]""".r.pattern
 }

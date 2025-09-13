@@ -57,7 +57,7 @@ private class ExternalJsonifier @Inject() (implicit ec: ExecutionContext) {
     }
 }
 
-object ExternalJsonifier {
+private object ExternalJsonifier {
   private val DateStringPattern = DateTimeFormatter.ofPattern("dd/MM")
   val Hosts: Seq[Host] = Vector(
     Host.MusicBrainz,

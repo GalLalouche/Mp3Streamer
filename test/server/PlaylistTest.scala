@@ -5,8 +5,8 @@ import formatter.UrlDecoder
 import models.ModelJsonable
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.BeforeAndAfterEach
-import play.api.libs.json.{JsArray, Json, JsString}
-import playlist.{Playlist, PlaylistJsonableTest}
+import play.api.libs.json.{JsArray, Json, JsString, JsValue}
+import playlist.PlaylistJsonableTest
 import sttp.client3.UriContext
 
 import scala.concurrent.Future
@@ -15,7 +15,7 @@ import common.rich.func.BetterFutureInstances._
 import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
 
 import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
-import common.json.ToJsonableOps.{jsonifySingle, parseJsValue}
+import common.json.ToJsonableOps.jsonifySingle
 
 private class PlaylistTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)
@@ -63,19 +63,17 @@ private class PlaylistTest(serverModule: Module)
     )
   }
 
-  // TODO check both IO and memory?
+  // TODO check both IO add memory?
   private val mj = injector.instance[ModelJsonable]
-  import mj._
+  import mj.songJsonifier
   private implicit val root: MemoryRoot = injector.instance[MemoryRoot]
-  private def putArbPlaylist(name: String): Future[Playlist] = {
-    val $ = PlaylistJsonableTest.arbPlaylist.arbitrary.sample.get
+  private def putArbPlaylist(name: String): Future[JsValue] = {
+    val $ = PlaylistJsonableTest.arbPlaylistJson.sample.get
     (putJson(uri"playlist/$name", $.jsonify) shouldEventuallyReturn name) >| $
   }
 
-  private def getPlaylist(name: String): Future[Playlist] =
-    getString(uri"playlist/$name")
-      .map(injector.instance[UrlDecoder].apply)
-      .map(Json.parse(_).parse[Playlist])
+  private def getPlaylist(name: String): Future[JsValue] =
+    getString(uri"playlist/$name").map(injector.instance[UrlDecoder].apply).map(Json.parse)
 
   private def getPlaylists: Future[Seq[String]] =
     getJson(uri"playlist/").map(_.as[JsArray].value.map(_.as[JsString].value))
