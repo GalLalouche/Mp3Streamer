@@ -10,6 +10,11 @@ export namespace LastAlbum {
     if (lastText != lastAlbumText)
       updateAlbum(last, true)
   }
+
+  export async function updateLatestAlbum(): Promise<void> {
+    write(span("Fetching last album..."))
+    updateLastAlbum().then(album => updateAlbum(album, false))
+  }
 }
 
 async function getLastAlbum(): Promise<Album> {
@@ -57,6 +62,6 @@ function updateAlbum(album: Album, addToPlaylist: boolean): void {
 }
 
 $(function () {
-  write(span("Fetching last album..."))
-  getLastAlbum().then(album => updateAlbum(album, false))
+  // noinspection JSIgnoredPromiseFromCall
+  LastAlbum.updateLatestAlbum()
 })

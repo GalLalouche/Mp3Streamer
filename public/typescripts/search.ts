@@ -212,13 +212,17 @@ class Helper {
   }
 }
 
-async function scan() {
+async function scanAux(addNewAlbum: boolean): Promise<void> {
+  await (addNewAlbum ? LastAlbum.addNextNewAlbum() : LastAlbum.updateLatestAlbum())
   return $.get("index/index").toPromise()
 }
 
+async function scan(): Promise<void> {
+  return scanAux(false)
+}
+
 export async function scanPlus() {
-  await LastAlbum.addNextNewAlbum()
-  await scan()
+  return scanAux(true)
 }
 
 $(() => {
