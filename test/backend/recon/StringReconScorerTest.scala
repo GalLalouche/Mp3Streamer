@@ -47,4 +47,7 @@ class StringReconScorerTest extends FreeSpec with AuxSpecs {
       verifyHighReconScore("Sheger Peger - שגר פגר", "שגר פגר")
     }
   }
+  "Correctly tokenizes" - {
+    verifyHighReconScore("... and Again into the Light", "…And Again Into the Light")
+  }
 }

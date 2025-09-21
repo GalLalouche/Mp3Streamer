@@ -4,8 +4,9 @@ import com.google.inject.Inject
 import mains.fixer.StringFixer
 
 import common.LanguageString._
-import common.rich.RichT._
+import common.rich.RichT.richT
 import common.rich.RichTuple._
+import common.rich.primitives.RichString.richString
 
 /**
  * A placeholder for a class that might some day in the future actually measure the similarity
@@ -20,17 +21,20 @@ class StringReconScorer @Inject() (stringFixer: StringFixer) extends ((String, S
     if (sameAndNonEmpty(canonS1, canonS2)) 1 else 0
   }
 
-  private def canonize(s: String): String = s.toLowerCase
-    .split(' ')
-    .filterNot(BadWords)
-    .mkString(" ")
-    .filter(_.isLetterOrDigit)
-    .tryOrKeep(stringFixer.asciiNormalize)
+  private def canonize(s: String): String =
+    s.toLowerCase
+      .|>(stringFixer.withoutSpecialCharacters)
+      .tokenize(Tokens)
+      .filterNot(BadWords)
+      .mkString(" ")
+      .filter(_.isLetterOrDigit)
+      .tryOrKeep(stringFixer.asciiNormalize)
 
   private def filterHebrew(s: String): String = s.split(" ").filter(_.hasHebrew).mkString(" ")
 }
 
 object StringReconScorer {
+  val Tokens = "!?,. "
   private val BadWords = Set("and", "ep")
   private def sameAndNonEmpty(s1: String, s2: String) = {
     val trim = s1.trim

@@ -23,14 +23,12 @@ class StringFixer @Inject() (detectLanguage: DetectLanguage) extends (String => 
   def asciiNormalize(s: String): String = try {
     if (s.isWhitespaceOrEmpty)
       return s
-    val withoutSpecialCharacters =
-      s.replaceAll(SpecialQuotes, "'")
-        .replace("…", "...") |> normalizeDashesAndApostrophes |> StringUtils.stripAccents
-    withoutSpecialCharacters.keepAscii
-      .mapIf(_.length < withoutSpecialCharacters.length)
+    val cleaned = this.withoutSpecialCharacters(s)
+    cleaned.keepAscii
+      .mapIf(_.length < cleaned.length)
       .to(
         asciiNormalize(
-          withoutSpecialCharacters
+          cleaned
             .flatMap(a => toAscii.get(a).getOrThrow(s"Can't asciify '$a' (${a.toInt}) in '$s'")),
         ),
       )
@@ -54,6 +52,10 @@ class StringFixer @Inject() (detectLanguage: DetectLanguage) extends (String => 
           }
       }
   }
+
+  def withoutSpecialCharacters(s: String): String =
+    s.replaceAll(SpecialQuotes, "'")
+      .replace("…", "...") |> normalizeDashesAndApostrophes |> StringUtils.stripAccents
 
   protected def ignoreLangDetectionErrors: Boolean = false
   // TODO reuse this for Hebrew check as well?
