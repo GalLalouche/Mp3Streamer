@@ -9,6 +9,7 @@ import monocle.macros.Lenses
 
 sealed trait Reconcilable {
   def normalize: String
+  def artist: Artist
 }
 /**
  * An Artist (contrast with [[models.ArtistDir]]) is the external world entity representing an
@@ -27,6 +28,7 @@ case class Artist(name: ArtistName) extends Reconcilable {
     case _ => false
   }
   override def hashCode(): Int = normalize.hashCode
+  override val artist: Artist = this
 }
 
 /**
@@ -34,7 +36,8 @@ case class Artist(name: ArtistName) extends Reconcilable {
  * In other words, while an [[models.AlbumDir]] has to physically exist on the filesystem, a release
  * can represent albums which haven't yet been downloaded.
  */
-class Album(val title: AlbumTitle, val year: Int, val artist: Artist) extends Reconcilable {
+class Album(val title: AlbumTitle, val year: Int, override val artist: Artist)
+    extends Reconcilable {
   override def normalize: String = s"${artist.normalize} - ${title.toLowerCase}"
   def toYearless = YearlessAlbum(title, artist)
 
@@ -66,7 +69,7 @@ object YearlessAlbum {
 
 class Track(val title: SongTitle, val album: Album) extends Reconcilable {
   private lazy val normalized = title.toLowerCase
-  def artist: Artist = album.artist
+  override def artist: Artist = album.artist
   def toYearless = YearlessTrack(title, album.toYearless)
   override def normalize: String = ???
 

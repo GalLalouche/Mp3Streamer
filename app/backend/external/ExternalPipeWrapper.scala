@@ -10,6 +10,7 @@ import backend.recon.{Reconcilable, ReconcilerCacher, ReconID}
 import backend.recon.StoredReconResult.{HasReconResult, StoredNull}
 import backend.storage.{ComposedFreshnessStorage, RefreshableRetriever}
 import com.google.inject.Inject
+import genre.{Genre, GenreFinder}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -19,6 +20,7 @@ import common.rich.func.ToMoreMonadErrorOps._
 import scalaz.{-\/, \/-}
 
 import common.rich.RichT._
+import common.rich.primitives.RichBoolean.richBoolean
 
 private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
     clock: Clock,
@@ -28,6 +30,7 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
     provider: Retriever[ReconID, BaseLinks[R]],
     expanders: Traversable[ExternalLinkExpander[R]],
     markers: Traversable[ExternalLinkMarker[R]],
+    genreFinder: GenreFinder,
 ) {
   private implicit val iec: ExecutionContext = ec
 
@@ -37,10 +40,17 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
     freshnessStorage = new ComposedFreshnessStorage(storage, clock),
     onlineRetriever = new ExternalPipe[R](
       r =>
-        reconciler(r).mapEitherMessage {
-          case Failure(e) => -\/(s"Failed to retrieve recon ID from online source for <$r>")
+        reconciler(r).mapEither {
+          case Failure(e) =>
+            -\/(
+              new NoSuchElementException(s"Failed to retrieve recon ID from online source for <$r>"),
+            )
           case Success(StoredNull) =>
-            -\/(s"Storage contained null for <$r>, i.e., past recon attempts failed")
+            val isClassical = genreFinder.forArtist(r.artist).contains(Genre.Classical)
+            val msg =
+              if (isClassical) "Classical album"
+              else s"Storage contained null for <$r>, i.e., past recon attempts failed"
+            -\/(new StoredNullException(shouldReport = isClassical.isFalse, msg = msg))
           case Success(HasReconResult(reconId, _)) => \/-(reconId)
         },
       provider,

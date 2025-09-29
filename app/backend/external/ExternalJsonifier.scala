@@ -49,7 +49,10 @@ private class ExternalJsonifier @Inject() (implicit ec: ExecutionContext) {
 
   def toJsonOrError(links: Future[TimestampedExtendedLinks[_]]): Future[JsObject] =
     links.map(toJson).handleErrorFlat { e =>
-      scribe.error(e)
+      e match {
+        case StoredNullException(false) =>
+        case e => scribe.error(e)
+      }
       Json.obj("error" -> e.getMessage)
     }
 }
