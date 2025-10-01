@@ -27,6 +27,7 @@ class Genre(Enum):
   GOTHIC_ROCK = auto()
   HARD_ROCK = auto()
   HARD_ROCK_REVIVAL = auto()
+  HEAVY_PROG = auto()
   HEAVY_PSYCH = auto()
   INDIE = auto()
   INDIE_FOLK = auto()
@@ -153,6 +154,8 @@ class Genre(Enum):
       return "Hard Rock Revival"
     if self == Genre.HARD_ROCK:
       return "Hard-Rock"
+    if self == Genre.HEAVY_PROG:
+      return "Heavy Prog"
     if self == Genre.HEAVY_PSYCH:
       return "Heavy Psych"
     if self == Genre.INDIE:
