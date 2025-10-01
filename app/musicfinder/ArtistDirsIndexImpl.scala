@@ -33,7 +33,8 @@ private class ArtistDirsIndexImpl(
 
 private object ArtistDirsIndexImpl {
   def load(saver: JsonableSaver)(implicit json: Jsonable[ArtistToDirectory]): ArtistDirsIndexImpl =
-    from(saver.loadArray[ArtistToDirectory])
+    // It's possible some directories will have changed by the time this loads.
+    from(saver.loadArrayHandleErrors[ArtistToDirectory]._1)
   def from(
       artistDirs: Iterable[ArtistDir],
       saver: JsonableSaver,
