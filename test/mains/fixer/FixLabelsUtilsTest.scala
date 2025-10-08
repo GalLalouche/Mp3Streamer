@@ -7,7 +7,7 @@ import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.scalatest.FreeSpec
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import common.test.AuxSpecs
 

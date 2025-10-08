@@ -1,18 +1,19 @@
 package mains.splitter
 
 import java.io.File
+
 import com.google.inject.Inject
+import musicfinder.IOMusicFinder
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import common.io.IODirectory
 import common.rich.collections.RichIterable._
 import common.rich.collections.RichTraversableOnce._
 import common.rich.path.{Directory, RichFileUtils}
 import common.rich.path.RichFile._
-import musicfinder.IOMusicFinder
 
 // Splits cue file and fixes the flac output.
 private class FlacSplitter @Inject() (cueSplitter: CueSplitter, mf: IOMusicFinder) {

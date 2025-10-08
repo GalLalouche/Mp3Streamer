@@ -5,8 +5,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
-import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
+import scala.jdk.CollectionConverters._
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT
@@ -22,13 +22,13 @@ class IterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTe
     $.batchStep(10).map(_._1) shouldEventuallyReturn expected
   "toStream" - {
     "empty returns empty" in {
-      Iterant.empty.toStream.toStream shouldEventuallyReturn Stream.empty
+      Iterant.empty.toStreamT.toStream shouldEventuallyReturn Stream.empty
     }
     "finite" in {
-      Iterant.range(0, 5).toStream.toStream shouldEventuallyReturn 0.until(5).toStream
+      Iterant.range(0, 5).toStreamT.toStream shouldEventuallyReturn 0.until(5).toStream
     }
     "infinite" in {
-      Iterant.from(0).toStream.take(10).toStream shouldEventuallyReturn 0.until(10).toStream
+      Iterant.from(0).toStreamT.take(10).toStream shouldEventuallyReturn 0.until(10).toStream
     }
   }
   "filter" - {

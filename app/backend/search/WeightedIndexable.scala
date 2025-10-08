@@ -24,7 +24,7 @@ private object WeightedIndexable {
   private val PrimaryWeight = 1.0
   private val SecondaryWeight = 0.1
   implicit object SongIndexer extends WeightedIndexable[Song] {
-    private def classicalMusicTerms(s: Song): Traversable[String] =
+    private def classicalMusicTerms(s: Song): Iterable[String] =
       s.composer ++ s.orchestra ++ s.conductor ++ s.opus ++ s.performanceYear.map(_.toString)
     protected override def mainTerm(t: Song) = t.title
     override def secondaryTerms(t: Song) =

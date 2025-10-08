@@ -12,7 +12,7 @@ private object LocalImageFetcher {
   private val Extensions = Set("jpg", "png")
   private def isImage(f: FileRef) = Extensions(f.extension.toLowerCase)
   def apply(dir: DirectoryRef)(implicit ec: ExecutionContext): FutureIterant[ImageSource] =
-    Iterant.fromStream(StreamT.fromStream(Future {
+    Iterant.fromStreamT(StreamT.fromStream(Future {
       dir.deepFiles.toStream.filter(isImage).map(LocalSource)
     }))
 }

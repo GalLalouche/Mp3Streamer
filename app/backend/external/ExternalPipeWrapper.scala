@@ -28,8 +28,8 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
     reconciler: ReconcilerCacher[R],
     storage: ExternalStorage[R],
     provider: Retriever[ReconID, BaseLinks[R]],
-    expanders: Traversable[ExternalLinkExpander[R]],
-    markers: Traversable[ExternalLinkMarker[R]],
+    expanders: Iterable[ExternalLinkExpander[R]],
+    markers: Iterable[ExternalLinkMarker[R]],
     genreFinder: GenreFinder,
 ) {
   private implicit val iec: ExecutionContext = ec
@@ -40,7 +40,9 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
     freshnessStorage = new ComposedFreshnessStorage(storage, clock),
     onlineRetriever = new ExternalPipe[R](
       r =>
-        reconciler(r).mapEither {
+        // TODO remove this explicit type annotation once we move on to cats
+        reconciler(r).mapEither[ReconID] {
+          case Success(HasReconResult(reconId, _)) => \/-(reconId)
           case Failure(e) =>
             -\/(
               new NoSuchElementException(s"Failed to retrieve recon ID from online source for <$r>"),
@@ -51,7 +53,6 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
               if (isClassical) "Classical album"
               else s"Storage contained null for <$r>, i.e., past recon attempts failed"
             -\/(new StoredNullException(shouldReport = isClassical.isFalse, msg = msg))
-          case Success(HasReconResult(reconId, _)) => \/-(reconId)
         },
       provider,
       standaloneReconcilers,

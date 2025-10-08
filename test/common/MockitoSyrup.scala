@@ -3,7 +3,7 @@ package common
 import org.mockito.{ArgumentCaptor, Mockito}
 import org.mockito.Mockito.atLeast
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 import common.rich.primitives.RichClass._
 
@@ -11,7 +11,7 @@ import common.rich.primitives.RichClass._
 object MockitoSyrup {
   def captor[A: Manifest]: ArgumentCaptor[A] = ArgumentCaptor.forClass(manifest.unerasedClass)
   class Capturer[A] private[MockitoSyrup] (a: A) {
-    def apply[B: Manifest](f: (A, B) => Any): Seq[B] = {
+    def apply[B: Manifest](f: (A, B) => Any): collection.Seq[B] = {
       val c = captor[B]
       f(Mockito.verify(a, atLeast(0)), c.capture())
       c.getAllValues.asScala

@@ -16,7 +16,7 @@ private object MainsModule extends ScalaModule {
       // Ensures the fixer process terminates after finishing, without waiting for the python
       // detector for too long.
       override def configure(): Unit =
-        bind[Duration].annotatedWith[DetectLanguageTimeout].toInstance(5 seconds)
+        bind[Duration].annotatedWith[DetectLanguageTimeout].toInstance(5.seconds)
     }))
   }
 }

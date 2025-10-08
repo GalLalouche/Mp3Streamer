@@ -6,7 +6,7 @@ import backend.lyrics.retrievers.{HtmlLyricsUtils, LyricParseResult, SingleHostP
 import models.Song
 import org.jsoup.nodes.{Document, Element, TextNode}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import common.RichJsoup._
 import common.rich.RichT.richT

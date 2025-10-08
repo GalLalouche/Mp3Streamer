@@ -91,7 +91,7 @@ private class RandomFolderCreator @Inject() (
   }
 
   private def copy(
-      songs: Traversable[File],
+      songs: Iterable[File],
       outputDir: Directory,
       playlistName: String,
   ): Directory = {

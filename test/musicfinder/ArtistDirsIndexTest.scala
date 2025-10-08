@@ -47,7 +47,7 @@ class ArtistDirsIndexTest extends FreeSpec with AuxSpecs {
     lazy val $ = setup(new JsonableSaver(new MemoryRoot))
     "multiples" in {
       $.forDir(dir1) shouldReturn ArtistDirResult.MultipleArtists(
-        Vector(Artist("foo"), Artist("bar")),
+        Set(Artist("foo"), Artist("bar")),
       )
       $.forArtist(Artist("foo")).value shouldReturn dir1
       $.forArtist(Artist("bar")).value shouldReturn dir1
@@ -75,7 +75,7 @@ class ArtistDirsIndexTest extends FreeSpec with AuxSpecs {
     )
     "multiples" in {
       $.forDir(dir4) shouldReturn ArtistDirResult.MultipleArtists(
-        Vector(Artist("foo2"), Artist("bar2")),
+        Set(Artist("foo2"), Artist("bar2")),
       )
     }
     "single" in { $.forDir(dir5) shouldReturn ArtistDirResult.SingleArtist(Artist("moo2")) }

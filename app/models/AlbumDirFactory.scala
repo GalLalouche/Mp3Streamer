@@ -12,6 +12,7 @@ class AlbumDirFactory @Inject() (songDirectoryParser: SongDirectoryParser) {
       songDirectoryParser(dir)
         .requiring(_.nonEmpty, s"Cannot create an album of an empty dir <$dir>")
         .sortBy(_.trackNumber)
+        .toVector
     val firstSong = songs.head
     AlbumDir(
       dir = dir,
@@ -31,6 +32,6 @@ class AlbumDirFactory @Inject() (songDirectoryParser: SongDirectoryParser) {
     title = s.albumName,
     artistName = s.artistName,
     year = s.year,
-    songs = songDirectoryParser(s.file.parent),
+    songs = songDirectoryParser(s.file.parent).toVector,
   )
 }

@@ -2,9 +2,6 @@ package common.concurrency.report
 
 import rx.lang.scala.{Observable, Observer, Subscription}
 
-import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
-
 import common.rich.func.MoreObservableInstances._
 import scalaz.syntax.functor.ToFunctorOps
 
@@ -25,11 +22,12 @@ object ReportObservable {
     Observable[Report[Agg, Result]](s =>
       observable
         .doOnError(s.onError)
-        .foldLeft[mutable.Buffer[Agg]](ArrayBuffer()) { case (buffer, (shouldNotify, next)) =>
+        .foldLeft(Vector.newBuilder[Agg]) { case (buffer, (shouldNotify, next)) =>
           if (shouldNotify)
             s.onNext(Aggregation(next))
           buffer += next
         }
+        .map(_.result())
         .subscribe(buffer => s.onNext(Result(finisher(buffer)))),
     ),
   )

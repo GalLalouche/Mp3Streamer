@@ -4,9 +4,9 @@ import java.util.concurrent.LinkedBlockingQueue
 
 import org.scalatest.{AsyncFreeSpec, Matchers}
 
-import scala.collection.JavaConverters._
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.jdk.CollectionConverters._
 
 import scalaz.std.scalaFuture.futureInstance
 import scalaz.std.vector.vectorInstance

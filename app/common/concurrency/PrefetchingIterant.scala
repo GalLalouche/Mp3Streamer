@@ -1,7 +1,5 @@
 package common.concurrency
 
-import scala.language.higherKinds
-
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import scalaz.{Monad, Need, OptionT}
 import scalaz.Scalaz.ToFunctorOps

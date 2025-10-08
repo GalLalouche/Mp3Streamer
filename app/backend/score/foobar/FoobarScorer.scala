@@ -17,7 +17,7 @@ import scalafx.scene.text.{Text, TextFlow}
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
-import common.rich.func.ToMoreMonadErrorOps.toMoreMonadErrorOps
+import common.rich.func.ToMoreMonadErrorOps.toMoreApplicativeErrorOps
 import scalaz.syntax.bind._
 
 import common.rich.RichFuture.richFuture
@@ -71,10 +71,10 @@ private class FoobarScorer @Inject() (
   private def reconcileArtist(a: Artist): Future[_] = reconStorage
     .exists(a)
     .ifM(
-      Future.successful(Unit),
+      Future.successful(()),
       reconciler(a)
         .listen(_ => scribe.info(s"Reconciled <$a>"))
-        .flatMapF(r => pusher.withValidation(a.name, r.id, isIgnored = false))
+        .mapF(r => pusher.withValidation(a.name, r.id, isIgnored = false))
         .run
         .void,
     )

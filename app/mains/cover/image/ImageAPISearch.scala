@@ -1,7 +1,6 @@
 package mains.cover.image
 
 import com.google.inject.Inject
-
 import mains.cover.ImageSource
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -22,5 +21,5 @@ private[cover] class ImageAPISearch @Inject() (
     RichStreamT
       .fromStream(Stream.iterate(0)(_ + 1))
       .flatMap(i => StreamT.fromStream(fetcher(terms, i).map(Parser.apply(_).toStream)))
-      .|>(Iterant.fromStream[Future, ImageSource])
+      .|>(Iterant.fromStreamT[Future, ImageSource])
 }

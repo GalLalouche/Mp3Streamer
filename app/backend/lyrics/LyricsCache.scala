@@ -37,7 +37,8 @@ private class LyricsCache @Inject() (
   )
   private val cache = new OnlineRetrieverCacher[Song, Lyrics](
     lyricsStorage,
-    allComposite(_).mapEitherMessage {
+    // TODO remove this explicit type annotation once we move on to cats
+    allComposite(_).mapEitherMessage[Lyrics] {
       case RetrievedLyricsResult.RetrievedLyrics(l) => \/-(l)
       case _ => -\/("No lyrics retrieved :(")
     },

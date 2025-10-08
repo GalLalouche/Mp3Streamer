@@ -2,13 +2,13 @@ package common
 
 import org.scalacheck.Arbitrary
 import org.scalatest.{PropSpec, Suite}
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 import common.json.Jsonable
 import common.json.ToJsonableOps._
 import common.test.AuxSpecs
 
-trait JsonableSpecs extends PropSpec with GeneratorDrivenPropertyChecks with AuxSpecs {
+trait JsonableSpecs extends PropSpec with ScalaCheckDrivenPropertyChecks with AuxSpecs {
   self: Suite =>
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 10, workers = 5)

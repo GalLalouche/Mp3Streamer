@@ -11,7 +11,7 @@ object JsonMapFile {
   def readJsonMap(stream: InputStream): Map[String, String] =
     Source
       .fromInputStream(stream, "utf-8")
-      .getLines
+      .getLines()
       .map(_.parseJsonable[Seq[String]].toVector.ensuring(_.size == 2))
       .map { case Vector(key, value) => (key, value) }
       .toMap

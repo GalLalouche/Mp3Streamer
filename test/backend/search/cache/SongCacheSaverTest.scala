@@ -6,7 +6,7 @@ import musicfinder.ArtistDirsIndex
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.mockito.Mockito
 import org.scalatest.FreeSpec
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 
 import common.io.{JsonableSaver, MemoryRoot}
 import common.test.AuxSpecs

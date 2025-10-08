@@ -6,7 +6,7 @@ import rx.lang.scala.Observer
 trait ReportObserver[Agg, Result] {
   def onStep(a: Agg): Unit
   def onComplete(r: Result): Unit
-  def onError(t: Throwable)
+  def onError(t: Throwable): Unit
 }
 
 object ReportObserver {

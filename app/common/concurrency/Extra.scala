@@ -3,7 +3,7 @@ package common.concurrency
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps.toMoreMonadErrorOps
+import common.rich.func.ToMoreMonadErrorOps.toMoreApplicativeErrorOps
 
 /**
  * An actor with neither input nor output, i.e., an object you can tell "go do that thing you do".

@@ -5,13 +5,12 @@ Compile / unmanagedSourceDirectories := Vector(baseDirectory.value / "app")
 Compile / resourceDirectory := baseDirectory.value / "conf"
 Test / unmanagedSourceDirectories := Vector(baseDirectory.value / "test")
 Test / resourceDirectory := baseDirectory.value / "test-resources"
-val scalaVersionStr = "2.12.20"
+val scalaVersionStr = "2.13.17"
 scalaVersion := scalaVersionStr
 version := "1.0-SNAPSHOT"
 
-addCompilerPlugin(("org.scalamacros" % "paradise" % "2.1.1").cross(CrossVersion.full))
 addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
-addCompilerPlugin(("org.typelevel" %% "kind-projector" % "0.13.3").cross(CrossVersion.full))
+addCompilerPlugin(("org.typelevel" %% "kind-projector" % "0.13.4").cross(CrossVersion.full))
 Compile / doc / sources := Seq.empty
 Compile / packageDoc / publishArtifact := false
 
@@ -27,10 +26,11 @@ resolvers ++= Seq(
   Resolver.mavenLocal,
 )
 val akkaVersion = "2.6.1"
-val monocleVersion = "1.5.0"
-val scalazVersion = "7.2.18"
+val monocleVersion = "2.1.0"
+val catsVersion = "2.13.0"
+val scalazVersion = "7.2.36"
 val guiceVersion = "7.0.0"
-val playStandaloneVersion = "2.1.11"
+val playStandaloneVersion = "3.0.8"
 val scribeVersion = "3.15.2"
 libraryDependencies ++= Seq(
   // noinspection SbtDependencyVersionInspection (Newer JDK version).
@@ -43,30 +43,29 @@ libraryDependencies ++= Seq(
   "com.google.inject" % "guice" % guiceVersion,
   "com.google.inject.extensions" % "guice-assistedinject" % guiceVersion,
   "com.h2database" % "h2" % "1.4.196",
-  "com.jsuereth" %% "scala-arm" % "2.0",
+  "com.michaelpollmeier" %% "scala-arm" % "2.1",
   "com.outr" %% "scribe" % scribeVersion,
   "com.outr" %% "scribe-slf4j" % scribeVersion,
   "com.typesafe" % "config" % "1.4.3",
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
-  "com.typesafe.play" %% "play-ahc-ws-standalone" % playStandaloneVersion,
-  "com.typesafe.play" %% "play-ws-standalone-json" % playStandaloneVersion,
   "com.typesafe.slick" %% "slick" % "3.3.3",
   "commons-validator" % "commons-validator" % "1.9.0",
   "io.lemonlabs" %% "scala-uri" % "3.0.0",
   "io.reactivex" %% "rxscala" % "0.27.0",
   "me.tongfei" % "progressbar" % "0.10.1",
   "my.net.jthink" % "jaudiotagger" % "3.0.3-SNAPSHOT",
-  "net.codingwell" %% "scala-guice" % "4.2.1",
+  "net.codingwell" %% "scala-guice" % "7.0.0",
   "org.apache.commons" % "commons-io" % "1.3.2",
   "org.apache.commons" % "commons-lang3" % "3.17.0",
   "org.jsoup" % "jsoup" % "1.12.1",
+  "org.playframework" %% "play-ahc-ws-standalone" % playStandaloneVersion,
   "org.playframework" %% "play-json" % "3.0.4",
+  "org.playframework" %% "play-ws-standalone-json" % playStandaloneVersion,
   "org.scala-lang.modules" %% "scala-swing" % "3.0.0",
   "org.openjfx" % "javafx" % "21.0.6",
   "org.openjfx" % "javafx-controls" % "21.0.6",
-  "org.scalafx" %% "scalafx" % "17.0.1-R26",
-  "org.scalamacros" % ("paradise_" + scalaVersionStr) % "2.1.1", // For some reason, it uses the full binary version
-  "org.scalatest" %% "scalatest" % "3.0.4",
+  "org.scalafx" %% "scalafx" % "24.0.2-R36",
+  "org.scalatest" %% "scalatest" % "3.0.9",
   "org.scalaz" %% "scalaz-concurrent" % scalazVersion,
   "org.scalaz" %% "scalaz-core" % scalazVersion,
   "org.xerial" % "sqlite-jdbc" % "3.49.0.0",
@@ -84,7 +83,7 @@ libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-dsl" % http4sVersion,
 )
 
-scalacOptions += "-Ypartial-unification"
+scalacOptions += "-Ymacro-annotations"
 scalacOptions += "-deprecation"
 
 libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always

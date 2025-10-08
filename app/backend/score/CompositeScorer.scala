@@ -2,8 +2,6 @@ package backend.score
 
 import backend.recon.{Album, Artist, Track}
 
-import scala.language.higherKinds
-
 import scalaz.{Bind, OptionT}
 import scalaz.syntax.bind._
 

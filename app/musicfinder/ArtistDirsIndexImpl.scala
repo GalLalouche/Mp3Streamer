@@ -20,7 +20,7 @@ import common.rich.primitives.RichBoolean.richBoolean
  * Windows (e.g., R.E.M.), or when multiple artists share the same parent directory (e.g., DT Sides)
  */
 private class ArtistDirsIndexImpl(
-    dirToArtist: Map[DirectoryRef, Either[Artist, Seq[Artist]]],
+    dirToArtist: Map[DirectoryRef, Either[Artist, Set[Artist]]],
     // This isn't a BiMap! Some dirs contain multiple artists (in which case, they won't be
     // represented in the above Map).
     artistToDir: Map[Artist, DirectoryRef],
@@ -74,7 +74,7 @@ private object ArtistDirsIndexImpl {
             case v =>
               if (v.allUnique.isFalse)
                 scribe.warn(s"Multiple repeating artists found for directory <$k>")
-              Right(v.ensuring(_.nonEmpty))
+              Right(v.ensuring(_.nonEmpty).toSet)
           })
         },
       // TuplePLenses requires explicit types here for some reason :\

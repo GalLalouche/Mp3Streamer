@@ -4,8 +4,8 @@ import com.google.inject.Inject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
-import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.concurrent.{ExecutionContext, Future}
+import scala.jdk.CollectionConverters._
 
 import common.rich.func.BetterFutureInstances.betterFutureInstances
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
@@ -43,6 +43,6 @@ private class GoogleFetcher @Inject() (
           .get(),
       )
       .toOptionTF(r => extract(Jsoup.parse(r.body).select("A").asScala))
-  private def extract(links: Seq[Element]): Option[String] =
+  private def extract(links: Iterable[Element]): Option[String] =
     links.optFilter(_.size == 1).map(_.single.attr("href"))
 }

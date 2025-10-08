@@ -1,7 +1,6 @@
 package songs
 
 import com.google.inject.Inject
-
 import models.Song
 
 import common.rich.func.MoreSeqInstances._
@@ -15,7 +14,7 @@ import common.rich.RichT._
 private class SongGroups @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
   private lazy val jsonFile = rootDirectory.addFile("song_groups.json")
 
-  def save(groups: Traversable[SongGroup])(implicit songJsonable: Jsonable[Song]): Unit = groups
+  def save(groups: Iterable[SongGroup])(implicit songJsonable: Jsonable[Song]): Unit = groups
     .map(_.songs.jsonify)
     .map(_.toString)
     .mkString("\n") |> jsonFile.write
@@ -25,7 +24,7 @@ private class SongGroups @Inject() (@RootDirectory rootDirectory: DirectoryRef) 
 }
 
 private object SongGroups {
-  def fromGroups(groups: Traversable[SongGroup]): Map[Song, SongGroup] =
+  def fromGroups(groups: Iterable[SongGroup]): Map[Song, SongGroup] =
     groups.foldLeft(Map[Song, SongGroup]())((agg, group) =>
       agg ++ group.songs.fproduct(group.const),
     )

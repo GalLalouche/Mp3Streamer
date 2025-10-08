@@ -18,6 +18,7 @@ import slick.ast.BaseTypedType
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.BetterFutureInstances._
+import common.rich.func.MoreIteratorInstances._
 import common.rich.func.ToMoreApplicativeOps.toLazyApplicativeUnitOps
 import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.ToMoreMonadErrorOps._
@@ -27,12 +28,13 @@ import scalaz.ListT
 import scalaz.std.vector.vectorInstance
 import scalaz.syntax.apply.^
 import scalaz.syntax.bind.ToBindOps
+import scalaz.syntax.foldable.ToFoldableOps
 import scalaz.syntax.functor.ToFunctorOps
 
 import common.rich.RichFuture.richFuture
 import common.rich.RichT.richT
 import common.rich.RichTime.OrderingLocalDate
-import common.rich.RichTuple.RightTuple
+import common.rich.RichTuple._
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichBoolean.richBoolean
 
@@ -124,23 +126,25 @@ private class SlickNewAlbumStorage @Inject() (
           .map(TuplePLenses.tuple2First.modify(extractValue))
           .map(TuplePLenses.tuple2Second.modify(_.map(_._2).toOptionalModelScore))
           .groupBy(_._1.na.artist)
+          .view
           .mapValues(_.map(_.swap) |> toNewAlbums)
           .map(_.flatten)
           .map(Function.tupled(ArtistNewAlbums.apply))
-          .toList,
+          .iterator
+          .toIList,
       ),
   )
   private def shouldRemoveAlbum(e: Rows): Rep[Boolean] = e.isRemoved || e.isIgnored
   private def toNewAlbums(
-      zipped: Seq[(OptionalModelScore, StoredNewAlbum)],
+      zipped: Iterable[(OptionalModelScore, StoredNewAlbum)],
   ): (OptionalModelScore, Seq[NewAlbum]) = {
     val (scores, albums) = zipped.unzip
     (scores.toSet.single, toNewAlbums(albums))
   }
-  private def toNewAlbums(albums: Seq[StoredNewAlbum])(implicit
+  private def toNewAlbums(albums: Iterable[StoredNewAlbum])(implicit
       dummy: DummyImplicit,
   ): Seq[NewAlbum] =
-    albums.sortBy(_.na.date).reverse.map(_.na)
+    albums.toVector.sortBy(_.na.date)(implicitly[Ordering[LocalDate]].reverse).reverse.map(_.na)
   override def apply(a: Artist) = db
     .run(
       tableQuery
@@ -189,7 +193,8 @@ private class SlickNewAlbumStorage @Inject() (
   override def storeNew(albums: Seq[NewAlbumRecon]): Future[AddedAlbumCount] = {
     val withoutDups = albums
       .groupBy(_.toTuple(_.newAlbum.artist, _.newAlbum.title, _.disambiguation))
-      .mapValues { e =>
+      .values
+      .map { e =>
         val v = e.toVector
         if (v.size > 1) {
           val albums = v.filter(_.newAlbum.albumType == AlbumType.Album)
@@ -206,7 +211,6 @@ private class SlickNewAlbumStorage @Inject() (
         } else
           v.head
       }
-      .values
       .toVector
     for {
       newAlbums <- withoutDups.filterM(isValid)

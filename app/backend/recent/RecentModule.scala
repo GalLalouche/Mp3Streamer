@@ -14,8 +14,8 @@ object RecentModule extends ScalaPrivateModule {
   override def configure(): Unit = {
     bind[Observer[DirectoryRef]].annotatedWith[NewDir].to[DirToAlbum]
     bind[Observable[AlbumDir]].annotatedWith[NewDir].to[DirToAlbum]
-    expose[Observer[DirectoryRef]].annotatedWith[NewDir]
-    expose[Observable[AlbumDir]].annotatedWith[NewDir]
+    expose[Observer[DirectoryRef]].annotatedWith[NewDir]()
+    expose[Observable[AlbumDir]].annotatedWith[NewDir]()
   }
 
   @Provides

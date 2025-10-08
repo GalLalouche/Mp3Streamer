@@ -15,6 +15,7 @@ import common.rich.func.BetterFutureInstances._
 import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
 
 import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
+import common.json.RichJson.ImmutableJsonArray
 import common.json.ToJsonableOps.jsonifySingle
 
 private class PlaylistTest(serverModule: Module)
@@ -76,5 +77,5 @@ private class PlaylistTest(serverModule: Module)
     getString(uri"playlist/$name").map(injector.instance[UrlDecoder].apply).map(Json.parse)
 
   private def getPlaylists: Future[Seq[String]] =
-    getJson(uri"playlist/").map(_.as[JsArray].value.map(_.as[JsString].value))
+    getJson(uri"playlist/").map(_.as[JsArray].map(_.as[JsString].value))
 }

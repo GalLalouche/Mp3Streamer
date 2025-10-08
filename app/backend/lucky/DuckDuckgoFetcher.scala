@@ -14,7 +14,7 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
 private class DuckDuckgoFetcher @Inject() (it: InternetTalker, ec: ExecutionContext) {
   private implicit val iec: ExecutionContext = ec
   def search(query: String): Future[String] =
-    it.useWs(_.url(s"$QueryPrefix$query").withFollowRedirects(false).get)
+    it.useWs(_.url(s"$QueryPrefix$query").withFollowRedirects(false).get())
       .map(DuckDuckgoFetcher parse _.body)
 
 }

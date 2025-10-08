@@ -12,7 +12,7 @@ import scala.concurrent.duration._
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.ToMoreMonadErrorOps._
-import scalaz.Scalaz.ToMonadErrorOps
+import scalaz.syntax.applicativeError.ToApplicativeErrorOps
 
 import common.concurrency.SimpleTypedActor
 import common.io.InternetTalker
@@ -48,7 +48,7 @@ private class JsonDownloader @Inject() (it: InternetTalker, ec: ExecutionContext
         .addQueryStringParameters(params: _*)
         // see https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#How_can_I_be_a_good_citizen_and_be_smart_about_using_the_Web_Service.3FI
         .addHttpHeaders("User-Agent" -> "Mp3Streamer (glpkmtg@gmail.com)")
-        .get,
+        .get(),
     ).filterWithMessageF(
       _.status == HttpURLConnection.HTTP_OK,
       m => s"HTTP response wasn't 200, was <${m.status}>: " + m.body,

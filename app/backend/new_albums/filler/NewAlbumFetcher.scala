@@ -12,7 +12,7 @@ import scala.util.{Failure, Success}
 
 import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichOptionT._
-import common.rich.func.ToMoreMonadErrorOps._
+import common.rich.func.ToMoreMonadErrorOps.{toMoreMonadErrorOps, _}
 import scalaz.{-\/, \/-, OptionT}
 
 import common.concurrency.DaemonExecutionContext
@@ -26,7 +26,8 @@ import common.rich.RichT._
     DaemonExecutionContext(this.simpleName, n = 10, keepAlive = 1.minute)
 
   private def getReconId(artist: Artist): OptionT[Future, ReconID] = reconciler(artist)
-    .mapEitherMessage {
+    // TODO remove this explicit type annotation once we move on to cats
+    .mapEitherMessage[ReconID] {
       case Failure(e) => -\/("Failed online recon")
       case Success(StoredNull) => -\/("No recon")
       case Success(HasReconResult(reconId, isIgnored)) =>

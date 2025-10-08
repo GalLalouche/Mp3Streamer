@@ -87,7 +87,7 @@ trait DirectoryRef extends PathRef { self =>
   def lastModified: LocalDateTime
   // TODO freaking unfoldables already
   override def parents =
-    Stream
+    LazyList
       .iterate(Option(parent))(p =>
         if (p.get.hasParent) Some(p.get.parent.asInstanceOf[S#D]) else None,
       )

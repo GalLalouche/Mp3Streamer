@@ -3,7 +3,8 @@ package musicfinder
 import models.ArtistName
 import musicfinder.MusicFinder.DirectoryName
 
-import common.ds.Types.ViewSeq
+import scala.collection.View
+
 import common.io.{DirectoryRef, RefSystem}
 
 trait MusicFinder { self =>
@@ -23,24 +24,24 @@ trait MusicFinder { self =>
   private def getDir(name: String) = baseDir.getDir(name).get
   private def allGenres = genresWithSubGenres ++ flatGenres
   def genreDirsWithSubGenres: Seq[S#D] = genresWithSubGenres.map(getDir)
-  def artistDirs: Seq[S#D] = {
-    def getDirs(xs: Seq[String]): Seq[S#D] = xs.view.map(getDir).flatMap(_.dirs)
+  def artistDirs: View[S#D] = {
+    def getDirs(xs: Seq[String]): View[S#D] = xs.view.map(getDir).flatMap(_.dirs)
     getDirs(genresWithSubGenres).flatMap(_.dirs) ++ getDirs(flatGenres)
   }
 
   protected def normalizeArtistName(name: ArtistName): DirectoryName
 
-  def albumDirs: DirView = albumDirs(genreDirs)
+  def albumDirs: DirView = albumDirs(genreDirs.view)
   protected def genreDirs: Seq[S#D] = allGenres.sorted.map(getDir)
-  def albumDirs(startingFrom: Seq[S#D]): DirView = startingFrom.view
+  def albumDirs(startingFrom: View[S#D]): DirView = startingFrom
     .flatMap(_.deepDirs)
     // Because some albums have, e.g., cover subdirectories
     .filter(_.files.exists(f => extensions.contains(f.extension)))
-  def getSongFiles: ViewSeq[S#F] = albumDirs.flatMap(getSongFilesInDir)
+  def getSongFiles: View[S#F] = albumDirs.flatMap(getSongFilesInDir)
   def getSongFilesInDir(d: DirectoryRef): Seq[S#F] =
     d.asInstanceOf[S#D].files.filter(f => extensions.contains(f.extension))
 
-  final type DirView = ViewSeq[S#D]
+  final type DirView = View[S#D]
 }
 
 object MusicFinder {

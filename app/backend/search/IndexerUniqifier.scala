@@ -40,7 +40,7 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
         .go(forceRefresh)
         .groupByBuffer(_.song.toTuple(_.artistName, _.albumName))
         .doOnNext(newDirObserver onNext _._2.mapSingle(_.song.file.parent))
-        .doOnCompleted($.complete(Success(Unit)))
+        .doOnCompleted($.complete(Success(())))
         .doOnCompleted(
           songSelectorState.update() >> searchState.update() >> lastAlbumState.update(),
         )

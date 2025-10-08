@@ -25,7 +25,7 @@ object Jsonable {
   }
   implicit def seqJsonable[A: Jsonable]: Jsonable[Seq[A]] = new Jsonable[Seq[A]] {
     override def jsonify(as: Seq[A]): JsValue = JsArray(as.map(_.jsonify))
-    override def parse(json: JsValue): Seq[A] = json.as[JsArray].value.map(_.parse[A])
+    override def parse(json: JsValue): Seq[A] = json.as[JsArray].map(_.parse[A])
   }
   implicit def optionJsonable[A: Jsonable]: Jsonable[Option[A]] = new Jsonable[Option[A]] {
     override def jsonify(o: Option[A]): JsValue = o.mapHeadOrElse(_.jsonify, JsNull)

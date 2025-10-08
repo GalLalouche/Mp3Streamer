@@ -14,7 +14,7 @@ private class WikidataEnglishOrHebrewExtenderFactory @Inject() (
 ) {
   def create[R <: Reconcilable]: ExternalLinkExpander[R] = new ExternalLinkExpander[R] {
     override def sourceHost: Host = Host.Wikidata
-    override def potentialHostsExtracted: Traversable[Host] = Vector(Host.Wikipedia)
+    override def potentialHostsExtracted: Iterable[Host] = Vector(Host.Wikipedia)
     override def expand = helper(WikidataEnglishOrHebrewExtenderFactory.parse)
   }
 }

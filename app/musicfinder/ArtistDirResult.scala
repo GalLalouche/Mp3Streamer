@@ -12,6 +12,6 @@ sealed trait ArtistDirResult {
 
 object ArtistDirResult {
   case class SingleArtist(artist: Artist) extends ArtistDirResult
-  case class MultipleArtists(artists: Seq[Artist]) extends ArtistDirResult
+  case class MultipleArtists(artists: Set[Artist]) extends ArtistDirResult
   case object NoMatch extends ArtistDirResult
 }

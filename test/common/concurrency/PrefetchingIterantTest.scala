@@ -9,7 +9,7 @@ import common.rich.func.BetterFutureInstances._
 import common.rich.func.RichStreamT.richStreamT
 import scalaz.OptionT
 
-import common.concurrency.Iterant.fromStream
+import common.concurrency.Iterant.fromStreamT
 import common.test.AsyncAuxSpecs
 
 class PrefetchingIterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
@@ -31,15 +31,15 @@ class PrefetchingIterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
 
   private val actor = new TogellableProducer
 
-  private val $ = Iterant.prefetching(fromStream(RichStreamT.fillM(OptionT(actor.!(Unit)))), 10)
+  private val $ = Iterant.prefetching(fromStreamT(RichStreamT.fillM(OptionT(actor ! ()))), 10)
 
   "starts on creation" in {
     actor.stop()
-    $.toStream.take(10).toStream shouldEventuallyReturn 1.to(10).toStream
+    $.toStreamT.take(10).toStream shouldEventuallyReturn 1.to(10).toStream
   }
   "Does not fetch more than is needed" in {
     actor.stop()
-    $.toStream.take(10).toStream shouldEventuallyReturn 1.to(10).toStream
+    $.toStreamT.take(10).toStream shouldEventuallyReturn 1.to(10).toStream
     actor.counter should be <= 12
   }
   "Should fetch more after getting" in {
@@ -47,7 +47,7 @@ class PrefetchingIterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
     actor.counter should be >= 20
   }
   "toStream should also prefetch more after getting" in {
-    $.toStream.unconsBatch(10).map(_._1) shouldEventuallyReturn 1.to(10)
+    $.toStreamT.unconsBatch(10).map(_._1) shouldEventuallyReturn 1.to(10)
     actor.counter should be >= 20
   }
 }

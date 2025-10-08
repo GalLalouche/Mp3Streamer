@@ -9,12 +9,12 @@ import play.api.libs.json.{JsArray, Json, JsString, JsValue}
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.BetterFutureInstances._
-import common.rich.func.MoreTraverseInstances._
 import common.rich.func.ToMoreFoldableOps._
 import monocle.Monocle.toApplyTraversalOps
 import monocle.Traversal
 import scalaz.std.option.optionInstance
 
+import common.ds.RichIList.richIList
 import common.json.JsonWriteable
 import common.json.RichJson._
 import common.json.ToJsonableOps._
@@ -37,7 +37,7 @@ class NewAlbumsFormatter @Inject() (
       "albums" -> fixTitles(a.albums).jsonify,
     )
   }
-  def albums: Future[JsValue] = $.albums.map(_.jsonify).run.map(JsArray.apply)
+  def albums: Future[JsValue] = $.albums.map(_.jsonify).run.map(e => JsArray.apply(e.toArray))
 
   def forArtist(artistName: ArtistName): Future[Option[JsValue]] =
     $.forArtist(Artist(artistName)).map {

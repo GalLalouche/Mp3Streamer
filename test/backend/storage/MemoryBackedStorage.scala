@@ -17,7 +17,7 @@ class MemoryBackedStorage[Key, Value] extends Storage[Key, Value] {
       Future.failed(new IllegalArgumentException(s"Key <$k> already exists"))
     else {
       replace(k, v)
-      Future.successful(Unit)
+      Future.successful(())
     }
   override def load(k: Key) = map.get(k).hoistId
   override def exists(k: Key) = Future.successful(map.contains(k))

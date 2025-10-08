@@ -6,19 +6,18 @@ import musicfinder.ArtistDirsIndex
 
 import common.io.DirectoryRef
 import common.rich.RichT.richT
+import common.rich.collections.RichMap.richMap
 import common.rich.primitives.RichOption.richOption
 
 private class PreCachedExistingAlbumsFactory @Inject() (
     artistDirsIndex: ArtistDirsIndex,
     reconcilableFactory: ReconcilableFactory,
 ) {
-  def from(albums: Seq[DirectoryRef]) = new PreCachedExistingAlbums(
+  def from(albums: Iterable[DirectoryRef]) = new PreCachedExistingAlbums(
     albums
       .map(reconcilableFactory.toAlbum(_).get)
       .groupBy(_.artist)
-      .mapValues(_.toSet)
-      .view
-      .force,
+      .properMapValues(_.toSet),
   )
 
   def singleArtist(artist: Artist): PreCachedExistingAlbums = {

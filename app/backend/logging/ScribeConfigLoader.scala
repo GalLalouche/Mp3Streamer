@@ -5,7 +5,7 @@ import java.util.{Collections, Properties}
 import better.files.File
 import com.typesafe.config.ConfigFactory
 
-import scala.jdk.CollectionConverters.{iterableAsScalaIterableConverter, mapAsScalaMapConverter}
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala}
 
 import common.io.IODirectory
 import common.rich.collections.RichTraversableOnce.richTraversableOnce

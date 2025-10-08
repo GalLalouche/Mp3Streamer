@@ -24,16 +24,16 @@ private object WeightedIndexBuilder {
   }
 
   def buildIndexFor[T: WeightedIndexable](ts: Iterable[T]): Index[T] = {
-    val documentsToScoredTerms: TraversableOnce[(T, (String, Double))] = ts.view
-      .flatMap(e => e.terms.strengthL(e))
+    val documentsToScoredTerms: IterableOnce[(T, (String, Double))] =
+      ts.view.flatMap(e => e.terms.strengthL(e))
     val scoredDocumentByTerm: Map[String, Seq[(T, Double)]] = documentsToScoredTerms
       .aggregateMap(_._2._1, e => Set(e._1 -> e._2._2))
-      .mapValues(_.toVector.sortBy(_._2))
+      .properMapValues(_.toVector.sortBy(_._2))
     new WeightedIndex(Trie.fromMultiMap(scoredDocumentByTerm))
   }
 
   private class WeightedIndex[T: WeightedIndexable](trie: Trie[(T, Double)]) extends Index[T] {
-    override def findIntersection(ss: Traversable[String]): Seq[T] = {
+    override def findIntersection(ss: Iterable[String]): Seq[T] = {
       val lastQuery :: allButLast = ss.toList.reverse
       allButLast
         .map(trie.exact(_).toMap)

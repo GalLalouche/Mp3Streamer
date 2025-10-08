@@ -10,9 +10,15 @@ private object Parser {
   def apply(json: JsObject): Seq[ImageSource] = {
     if (json.has("error"))
       throw new Exception("API error: " + json./("error").str("message"))
-    json.array("items").value.map { e =>
-      val image = e./("image")
-      UrlSource(Url.parse(e.str("link")), width = image.int("width"), height = image.int("height"))
-    }
+    json
+      .array("items")
+      .map { e =>
+        val image = e./("image")
+        UrlSource(
+          Url.parse(e.str("link")),
+          width = image.int("width"),
+          height = image.int("height"),
+        )
+      }
   }
 }

@@ -26,7 +26,7 @@ private class MbAlbumReconciler @Inject() (
   private implicit val iec: ExecutionContext = ec
 
   override def apply(a: Album) = artistReconciler(a.artist)
-    .flatMapF(artistId => downloader("release-group/", "limit" -> "100", "artist" -> artistId.id))
+    .mapF(artistId => downloader("release-group/", "limit" -> "100", "artist" -> artistId.id))
     .subFlatMap(parse(_, a))
 
   private def album(js: JsObject, a: Artist) =

@@ -7,8 +7,10 @@ import models.{AlbumDir, AlbumDirFactory, SongTagParser}
 import musicfinder.MusicFinder
 
 import scala.Ordering.Implicits._
+import scala.collection.View
 import scala.concurrent.Future
 
+import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
 import scalaz.std.option.optionInstance
 import scalaz.syntax.apply.^
 
@@ -26,7 +28,7 @@ private class RecentAlbums @Inject() (
 ) {
   // recent doesn't care about songs.
   private def makeAlbum(dir: DirectoryRef) = albumFactory.fromDir(dir).copy(songs = Nil)
-  private def go(amount: Int)(dirs: Seq[DirectoryRef]) =
+  private def go(amount: Int)(dirs: View[DirectoryRef]) =
     dirs.topK(amount)(Ordering.by(_.lastModified)).map(makeAlbum)
   private val lastFetcher =
     SimpleTypedActor.unique[Unit, AlbumDir]("last fetcher", all(1).head.const)
@@ -37,6 +39,7 @@ private class RecentAlbums @Inject() (
     val lastDuration = f(clock.getLocalDate)
     mf.albumDirs
       .filter(_.lastModified.toLocalDate >= lastDuration)
+      .toVector
       .sortBy(_.lastModified)(OrderingLocalDateTime.reverse)
       .map(makeAlbum)
   }

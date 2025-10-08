@@ -17,7 +17,7 @@ private[external] trait ExternalLinkExpander[R <: Reconcilable] {
    * they might not exist in the source's document. Therefore, this only lists hosts that *can* be
    * extracted.
    */
-  def potentialHostsExtracted: Traversable[Host]
+  def potentialHostsExtracted: Iterable[Host]
   // For point free style.
   def expand: BaseLink[R] => Future[BaseLinks[R]]
 }

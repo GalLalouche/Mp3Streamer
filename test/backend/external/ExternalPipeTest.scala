@@ -35,7 +35,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
   )
   private def constExpander(links: BaseLink[Album]*) = new ExternalLinkExpander[Album] {
     override def sourceHost: Host = existingHost
-    override def potentialHostsExtracted: Traversable[Host] = links.map(_.host)
+    override def potentialHostsExtracted: Iterable[Host] = links.map(_.host)
     override def expand = Future.successful(links).const
   }
   private def constReconciler(_host: Host, link: BaseLink[Album]) = new LinkRetriever[Album] {
@@ -61,7 +61,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
     val failed = Future.failed(new AssertionError("Shouldn't have been invoked"))
     def failedExpander(h: Host) = new ExternalLinkExpander[Album] {
       override val sourceHost: Host = existingHost
-      override val potentialHostsExtracted: Traversable[Host] = Vector(h)
+      override val potentialHostsExtracted: Iterable[Host] = Vector(h)
       override def expand = failed.const
     }
     def failedReconciler(_host: Host) = new LinkRetriever[Album] {
@@ -121,7 +121,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
     def oneTimeExpander(source: BaseLink[Album], dest: BaseLink[Album]) =
       new ExternalLinkExpander[Album] {
         private var firstRun = true
-        override def potentialHostsExtracted: Traversable[Host] = Vector(dest.host)
+        override def potentialHostsExtracted: Iterable[Host] = Vector(dest.host)
         override def sourceHost: Host = source.host
         override def expand = v1 =>
           if (firstRun) {

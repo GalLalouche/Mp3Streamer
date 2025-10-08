@@ -4,8 +4,10 @@ import play.api.libs.json._
 
 import scala.annotation.implicitNotFound
 
+import common.json.RichJson.ImmutableJsonObject
 import common.json.ToJsonableOps.{jsonifySingle, parseJsValue}
 import common.rich.RichTuple.richTuple2
+import common.rich.collections.RichMap.richMap
 
 /** Saner names for play's JSON trait, and less optionality. */
 @implicitNotFound("Could not prove that ${T} is OJsonable.")
@@ -25,6 +27,6 @@ object OJsonable {
     override def jsonify(e: Map[String, A]): JsObject =
       JsObject(e.iterator.map(_.modifySecond(_.jsonify)).toVector)
     override def parse(json: JsObject): Map[String, A] =
-      json.value.mapValues(_.parse[A]).toMap
+      json.map.properMapValues(_.parse[A])
   }
 }

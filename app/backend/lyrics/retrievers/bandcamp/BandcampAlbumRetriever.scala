@@ -1,9 +1,8 @@
 package backend.lyrics.retrievers.bandcamp
 
-import com.google.inject.Inject
-
 import backend.lyrics.retrievers.{HtmlRetriever, SingleHostParsingHelper}
 import backend.lyrics.retrievers.RetrievedLyricsResult.NoLyrics
+import com.google.inject.Inject
 
 import scala.concurrent.ExecutionContext
 
@@ -21,7 +20,7 @@ private[retrievers] class BandcampAlbumRetriever @Inject() (
   override val doesUrlMatchHost = Utils.doesUrlMatchHost
   override def get = song =>
     externalLinksProvider(song)
-      .flatMapF(parse(_, song))
+      .mapF(parse(_, song))
       .getOrElse(NoLyrics) // Recovering from None
       .orElse(NoLyrics) // Recovering from Future failure
 }

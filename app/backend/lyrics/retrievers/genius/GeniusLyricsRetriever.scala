@@ -17,5 +17,5 @@ private[lyrics] class GeniusLyricsRetriever @Inject() (
 
   override val parse = singleHostHelper(LyricsParser)
   override val doesUrlMatchHost = _.toStringPunycode.startsWith("https://genius.com")
-  override val get = song => api.getLyricUrl(song).flatMapF(parse(_, song)) | NoLyrics
+  override val get = song => api.getLyricUrl(song).mapF(parse(_, song)) | NoLyrics
 }

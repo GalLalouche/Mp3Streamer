@@ -15,8 +15,7 @@ import scalaz.State
 
 import common.rich.RichT.lazyT
 import common.rich.RichTuple.richSameTuple2
-import common.rich.collections.RichSeq._
-import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rich.collections.RichTraversableOnce._
 import common.rich.path.Directory
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichInt.Rich
@@ -41,7 +40,7 @@ private[fixer] class GenrePanel private (
         ),
       )
     }
-    .>>(State.modify(_ + (dirs.length.ceilDiv(maxRows))))
+    .>>(State.modify(_ + dirs.length.ceilDiv(maxRows)))
 
   private def addBigSizeIcon(dir: Directory): UpdatingColumns[Unit] =
     dynamicConstraint(
@@ -131,9 +130,11 @@ private[fixer] class GenrePanel private (
         case Direction.Previous => i._1.onlyIf(i._2 == currentSelection)
         case Direction.Next => i._2.onlyIf(i._1 == currentSelection)
       }
-      boxes.zipWithIndex
+      boxes.iterator.zipWithIndex
         .filter(_._1.isFuzzyMatch(s))
-        .pairSliding
+        // TODO add pairSliding to RichIterator
+        .sliding(2)
+        .map(e => e(0) -> e(1))
         .map(_.map(_._2))
         .mapFirst(nextSelection)
         .foreach(select)

@@ -4,7 +4,7 @@ import backend.recon.{Album, Artist, Track}
 import backend.recon.Reconcilable.SongExtractor
 import models.{FakeModelFactory, Song}
 import org.scalatest.WordSpec
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.tags.Slow
 
 import scala.collection.mutable.ArrayBuffer

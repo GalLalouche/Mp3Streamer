@@ -65,7 +65,7 @@ private[mains] class DownloadCover @Inject() (
     imageSelector.select(
       Iterant
         .prefetching(imageURLs.filter(i => i.isSquare && i.width >= 500), 12)
-        .flatMapF(
+        .mapF(
           // TODO filterSuccessful in rich whatever.
           sourceToImage(_).toTry.map(_.toOption),
         )

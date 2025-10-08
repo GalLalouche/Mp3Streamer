@@ -7,6 +7,7 @@ import scala.math.Ordering.Implicits._
 
 import common.io.FileRef
 import common.json.Jsonable
+import common.json.RichJson.ImmutableJsonArray
 import common.json.ToJsonableOps._
 import common.rich.RichT.richT
 import common.rich.RichTime._
@@ -31,6 +32,6 @@ private object SongCache {
     new Jsonable[SongCache] {
       override def jsonify(e: SongCache): JsValue = e.songsByFile.values.toVector.jsonifyArray
       override def parse(json: JsValue): SongCache =
-        from(json.as[JsArray].value.map(_.parse[TimestampedSong]))
+        from(json.as[JsArray].map(_.parse[TimestampedSong]))
     }
 }

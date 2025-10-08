@@ -6,6 +6,7 @@ import com.google.inject.Inject
 import models.{SongTitle, TrackNumber}
 import musicfinder.{ArtistDirsIndex, MusicFinder, SongDirectoryParser}
 
+import scala.collection.View
 import scala.util.{Failure, Success, Try}
 
 import common.io.{DirectoryRef, FileRef}
@@ -53,9 +54,9 @@ class ReconcilableFactory @Inject() (
   def songInfo(f: FileRef): (TrackNumber, SongTitle) =
     trySongInfo(f).getOrElse(songDirectoryParser(f).toTuple(_.trackNumber, _.title))
   private val IgnoredFolders = Vector("Classical", "Musicals")
-  private def artistDirectoriesTyped: Seq[S#D] = mf.artistDirs.filterNot(shouldIgnore)
+  private def artistDirectoriesTyped: View[S#D] = mf.artistDirs.filterNot(shouldIgnore)
   // TODO this shouldn't be here.
-  def artistDirectories: Seq[DirectoryRef] = artistDirectoriesTyped
+  def artistDirectories: View[DirectoryRef] = artistDirectoriesTyped
   private val prefixLength = {
     val $ = mf.baseDir.path
     $.length + (if ($.endsWith("\\") || $.endsWith("/")) 0 else 1)
@@ -64,7 +65,7 @@ class ReconcilableFactory @Inject() (
     val genrePrefix = dir.path.drop(prefixLength)
     IgnoredFolders.exists(genrePrefix.startsWith)
   }
-  def albumDirectories: Seq[DirectoryRef] = mf.albumDirs(artistDirectoriesTyped)
+  def albumDirectories: View[DirectoryRef] = mf.albumDirs(artistDirectoriesTyped)
 }
 
 private object ReconcilableFactory {

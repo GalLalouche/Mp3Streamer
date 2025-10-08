@@ -1,11 +1,11 @@
 package backend.external.expansions
 
 import java.util.regex.Pattern
-import com.google.inject.Inject
 
 import backend.external.{BaseLink, Host}
 import backend.recon.Reconcilable
 import com.google.common.annotations.VisibleForTesting
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
@@ -28,7 +28,7 @@ private class WikipediaToWikidataExtenderFactory @Inject() (helper: ExternalLink
       .toVector
   def create[R <: Reconcilable]: ExternalLinkExpander[R] = new ExternalLinkExpander[R] {
     override def sourceHost: Host = Host.Wikipedia
-    override def potentialHostsExtracted: Traversable[Host] = Vector(Host.Wikidata)
+    override def potentialHostsExtracted: Iterable[Host] = Vector(Host.Wikidata)
     override def expand = helper(parse)
   }
 }

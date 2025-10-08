@@ -67,6 +67,7 @@ private case class FakeWSRequest private (
   override def options() = ???
   override def execute(method: String) = ???
   override def withUrl(url: String): FakeWSRequest = copy(u = Url.parse(url))
+  override def withDisableUrlEncoding(disableUrlEncoding: Boolean): FakeWSRequest = ???
 }
 
 private object FakeWSRequest {

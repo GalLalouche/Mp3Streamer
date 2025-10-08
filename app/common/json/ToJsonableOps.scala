@@ -2,6 +2,8 @@ package common.json
 
 import play.api.libs.json._
 
+import common.json.RichJson.ImmutableJsonArray
+
 trait ToJsonableOps {
   implicit class jsonifyString($ : String) {
     /** Assumes the string is a valid JSON string. A raw unquoted string is *not* a valid JSON. */
@@ -20,7 +22,7 @@ trait ToJsonableOps {
     def parse[T](implicit ev: JsonReadable[T]): T = ev.parse($)
   }
   implicit class parseArray($ : JsArray) {
-    def parse[T](implicit ev: JsonReadable[T]): Seq[T] = $.value.map(ev.parse)
+    def parse[T](implicit ev: JsonReadable[T]): Seq[T] = $.map(ev.parse)
   }
 }
 

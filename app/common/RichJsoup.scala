@@ -2,7 +2,7 @@ package common
 
 import org.jsoup.nodes.Element
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce._

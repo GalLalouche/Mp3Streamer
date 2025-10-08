@@ -89,6 +89,6 @@ private object FixLabelsUtils {
 
   private val BonusTrackSuffixes = for {
     str <- Vector("bonus", "bonus track")
-    (s, e) <- Vector(('(', ')'), ('[', ']'), ('<', '>))
+    (s, e) <- Vector(('(', ')'), ('[', ']'), ('<', '>'))
   } yield (s, s"$s$str$e")
 }

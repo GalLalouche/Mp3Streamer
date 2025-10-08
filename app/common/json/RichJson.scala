@@ -22,7 +22,7 @@ object RichJson {
     def double(s: String): Double = value(s).as[Double]
     def ostr(s: String): Option[String] = $.\(s).asOpt[String]
     def array(s: String): JsArray = value(s).as[JsArray]
-    def objects(s: String): Seq[JsObject] = value(s).as[JsArray].value.map(_.as[JsObject])
+    def objects(s: String): Seq[JsObject] = value(s).as[JsArray].map(_.as[JsObject])
 
     def arrayAt(i: Int): JsArray = $.\(i).as[JsArray]
     def intAt(i: Int): Int = $.\(i).as[Int]
@@ -32,5 +32,13 @@ object RichJson {
   implicit class DynamicJsonObject(private val $ : JsObject) extends AnyVal {
     def append[A: JsonWriteable](e: (String, Option[A])): JsObject =
       e._2.map(_.jsonify).map(e._1.->).mapHeadOrElse($.+, $)
+  }
+
+  implicit class ImmutableJsonObject(private val $ : JsObject) extends AnyVal {
+    def map: Map[String, JsValue] = $.value.asInstanceOf[Map[String, JsValue]]
+  }
+  implicit class ImmutableJsonArray(private val $ : JsArray) extends AnyVal {
+    // Two birds: both a mapping by view and returns an immutable collection!
+    def map[A](f: JsValue => A): IndexedSeq[A] = $.value.view.map(f).toVector
   }
 }

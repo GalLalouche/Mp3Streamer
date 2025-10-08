@@ -37,8 +37,8 @@ private class ExternalPipe[R <: Reconcilable](
     reconciler: Retriever[R, ReconID],
     linksRetriever: Retriever[ReconID, BaseLinks[R]],
     standaloneReconcilers: LinkRetrievers[R],
-    expanders: Traversable[ExternalLinkExpander[R]],
-    markers: Traversable[ExternalLinkMarker[R]],
+    expanders: Iterable[ExternalLinkExpander[R]],
+    markers: Iterable[ExternalLinkMarker[R]],
 )(implicit ec: ExecutionContext)
     extends Retriever[R, MarkedLinks[R]] {
   override def apply(r: R): Future[MarkedLinks[R]] =
@@ -60,7 +60,7 @@ private class ExternalPipe[R <: Reconcilable](
   private def applyNewHostReconcilers(entity: R, existingHosts: Set[Host]): Future[BaseLinks[R]] =
     standaloneReconcilers.get
       .filterNot(existingHosts apply _.host)
-      .toTraversable
+      .toIterable
       .traverse(_(entity).run)
       .map(_.flatten)
 
@@ -79,9 +79,9 @@ private class ExternalPipe[R <: Reconcilable](
         expanders
           .filterNot(_.potentialHostsExtracted.toSet <= existingHosts)
           .toMultiMap(_.sourceHost)
-      val expanderLinkPairs: Traversable[(ExternalLinkExpander[R], BaseLink[R])] = for {
+      val expanderLinkPairs: Iterable[(ExternalLinkExpander[R], BaseLink[R])] = for {
         r <- result
-        expanders <- nextExpandersByHost.get(r.host).toTraversable
+        expanders <- nextExpandersByHost.get(r.host).toIterable
         expander <- expanders
       } yield expander -> r
       for {
@@ -93,7 +93,7 @@ private class ExternalPipe[R <: Reconcilable](
     aux(links.toSet)
   }
 
-  private def mark(links: Traversable[MarkedLink[R]]): Future[MarkedLinks[R]] = links.traverse(l =>
+  private def mark(links: Iterable[MarkedLink[R]]): Future[MarkedLinks[R]] = links.traverse(l =>
     markers
       .filter(_.host == l.host)
       .singleOpt

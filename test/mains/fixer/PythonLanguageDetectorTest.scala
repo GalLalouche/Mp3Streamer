@@ -10,7 +10,7 @@ import common.test.AuxSpecs
 
 class PythonLanguageDetectorTest extends FreeSpec with AuxSpecs {
   "Single process" - {
-    lazy val $ = PythonLanguageDetector.create(1 minute)
+    lazy val $ = PythonLanguageDetector.create(1.minute)
     def detect(s: String) = $.detect(s).right.value
     "Hebrew" in { detect("דגשדגשדגשדג") shouldReturn "he" }
     "Japanese" in { detect("センチメートル") shouldReturn "ja" }
@@ -22,7 +22,7 @@ class PythonLanguageDetectorTest extends FreeSpec with AuxSpecs {
   }
 
   "Multiple processes" - {
-    lazy val $ = PythonLanguageDetector.create(1 millisecond)
+    lazy val $ = PythonLanguageDetector.create(1.millisecond)
     def detect(s: String) = $.detect(s).right.value
     "Hebrew" taggedAs Slow in { detect("דגשדגשדגשדג") shouldReturn "he" }
     "Japanese" taggedAs Slow in { detect("センチメートル") shouldReturn "ja" }

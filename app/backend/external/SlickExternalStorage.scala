@@ -59,8 +59,8 @@ private abstract class SlickExternalStorage[R <: Reconcilable](
       }
     }
   // Can't use the type alias because it messes up the type inference.
-  protected implicit val markedLinksColumns: JdbcType[Traversable[MarkedLink[R]]] =
-    new ColumnMappersSpecVer().traversable
+  protected implicit val markedLinksColumns: JdbcType[Iterable[MarkedLink[R]]] =
+    new ColumnMappersSpecVer().iterable
   protected def toFreshness(o: Option[LocalDateTime]): Freshness =
     o.mapHeadOrElse(DatedFreshness, AlwaysFresh)
   protected override type Id = String
@@ -121,7 +121,7 @@ private class SlickAlbumExternalStorage @Inject() (
   protected override def extractValue(e: Entity) = e._3 -> toFreshness(e._4)
 
   // TODO CASCADE
-  def deleteAllLinks(a: Artist): Future[Traversable[(String, MarkedLinks[Album], Freshness)]] = {
+  def deleteAllLinks(a: Artist): Future[Iterable[(String, MarkedLinks[Album], Freshness)]] = {
     val artistRows = tableQuery.filter(_.artist === a.normalize)
     val existingRows = db.run(
       artistRows

@@ -4,7 +4,7 @@ import java.io.InputStream
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import common.rich.primitives.RichString._
 

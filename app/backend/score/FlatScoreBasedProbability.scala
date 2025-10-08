@@ -50,7 +50,7 @@ private object FlatScoreBasedProbability {
           score -> map(score) / (count.toDouble / sum)
         }
         val unnormalizedSum = unnormalized.values.sum
-        val $ = unnormalized.mapValues(_ / unnormalizedSum).mapValues(Percentage.apply).view.force;
+        val $ = unnormalized.view.mapValues(_ / unnormalizedSum).mapValues(Percentage.apply).toMap;
 
         {
           val sum = $.values.view.map(_.p).sum
