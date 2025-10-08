@@ -5,16 +5,20 @@ import {Try, tryF} from "./try.js"
 
 export namespace LastAlbum {
   export async function addNextNewAlbum(): Promise<void> {
+    setFetchingText()
     const last = await updateLastAlbum()
-    const lastText = albumText(last)
-    if (lastText != lastAlbumText)
-      updateAlbum(last, true)
+    const addToPlaylist = albumText(last) != lastAlbumText
+    updateAlbum(last, addToPlaylist)
   }
 
   export async function updateLatestAlbum(): Promise<void> {
-    write(span("Fetching last album..."))
+    setFetchingText()
     updateLastAlbum().then(album => updateAlbum(album, false))
   }
+}
+
+function setFetchingText(): void {
+  write(span("Fetching last album..."))
 }
 
 async function getLastAlbum(): Promise<Album> {
