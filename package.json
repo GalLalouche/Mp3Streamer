@@ -7,10 +7,11 @@
     "@types/jqueryui": "^1.12.23",
     "lodash": "^4.17.21",
     "lru-cache": "^11.0.1",
-    "mocha": "^9.0.2",
+    "mocha": "^11.7.4",
     "ts-pattern": "^5.5.0",
     "tsc": "^2.0.4",
-    "tsify": "^5.0.4"
+    "tsify": "^5.0.4",
+    "tspc": "^1.1.2"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.31",
