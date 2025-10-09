@@ -9,8 +9,6 @@ import musicfinder.MusicFinder
 import scala.Ordering.Implicits._
 import scala.concurrent.Future
 
-import common.rich.func.MoreSeqInstances._
-import common.rich.func.ToMoreFoldableOps._
 import scalaz.std.option.optionInstance
 import scalaz.syntax.apply.^
 
@@ -18,6 +16,7 @@ import common.concurrency.SimpleTypedActor
 import common.io.{DirectoryRef, FileRef}
 import common.rich.RichT._
 import common.rich.RichTime._
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class RecentAlbums @Inject() (
     mf: MusicFinder,
