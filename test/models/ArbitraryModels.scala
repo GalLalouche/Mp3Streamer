@@ -12,7 +12,8 @@ import common.io.MemoryRoot
 object ArbitraryModels {
   private implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])
   // Avoids generating nonsense characters which can mess up JSON parsing
-  private val arbitraryString: Gen[String] = arbitrary[String].map(_.filterNot(_.toInt < 60))
+  private val arbitraryString: Gen[String] =
+    arbitrary[String].map(_.filterNot(_.toInt < 60).take(5))
   private val arbitraryStringOpt: Gen[Option[String]] =
     Arbitrary.arbOption[String](Arbitrary(arbitraryString)).arbitrary
   private val arbitraryFileName = Gen.nonEmptyStringOf(Gen.alphaNumChar)

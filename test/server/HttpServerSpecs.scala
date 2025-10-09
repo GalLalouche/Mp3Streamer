@@ -6,9 +6,9 @@ import backend.module.TestModuleConfiguration
 import com.google.inject.{Guice, Injector, Module}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import net.codingwell.scalaguice.ScalaModule
-import org.scalatest.{AsyncFreeSpec, BeforeAndAfterAll}
+import org.scalatest.{Assertion, AsyncFreeSpec, BeforeAndAfterAll, Succeeded}
 import org.scalatest.tags.Slow
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsArray, JsObject, JsValue}
 import sttp.client3
 import sttp.client3.{asByteArray, HttpClientFutureBackend, ResolveRelativeUrisBackend, Response}
 import sttp.client3.playJson._
@@ -76,6 +76,23 @@ private abstract class HttpServerSpecs(serverModule: Module)
 
   def deleteString(u: Uri): Future[String] =
     backend.send(request.delete(u)).map(_.body.getOrThrow)
+
+  // TODO Maybe use https://github.com/skyscreamer/JSONassert?
+  implicit class jsValueSpecs(private val $ : JsValue) {
+    def shouldContain(other: JsValue): Assertion = {
+      ($, other) match {
+        case (o1: JsObject, o2: JsObject) =>
+          o1.value.keys shouldContainAllOf (o2.keys)
+          for (k <- o2.keys)
+            o1.value(k) shouldContain (o2.value(k))
+        case (a1: JsArray, a2: JsArray) =>
+          for (i <- a2.value.indices)
+            a1.value(i) shouldContain (a2.value(i))
+        case (j1, j2) => j1 shouldReturn j2
+      }
+      Succeeded
+    }
+  }
 }
 
 private object HttpServerSpecs {

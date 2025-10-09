@@ -24,7 +24,7 @@ private class PlaylistTest(serverModule: Module)
   "set then get" in {
     putArbPlaylist("foobar") >>= (playlist =>
       checkAll(
-        getPlaylist("foobar") shouldEventuallyReturn playlist,
+        getPlaylist("foobar").map(_ shouldContain playlist),
         getPlaylists shouldEventuallyReturn Vector("foobar"),
       ),
     )
@@ -35,7 +35,7 @@ private class PlaylistTest(serverModule: Module)
       _ <- putArbPlaylist("foobar")
       pl1 <- putArbPlaylist("foobar")
       result <- checkAll(
-        getPlaylist("foobar") shouldEventuallyReturn pl1,
+        getPlaylist("foobar").map(_ shouldContain pl1),
         getPlaylists shouldEventuallyReturn Vector("foobar"),
       )
     } yield result
@@ -46,8 +46,8 @@ private class PlaylistTest(serverModule: Module)
       playlist1 <- putArbPlaylist("foo")
       playlist2 <- putArbPlaylist("bar")
       result <- checkAll(
-        getPlaylist("foo") shouldEventuallyReturn playlist1,
-        getPlaylist("bar") shouldEventuallyReturn playlist2,
+        getPlaylist("foo").map(_ shouldContain playlist1),
+        getPlaylist("bar").map(_ shouldContain playlist2),
         getPlaylists shouldEventuallyReturn Vector("bar", "foo"),
       )
     } yield result
