@@ -8,7 +8,7 @@ import common.rich.RichT._
 private object TableInitializer extends IndividualInitializer {
   override def apply(tags: Seq[IndividualInitializer.IndividualTags]): Seq[String] = {
     def reorder(t: IndividualTags): Seq[Any] = Vector(t.track, t.title, t.discNumber, t.file)
-    def toTableLine(ss: TraversableOnce[Any]) = ss.mkString("| ", " | ", " |")
+    def toTableLine(ss: IterableOnce[Any]) = ss.iterator.mkString("| ", " | ", " |")
     val headlines = Vector(
       "Track #",
       "Title",

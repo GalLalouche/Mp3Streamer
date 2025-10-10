@@ -1,7 +1,6 @@
 package backend.module
 
 import com.google.inject.Inject
-
 import common.io.{MemoryDir, MemoryFile, MemoryPath, MemoryRoot, PathRefFactory}
 import common.rich.primitives.RichOption.richOption
 

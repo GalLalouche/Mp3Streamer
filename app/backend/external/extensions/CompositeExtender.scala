@@ -4,8 +4,7 @@ import backend.external._
 import backend.recon.{Album, Artist, Reconcilable}
 import com.google.inject.Inject
 
-import common.rich.func.ToMoreFoldableOps._
-import scalaz.std.option.optionInstance
+import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 import common.rich.collections.RichTraversableOnce._
 

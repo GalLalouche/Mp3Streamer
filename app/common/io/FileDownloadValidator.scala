@@ -1,9 +1,9 @@
 package common.io
 
 import java.io.File
-import com.google.inject.Inject
 
 import better.files.FileExtensions
+import com.google.inject.Inject
 
 import common.rich.primitives.RichOption.richOption
 

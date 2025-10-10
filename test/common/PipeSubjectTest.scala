@@ -1,8 +1,7 @@
 package common
 
-import org.scalatest.FreeSpec
-
 import common.test.AuxSpecs
+import org.scalatest.FreeSpec
 
 class PipeSubjectTest extends FreeSpec with AuxSpecs {
   "apply" in {

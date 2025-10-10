@@ -6,8 +6,6 @@ import backend.FutureOption
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-
 import common.rich.RichT._
 import common.rich.RichTime.RichInstant
 import common.rich.RichTuple._

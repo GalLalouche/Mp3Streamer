@@ -6,7 +6,7 @@ import com.google.inject.Inject
 
 import scala.concurrent.ExecutionContext
 
-import common.rich.func.BetterFutureInstances._
+import common.rich.func.kats.RichOptionT.richOptionT
 
 private[lyrics] class GeniusLyricsRetriever @Inject() (
     singleHostHelper: SingleHostParsingHelper,
@@ -17,5 +17,5 @@ private[lyrics] class GeniusLyricsRetriever @Inject() (
 
   override val parse = singleHostHelper(LyricsParser)
   override val doesUrlMatchHost = _.toStringPunycode.startsWith("https://genius.com")
-  override val get = song => api.getLyricUrl(song).mapF(parse(_, song)) | NoLyrics
+  override val get = song => api.getLyricUrl(song).semiflatMap(parse(_, song)) | NoLyrics
 }

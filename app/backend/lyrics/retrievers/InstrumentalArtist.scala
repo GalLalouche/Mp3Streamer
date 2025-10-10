@@ -6,8 +6,7 @@ import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import scalaz.syntax.functor.ToFunctorOps
+import cats.implicits.toFunctorOps
 
 private[lyrics] class InstrumentalArtist @Inject() (
     ec: ExecutionContext,
@@ -17,5 +16,5 @@ private[lyrics] class InstrumentalArtist @Inject() (
   private val helper = new DefaultInstrumentalHelper("artist")
 
   override def get = s => storage.exists(s.artistName).map(helper.apply)
-  def add(s: Song): Future[Instrumental] = storage.store(s.artistName) >| helper.instrumental
+  def add(s: Song): Future[Instrumental] = storage.store(s.artistName) as helper.instrumental
 }

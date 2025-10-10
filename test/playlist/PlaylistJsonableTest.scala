@@ -1,21 +1,18 @@
 package playlist
 
-import java.util.concurrent.TimeUnit
-
 import backend.module.TestModuleConfiguration
 import com.google.inject.Injector
+import common.JsonableSpecs
+import common.io.MemoryRoot
+import common.json.Jsonable
+import common.json.ToJsonableOps.jsonifySingle
+import java.util.concurrent.TimeUnit
 import models.{ArbitraryModels, ModelJsonable, Song}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalacheck.{Arbitrary, Gen}
 import play.api.libs.json.JsValue
 import playlist.Playlist.playlistJsonable
-
 import scala.concurrent.duration.Duration
-
-import common.JsonableSpecs
-import common.io.MemoryRoot
-import common.json.Jsonable
-import common.json.ToJsonableOps.jsonifySingle
 
 class PlaylistJsonableTest extends JsonableSpecs {
   private val injector: Injector = TestModuleConfiguration().injector

@@ -1,20 +1,16 @@
 package backend.storage
 
-import java.time.Clock
-
 import backend.module.TestModuleConfiguration
-import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
-import org.scalatest.OptionValues._
-
-import common.rich.func.BetterFutureInstances._
-import scalaz.syntax.bind.ToBindOps
-import scalaz.syntax.functor.ToFunctorOps
-
+import cats.implicits.catsSyntaxFlatMapOps
 import common.FakeClock
 import common.rich.RichTime.{RichInstant, RichLong}
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 import common.storage.StoreMode
 import common.test.AsyncAuxSpecs
+import java.time.Clock
+import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.OptionValues._
+import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
 
 class ComposedFreshnessStorageTest
     extends AsyncFreeSpec

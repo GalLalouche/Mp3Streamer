@@ -7,9 +7,8 @@ import org.jsoup.nodes.Element
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
-import common.rich.func.BetterFutureInstances.betterFutureInstances
-import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
-import scalaz.OptionT
+import cats.data.OptionT
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.io.InternetTalker
 import common.io.google.GoogleSearch

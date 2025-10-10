@@ -7,7 +7,7 @@ import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.Artist
 import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.AsyncFreeSpec
+import org.scalatest.freespec.AsyncFreeSpec
 
 import scala.concurrent.ExecutionContext
 
@@ -54,5 +54,11 @@ class LastFmLinkRetrieverTest extends AsyncFreeSpec with AsyncAuxSpecs with Docu
           Host.LastFm,
         ),
       )
+  }
+  "500" in {
+    val c = config.copy(_urlToResponseMapper =
+      FakeWSResponse(status = HttpURLConnection.HTTP_BAD_GATEWAY).partialConst,
+    )
+    create(c)(Artist("Foobar")).shouldEventuallyReturnNone()
   }
 }

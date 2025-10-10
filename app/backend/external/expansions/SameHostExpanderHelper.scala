@@ -7,8 +7,7 @@ import com.google.inject.Inject
 
 import scala.concurrent.ExecutionContext
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.RichOptionT._
+import common.rich.func.kats.RichOptionT._
 
 import common.io.InternetTalker
 

@@ -3,8 +3,7 @@ package songs
 import com.google.inject.Inject
 import models.Song
 
-import common.rich.func.MoreSeqInstances._
-import scalaz.syntax.functor.ToFunctorOps
+import cats.syntax.functor.toFunctorOps
 
 import common.io.{DirectoryRef, RootDirectory}
 import common.json.Jsonable

@@ -6,9 +6,7 @@ import mains.vimtag.Initializer.InitialLines
 import models.TypeAliases.TrackNumber
 import musicfinder.MusicFinder
 
-import common.rich.func.ToMoreMonoidOps.monoidFilter
-import scalaz.std.string.stringInstance
-import scalaz.syntax.std.tuple.ToTuple2Ops
+import common.rich.func.kats.ToMoreMonoidOps.monoidFilter
 
 import common.io.DirectoryRef
 import common.rich.RichT._
@@ -64,7 +62,7 @@ private class Initializer @Inject() (
     def titles: Seq[String] = sequence(_.title.getOrElse(""))
     def tracks: Seq[TrackNumber] = songs.zipWithIndex
       .map(_.modifySecond(_ + 1))
-      .map(_.fold(_.trackNumber.getOrElse(_)))
+      .map(_.reduce(_.trackNumber.getOrElse(_)))
     def discNumbers: Seq[String] = sequence(_.discNumber.getOrElse(""))
   }
 

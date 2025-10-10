@@ -12,9 +12,11 @@ import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichString._
 
 private object IOUtils {
-  /** Opens Windows explorer with the file in focus */
-  def focus(f: File): Unit =
-    Process(s"""explorer.exe /select,"${f.getAbsolutePath.simpleReplace("/", "\\")}"""").!
+  /** Opens Windows explorer with the file in focus, i.e., it opens its parent. */
+  def focus(f: File): Unit = {
+    val windowsPath = s""""${f.getAbsolutePath.simpleReplace("/", "\\")}""""
+    Process(Vector("cmd.exe", "/C", "explorer.exe /select," + windowsPath)).!
+  }
 
   /**
    * Windows can't parse Unicode path names correctly it seems, instead it replaces the Unicode

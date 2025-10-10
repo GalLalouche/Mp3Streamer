@@ -1,7 +1,6 @@
 package http4s.routes
 
 import backend.new_albums.NewAlbumsFormatter
-import cats.effect.IO
 import com.google.inject.Inject
 import http4s.routes.Http4sUtils.{fromFuture, fromFutureIO, jsonEncoder}
 import org.http4s.HttpRoutes
@@ -9,8 +8,8 @@ import org.http4s.dsl.io._
 
 import scala.concurrent.ExecutionContext
 
-import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
-import scalaz.std.option.optionInstance
+import cats.effect.IO
+import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 /**
  * A web interface to new albums finder. Displays new albums and can update the current file /

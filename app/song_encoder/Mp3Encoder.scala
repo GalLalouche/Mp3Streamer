@@ -6,8 +6,7 @@ import com.google.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import scalaz.syntax.apply.ToApplyOps
+import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 
 import common.concurrency.SimpleTypedActor
 import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
@@ -46,7 +45,7 @@ class Mp3Encoder @Inject() (
    *   The (possibly new) mp3 file created; The file will be created in the outputDir, and will be
    *   the absolute path of the file (with no spaces) with an "mp3" extension.
    */
-  override def !(m: => FileRef): Future[FileRef] = actor.!(m) <* cleaner.clean()
+  override def !(m: => FileRef): Future[FileRef] = actor.!(m) <<* cleaner.clean()
 }
 
 private object Mp3Encoder {

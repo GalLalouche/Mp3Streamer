@@ -17,7 +17,7 @@ private class ImageSelector @Inject() (
 )() {
   private implicit val iec: ExecutionContext = ec
   def select(images: FutureIterant[FolderImage]): Future[ImageChoice] = {
-    val promise = Promise[ImageChoice]
+    val promise = Promise[ImageChoice]()
     val frame =
       new Frame <| (_.reactions += { case _: WindowClosing => promise.success(Cancelled) })
     val panel = factory(images, cols = 3, rows = 2) <| (_.reactions += {

@@ -2,11 +2,10 @@ package genre
 
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import com.google.inject.Guice
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.FreeSpec
-
 import common.io.MemoryRoot
 import common.test.AuxSpecs
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+import org.scalatest.FreeSpec
 
 class StringGenreTest extends FreeSpec with AuxSpecs {
   private val root = new MemoryRoot

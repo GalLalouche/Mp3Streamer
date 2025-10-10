@@ -2,8 +2,7 @@ package mains.vimtag
 
 import com.google.inject.Inject
 
-import scalaz.std.tuple.tuple2Bitraverse
-import scalaz.syntax.bifunctor.ToBifunctorOps
+import cats.implicits.toBifunctorOps
 
 private class Parser @Inject() (aux: IndividualParser) {
   def apply(existingMappings: Map[String, InitialValues])(lines: Seq[String]): ParsedId3 = {

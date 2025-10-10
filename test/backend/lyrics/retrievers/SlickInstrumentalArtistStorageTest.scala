@@ -3,11 +3,9 @@ package backend.lyrics.retrievers
 import backend.StorageSetup
 import backend.module.TestModuleConfiguration
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
+import cats.implicits.catsSyntaxFlatMapOps
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.AsyncFreeSpec
-
-import common.rich.func.BetterFutureInstances._
-import scalaz.syntax.bind.ToBindOps
 
 class SlickInstrumentalArtistStorageTest extends AsyncFreeSpec with StorageSetup {
   protected override val config = TestModuleConfiguration()
@@ -29,7 +27,7 @@ class SlickInstrumentalArtistStorageTest extends AsyncFreeSpec with StorageSetup
       storage.load(artistName).mapValue(_ shouldReturn ())
   }
   "delete" in {
-    storage.store(artistName) >> storage.delete(artistName).run >>
+    storage.store(artistName) >> storage.delete(artistName).value >>
       storage.load(artistName).shouldEventuallyReturnNone()
   }
 }

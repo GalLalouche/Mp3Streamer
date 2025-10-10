@@ -2,13 +2,14 @@ package http4s.routes
 
 import java.io.File
 
-import cats.effect.IO
 import com.google.inject.Inject
 import http4s.routes.AssetHttpRoutes.asset
 import http4s.routes.Http4sUtils.decodePath
 import org.http4s.{HttpRoutes, MediaType, Request, Response}
 import org.http4s.dsl.io._
 import org.http4s.headers.`Content-Type`
+
+import cats.effect.IO
 
 // Since 2.6 ruined their own assets controller :\
 private class AssetHttpRoutes @Inject() {

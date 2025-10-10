@@ -9,9 +9,7 @@ import play.api.libs.json.{Json, JsValue}
 
 import scala.util.Try
 
-import common.rich.func.MoreSeqInstances._
-import common.rich.func.ToMoreFoldableOps._
-import scalaz.std.option.optionInstance
+import common.rich.func.kats.ToMoreFoldableOps._
 
 import common.io.JsonableSaver.Encoding
 import common.json.Jsonable
@@ -36,8 +34,8 @@ class JsonableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
    */
   // TODO replace TraversableOnce with a Non-Empty list?
   def saveArray[T: Jsonable: Manifest](data: IterableOnce[T]): Unit = {
-    require(data.nonEmpty, s"Can't save empty data of type <$manifest>")
-    save(data.toSeq.jsonify)
+    val seq: Seq[T] = data.iterator.toVector
+    save(seq.requiring(_.nonEmpty, s"Can't save empty data of type <$manifest>").jsonify)
   }
   def saveObject[T: Jsonable: Manifest](obj: T): Unit = save(obj.jsonify)
 

@@ -19,7 +19,7 @@ private[backend] class ReleaseGroupToReleases @Inject() (
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
-  def apply(a: Album): Future[Iterable[ReconID]] = albumReconciler(a).run
+  def apply(a: Album): Future[Iterable[ReconID]] = albumReconciler(a).value
     .map(_.get)
     .flatMap(reconId =>
       jsonDownloader(

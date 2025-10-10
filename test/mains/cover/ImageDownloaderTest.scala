@@ -1,13 +1,12 @@
 package mains.cover
 
 import backend.module.TestModuleConfiguration
-import io.lemonlabs.uri.Url
-import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.AsyncFreeSpec
-
 import common.io.MemoryRoot
 import common.rich.RichT._
 import common.test.AuxSpecs
+import io.lemonlabs.uri.Url
+import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.AsyncFreeSpec
 
 class ImageDownloaderTest extends AsyncFreeSpec with AuxSpecs {
   private val tempDir = new MemoryRoot

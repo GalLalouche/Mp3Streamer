@@ -4,16 +4,15 @@ import backend.recon.Track
 
 import scala.util.{Failure, Try}
 
-import common.rich.func.MoreTryInstances._
-import scalaz.syntax.apply.ToApplyOps
+import cats.syntax.apply.catsSyntaxApplyOps
 
 import common.rich.primitives.RichString._
 
 private object TrackScoreParser extends ScoreParserTemplate[Track] {
   protected override val prefix = "SONG"
-  protected override def entity(s: Seq[String]): Try[Track] = s.toVector match {
+  protected override def entity(s: Vector[String]): Try[Track] = s match {
     case Vector(_, _, song) =>
-      (parseTitle(song) |@| AlbumScoreParser.entity(s.take(2)))(Track.apply)
+      parseTitle(song).map2(AlbumScoreParser.entity(s.take(2)))(Track.apply)
     case _ => Failure(new Exception(s"Invalid entry: '$s'"))
   }
 

@@ -4,9 +4,8 @@ import play.api.libs.json._
 
 import scala.annotation.implicitNotFound
 
-import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
+import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 import monocle.Iso
-import scalaz.std.option.optionInstance
 
 import common.json.RichJson._
 import common.json.ToJsonableOps._

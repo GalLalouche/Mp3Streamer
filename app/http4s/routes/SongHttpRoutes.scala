@@ -1,13 +1,13 @@
 package http4s.routes
 
-import cats.effect.IO
 import com.google.inject.Inject
 import http4s.routes.Http4sUtils.{decodePath, jsonEncoder, shouldEncodeMp3}
 import org.http4s.{HttpRoutes, Request}
 import org.http4s.dsl.io._
 import songs.SongFormatter
 
-import scalaz.Reader
+import cats.data.Reader
+import cats.effect.IO
 
 /** Handles fetch requests of JSON information. */
 private class SongHttpRoutes @Inject() ($ : SongFormatter) {

@@ -29,7 +29,7 @@ object RichUrl {
       val s = pathPart.path(p)
       val address = url.toStringRaw
       if (s.head == '/') addPathPartRaw(s.tail)
-      else Url.parse(address + s.mapIf(address.last != '/').to('/' + _))
+      else Url.parse(address + s.mapIf(address.last != '/').to("/" + _))
     }
 
   }

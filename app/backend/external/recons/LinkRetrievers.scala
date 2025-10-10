@@ -9,7 +9,7 @@ private[external] class LinkRetrievers[R <: Reconcilable] private (val get: Seq[
 }
 
 private[external] object LinkRetrievers {
-  def apply[R <: Reconcilable](seq: IterableOnce[LinkRetriever[R]]): LinkRetrievers[R] =
-    new LinkRetrievers(seq.toVector.sortBy(_.qualityRank))
+  def apply[R <: Reconcilable](retrievers: IterableOnce[LinkRetriever[R]]): LinkRetrievers[R] =
+    new LinkRetrievers(retrievers.iterator.toVector.sortBy(_.qualityRank))
   def apply[R <: Reconcilable](lrs: LinkRetriever[R]*): LinkRetrievers[R] = new LinkRetrievers(lrs)
 }

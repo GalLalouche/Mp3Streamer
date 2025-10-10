@@ -8,7 +8,7 @@ import common.rich.primitives.RichString._
 
 private object AlbumScoreParser extends ScoreParserTemplate[Album] {
   protected override val prefix = "ALBUM"
-  override def entity(sections: Seq[String]): Try[Album] = sections.toVector match {
+  override def entity(sections: Vector[String]): Try[Album] = sections match {
     case Vector(artist, titleYear) =>
       if (titleYear.matches(YearPattern)) {
         val year = titleYear.takeRight("2000)".length).dropRight(1).toInt

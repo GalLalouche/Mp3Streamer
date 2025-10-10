@@ -4,7 +4,7 @@ import backend.storage.OnlineRetrieverCacher
 
 import scala.concurrent.ExecutionContext
 
-import scalaz.std.scalaFuture._
+import common.rich.func.kats.RichOptionT.richOptionT
 
 class ReconcilerCacher[Key <: Reconcilable](repo: ReconStorage[Key], online: Reconciler[Key])(
     implicit ec: ExecutionContext,

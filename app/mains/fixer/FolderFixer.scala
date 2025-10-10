@@ -17,12 +17,11 @@ import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.RichOptionT.richOptionT
-import common.rich.func.ToMoreMonadErrorOps._
-import scalaz.OptionT
-import scalaz.syntax.bind.ToBindOpsUnapply
-import scalaz.syntax.functor.ToFunctorOps
+import cats.data.OptionT
+import cats.implicits.catsSyntaxFlatMapOps
+import common.rich.func.kats.RichOptionT.richOptionT
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.io.{InternetTalker, IODirectory}
 import common.rich.RichFuture._
@@ -127,7 +126,7 @@ private[mains] class FolderFixer @Inject() private (
   private def updateServer(): Future[Unit] = {
     println("Updating remote server if running...")
     it.get(Url("http://localhost:9000/debug/smart_refresh"))
-      .>|(println("Updated!"))
+      .asByName(println("Updated!"))
       .collectHandle { case e: ConnectException =>
         println("Could not connect to the server, maybe it's down? " + e.getMessage)
         ()

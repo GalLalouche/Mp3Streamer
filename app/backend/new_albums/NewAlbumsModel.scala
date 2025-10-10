@@ -14,10 +14,9 @@ import shapeless.syntax.std.tuple.productTupleOps
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import scalaz.ListT
-import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
+import cats.implicits.{catsSyntaxFlatMapOps, toFunctorOps}
 
+import common.TempIList.ListT
 import common.rich.RichEnumeratum.richEnumeratum
 import common.rich.RichT.richT
 
@@ -30,7 +29,9 @@ private class NewAlbumsModel @Inject() (
   private implicit val iec: ExecutionContext = ec
 
   def albums: ListT[Future, ModelResult] =
-    storage.all.map(e => e :+ genreFinder.forArtist(e.artist) |> Function.tupled(ModelResult.apply))
+    storage.all.fmap(e =>
+      e :+ genreFinder.forArtist(e.artist) |> Function.tupled(ModelResult.apply),
+    )
   private def albumsForArtist(artist: Artist) =
     filler.update(Duration.ofDays(90), 10)(artist) >>
       storage
@@ -42,7 +43,7 @@ private class NewAlbumsModel @Inject() (
       .flatMap {
         case IgnoredReconResult.Ignored => Future.successful(NewAlbumsModel.IgnoredArtist)
         case IgnoredReconResult.NotIgnored => albumsForArtist(artist).map(NonIgnoredArtist)
-        case IgnoredReconResult.Missing => storage.remove(artist) >| Unreconciled
+        case IgnoredReconResult.Missing => storage.remove(artist) as Unreconciled
       }
 
   def removeArtist(artist: Artist): Future[_] = storage.remove(artist)

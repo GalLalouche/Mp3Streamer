@@ -1,19 +1,17 @@
 package backend.score.file
 
 import backend.score.{ModelScore, OptionalModelScore}
+import cats.implicits.{catsSyntaxApplicativeId, catsSyntaxFlatMapOps, toFlatMapOps}
+import common.test.kats.GenInstances.MonadGen
+import common.test.{AuxSpecs, MoreGen}
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.FreeSpec
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-
-import scalaz.Scalaz.{ApplicativeIdV, ToBindOps}
-
-import common.test.{AuxSpecs, MoreGen}
-import common.test.GenInstances.MonadGen
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 abstract class ScoreParserTestTemplate[A: Arbitrary]
     extends FreeSpec
     with AuxSpecs
-    with GeneratorDrivenPropertyChecks {
+    with ScalaCheckDrivenPropertyChecks {
   protected def basicInput: (A, String)
   protected def parse: String => (A, OptionalModelScore)
   protected def format: (A, OptionalModelScore) => String

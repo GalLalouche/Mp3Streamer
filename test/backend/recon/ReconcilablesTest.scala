@@ -1,15 +1,13 @@
 package backend.recon
 
+import cats.implicits.{catsSyntaxTuple2Semigroupal, catsSyntaxTuple3Semigroupal}
+import common.test.AuxSpecs
+import common.test.MoreGen.nonEmptyAlphaNumString
+import common.test.kats.GenInstances.MonadGen
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen.choose
 import org.scalatest.FreeSpec
-
-import scalaz.Scalaz.ToApplyOps
-
-import common.test.AuxSpecs
-import common.test.GenInstances.MonadGen
-import common.test.MoreGen.nonEmptyAlphaNumString
 
 class ReconcilablesTest extends FreeSpec with AuxSpecs {
   "Artist" - {
@@ -36,7 +34,7 @@ object ReconcilablesTest {
   implicit val arbitraryArtist: Arbitrary[Artist] =
     Arbitrary(nonEmptyAlphaNumString.map(Artist.apply))
   implicit val arbitraryAlbum: Arbitrary[Album] =
-    Arbitrary((nonEmptyAlphaNumString |@| choose(1000, 9999) |@| arbitrary[Artist])(Album.apply))
+    Arbitrary((nonEmptyAlphaNumString, choose(1000, 9999), arbitrary[Artist]).mapN(Album.apply))
   implicit val arbitraryTrack: Arbitrary[Track] =
-    Arbitrary((nonEmptyAlphaNumString |@| arbitrary[Album])(Track.apply))
+    Arbitrary((nonEmptyAlphaNumString, arbitrary[Album]).mapN(Track.apply))
 }

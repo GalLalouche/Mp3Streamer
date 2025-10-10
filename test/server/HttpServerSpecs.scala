@@ -1,29 +1,24 @@
 package server
 
-import java.util.concurrent.atomic.AtomicInteger
-
 import backend.module.TestModuleConfiguration
+import cats.implicits.catsSyntaxApplicativeByName
 import com.google.inject.{Guice, Injector, Module}
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import net.codingwell.scalaguice.ScalaModule
-import org.scalatest.{Assertion, AsyncFreeSpec, BeforeAndAfterAll, Succeeded}
-import org.scalatest.tags.Slow
-import play.api.libs.json.{JsArray, JsObject, JsValue}
-import sttp.client3
-import sttp.client3.{asByteArray, HttpClientFutureBackend, ResolveRelativeUrisBackend, Response}
-import sttp.client3.playJson._
-import sttp.model.Uri
-
-import scala.concurrent.Future
-
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreApplicativeOps.toLazyApplicativeUnitOps
-
 import common.concurrency.DaemonExecutionContext
 import common.guice.RichModule.richModule
 import common.rich.RichFuture.richFuture
 import common.rich.primitives.RichEither._
 import common.test.AsyncAuxSpecs
+import java.util.concurrent.atomic.AtomicInteger
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+import net.codingwell.scalaguice.ScalaModule
+import org.scalatest.tags.Slow
+import org.scalatest.{Assertion, AsyncFreeSpec, BeforeAndAfterAll, Succeeded}
+import play.api.libs.json.{JsArray, JsObject, JsValue}
+import scala.concurrent.Future
+import sttp.client3
+import sttp.client3.playJson._
+import sttp.client3.{HttpClientFutureBackend, ResolveRelativeUrisBackend, Response, asByteArray}
+import sttp.model.Uri
 
 /**
  * A test that is not coupled with any specific server implementation, e.g., http4s vs Play.
@@ -47,7 +42,7 @@ private abstract class HttpServerSpecs(serverModule: Module)
   //    framework.
   private var runningServer: RunningServer = _
   protected override def beforeAll() = runningServer = injector.instance[Server].start(port).get
-  protected override def afterAll() = runningServer.stop().whenMLazy(runningServer != null)
+  protected override def afterAll() = runningServer.stop().whenA(runningServer != null)
   protected def baseTestModule: TestModuleConfiguration =
     TestModuleConfiguration(_ec = DaemonExecutionContext("HttpServerSpecs", n = 20))
   /** This module should contain an implementation of [[Server]] */
@@ -82,7 +77,7 @@ private abstract class HttpServerSpecs(serverModule: Module)
     def shouldContain(other: JsValue): Assertion = {
       ($, other) match {
         case (o1: JsObject, o2: JsObject) =>
-          o1.value.keys shouldContainAllOf (o2.keys)
+          o1.value.keys shouldContainAllOf o2.keys
           for (k <- o2.keys)
             o1.value(k) shouldContain (o2.value(k))
         case (a1: JsArray, a2: JsArray) =>

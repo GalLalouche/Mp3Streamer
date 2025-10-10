@@ -4,8 +4,6 @@ import backend.recon.{Album, Artist}
 import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.ScalaModule
 
-import common.rich.func.BetterFutureInstances._
-
 class WikipediaAlbumFinderTest extends SameHostExpanderSpec {
   protected override def module = new ScalaModule {
     override def configure() =

@@ -1,9 +1,8 @@
 package backend.recon
 
+import common.test.AuxSpecs
 import org.scalatest.FreeSpec
 import org.scalatest.OptionValues._
-
-import common.test.AuxSpecs
 
 class ReconIDTest extends FreeSpec with AuxSpecs {
   "Invalid" - {

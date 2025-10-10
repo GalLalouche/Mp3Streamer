@@ -5,7 +5,7 @@ import backend.storage.Freshness
 
 import scala.concurrent.Future
 
-import scalaz.OptionT
+import cats.data.OptionT
 
 // TODO UnitRefreshableStorage
 private trait LastFetchTime {

@@ -1,5 +1,6 @@
 package backend.external
 
+import alleycats.std.iterable.alleycatsStdIterableTraverse
 import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
 import backend.external.mark.ExternalLinkMarker
@@ -8,17 +9,15 @@ import backend.recon.{Reconcilable, ReconID}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.MoreTraversableInstances._
-import common.rich.func.MoreTraverseInstances._
-import common.rich.func.ToMoreFoldableOps._
-import scalaz.std.option.optionInstance
-import scalaz.syntax.bind.ToBindOps
-import scalaz.syntax.std.tuple.ToTuple2Ops
-import scalaz.syntax.traverse.ToTraverseOps
+import cats.syntax.flatMap.catsSyntaxFlatMapOps
+import cats.syntax.traverse.toTraverseOps
+import common.rich.func.kats.MoreIterableInstances.iterableInstances
+import common.rich.func.kats.ToMoreFoldableOps._
 
+import common.rich.RichTuple.richTuple2
 import common.rich.collections.RichSet._
 import common.rich.collections.RichTraversableOnce._
+import common.rich.primitives.RichOption.richOption
 
 /**
  * Encompasses all online steps for fetching the external links for a given entity.
@@ -60,8 +59,7 @@ private class ExternalPipe[R <: Reconcilable](
   private def applyNewHostReconcilers(entity: R, existingHosts: Set[Host]): Future[BaseLinks[R]] =
     standaloneReconcilers.get
       .filterNot(existingHosts apply _.host)
-      .toIterable
-      .traverse(_(entity).run)
+      .traverse(_(entity).value)
       .map(_.flatten)
 
   private def filterLinksWithNewHosts(
@@ -81,11 +79,11 @@ private class ExternalPipe[R <: Reconcilable](
           .toMultiMap(_.sourceHost)
       val expanderLinkPairs: Iterable[(ExternalLinkExpander[R], BaseLink[R])] = for {
         r <- result
-        expanders <- nextExpandersByHost.get(r.host).toIterable
+        expanders <- nextExpandersByHost.get(r.host).asIterable
         expander <- expanders
       } yield expander -> r
       for {
-        newLinkSet <- expanderLinkPairs.traverseM(_.fold(_ expand _)).map(_.toSet)
+        newLinkSet <- expanderLinkPairs.flatTraverse(_.reduce(_ expand _)).map(_.toSet)
         noNewLinks = newLinkSet <= result
         r <- if (noNewLinks) Future.successful(result) else aux(newLinkSet ++ result)
       } yield r

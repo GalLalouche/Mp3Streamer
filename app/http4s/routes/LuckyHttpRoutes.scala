@@ -1,12 +1,13 @@
 package http4s.routes
 
 import backend.lucky.LuckyFormatter
-import cats.effect.IO
 import com.google.inject.Inject
 import http4s.routes.Http4sUtils.{decodePath, fromFuture}
 import org.http4s.{HttpRoutes, Uri}
 import org.http4s.dsl.io._
 import org.http4s.headers.Location
+
+import cats.effect.IO
 
 private class LuckyHttpRoutes @Inject() ($ : LuckyFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {

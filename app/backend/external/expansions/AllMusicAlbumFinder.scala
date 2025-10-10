@@ -1,21 +1,18 @@
 package backend.external.expansions
 
-import com.google.inject.Inject
-
 import backend.FutureOption
 import backend.external.Host
 import backend.recon.{Album, AlbumReconScorer}
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
 import scala.concurrent.ExecutionContext
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.MoreIteratorInstances._
-import common.rich.func.ToMoreMonadPlusOps._
-import common.rich.func.ToTraverseMonadPlusOps._
-import scalaz.OptionT
-import scalaz.std.option.optionInstance
+import cats.data.OptionT
+import cats.implicits.toTraverseFilterOps
+import common.rich.func.kats.IteratorInstances._
+import common.rich.func.kats.ToMoreFunctorFilterOps._
 
 import common.RichJsoup._
 import common.rich.RichT._
@@ -56,7 +53,7 @@ private class AllMusicAlbumFinder @Inject() (
             .to("http://www.allmusic.com" + _)
             .|>(Url.parse),
         )
-        .filterM(allMusicHelper.isValidLink)
+        .filterA(allMusicHelper.isValidLink)
     }
   }
 

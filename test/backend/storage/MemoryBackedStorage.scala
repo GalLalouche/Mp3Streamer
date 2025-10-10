@@ -1,12 +1,11 @@
 package backend.storage
 
+import common.rich.func.kats.MoreFutureInstances.futureIsPure
+import common.rich.func.kats.ToTransableOps.toHoistIdOps
+import common.rich.func.kats.Transable.OptionTransable
+import common.storage.{Storage, StoreMode}
 import scala.collection.mutable
 import scala.concurrent.Future
-
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToTransableOps.toHoistIdOps
-
-import common.storage.{Storage, StoreMode}
 
 class MemoryBackedStorage[Key, Value] extends Storage[Key, Value] {
   private val map = new mutable.HashMap[Key, Value]

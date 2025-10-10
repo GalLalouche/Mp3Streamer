@@ -9,13 +9,10 @@ import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreFoldableOps._
-import common.rich.func.ToMoreMonadErrorOps._
-import scalaz.{-\/, \/-}
-import scalaz.Scalaz.ToBindOps
-import scalaz.std.option.optionInstance
-import scalaz.syntax.functor.ToFunctorOps
+import cats.implicits.toFlatMapOps
+import cats.syntax.functor.toFunctorOps
+import common.rich.func.kats.ToMoreFoldableOps._
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.rich.RichFuture.RichTryFuture
 import common.rich.RichT._
@@ -37,16 +34,15 @@ private class LyricsCache @Inject() (
   )
   private val cache = new OnlineRetrieverCacher[Song, Lyrics](
     lyricsStorage,
-    // TODO remove this explicit type annotation once we move on to cats
-    allComposite(_).mapEitherMessage[Lyrics] {
-      case RetrievedLyricsResult.RetrievedLyrics(l) => \/-(l)
-      case _ => -\/("No lyrics retrieved :(")
+    allComposite(_).mapEitherMessage {
+      case RetrievedLyricsResult.RetrievedLyrics(l) => Right(l)
+      case _ => Left("No lyrics retrieved :(")
     },
   )
   def find(s: Song): Future[Lyrics] = cache(s).fromTry
   def parse(url: Url, s: Song): Future[RetrievedLyricsResult] = {
-    def aux(parser: PassiveParser): Future[RetrievedLyricsResult] = parser.parse(url, s) >>! {
-      case RetrievedLyricsResult.RetrievedLyrics(l) => cache.replace(s, l).run
+    def aux(parser: PassiveParser): Future[RetrievedLyricsResult] = parser.parse(url, s).flatTap {
+      case RetrievedLyricsResult.RetrievedLyrics(l) => cache.replace(s, l).value
       case _ => Future.successful(())
     }
     def check(pp: PassiveParser): Option[PassiveParser] = pp.optFilter(_.doesUrlMatchHost(url))
@@ -57,7 +53,7 @@ private class LyricsCache @Inject() (
 
   def setInstrumentalSong(s: Song): Future[Instrumental] = {
     val instrumental = Instrumental("Manual override", ManualEmpty)
-    cache.replace(s, instrumental).run >| instrumental
+    cache.replace(s, instrumental).value as instrumental
   }
   def setInstrumentalArtist(s: Song): Future[Instrumental] = defaultArtistInstrumental.add(s)
 }

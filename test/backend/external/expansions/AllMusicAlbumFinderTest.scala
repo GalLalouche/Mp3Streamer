@@ -6,7 +6,6 @@ import net.codingwell.scalaguice.ScalaModule
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-
 import scala.concurrent.Future
 
 class AllMusicAlbumFinderTest extends SameHostExpanderSpec with MockitoSugar {

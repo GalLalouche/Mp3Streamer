@@ -5,7 +5,7 @@ import backend.recon.{Artist, IgnoredReconResult, ReconID}
 
 import scala.concurrent.Future
 
-import scalaz.ListT
+import common.TempIList.ListT
 
 private[new_albums] trait FilledStorage {
   def all: ListT[Future, ArtistNewAlbums]

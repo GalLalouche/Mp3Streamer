@@ -10,9 +10,8 @@ import play.api.libs.ws.JsonBodyReadables.readableAsJson
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
-import scalaz.syntax.applicativeError.ToApplicativeErrorOps
+import cats.implicits.catsSyntaxApplicativeError
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.concurrency.SimpleTypedActor
 import common.io.InternetTalker
@@ -31,7 +30,7 @@ private class JsonDownloader @Inject() (it: InternetTalker, ec: ExecutionContext
     1.seconds,
   )
   private def aux(method: String, params: Seq[(String, String)], times: Int): Future[JsObject] =
-    getJson(method, params).handleError { e =>
+    getJson(method, params).handleErrorWith { e =>
       if (times <= 1)
         Future.failed(new Exception(s"Failed retry; last failure was: <${e.getMessage}>"))
       else {

@@ -1,25 +1,22 @@
 package backend.module
 
-import java.util.UUID
-
 import backend.logging.ScribeUtils
 import backend.storage.DbProvider
-import com.google.inject.{Guice, Module, Provides}
 import com.google.inject.util.Modules
+import com.google.inject.{Guice, Module, Provides}
+import common.guice.RichModule.richModule
+import common.io.WSAliases._
+import common.io.{BaseDirectory, DirectoryRef, MemoryRoot, PathRefFactory, RootDirectory}
+import common.rich.RichT._
 import io.lemonlabs.uri.Url
+import java.util.UUID
 import models.ModelJsonable.SongParser
 import models.SongTagParser
 import musicfinder.PosterLookup
 import net.codingwell.scalaguice.ScalaModule
+import scala.concurrent.ExecutionContext
 import slick.jdbc.{H2Profile, JdbcProfile}
 import slick.util.AsyncExecutor
-
-import scala.concurrent.ExecutionContext
-
-import common.guice.RichModule.richModule
-import common.io.{BaseDirectory, DirectoryRef, MemoryRoot, PathRefFactory, RootDirectory}
-import common.io.WSAliases._
-import common.rich.RichT._
 
 // It's a case class so its copy constructor could be used by clients in order to configure it.
 case class TestModuleConfiguration(

@@ -1,13 +1,14 @@
 package http4s.routes
 
 import backend.recent.RecentFormatter
-import cats.effect.IO
 import com.google.inject.Inject
 import http4s.routes.Http4sUtils.{fromFuture, jsonEncoder}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 
 import scala.concurrent.ExecutionContext
+
+import cats.effect.IO
 
 private class RecentHttpRoutes @Inject() ($ : RecentFormatter, ec: ExecutionContext) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {

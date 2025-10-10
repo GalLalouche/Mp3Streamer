@@ -1,7 +1,6 @@
 package backend.recon
 
 import com.google.inject.Inject
-
 import org.jline.utils.Levenshtein
 
 import common.rich.primitives.RichDouble.richDouble

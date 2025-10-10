@@ -1,6 +1,7 @@
 package common
 
-import scalaz.State
+import cats.data.State
+import common.rich.func.kats.RichState.richState
 
 // This is a cool little exercise! (Assuming it works). Maybe for the tutorials
 object OrgModeWriterMonad {

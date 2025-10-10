@@ -5,17 +5,12 @@ import backend.external.expansions.ExternalLinkExpander
 import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.{LinkRetriever, LinkRetrievers}
 import backend.recon.{Album, ReconID}
-import io.lemonlabs.uri.Url
-import org.scalatest.AsyncFreeSpec
-
-import scala.concurrent.Future
-
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.RichOptionT
-import scalaz.OptionT
-
+import cats.data.OptionT
 import common.rich.RichT._
 import common.test.AuxSpecs
+import io.lemonlabs.uri.Url
+import org.scalatest.AsyncFreeSpec
+import scala.concurrent.Future
 
 class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
   private val existingHost: Host = Host("existinghost", Url.parse("existinghosturl"))
@@ -41,7 +36,7 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
   private def constReconciler(_host: Host, link: BaseLink[Album]) = new LinkRetriever[Album] {
     override val host = _host
     override val qualityRank = 0
-    override def apply(v1: Album) = RichOptionT.pointSome[Future].apply(link)
+    override def apply(v1: Album) = OptionT.some(link)
   }
   private val newLinkExpander = constExpander(expandedLink)
   private val newLinkReconciler = constReconciler(reconciledLink.host, reconciledLink)

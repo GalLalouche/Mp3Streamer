@@ -1,15 +1,14 @@
 package backend.external.expansions
 
-import com.google.inject.Inject
-
 import backend.FutureOption
 import backend.external.Host
 import backend.recon.Album
+import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import org.jsoup.nodes.Document
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToTransableOps.toHoistIdOps
+import common.rich.func.kats.MoreFutureInstances.futureIsPure
+import common.rich.func.kats.ToTransableOps.toHoistIdOps
 
 import common.RichJsoup._
 

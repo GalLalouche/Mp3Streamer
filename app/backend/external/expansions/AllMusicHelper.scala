@@ -13,8 +13,7 @@ import org.jsoup.nodes.Document
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.RichJsoup._
 import common.io.InternetTalker

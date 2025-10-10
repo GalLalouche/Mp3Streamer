@@ -1,10 +1,10 @@
 package backend.external.extensions
 
+import alleycats.std.all.alleycatsStdIterableTraverse
 import backend.external.MarkedLinks
 import backend.recon.Reconcilable
 
-import common.rich.func.MoreTraversableInstances._
-import common.rich.func.ToMoreFoldableOps._
+import common.rich.func.kats.ToMoreFoldableOps._
 
 /** For extenders whose result is not dependent on other links. */
 private final class StaticExtenderHelper {

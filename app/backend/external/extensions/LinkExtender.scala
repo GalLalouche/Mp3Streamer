@@ -2,10 +2,8 @@ package backend.external.extensions
 
 import backend.external.{Host, MarkedLink, MarkedLinks}
 import backend.recon.Reconcilable
-import io.lemonlabs.uri.Url
 
-import common.rich.func.MoreSeqInstances._
-import scalaz.syntax.functor.ToFunctorOpsUnapply
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.RichUrl.richUrl
 import common.rich.RichTuple._

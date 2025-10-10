@@ -9,8 +9,7 @@ import songs.selector.SongSelectorState
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.Success
 
-import common.rich.func.BetterFutureInstances._
-import scalaz.Scalaz.ToBindOps
+import cats.implicits.catsSyntaxFlatMapOps
 
 import common.concurrency.SimpleActor
 import common.io.DirectoryRef

@@ -8,10 +8,8 @@ import com.google.inject.Guice
 import musicfinder.{ArtistNameNormalizer, IOMusicFinder}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
-import common.rich.func.ToMoreMonoidOps._
-import common.rich.func.ToTraverseMonadPlusOps._
-import scalaz.std.string.stringInstance
-import scalaz.std.vector.vectorInstance
+import common.rich.func.kats.ToMoreMonoidOps._
+import common.rich.func.kats.ToMoreTraverseFilterOps.toMoreTraverseFilterOps
 
 import common.rich.RichT.richT
 import common.rich.path.RichFile._

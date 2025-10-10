@@ -2,14 +2,11 @@ package backend.lyrics
 
 import backend.lyrics.retrievers.InstrumentalArtistStorage
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
+import cats.implicits.{catsSyntaxFlatMapOps, toFunctorOps}
 import com.google.inject.Inject
 import io.lemonlabs.uri.Url
 import models.Song
-
 import scala.concurrent.{ExecutionContext, Future}
-
-import common.rich.func.BetterFutureInstances._
-import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
 
 class LyricsBridge @Inject() (
     lyricsStorage: LyricsStorage,

@@ -7,8 +7,8 @@ import rx.lang.scala.schedulers.ImmediateScheduler
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.MoreObservableInstances._
-import scalaz.syntax.bind.ToBindOps
+import cats.implicits.toFlatMapOps
+import common.rich.func.kats.ObservableInstances._
 
 import common.concurrency.SimpleActor
 import common.rich.RichFuture._

@@ -2,10 +2,11 @@ package http4s.routes
 
 import java.io.File
 
-import cats.effect.IO
 import http4s.routes.Http4sUtils.sendFile
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
+
+import cats.effect.IO
 
 private class ApplicationHttpRoutes {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {

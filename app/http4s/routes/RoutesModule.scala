@@ -1,12 +1,13 @@
 package http4s.routes
 
-import cats.effect.IO
 import com.google.inject.{Provides, Singleton}
 import formatter.{UrlDecoder, UrlEncoder}
 import net.codingwell.scalaguice.ScalaModule
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 import org.http4s.server.Router
+
+import cats.effect.IO
 
 private[http4s] object RoutesModule extends ScalaModule {
   override def configure(): Unit = {

@@ -6,8 +6,7 @@ import backend.recon.{Artist, ReconID}
 
 import scala.concurrent.Future
 
-import scalaz.ListT
-
+import common.TempIList.ListT
 import common.storage.Storage
 
 // TODO Non-Keyed storage, or multi-valued storage

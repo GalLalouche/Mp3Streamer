@@ -2,8 +2,7 @@ package stream
 
 import java.net.HttpURLConnection
 
-import common.rich.func.ToMoreFoldableOps._
-import scalaz.std.option.optionInstance
+import common.rich.func.kats.ToMoreFoldableOps._
 
 import common.io.FileRef
 import common.rich.primitives.RichString._

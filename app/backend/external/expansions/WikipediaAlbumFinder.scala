@@ -10,10 +10,9 @@ import org.jsoup.nodes.Document
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToTransableOps.{toHoistIdOps, toUnrunOps}
-import common.rich.func.ToTraverseMonadPlusOps._
-import scalaz.std.vector.vectorInstance
+import cats.implicits.toTraverseFilterOps
+import common.rich.func.kats.MoreFutureInstances.futureIsPure
+import common.rich.func.kats.ToTransableOps.{toHoistIdOps, toWrapOps}
 
 import common.RichJsoup._
 import common.RichUrl.richUrl
@@ -61,9 +60,9 @@ private class WikipediaAlbumFinder @Inject() (
           .filterNot(_ contains "File:")
           .map(s"https://$documentLanguage.wikipedia.org" + _ |> Url.parse)
           .|>(_.toVector.ensuring(_.forall(_.isValid)))
-          .filterM(isNotRedirected(documentLanguage))
+          .filterA(isNotRedirected(documentLanguage))
           .map(_.headOption)
-          .unrun
+          .wrap
       } yield res
     }
   }

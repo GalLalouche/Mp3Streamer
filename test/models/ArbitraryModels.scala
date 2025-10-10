@@ -1,13 +1,10 @@
 package models
 
-import java.util.concurrent.TimeUnit
-
-import org.scalacheck.{Arbitrary, Gen}
-import org.scalacheck.Arbitrary.arbitrary
-
-import scala.concurrent.duration.Duration
-
 import common.io.MemoryRoot
+import java.util.concurrent.TimeUnit
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.{Arbitrary, Gen}
+import scala.concurrent.duration.Duration
 
 object ArbitraryModels {
   private implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])

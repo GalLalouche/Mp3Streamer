@@ -7,6 +7,7 @@ import com.google.inject.Inject
 
 import scala.concurrent.ExecutionContext
 
+import common.rich.collections.RichMap._
 import common.rich.collections.RichTraversableOnce._
 
 /** E.g., from an artist's wikipedia page, to that artists' wikipedia pages of her albums. */
@@ -21,7 +22,7 @@ private[external] class CompositeSameHostExpander @Inject() (
 
   private val expanders: Map[Host, SameHostExpander] = Iterator(wiki).mapBy(_.host)
   def toReconcilers(ls: BaseLinks[Artist]): LinkRetrievers[Album] = {
-    val availableHosts = ls.toMultiMap(_.host).mapValues(_.head)
+    val availableHosts = ls.toMultiMap(_.host).properMapValues(_.head)
     LinkRetrievers(expanders.flatMap(e => availableHosts.get(e._1).map(e._2.toReconciler)))
   }
 }

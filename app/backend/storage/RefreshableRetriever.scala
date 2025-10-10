@@ -6,10 +6,9 @@ import backend.Retriever
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.RichOptionT._
-import common.rich.func.ToMoreMonadErrorOps._
-import scalaz.syntax.bind.ToBindOps
+import cats.implicits.toFlatMapOps
+import common.rich.func.kats.RichOptionT._
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.rich.RichT._
 import common.rich.RichTime.RichLocalDateTime
@@ -27,7 +26,7 @@ class RefreshableRetriever[Key, Value](
   } | true
 
   private def refresh(k: Key): Future[Value] =
-    onlineRetriever(k) >>! (freshnessStorage.update(k, _).run)
+    onlineRetriever(k).flatTap(freshnessStorage.update(k, _).value)
   override def apply(k: Key): Future[Value] = needsRefresh(k).flatMap { isOld =>
     lazy val oldData = freshnessStorage.load(k).get
     if (isOld) refresh(k).handleButKeepOriginal(oldData.const) else oldData
@@ -35,6 +34,6 @@ class RefreshableRetriever[Key, Value](
 
   def withAge(k: Key): Future[(Value, Freshness)] = for {
     v <- apply(k)
-    age <- freshnessStorage.freshness(k).run
+    age <- freshnessStorage.freshness(k).value
   } yield v -> age.get
 }

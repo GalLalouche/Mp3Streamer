@@ -11,8 +11,7 @@ import play.api.libs.json.{Json, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import scalaz.syntax.bind.ToBindOps
+import cats.implicits.catsSyntaxFlatMapOps
 
 import common.json.RichJson._
 import common.rich.RichT._

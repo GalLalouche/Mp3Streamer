@@ -7,7 +7,7 @@ import backend.storage.Freshness
 
 import scala.concurrent.Future
 
-import scalaz.OptionT
+import cats.data.OptionT
 
 private[filler] trait CachedNewAlbumStorage extends FilledStorage {
   def resetToEpoch(a: Artist): Future[Freshness]

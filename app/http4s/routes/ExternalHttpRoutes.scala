@@ -1,11 +1,12 @@
 package http4s.routes
 
 import backend.external.ExternalFormatter
-import cats.effect.IO
 import com.google.inject.Inject
 import http4s.routes.Http4sUtils.{decodePath, fromFuture, jsonEncoder}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
+
+import cats.effect.IO
 
 private[http4s] class ExternalHttpRoutes @Inject() ($ : ExternalFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {

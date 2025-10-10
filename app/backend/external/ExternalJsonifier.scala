@@ -11,8 +11,7 @@ import play.api.libs.json.Json.JsValueWrapper
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
+import cats.syntax.applicativeError.catsSyntaxApplicativeError
 
 import common.rich.RichT._
 import common.rich.collections.RichTraversableOnce._
@@ -48,7 +47,7 @@ private class ExternalJsonifier @Inject() (implicit ec: ExecutionContext) {
   )
 
   def toJsonOrError(links: Future[TimestampedExtendedLinks[_]]): Future[JsObject] =
-    links.map(toJson).handleErrorFlat { e =>
+    links.map(toJson).handleError { e =>
       e match {
         case StoredNullException(false) =>
         case e => scribe.error(e)

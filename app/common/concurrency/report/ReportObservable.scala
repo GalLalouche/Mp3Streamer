@@ -2,8 +2,8 @@ package common.concurrency.report
 
 import rx.lang.scala.{Observable, Observer, Subscription}
 
-import common.rich.func.MoreObservableInstances._
-import scalaz.syntax.functor.ToFunctorOps
+import cats.implicits.toFunctorOps
+import common.rich.func.kats.ObservableInstances.observableInstances
 
 import common.rich.primitives.RichBoolean.richBoolean
 
@@ -12,7 +12,7 @@ object ReportObservable {
   def aggregator[Agg, Result](
       observable: Observable[Agg],
       finisher: Seq[Agg] => Result,
-  ): ReportObservable[Agg, Result] = filteringAggregator(observable.strengthL(true), finisher)
+  ): ReportObservable[Agg, Result] = filteringAggregator(observable.tupleLeft(true), finisher)
 
   type ShouldNotify = Boolean
   def filteringAggregator[Agg, Result](

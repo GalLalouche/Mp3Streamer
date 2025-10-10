@@ -3,9 +3,6 @@ package http4s.routes
 import java.io.File
 import java.net.{URLDecoder, URLEncoder}
 
-import cats.MonadThrow
-import cats.effect.{Concurrent, IO}
-import cats.implicits.toFunctorOps
 import fs2.Chunk
 import fs2.io.file.Files
 import org.http4s.{EntityDecoder, EntityEncoder, MediaType, Request, Response, StaticFile, Uri}
@@ -14,6 +11,10 @@ import org.http4s.headers.{`Content-Type`, `User-Agent`, Referer}
 import play.api.libs.json.{Json, JsValue}
 
 import scala.concurrent.Future
+
+import cats.MonadThrow
+import cats.effect.{Concurrent, IO}
+import cats.implicits.toFunctorOps
 
 import common.rich.RichT.richT
 

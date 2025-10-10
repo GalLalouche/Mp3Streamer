@@ -2,13 +2,12 @@ package backend.lyrics.retrievers.genius
 
 import backend.module.TestModuleConfiguration
 import backend.recon.StringReconScorer
+import common.test.AuxSpecs
 import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.FreeSpec
 import org.scalatest.OptionValues._
 import play.api.libs.json.{JsObject, Json}
-
-import common.test.AuxSpecs
 
 class APITest extends FreeSpec with AuxSpecs {
   private val factory = new FakeModelFactory

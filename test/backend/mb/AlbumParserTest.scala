@@ -1,14 +1,12 @@
 package backend.mb
 
-import java.time.LocalDate
-
 import backend.recon.{Artist, ReconID}
+import common.test.AuxSpecs
+import java.time.LocalDate
 import org.scalatest.FreeSpec
 import org.scalatest.Inside._
 import org.scalatest.OptionValues._
 import play.api.libs.json.{JsObject, Json}
-
-import common.test.AuxSpecs
 
 class AlbumParserTest extends FreeSpec with AuxSpecs {
   private val $ = AlbumParser

@@ -6,9 +6,9 @@ import models.{ArtistDir, ArtistDirFactory, Song}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.MoreTraverseInstances._
-import scalaz.Scalaz.{ToBindOps, ToFoldableOps, ToFunctorOpsUnapply}
-import scalaz.State
+import cats.data.State
+import cats.implicits.{catsSyntaxFlatMapOps, toFunctorOps}
+import cats.syntax.foldable.toFoldableOps
 
 import common.{OrgModeWriter, OrgModeWriterMonad, VimLauncher}
 import common.OrgModeWriterMonad.OrgModeWriterMonad
@@ -34,7 +34,7 @@ private[score] class FileScorer @Inject() (
       .append(scoreable.scoreFormat)
       .>>(
         if (scoreable.isEmpty)
-          State.init[OrgModeWriter].void
+          State.get[OrgModeWriter].void
         else
           ev.children(scoreable).traverse_(go(_)(ev.childrenEv) |> OrgModeWriterMonad.indent),
       )

@@ -21,7 +21,7 @@ class SimpleTypedActorImplTest extends AsyncFreeSpec with OneInstancePerTest wit
       val sb = new StringBuilder
       val semaphore = new Semaphore(0)
       val map = Map("1" -> new Semaphore(0), "2" -> new Semaphore(0))
-      def appendToSb(i: Int) {
+      def appendToSb(i: Int): Unit = {
         sb.append(i.toString)
         semaphore.release()
       }
@@ -66,7 +66,7 @@ class SimpleTypedActorImplTest extends AsyncFreeSpec with OneInstancePerTest wit
       val sb = new StringBuilder
       val semaphore = new Semaphore(0)
       val map = Map("1" -> new Semaphore(0), "2" -> new Semaphore(0))
-      def appendToSb(i: Int) {
+      def appendToSb(i: Int): Unit = {
         sb.append(i.toString)
         semaphore.release()
       }

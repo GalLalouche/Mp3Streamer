@@ -7,14 +7,13 @@ import models.SongTagParser
 import musicfinder.MusicFinder
 import rx.lang.scala.Observable
 
-import scalaz.Scalaz.ToBooleanOpsFromBoolean
-
 import common.TimedLogger
 import common.concurrency.report.ReportObservable
 import common.concurrency.report.ReportObservable.ReportObservable
 import common.io.FileRef
 import common.rich.RichT.richT
 import common.rich.RichTime.RichClock
+import common.rich.primitives.RichBoolean.richBoolean
 
 private class SongCacheBuilder @Inject() (
     mf: MusicFinder,

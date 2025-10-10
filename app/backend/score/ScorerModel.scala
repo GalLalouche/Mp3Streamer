@@ -9,8 +9,7 @@ import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import scalaz.Scalaz.ToBindOpsUnapply
+import cats.implicits.catsSyntaxFlatMapOps
 
 private class ScorerModel @Inject() (
     trackScorer: StorageScorer[Track],

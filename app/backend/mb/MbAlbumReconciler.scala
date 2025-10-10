@@ -7,12 +7,7 @@ import play.api.libs.json.{JsObject, JsValue}
 
 import scala.concurrent.ExecutionContext
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.MoreSeqInstances._
-import common.rich.func.ToTransableOps.toTransableOps
-import scalaz.Scalaz.{doubleInstance, ToFunctorOps}
-import scalaz.std.option.optionInstance
-import scalaz.syntax.foldable.ToFoldableOps
+import cats.implicits.{toFoldableOps, toFunctorOps}
 
 import common.json.RichJson._
 import common.rich.RichT._
@@ -26,8 +21,10 @@ private class MbAlbumReconciler @Inject() (
   private implicit val iec: ExecutionContext = ec
 
   override def apply(a: Album) = artistReconciler(a.artist)
-    .mapF(artistId => downloader("release-group/", "limit" -> "100", "artist" -> artistId.id))
-    .subFlatMap(parse(_, a))
+    .semiflatMap(artistId =>
+      downloader("release-group/", "limit" -> "100", "artist" -> artistId.id),
+    )
+    .subflatMap(parse(_, a))
 
   private def album(js: JsObject, a: Artist) =
     Album(title = js.str("title"), year = js.str("first-release-date").take(4).toInt, artist = a)
@@ -38,7 +35,7 @@ private class MbAlbumReconciler @Inject() (
     // TODO topByFilter?
     .fproduct(js => albumReconScorer(album(js, a.artist), a))
     .filter(_._2 >= 0.85)
-    .maximumBy(_._2)
+    .maximumByOption(_._2)
     .map(_._1)
     .map(_.str("id").thrush(ReconID.validateOrThrow))
     .<| {

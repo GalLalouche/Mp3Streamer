@@ -7,8 +7,7 @@ import com.google.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.sys.process.stringSeqToProcess
 
-import common.rich.func.BetterFutureInstances._
-import scalaz.Scalaz.ToBindOps
+import cats.syntax.flatMap.catsSyntaxFlatMapOps
 
 import common.VimLauncher.VimLocation
 import common.rich.path.RichFile.richFile

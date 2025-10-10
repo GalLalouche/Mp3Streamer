@@ -1,8 +1,5 @@
 package http4s
 
-import cats.data.OptionT
-import cats.effect.{ExitCode, IO, IOApp, Resource}
-import cats.effect.unsafe.IORuntimeConfig
 import com.comcast.ip4s._
 import com.google.inject.{Guice, Inject, Provider}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
@@ -13,6 +10,10 @@ import org.http4s.server.Server
 import org.http4s.server.middleware.ErrorHandling
 
 import scala.concurrent.duration.Duration
+
+import cats.data.OptionT
+import cats.effect.{ExitCode, IO, IOApp, Resource}
+import cats.effect.unsafe.IORuntimeConfig
 
 private class Main @Inject() (routes: Provider[HttpRoutes[IO]]) {
   lazy val app: HttpApp[IO] =

@@ -4,7 +4,7 @@ import backend.module.TestModuleConfiguration
 import models.{AlbumDir, ArtistDir, FakeModelFactory, ModelJsonable, Song}
 import musicfinder.ArtistDirsIndex
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.mockito.Mockito
+import org.mockito.{ArgumentCaptor, Mockito}
 import org.scalatest.FreeSpec
 import org.scalatestplus.mockito.MockitoSugar
 
@@ -40,6 +40,9 @@ class SongCacheSaverTest extends FreeSpec with AuxSpecs with MockitoSugar {
     )
     saver.loadArray[ArtistDir] shouldMultiSetEqual artists
 
-    Mockito.verify(index, Mockito.times(1)).update(artists)
+    // TODO MoreMockitoSugar?
+    val argument = ArgumentCaptor.forClass(classOf[Iterable[ArtistDir]]);
+    Mockito.verify(index, Mockito.times(1)).update(argument.capture())
+    argument.getValue shouldMultiSetEqual artists
   }
 }

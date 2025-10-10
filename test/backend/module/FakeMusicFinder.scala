@@ -1,13 +1,11 @@
 package backend.module
 
+import common.io.{FileRef, MemoryDir, MemoryFile, MemorySystem}
+import common.rich.RichT._
 import models.{ArtistName, MemorySong, SongTagParser}
 import musicfinder.MusicFinder
 import musicfinder.MusicFinder.DirectoryName
-
 import scala.collection.mutable
-
-import common.io.{FileRef, MemoryDir, MemoryFile, MemorySystem}
-import common.rich.RichT._
 
 class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder with SongTagParser {
   override type S = MemorySystem

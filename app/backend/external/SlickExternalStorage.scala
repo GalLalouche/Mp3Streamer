@@ -11,11 +11,9 @@ import slick.jdbc.JdbcType
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreFoldableOps._
-import common.rich.func.ToMoreMonadErrorOps._
-import scalaz.std.option.optionInstance
-import scalaz.syntax.apply.ToApplyOps
+import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
+import common.rich.func.kats.ToMoreFoldableOps._
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.rich.RichT._
 import common.storage.{ColumnMappersSpecVer, StringSerializable}
@@ -129,6 +127,6 @@ private class SlickAlbumExternalStorage @Inject() (
         .result
         .map(_.map(e => (e._1, e._2, toFreshness(e._3)))),
     )
-    existingRows.`<*ByName`(db.run(artistRows.delete))
+    existingRows <<* db.run(artistRows.delete)
   }
 }

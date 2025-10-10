@@ -4,9 +4,8 @@ import java.util
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreFunctorOps._
-import scalaz.Scalaz.ToFunctorOps
+import cats.implicits.toFunctorOps
+import common.rich.func.kats.ToMoreFunctorOps._
 
 import common.rich.RichT._
 

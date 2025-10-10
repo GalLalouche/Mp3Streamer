@@ -1,8 +1,7 @@
 package backend.mb
 
-import com.google.inject.Inject
-
 import backend.recon.{Artist, ReconID}
+import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 

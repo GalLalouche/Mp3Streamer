@@ -1,22 +1,19 @@
 package server
 
+import cats.implicits.catsSyntaxFlatMapOps
 import com.google.inject.Module
+import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
+import common.json.RichJson.ImmutableJsonArray
+import common.json.ToJsonableOps.jsonifySingle
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 import formatter.UrlDecoder
 import models.ModelJsonable
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.BeforeAndAfterEach
-import play.api.libs.json.{JsArray, Json, JsString, JsValue}
+import play.api.libs.json.{JsArray, JsString, JsValue, Json}
 import playlist.PlaylistJsonableTest
-import sttp.client3.UriContext
-
 import scala.concurrent.Future
-
-import common.rich.func.BetterFutureInstances._
-import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
-
-import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
-import common.json.RichJson.ImmutableJsonArray
-import common.json.ToJsonableOps.jsonifySingle
+import sttp.client3.UriContext
 
 private class PlaylistTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)

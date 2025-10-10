@@ -9,8 +9,7 @@ import slick.jdbc.JdbcType
 
 import scala.concurrent.ExecutionContext
 
-import common.rich.func.ToMoreFoldableOps._
-import scalaz.std.option.optionInstance
+import common.rich.func.kats.ToMoreFoldableOps._
 
 import common.rich.RichT._
 

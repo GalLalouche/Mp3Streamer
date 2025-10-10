@@ -6,8 +6,7 @@ import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.RichOptionT.richOptionT
+import common.rich.func.kats.RichOptionT.richOptionT
 
 private class AlbumReconVerifier @Inject() (
     artistReconStorage: ArtistReconStorage,

@@ -1,18 +1,15 @@
 package models
 
-import java.io.File
-import java.util.concurrent.TimeUnit
-
-import org.scalacheck.{Arbitrary, Gen}
-import org.scalacheck.Arbitrary.arbitrary
-import org.scalatest.OneInstancePerTest
-import org.scalatest.tags.Slow
-
-import scala.concurrent.duration.Duration
-
 import common.JsonableSpecs
 import common.io.{IODirectory, IOFile, IOPathRefFactory}
 import common.rich.path.TempDirectory
+import java.io.File
+import java.util.concurrent.TimeUnit
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.{Arbitrary, Gen}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.tags.Slow
+import scala.concurrent.duration.Duration
 
 @Slow
 class IOModelJsonableTest extends JsonableSpecs with OneInstancePerTest {

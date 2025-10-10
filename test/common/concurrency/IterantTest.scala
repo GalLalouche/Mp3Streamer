@@ -1,34 +1,29 @@
 package common.concurrency
 
-import java.util.concurrent.{LinkedBlockingQueue, Semaphore}
-import java.util.concurrent.atomic.AtomicInteger
-
-import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
-
-import scala.concurrent.{ExecutionContext, Future}
-import scala.jdk.CollectionConverters._
-
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.RichOptionT
-import scalaz.OptionT
-
+import cats.data.OptionT
 import common.rich.RichT.lazyT
 import common.test.AsyncAuxSpecs
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.{LinkedBlockingQueue, Semaphore}
+import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
+import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 class IterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
-  implicit override def executionContext: ExecutionContext = ThreadlessContext
-
   private def test10($ : Iterant[Future, Int], expected: Seq[Int]) =
     $.batchStep(10).map(_._1) shouldEventuallyReturn expected
   "toStream" - {
     "empty returns empty" in {
-      Iterant.empty.toStreamT.toStream shouldEventuallyReturn Stream.empty
+      Iterant.empty[Future, Int].toSeq shouldEventuallyReturn LazyList.empty
     }
     "finite" in {
-      Iterant.range(0, 5).toStreamT.toStream shouldEventuallyReturn 0.until(5).toStream
+      Iterant.range[Future](0, 5).toSeq shouldEventuallyReturn 0.until(5)
+    }
+    "lots of values doesn't blow the stack" in {
+      Iterant.range[Future](0, 1000).toSeq shouldEventuallyReturn 0.until(1000)
     }
     "infinite" in {
-      Iterant.from(0).toStreamT.take(10).toStream shouldEventuallyReturn 0.until(10).toStream
+      Iterant.from[Future](0).take(10).toSeq shouldEventuallyReturn 0.until(10)
     }
   }
   "filter" - {
@@ -37,15 +32,25 @@ class IterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTe
     }
     "non-empty + trivial filter returns the same iterant" in {
       test10(
-        Iterant.from(0).filter(true.const),
+        Iterant.from[Future](0).filter(true.const),
         0 until 10,
       )
     }
     "Proper test" in {
       test10(
-        Iterant.from(0).filter(_ % 2 == 0),
+        Iterant.from[Future](0).filter(_ % 2 == 0),
         0 until 20 by 2,
       )
+    }
+  }
+
+  "flatMap" - {
+    "Is lazy" in {
+      Iterant
+        .from[Future](1)
+        .flatMap(i => Iterant.from(i * 10))
+        .take(10)
+        .toSeq shouldEventuallyReturn 10.until(20)
     }
   }
 
@@ -55,19 +60,19 @@ class IterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTe
     }
     "finite + finite" in {
       test10(
-        Iterant.range(0, 5) ++ Iterant.range(10, 15),
+        Iterant.range[Future](0, 5) ++ Iterant.range(10, 15),
         0.until(5) ++ 10.until(15),
       )
     }
     "finite + infinite" in {
       test10(
-        Iterant.range(0, 5) ++ Iterant.from(10),
+        Iterant.range[Future](0, 5) ++ Iterant.from(10),
         0.until(5) ++ 10.until(15),
       )
     }
     "infinite + infinite" in {
       test10(
-        Iterant.from(0) ++ Iterant.from(100),
+        Iterant.from[Future](0) ++ Iterant.from(100),
         0 until 10,
       )
     }
@@ -80,7 +85,7 @@ class IterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTe
       if (from >= to)
         OptionT.none
       else
-        RichOptionT.pointSome.apply(from -> new InterlockingIterant(semaphore, from + 1, to))
+        OptionT.some(from -> new InterlockingIterant(semaphore, from + 1, to))
     }
   }
 

@@ -29,7 +29,7 @@ class CompositeExtenderTest extends FreeSpec with AuxSpecs {
     val sourceHosts = source.links.map(_.host).toSet
     val extendedHosts = actual.links.filter(_.extensions.nonEmpty).map(_.host).toSet
     val unexpectedExtendedHosts = (sourceHosts &~ extendedHosts).filter(expected.contains)
-    unexpectedExtendedHosts shouldBe 'empty
+    unexpectedExtendedHosts shouldBe empty
 
     actual.links
       .filter(_.extensions.nonEmpty)

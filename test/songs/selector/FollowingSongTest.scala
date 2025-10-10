@@ -27,6 +27,6 @@ class FollowingSongTest
 
     val nextSong = $.next(song1).get
     nextSong shouldReturn song2
-    $.next(song2) shouldBe 'empty
+    $.next(song2) shouldBe empty
   }
 }

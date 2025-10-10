@@ -13,7 +13,7 @@ import play.api.libs.json.{JsObject, Json}
 
 import scala.concurrent.ExecutionContext
 
-import scalaz.OptionT
+import cats.data.OptionT
 
 import common.io.InternetTalker
 import common.rich.RichT._

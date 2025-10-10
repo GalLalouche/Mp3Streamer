@@ -10,7 +10,7 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import net.codingwell.scalaguice.ScalaModule
 import org.scalacheck.Arbitrary._
 import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 import common.guice.RichModule.richModule
 import common.io.{DirectoryRef, FileRef}
@@ -20,7 +20,7 @@ class SongSelectorTest
     extends FreeSpec
     with OneInstancePerTest
     with AuxSpecs
-    with GeneratorDrivenPropertyChecks
+    with ScalaCheckDrivenPropertyChecks
     with Matchers {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 10, workers = 5)

@@ -1,10 +1,9 @@
 package backend.lyrics.retrievers
 
-import models.{FakeModelFactory, Song}
-import org.scalatest.AsyncFreeSpec
-
 import common.io.{MemoryDir, MemoryRoot}
 import common.test.AsyncAuxSpecs
+import models.{FakeModelFactory, Song}
+import org.scalatest.AsyncFreeSpec
 
 class DefaultClassicalInstrumentalTest extends AsyncFreeSpec with AsyncAuxSpecs {
   protected val factory = new FakeModelFactory

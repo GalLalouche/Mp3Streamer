@@ -2,8 +2,7 @@ package common.concurrency
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import scalaz.syntax.functor.ToFunctorOps
+import cats.implicits.toFunctorOps
 
 private class SimpleTypedActorImpl[Msg, +Result](name: String, f: Msg => Result)
     extends SimpleTypedActor[Msg, Result] {

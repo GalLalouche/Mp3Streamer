@@ -1,13 +1,11 @@
 package server
 
-import java.io.File
-
 import com.google.inject.Module
-import net.codingwell.scalaguice.ScalaModule
-import sttp.client3.UriContext
-
 import common.io.{BaseDirectory, DirectoryRef, IODirectory}
 import common.rich.path.RichFile.richFile
+import java.io.File
+import net.codingwell.scalaguice.ScalaModule
+import sttp.client3.UriContext
 
 private class PosterTest(serverModule: Module) extends HttpServerSpecs(serverModule) {
   protected override lazy val overridingModule = new ScalaModule {

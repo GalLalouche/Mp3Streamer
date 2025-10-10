@@ -11,6 +11,7 @@ import common.test.AuxSpecs
 class PythonLanguageDetectorTest extends FreeSpec with AuxSpecs {
   "Single process" - {
     lazy val $ = PythonLanguageDetector.create(1.minute)
+    // TODO Proper
     def detect(s: String) = $.detect(s).right.value
     "Hebrew" in { detect("דגשדגשדגשדג") shouldReturn "he" }
     "Japanese" in { detect("センチメートル") shouldReturn "ja" }

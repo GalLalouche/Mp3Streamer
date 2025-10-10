@@ -7,9 +7,8 @@ import models.TypeAliases.ArtistName
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
-import scalaz.Scalaz.ToBindOps
+import cats.implicits.catsSyntaxFlatMapOps
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 // Easier (and safer!) than opening SQLiteBrowser!
 private class ArtistReconPusherImpl @Inject() (

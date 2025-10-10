@@ -1,9 +1,8 @@
 package backend.module
 
-import org.scalatest.{FreeSpec, OneInstancePerTest}
-
 import common.io.MemoryRoot
 import common.test.AuxSpecs
+import org.scalatest.{FreeSpec, OneInstancePerTest}
 
 class MemoryPathRefFactoryTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
   private val root = new MemoryRoot

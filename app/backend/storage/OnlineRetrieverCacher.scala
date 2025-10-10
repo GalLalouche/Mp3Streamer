@@ -5,10 +5,9 @@ import backend.Retriever
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.RichOptionT._
-import common.rich.func.ToMoreMonadErrorOps._
-import scalaz.Scalaz.ToBindOps
+import cats.implicits.toFlatMapOps
+import common.rich.func.kats.RichOptionT._
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.rich.RichFuture.richFuture
 import common.storage.{Storage, StoreMode}
@@ -26,7 +25,7 @@ class OnlineRetrieverCacher[Key, Value](
    * Returns [[Failure]] if the online retrieval failed. Storage failed are dealt with in the
    * storage layer.
    */
-  def apply(k: Key): Future[Try[Value]] = (localStorage.load(k) |||| onlineRetriever(k).>>!(
+  def apply(k: Key): Future[Try[Value]] = (localStorage.load(k) |||| onlineRetriever(k).flatTap(
     localStorage
       .store(k, _)
       .mapError(

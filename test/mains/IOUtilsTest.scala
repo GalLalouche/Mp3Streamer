@@ -1,9 +1,8 @@
 package mains
 
-import org.scalatest.FreeSpec
-
 import common.io.MemoryRoot
 import common.test.AuxSpecs
+import org.scalatest.FreeSpec
 
 class IOUtilsTest extends FreeSpec with AuxSpecs {
   "decode" in {

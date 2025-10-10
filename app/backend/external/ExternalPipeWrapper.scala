@@ -15,9 +15,7 @@ import genre.{Genre, GenreFinder}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
-import scalaz.{-\/, \/-}
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean.richBoolean
@@ -40,11 +38,10 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
     freshnessStorage = new ComposedFreshnessStorage(storage, clock),
     onlineRetriever = new ExternalPipe[R](
       r =>
-        // TODO remove this explicit type annotation once we move on to cats
-        reconciler(r).mapEither[ReconID] {
-          case Success(HasReconResult(reconId, _)) => \/-(reconId)
-          case Failure(e) =>
-            -\/(
+        reconciler(r).mapEither {
+          case Success(HasReconResult(reconId, _)) => Right(reconId)
+          case Failure(_) =>
+            Left(
               new NoSuchElementException(s"Failed to retrieve recon ID from online source for <$r>"),
             )
           case Success(StoredNull) =>
@@ -52,7 +49,7 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
             val msg =
               if (isClassical) "Classical album"
               else s"Storage contained null for <$r>, i.e., past recon attempts failed"
-            -\/(new StoredNullException(shouldReport = isClassical.isFalse, msg = msg))
+            Left(new StoredNullException(shouldReport = isClassical.isFalse, msg = msg))
         },
       provider,
       standaloneReconcilers,

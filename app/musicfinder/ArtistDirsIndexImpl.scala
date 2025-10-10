@@ -5,8 +5,7 @@ import genre.GenreFinder
 import models.ArtistDir
 import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
 
-import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
-import scalaz.Scalaz.optionInstance
+import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 import common.io.{DirectoryRef, JsonableSaver}
 import common.json.Jsonable

@@ -8,10 +8,8 @@ import slick.jdbc.{JdbcProfile, JdbcType}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreFoldableOps._
-import scalaz.OptionT
-import scalaz.std.option.optionInstance
+import cats.data.OptionT
+import common.rich.func.kats.ToMoreFoldableOps._
 
 import common.rich.RichT.richT
 
@@ -22,7 +20,7 @@ private class SlickReconStorageAux(profile: JdbcProfile)(implicit ec: ExecutionC
     MappedColumnType.base[ReconID, String](_.id, ReconID.apply)
   def btt: BaseTypedType[String] = ScalaBaseType.stringType
   def isIgnored(srr: OptionT[Future, StoredReconResult]): Future[IgnoredReconResult] =
-    srr.map(_.isIgnored).run.map(IgnoredReconResult.from)
+    srr.map(_.isIgnored).value.map(IgnoredReconResult.from)
   def toStoredReconResult(reconId: Option[ReconID], isIgnored: Boolean): StoredReconResult =
     reconId.mapHeadOrElse(HasReconResult(_, isIgnored), StoredNull)
 }

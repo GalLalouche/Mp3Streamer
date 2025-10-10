@@ -15,10 +15,9 @@ import scalafx.scene.control.{ComboBox, Label}
 import scalafx.scene.layout.{GridPane, Pane, VBox}
 import scalafx.scene.text.{Text, TextFlow}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
-import common.rich.func.ToMoreMonadErrorOps.toMoreApplicativeErrorOps
-import scalaz.syntax.bind._
+import cats.implicits.{catsSyntaxIfM, toFunctorOps}
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
+import common.rich.func.kats.ToMoreMonadErrorOps.toMoreApplicativeErrorOps
 
 import common.rich.RichFuture.richFuture
 import common.rich.RichT.richT
@@ -63,7 +62,7 @@ private class FoobarScorer @Inject() (
         case ScoreSource.Song => scorer.updateSongScore(song, newScore)
       }).toTry
         .listenError(scribe.error("Failed to update score", _))
-        .>|(onScoreChange())
+        .as(onScoreChange())
     }
     $
   }
@@ -74,9 +73,8 @@ private class FoobarScorer @Inject() (
       Future.successful(()),
       reconciler(a)
         .listen(_ => scribe.info(s"Reconciled <$a>"))
-        .mapF(r => pusher.withValidation(a.name, r.id, isIgnored = false))
-        .run
-        .void,
+        .semiflatMap(r => pusher.withValidation(a.name, r.id, isIgnored = false))
+        .value,
     )
   def update(nowPlayingSimpleOutput: File, onScoreChange: () => Any): Future[Pane] = for {
     song <- currentlyPlayingSong(nowPlayingSimpleOutput)

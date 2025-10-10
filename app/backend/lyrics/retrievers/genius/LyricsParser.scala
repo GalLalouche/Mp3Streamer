@@ -43,7 +43,7 @@ private object LyricsParser extends SingleHostParser {
   }
 
   private val LineBreaks = Set("br", "div")
-  private def go(el: Element): Seq[String] = el.childNodes.asScala.toStream.flatMap {
+  private def go(el: Element): Seq[String] = el.childNodes.asScala.to(LazyList).flatMap {
     case e: Element =>
       if (LineBreaks contains e.tagName)
         Vector("\n")

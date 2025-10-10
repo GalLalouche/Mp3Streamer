@@ -36,9 +36,13 @@ private class SongCacheSaver @Inject() (
       }
       .toSet <| jsonableSaver.saveArray
 
-    val artists = albums.groupBy(_.toTuple(_.dir.parent, _.artistName)).map {
-      case ((dir, artistName), albums) => ArtistDir(dir, artistName, albums)
-    }
+    val artists = albums
+      .groupBy(_.toTuple(_.dir.parent, _.artistName))
+      .map { case ((dir, artistName), albums) =>
+        ArtistDir(dir, artistName, albums)
+      }
+      .toVector
+      .sortBy(_.toTuple(_.dir.parent.path, _.name))
     artistDirsIndexState.update(artists)
     jsonableSaver.saveArray[ArtistDir](artists)
   }

@@ -4,8 +4,7 @@ import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.immutable
 
-import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
-import scalaz.std.option.optionInstance
+import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 sealed trait ModelScore extends EnumEntry
 

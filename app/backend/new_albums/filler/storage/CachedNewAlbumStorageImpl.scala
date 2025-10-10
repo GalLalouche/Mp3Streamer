@@ -9,11 +9,12 @@ import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 import scala.concurrent.ExecutionContext
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.MoreTraverseInstances._
+import cats.implicits.toFunctorOps
+import cats.syntax.functorFilter.toFunctorFilterOps
+import cats.syntax.unorderedTraverse.toUnorderedTraverseOps
+import common.rich.func.kats.MoreFutureInstances.futureIsCommutativeMonad
+import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 import monocle.Monocle.toApplyLensOps
-import scalaz.Scalaz.{ToApplyOps, ToFunctorOpsUnapply}
-import scalaz.syntax.traverse.ToTraverseOps
 
 private class CachedNewAlbumStorageImpl @Inject() (
     lastFetchTime: LastFetchTime,
@@ -23,20 +24,21 @@ private class CachedNewAlbumStorageImpl @Inject() (
 ) extends CachedNewAlbumStorage {
   private implicit val iec: ExecutionContext = ec
   override def all = newAlbumStorage.all
-    .map { t =>
-      t.&|->(ArtistNewAlbums.albums).modify(filterExistingAlbums(t.artist, _))
-    }
+    .map(t => t.&|->(ArtistNewAlbums.albums).modify(filterExistingAlbums(t.artist, _)))
     .filter(_.albums.nonEmpty)
   override def forArtist(a: Artist) = newAlbumStorage.apply(a).map(filterExistingAlbums(a, _))
   override def freshness(a: Artist) = lastFetchTime.freshness(a)
   override def unremoveAll(a: Artist) = newAlbumStorage.unremoveAll(a)
   override def storeNew(albums: Seq[NewAlbumRecon], artists: Set[Artist]) =
-    newAlbumStorage.storeNew(albums).`<*ByName`(artists.traverse(lastFetchTime.update))
+    newAlbumStorage.storeNew(albums).<<*(artists.unorderedTraverse(lastFetchTime.update))
   override def resetToEpoch(a: Artist) = lastFetchTime.resetToEpoch(a)
   override def remove(artist: Artist) = newAlbumStorage.remove(artist)
   override def ignore(artist: Artist) = lastFetchTime.ignore(artist)
   override def isIgnored(artist: Artist) =
-    lastFetchTime.freshness(artist).run.map(IgnoredReconResult from _.map(_.localDateTime.isEmpty))
+    lastFetchTime
+      .freshness(artist)
+      .value
+      .map(IgnoredReconResult from _.map(_.localDateTime.isEmpty))
   override def unignore(artist: Artist) = lastFetchTime.unignore(artist).void
   override def removeAlbum(reconID: ReconID) = newAlbumStorage.removeAlbum(reconID)
   override def ignore(reconID: ReconID) = newAlbumStorage.ignoreAlbum(reconID)
@@ -51,7 +53,7 @@ private object CachedNewAlbumStorageImpl {
       injector
         .instance[CachedNewAlbumStorage]
         .all
-        .run
+        .value
         .get,
     )
   }

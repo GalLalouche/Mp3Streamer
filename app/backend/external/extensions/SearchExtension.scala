@@ -20,8 +20,8 @@ private[external] object SearchExtension {
     )
   }
 
-  def extendMissing[R <: Reconcilable](allHosts: TraversableOnce[Host], r: R)(
+  def extendMissing[R <: Reconcilable](allHosts: IterableOnce[Host], r: R)(
       links: ExtendedLinks[R],
   ): ExtendedLinks[R] =
-    links ++ (allHosts.toSet &~ links.map(_.host).toSet map (apply(_, r)))
+    links ++ (allHosts.iterator.toSet &~ links.map(_.host).toSet map (apply(_, r)))
 }

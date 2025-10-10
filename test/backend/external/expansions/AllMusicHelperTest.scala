@@ -1,18 +1,16 @@
 package backend.external.expansions
 
-import java.net.HttpURLConnection
-
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.module.{FakeWSResponse, TestModuleConfiguration}
 import backend.recon.Album
-import io.lemonlabs.uri.Url
-import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.AsyncFreeSpec
-
 import common.io.WSAliases._
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
 import common.test.AsyncAuxSpecs
+import io.lemonlabs.uri.Url
+import java.net.HttpURLConnection
+import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.AsyncFreeSpec
 
 class AllMusicHelperTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentSpecs {
   private val config = TestModuleConfiguration()

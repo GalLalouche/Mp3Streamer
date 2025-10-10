@@ -8,11 +8,9 @@ import models.{AlbumTitle, SongTitle}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.MoreSeqInstances._
-import scalaz.ListT
-import scalaz.syntax.foldable.ToFoldableOps
+import cats.implicits.toFunctorOps
 
+import common.TempIList.ListT
 import common.rich.RichT.richT
 
 private[score] class TrackScoreStorage @Inject() (
@@ -52,7 +50,7 @@ private[score] class TrackScoreStorage @Inject() (
       e.song === k.title.toLowerCase &&
       e.album === k.album.title.toLowerCase
   def loadAll: ListT[Future, (YearlessTrack, ModelScore)] =
-    ListT(db.run(tableQuery.result).map(_.toIList))
+    ListT(db.run(tableQuery.result).map(_.toList))
       .map(e => (YearlessTrack(e._3, YearlessAlbum(e._2, e._1)), e._4))
   def allForArtist(a: Artist): Future[Seq[(AlbumTitle, SongTitle, ModelScore)]] =
     db.run(tableQuery.filter(_.artist === a).map(_.toTuple(_.album, _.song, _.score)).result)

@@ -1,14 +1,12 @@
 package backend.mb
 
-import com.google.inject.Inject
-
 import backend.recon.{Artist, Reconciler, ReconID}
+import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
-import scalaz.OptionT
+import cats.data.OptionT
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.json.RichJson._
 

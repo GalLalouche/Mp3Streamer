@@ -8,9 +8,7 @@ import slick.ast.BaseTypedType
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.MoreSeqInstances._
-import scalaz.ListT
-import scalaz.syntax.foldable.ToFoldableOps
+import common.TempIList.ListT
 
 private[backend] class ArtistScoreStorage @Inject() (
     protected override val ec: ExecutionContext,
@@ -45,5 +43,5 @@ private[backend] class ArtistScoreStorage @Inject() (
   protected override def toId(et: Rows) = et.artist
   protected override def toEntity(k: Artist, v: ModelScore) = (k, v)
   protected override def extractValue(e: (Artist, ModelScore)) = e._2
-  def loadAll: ListT[Future, (Artist, ModelScore)] = ListT(db.run(tableQuery.result).map(_.toIList))
+  def loadAll: ListT[Future, (Artist, ModelScore)] = ListT(db.run(tableQuery.result).map(_.toList))
 }

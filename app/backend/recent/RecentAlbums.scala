@@ -10,9 +10,7 @@ import scala.Ordering.Implicits._
 import scala.collection.View
 import scala.concurrent.Future
 
-import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
-import scalaz.std.option.optionInstance
-import scalaz.syntax.apply.^
+import cats.syntax.apply.catsSyntaxApplyOps
 
 import common.concurrency.SimpleTypedActor
 import common.io.{DirectoryRef, FileRef}
@@ -48,6 +46,6 @@ private class RecentAlbums @Inject() (
   private def isDoubleAlbum(dir: DirectoryRef): Boolean = {
     val songs = mf.getSongFilesInDir(dir).sortBy(_.name)
     def discNumber(s: FileRef) = songTagParser(s).discNumber
-    ^(discNumber(songs.head), discNumber(songs.last))(_ != _).getOrElse(false)
+    discNumber(songs.head).map2(discNumber(songs.last))(_ != _).getOrElse(false)
   }
 }

@@ -11,7 +11,7 @@ import common.io.{MemoryRoot, PathRefFactory}
 private class ArtistToDirectoryTest extends JsonableSpecs {
   private val injector = TestModuleConfiguration().injector
   private implicit val root: MemoryRoot = injector.instance[MemoryRoot]
-  private implicit val factory = injector.instance[PathRefFactory]
+  private implicit val factory: PathRefFactory = injector.instance[PathRefFactory]
   implicit def arbitraryArtistToDirectory: Arbitrary[ArtistToDirectory] =
     Arbitrary(ArbitraryModels.arbArtist.map(ArtistToDirectory.from))
 

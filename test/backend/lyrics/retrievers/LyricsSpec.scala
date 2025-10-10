@@ -4,10 +4,9 @@ import backend.external.DocumentSpecs
 import backend.lyrics.Instrumental
 import backend.lyrics.retrievers.LyricsSpec._
 import models.{FakeModelFactory, TrackNumber}
+import org.scalatest.matchers.{BePropertyMatchResult, BePropertyMatcher}
 import org.scalatest.{Assertion, Suite}
-import org.scalatest.matchers.{BePropertyMatcher, BePropertyMatchResult}
 import resource.managed
-
 import scala.PartialFunction.cond
 import scala.io.Source
 

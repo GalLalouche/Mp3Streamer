@@ -1,21 +1,16 @@
 package backend.storage
 
-import java.time.{Clock, Duration}
-
 import backend.module.TestModuleConfiguration
-import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
-import org.scalatest.OptionValues._
-
-import scala.concurrent.Future
-
-import common.rich.func.BetterFutureInstances._
-import scalaz.syntax.bind.ToBindOps
-import scalaz.syntax.functor.ToFunctorOps
-
+import cats.implicits.catsSyntaxFlatMapOps
 import common.FakeClock
 import common.rich.RichT._
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 import common.test.AsyncAuxSpecs
+import java.time.{Clock, Duration}
+import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.OptionValues._
+import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
+import scala.concurrent.Future
 
 class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
   private val c = new TestModuleConfiguration
@@ -68,12 +63,12 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
         )
         for {
           _ <- freshnessStorage.store("foo", "bar")
-          dataFreshness <- freshnessStorage.freshness("foo").run
+          dataFreshness <- freshnessStorage.freshness("foo").value
           _ = clock.advance(100)
           a <- checkAll(
             $.needsRefresh("foo") shouldEventuallyReturn true,
             $.apply("foo") shouldEventuallyReturn "bar",
-            freshnessStorage.freshness("foo").run shouldEventuallyReturn dataFreshness,
+            freshnessStorage.freshness("foo").value shouldEventuallyReturn dataFreshness,
           )
         } yield a
       }
@@ -92,7 +87,7 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
   "withAge" in {
     for {
       _ <- freshnessStorage.store("foobar", "bazqux")
-      timestamp <- freshnessStorage.freshness("foobar").run
+      timestamp <- freshnessStorage.freshness("foobar").value
       ld = timestamp.value.localDateTime.value
       age <- $.withAge("foobar")
     } yield age shouldReturn ("bazqux" -> DatedFreshness(ld))

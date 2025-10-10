@@ -17,20 +17,12 @@ import slick.ast.BaseTypedType
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.MoreIteratorInstances._
-import common.rich.func.ToMoreApplicativeOps.toLazyApplicativeUnitOps
-import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
-import common.rich.func.ToMoreMonadErrorOps._
-import common.rich.func.ToTraverseMonadPlusOps._
-import common.rich.func.TuplePLenses
-import scalaz.ListT
-import scalaz.std.vector.vectorInstance
-import scalaz.syntax.apply.^
-import scalaz.syntax.bind.ToBindOps
-import scalaz.syntax.foldable.ToFoldableOps
-import scalaz.syntax.functor.ToFunctorOps
+import cats.implicits.{catsSyntaxApplicativeByName, catsSyntaxApplyOps, catsSyntaxFlatMapOps, toFunctorOps, toTraverseFilterOps}
+import common.rich.func.TuplePLenses.{__1, __2}
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
+import common.TempIList.ListT
 import common.rich.RichFuture.richFuture
 import common.rich.RichT.richT
 import common.rich.RichTime.OrderingLocalDate
@@ -123,15 +115,15 @@ private class SlickNewAlbumStorage @Inject() (
       )
       .map(
         _.view
-          .map(TuplePLenses.tuple2First.modify(extractValue))
-          .map(TuplePLenses.tuple2Second.modify(_.map(_._2).toOptionalModelScore))
+          .map(__1.modify(extractValue))
+          .map(__2.modify(_.map(_._2).toOptionalModelScore))
           .groupBy(_._1.na.artist)
           .view
           .mapValues(_.map(_.swap) |> toNewAlbums)
           .map(_.flatten)
           .map(Function.tupled(ArtistNewAlbums.apply))
           .iterator
-          .toIList,
+          .toList,
       ),
   )
   private def shouldRemoveAlbum(e: Rows): Rep[Boolean] = e.isRemoved || e.isIgnored
@@ -189,7 +181,7 @@ private class SlickNewAlbumStorage @Inject() (
     )
     .listen(e => if (e) scribe.warn(s"<$a> already exists with a different ReconID... skipping"))
   private def isValid(e: NewAlbumRecon): Future[Boolean] =
-    ^(exists(e.reconId), existsWithADifferentReconID(e))(_ neither _)
+    exists(e.reconId).map2(existsWithADifferentReconID(e))(_ neither _)
   override def storeNew(albums: Seq[NewAlbumRecon]): Future[AddedAlbumCount] = {
     val withoutDups = albums
       .groupBy(_.toTuple(_.newAlbum.artist, _.newAlbum.title, _.disambiguation))
@@ -213,7 +205,7 @@ private class SlickNewAlbumStorage @Inject() (
       }
       .toVector
     for {
-      newAlbums <- withoutDups.filterM(isValid)
+      newAlbums <- withoutDups.filterA(isValid)
       result = newAlbums.size
       _ <- db
         .run(
@@ -221,7 +213,7 @@ private class SlickNewAlbumStorage @Inject() (
             .map(_.toTuple(_.reconId, _.album, _.albumType, _.year, _.artist))
             .++=(newAlbums.map(toPartialEntity).ensuring(_.nonEmpty)),
         )
-        .whenMLazy(result > 0)
+        .whenA(result > 0)
         .listenError(scribe.error(s"Failed to store albums: <${newAlbums.mkString("\n")}>", _))
     } yield result
   }
@@ -236,7 +228,7 @@ private class SlickNewAlbumStorage @Inject() (
       albumExists <- db.run(filter.exists.result)
       _ <- Future
         .failed(new IllegalArgumentException(s"Could not find album with ID <${reconID.id}>"))
-        .whenMLazy(albumExists.isFalse)
+        .whenA(albumExists.isFalse)
       _ <- db.run(filter.map(f).update(true))
     } yield ()
   }

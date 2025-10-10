@@ -8,13 +8,11 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.jdk.CollectionConverters._
 
-import scalaz.std.scalaFuture.futureInstance
-import scalaz.std.vector.vectorInstance
-import scalaz.syntax.functor.ToFunctorOps
-import scalaz.syntax.std.tuple.ToTuple2Ops
-import scalaz.syntax.traverse.ToTraverseOps
+import cats.implicits.toTraverseOps
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
-import common.rich.collections.RichSeq._
+import common.rich.RichTuple.richTuple2
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.test.AsyncAuxSpecs
 
 class RateLimitedActorAsyncImplTest extends AsyncFreeSpec with AsyncAuxSpecs with Matchers {
@@ -30,7 +28,7 @@ class RateLimitedActorAsyncImplTest extends AsyncFreeSpec with AsyncAuxSpecs wit
     vector.traverse($ ! _) >| {
       val v = queue.asScala.toVector
       v.map(_._1) shouldReturn vector
-      all(v.map(_._2).pairSliding.map(_.swap.fold(_ - _)).toVector) should be >= limit
+      all(v.map(_._2).pairSliding.map(_.swap.reduce(_ - _)).toVector) should be >= limit
     }
   }
 }

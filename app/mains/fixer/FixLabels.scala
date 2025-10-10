@@ -12,8 +12,7 @@ import org.jaudiotagger.tag.FieldKey
 import scala.annotation.tailrec
 import scala.util.Try
 
-import common.rich.func.MoreTryInstances._
-import common.rich.func.ToMoreMonadErrorOps._
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.io.IODirectory
 import common.rich.RichT.richT

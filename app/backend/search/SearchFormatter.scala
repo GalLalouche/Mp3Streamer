@@ -23,7 +23,7 @@ class SearchFormatter @Inject() (
   private implicit val iec: ExecutionContext = ec
 
   def search(path: String): Future[JsObject] = {
-    val terms = URLDecoder.decode(path, "UTF-8").split(" ").map(_.toLowerCase)
+    val terms = URLDecoder.decode(path, "UTF-8").split(" ").view.map(_.toLowerCase).toVector
     state.search(terms).map { case (songs, albums, artists) =>
       Json.obj("songs" -> songs.jsonify, "albums" -> albums.jsonify, "artists" -> artists.jsonify)
     }

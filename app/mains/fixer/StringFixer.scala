@@ -11,13 +11,12 @@ import scala.io.Source
 
 import common.LanguageString._
 import common.rich.RichT._
-import common.rich.collections.RichSeq._
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichOption.richOption
 import common.rich.primitives.RichString._
 
-class StringFixer @Inject() (detectLanguage: DetectLanguage) extends (String => String) {
+class StringFixer @Inject() (detectLanguage: DetectLanguage) {
   import StringFixer._
 
   def asciiNormalize(s: String): String = try {
@@ -63,7 +62,7 @@ class StringFixer @Inject() (detectLanguage: DetectLanguage) extends (String => 
     // Japanese and Chinese. Life is too short to start asciing those.
     lang == "ja" || lang.startsWith("ch") || lang.startsWith("zh") || lang == "ko"
 
-  override def apply(s: String): String = {
+  def apply(s: String): String = {
     val trimmed = s.replaceAll(AllSpaces, " ").trim
     if (trimmed.hasHebrew)
       trimmed
@@ -80,7 +79,7 @@ class StringFixer @Inject() (detectLanguage: DetectLanguage) extends (String => 
           fixWord(word, forceCapitalization = wordBefore.trim.matches(Delimiters))
         }
         .mkString("")
-        .replaceAll(ConjuctiveN, " n'")
+        .replaceAll(ConjunctiveN, " n'")
         .replaceAll(Vs, " vs. ")
     }
   }
@@ -192,7 +191,7 @@ object StringFixer {
   private val RomanPattern = Pattern.compile("[IVXMLivxml]+")
   private val MixedCapsPattern = Pattern.compile(".*[A-Z].*")
   private val DottedAcronymPattern = Pattern.compile("(\\w\\.)+")
-  private val ConjuctiveN = Pattern.compile(" '?[Nn]'")
+  private val ConjunctiveN = Pattern.compile(" '?[Nn]'")
   private val Vs = Pattern.compile(""" vs\.? """, Pattern.CASE_INSENSITIVE)
   // \p{Z}: any kind of whitespace or invisible separator.
   private val AllSpaces = Pattern.compile("""\p{Z}""")

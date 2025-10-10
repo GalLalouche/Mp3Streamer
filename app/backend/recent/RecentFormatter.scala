@@ -6,9 +6,8 @@ import play.api.libs.json.{JsNull, JsValue}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
-import scalaz.Scalaz.{optionInstance, ToBindOps}
+import cats.implicits.toFlatMapOps
+import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 import common.json.ToJsonableOps._
 
@@ -39,6 +38,6 @@ class RecentFormatter @Inject() (
   def all(amount: Int): Future[JsValue] = Future(recentAlbums.all(amount)).map(_.jsonify)
   def double: Future[JsValue] = double(10)
   def double(amount: Int): Future[JsValue] = Future(recentAlbums.double(amount)).map(_.jsonify)
-  def updateLast(): Future[JsValue] = recentAlbums.last.>>!(lastAlbumState.set).map(_.jsonify)
+  def updateLast(): Future[JsValue] = recentAlbums.last.flatTap(lastAlbumState.set).map(_.jsonify)
   def getLastState: JsValue = lastAlbumState.get().mapHeadOrElse(_.jsonify, JsNull)
 }

@@ -11,8 +11,6 @@ import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-
 import common.concurrency.{FutureIterant, Iterant}
 import common.io.{IODirectory, IOFile}
 import common.rich.RichFuture.richFuture
@@ -48,7 +46,7 @@ private[mains] class DownloadCover @Inject() (
         ImageType -> Square,
         "q" -> s"${album.artistName} ${album.title}",
       )
-    val urls = imageFinder(s"${album.artistName} ${album.title}")
+    val urls = imageFinder(s"${album.artistName} ${album.title}", maxCalls = 10)
     val locals = LocalImageFetcher(IODirectory(albumDir))
     selectImage(locals ++ urls).map {
       case Selected(img) => fileMover(img) _
@@ -95,8 +93,7 @@ private object DownloadCover {
 
   def main(args: Array[String]): Unit = {
     import common.rich.RichFuture._
-    import common.rich.func.ToMoreMonadErrorOps._
-    import scalaz.std.scalaFuture.futureInstance
+    import common.rich.func.kats.ToMoreMonadErrorOps._
     val injector = Guice.createInjector(MainsModule)
     val folder = Directory(IOUtils.decodeFile(args.mkString(" ")))
     println("Downloading cover image for " + folder.path)

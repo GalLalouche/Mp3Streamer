@@ -1,11 +1,9 @@
 package backend.module
 
+import common.io.WSAliases._
 import java.net.URI
-
 import org.apache.pekko.util.ByteString
 import play.api.libs.ws.WSCookie
-
-import common.io.WSAliases._
 
 case class FakeWSResponse(
     allHeaders: Map[String, Seq[String]] = Map(),

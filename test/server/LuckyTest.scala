@@ -2,13 +2,12 @@ package server
 
 import backend.module.FakeWSResponse
 import com.google.inject.Module
+import common.RichUrl
+import common.rich.path.RichFile.richFile
 import org.http4s.Status
 import server.LuckyTest.UrlResult
 import sttp.client3.UriContext
 import sttp.model.{Header, StatusCode}
-
-import common.RichUrl
-import common.rich.path.RichFile.richFile
 
 private class LuckyTest(module: Module) extends HttpServerSpecs(module: Module) {
   protected override def baseTestModule = super.baseTestModule.copy(_urlToResponseMapper = {

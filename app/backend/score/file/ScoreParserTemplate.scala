@@ -7,8 +7,7 @@ import backend.score.file.ScoreParserTemplate.isDefault
 import scala.{util => su}
 import scala.util.{Failure, Success, Try}
 
-import common.rich.func.MoreTryInstances._
-import scalaz.Scalaz.ToApplyOps
+import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 
 import common.rich.RichEnumeratum.richEnumeratum
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
@@ -19,7 +18,7 @@ private trait ScoreParserTemplate[A] {
   def apply(line: String): Try[(A, OptionalModelScore)] = toTry(line)
 
   protected def prefix: String
-  protected def entity(s: Seq[String]): Try[A]
+  protected def entity(s: Vector[String]): Try[A]
   private def toTry(s: String): su.Try[(A, OptionalModelScore)] = {
     val split = s.split(s" $ScoreSeparator ")
     if (split.length != 2)
@@ -40,18 +39,20 @@ private trait ScoreParserTemplate[A] {
   }
 
   private val prefixOrg = "\\**".r.pattern
-  private def prepare(s: String): Try[Seq[String]] = {
+  private def prepare(s: String): Try[Vector[String]] = {
     val stripped = s.trim.removeAll(prefixOrg).trim
     val p = s"$prefix $PrefixSeparator"
     if (stripped.startsWith(p))
-      Success(stripped.drop(p.length).split(OrgScoreFormatter.SectionSeparator).map(_.trim))
+      Success(
+        stripped.drop(p.length).split(OrgScoreFormatter.SectionSeparator).map(_.trim).toVector,
+      )
     else
       Failure(new Exception(s"Line '$stripped' did not begin with '$p'"))
   }
 }
 
 private object ScoreParserTemplate {
-  // Necessary for the below implementatio of isDefault to be correct.
-  assert(ModelScore.values.fornone(_.entryName.head.toLower == 'd'));
+  // Necessary for the below implementation of isDefault to be correct.
+  assert(ModelScore.values.fornone(_.entryName.head.toLower == 'd'))
   def isDefault(s: String): Boolean = s.headOption.exists(_.toLower == 'd')
 }

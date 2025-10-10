@@ -10,10 +10,9 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.RichOptionT._
-import common.rich.func.ToMoreMonadErrorOps.{toMoreMonadErrorOps, _}
-import scalaz.{-\/, \/-, OptionT}
+import cats.data.OptionT
+import common.rich.func.kats.RichOptionT._
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.concurrency.DaemonExecutionContext
 import common.rich.RichT._
@@ -26,12 +25,11 @@ import common.rich.RichT._
     DaemonExecutionContext(this.simpleName, n = 10, keepAlive = 1.minute)
 
   private def getReconId(artist: Artist): OptionT[Future, ReconID] = reconciler(artist)
-    // TODO remove this explicit type annotation once we move on to cats
-    .mapEitherMessage[ReconID] {
-      case Failure(e) => -\/("Failed online recon")
-      case Success(StoredNull) => -\/("No recon")
+    .mapEitherMessage {
+      case Failure(_) => Left("Failed online recon")
+      case Success(StoredNull) => Left("No recon")
       case Success(HasReconResult(reconId, isIgnored)) =>
-        if (isIgnored) -\/("Ignored") else \/-(reconId)
+        if (isIgnored) Left("Ignored") else Right(reconId)
     }
     .foldEither(
       _.fold(

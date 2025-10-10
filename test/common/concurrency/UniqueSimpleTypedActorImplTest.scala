@@ -1,14 +1,11 @@
 package common.concurrency
 
+import common.test.AuxSpecs
 import java.util.concurrent.Semaphore
-
 import org.scalatest.{FreeSpec, OneInstancePerTest}
-
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.language.postfixOps
-
-import common.test.AuxSpecs
 
 class UniqueSimpleTypedActorImplTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
   "unique" in {

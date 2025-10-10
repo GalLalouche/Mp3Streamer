@@ -1,11 +1,10 @@
 package backend.search
 
+import alleycats.std.iterable.alleycatsStdIterableTraverse
 import backend.search.WeightedIndexable.ops._
 
-import common.rich.func.MoreIterableInstances._
-import scalaz.Semigroup
-import scalaz.std.set.setMonoid
-import scalaz.syntax.functor.ToFunctorOps
+import cats.Semigroup
+import cats.implicits.toFunctorOps
 
 import common.ds.Trie
 import common.rich.collections.RichMap._
@@ -20,12 +19,12 @@ import common.rich.collections.RichTraversableOnce._
  */
 private object WeightedIndexBuilder {
   private implicit object DoubleSemi extends Semigroup[Double] {
-    override def append(f1: Double, f2: => Double): Double = f1 + f2
+    override def combine(f1: Double, f2: Double): Double = f1 + f2
   }
 
   def buildIndexFor[T: WeightedIndexable](ts: Iterable[T]): Index[T] = {
     val documentsToScoredTerms: IterableOnce[(T, (String, Double))] =
-      ts.view.flatMap(e => e.terms.strengthL(e))
+      ts.view.flatMap(e => e.terms.tupleLeft(e))
     val scoredDocumentByTerm: Map[String, Seq[(T, Double)]] = documentsToScoredTerms
       .aggregateMap(_._2._1, e => Set(e._1 -> e._2._2))
       .properMapValues(_.toVector.sortBy(_._2))

@@ -25,12 +25,12 @@ resolvers ++= Seq(
   ),
   Resolver.mavenLocal,
 )
-val akkaVersion = "2.6.1"
-val monocleVersion = "2.1.0"
 val catsVersion = "2.13.0"
-val scalazVersion = "7.2.36"
+val fs2Version = "3.12.2"
 val guiceVersion = "7.0.0"
+val monocleVersion = "2.1.0"
 val playStandaloneVersion = "3.0.8"
+val scalazVersion = "7.2.36"
 val scribeVersion = "3.15.2"
 libraryDependencies ++= Seq(
   // noinspection SbtDependencyVersionInspection (Newer JDK version).
@@ -47,7 +47,6 @@ libraryDependencies ++= Seq(
   "com.outr" %% "scribe" % scribeVersion,
   "com.outr" %% "scribe-slf4j" % scribeVersion,
   "com.typesafe" % "config" % "1.4.3",
-  "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.slick" %% "slick" % "3.3.3",
   "commons-validator" % "commons-validator" % "1.9.0",
   "io.lemonlabs" %% "scala-uri" % "3.0.0",
@@ -58,22 +57,21 @@ libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-io" % "1.3.2",
   "org.apache.commons" % "commons-lang3" % "3.17.0",
   "org.jsoup" % "jsoup" % "1.12.1",
+  "org.openjfx" % "javafx" % "21.0.6",
+  "org.openjfx" % "javafx-controls" % "21.0.6",
   "org.playframework" %% "play-ahc-ws-standalone" % playStandaloneVersion,
   "org.playframework" %% "play-json" % "3.0.4",
   "org.playframework" %% "play-ws-standalone-json" % playStandaloneVersion,
   "org.scala-lang.modules" %% "scala-swing" % "3.0.0",
-  "org.openjfx" % "javafx" % "21.0.6",
-  "org.openjfx" % "javafx-controls" % "21.0.6",
   "org.scalafx" %% "scalafx" % "24.0.2-R36",
   "org.scalatest" %% "scalatest" % "3.0.9",
-  "org.scalaz" %% "scalaz-concurrent" % scalazVersion,
-  "org.scalaz" %% "scalaz-core" % scalazVersion,
+  "org.typelevel" %% "alleycats-core" % catsVersion,
+  "org.typelevel" %% "cats-core" % catsVersion,
   "org.xerial" % "sqlite-jdbc" % "3.49.0.0",
-  ("org.me" %% "scalacommon" % "1.0").changing(),
+  ("org.me" %% "scalacommon" % "2.0").changing(),
   // Test stuff
   "com.softwaremill.sttp.client3" %% "core" % "3.10.3" % Test,
   "com.softwaremill.sttp.client3" %% "play2-json" % "3.10.3" % Test,
-  "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
   "org.mockito" % "mockito-core" % "5.15.2" % Test,
   "org.scalacheck" %% "scalacheck" % "1.18.1" % Test,
 

@@ -1,6 +1,6 @@
 import scala.concurrent.Future
 
-import scalaz.OptionT
+import cats.data.OptionT
 
 package object backend {
   type FutureOption[A] = OptionT[Future, A]

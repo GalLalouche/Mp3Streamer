@@ -10,7 +10,7 @@ import songs.selector.{FollowingSong, SongSelectorState}
 
 import scala.language.implicitConversions
 
-import scalaz.Reader
+import cats.data.Reader
 
 import common.io.PathRefFactory
 import common.json.JsonWriteable

@@ -1,6 +1,5 @@
 package http4s.routes
 
-import cats.effect.IO
 import com.google.inject.Inject
 import http4s.routes.Http4sUtils.{decodePath, fromFuture, shouldEncodeMp3}
 import org.http4s.{Header, Headers, HttpRoutes, MediaType, Response, Status}
@@ -9,6 +8,8 @@ import org.http4s.headers.{`Content-Length`, `Content-Type`}
 import org.http4s.implicits.http4sSelectSyntaxOne
 import org.typelevel.ci.CIString
 import stream.{StreamFormatter, StreamResult}
+
+import cats.effect.IO
 
 import common.rich.collections.RichTraversableOnce._
 
@@ -20,8 +21,8 @@ private class StreamHttpRoutes @Inject() ($ : StreamFormatter) {
 
   private def toResponse(sr: StreamResult): Response[IO] = Response[IO](
     body = fs2.io.readInputStream(IO.pure(sr.inputStream), 4096),
-    status = Status.fromInt(sr.status).right.get,
+    status = Status.fromInt(sr.status).toOption.get,
     headers = Headers(sr.headers.view.map(Header.ToRaw.keyValuesToRaw).toVector: _*)
       .put(`Content-Length`(sr.contentLength).toRaw1),
-  ).withContentType(`Content-Type`(MediaType.parse(sr.mimeType).right.get))
+  ).withContentType(`Content-Type`(MediaType.parse(sr.mimeType).toOption.get))
 }

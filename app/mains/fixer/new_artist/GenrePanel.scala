@@ -9,9 +9,9 @@ import rx.lang.scala.{Observable, Subject}
 import scala.swing.{GridBagPanel, Orientation}
 import scala.swing.GridBagPanel.Anchor
 
-import common.rich.func.MoreTraverseInstances._
-import scalaz.Scalaz.{ToBindOps, ToFunctorOps, ToTraverseOps}
-import scalaz.State
+import cats.data.State
+import cats.implicits.{catsSyntaxFlatMapOps, toFunctorOps, toTraverseOps}
+import common.rich.func.kats.RichState.richState
 
 import common.rich.RichT.lazyT
 import common.rich.RichTuple.richSameTuple2
@@ -132,9 +132,7 @@ private[fixer] class GenrePanel private (
       }
       boxes.iterator.zipWithIndex
         .filter(_._1.isFuzzyMatch(s))
-        // TODO add pairSliding to RichIterator
-        .sliding(2)
-        .map(e => e(0) -> e(1))
+        .pairSliding
         .map(_.map(_._2))
         .mapFirst(nextSelection)
         .foreach(select)
@@ -196,7 +194,7 @@ object GenrePanel {
       .traverse($.addSubGenres)
       .>>(bigGenreDirs.traverse($.addBigSizeIcon))
       .>>($.addFilter())
-      .>|($)
+      .as($)
       .eval(0)
   }
 }

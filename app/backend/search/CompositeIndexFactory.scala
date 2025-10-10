@@ -5,7 +5,6 @@ import models.{AlbumDir, ArtistDir, ModelJsonable, Song}
 
 import scala.collection.mutable
 
-import common.rich.func.MoreTraverseInstances.traversableTraverse
 import monocle.Monocle.toApplyLensOps
 import monocle.Traversal
 

@@ -1,9 +1,8 @@
 package backend.recon
 
+import common.test.AuxSpecs
 import org.scalatest.FreeSpec
 import org.scalatest.OptionValues.convertOptionToValuable
-
-import common.test.AuxSpecs
 
 class ReconcilableFactoryTest extends FreeSpec with AuxSpecs {
   "Parsing song info from file path" - {

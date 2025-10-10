@@ -7,14 +7,14 @@ import playlist.PlaylistModel._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.MoreMapInstances.basicMonoid
-import common.rich.func.ToMoreMonoidOps.toMoreMonoidOptionOps
+import common.rich.func.kats.MoreMapInstances.mapEmpty
 
 import common.io.JsonableSaver
 import common.json.{Jsonable, OJsonable}
 import common.json.OJsonable.MapJsonable
 import common.json.ToJsonableOps._
 import common.rich.RichT.richT
+import common.rich.primitives.RichOption.richOption
 
 private class PlaylistModel @Inject() (
     ec: ExecutionContext,
@@ -29,7 +29,7 @@ private class PlaylistModel @Inject() (
   def remove(id: String): Future[Boolean] = modify(_.toTuple(_.contains(id), _ - id))
 
   private def loadOrZero: Future[State] =
-    Future(saver.loadObjectOpt[PlaylistModel.PlaylistMap].map(_.s).getOrZero)
+    Future(saver.loadObjectOpt[PlaylistModel.PlaylistMap].map(_.s).getOrEmpty)
   private def modify[A](f: State => (A, State)): Future[A] = loadOrZero.map { s =>
     val (result, newState) = f(s)
     saver.saveObject(PlaylistMap(newState))

@@ -30,7 +30,7 @@ class GoogleSearch @Inject() private (
       _.url(GoogleSearch.Url)
         .addQueryStringParameters(params: _*)
         .addHttpHeaders("accept" -> "application/json")
-        .get,
+        .get(),
     ).map(_.jsonObject)
   }
 }

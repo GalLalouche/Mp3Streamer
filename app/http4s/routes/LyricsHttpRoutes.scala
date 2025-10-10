@@ -1,12 +1,13 @@
 package http4s.routes
 
 import backend.lyrics.LyricsFormatter
-import cats.effect.IO
 import com.google.inject.Inject
 import http4s.routes.Http4sUtils.{decodePath, fromFuture, parseText}
 import io.lemonlabs.uri.Url
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
+
+import cats.effect.IO
 
 private class LyricsHttpRoutes @Inject() ($ : LyricsFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {

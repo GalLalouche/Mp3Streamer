@@ -1,11 +1,10 @@
 package songs
 
 import backend.module.TestModuleConfiguration
+import common.test.AuxSpecs
 import models.{FakeModelFactory, FakeModelJsonable}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.FreeSpec
-
-import common.test.AuxSpecs
 
 class SongGroupsTest extends FreeSpec with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory

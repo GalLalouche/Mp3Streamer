@@ -1,19 +1,24 @@
 package common.concurrency
 
-import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
-import scalaz.{Monad, Need, OptionT}
-import scalaz.Scalaz.ToFunctorOps
+import cats.{Eval, Monad}
+import cats.data.OptionT
+import cats.implicits.catsSyntaxFunctorTuple2Ops
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.rich.RichT.richT
 
+/**
+ * This has the benefit over using something like [[LinkedBlockingQueue]], since it doesn't take up
+ * a thread blocking until the queue opens up!
+ */
 private class PrefetchingIterant[F[_]: Monad, A](
     private val head: OptionT[F, A],
-    private val tail: Need[OptionT[F, PrefetchingIterant[F, A]]],
+    private val tail: Eval[OptionT[F, PrefetchingIterant[F, A]]],
     capacity: Int,
 ) extends Iterant[F, A] {
-  private def forceEvaluation(n: Int): Unit = if (n > 0)
-    tail.value.listen(_.forceEvaluation(n - 1))
-  override def step = for {
+  // Note: this probably isn't stack safe, but for small capacities this shouldn't matter.
+  private def forceEvaluation(n: Int): Unit = if (n > 0) tail.value.listen(_.forceEvaluation(n - 1))
+  override lazy val step: Step[A] = for {
     h <- head
     t <- tail.value
   } yield {
@@ -30,7 +35,7 @@ private object PrefetchingIterant {
       val (h, t) = i.step.unzip
       new PrefetchingIterant(
         h,
-        Need(t).map(_.map(preevaluating(_, initial - 1))),
+        Eval.later(t).map(_.map(preevaluating(_, initial - 1))),
         capacity,
       ).<|(_.forceEvaluation(initial - 1))
     }

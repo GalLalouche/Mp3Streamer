@@ -24,7 +24,7 @@ class MusicFinderTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
 
   "getSongFilters" - {
     "find nothing" - {
-      def verifyIsEmpty() = mf.getSongFiles shouldBe 'empty
+      def verifyIsEmpty() = mf.getSongFiles shouldBe empty
       "when subdirs are empty" in {
         root.addSubDir("a").addSubDir("b").addSubDir("c")
         root.addSubDir("b").addSubDir("b").addSubDir("c")

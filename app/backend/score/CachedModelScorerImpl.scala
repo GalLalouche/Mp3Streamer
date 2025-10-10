@@ -9,10 +9,9 @@ import models.SongTagParser
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
 
-import common.rich.func.ToTransableOps.toHoistIdOps
-import scalaz.Id.Id
+import cats.Id
+import common.rich.func.kats.ToTransableOps.toHoistIdOps
 
-import common.ds.RichIList.richIList
 import common.io.FileRef
 import common.rich.RichFuture.richFuture
 import common.rich.RichT.richT
@@ -34,10 +33,10 @@ private class CachedModelScorerImpl @Inject() (
   private implicit val iec: ExecutionContext = ec
 
   private lazy val songScores: Map[YearlessTrack, ModelScore] =
-    songScorer.loadAll.run.get.toFuckingMap
+    songScorer.loadAll.value.get.toMap
   private lazy val albumScores: Map[YearlessAlbum, ModelScore] =
-    albumScorer.loadAll.run.get.toFuckingMap
-  private lazy val artistScores: Map[Artist, ModelScore] = artistScorer.loadAll.run.get.toFuckingMap
+    albumScorer.loadAll.value.get.toMap
+  private lazy val artistScores: Map[Artist, ModelScore] = artistScorer.loadAll.value.get.toMap
   private val aux = new CompositeScorer[Id](
     explicitScore(_).toModelScore.hoistId,
     explicitScore(_).toModelScore.hoistId,

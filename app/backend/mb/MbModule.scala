@@ -8,7 +8,7 @@ import net.codingwell.scalaguice.ScalaPrivateModule
 
 import scala.concurrent.ExecutionContext
 
-import scalaz.OptionT
+import cats.data.OptionT
 
 object MbModule extends ScalaPrivateModule {
   override def configure(): Unit = {

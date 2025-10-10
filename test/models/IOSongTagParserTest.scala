@@ -1,14 +1,12 @@
 package models
 
 import better.files.FileExtensions
+import common.test.{AuxSpecs, DirectorySpecs}
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 import org.scalatest.FreeSpec
 import org.scalatest.OptionValues.convertOptionToValuable
-
 import scala.concurrent.duration.DurationInt
-
-import common.test.{AuxSpecs, DirectorySpecs}
 
 class IOSongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
   private def getSong(location: String) = getResourceFile(location)

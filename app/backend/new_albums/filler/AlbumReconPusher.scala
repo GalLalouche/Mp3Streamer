@@ -6,9 +6,8 @@ import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
-import scalaz.Scalaz.{ToBindOps, ToFunctorOps}
+import cats.implicits.{catsSyntaxFlatMapOps, toFunctorOps}
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.rich.RichFuture._
 
@@ -27,7 +26,7 @@ private class AlbumReconPusher @Inject() (
     isValid
       .filterWithMessage(identity, s"Could not validate <$album> with ID <$musicBrainzId>")
       .>>(storage.store(album, HasReconResult(reconID, isIgnored = false)))
-      .>|(println("done"))
+      .as(println("done"))
       .get
   }
 

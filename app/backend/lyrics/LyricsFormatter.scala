@@ -9,8 +9,7 @@ import models.{IOSong, Song}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 class LyricsFormatter @Inject() (ec: ExecutionContext, backend: LyricsCache) {
   private implicit val iec: ExecutionContext = ec
@@ -20,7 +19,7 @@ class LyricsFormatter @Inject() (ec: ExecutionContext, backend: LyricsCache) {
       .find(IOSong.read(new File(path)))
       .map(LyricsFormatter.toString)
       // .listenError(_.printStackTrace())
-      .orElse("Failed to get lyrics :(")
+      .orElseFlat("Failed to get lyrics :(")
   def push(path: String, url: Url): Future[String] =
     backend.parse(url, IOSong.read(new File(path))).map {
       case RetrievedLyricsResult.RetrievedLyrics(l) => LyricsFormatter.toString(l)

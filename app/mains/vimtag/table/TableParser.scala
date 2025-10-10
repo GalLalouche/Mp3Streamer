@@ -4,11 +4,10 @@ import java.util.regex.Pattern
 
 import mains.vimtag.{IndividualId3, IndividualParser}
 
-import scalaz.State
-import scalaz.std.vector.vectorInstance
-import scalaz.syntax.bind.ToBindOps
-import scalaz.syntax.functor.ToFunctorOps
-import scalaz.syntax.traverse._
+import cats.data.State
+import cats.implicits.{catsSyntaxFlatMapOps, toTraverseOps}
+import common.rich.func.kats.RichState._
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean._
@@ -23,8 +22,8 @@ private object TableParser extends IndividualParser {
     lazy val updateDiscNumber: State[CurrentDiscNumber, CurrentDiscNumber] =
       discNumber.optFilter(_.nonEmpty) match {
         case None => State.get
-        case Some(v) if v.endsWith("->") => State.put(Option(v.dropRight(2))) >> State.get
-        case Some(v) => State.put[CurrentDiscNumber](None) >| Option(v)
+        case Some(v) if v.endsWith("->") => State.set(Option(v.dropRight(2))) >> State.get
+        case Some(v) => State.set[CurrentDiscNumber](None) >| Option(v)
       }
     def throwOnEmpty(tag: String, s: String) =
       s.ifNot(_.nonEmpty).thenThrow(new NoSuchElementException(s"key not found for $file: $tag"))

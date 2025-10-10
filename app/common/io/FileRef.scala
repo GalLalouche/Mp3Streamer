@@ -45,7 +45,7 @@ trait FileRef extends PathRef {
   final def lines: Seq[String] = {
     // Splitting an empty string returns [""].
     val content = readAll
-    if (content.isEmpty) Nil else content.split("\n")
+    if (content.isEmpty) Vector.empty else content.split("\n").toVector
   }
   def inputStream: InputStream
 

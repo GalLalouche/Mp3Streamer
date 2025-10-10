@@ -1,11 +1,9 @@
 package common
 
-import org.mockito.{ArgumentCaptor, Mockito}
-import org.mockito.Mockito.atLeast
-
-import scala.jdk.CollectionConverters.ListHasAsScala
-
 import common.rich.primitives.RichClass._
+import org.mockito.Mockito.atLeast
+import org.mockito.{ArgumentCaptor, Mockito}
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 /** More mockito sugar. */
 object MockitoSyrup {

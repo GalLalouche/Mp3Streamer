@@ -3,8 +3,7 @@ package common.concurrency
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
 
-import common.rich.func.BetterFutureInstances._
-import scalaz.syntax.functor.ToFunctorOps
+import cats.implicits.toFunctorOps
 
 import common.rich.RichFuture
 

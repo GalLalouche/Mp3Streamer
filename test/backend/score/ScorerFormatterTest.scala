@@ -12,9 +12,7 @@ import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext
 
-import common.rich.func.BetterFutureInstances._
-import scalaz.Scalaz.{ToBindOps, ToTraverseOpsUnapply}
-import scalaz.std.vector.vectorInstance
+import cats.implicits.{catsSyntaxFlatMapOps, toTraverseOps}
 
 import common.io.MemoryRoot
 import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
@@ -41,7 +39,8 @@ class ScorerFormatterTest
 
   // TODO extract these to a common method, accepting a bunch of tables
   protected override def beforeEach() =
-    Vector(artists, artistScores, albumScores, songScores).traverse(_.utils.clearOrCreateTable())
+    artists.utils.clearOrCreateTable() >> // Order is important!
+      Vector(artistScores, albumScores, songScores).traverse(_.utils.clearOrCreateTable())
 
   private val path = song.file.path
   "getScores" - {

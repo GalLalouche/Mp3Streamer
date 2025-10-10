@@ -12,9 +12,8 @@ import com.google.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.Ordered.orderingToOrdered
 
-import common.rich.func.BetterFutureInstances.betterFutureInstances
-import common.rich.func.ToMoreFunctorOps.toMoreFunctorOps
-import scalaz.Scalaz.ToBindOps
+import cats.implicits.{catsSyntaxFlatMapOps, catsSyntaxIfM}
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.concurrency.SimpleTypedActor
 import common.rich.RichTime.RichLocalDateTime

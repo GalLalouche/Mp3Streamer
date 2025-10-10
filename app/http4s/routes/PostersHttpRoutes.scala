@@ -1,13 +1,12 @@
 package http4s.routes
 
-import cats.effect.IO
 import com.google.inject.Inject
 import musicfinder.PostersFormatter
 import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 
-import common.rich.func.ToMoreFoldableOps.toMoreFoldableOps
-import scalaz.Scalaz.optionInstance
+import cats.effect.IO
+import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 private class PostersHttpRoutes @Inject() ($ : PostersFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] { case req @ GET -> path =>

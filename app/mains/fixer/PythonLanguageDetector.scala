@@ -12,7 +12,7 @@ import scala.io.Source
 import scala.util.Try
 import scala.util.control.Breaks.{break, breakable}
 
-import scalaz.Scalaz.{eitherInstance, ToBifunctorOps}
+import cats.syntax.either.catsSyntaxEither
 
 import common.rich.RichInputStream.richInputStream
 import common.rich.RichT.richT
@@ -75,7 +75,7 @@ private class PythonLanguageDetector private (timeout: Duration) {
               if (shouldTerminate) {
                 scribe.trace(s"Terminating Python language detection process after $timeout idle")
                 $.destroy()
-                break
+                break()
               }
             }
         }

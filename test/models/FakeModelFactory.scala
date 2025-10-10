@@ -1,14 +1,11 @@
 package models
 
+import common.io.MemoryRoot
 import java.util.UUID
 import java.util.concurrent.TimeUnit
-
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
-
 import scala.concurrent.duration.Duration
-
-import common.io.MemoryRoot
 
 class FakeModelFactory(root: MemoryRoot = new MemoryRoot) {
   def album(

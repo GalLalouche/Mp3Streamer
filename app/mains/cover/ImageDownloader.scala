@@ -9,8 +9,7 @@ import mains.SwingUtils._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.DurationInt
 
-import common.rich.func.BetterFutureInstances._
-import common.rich.func.ToMoreMonadErrorOps._
+import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.io.{DirectoryRef, FileRef, InternetTalker}
 import common.io.RichWSRequest._

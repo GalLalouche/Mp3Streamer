@@ -3,10 +3,7 @@ package formatter
 import com.google.inject.Inject
 import models.{AlbumDir, ModelJsonable}
 
-import common.rich.func.MoreTraverseInstances._
-import scalaz.Scalaz.ToFunctorOps
-import scalaz.std.option.optionInstance
-import scalaz.syntax.traverse.ToTraverseOps
+import cats.implicits.{toFunctorOps, toTraverseOps}
 
 import common.json.{JsonableOverrider, OJsonable}
 import common.json.RichJson._
@@ -33,7 +30,7 @@ private object ControllerAlbumDirJsonifier {
   // If not all songs have a disc number, returns None (i.e., ignores albums with bonus disc only).
   private def discNumbers(a: AlbumDir): Option[Seq[String]] =
     a.songs
-      .traverse(s => s.discNumber.strengthR(s.trackNumber))
+      .traverse(s => s.discNumber.tupleRight(s.trackNumber))
       // Sort disc numbers by track order.
       .map(_.sortBy(_._2).map(_._1).distinct)
 }
