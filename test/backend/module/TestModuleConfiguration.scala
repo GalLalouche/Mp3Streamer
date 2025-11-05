@@ -1,22 +1,25 @@
 package backend.module
 
+import java.util.UUID
+
 import backend.logging.ScribeUtils
 import backend.storage.DbProvider
-import com.google.inject.util.Modules
 import com.google.inject.{Guice, Module, Provides}
-import common.guice.RichModule.richModule
-import common.io.WSAliases._
-import common.io.{BaseDirectory, DirectoryRef, MemoryRoot, PathRefFactory, RootDirectory}
-import common.rich.RichT._
+import com.google.inject.util.Modules
 import io.lemonlabs.uri.Url
-import java.util.UUID
 import models.ModelJsonable.SongParser
 import models.SongTagParser
 import musicfinder.PosterLookup
 import net.codingwell.scalaguice.ScalaModule
-import scala.concurrent.ExecutionContext
 import slick.jdbc.{H2Profile, JdbcProfile}
 import slick.util.AsyncExecutor
+
+import scala.concurrent.ExecutionContext
+
+import common.guice.RichModule.richModule
+import common.io.{BaseDirectory, DirectoryRef, MemoryRoot, PathRefFactory, RootDirectory}
+import common.io.WSAliases._
+import common.rich.RichT._
 
 // It's a case class so its copy constructor could be used by clients in order to configure it.
 case class TestModuleConfiguration(
@@ -57,7 +60,7 @@ case class TestModuleConfiguration(
           bind[DbProvider].toInstance(new DbProvider {
             override lazy val profile: JdbcProfile = H2Profile
             override lazy val db: profile.backend.DatabaseDef = {
-              val dbId = System.identityHashCode(this) + UUID.randomUUID().toString
+              val dbId = s"${System.identityHashCode(this)}${UUID.randomUUID().toString}"
               profile.api.Database.forURL(
                 url = s"jdbc:h2:mem:test$dbId;DB_CLOSE_DELAY=-1",
                 executor = AsyncExecutor.default("Testing", 20),

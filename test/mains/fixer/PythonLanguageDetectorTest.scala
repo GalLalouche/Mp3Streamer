@@ -12,7 +12,7 @@ class PythonLanguageDetectorTest extends AnyFreeSpec with AuxSpecs {
   "Single process" - {
     lazy val $ = PythonLanguageDetector.create(1.minute)
     // TODO Proper
-    def detect(s: String) = $.detect(s).right.value
+    def detect(s: String) = $.detect(s).value
     "Hebrew" in { detect("דגשדגשדגשדג") shouldReturn "he" }
     "Japanese" in { detect("センチメートル") shouldReturn "ja" }
     "Chinese" in { detect("汉英词典") shouldReturn "zh-cn" }
@@ -24,7 +24,7 @@ class PythonLanguageDetectorTest extends AnyFreeSpec with AuxSpecs {
 
   "Multiple processes" - {
     lazy val $ = PythonLanguageDetector.create(1.millisecond)
-    def detect(s: String) = $.detect(s).right.value
+    def detect(s: String) = $.detect(s).value
     "Hebrew" taggedAs Slow in { detect("דגשדגשדגשדג") shouldReturn "he" }
     "Japanese" taggedAs Slow in { detect("センチメートル") shouldReturn "ja" }
     "Chinese" taggedAs Slow in { detect("汉英词典") shouldReturn "zh-cn" }
