@@ -145,8 +145,9 @@ function updateScore(song: Song, score: ScoreResult): void {
         option.attr("selected", "selected")
       result.append(option)
     }
-    result.attr('source', key.capitalize()).css("margin-left", "20px")
-    return div().append(span(`${key}`)).append(result).on('keydown', function (event) {
+    const keyCap = key.capitalize()
+    result.attr('source', keyCap).css("margin-left", "12px")
+    return div().append(span(`${keyCap}`)).append(result).on('keydown', function (event) {
       // Prevent keys from changing the score, as sometimes things like pausing/unpausing can
       // accidentally change the score!
       event.preventDefault()
