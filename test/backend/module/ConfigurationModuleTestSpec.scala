@@ -1,13 +1,12 @@
 package backend.module
 
 import com.google.inject.{Guice, Injector, Module}
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers._
 
-trait ConfigurationModuleTestSpec extends FreeSpec with Matchers {
+trait ConfigurationModuleTestSpec extends AnyFreeSpec {
   protected def allRequiredBindingsSatisfied(configName: String, i: => Injector): Unit =
-    configName in {
-      noException shouldBe thrownBy(i)
-    }
+    configName in { noException shouldBe thrownBy(i) }
 
   protected def allRequiredBindingsSatisfied(configName: String, m: Module): Unit =
     allRequiredBindingsSatisfied(configName, Guice.createInjector(m))

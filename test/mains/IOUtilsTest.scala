@@ -2,9 +2,9 @@ package mains
 
 import common.io.MemoryRoot
 import common.test.AuxSpecs
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class IOUtilsTest extends FreeSpec with AuxSpecs {
+class IOUtilsTest extends AnyFreeSpec with AuxSpecs {
   "decode" in {
     val dir = new MemoryRoot().addSubDir("foo").addSubDir("bar")
     val target = dir.addFile("mאo")

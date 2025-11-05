@@ -4,9 +4,9 @@ import backend.module.TestModuleConfiguration
 import common.test.AuxSpecs
 import models.{FakeModelFactory, FakeModelJsonable}
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class SongGroupsTest extends FreeSpec with AuxSpecs {
+class SongGroupsTest extends AnyFreeSpec with AuxSpecs {
   private val fakeModelFactory = new FakeModelFactory
   private val fakeJsonable = new FakeModelJsonable
   import fakeJsonable._

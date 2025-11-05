@@ -2,9 +2,9 @@ package mains.vimtag
 
 import common.test.AuxSpecs
 import mains.vimtag.Flag.RemoveFeat
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class FlagTest extends FreeSpec with AuxSpecs {
+class FlagTest extends AnyFreeSpec with AuxSpecs {
   "RemoveFeat" - {
     "Does nothing to a title with no Feat." in {
       RemoveFeat.removeFeat("Foo Bar") shouldReturn "Foo Bar"

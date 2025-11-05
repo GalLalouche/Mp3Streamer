@@ -5,7 +5,7 @@ import backend.recon.{Album, Artist}
 import common.test.AuxSpecs
 import io.lemonlabs.uri.Url
 import java.time.{LocalDate, Month}
-import org.scalatest.AsyncFreeSpec
+import org.scalatest.freespec.AsyncFreeSpec
 import play.api.libs.json.Json
 import scala.concurrent.Future
 

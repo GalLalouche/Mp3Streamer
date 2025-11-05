@@ -8,7 +8,7 @@ import com.google.inject.{Guice, Module}
 import common.test.AsyncAuxSpecs
 import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.AsyncFreeSpec
+import org.scalatest.freespec.AsyncFreeSpec
 
 abstract class SameHostExpanderSpec extends AsyncFreeSpec with DocumentSpecs with AsyncAuxSpecs {
   protected def module: Module

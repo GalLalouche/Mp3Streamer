@@ -2,9 +2,9 @@ package backend.external
 
 import common.test.AuxSpecs
 import io.lemonlabs.uri.Url
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class HostTest extends FreeSpec with AuxSpecs {
+class HostTest extends AnyFreeSpec with AuxSpecs {
   "fromUrl" - {
     "existing" - {
       "MetalArchives" in {

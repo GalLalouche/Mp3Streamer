@@ -1,10 +1,10 @@
 package backend.recon
 
 import common.test.AuxSpecs
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.OptionValues._
 
-class ReconIDTest extends FreeSpec with AuxSpecs {
+class ReconIDTest extends AnyFreeSpec with AuxSpecs {
   "Invalid" - {
     "nonsense" in {
       ReconID.validate("foobar") shouldReturn None

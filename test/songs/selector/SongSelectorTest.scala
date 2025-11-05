@@ -9,7 +9,8 @@ import models.{FakeModelFactory, MemorySong, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import net.codingwell.scalaguice.ScalaModule
 import org.scalacheck.Arbitrary._
-import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 import common.guice.RichModule.richModule
@@ -17,11 +18,10 @@ import common.io.{DirectoryRef, FileRef}
 import common.test.AuxSpecs
 
 class SongSelectorTest
-    extends FreeSpec
+    extends AnyFreeSpec
     with OneInstancePerTest
     with AuxSpecs
-    with ScalaCheckDrivenPropertyChecks
-    with Matchers {
+    with ScalaCheckDrivenPropertyChecks {
   implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfiguration(minSuccessful = 10, workers = 5)
   private val factory = new FakeModelFactory()

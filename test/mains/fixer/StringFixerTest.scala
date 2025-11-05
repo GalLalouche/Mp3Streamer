@@ -3,10 +3,10 @@ package mains.fixer
 import backend.module.TestModuleConfiguration
 import common.test.AuxSpecs
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.tagobjects.Slow
 
-class StringFixerTest extends FreeSpec with AuxSpecs {
+class StringFixerTest extends AnyFreeSpec with AuxSpecs {
   private val $ = TestModuleConfiguration().injector.instance[StringFixer]
 
   private def verifyFix(original: String, fix: String): Unit = $(original) shouldReturn fix

@@ -3,17 +3,17 @@ package songs.selector
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 import common.test.AuxSpecs
 
 class FollowingSongTest
-    extends FreeSpec
+    extends AnyFreeSpec
     with OneInstancePerTest
     with AuxSpecs
-    with ScalaCheckDrivenPropertyChecks
-    with Matchers {
+    with ScalaCheckDrivenPropertyChecks {
   private val factory = new FakeModelFactory()
   "next song" in {
     val injector = TestModuleConfiguration().injector

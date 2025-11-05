@@ -1,15 +1,19 @@
 package mains.cover.image
 
-import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
-import common.test.AsyncAuxSpecs
 import io.lemonlabs.uri.Url
 import mains.cover.UrlSource
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify}
-import org.scalatest.{AsyncFreeSpec, Succeeded}
+import org.scalatest.Succeeded
+import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatestplus.mockito.MockitoSugar
+
 import scala.concurrent.Future
+
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
+
+import common.test.AsyncAuxSpecs
 
 class ImageAPISearchTest extends AsyncFreeSpec with AsyncAuxSpecs with MockitoSugar {
   private val imageApiFetcher = mock[ImageAPIFetcher]

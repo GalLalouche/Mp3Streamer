@@ -3,7 +3,8 @@ package common.concurrency
 import java.util.concurrent.Semaphore
 
 import backend.logging.ScribeUtils
-import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.freespec.AsyncFreeSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps

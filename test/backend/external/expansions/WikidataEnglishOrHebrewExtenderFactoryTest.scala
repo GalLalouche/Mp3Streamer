@@ -3,9 +3,9 @@ package backend.external.expansions
 import backend.external.{BaseLink, DocumentSpecs, Host}
 import common.rich.collections.RichTraversableOnce._
 import io.lemonlabs.uri.Url
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class WikidataEnglishOrHebrewExtenderFactoryTest extends FreeSpec with DocumentSpecs {
+class WikidataEnglishOrHebrewExtenderFactoryTest extends AnyFreeSpec with DocumentSpecs {
   "parse" - {
     "extract English links if they exist" in {
       WikidataEnglishOrHebrewExtenderFactory.parse(getDocument("wikidata.htm")).single shouldReturn

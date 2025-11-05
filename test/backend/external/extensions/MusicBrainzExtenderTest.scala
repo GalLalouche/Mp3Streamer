@@ -4,9 +4,9 @@ import backend.external.{Host, LinkMark, MarkedLink}
 import backend.recon.{Album, Artist}
 import common.test.AuxSpecs
 import io.lemonlabs.uri.Url
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class MusicBrainzExtenderTest extends FreeSpec with AuxSpecs {
+class MusicBrainzExtenderTest extends AnyFreeSpec with AuxSpecs {
   "Preseeded" - {
     "Artist" in {
       val artist = Artist("Foobar")

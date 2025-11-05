@@ -1,9 +1,9 @@
 package common
 
 import common.test.AuxSpecs
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class PipeSubjectTest extends FreeSpec with AuxSpecs {
+class PipeSubjectTest extends AnyFreeSpec with AuxSpecs {
   "apply" in {
     val $ = PipeSubject[String, Int](_.length)
     var x = 0

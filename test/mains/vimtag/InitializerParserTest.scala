@@ -1,14 +1,16 @@
 package mains.vimtag
 
 import backend.module.FakeMusicFinder
-import common.io.{DirectoryRef, MemoryRoot}
-import common.test.AuxSpecs
 import mains.{OptionalSong, OptionalSongFinder}
 import models.{FakeModelFactory, SongTitle, TrackNumber}
-import org.scalatest.{FreeSpec, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.freespec.AnyFreeSpec
+
+import common.io.{DirectoryRef, MemoryRoot}
+import common.test.AuxSpecs
 
 abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualParser)
-    extends FreeSpec
+    extends AnyFreeSpec
     with AuxSpecs
     with OneInstancePerTest {
   private val mf = new FakeMusicFinder(new MemoryRoot)

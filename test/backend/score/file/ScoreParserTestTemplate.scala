@@ -5,11 +5,11 @@ import cats.implicits.{catsSyntaxApplicativeId, catsSyntaxFlatMapOps, toFlatMapO
 import common.test.kats.GenInstances.MonadGen
 import common.test.{AuxSpecs, MoreGen}
 import org.scalacheck.{Arbitrary, Gen}
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 abstract class ScoreParserTestTemplate[A: Arbitrary]
-    extends FreeSpec
+    extends AnyFreeSpec
     with AuxSpecs
     with ScalaCheckDrivenPropertyChecks {
   protected def basicInput: (A, String)

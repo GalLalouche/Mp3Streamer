@@ -5,7 +5,7 @@ import backend.recon.{Album, Artist, ReconID}
 import com.google.inject.Key
 import common.rich.RichT._
 import io.lemonlabs.uri.Url
-import org.scalatest.AsyncFreeSpec
+import org.scalatest.freespec.AsyncFreeSpec
 
 class MbHtmlLinkExtractorTest extends AsyncFreeSpec with DocumentSpecs {
   private def withDocument(name: String) =

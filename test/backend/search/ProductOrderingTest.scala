@@ -2,9 +2,9 @@ package backend.search
 
 import backend.search.ProductOrdering.Impl
 import common.test.AuxSpecs
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class ProductOrderingTest extends FreeSpec with AuxSpecs {
+class ProductOrderingTest extends AnyFreeSpec with AuxSpecs {
   private def product(a: Any*): Product = new Product {
     override def productElement(n: Int) = a(n)
     override val productArity = a.length

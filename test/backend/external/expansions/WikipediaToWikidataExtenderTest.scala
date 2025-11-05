@@ -4,9 +4,9 @@ import backend.external.{BaseLink, DocumentSpecs, Host}
 import backend.module.TestModuleConfiguration
 import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class WikipediaToWikidataExtenderTest extends FreeSpec with DocumentSpecs {
+class WikipediaToWikidataExtenderTest extends AnyFreeSpec with DocumentSpecs {
   private val config = TestModuleConfiguration().copy(_urlToBytesMapper = { case x => getBytes(x) })
   private val $ = config.injector.instance[WikipediaToWikidataExtenderFactory]
   "Extracts wikidata item" in {

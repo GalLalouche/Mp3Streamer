@@ -7,7 +7,7 @@ import java.net.HttpURLConnection
 import models.{FakeModelFactory, Song}
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.jsoup.nodes.Document
-import org.scalatest.AsyncFreeSpec
+import org.scalatest.freespec.AsyncFreeSpec
 
 class SingleHostParsingHelperTest extends AsyncFreeSpec with AsyncAuxSpecs {
   "404 returns NoLyrics" in {

@@ -4,9 +4,9 @@ import backend.external.{Host, LinkMark}
 import backend.recon.Artist
 import common.test.AuxSpecs
 import io.lemonlabs.uri.Url
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class SearchExtensionTest extends FreeSpec with AuxSpecs {
+class SearchExtensionTest extends AnyFreeSpec with AuxSpecs {
   "apply" in {
     val $ = SearchExtension(Host("foo bar", Url.parse("www.foo.bar")), Artist("qux bazz"))
     val extensions = $.extensions.toVector

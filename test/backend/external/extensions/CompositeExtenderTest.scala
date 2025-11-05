@@ -7,12 +7,12 @@ import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, Reconcilable}
 import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
 import common.rich.RichT._
 import common.test.AuxSpecs
 
-class CompositeExtenderTest extends FreeSpec with AuxSpecs {
+class CompositeExtenderTest extends AnyFreeSpec with AuxSpecs {
   private val $ = TestModuleConfiguration().injector.instance[CompositeExtender]
 
   private def toMarked[R <: Reconcilable](e: ExtendedLink[R]) =

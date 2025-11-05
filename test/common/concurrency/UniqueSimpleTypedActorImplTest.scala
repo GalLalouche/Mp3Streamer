@@ -1,13 +1,17 @@
 package common.concurrency
 
-import common.test.AuxSpecs
 import java.util.concurrent.Semaphore
-import org.scalatest.{FreeSpec, OneInstancePerTest}
+
+import org.scalatest.OneInstancePerTest
+import org.scalatest.freespec.AnyFreeSpec
+
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-class UniqueSimpleTypedActorImplTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
+import common.test.AuxSpecs
+
+class UniqueSimpleTypedActorImplTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
   "unique" in {
     val sb = new StringBuilder
     val semaphore = new Semaphore(0)

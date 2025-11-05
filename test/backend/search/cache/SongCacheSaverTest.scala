@@ -5,13 +5,13 @@ import models.{AlbumDir, ArtistDir, FakeModelFactory, ModelJsonable, Song}
 import musicfinder.ArtistDirsIndex
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.mockito.{ArgumentCaptor, Mockito}
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.mockito.MockitoSugar
 
 import common.io.{JsonableSaver, MemoryRoot}
 import common.test.AuxSpecs
 
-class SongCacheSaverTest extends FreeSpec with AuxSpecs with MockitoSugar {
+class SongCacheSaverTest extends AnyFreeSpec with AuxSpecs with MockitoSugar {
   "saves and updates index" in {
     val injector = TestModuleConfiguration().injector
     val mj = injector.instance[ModelJsonable]

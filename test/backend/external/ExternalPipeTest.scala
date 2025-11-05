@@ -9,7 +9,7 @@ import cats.data.OptionT
 import common.rich.RichT._
 import common.test.AuxSpecs
 import io.lemonlabs.uri.Url
-import org.scalatest.AsyncFreeSpec
+import org.scalatest.freespec.AsyncFreeSpec
 import scala.concurrent.Future
 
 class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {

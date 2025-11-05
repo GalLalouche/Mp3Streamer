@@ -6,7 +6,8 @@ import backend.recon.Reconcilable.SongExtractor
 import backend.score.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
 import models.{IOSong, Song}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.tags.Slow
 import play.api.libs.json.Json
 

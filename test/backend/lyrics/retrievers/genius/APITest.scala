@@ -5,11 +5,11 @@ import backend.recon.StringReconScorer
 import common.test.AuxSpecs
 import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.OptionValues._
 import play.api.libs.json.{JsObject, Json}
 
-class APITest extends FreeSpec with AuxSpecs {
+class APITest extends AnyFreeSpec with AuxSpecs {
   private val factory = new FakeModelFactory
   private val scorer = TestModuleConfiguration().injector.instance[StringReconScorer]
 

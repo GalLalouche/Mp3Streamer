@@ -1,9 +1,9 @@
 package backend.external
 
 import common.test.AuxSpecs
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class LinkMarkTest extends FreeSpec with AuxSpecs {
+class LinkMarkTest extends AnyFreeSpec with AuxSpecs {
   "Text" - {
     "Read" in {
       val $ = LinkMark.Text("foobar")

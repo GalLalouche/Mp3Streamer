@@ -1,13 +1,15 @@
 package common
 
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers._
+import play.api.libs.json.{JsNull, JsNumber, JsObject, Json}
+import play.api.libs.json.Json.JsValueWrapper
+
 import common.json.RichJson._
 import common.rich.RichT._
 import common.test.AuxSpecs
-import org.scalatest.{FreeSpec, Matchers}
-import play.api.libs.json.Json.JsValueWrapper
-import play.api.libs.json.{JsNull, JsNumber, JsObject, Json}
 
-class RichJsonTest extends FreeSpec with AuxSpecs with Matchers {
+class RichJsonTest extends AnyFreeSpec with AuxSpecs {
   private def withObject(a: JsValueWrapper): JsObject = Json.obj("foo" -> a)
   "dynamic json" - {
     "exists" in {

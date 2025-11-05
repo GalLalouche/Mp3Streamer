@@ -8,7 +8,7 @@ import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
 import cats.implicits.catsSyntaxFlatMapOps
 import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.AsyncFreeSpec
+import org.scalatest.freespec.AsyncFreeSpec
 
 class SlickInstrumentalArtistTest extends AsyncFreeSpec with StorageSetup {
   protected override val config = TestModuleConfiguration()

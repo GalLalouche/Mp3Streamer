@@ -2,13 +2,14 @@ package musicfinder
 
 import backend.module.FakeMusicFinder
 import models.ArtistName
-import org.scalatest.{FreeSpec, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.freespec.AnyFreeSpec
 
 import common.io.MemoryRoot
 import common.rich.collections.RichTraversableOnce._
 import common.test.AuxSpecs
 
-class MusicFinderTest extends FreeSpec with OneInstancePerTest with AuxSpecs {
+class MusicFinderTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
   private val root = new MemoryRoot
   private val mf = new FakeMusicFinder(root) {
     protected override def genresWithSubGenres = Vector("a", "b", "c")

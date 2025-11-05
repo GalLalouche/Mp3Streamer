@@ -1,10 +1,12 @@
 package backend.module
 
+import org.scalatest.OneInstancePerTest
+import org.scalatest.freespec.AnyFreeSpec
+
 import common.io.MemoryRoot
 import common.test.AuxSpecs
-import org.scalatest.{FreeSpec, OneInstancePerTest}
 
-class MemoryPathRefFactoryTest extends FreeSpec with AuxSpecs with OneInstancePerTest {
+class MemoryPathRefFactoryTest extends AnyFreeSpec with AuxSpecs with OneInstancePerTest {
   private val root = new MemoryRoot
   private val $ = new MemoryPathRefFactory(root)
   "root" in {

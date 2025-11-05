@@ -1,8 +1,8 @@
 package backend.lyrics.retrievers
 
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class AzLyricsRetrieverTest extends FreeSpec with LyricsSpec {
+class AzLyricsRetrieverTest extends AnyFreeSpec with LyricsSpec {
   private[retrievers] override def parser = AzLyricsRetriever.parser
 
   "getUrl" in {

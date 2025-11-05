@@ -4,11 +4,11 @@ import better.files.FileExtensions
 import common.test.{AuxSpecs, DirectorySpecs}
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.OptionValues.convertOptionToValuable
 import scala.concurrent.duration.DurationInt
 
-class IOSongTagParserTest extends FreeSpec with AuxSpecs with DirectorySpecs {
+class IOSongTagParserTest extends AnyFreeSpec with AuxSpecs with DirectorySpecs {
   private def getSong(location: String) = getResourceFile(location)
 
   "apply" - {

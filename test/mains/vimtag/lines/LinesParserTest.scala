@@ -2,9 +2,9 @@ package mains.vimtag.lines
 
 import common.test.AuxSpecs
 import mains.vimtag.{Change, Common, Empty, Keep, Parser}
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class LinesParserTest extends FreeSpec with AuxSpecs {
+class LinesParserTest extends AnyFreeSpec with AuxSpecs {
   private val $ = new Parser(LinesParser)
   "apply" - {
     "Missing mandatory field throws" in {

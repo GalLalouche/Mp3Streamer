@@ -1,9 +1,9 @@
 package backend.lyrics.retrievers.genius
 
 import backend.lyrics.retrievers.{LyricsSpec, SingleHostParser}
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class LyricsParserTest extends FreeSpec with LyricsSpec {
+class LyricsParserTest extends AnyFreeSpec with LyricsSpec {
   private[retrievers] override def parser: SingleHostParser = LyricsParser
   "fromHtml" - {
     "lyrics" in verifyLyrics("lyrics1")

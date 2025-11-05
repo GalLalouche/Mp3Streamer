@@ -2,7 +2,7 @@ package common.concurrency
 
 import java.util.concurrent.LinkedBlockingQueue
 
-import org.scalatest.{AsyncFreeSpec, Matchers}
+import org.scalatest.freespec.AsyncFreeSpec
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -15,7 +15,7 @@ import common.rich.RichTuple.richTuple2
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.test.AsyncAuxSpecs
 
-class RateLimitedActorAsyncImplTest extends AsyncFreeSpec with AsyncAuxSpecs with Matchers {
+class RateLimitedActorAsyncImplTest extends AsyncFreeSpec with AsyncAuxSpecs {
   "rate limited" in {
     val queue = new LinkedBlockingQueue[(Int, Long)]()
     val limit = 10L

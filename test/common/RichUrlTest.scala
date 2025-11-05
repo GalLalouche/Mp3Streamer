@@ -3,9 +3,9 @@ package common
 import _root_.io.lemonlabs.uri.Url
 import common.RichUrl.richUrl
 import common.test.AuxSpecs
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class RichUrlTest extends FreeSpec with AuxSpecs {
+class RichUrlTest extends AnyFreeSpec with AuxSpecs {
   "host" - {
     "correct" in {
       Url.parse("http://www.metal-archives.com/bands/Cruachan/86/").hostUrl shouldReturn Url.parse(

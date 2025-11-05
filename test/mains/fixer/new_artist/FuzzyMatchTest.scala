@@ -2,9 +2,9 @@ package mains.fixer.new_artist
 
 import common.rich.primitives.RichBoolean.richBoolean
 import common.test.AuxSpecs
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class FuzzyMatchTest extends FreeSpec with AuxSpecs {
+class FuzzyMatchTest extends AnyFreeSpec with AuxSpecs {
   private implicit class MatchedString($ : String) {
     def fuzzyMatches(dest: String) = assert(FuzzyMatch($, dest), "Should have fuzzy matched")
     def doesNotFuzzyMatch(dest: String) =

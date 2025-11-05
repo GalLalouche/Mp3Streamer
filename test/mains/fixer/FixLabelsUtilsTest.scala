@@ -6,10 +6,10 @@ import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.{FieldKey, Tag}
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 import scala.jdk.CollectionConverters._
 
-class FixLabelsUtilsTest extends FreeSpec with AuxSpecs {
+class FixLabelsUtilsTest extends AnyFreeSpec with AuxSpecs {
   private val $ = new TestModuleConfiguration().injector.instance[FixLabelsUtils]
 
   private def getSongFile(path: String) = AudioFileIO.read(getResourceFile("../../models/" + path))

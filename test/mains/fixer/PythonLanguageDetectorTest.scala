@@ -1,14 +1,14 @@
 package mains.fixer
 
 import org.scalatest.EitherValues._
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.tagobjects.Slow
 
 import scala.concurrent.duration.DurationInt
 
 import common.test.AuxSpecs
 
-class PythonLanguageDetectorTest extends FreeSpec with AuxSpecs {
+class PythonLanguageDetectorTest extends AnyFreeSpec with AuxSpecs {
   "Single process" - {
     lazy val $ = PythonLanguageDetector.create(1.minute)
     // TODO Proper

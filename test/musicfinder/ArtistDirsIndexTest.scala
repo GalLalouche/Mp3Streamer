@@ -7,12 +7,12 @@ import common.test.AuxSpecs
 import genre.GenreFinder
 import models.ArtistDir
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.Inspectors.forAll
 import org.scalatest.OptionValues._
 import scala.concurrent.ExecutionContext
 
-class ArtistDirsIndexTest extends FreeSpec with AuxSpecs {
+class ArtistDirsIndexTest extends AnyFreeSpec with AuxSpecs {
   private val injector = TestModuleConfiguration().injector
   private implicit val factory: PathRefFactory = injector.instance[PathRefFactory]
   private val root = injector.instance[MemoryRoot]

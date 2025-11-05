@@ -1,8 +1,8 @@
 package backend.lyrics.retrievers
 
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class DarkLyricsRetrieverTest extends FreeSpec with LyricsSpec {
+class DarkLyricsRetrieverTest extends AnyFreeSpec with LyricsSpec {
   private[retrievers] override def parser = DarkLyricsRetriever.parser
   "getUrl" in {
     DarkLyricsRetriever.url.urlFor(

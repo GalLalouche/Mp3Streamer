@@ -1,13 +1,18 @@
 package common.concurrency
 
-import cats.data.OptionT
-import common.rich.RichT.lazyT
-import common.test.AsyncAuxSpecs
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{LinkedBlockingQueue, Semaphore}
-import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
+import java.util.concurrent.atomic.AtomicInteger
+
+import org.scalatest.OneInstancePerTest
+import org.scalatest.freespec.AsyncFreeSpec
+
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
+
+import cats.data.OptionT
+
+import common.rich.RichT.lazyT
+import common.test.AsyncAuxSpecs
 
 class IterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
   private def test10($ : Iterant[Future, Int], expected: Seq[Int]) =

@@ -1,6 +1,7 @@
 package common.concurrency
 
-import org.scalatest.{AsyncFreeSpec, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.freespec.AsyncFreeSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 

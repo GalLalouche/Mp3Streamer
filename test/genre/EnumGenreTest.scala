@@ -2,9 +2,9 @@ package genre
 
 import common.test.AuxSpecs
 import genre.Genre._
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class EnumGenreTest extends FreeSpec with AuxSpecs {
+class EnumGenreTest extends AnyFreeSpec with AuxSpecs {
   "ordering" - {
     // Helping type inference
     def test(smallGenre: Genre, bigGenre: Genre): Unit =

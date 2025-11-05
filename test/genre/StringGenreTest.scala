@@ -5,9 +5,9 @@ import com.google.inject.Guice
 import common.io.MemoryRoot
 import common.test.AuxSpecs
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class StringGenreTest extends FreeSpec with AuxSpecs {
+class StringGenreTest extends AnyFreeSpec with AuxSpecs {
   private val root = new MemoryRoot
   private val mf = new FakeMusicFinder(root) {
     protected override def genresWithSubGenres = Vector("a", "b", "c")

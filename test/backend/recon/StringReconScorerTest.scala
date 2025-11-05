@@ -3,9 +3,9 @@ package backend.recon
 import backend.module.TestModuleConfiguration
 import common.test.AuxSpecs
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class StringReconScorerTest extends FreeSpec with AuxSpecs {
+class StringReconScorerTest extends AnyFreeSpec with AuxSpecs {
   private val $ = TestModuleConfiguration().injector.instance[StringReconScorer]
 
   def verifyLowReconScore(str1: String, str2: String): Unit =

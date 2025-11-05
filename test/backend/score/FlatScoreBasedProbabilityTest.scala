@@ -3,8 +3,8 @@ package backend.score
 import backend.recon.{Album, Artist, Track}
 import backend.recon.Reconcilable.SongExtractor
 import models.{FakeModelFactory, Song}
-import org.scalatest.WordSpec
 import org.scalatest.tags.Slow
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 
 import scala.collection.mutable.ArrayBuffer
@@ -17,7 +17,7 @@ import common.rich.collections.RichTraversableOnce._
 import common.test.AuxSpecs
 
 @Slow
-class FlatScoreBasedProbabilityTest extends WordSpec with AuxSpecs with MockitoSugar {
+class FlatScoreBasedProbabilityTest extends AnyWordSpec with AuxSpecs with MockitoSugar {
   private val requiredProbability: ModelScore => Double = {
     case ModelScore.Crappy => 0.11
     case ModelScore.Meh => 0.08

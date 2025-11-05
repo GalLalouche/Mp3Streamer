@@ -1,9 +1,11 @@
 package common.ds
 
-import common.test.AuxSpecs
-import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.freespec.AnyFreeSpec
 
-class TrieTest extends FreeSpec with OneInstancePerTest with Matchers with AuxSpecs {
+import common.test.AuxSpecs
+
+class TrieTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
   private var $ = Trie.empty[Int]
 
   "empty" - {

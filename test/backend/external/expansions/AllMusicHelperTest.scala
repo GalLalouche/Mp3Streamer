@@ -10,7 +10,7 @@ import common.test.AsyncAuxSpecs
 import io.lemonlabs.uri.Url
 import java.net.HttpURLConnection
 import net.codingwell.scalaguice.InjectorExtensions._
-import org.scalatest.AsyncFreeSpec
+import org.scalatest.freespec.AsyncFreeSpec
 
 class AllMusicHelperTest extends AsyncFreeSpec with AsyncAuxSpecs with DocumentSpecs {
   private val config = TestModuleConfiguration()

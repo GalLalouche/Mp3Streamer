@@ -3,9 +3,9 @@ package backend.search
 import backend.search.WeightedIndexable.ops._
 import common.test.AuxSpecs
 import models.{FakeModelFactory, Song}
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class WeightedIndexableTest extends FreeSpec with AuxSpecs {
+class WeightedIndexableTest extends AnyFreeSpec with AuxSpecs {
   private val factory = new FakeModelFactory
   private val song = factory
     .song(title = "foo bar", artistName = "quxx", year = 1999, albumName = "bazz bazz")

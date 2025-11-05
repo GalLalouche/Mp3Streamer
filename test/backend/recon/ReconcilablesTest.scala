@@ -7,9 +7,9 @@ import common.test.kats.GenInstances.MonadGen
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen.choose
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class ReconcilablesTest extends FreeSpec with AuxSpecs {
+class ReconcilablesTest extends AnyFreeSpec with AuxSpecs {
   "Artist" - {
     "Comparison is based on name" in {
       val a1 = Artist("FooOBAr")

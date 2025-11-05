@@ -3,10 +3,10 @@ package mains.cover.image
 import common.test.AuxSpecs
 import io.lemonlabs.uri.Url
 import mains.cover.UrlSource
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 import play.api.libs.json.{JsObject, Json}
 
-class ParserTest extends FreeSpec with AuxSpecs {
+class ParserTest extends AnyFreeSpec with AuxSpecs {
   "apply" in {
     Parser(Json.parse(getClass.getResourceAsStream("test.json")).as[JsObject])
       .shouldContainExactly(
