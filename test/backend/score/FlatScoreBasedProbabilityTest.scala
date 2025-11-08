@@ -12,7 +12,9 @@ import scala.util.Random
 
 import common.io.FileRef
 import common.rich.RichEnumeratum.richEnumeratum
+import common.rich.RichRandom.richRandom
 import common.rich.RichRandomSpecVer.richRandomSpecVer
+import common.rich.RichT.lazyT
 import common.rich.collections.RichTraversableOnce._
 import common.test.AuxSpecs
 
@@ -31,7 +33,7 @@ class FlatScoreBasedProbabilityTest extends AnyWordSpec with AuxSpecs with Mocki
     ModelScore.values.foreach(score =>
       s"return correct probability for $score" in {
         val random = new Random
-        def randomScore = ModelScore.random(random)
+        def randomScore: ModelScore = ModelScore.random(random)
         val modelFactory = new FakeModelFactory
         val songs = Vector.tabulate(20000)(i => modelFactory.song(title = i.toString))
         val tracks = songs.mapBy(_.track)
@@ -40,7 +42,8 @@ class FlatScoreBasedProbabilityTest extends AnyWordSpec with AuxSpecs with Mocki
           override def explicitScore(a: Artist) = ???
           override def explicitScore(a: Album) = ???
           override def explicitScore(t: Track) = ???
-          override def aggregateScore(f: FileRef) = songScores.get(f).toOptionalModelScore
+          override def aggregateScore(f: FileRef) =
+            songScores(f).onlyIf(random.flipCoin(0.95)).toOptionalModelScore
           override def aggregateScore(t: Track) = aggregateScore(tracks(t).file)
           override def fullInfo(t: Track) = ???
         }
@@ -57,7 +60,6 @@ class FlatScoreBasedProbabilityTest extends AnyWordSpec with AuxSpecs with Mocki
           if ($(nextSong).roll(random))
             buffer += nextSong.file
         }
-        // FIXME Also test for defaults
         buffer.percentageSatisfying(songScores(_) == score) shouldBe requiredProbability(
           score,
         ) +- 0.05

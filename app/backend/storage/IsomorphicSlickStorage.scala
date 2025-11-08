@@ -16,7 +16,7 @@ abstract class IsomorphicSlickStorage[Key, Value](implicit ec: ExecutionContext,
   // TODO ListT(db.run(tableQuery.result).map(_.toList)) can be moved to SlickStorageTemplate
   def loadAllPairs: ListT[Future, (Key, Value)] =
     ListT(db.run(tableQuery.result).map(_.toList)).map(_.toTuple(extractKey, extractValue))
-  // FIXME this is wrong, since it doesn't normalized
+  // FIXME this is wrong, since it isn't normalized
   override def cachedStorage: Future[Map[Key, Value]] = loadAllPairs.value.map(_.toMap)
   override def cachedKeys: Future[Set[Key]] = cachedStorage.map(_.keySet)
 }

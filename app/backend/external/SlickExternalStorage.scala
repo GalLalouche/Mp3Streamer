@@ -29,7 +29,8 @@ private abstract class SlickExternalStorage[R <: Reconcilable](
   import profile.api._
 
   private implicit def markedLinkStringSerializable: StringSerializable[MarkedLink[R]] =
-    // FIXME some URLs include ";". We solve this by using "-;-" in those rare cases, but one should find a less hacky hack.
+    // FIXME some URLs include ";". We solve this by using "-;-" in those rare cases, but one should
+    //  find a less hacky hack. Perhaps using URL encoding?
     new StringSerializable[MarkedLink[R]] {
       private val SplitChar = ";"
       private val SplitCharBackup = "-;-"
