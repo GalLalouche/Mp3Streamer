@@ -34,10 +34,13 @@ private class LyricsCache @Inject() (
   )
   private val cache = new OnlineRetrieverCacher[Song, Lyrics](
     lyricsStorage,
-    allComposite(_).mapEitherMessage {
-      case RetrievedLyricsResult.RetrievedLyrics(l) => Right(l)
-      case _ => Left("No lyrics retrieved :(")
-    },
+    s =>
+      allComposite(s)
+        .listenError(e => scribe.error(s"Failure to fetch lyrics for <${s.file.path}>", e))
+        .mapEitherMessage {
+          case RetrievedLyricsResult.RetrievedLyrics(l) => Right(l)
+          case _ => Left("No lyrics retrieved :(")
+        },
   )
   def find(s: Song): Future[Lyrics] = cache(s).fromTry
   def parse(url: Url, s: Song): Future[RetrievedLyricsResult] = {

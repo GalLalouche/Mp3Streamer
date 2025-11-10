@@ -30,13 +30,19 @@ private class SingleHostParsingHelper @Inject() (it: InternetTalker, ec: Executi
           scribe.warn(s"Got error code <${response.status}> for <$url>")
           RetrievedLyricsResult.NoLyrics
         } else
-          p(response.document, s) match {
-            case LyricParseResult.Instrumental =>
-              RetrievedLyricsResult.RetrievedLyrics(Instrumental(p.source, LyricsUrl.Url(url)))
-            case LyricParseResult.Lyrics(l) =>
-              RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(p.source, l, LyricsUrl.Url(url)))
-            case LyricParseResult.NoLyrics => RetrievedLyricsResult.NoLyrics
-            case LyricParseResult.Error(e) => RetrievedLyricsResult.Error(e)
+          try
+            p(response.document, s) match {
+              case LyricParseResult.Instrumental =>
+                RetrievedLyricsResult.RetrievedLyrics(Instrumental(p.source, LyricsUrl.Url(url)))
+              case LyricParseResult.Lyrics(l) =>
+                RetrievedLyricsResult.RetrievedLyrics(HtmlLyrics(p.source, l, LyricsUrl.Url(url)))
+              case LyricParseResult.NoLyrics => RetrievedLyricsResult.NoLyrics
+              case LyricParseResult.Error(e) => RetrievedLyricsResult.Error(e)
+            }
+          catch {
+            case e: Exception =>
+              scribe.error(s"<$p> failed to parse the lyrics in URL <$url>", e)
+              throw e
           },
       )
       .filterWithMessage(
