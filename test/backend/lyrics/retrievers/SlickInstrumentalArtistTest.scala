@@ -5,10 +5,11 @@ import backend.lyrics.Instrumental
 import backend.lyrics.LyricsUrl.DefaultEmpty
 import backend.module.TestModuleConfiguration
 import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
-import cats.implicits.catsSyntaxFlatMapOps
 import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.freespec.AsyncFreeSpec
+
+import cats.implicits.catsSyntaxFlatMapOps
 
 class SlickInstrumentalArtistTest extends AsyncFreeSpec with StorageSetup {
   protected override val config = TestModuleConfiguration()
@@ -30,7 +31,15 @@ class SlickInstrumentalArtistTest extends AsyncFreeSpec with StorageSetup {
   "exists" in {
     val song = factory.song(artistName = existingArtist)
     storage
-      .store(existingArtist)
+      .store(Artist(existingArtist))
+      .>>($(song)) shouldEventuallyReturn RetrievedLyricsResult.RetrievedLyrics(
+      Instrumental("Default for artist", DefaultEmpty),
+    )
+  }
+  "exists with different capitalization" in {
+    val song = factory.song(artistName = existingArtist.toUpperCase)
+    storage
+      .store(Artist(existingArtist))
       .>>($(song)) shouldEventuallyReturn RetrievedLyricsResult.RetrievedLyrics(
       Instrumental("Default for artist", DefaultEmpty),
     )
@@ -38,7 +47,7 @@ class SlickInstrumentalArtistTest extends AsyncFreeSpec with StorageSetup {
   "doesn't exist" in {
     val song = factory.song(artistName = existingArtist)
     storage
-      .store(nonExistingArtist)
+      .store(Artist(nonExistingArtist))
       .>>($(song)) shouldEventuallyReturn RetrievedLyricsResult.NoLyrics
   }
 }

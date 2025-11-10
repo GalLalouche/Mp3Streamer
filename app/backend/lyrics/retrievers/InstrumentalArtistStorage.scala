@@ -1,11 +1,11 @@
 package backend.lyrics.retrievers
 
-import models.TypeAliases.ArtistName
+import backend.recon.Artist
 
 import scala.concurrent.Future
 
 import common.storage.Storage
 
-private[lyrics] trait InstrumentalArtistStorage extends Storage[ArtistName, Unit] {
-  def store(name: ArtistName): Future[Unit]
+private[lyrics] trait InstrumentalArtistStorage extends Storage[Artist, Unit] {
+  def store(name: Artist): Future[Unit]
 }

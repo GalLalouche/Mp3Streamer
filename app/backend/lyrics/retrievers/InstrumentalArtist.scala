@@ -1,6 +1,7 @@
 package backend.lyrics.retrievers
 
 import backend.lyrics.Instrumental
+import backend.recon.Reconcilable.SongExtractor
 import com.google.inject.Inject
 import models.Song
 
@@ -15,6 +16,6 @@ private[lyrics] class InstrumentalArtist @Inject() (
   private implicit val iec: ExecutionContext = ec
   private val helper = new DefaultInstrumentalHelper("artist")
 
-  override def get = s => storage.exists(s.artistName).map(helper.apply)
-  def add(s: Song): Future[Instrumental] = storage.store(s.artistName) as helper.instrumental
+  override def get = s => storage.exists(s.artist).map(helper.apply)
+  def add(s: Song): Future[Instrumental] = storage.store(s.artist) as helper.instrumental
 }
