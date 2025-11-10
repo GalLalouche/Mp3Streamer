@@ -1,9 +1,12 @@
 package backend.lyrics.retrievers
 
+import backend.lyrics.retrievers.LyricParseResult.NoLyrics
 import com.google.common.annotations.VisibleForTesting
 import com.google.inject.Inject
 import models.Song
 import org.jsoup.nodes.Document
+
+import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 import common.RichJsoup._
 import common.rich.RichT.richT
@@ -31,14 +34,21 @@ private object AzLyricsRetriever {
   @VisibleForTesting
   private[retrievers] val parser: SingleHostParser = new SingleHostParser {
     // AZ lyrics don't support instrumental :\
-    override def apply(d: Document, s: Song): LyricParseResult = LyricParseResult.Lyrics(
-      d.selectIterator(".main-page .text-center div:not([class]):not([id])")
-        .map(_.wholeText)
-        .filter(_.nonEmpty)
-        .single
-        .trim
-        .|>(HtmlLyricsUtils.addBreakLines),
-    )
+    override def apply(d: Document, s: Song): LyricParseResult =
+      if (d.has("#az_captcha_container")) {
+        scribe.error(CaptchaError)
+        LyricParseResult.Error(new Exception(CaptchaError))
+      } else
+        d.selectIterator(".main-page .text-center div:not([class]):not([id])")
+          .map(_.wholeText)
+          .filter(_.nonEmpty)
+          .singleOpt
+          .mapHeadOrElse(
+            _.trim |> HtmlLyricsUtils.addBreakLines |> LyricParseResult.Lyrics,
+            NoLyrics,
+          )
     override val source = "AZLyrics"
   }
+
+  private val CaptchaError = "AZLyrics blocked by captcha!"
 }

@@ -15,4 +15,5 @@ class AzLyricsRetrieverTest extends AnyFreeSpec with LyricsSpec {
     "has lyrics" in verifyLyrics("az_lyrics")
     "has lyrics and image" in verifyLyrics("az_lyrics_with_image")
   }
+  "has no lyrics" in verifyNoLyrics("az_no_lyrics")
 }

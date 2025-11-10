@@ -2,11 +2,13 @@ package backend.lyrics.retrievers
 
 import backend.external.DocumentSpecs
 import backend.lyrics.Instrumental
+import backend.lyrics.retrievers.LyricParseResult.NoLyrics
 import backend.lyrics.retrievers.LyricsSpec._
 import models.{FakeModelFactory, TrackNumber}
-import org.scalatest.matchers.{BePropertyMatchResult, BePropertyMatcher}
-import org.scalatest.{Assertion, Suite}
+import org.scalatest.{Assertion, Succeeded, Suite}
+import org.scalatest.matchers.{BePropertyMatcher, BePropertyMatchResult}
 import resource.managed
+
 import scala.PartialFunction.cond
 import scala.io.Source
 
@@ -30,13 +32,20 @@ trait LyricsSpec extends DocumentSpecs { self: Suite =>
         l shouldReturn contents
       case res => fail(s"Invalid result: <$res>")
     }
+  protected[retrievers] def verifyNoLyrics(
+      htmlFileName: String,
+      trackNumber: TrackNumber = 1,
+  ): Assertion =
+    parseDocument(htmlFileName, trackNumber) match {
+      case NoLyrics => Succeeded
+      case res => fail(s"Invalid result; expected no lyrics, but got: <$res>")
+    }
+
   protected[retrievers] def verifyInstrumental(
       htmlFileName: String,
       trackNumber: TrackNumber = 1,
   ): Assertion =
     (parseDocument(htmlFileName, trackNumber) should be).an(instrumental)
-  protected[retrievers] def verifyError(htmlFileName: String): Assertion =
-    parseDocument(htmlFileName) shouldBe a[LyricParseResult.Error]
   private def parseDocument(htmlFileName: String, trackNumber: TrackNumber = 1): LyricParseResult =
     parser(getDocument(htmlFileName + ".html"), factory.song(trackNumber = trackNumber))
 }
