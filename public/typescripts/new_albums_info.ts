@@ -47,7 +47,7 @@ export function show(song: Song): void {
     }
 
     fieldSet.show()
-    fieldSet.append(elem("legend", `${albums.length} missing albums for artist`))
+    fieldSet.append(elem("legend", `${albums.length} missing releases for artist`))
 
     const ul = $("<ul>")
     const ignoreArtistButton = button("Ignore artist")
