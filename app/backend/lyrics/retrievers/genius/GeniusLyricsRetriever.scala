@@ -1,6 +1,6 @@
 package backend.lyrics.retrievers.genius
 
-import backend.lyrics.retrievers.{HtmlRetriever, SingleHostParsingHelper}
+import backend.lyrics.retrievers.{AmphiRetriever, SingleHostParsingHelper}
 import backend.lyrics.retrievers.RetrievedLyricsResult.NoLyrics
 import com.google.inject.Inject
 
@@ -8,11 +8,11 @@ import scala.concurrent.ExecutionContext
 
 import common.rich.func.kats.RichOptionT.richOptionT
 
-private[lyrics] class GeniusLyricsRetriever @Inject() (
+private[retrievers] class GeniusLyricsRetriever @Inject() (
     singleHostHelper: SingleHostParsingHelper,
     api: API,
     ec: ExecutionContext,
-) extends HtmlRetriever {
+) extends AmphiRetriever {
   private implicit val iec: ExecutionContext = ec
 
   override val parse = singleHostHelper(LyricsParser)

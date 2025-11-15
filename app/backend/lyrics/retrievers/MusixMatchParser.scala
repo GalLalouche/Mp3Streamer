@@ -10,13 +10,14 @@ import scala.concurrent.Future
 
 import common.RichJsoup._
 
-// Passive since their API costs money to use, which is a pretty dick-move when your lyrics are crowd sourced.
-class MusixMatchParser @Inject() (helper: SingleHostParsingHelper) extends PassiveParser {
+// Passive since their API costs money to use, which is a pretty dick move when your lyrics are
+// crowd-sourced.
+private class MusixMatchParser @Inject() (helper: SingleHostParsingHelper) extends PassiveParser {
   override def doesUrlMatchHost: Url => Boolean = _.toStringPunycode.contains("musixmatch.com")
   override def parse: (Url, Song) => Future[RetrievedLyricsResult] =
     helper.apply(MusixMatchParser.parser)
 }
-object MusixMatchParser {
+private object MusixMatchParser {
   @VisibleForTesting
   private[retrievers] val parser: SingleHostParser = new SingleHostParser {
     override def source = "MusixMatch"

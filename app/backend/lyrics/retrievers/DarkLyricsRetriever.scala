@@ -11,7 +11,7 @@ import common.rich.RichT._
 import common.rich.primitives.RichString._
 
 private class DarkLyricsRetriever @Inject() (singleHostHelper: SingleHostParsingHelper)
-    extends HtmlRetriever {
+    extends AmphiRetriever {
   import DarkLyricsRetriever._
 
   override val parse = singleHostHelper(parser)

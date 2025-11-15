@@ -13,7 +13,7 @@ import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class AzLyricsRetriever @Inject() (singleHostHelper: SingleHostParsingHelper)
-    extends HtmlRetriever {
+    extends AmphiRetriever {
   import AzLyricsRetriever._
 
   override val parse = singleHostHelper(parser)

@@ -5,8 +5,9 @@ import models.Song
 
 import scala.concurrent.Future
 
-private[lyrics] trait LyricsRetriever extends Retriever[Song, RetrievedLyricsResult] {
-  // For point free style
+/** Can look up lyrics by songs. */
+private[lyrics] trait ActiveRetriever extends Retriever[Song, RetrievedLyricsResult] {
+  // For point free e
   def get: Song => Future[RetrievedLyricsResult]
   override def apply(v1: Song) = get(v1)
 }

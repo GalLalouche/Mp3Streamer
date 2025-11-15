@@ -11,7 +11,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.kats.ToMoreMonadErrorOps._
 
-class LyricsFormatter @Inject() (ec: ExecutionContext, backend: LyricsCache) {
+class LyricsFormatter @Inject() (ec: ExecutionContext, backend: LyricsBackend) {
   private implicit val iec: ExecutionContext = ec
 
   def get(path: String): Future[String] =

@@ -4,10 +4,9 @@ import models.Song
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private[lyrics] class CompositeLyricsRetriever(
-    retrievers: Seq[LyricsRetriever],
-)(implicit ec: ExecutionContext)
-    extends LyricsRetriever {
+private[lyrics] class CompositeActiveRetriever(retrievers: Seq[ActiveRetriever])(implicit
+    ec: ExecutionContext,
+) extends ActiveRetriever {
   override def get = (s: Song) =>
     retrievers.foldLeft(retrievers.head.apply(s))((result, nextRetriever) =>
       result.flatMap {

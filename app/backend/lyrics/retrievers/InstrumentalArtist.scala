@@ -12,7 +12,8 @@ import cats.implicits.toFunctorOps
 private[lyrics] class InstrumentalArtist @Inject() (
     ec: ExecutionContext,
     storage: InstrumentalArtistStorage,
-) extends LyricsRetriever {
+    // Don't extend ActiveRetriever, instead, expose it as a method
+) extends ActiveRetriever {
   private implicit val iec: ExecutionContext = ec
   private val helper = new DefaultInstrumentalHelper("artist")
 

@@ -1,6 +1,6 @@
 package backend.lyrics.retrievers.bandcamp
 
-import backend.lyrics.retrievers.{HtmlRetriever, SingleHostParsingHelper}
+import backend.lyrics.retrievers.{AmphiRetriever, SingleHostParsingHelper}
 import backend.lyrics.retrievers.RetrievedLyricsResult.NoLyrics
 import com.google.inject.Inject
 
@@ -12,7 +12,7 @@ private[retrievers] class BandcampAlbumRetriever @Inject() (
     helper: SingleHostParsingHelper,
     externalLinksProvider: BandcampLinksProvider,
     ec: ExecutionContext,
-) extends HtmlRetriever {
+) extends AmphiRetriever {
   private implicit val iec: ExecutionContext = ec
 
   override val parse = helper(AlbumParser)

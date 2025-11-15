@@ -18,7 +18,7 @@ import common.rich.path.RichFile.richFile
 import common.test.AsyncAuxSpecs
 
 trait LyricsRetrieverIntegrationTemplate extends AsyncFreeSpec with AsyncAuxSpecs { self: Suite =>
-  def go[R <: HtmlRetriever: Manifest](
+  def go[R <: AmphiRetriever: Manifest](
       file: String,
       source: String,
       expectedLyricsPath: String,

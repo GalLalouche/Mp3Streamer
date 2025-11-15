@@ -5,7 +5,7 @@ import scala.concurrent.Future
 
 import common.io.DirectoryRef
 
-private[lyrics] object DefaultClassicalInstrumental extends LyricsRetriever {
+private object DefaultClassicalInstrumental extends ActiveRetriever {
   @tailrec private def isInstrumental(f: DirectoryRef): Boolean =
     f.name == "Classical" || f.name == "New Age" || (f.hasParent && isInstrumental(f.parent))
   private val helper = new DefaultInstrumentalHelper("Classical/NewAge")

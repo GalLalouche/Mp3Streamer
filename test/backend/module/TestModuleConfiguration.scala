@@ -24,7 +24,7 @@ import common.rich.RichT._
 // It's a case class so its copy constructor could be used by clients in order to configure it.
 case class TestModuleConfiguration(
     private val _ec: ExecutionContext = new ExecutionContext {
-      override def reportFailure(cause: Throwable): Unit = ???
+      override def reportFailure(cause: Throwable): Unit = throw cause
       override def execute(runnable: Runnable): Unit = runnable.run()
     },
     private val _mf: FakeMusicFinder = null,
