@@ -13,7 +13,7 @@ import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
 
 private object AlbumParser {
-  def parseReleaseGroup(json: JsObject): Option[MbAlbumMetadata] = for {
+  def parseReleaseGroup(json: JsObject): Option[AlbumMetadata] = for {
     date <- parseDate(json)
     albumType <- json.ostr("primary-type").flatMap(AlbumType.withNameOption)
     if ValidPrimaryTypes(albumType.entryName)
@@ -23,7 +23,7 @@ private object AlbumParser {
     if secondaryTypes.fornone(_ != "live")
   } yield {
     assert(secondaryTypes.singleOpt.forall(_ == "live"))
-    MbAlbumMetadata(
+    AlbumMetadata(
       title = fixQuotes(json.str("title")),
       releaseDate = date,
       albumType = if (secondaryTypes.nonEmpty) AlbumType.Live else albumType,
@@ -51,7 +51,7 @@ private object AlbumParser {
     )
 
   // This is no longer used, but I'm keeping it in case I might need in the future.
-  def releaseToReleaseGroups(js: JsValue): Seq[MbAlbumMetadata] = js
+  def releaseToReleaseGroups(js: JsValue): Seq[AlbumMetadata] = js
     .array("releases")
     .value
     .flatMap(_ / "release-group" |> parseReleaseGroup)
@@ -60,7 +60,7 @@ private object AlbumParser {
     .map(extractSingleRelease)
     .toVector
 
-  def releaseGroups(js: JsValue): Seq[MbAlbumMetadata] =
+  def releaseGroups(js: JsValue): Seq[AlbumMetadata] =
     js.objects("release-groups").flatMap(parseReleaseGroup)
 
   private val ReleaseDate = "first-release-date"
@@ -69,7 +69,7 @@ private object AlbumParser {
     s.replaceAll(StringFixer.SpecialQuotes, "\"").replaceAll(StringFixer.SpecialApostrophes, "'")
   private val DateFormatter =
     CompositeDateFormat[LocalDate]("yyyy-MM-dd").orElse[YearMonth]("yyyy-MM").orElse[Year]("yyyy")
-  private def extractSingleRelease(releases: Iterable[MbAlbumMetadata]): MbAlbumMetadata = {
+  private def extractSingleRelease(releases: Iterable[AlbumMetadata]): AlbumMetadata = {
     val byDate = releases.groupBy(_.releaseDate)
     if (byDate.size > 1)
       // If there are multiple dates, choose the first one.

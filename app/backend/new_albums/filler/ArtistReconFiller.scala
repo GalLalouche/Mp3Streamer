@@ -1,6 +1,6 @@
 package backend.new_albums.filler
 
-import backend.mb.MbArtistReconciler
+import backend.mb.ArtistReconciler
 import backend.recon.{Artist, ArtistReconStorage, ReconID}
 import com.google.inject.Inject
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -11,7 +11,7 @@ import common.rich.RichFuture._
 
 private class ArtistReconFiller @Inject() (
     ea: ExistingAlbums,
-    reconciler: MbArtistReconciler,
+    reconciler: ArtistReconciler,
     storage: ArtistReconStorage,
     verifier: ArtistReconVerifier,
     ec: ExecutionContext,

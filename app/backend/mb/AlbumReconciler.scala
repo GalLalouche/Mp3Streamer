@@ -12,7 +12,7 @@ import cats.implicits.{toFoldableOps, toFunctorOps}
 import common.json.RichJson._
 import common.rich.RichT._
 
-private class MbAlbumReconciler @Inject() (
+private class AlbumReconciler @Inject() (
     ec: ExecutionContext,
     downloader: JsonDownloader,
     artistReconciler: OptionRetriever[Artist, ReconID],

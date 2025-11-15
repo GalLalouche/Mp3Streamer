@@ -12,7 +12,7 @@ import cats.data.OptionT
 
 object MbModule extends ScalaPrivateModule {
   override def configure(): Unit = {
-    bind[Reconciler[Album]].to[MbAlbumReconciler]
+    bind[Reconciler[Album]].to[AlbumReconciler]
     expose[Reconciler[Album]]
   }
 

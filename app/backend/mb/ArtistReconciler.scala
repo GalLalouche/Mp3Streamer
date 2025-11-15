@@ -10,7 +10,7 @@ import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.json.RichJson._
 
-private[backend] class MbArtistReconciler @Inject() (
+private[backend] class ArtistReconciler @Inject() (
     ec: ExecutionContext,
     downloader: JsonDownloader,
 ) extends Reconciler[Artist] {

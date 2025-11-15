@@ -11,7 +11,7 @@ import scala.Ordering.Implicits._
 import common.rich.RichTime.{OrderingLocalDateTime, RichClock}
 import common.rich.primitives.RichString._
 
-private[backend] case class MbAlbumMetadata(
+private[backend] case class AlbumMetadata(
     title: AlbumTitle,
     releaseDate: LocalDate,
     albumType: AlbumType,

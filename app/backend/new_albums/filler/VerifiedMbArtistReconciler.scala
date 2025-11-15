@@ -1,7 +1,7 @@
 package backend.new_albums.filler
 
 import backend.FutureOption
-import backend.mb.MbArtistReconciler
+import backend.mb.ArtistReconciler
 import backend.recon.{Artist, Reconciler, ReconID}
 import com.google.inject.Inject
 
@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext
  * MusicBrainz, thus avoiding false positives.
  */
 class VerifiedMbArtistReconciler @Inject() (
-    artistReconciler: MbArtistReconciler,
+    artistReconciler: ArtistReconciler,
     verifier: ArtistReconVerifier,
     ec: ExecutionContext,
 ) extends Reconciler[Artist] {

@@ -3,7 +3,7 @@ package backend.new_albums
 import java.time.{Clock, LocalDate}
 import java.time.format.DateTimeFormatter
 
-import backend.mb.{AlbumType, MbAlbumMetadata}
+import backend.mb.{AlbumMetadata, AlbumType}
 import backend.recon.{Album, Artist, ReconID}
 import mains.fixer.StringFixer
 import models.TypeAliases.AlbumTitle
@@ -34,7 +34,7 @@ case class NewAlbum(
 }
 
 private object NewAlbum {
-  def from(a: Artist, mb: MbAlbumMetadata): NewAlbum =
+  def from(a: Artist, mb: AlbumMetadata): NewAlbum =
     NewAlbum(mb.title, mb.releaseDate, a, mb.albumType, mb.reconId)
 
   implicit object NewAlbumJsonable extends OJsonable[NewAlbum] {

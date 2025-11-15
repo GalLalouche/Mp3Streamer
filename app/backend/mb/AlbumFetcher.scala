@@ -5,12 +5,12 @@ import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private[backend] class MbAlbumFetcher @Inject() (
+private[backend] class AlbumFetcher @Inject() (
     ec: ExecutionContext,
     downloader: JsonDownloader,
 ) {
   private implicit val iec: ExecutionContext = ec
 
-  def getAlbumsMetadata(artistKey: ReconID): Future[Seq[MbAlbumMetadata]] =
+  def getAlbumsMetadata(artistKey: ReconID): Future[Seq[AlbumMetadata]] =
     downloader("release-group", "artist" -> artistKey.id).map(AlbumParser.releaseGroups)
 }

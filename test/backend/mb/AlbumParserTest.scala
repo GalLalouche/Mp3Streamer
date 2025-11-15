@@ -1,16 +1,18 @@
 package backend.mb
 
-import backend.recon.{Artist, ReconID}
-import common.test.AuxSpecs
 import java.time.LocalDate
-import org.scalatest.freespec.AnyFreeSpec
+
+import backend.recon.{Artist, ReconID}
 import org.scalatest.Inside._
 import org.scalatest.OptionValues._
+import org.scalatest.freespec.AnyFreeSpec
 import play.api.libs.json.{JsObject, Json}
+
+import common.test.AuxSpecs
 
 class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
   private val $ = AlbumParser
-  private def parse(s: String): Option[MbAlbumMetadata] =
+  private def parse(s: String): Option[AlbumMetadata] =
     $.parseReleaseGroup(Json.parse(s.stripMargin).as[JsObject])
   "valid input" in {
     val result = parse("""{
@@ -23,7 +25,7 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
         |"title": "ניתוקים",
         |"secondary-types": []
         |}""").value
-    inside(result) { case MbAlbumMetadata(title, releaseDate, albumType, reconId, disambiguation) =>
+    inside(result) { case AlbumMetadata(title, releaseDate, albumType, reconId, disambiguation) =>
       title shouldReturn "ניתוקים"
       releaseDate shouldReturn LocalDate.of(2017, 7, 15)
       albumType shouldReturn AlbumType.Album
@@ -43,7 +45,7 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
                          |"title": "ניתוקים",
                          |"secondary-types": []
                          |}""").value
-    inside(result) { case MbAlbumMetadata(title, releaseDate, albumType, reconId, disambiguation) =>
+    inside(result) { case AlbumMetadata(title, releaseDate, albumType, reconId, disambiguation) =>
       title shouldReturn "ניתוקים"
       releaseDate shouldReturn LocalDate.of(2017, 7, 15)
       albumType shouldReturn AlbumType.Album
@@ -85,42 +87,42 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
   "releaseGroup parsing" in {
     $.releaseGroups(Json.parse(getClass.getResourceAsStream("release-group.json")))
       .shouldContainExactly(
-        MbAlbumMetadata(
+        AlbumMetadata(
           "O",
           LocalDate.of(2002, 7, 22),
           AlbumType.Album,
           ReconID("d7e69fd9-59ac-3093-8b72-60b77a91b298"),
           None,
         ),
-        MbAlbumMetadata(
+        AlbumMetadata(
           "9",
           LocalDate.of(2006, 11, 6),
           AlbumType.Album,
           ReconID("0d673e32-4f95-348f-af28-3abc1353bff3"),
           None,
         ),
-        MbAlbumMetadata(
+        AlbumMetadata(
           "My Favourite Faded Fantasy",
           LocalDate.of(2014, 10, 31),
           AlbumType.Album,
           ReconID("72ea557d-b39d-4e06-bb17-e3bda5802d4b"),
           None,
         ),
-        MbAlbumMetadata(
+        AlbumMetadata(
           "Live From the Union Chapel",
           LocalDate.of(2003, 7, 1),
           AlbumType.Live,
           ReconID("076a1fb6-c1da-38dc-8bc0-1b7f4c2256f7"),
           None,
         ),
-        MbAlbumMetadata(
+        AlbumMetadata(
           "2004 Live at Outremont Theatre, Montreal",
           LocalDate.of(2004, 1, 1),
           AlbumType.Live,
           ReconID("0b2d6869-bc7b-4b8a-bc04-03d73f279831"),
           None,
         ),
-        MbAlbumMetadata(
+        AlbumMetadata(
           "Live at Fingerprints: Warts and All",
           LocalDate.of(2007, 10, 23),
           AlbumType.EP,
@@ -134,21 +136,21 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
     "ignores singles, concatenates repeats" in {
       $.releaseToReleaseGroups(Json.parse(getClass.getResourceAsStream("release.json")))
         .shouldContainExactly(
-          MbAlbumMetadata(
+          AlbumMetadata(
             "Olden Tales & Deathly Trails",
             LocalDate.of(2012, 9, 21),
             AlbumType.Album,
             ReconID("f3098f4d-7a46-46a9-85cf-c3e69d1398ea"),
             None,
           ),
-          MbAlbumMetadata(
+          AlbumMetadata(
             "Sleep at the Edge of the Earth",
             LocalDate.of(2015, 4, 7),
             AlbumType.Album,
             ReconID("afe8a3e0-96bc-4a63-8be1-3e133ad4f702"),
             None,
           ),
-          MbAlbumMetadata(
+          AlbumMetadata(
             "Veil of Imagination",
             LocalDate.of(2019, 11, 1),
             AlbumType.Album,
@@ -160,7 +162,7 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
     "Handles repeats in the same date by most popular" in {
       $.releaseToReleaseGroups(Json.parse(getClass.getResourceAsStream("release_repeats_pop.json")))
         .shouldContainExactly(
-          MbAlbumMetadata(
+          AlbumMetadata(
             "Triumphant Hearts",
             LocalDate.of(2018, 12, 7),
             AlbumType.Album,
@@ -173,7 +175,7 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
       $.releaseToReleaseGroups(
         Json.parse(getClass.getResourceAsStream("release_repeats_date.json")),
       ).shouldContainExactly(
-        MbAlbumMetadata(
+        AlbumMetadata(
           "Out",
           LocalDate.of(2006, 8, 1),
           AlbumType.Album,

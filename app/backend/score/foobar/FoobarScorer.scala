@@ -2,7 +2,7 @@ package backend.score.foobar
 
 import java.io.File
 
-import backend.mb.MbArtistReconciler
+import backend.mb.ArtistReconciler
 import backend.recon.{Artist, ArtistReconPusher, ArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
 import backend.score.{FullInfoModelScorer, FullInfoScore, OptionalModelScore, ScoreSource}
@@ -26,7 +26,7 @@ import common.scalafx.Builders
 import common.scalafx.RichNode.richNode
 
 private class FoobarScorer @Inject() (
-    reconciler: MbArtistReconciler,
+    reconciler: ArtistReconciler,
     reconStorage: ArtistReconStorage,
     pusher: ArtistReconPusher,
     scorer: FullInfoModelScorer,
