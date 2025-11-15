@@ -3,7 +3,7 @@ package backend.mb
 import backend.recon.{Artist, Reconciler, ReconID}
 import com.google.inject.Inject
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 import cats.data.OptionT
 import common.rich.func.kats.ToMoreMonadErrorOps._
@@ -23,8 +23,4 @@ private[backend] class MbArtistReconciler @Inject() (
       .filterWithMessage(_.int("score") == 100, "could not find a 100 match")
       .map(_.ostr("id").map(ReconID.validateOrThrow))
   }
-
-  // TODO Extract this to another module, this shouldn't be here
-  def getAlbumsMetadata(artistKey: ReconID): Future[Seq[MbAlbumMetadata]] =
-    downloader("release-group", "artist" -> artistKey.id).map(AlbumParser.releaseGroups)
 }

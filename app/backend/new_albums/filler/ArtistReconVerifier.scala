@@ -1,6 +1,6 @@
 package backend.new_albums.filler
 
-import backend.mb.{MbAlbumMetadata, MbArtistReconciler}
+import backend.mb.{MbAlbumFetcher, MbAlbumMetadata}
 import backend.recon.{Album, Artist, ReconID, StringReconScorer}
 import com.google.inject.Inject
 
@@ -10,14 +10,13 @@ import common.rich.primitives.RichBoolean._
 
 private class ArtistReconVerifier @Inject() (
     ea: ExistingAlbums,
-    reconciler: MbArtistReconciler,
+    albumFetcher: MbAlbumFetcher,
     ec: ExecutionContext,
     stringReconScorer: StringReconScorer,
 ) {
   private implicit val iec: ExecutionContext = ec
-  def apply(artist: Artist, id: ReconID): Future[Boolean] = reconciler
-    .getAlbumsMetadata(id)
-    .map(intersects(ea.albums(artist)))
+  def apply(artist: Artist, id: ReconID): Future[Boolean] =
+    albumFetcher.getAlbumsMetadata(id).map(intersects(ea.albums(artist)))
 
   private def intersects(album: Set[Album])(reconAlbums: Seq[MbAlbumMetadata]): Boolean = {
     val albumTitles = album.map(_.title)

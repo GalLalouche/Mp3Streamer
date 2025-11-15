@@ -1,6 +1,6 @@
 package backend.new_albums.filler
 
-import backend.mb.{MbAlbumMetadata, MbArtistReconciler}
+import backend.mb.{MbAlbumFetcher, MbAlbumMetadata}
 import backend.new_albums.NewAlbum
 import backend.recon.{Artist, ReconcilerCacher, ReconID}
 import backend.recon.StoredReconResult.{HasReconResult, StoredNull}
@@ -18,7 +18,7 @@ import common.concurrency.DaemonExecutionContext
 import common.rich.RichT._
 
 @Singleton private class NewAlbumFetcher @Inject() (
-    meta: MbArtistReconciler,
+    albumFetcher: MbAlbumFetcher,
     reconciler: ReconcilerCacher[Artist],
 ) {
   private implicit val ec: ExecutionContext =
@@ -45,7 +45,7 @@ import common.rich.RichT._
   def apply(artist: Artist): Future[Seq[NewAlbumRecon]] = (for {
     recon <- getReconId(artist)
     _ = scribe.debug(s"Fetching new albums for <$artist>")
-    albums <- meta.getAlbumsMetadata(recon).liftSome
+    albums <- albumFetcher.getAlbumsMetadata(recon).liftSome
   } yield albums.map(NewAlbumFetcher.toReconned(artist))) | Nil
 }
 
