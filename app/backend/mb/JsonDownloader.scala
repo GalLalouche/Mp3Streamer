@@ -1,6 +1,7 @@
 package backend.mb
 
 import java.net.HttpURLConnection
+import java.util.Properties
 
 import backend.mb.JsonDownloader.Input
 import com.google.inject.{Inject, Singleton}
@@ -20,6 +21,11 @@ import common.rich.primitives.RichBoolean._
 @Singleton
 private class JsonDownloader @Inject() (it: InternetTalker, ec: ExecutionContext) {
   private implicit val iec: ExecutionContext = ec
+  private val userAgent: String = {
+    val properties = new Properties
+    properties.load(getClass.getResourceAsStream("tokens.properties"))
+    properties.getProperty("userAgent").ensuring(_ != null)
+  }
 
   def apply(method: String, params: (String, String)*): Future[JsObject] =
     actor ! Input(method, params, times = 1)
@@ -46,7 +52,7 @@ private class JsonDownloader @Inject() (it: InternetTalker, ec: ExecutionContext
         .addQueryStringParameters("fmt" -> "json")
         .addQueryStringParameters(params: _*)
         // see https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#How_can_I_be_a_good_citizen_and_be_smart_about_using_the_Web_Service.3FI
-        .addHttpHeaders("User-Agent" -> "Mp3Streamer (glpkmtg@gmail.com)")
+        .addHttpHeaders("User-Agent" -> s"Mp3Streamer ($userAgent)")
         .get(),
     ).filterWithMessageF(
       _.status == HttpURLConnection.HTTP_OK,
