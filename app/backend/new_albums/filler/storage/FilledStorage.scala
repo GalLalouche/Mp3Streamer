@@ -5,10 +5,10 @@ import backend.recon.{Artist, IgnoredReconResult, ReconID}
 
 import scala.concurrent.Future
 
-import common.TempIList.ListT
+import common.rich.func.kats.Nesteds.SeqT
 
 private[new_albums] trait FilledStorage {
-  def all: ListT[Future, ArtistNewAlbums]
+  def all: SeqT[Future, ArtistNewAlbums]
   def forArtist(a: Artist): Future[Seq[NewAlbum]]
 
   // Remove vs. Ignore: remove is only temporary (usually until the next mega fetch), ignore is forever.

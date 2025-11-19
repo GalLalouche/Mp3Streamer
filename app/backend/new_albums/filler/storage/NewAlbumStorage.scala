@@ -6,13 +6,14 @@ import backend.recon.{Artist, ReconID}
 
 import scala.concurrent.Future
 
-import common.TempIList.ListT
+import common.rich.func.kats.Nesteds.SeqT
+
 import common.storage.Storage
 
 // TODO Non-Keyed storage, or multi-valued storage
 private trait NewAlbumStorage extends Storage[ReconID, StoredNewAlbum] with NewAlbumCleaner {
   /** Takes care of all the filterings (ignored artists, albums, etc.). */
-  def all: ListT[Future, ArtistNewAlbums]
+  def all: SeqT[Future, ArtistNewAlbums]
   /**
    * Takes care of all the filterings related to albums(removed, ignored, etc.), but ignored artists
    * will still be returned.

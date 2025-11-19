@@ -33,9 +33,9 @@ private class CachedModelScorerImpl @Inject() (
   private implicit val iec: ExecutionContext = ec
 
   private lazy val songScores: Map[YearlessTrack, ModelScore] =
-    songScorer.loadAll.value.get.toMap
+    songScorer.loadAllScores.value.get.toMap
   private lazy val albumScores: Map[YearlessAlbum, ModelScore] =
-    albumScorer.loadAll.value.get.toMap
+    albumScorer.loadAllScores.value.get.toMap
   private lazy val artistScores: Map[Artist, ModelScore] = artistScorer.loadAll.value.get.toMap
   private val aux = new CompositeScorer[Id](
     explicitScore(_).toModelScore.hoistId,

@@ -8,9 +8,9 @@ import models.AlbumTitle
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import cats.syntax.functor.toFunctorOps
+import cats.implicits.toFunctorOps
+import common.rich.func.kats.Nesteds.SeqT
 
-import common.TempIList.ListT
 import common.rich.RichT.richT
 
 private[score] class AlbumScoreStorage @Inject() (
@@ -46,8 +46,8 @@ private[score] class AlbumScoreStorage @Inject() (
   // TODO use an AlbumTitle case class or CIString?
   protected override def keyFilter(k: Album)(e: Rows) =
     e.artist === k.artist && e.title === k.title.toLowerCase
-  def loadAll: ListT[Future, (YearlessAlbum, ModelScore)] =
-    ListT(db.run(tableQuery.result).map(_.toList)).map(e => YearlessAlbum(e._2, e._1) -> e._3)
+  def loadAllScores: SeqT[Future, (YearlessAlbum, ModelScore)] =
+    loadAll.map(e => YearlessAlbum(e._2, e._1) -> e._3)
   def allForArtist(a: Artist): Future[Seq[(AlbumTitle, ModelScore)]] =
     db.run(tableQuery.filter(_.artist === a).map(_.toTuple(_.title, _.score)).result)
 }

@@ -6,9 +6,7 @@ import backend.storage.{DbProvider, JdbcMappers, SlickSingleKeyColumnStorageTemp
 import com.google.inject.Inject
 import slick.ast.BaseTypedType
 
-import scala.concurrent.{ExecutionContext, Future}
-
-import common.TempIList.ListT
+import scala.concurrent.ExecutionContext
 
 private[backend] class ArtistScoreStorage @Inject() (
     protected override val ec: ExecutionContext,
@@ -43,5 +41,4 @@ private[backend] class ArtistScoreStorage @Inject() (
   protected override def toId(et: Rows) = et.artist
   protected override def toEntity(k: Artist, v: ModelScore) = (k, v)
   protected override def extractValue(e: (Artist, ModelScore)) = e._2
-  def loadAll: ListT[Future, (Artist, ModelScore)] = ListT(db.run(tableQuery.result).map(_.toList))
 }

@@ -15,8 +15,8 @@ import shapeless.syntax.std.tuple.productTupleOps
 import scala.concurrent.{ExecutionContext, Future}
 
 import cats.implicits.{catsSyntaxFlatMapOps, toFunctorOps}
+import common.rich.func.kats.Nesteds.SeqT
 
-import common.TempIList.ListT
 import common.rich.RichEnumeratum.richEnumeratum
 import common.rich.RichT.richT
 
@@ -28,7 +28,7 @@ private class NewAlbumsModel @Inject() (
 ) {
   private implicit val iec: ExecutionContext = ec
 
-  def albums: ListT[Future, ModelResult] =
+  def albums: SeqT[Future, ModelResult] =
     storage.all.fmap(e =>
       e :+ genreFinder.forArtist(e.artist) |> Function.tupled(ModelResult.apply),
     )

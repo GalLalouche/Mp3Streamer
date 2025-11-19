@@ -19,10 +19,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import cats.implicits.{catsSyntaxApplicativeByName, catsSyntaxApplyOps, catsSyntaxFlatMapOps, toFunctorOps, toTraverseFilterOps}
 import common.rich.func.TuplePLenses.{__1, __2}
+import common.rich.func.kats.Nesteds.SeqT
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.kats.ToMoreMonadErrorOps._
 
-import common.TempIList.ListT
 import common.rich.RichFuture.richFuture
 import common.rich.RichT.richT
 import common.rich.RichTime.OrderingLocalDate
@@ -101,7 +101,7 @@ private class SlickNewAlbumStorage @Inject() (
   }
   protected override type EntityTable = Rows
   protected override val tableQuery = TableQuery[EntityTable]
-  override def all = ListT(
+  override def all: SeqT[Future, ArtistNewAlbums] = SeqT(
     db
       .run(
         tableQuery
@@ -122,8 +122,7 @@ private class SlickNewAlbumStorage @Inject() (
           .mapValues(_.map(_.swap) |> toNewAlbums)
           .map(_.flatten)
           .map(Function.tupled(ArtistNewAlbums.apply))
-          .iterator
-          .toList,
+          .toVectorSeq,
       ),
   )
   private def shouldRemoveAlbum(e: Rows): Rep[Boolean] = e.isRemoved || e.isIgnored
