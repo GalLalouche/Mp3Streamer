@@ -1,14 +1,18 @@
 package mains.fixer
 
+import com.google.inject.Inject
 import mains.BrowserUtils
+import mains.fixer.NewArtistFolderCreator.{BigIconMultiplayer, IconSideInPixels, MaxRows}
 import mains.fixer.new_artist.GenrePanel
 import models.TypeAliases.ArtistName
+import musicfinder.IOMusicFinder
 
 import scala.concurrent.{Future, Promise}
 import scala.swing.Frame
 import scala.swing.event.WindowClosing
 
 import common.rich.path.Directory
+import common.rich.primitives.RichOption.richOption
 
 /**
  * Creates a new artist folder by asking the user which subgenre to place the artist in using a
@@ -24,14 +28,16 @@ import common.rich.path.Directory
  *                || Doom
  * }}}
  */
-private object NewArtistFolderCreator {
+private class NewArtistFolderCreator @Inject() (
+    mf: IOMusicFinder,
+) {
   def selectGenreDirAndPopupBrowser(name: ArtistName): Future[Directory] = {
     BrowserUtils.searchForLucky(name + " rateyourmusic")
     selectGenreDir(name)
   }
   def selectGenreDir(name: ArtistName): Future[Directory] = {
-    // TODO this should use IOMusicFinder
-    def genre(dirName: String) = Directory("g:/media/music/" + dirName)
+    def genre(dirName: String): Directory =
+      mf.baseDir.getDir(dirName).getOrThrow(s"Could not find genre dir <$dirName>").dir
     val panel = GenrePanel(
       maxRows = MaxRows,
       iconSideInPixels = IconSideInPixels,
@@ -54,7 +60,9 @@ private object NewArtistFolderCreator {
     }
     $.future
   }
+}
 
+private object NewArtistFolderCreator {
   private val MaxHeightInPixels = 800
   private val IconSideInPixels = 50
   private val BigIconMultiplayer = 3

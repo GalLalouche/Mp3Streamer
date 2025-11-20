@@ -39,6 +39,7 @@ private[mains] class FolderFixer @Inject() private (
     foobarGain: FoobarGain,
     downloader: DownloadCover,
     stringFixer: StringFixer,
+    newArtistFolderCreator: NewArtistFolderCreator,
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
@@ -74,7 +75,7 @@ private[mains] class FolderFixer @Inject() private (
   ): Future[Directory] = for {
     destinationParent <-
       destination ||||
-        NewArtistFolderCreator
+        newArtistFolderCreator
           .selectGenreDirAndPopupBrowser(artist)
           .map(_.addSubDir(stringFixer(artistNameNormalizer(artist))))
     folderImageMover <- folderImage
