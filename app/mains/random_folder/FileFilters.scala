@@ -11,7 +11,7 @@ import play.api.libs.json.Json
 import common.Filter
 import common.io.{IODirectory, IOFile}
 import common.json.RichJson.DynamicJson
-import common.rich.primitives.RichBoolean.richBoolean
+import common.rich.collections.RichSet.richSet
 
 private object FileFilters {
   private def removeGenres(genreFinder: GenreFinder, f: File)(
@@ -55,8 +55,7 @@ private object FileFilters {
       if (forbiddenArtists(data.artist))
         return false
 
-      // TODO RichSet.doesNotContain
-      forbiddenGenres.contains(data.genre.name).isFalse
+      forbiddenGenres.doesNotContain(data.genre.name)
     }
   }
   def fromConfig(sde: SongDataExtractor): Filter[File] = {
