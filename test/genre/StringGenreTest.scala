@@ -2,7 +2,6 @@ package genre
 
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import backend.recon.Artist
-import com.google.inject.Guice
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.freespec.AnyFreeSpec
 
@@ -17,8 +16,7 @@ class StringGenreTest extends AnyFreeSpec with AuxSpecs {
     (genresWithSubGenres ++ flatGenres).foreach(root.addSubDir)
     override val extensions = Set("mp3", "flac")
   }
-  private val $ =
-    Guice.createInjector(TestModuleConfiguration(_mf = mf).module).instance[StringGenreFinder]
+  private val $ = TestModuleConfiguration(_mf = mf).injector.instance[StringGenreFinder]
 
   private val baseDir = root.getDir("a").get
   private val d = root.getDir("d").get
