@@ -10,10 +10,7 @@ import scala.concurrent.ExecutionContext
 import common.guice.PrivateModuleUtils
 
 private[lyrics] object RetrieversModule extends ScalaPrivateModule with PrivateModuleUtils {
-  override def configure(): Unit = {
-    expose[InstrumentalArtistStorage]
-    publicBind[InstrumentalArtistStorage].to[SlickInstrumentalArtistStorage]
-  }
+  override def configure(): Unit = {}
 
   @Provides private def provideBaseList(
       geniusLyricsRetriever: GeniusLyricsRetriever,
@@ -42,5 +39,4 @@ private[lyrics] object RetrieversModule extends ScalaPrivateModule with PrivateM
       musixMatchParser: MusixMatchParser,
   ): PassiveParser =
     new CompositePassiveParser(base ++ Vector(shironetParser, musixMatchParser, bandcampParser))(ec)
-
 }

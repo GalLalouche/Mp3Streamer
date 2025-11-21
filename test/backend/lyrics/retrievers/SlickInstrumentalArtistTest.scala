@@ -11,10 +11,11 @@ import org.scalatest.freespec.AsyncFreeSpec
 
 import cats.implicits.catsSyntaxFlatMapOps
 
-class SlickInstrumentalArtistTest extends AsyncFreeSpec with StorageSetup {
+private class SlickInstrumentalArtistTest extends AsyncFreeSpec with StorageSetup {
   protected override val config = TestModuleConfiguration()
   private val injector = config.injector
-  protected override lazy val storage = injector.instance[InstrumentalArtistStorage]
+  protected override lazy val storage: SlickInstrumentalArtistStorage =
+    injector.instance[SlickInstrumentalArtistStorage]
   private val factory = new FakeModelFactory
   private val $ = injector.instance[InstrumentalArtist]
 

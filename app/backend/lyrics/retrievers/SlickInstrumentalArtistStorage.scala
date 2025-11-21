@@ -6,15 +6,14 @@ import com.google.inject.{Inject, Singleton}
 import models.TypeAliases.ArtistName
 import slick.ast.{BaseTypedType, ScalaBaseType}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 private class SlickInstrumentalArtistStorage @Inject() (
     ec: ExecutionContext,
     dbP: DbProvider,
     protected val artistStorage: SlickArtistReconStorage,
-) extends IsomorphicSlickStorage[Artist, Unit]()(ec, dbP)
-    with InstrumentalArtistStorage {
+) extends IsomorphicSlickStorage[Artist, Unit]()(ec, dbP) {
   import profile.api._
 
   protected override type Id = ArtistName
@@ -37,7 +36,4 @@ private class SlickInstrumentalArtistStorage @Inject() (
   protected override def toEntity(k: Artist, v: Unit): ArtistName = k.normalize
   protected override def toId(et: ArtistTable) = et.name
   protected override def extractValue(e: ArtistName): Unit = ()
-
-  // TODO SetStorage, i.e., a storage only for check if something exists or not
-  override def store(artist: Artist): Future[Unit] = store(artist: Artist, ())
 }
