@@ -39,7 +39,7 @@ class ComposedFreshnessStorageTest
       $.freshness(1).shouldEventuallyReturnNone()
     }
     "existing data but no timestamp" in {
-      $.storeWithoutTimestamp(1, 2) >> $.freshness(1).mapValue(_ shouldReturn AlwaysFresh)
+      $.foreverFresh(1, 2) >> $.freshness(1).mapValue(_ shouldReturn AlwaysFresh)
     }
     "existing data with timestamp" in {
       $.store(1, 2) >>

@@ -22,7 +22,7 @@ class ComposedFreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshne
   private def now(v: Value): (Value, Freshness) = v -> DatedFreshness(clock.instant.toLocalDateTime)
   private def toValue[A](v: FutureOption[(Value, A)]): FutureOption[Value] = v.map(_._1)
   override def freshness(k: Key): FutureOption[Freshness] = storage.load(k).map(_._2)
-  override def storeWithoutTimestamp(k: Key, v: Value): Future[Unit] =
+  override def foreverFresh(k: Key, v: Value): Future[Unit] =
     storage.store(k, v -> AlwaysFresh)
   override def store(k: Key, v: Value) = storage.store(k, v |> now)
   override def storeMultiple(kvs: Seq[(Key, Value)]) =
@@ -32,6 +32,9 @@ class ComposedFreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshne
   override def load(k: Key) = storage.load(k) |> toValue
   override def exists(k: Key) = storage.exists(k)
   override def update(k: Key, v: Value) = storage.update(k, v |> now) |> toValue
+  /** A utility when the value is [[Unit]]. Returns [[true]] if a value was updated. */
+  def update(k: Key)(implicit ev: Unit =:= Value): Future[Boolean] =
+    storage.update(k, now(ev())).value.map(_.isDefined)
   override def replace(k: Key, v: Value) = storage.replace(k, v |> now) |> toValue
   // Also updates the timestamp to now
   override def mapStore(mode: StoreMode, k: Key, f: Value => Value, default: => Value) =

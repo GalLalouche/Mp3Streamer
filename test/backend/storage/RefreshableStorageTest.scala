@@ -55,7 +55,7 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
       )
     }
     "existing value has no datetime" in {
-      freshnessStorage.storeWithoutTimestamp("foobar", "bazqux") >>
+      freshnessStorage.foreverFresh("foobar", "bazqux") >>
         $("foobar").shouldEventuallyReturn("bazqux")
     }
     "reuse existing value on failure" - {

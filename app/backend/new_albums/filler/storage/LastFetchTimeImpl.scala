@@ -37,8 +37,8 @@ private class LastFetchTimeImpl @Inject() (
       .isoMap(Freshness.iso ^<-> prependUnit)
   private val aux = new ComposedFreshnessStorage[Artist, Unit](xmapped, clock)
   override def update(a: Artist) =
-    aux.update(a, ()).value.void.listenError(scribe.error(s"Failed to update artist <$a>", _))
-  override def ignore(a: Artist) = aux.delete(a).value >> aux.storeWithoutTimestamp(a, ())
+    aux.update(a).void.listenError(scribe.error(s"Failed to update artist <$a>", _))
+  override def ignore(a: Artist) = aux.delete(a).value >> aux.foreverFresh(a, ())
   override def unignore(a: Artist) = aux.delete(a).value >> resetToEpoch(a)
   override def freshness(a: Artist) = aux.freshness(a) ||| resetToEpochIfExists(a)
   private def resetToEpochIfExists(a: Artist): FutureOption[Freshness] =
