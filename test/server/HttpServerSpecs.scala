@@ -28,7 +28,7 @@ import common.test.AsyncAuxSpecs
 /**
  * A test that is not coupled with any specific server implementation, e.g., http4s vs Play.
  * Instead, it initializes an HTTP server and just makes plain old HTTP requests to it. Mind you,
- * this not actually a proper "end-to-end" test, since, for example, it will write to disk.
+ * this not actually a proper "end-to-end" test, since, for example, it will not write to disk.
  *
  * @serverModule
  *   Should contain a binding for [[Server]].
@@ -50,7 +50,7 @@ private abstract class HttpServerSpecs(serverModule: Module)
   protected override def afterAll() = runningServer.stop().whenA(runningServer != null)
   protected def baseTestModule: TestModuleConfiguration =
     TestModuleConfiguration(_ec = DaemonExecutionContext("HttpServerSpecs", n = 20))
-  /** This module should contain an implementation of [[Server]] */
+  /** Used to override `serverModule`. */
   protected def overridingModule: Module = new ScalaModule {}
   protected final lazy val injector: Injector = Guice.createInjector(
     serverModule.overrideWith(baseTestModule.module).overrideWith(overridingModule),

@@ -14,6 +14,7 @@ trait MemorySystem extends RefSystem {
   override type F = MemoryFile
   override type D = MemoryDir
 }
+
 sealed trait MemoryPath extends PathRef {
   override type S = MemorySystem
 }
@@ -51,9 +52,9 @@ case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with Memo
 }
 
 sealed abstract class MemoryDir(val path: String) extends DirectoryRef with MemoryPath {
-
   private val filesByName = new ConcurrentHashMap[String, MemoryFile]().asScala
   private val dirsByName = new ConcurrentHashMap[String, MemoryDir]().asScala
+
   override def getFile(name: String) = filesByName.get(name)
   override def addFile(name: String) = getFile(name).getOrElse {
     val $ = MemoryFile(this, name)
@@ -96,7 +97,4 @@ class MemoryRoot extends MemoryDir("/") {
   override def parent = throw new UnsupportedOperationException("MemoryRoot has no parent")
   override def hasParent = false
   override val path = s"root(${System.identityHashCode(this)})/"
-}
-object MemoryRoot {
-  private val PathRegex = """root\((\d+)\)//(.*)""".r
 }

@@ -10,8 +10,7 @@ import common.rich.RichT._
 
 object RichWSRequest {
   implicit class richWSResponse($ : WSRequest)(implicit ec: ExecutionContext) {
-    private def mapGet[T](f: WSResponse => T): Future[T] = $.get().map(f)
-    def bytes: Future[Array[Byte]] = mapGet(_.bodyAsBytes.toArray[Byte])
+    def bytes: Future[Array[Byte]] = $.get.map(_.bodyAsBytes.toArray[Byte])
     def document(decodeUtf: Boolean): Future[Document] =
       string.map(_.mapIf(decodeUtf).to(UtfDecoder(_)) |> Jsoup.parse)
     def string: Future[String] = bytes.map(new String(_, "UTF-8"))

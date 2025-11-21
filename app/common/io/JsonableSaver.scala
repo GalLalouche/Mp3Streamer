@@ -68,7 +68,6 @@ class JsonableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
   // Require T: Jsonable, otherwise T will always be inferred as Nothing
   def lastUpdateTime[T: Jsonable: Manifest]: Option[LocalDateTime] =
     workingDir.getFile(jsonFileName).map(_.lastModified)
-
 }
 
 private object JsonableSaver {
