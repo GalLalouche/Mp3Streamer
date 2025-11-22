@@ -1,71 +1,62 @@
-// A very simple module, showing the most recent album, so it can be easily added to the playlist.
+// A very simple module, showing the latest albums, so it can be easily added to the playlist.
 
 import {Album, gplaylist} from "./types.js"
-import {Try, tryF} from "./try.js"
 
 export namespace LastAlbum {
   export async function addNextNewAlbum(): Promise<void> {
-    setFetchingText()
-    const last = await updateLastAlbum()
-    const addToPlaylist = albumText(last) != lastAlbumText
-    updateAlbum(last, addToPlaylist)
+    await updateLatestAlbum()
+    return dequeue()
   }
 
   export async function updateLatestAlbum(): Promise<void> {
     setFetchingText()
-    updateLastAlbum().then(album => updateAlbum(album, false))
+    updateAlbums(await forceUpdate())
   }
 }
 
 function setFetchingText(): void {
-  write(span("Fetching last album..."))
+  write("Fetching last albums...")
 }
 
-async function getLastAlbum(): Promise<Album> {
-  const last: Try<Album> = await tryF($.get("recent/get_last").toPromise())
-  return last == null || last instanceof Error ? forceUpdate() : last
+const prefix = "last_albums"
+
+async function getLastAlbums(): Promise<void> {
+  setFetchingText()
+  updateAlbums(await $.get(prefix).toPromise())
 }
 
-async function updateLastAlbum(): Promise<Album> {
-  const last = await getLastAlbum()
-  const getLastText = albumText(last)
-  return getLastText != lastAlbumText ? last : forceUpdate()
-}
-
-async function forceUpdate(): Promise<Album> {
-  return $.get("recent/update_last").toPromise()
+async function forceUpdate(): Promise<Album[]> {
+  return $.post(prefix + "/update").toPromise()
 }
 
 const ADD = "plus"
 
-function write(value: JQuery<HTMLElement>): void {
-  $("#last_album").empty().append(value)
+function write(text: string): JQuery<HTMLElement> {
+  return $("#last_album").empty().append(span(text))
 }
 
-function albumText(album: Album): string {
-  return `${icon(ADD)} ${album.artistName}: ${album.title}`
-}
-
-function addAlbum(album: Album): void {
-  $.get("data/album/" + album.dir, e => gplaylist.add(e, false))
-}
-
-let lastAlbumText: string | undefined = undefined
-
-function updateAlbum(album: Album, addToPlaylist: boolean): void {
-  const text = albumText(album)
-  if (addToPlaylist && text !== lastAlbumText)
-    addAlbum(album)
+function updateAlbums(albums: Album[]): void {
+  if (albums.length == 0) {
+    write("No new albums")
+    return
+  }
+  const album = albums[0]
+  const extra = albums.length > 1 ? ` (+ ${albums.length - 1} more)` : ""
+  const text = `${icon(ADD)} ${album.artistName}: ${album.title}${extra}`
   console.log(`Updating last album: '${text}'`)
-  const albumElement = elem("span", text)
-  write(albumElement)
-  albumElement.find(".fa-" + ADD).click(() => addAlbum(album))
+  const albumElement = write(text)
+  albumElement.find(".fa-" + ADD).on("click", (() => dequeue()))
   if (albumElement.custom_overflown())
     albumElement.custom_tooltip(text)
-  lastAlbumText = text
+}
+
+async function dequeue(): Promise<void> {
+  const [head, tail] = await $.post(prefix + "/dequeue").toPromise()
+  await $.get("data/album/" + head.dir, e => gplaylist.add(e, false)).toPromise()
+  updateAlbums(tail)
 }
 
 $(function () {
   // noinspection JSIgnoredPromiseFromCall
-  LastAlbum.updateLatestAlbum()
+  getLastAlbums()
 })

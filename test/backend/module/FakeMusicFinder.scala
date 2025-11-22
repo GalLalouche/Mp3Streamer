@@ -1,11 +1,13 @@
 package backend.module
 
-import common.io.{FileRef, MemoryDir, MemoryFile, MemorySystem}
-import common.rich.RichT._
-import models.{ArtistName, MemorySong, SongTagParser}
+import models.{AlbumDir, ArtistName, MemorySong, SongTagParser}
 import musicfinder.MusicFinder
 import musicfinder.MusicFinder.DirectoryName
+
 import scala.collection.mutable
+
+import common.io.{FileRef, MemoryDir, MemoryFile, MemorySystem}
+import common.rich.RichT._
 
 class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder with SongTagParser {
   override type S = MemorySystem
@@ -30,6 +32,8 @@ class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder with 
   /** Adds a song under the requested directory name. */
   def copySong(path: Seq[String], s: MemorySong): MemorySong =
     copy(s, path.foldLeft(dirToAddSongsTo)(_ addSubDir _).addFile(s.file.name))
+  def copyAlbum(albumDir: AlbumDir): AlbumDir =
+    albumDir.copy(dir = dirToAddSongsTo.addSubDir(albumDir.dir.name))
   override def apply(f: FileRef): MemorySong = pathToSongs(f.path)
   protected override def normalizeArtistName(name: ArtistName): DirectoryName = name
 }

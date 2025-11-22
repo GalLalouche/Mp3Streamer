@@ -1,6 +1,7 @@
 package backend.search
 
-import backend.recent.{LastAlbumState, NewDir}
+import backend.last_albums.LastAlbumsState
+import backend.recent.NewDir
 import backend.search.cache.SongCacheUpdater
 import com.google.inject.{Inject, Singleton}
 import rx.lang.scala.Observer
@@ -27,7 +28,7 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
     @NewDir newDirObserver: Observer[DirectoryRef],
     searchState: SearchState,
     songSelectorState: SongSelectorState,
-    lastAlbumState: LastAlbumState,
+    lastAlbumState: LastAlbumsState,
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
