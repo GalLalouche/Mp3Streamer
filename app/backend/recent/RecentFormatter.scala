@@ -2,19 +2,15 @@ package backend.recent
 
 import com.google.inject.Inject
 import models.ModelJsonable
-import play.api.libs.json.{JsNull, JsValue}
+import play.api.libs.json.JsValue
 
 import scala.concurrent.{ExecutionContext, Future}
-
-import cats.implicits.toFlatMapOps
-import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 import common.json.ToJsonableOps._
 
 class RecentFormatter @Inject() (
     ec: ExecutionContext,
     recentAlbums: RecentAlbums,
-    lastAlbumState: LastAlbumState,
     mj: ModelJsonable,
 ) {
   import mj.albumDirJsonifier
@@ -38,6 +34,4 @@ class RecentFormatter @Inject() (
   def all(amount: Int): Future[JsValue] = Future(recentAlbums.all(amount)).map(_.jsonify)
   def double: Future[JsValue] = double(10)
   def double(amount: Int): Future[JsValue] = Future(recentAlbums.double(amount)).map(_.jsonify)
-  def updateLast(): Future[JsValue] = recentAlbums.last.flatTap(lastAlbumState.set).map(_.jsonify)
-  def getLastState: JsValue = lastAlbumState.get().mapHeadOrElse(_.jsonify, JsNull)
 }

@@ -33,13 +33,15 @@ object Jsonable {
       case _ => Some(json.parse[A])
     }
   }
+  // Tuples are represented as arrays in typescript, so we do the same for interoperability.
+  // See: https://www.typescriptlang.org/docs/handbook/2/objects.html#tuple-types
   implicit def pairJsonable[A: Jsonable, B: Jsonable]: Jsonable[(A, B)] = new Jsonable[(A, B)] {
-    private val firstKey = "1"
-    private val secondKey = "2"
     override def jsonify(t: (A, B)): JsValue =
-      Json.obj(firstKey -> t._1.jsonify, secondKey -> t._2.jsonify)
-    override def parse(json: JsValue): (A, B) =
-      json.value(firstKey).parse[A] -> json.value(secondKey).parse[B]
+      Json.arr(t._1.jsonify, t._2.jsonify)
+    override def parse(json: JsValue): (A, B) = {
+      val seq = json.as[JsArray].value
+      seq(0).parse[A] -> seq(1).parse[B]
+    }
   }
   def isoJsonable[A, B: Jsonable](aToB: Iso[A, B]): Jsonable[A] = new Jsonable[A] {
     override def parse(json: JsValue): A = aToB.reverseGet(json.parse[B])

@@ -62,12 +62,12 @@ sealed abstract class MemoryDir(val path: String) extends DirectoryRef with Memo
     $
   }
   override def getDir(name: String): Option[MemoryDir] = dirsByName.get(name)
-  override def addSubDir(name: String) = getDir(name).getOrElse {
-    val $ = SubDir(this, name)
+  override def addSubDir(name: String) = addSubDir(name, LocalDateTime.now())
+  def addSubDir(name: String, lastModified: LocalDateTime): MemoryDir = getDir(name).getOrElse {
+    val $ = SubDir(this, name, lastModified)
     dirsByName += ((name, $))
     $
   }
-  override val lastModified = LocalDateTime.now()
   override def dirs: Seq[MemoryDir] = dirsByName.values.toSeq.sortBy(_.name)
   override def files = filesByName.values.toSeq.sortBy(_.name)
 
@@ -88,8 +88,11 @@ sealed abstract class MemoryDir(val path: String) extends DirectoryRef with Memo
     dirsByName.values.foreach(_.clean())
   }
 }
-private case class SubDir(parent: MemoryDir, name: String)
-    extends MemoryDir(parent.path + "/" + name) {
+private case class SubDir(
+    parent: MemoryDir,
+    name: String,
+    override val lastModified: LocalDateTime = LocalDateTime.now(),
+) extends MemoryDir(parent.path + "/" + name) {
   override def hasParent = true
 }
 class MemoryRoot extends MemoryDir("/") {
@@ -97,4 +100,5 @@ class MemoryRoot extends MemoryDir("/") {
   override def parent = throw new UnsupportedOperationException("MemoryRoot has no parent")
   override def hasParent = false
   override val path = s"root(${System.identityHashCode(this)})/"
+  override val lastModified: LocalDateTime = LocalDateTime.now()
 }

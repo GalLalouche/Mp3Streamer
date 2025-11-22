@@ -23,14 +23,14 @@ private class RecentAlbums @Inject() (
     songTagParser: SongTagParser,
     albumFactory: AlbumDirFactory,
     clock: Clock,
-) {
+) extends LastAlbumProvider {
   // recent doesn't care about songs.
   private def makeAlbum(dir: DirectoryRef) = albumFactory.fromDir(dir).copy(songs = Nil)
   private def go(amount: Int)(dirs: View[DirectoryRef]) =
     dirs.topK(amount)(Ordering.by(_.lastModified)).map(makeAlbum)
   private val lastFetcher =
     SimpleTypedActor.unique[Unit, AlbumDir]("last fetcher", all(1).head.const)
-  def last: Future[AlbumDir] = lastFetcher ! ()
+  override def last: Future[AlbumDir] = lastFetcher ! ()
   def all(amount: Int): Seq[AlbumDir] = mf.albumDirs |> go(amount)
   def double(amount: Int): Seq[AlbumDir] = mf.albumDirs.filter(isDoubleAlbum) |> go(amount)
   private def since(f: LocalDate => LocalDate): Seq[AlbumDir] = {

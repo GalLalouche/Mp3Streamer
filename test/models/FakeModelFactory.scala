@@ -1,21 +1,25 @@
 package models
 
-import common.io.MemoryRoot
+import java.time.LocalDateTime
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
+
 import scala.concurrent.duration.Duration
+
+import common.io.MemoryRoot
 
 class FakeModelFactory(root: MemoryRoot = new MemoryRoot) {
   def album(
-      dirName: String = UUID.randomUUID().toString,
-      title: AlbumTitle = "album",
+      title: AlbumTitle = UUID.randomUUID().toString,
       artistName: ArtistName = "artist",
       year: Int = 2000,
       songs: Seq[Song] = Nil,
+      lastModified: LocalDateTime = LocalDateTime.now(),
   ) = AlbumDir(
-    root.addSubDir(artistName).addSubDir(title),
+    root.addSubDir(artistName).addSubDir(title, lastModified),
     title = title,
     artistName = artistName,
     year = year,
