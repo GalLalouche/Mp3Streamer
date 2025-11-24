@@ -1,15 +1,20 @@
 package backend.external
 
-import backend.external.extensions.{ExtendedLink, SearchExtension}
-import backend.recon.{Album, Artist}
-import common.test.AuxSpecs
-import io.lemonlabs.uri.Url
 import java.time.{LocalDate, Month}
+
+import backend.external.extensions.{ExtendedLink, SearchExtension}
+import backend.logging.ScribeUtils
+import backend.recon.{Album, Artist}
+import io.lemonlabs.uri.Url
 import org.scalatest.freespec.AsyncFreeSpec
 import play.api.libs.json.Json
+
 import scala.concurrent.Future
 
+import common.test.AuxSpecs
+
 class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
+  ScribeUtils.noLogs()
   private val $ = new ExternalJsonifier()
   private val time = LocalDate.of(1980, Month.OCTOBER, 17).atStartOfDay
 
