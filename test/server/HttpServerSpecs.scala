@@ -76,12 +76,11 @@ private abstract class HttpServerSpecs(serverModule: Module)
   def putRaw(u: Uri, json: JsValue): Future[Response[_]] =
     backend.send(request.put(u).body(json))
 
-  // FIXME rename these overloads without a JSON.
-  def postJson(u: Uri): Future[String] =
+  def post(u: Uri): Future[String] =
     backend.send(request.post(u)).map(_.body.getOrThrow)
   def postJson(u: Uri, json: JsValue): Future[String] =
     backend.send(request.post(u).body(json)).map(_.body.getOrThrow)
-  def postRaw(u: Uri, json: JsValue): Future[Response[_]] =
+  def postJsonRaw(u: Uri, json: JsValue): Future[Response[_]] =
     backend.send(request.post(u).body(json))
   def postRaw(u: Uri): Future[Response[_]] =
     backend.send(request.post(u))

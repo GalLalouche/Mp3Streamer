@@ -20,7 +20,7 @@ import common.rich.RichT.{lazyT, richT}
 import common.rich.RichTime.RichClock
 import common.test.BeforeAndAfterEachAsync
 
-private class LastAlbumsTest(serverModule: Module)
+private class LastAlbumsServerTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)
     with BeforeAndAfterEachAsync {
   override def afterEach(): Future[Unit] =
@@ -39,9 +39,9 @@ private class LastAlbumsTest(serverModule: Module)
   "get returns albums after update" in {
     val a1 = createAlbumWithSong()
     for {
-      _ <- postJson(uri"last_albums/update")
+      _ <- post(uri"last_albums/update")
       a2 = createAlbumWithSong()
-      _ <- postJson(uri"last_albums/update")
+      _ <- post(uri"last_albums/update")
       result <- getJson(uri"last_albums")
     } yield result.parse[Seq[AlbumDir]] shouldReturn Vector(a1, a2)
   }
@@ -53,12 +53,12 @@ private class LastAlbumsTest(serverModule: Module)
   "dequeue returns next album and removes it from list" in {
     val a1 = createAlbumWithSong()
     for {
-      _ <- postJson(uri"last_albums/update")
+      _ <- post(uri"last_albums/update")
       a2 = createAlbumWithSong()
-      _ <- postJson(uri"last_albums/update")
+      _ <- post(uri"last_albums/update")
       a3 = createAlbumWithSong()
-      _ <- postJson(uri"last_albums/update")
-      dequeueResult <- postJson(uri"last_albums/dequeue")
+      _ <- post(uri"last_albums/update")
+      dequeueResult <- post(uri"last_albums/dequeue")
       remainingAlbums <- getJson(uri"last_albums")
     } yield {
       Json.parse(dequeueResult).parse[(AlbumDir, Seq[AlbumDir])] shouldReturn (a1, Vector(a2, a3))

@@ -7,7 +7,7 @@ import scala.collection.immutable
 
 class HttpTestSuite(serverModule: Module) extends AsyncTestSuite {
   override def nestedSuites: immutable.IndexedSeq[Suite] = Vector(
-    new LastAlbumsTest(serverModule),
+    new LastAlbumsServerTest(serverModule),
     new LuckyTest(serverModule),
     new PlaylistTest(serverModule),
     new PosterTest(serverModule),

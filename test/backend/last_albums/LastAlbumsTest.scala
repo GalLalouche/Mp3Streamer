@@ -8,10 +8,9 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.OptionValues._
 import org.scalatest.freespec.AnyFreeSpec
 
-import scala.collection.immutable.Queue
-
 import common.FakeClock
 import common.io.{JsonableSaver, MemoryRoot}
+import common.rich.RichT.richT
 import common.rich.RichTime.RichClock
 import common.test.AuxSpecs
 
@@ -26,7 +25,7 @@ class LastAlbumsTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
 
   private def create() = {
     clock.advance(1)
-    new LastAlbums(Queue.empty, clock.getLocalDateTime)
+    new LastAlbums(clock.getLocalDateTime)
   }
   private def album(): AlbumDir = {
     clock.advance(1)
@@ -34,8 +33,9 @@ class LastAlbumsTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
   }
   private def load(): LastAlbums = {
     clock.advance(1)
-    LastAlbums.load(saver, clock)
+    saver.loadObjectOpt[LastAlbums].getOrElse(create())
   }
+  def persist(la: LastAlbums): Unit = saver.saveObject(la)
 
   "load" - {
     "creates empty LastAlbums when no saved data exists" in {
@@ -46,7 +46,7 @@ class LastAlbumsTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
       val album1 = album()
       val album2 = album()
 
-      $.enqueue(album1).enqueue(album2).persist(saver)
+      $.enqueue(album1).enqueue(album2) |> persist
 
       load().albums shouldReturn Vector(album1, album2)
     }
@@ -99,7 +99,7 @@ class LastAlbumsTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
       val $ = create()
       val album1 = album()
       val album2 = album()
-      $.enqueue(album1).enqueue(album2).persist(saver)
+      $.enqueue(album1).enqueue(album2) |> persist
       load().albums shouldReturn Vector(album1, album2)
     }
   }
