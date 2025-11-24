@@ -2,6 +2,7 @@ package backend.last_albums
 
 import java.time.Clock
 
+import alleycats.Zero
 import backend.FutureOption
 import backend.recent.LastAlbumProvider
 import com.google.inject.{Inject, Singleton}
@@ -10,17 +11,16 @@ import models.{AlbumDir, ModelJsonable}
 import scala.concurrent.{ExecutionContext, Future}
 
 import cats.data.OptionT
-import cats.implicits.toTraverseOps
-import cats.syntax.functor.toFunctorOps
+import cats.implicits.{toFunctorOps, toTraverseOps}
 
-import common.concurrency.JsonablePersistentValueFactory
+import common.json.JsonableCOWFactory
 import common.rich.RichTime.RichClock
 
 @Singleton class LastAlbumsState @Inject() (
     lastAlbumProvider: LastAlbumProvider,
     modelJsonable: ModelJsonable,
     clock: Clock,
-    factory: JsonablePersistentValueFactory,
+    factory: JsonableCOWFactory,
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
@@ -33,8 +33,13 @@ import common.rich.RichTime.RichClock
     })
   private[last_albums] def get: Seq[AlbumDir] = lastAlbums.get.albums
 
-  import LastAlbums.jsonableLastAlbums
-  import modelJsonable.albumDirJsonifier
+  private val lastAlbums = {
+    import LastAlbums.jsonableLastAlbums
+    import modelJsonable.albumDirJsonifier
+    implicit val ZeroLastAlbums: Zero[LastAlbums] = new Zero[LastAlbums] {
+      def zero: LastAlbums = new LastAlbums(clock.getLocalDateTime)
+    }
 
-  private val lastAlbums = factory[LastAlbums](new LastAlbums(clock.getLocalDateTime))
+    factory[LastAlbums]
+  }
 }

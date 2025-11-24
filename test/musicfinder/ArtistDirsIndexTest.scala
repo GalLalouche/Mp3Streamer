@@ -2,15 +2,16 @@ package musicfinder
 
 import backend.module.TestModuleConfiguration
 import backend.recon.Artist
-import common.io.{DirectoryRef, JsonableSaver, MemoryRoot, PathRefFactory}
-import common.test.AuxSpecs
 import genre.GenreFinder
 import models.ArtistDir
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.Inspectors.forAll
 import org.scalatest.OptionValues._
-import scala.concurrent.ExecutionContext
+import org.scalatest.freespec.AnyFreeSpec
+
+import common.io.{DirectoryRef, JsonableSaver, MemoryRoot, PathRefFactory}
+import common.json.JsonableCOWFactory
+import common.test.AuxSpecs
 
 class ArtistDirsIndexTest extends AnyFreeSpec with AuxSpecs {
   private val injector = TestModuleConfiguration().injector
@@ -34,9 +35,8 @@ class ArtistDirsIndexTest extends AnyFreeSpec with AuxSpecs {
         ),
       )
     new ArtistDirsIndex(
-      saver,
+      new JsonableCOWFactory(saver),
       injector.instance[GenreFinder],
-      injector.instance[ExecutionContext],
       factory,
     )
   }
