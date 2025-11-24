@@ -8,7 +8,7 @@ import rx.lang.scala.subjects.ReplaySubject
 import scala.concurrent.ExecutionContext
 
 import common.concurrency.report.ReportObserver
-import common.io.JsonableSaver
+import common.json.saver.JsonableSaver
 import common.rich.RichT.richT
 
 private[search] class SongCacheUpdater @Inject() (

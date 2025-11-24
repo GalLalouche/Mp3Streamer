@@ -1,8 +1,8 @@
-package common.json
+package common.json.saver
 
 import alleycats.Zero
 
-import common.io.JsonableSaver
+import common.json.Jsonable
 
 trait JsonableSaveable[A] {
   def save(saver: JsonableSaver, a: A): Unit

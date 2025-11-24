@@ -1,4 +1,4 @@
-package common.json
+package common.json.saver
 
 import java.time.{Instant, LocalDateTime, ZoneOffset}
 
@@ -9,6 +9,7 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AsyncFreeSpec
 import play.api.libs.json.{JsNumber, JsValue}
 
+import common.json.Jsonable
 import common.test.AsyncAuxSpecs
 
 class JsonableCOWImplTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
@@ -21,7 +22,7 @@ class JsonableCOWImplTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInsta
   private implicit val zeroLong: Zero[Long] = alleycats.Zero[Long](0L)
   private def $ : JsonableCOW[String, LocalDateTime] = factory[String, Long, LocalDateTime](
     LocalDateTime.parse(_).atZone(ZoneOffset.UTC).toInstant.toEpochMilli,
-    long => Instant.ofEpochMilli(long).atZone(ZoneOffset.UTC).toLocalDateTime,
+    Instant.ofEpochMilli(_).atZone(ZoneOffset.UTC).toLocalDateTime,
   )
 
   "initial value" - {

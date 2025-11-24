@@ -9,8 +9,9 @@ import monocle.Monocle.toApplyLensOps
 import monocle.Traversal
 
 import common.TimedLogger
-import common.io.{FileRef, JsonableSaver}
+import common.io.FileRef
 import common.json.Jsonable
+import common.json.saver.JsonableSaver
 
 private class CompositeIndexFactory @Inject() (
     saver: JsonableSaver,

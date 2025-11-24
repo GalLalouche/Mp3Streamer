@@ -6,7 +6,7 @@ import genre.GenreFinder
 import models.ArtistDir
 
 import common.io.{DirectoryRef, PathRefFactory}
-import common.json.JsonableCOWFactory
+import common.json.saver.JsonableCOWFactory
 
 @Singleton class ArtistDirsIndex @Inject() (
     cowFactory: JsonableCOWFactory,

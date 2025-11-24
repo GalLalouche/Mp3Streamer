@@ -1,4 +1,4 @@
-package common.json
+package common.json.saver
 
 import scala.concurrent.Future
 
