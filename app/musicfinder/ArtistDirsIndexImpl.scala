@@ -7,8 +7,8 @@ import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
 
 import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
-import common.io.{DirectoryRef, JsonableSaver}
-import common.json.Jsonable
+import common.io.DirectoryRef
+import common.json.{Jsonable, JsonableCOW, JsonableCOWFactory, JsonableSaveable}
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichBoolean.richBoolean
@@ -31,16 +31,12 @@ private class ArtistDirsIndexImpl(
 }
 
 private object ArtistDirsIndexImpl {
-  def load(saver: JsonableSaver)(implicit json: Jsonable[ArtistToDirectory]): ArtistDirsIndexImpl =
-    // It's possible some directories will have changed by the time this loads.
-    from(saver.loadArrayHandleErrors[ArtistToDirectory]._1)
-  def from(
-      artistDirs: Iterable[ArtistDir],
-      saver: JsonableSaver,
-      genreFinder: GenreFinder,
-  )(implicit json: Jsonable[ArtistToDirectory]): ArtistDirsIndexImpl = {
-    val artistToDirectories =
-      artistDirs.view
+  def persistentValue(genreFinder: GenreFinder, factory: JsonableCOWFactory)(implicit
+      json: Jsonable[ArtistToDirectory],
+  ): JsonableCOW[Iterable[ArtistDir], ArtistDirsIndexImpl] = {
+    implicit val ev: JsonableSaveable[Seq[ArtistToDirectory]] = JsonableSaveable.fromJsonableLenient
+    factory[Iterable[ArtistDir], Seq[ArtistToDirectory], ArtistDirsIndexImpl](
+      _.view
         .map(ArtistToDirectory.from)
         .groupBy(_.artist)
         .map { case (a, dirs) =>
@@ -57,28 +53,24 @@ private object ArtistDirsIndexImpl {
           }
           ArtistToDirectory(a, dir)
         }
-        .toVector
-
-    saver.saveArray(artistToDirectories)
-    from(artistToDirectories)
-  }
-
-  private def from(artistToDirectories: Seq[ArtistToDirectory])(implicit di: DummyImplicit) =
-    new ArtistDirsIndexImpl(
-      dirToArtist = artistToDirectories
-        .groupBy(_.dir)
-        .map { case (k, v) =>
-          k -> (v.view.map(_.artist).toVector match {
-            case Vector(e) => Left(e)
-            case v =>
-              if (v.allUnique.isFalse)
-                scribe.warn(s"Multiple repeating artists found for directory <$k>")
-              Right(v.ensuring(_.nonEmpty).toSet)
-          })
-        },
-      // TuplePLenses requires explicit types here for some reason :\
-      artistToDir = artistToDirectories.groupBy(_.artist).map(e => e._1 :-> toSingle(e._2)),
+        .toVector,
+      artistToDirectories =>
+        new ArtistDirsIndexImpl(
+          dirToArtist = artistToDirectories
+            .groupBy(_.dir)
+            .map { case (k, v) =>
+              k -> (v.view.map(_.artist).toVector match {
+                case Vector(e) => Left(e)
+                case v =>
+                  if (v.allUnique.isFalse)
+                    scribe.warn(s"Multiple repeating artists found for directory <$k>")
+                  Right(v.ensuring(_.nonEmpty).toSet)
+              })
+            },
+          artistToDir = artistToDirectories.groupBy(_.artist).map(e => e._1 :-> toSingle(e._2)),
+        ),
     )
+  }
 
   private def toSingle(xs: Seq[ArtistToDirectory])(artist: Artist): DirectoryRef =
     xs.view.map(_.dir).toVector match {
