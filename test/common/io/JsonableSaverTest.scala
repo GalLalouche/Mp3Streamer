@@ -12,6 +12,7 @@ import play.api.libs.json.{JsObject, Json, JsValue}
 import common.json.Jsonable
 import common.json.RichJson._
 import common.json.ToJsonableOps._
+import common.json.saver.JsonableSaver
 import common.rich.RichT._
 import common.test.AuxSpecs
 

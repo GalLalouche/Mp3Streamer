@@ -7,7 +7,8 @@ import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.mockito.MockitoSugar
 
-import common.io.{JsonableSaver, MemoryRoot}
+import common.io.MemoryRoot
+import common.json.saver.JsonableSaver
 import common.test.{AuxSpecs, MoreMockitoSugar}
 
 class SongCacheSaverTest extends AnyFreeSpec with AuxSpecs with MockitoSugar with MoreMockitoSugar {

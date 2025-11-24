@@ -4,8 +4,8 @@ import com.google.inject.Inject
 import models.{AlbumDir, ArtistDir, Song}
 import musicfinder.ArtistDirsIndex
 
-import common.io.JsonableSaver
 import common.json.Jsonable
+import common.json.saver.JsonableSaver
 import common.rich.RichT.richT
 
 /**

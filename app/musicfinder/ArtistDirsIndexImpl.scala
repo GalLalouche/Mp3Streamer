@@ -8,7 +8,8 @@ import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
 import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 import common.io.DirectoryRef
-import common.json.{Jsonable, JsonableCOW, JsonableCOWFactory, JsonableSaveable}
+import common.json.Jsonable
+import common.json.saver.{JsonableCOW, JsonableCOWFactory, JsonableSaveable}
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichBoolean.richBoolean

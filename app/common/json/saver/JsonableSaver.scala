@@ -1,4 +1,4 @@
-package common.io
+package common.json.saver
 
 import java.io.FileNotFoundException
 import java.time.LocalDateTime
@@ -11,9 +11,10 @@ import scala.util.Try
 
 import common.rich.func.kats.ToMoreFoldableOps._
 
-import common.io.JsonableSaver.Encoding
+import common.io.{DirectoryRef, RootDirectory}
 import common.json.Jsonable
 import common.json.ToJsonableOps._
+import common.json.saver.JsonableSaver.Encoding
 import common.rich.RichT._
 import common.rich.primitives.RichOption._
 import common.rich.primitives.RichString._

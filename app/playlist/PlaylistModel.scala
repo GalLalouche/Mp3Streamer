@@ -9,10 +9,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.kats.MoreMapInstances.mapEmpty
 
-import common.io.JsonableSaver
 import common.json.{Jsonable, OJsonable}
 import common.json.OJsonable.MapJsonable
 import common.json.ToJsonableOps._
+import common.json.saver.JsonableSaver
 import common.rich.RichT.richT
 import common.rich.primitives.RichOption.richOption
 

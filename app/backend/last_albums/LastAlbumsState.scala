@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import cats.data.OptionT
 import cats.implicits.{toFunctorOps, toTraverseOps}
 
-import common.json.JsonableCOWFactory
+import common.json.saver.JsonableCOWFactory
 import common.rich.RichTime.RichClock
 
 @Singleton class LastAlbumsState @Inject() (

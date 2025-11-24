@@ -1,9 +1,8 @@
-package common.json
+package common.json.saver
 
 import scala.concurrent.Future
 
 import common.concurrency.SimpleTypedActor
-import common.io.JsonableSaver
 import common.rich.RichT._
 
 /**
