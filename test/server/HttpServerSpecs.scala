@@ -71,19 +71,12 @@ private abstract class HttpServerSpecs(serverModule: Module)
   def getJson(u: Uri): Future[JsValue] =
     backend.send(request.get(u).response(asJson[JsValue])).map(_.body.getOrThrow)
 
-  def putJson(u: Uri, json: JsValue): Future[String] =
+  def putString(u: Uri, json: JsValue): Future[String] =
     backend.send(request.put(u).body(json)).map(_.body.getOrThrow)
-  def putRaw(u: Uri, json: JsValue): Future[Response[_]] =
-    backend.send(request.put(u).body(json))
 
-  def post(u: Uri): Future[String] =
-    backend.send(request.post(u)).map(_.body.getOrThrow)
-  def postJson(u: Uri, json: JsValue): Future[String] =
-    backend.send(request.post(u).body(json)).map(_.body.getOrThrow)
-  def postJsonRaw(u: Uri, json: JsValue): Future[Response[_]] =
-    backend.send(request.post(u).body(json))
-  def postRaw(u: Uri): Future[Response[_]] =
-    backend.send(request.post(u))
+  def postString(u: Uri): Future[String] = post(u).map(_.body.getOrThrow)
+  def postRaw(u: Uri): Future[Response[_]] = post(u)
+  private def post(u: Uri) = backend.send(request.post(u))
 
   def deleteString(u: Uri): Future[String] =
     backend.send(request.delete(u)).map(_.body.getOrThrow)

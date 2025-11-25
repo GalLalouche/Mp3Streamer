@@ -1,19 +1,22 @@
 package server
 
-import cats.implicits.catsSyntaxFlatMapOps
 import com.google.inject.Module
-import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
-import common.json.RichJson.ImmutableJsonArray
-import common.json.ToJsonableOps.jsonifySingle
-import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 import formatter.UrlDecoder
 import models.ModelJsonable
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.BeforeAndAfterEach
-import play.api.libs.json.{JsArray, JsString, JsValue, Json}
+import play.api.libs.json.{JsArray, Json, JsString, JsValue}
 import playlist.PlaylistJsonableTest
-import scala.concurrent.Future
 import sttp.client3.UriContext
+
+import scala.concurrent.Future
+
+import cats.implicits.catsSyntaxFlatMapOps
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
+
+import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
+import common.json.RichJson.ImmutableJsonArray
+import common.json.ToJsonableOps.jsonifySingle
 
 private class PlaylistTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)
@@ -67,7 +70,7 @@ private class PlaylistTest(serverModule: Module)
   private implicit val root: MemoryRoot = injector.instance[MemoryRoot]
   private def putArbPlaylist(name: String): Future[JsValue] = {
     val $ = PlaylistJsonableTest.arbPlaylistJson.sample.get
-    (putJson(uri"playlist/$name", $.jsonify) shouldEventuallyReturn name) >| $
+    (putString(uri"playlist/$name", $.jsonify) shouldEventuallyReturn name) >| $
   }
 
   private def getPlaylist(name: String): Future[JsValue] =
