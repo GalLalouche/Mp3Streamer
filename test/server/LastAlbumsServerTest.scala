@@ -39,9 +39,9 @@ private class LastAlbumsServerTest(serverModule: Module)
   "get returns albums after update" in {
     val a1 = createAlbumWithSong()
     for {
-      _ <- post(uri"last_albums/update")
+      _ <- postString(uri"last_albums/update")
       a2 = createAlbumWithSong()
-      _ <- post(uri"last_albums/update")
+      _ <- postString(uri"last_albums/update")
       result <- getJson(uri"last_albums")
     } yield result.parse[Seq[AlbumDir]] shouldReturn Vector(a1, a2)
   }
@@ -53,12 +53,12 @@ private class LastAlbumsServerTest(serverModule: Module)
   "dequeue returns next album and removes it from list" in {
     val a1 = createAlbumWithSong()
     for {
-      _ <- post(uri"last_albums/update")
+      _ <- postString(uri"last_albums/update")
       a2 = createAlbumWithSong()
-      _ <- post(uri"last_albums/update")
+      _ <- postString(uri"last_albums/update")
       a3 = createAlbumWithSong()
-      _ <- post(uri"last_albums/update")
-      dequeueResult <- post(uri"last_albums/dequeue")
+      _ <- postString(uri"last_albums/update")
+      dequeueResult <- postString(uri"last_albums/dequeue")
       remainingAlbums <- getJson(uri"last_albums")
     } yield {
       Json.parse(dequeueResult).parse[(AlbumDir, Seq[AlbumDir])] shouldReturn (a1, Vector(a2, a3))
