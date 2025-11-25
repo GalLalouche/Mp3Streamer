@@ -15,5 +15,6 @@ class LyricsParserTest extends AnyFreeSpec with LyricsSpec {
     "Ignores parenthesis comments" in verifyLyrics("parens")
     "instrumental" in verifyInstrumental("instrumental")
     "More BS brackets" in verifyLyrics("bs_brackets")
+    "untranscribed" in verifyNoLyrics("untranscribed")
   }
 }

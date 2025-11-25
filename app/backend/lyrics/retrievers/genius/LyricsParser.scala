@@ -3,6 +3,7 @@ package backend.lyrics.retrievers.genius
 import java.util.regex.Pattern
 
 import backend.lyrics.retrievers.{HtmlLyricsUtils, LyricParseResult, SingleHostParser}
+import backend.lyrics.retrievers.LyricParseResult.NoLyrics
 import models.Song
 import org.jsoup.nodes.{Document, Element, TextNode}
 
@@ -21,12 +22,15 @@ private object LyricsParser extends SingleHostParser {
         .toVector
         .mapIf(_.isEmpty)
         .to(d.selectIterator(".lyrics").toVector)
-    if (v.isEmpty)
-      if (d.wholeText.contains("This song is an instrumental"))
+    if (v.isEmpty) {
+      val wholeText = d.wholeText
+      if (wholeText.contains("This song is an instrumental"))
         LyricParseResult.Instrumental
+      else if (d.wholeText.contains("Lyrics for this song have yet to be transcribed"))
+        NoLyrics
       else
         throw new IllegalArgumentException("Unexpected HTML structure")
-    else if (v == Vector("[Instrumental]") || v == Vector("Instrumental"))
+    } else if (v == Vector("[Instrumental]") || v == Vector("Instrumental"))
       LyricParseResult.Instrumental
     else if (d.wholeText.contains("Lyrics for this song have yet to be released"))
       LyricParseResult.NoLyrics
