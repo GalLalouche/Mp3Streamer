@@ -4,7 +4,9 @@ import com.google.inject.{Inject, Provider, Singleton}
 import models.Song
 import musicfinder.MusicFinder
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+
+import cats.implicits.toFunctorOps
 
 import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
 
@@ -15,12 +17,14 @@ import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
     fastSongSelector: FastSongSelector,
     ssFactory: Provider[MultiStageSongSelectorFactory],
     factory: UpdatableProxyFactory,
+    ec: ExecutionContext,
 ) extends SongSelector {
+  private implicit val iec: ExecutionContext = ec
   private val updater: UpdatableProxy[SongSelector] = factory(
     fastSongSelector,
     () => ssFactory.get().withSongs(mf.getSongFiles.toVector),
   )
-  def update(): Future[Unit] = updater.update()
+  def update(): Future[Unit] = updater.update().void
   update()
-  override def randomSong(): Song = updater.current.randomSong()
+  override def randomSong(): Song = updater.get.randomSong()
 }

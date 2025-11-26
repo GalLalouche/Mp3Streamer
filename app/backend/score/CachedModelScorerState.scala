@@ -3,7 +3,9 @@ package backend.score
 import backend.recon.{Album, Artist, Track}
 import com.google.inject.{Inject, Provider, Singleton}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
+
+import cats.implicits.toFunctorOps
 
 import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
 import common.io.FileRef
@@ -19,11 +21,11 @@ import common.rich.RichFuture.richFuture
   //  CachedModelScorer is that it *isn't* async!
   private lazy val updatable: UpdatableProxy[CachedModelScorer] =
     factory.initialize[CachedModelScorer](provider.get).get
-  def update() = updatable.update()
+  def update(): Future[Unit] = updatable.update().void
 
-  override def explicitScore(a: Artist) = updatable.current.explicitScore(a)
-  override def explicitScore(a: Album) = updatable.current.explicitScore(a)
-  override def explicitScore(s: Track) = updatable.current.explicitScore(s)
-  override def aggregateScore(f: FileRef) = updatable.current.aggregateScore(f)
-  override def fullInfo(s: Track) = updatable.current.fullInfo(s)
+  override def explicitScore(a: Artist) = updatable.get.explicitScore(a)
+  override def explicitScore(a: Album) = updatable.get.explicitScore(a)
+  override def explicitScore(s: Track) = updatable.get.explicitScore(s)
+  override def aggregateScore(f: FileRef) = updatable.get.aggregateScore(f)
+  override def fullInfo(s: Track) = updatable.get.fullInfo(s)
 }

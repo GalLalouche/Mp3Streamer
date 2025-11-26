@@ -9,6 +9,7 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AsyncFreeSpec
 import play.api.libs.json.{JsNumber, JsValue}
 
+import common.concurrency.ActorState
 import common.json.Jsonable
 import common.test.AsyncAuxSpecs
 
@@ -20,7 +21,7 @@ class JsonableCOWImplTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInsta
     override def parse(json: JsValue): Long = json.as[Long]
   }
   private implicit val zeroLong: Zero[Long] = alleycats.Zero[Long](0L)
-  private def $ : JsonableCOW[String, LocalDateTime] = factory[String, Long, LocalDateTime](
+  private def $ : ActorState[String, LocalDateTime] = factory[String, Long, LocalDateTime](
     LocalDateTime.parse(_).atZone(ZoneOffset.UTC).toInstant.toEpochMilli,
     Instant.ofEpochMilli(_).atZone(ZoneOffset.UTC).toLocalDateTime,
   )

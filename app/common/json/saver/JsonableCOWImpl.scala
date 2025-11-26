@@ -2,7 +2,7 @@ package common.json.saver
 
 import scala.concurrent.Future
 
-import common.concurrency.SimpleTypedActor
+import common.concurrency.{ActorState, SimpleTypedActor}
 import common.rich.RichT._
 
 /**
@@ -19,9 +19,9 @@ private class JsonableCOWImpl[Input, Internal: JsonableSaveable: Manifest, Outpu
     saver: JsonableSaver,
     inputToInternal: Input => Internal,
     internalToOutput: Internal => Output,
-) extends JsonableCOW[Input, Output] {
-  def get: Output = value
-  def set(newValue: Input): Future[Output] = actor ! newValue
+) extends ActorState[Input, Output] {
+  override def get: Output = value
+  override def set(newValue: Input): Future[Output] = actor ! newValue
 
   private var value = internalToOutput(implicitly[JsonableSaveable[Internal]].load(saver))
   private val actor = SimpleTypedActor[Input, Output](

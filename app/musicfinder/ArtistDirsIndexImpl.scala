@@ -7,9 +7,10 @@ import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
 
 import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
+import common.concurrency.ActorState
 import common.io.DirectoryRef
 import common.json.Jsonable
-import common.json.saver.{JsonableCOW, JsonableCOWFactory, JsonableSaveable}
+import common.json.saver.{JsonableCOWFactory, JsonableSaveable}
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichBoolean.richBoolean
@@ -34,7 +35,7 @@ private class ArtistDirsIndexImpl(
 private object ArtistDirsIndexImpl {
   def persistentValue(genreFinder: GenreFinder, factory: JsonableCOWFactory)(implicit
       json: Jsonable[ArtistToDirectory],
-  ): JsonableCOW[Iterable[ArtistDir], ArtistDirsIndexImpl] = {
+  ): ActorState[Iterable[ArtistDir], ArtistDirsIndexImpl] = {
     implicit val ev: JsonableSaveable[Seq[ArtistToDirectory]] = JsonableSaveable.fromJsonableLenient
     factory[Iterable[ArtistDir], Seq[ArtistToDirectory], ArtistDirsIndexImpl](
       _.view
