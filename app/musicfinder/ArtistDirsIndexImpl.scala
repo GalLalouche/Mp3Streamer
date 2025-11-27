@@ -53,7 +53,7 @@ private object ArtistDirsIndexImpl {
               // Having multiple dirs for a single artists can stem from them being listed in a
               // split in another artist's directory, or song files appearing at the top level.
               // So we just take the biggest directory in this case.
-              dirs.minBy(_.deepFiles.size)
+              dirs.maxBy(_.deepFiles.size)
           }
           ArtistToDirectory(a, dir)
         }
