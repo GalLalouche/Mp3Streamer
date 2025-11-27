@@ -36,7 +36,6 @@ private[lyrics] object RetrieversModule extends ScalaPrivateModule with PrivateM
       base: Seq[AmphiRetriever],
       bandcampParser: BandcampParser,
       shironetParser: ShironetParser,
-      musixMatchParser: MusixMatchParser,
   ): PassiveParser =
-    new CompositePassiveParser(base ++ Vector(shironetParser, musixMatchParser, bandcampParser))(ec)
+    new CompositePassiveParser(base ++ Vector(shironetParser, bandcampParser))(ec)
 }
