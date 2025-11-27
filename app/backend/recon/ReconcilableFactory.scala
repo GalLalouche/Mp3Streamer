@@ -42,6 +42,8 @@ class ReconcilableFactory @Inject() (
           )
         case _ => Failure(new IllegalArgumentException(s"Bad name for <$dir>"))
       }
+    else if (dir.name == "Singles")
+      Failure(new Exception("Singles directory"))
     else
       Success(songDirectoryParser(dir).headOption.getOrThrow(s"Problem with $dir").release)
 

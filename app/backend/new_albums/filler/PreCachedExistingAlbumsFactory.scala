@@ -1,6 +1,6 @@
 package backend.new_albums.filler
 
-import backend.recon.{Artist, ReconcilableFactory}
+import backend.recon.{Album, Artist, ReconcilableFactory}
 import com.google.inject.Inject
 import musicfinder.ArtistDirsIndex
 
@@ -15,11 +15,16 @@ private class PreCachedExistingAlbumsFactory @Inject() (
 ) {
   def from(albums: Iterable[DirectoryRef]) = new PreCachedExistingAlbums(
     albums
-      .map(reconcilableFactory.toAlbum(_).get)
+      .flatMap(toAlbum)
       .groupBy(_.artist)
       .properMapValues(_.toSet),
   )
 
+  private def toAlbum(dir: DirectoryRef): Option[Album] =
+    reconcilableFactory
+      .toAlbum(dir)
+      .<|(_.failed.foreach(scribe.error(s"Failed to convert <$dir> to an album", _)))
+      .toOption
   def singleArtist(artist: Artist): PreCachedExistingAlbums = {
     val artistDir: DirectoryRef = artistDirsIndex
       .forArtist(artist)
