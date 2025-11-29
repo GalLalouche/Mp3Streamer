@@ -1,12 +1,12 @@
 package backend.recon
 
+import backend.new_albums.IgnoredArtists
 import backend.recon.Reconcilable.SongExtractor
 import com.google.common.annotations.VisibleForTesting
 import com.google.inject.Inject
 import models.{SongTitle, TrackNumber}
 import musicfinder.{ArtistDirsIndex, MusicFinder, SongDirectoryParser}
 
-import scala.collection.View
 import scala.util.{Failure, Success, Try}
 
 import common.io.{DirectoryRef, FileRef}
@@ -18,12 +18,13 @@ class ReconcilableFactory @Inject() (
     mf: MusicFinder,
     songDirectoryParser: SongDirectoryParser,
     artistDirsIndex: ArtistDirsIndex,
+    directoryDiscovery: IgnoredArtists,
 ) {
   private type S = mf.S
 
   // This is Try so the error could be reserved.
   def toAlbum(dir: DirectoryRef): Try[Album] =
-    if (shouldIgnore(dir))
+    if (directoryDiscovery.shouldIgnore(dir))
       Failure(new IllegalArgumentException(s"'$dir' belongs to a Classical artist"))
     else if (dir.name.take(4).exists(_.isDigit))
       dir.name.split(" ", 2) match {
@@ -55,19 +56,6 @@ class ReconcilableFactory @Inject() (
     ReconcilableFactory.capture(f.name).toTry(new Exception(s"$f has invalid file name"))
   def songInfo(f: FileRef): (TrackNumber, SongTitle) =
     trySongInfo(f).getOrElse(songDirectoryParser(f).toTuple(_.trackNumber, _.title))
-  private val IgnoredFolders = Vector("Classical", "Musicals")
-  private def artistDirectoriesTyped: View[S#D] = mf.artistDirs.filterNot(shouldIgnore)
-  // TODO this shouldn't be here.
-  def artistDirectories: View[DirectoryRef] = artistDirectoriesTyped
-  private val prefixLength = {
-    val $ = mf.baseDir.path
-    $.length + (if ($.endsWith("\\") || $.endsWith("/")) 0 else 1)
-  }
-  private def shouldIgnore(dir: DirectoryRef): Boolean = {
-    val genrePrefix = dir.path.drop(prefixLength)
-    IgnoredFolders.exists(genrePrefix.startsWith)
-  }
-  def albumDirectories: View[DirectoryRef] = mf.albumDirs(artistDirectoriesTyped)
 }
 
 private object ReconcilableFactory {

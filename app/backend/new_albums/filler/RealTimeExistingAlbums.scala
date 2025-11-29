@@ -1,5 +1,6 @@
 package backend.new_albums.filler
 
+import backend.new_albums.DirectoryDiscovery
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import com.google.inject.Inject
 import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
@@ -19,6 +20,7 @@ import common.rich.primitives.RichOption.richOption
  */
 private class RealTimeExistingAlbums @Inject() (
     reconcilableFactory: ReconcilableFactory,
+    directoryDiscovery: DirectoryDiscovery,
     artistDirsIndex: ArtistDirsIndex,
     timed: TimedLogger,
     manualAlbumsFinder: ManualAlbumsFinder,
@@ -26,7 +28,7 @@ private class RealTimeExistingAlbums @Inject() (
 ) extends ExistingAlbums {
   private implicit val iec: ExecutionContext = ec
   override def artists: Iterable[Artist] = timed("Fetching artists (lazy)", scribe.info(_)) {
-    reconcilableFactory.artistDirectories.flatMap { artistDir =>
+    directoryDiscovery.artistDirectories.flatMap { artistDir =>
       lazy val albumDir = artistDir.dirs.headOption.getOrThrow(s"Problem with $artistDir")
       artistDirsIndex.forDir(artistDir) match {
         case SingleArtist(artist) => Vector(artist)

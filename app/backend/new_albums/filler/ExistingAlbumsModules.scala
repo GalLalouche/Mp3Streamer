@@ -1,8 +1,9 @@
 package backend.new_albums.filler
 
 import backend.module.{CleanModule, IOSongsModule, StandaloneModule}
+import backend.new_albums.DirectoryDiscovery
 import backend.new_albums.filler.storage.FillerStorageModule
-import backend.recon.{Artist, ReconcilableFactory}
+import backend.recon.Artist
 import com.google.inject.{Guice, Injector, Module, Provides, Singleton}
 import models.TypeAliases.ArtistName
 import net.codingwell.scalaguice.ScalaModule
@@ -29,9 +30,9 @@ object ExistingAlbumsModules {
     @Provides @Singleton private def existingAlbumsCache(
         factory: PreCachedExistingAlbumsFactory,
         timed: TimedLogger,
-        reconcilableFactory: ReconcilableFactory,
+        directoryDiscovery: DirectoryDiscovery,
     ): PreCachedExistingAlbums = timed("Creating cache", scribe.info(_)) {
-      factory.from(reconcilableFactory.albumDirectories)
+      factory.from(directoryDiscovery.albumDirectories)
     }
   }
   private def overriding(overridenModule: Module)(existingAlbumsModule: Module): Injector =
