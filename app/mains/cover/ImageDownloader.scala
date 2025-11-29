@@ -12,7 +12,7 @@ import scala.concurrent.duration.DurationInt
 import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.io.{DirectoryRef, FileRef, InternetTalker}
-import common.io.RichWSRequest._
+import common.io.RichWSResponse.richWSResponse
 
 private object ImageDownloader {
   def folderImage(f: FileRef, local: Boolean, w: => Int, h: => Int, image: => Image): FolderImage =
