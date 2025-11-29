@@ -9,7 +9,7 @@ import common.concurrency.UpdatableProxy.Update
  * Can update itself asynchronously while still serving the old value. This differs from
  * [[common.json.saver.JsonableCOW]] since obviously the proxy does not (necessarily) copies itself
  * on updates, but also in that the proxy can update itself, and that it is assumed this is a long
- * process (hence the use of [[Future]] all around.
+ * process (hence the use of [[Future]] all around).
  */
 class UpdatableProxy[A] private[concurrency] (
     private var state: A,

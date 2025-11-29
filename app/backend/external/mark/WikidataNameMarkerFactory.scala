@@ -11,7 +11,6 @@ import scala.concurrent.{ExecutionContext, Future}
 import common.RichJsoup._
 import common.io.InternetTalker
 import common.rich.RichT._
-import common.rich.primitives.RichBoolean._
 
 private class WikidataNameMarkerFactory @Inject() (it: InternetTalker, ec: ExecutionContext) {
   private implicit val iec: ExecutionContext = ec
@@ -31,6 +30,6 @@ private object WikidataNameMarkerFactory {
       l: MarkedLink[R],
       it: InternetTalker,
   )(implicit ec: ExecutionContext): Future[LinkMark] =
-    if (l.isNew.isFalse) Future.successful(l.mark)
-    else it.downloadDocument(l.link).map(extract(_) |> LinkMark.Text.apply)
+    if (l.isNew) it.downloadDocument(l.link).map(extract(_) |> LinkMark.Text.apply)
+    else Future.successful(l.mark)
 }

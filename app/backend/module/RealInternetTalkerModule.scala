@@ -18,8 +18,8 @@ object RealInternetTalkerModule {
     .load()
     .withValue("akka.loglevel", ConfigValueFactory.fromAnyRef("WARNING"))
     .withValue("akka.stdout-loglevel", ConfigValueFactory.fromAnyRef("WARNING"))
-  val warningOnlyDaemonicConfig: Config = warningOnlyConfig
-    .withValue("akka.daemonic", ConfigValueFactory.fromAnyRef(true))
+  private val warningOnlyDaemonicConfig: Config =
+    warningOnlyConfig.withValue("akka.daemonic", ConfigValueFactory.fromAnyRef(true))
   def daemonic: Module = new RealInternetTalkerModule(
     Materializer(ActorSystem.create("Standalone-Config-WS-System", warningOnlyDaemonicConfig)),
   )

@@ -21,31 +21,28 @@ trait LyricsSpec extends DocumentSpecs { self: Suite =>
       htmlFileName: String,
       resultFileName: String,
       trackNumber: TrackNumber = 1,
-  ): Assertion =
-    parseDocument(htmlFileName, trackNumber) match {
-      case LyricParseResult.Lyrics(l) =>
-        // RichFile.readAll doesn't read the final linebreak... Fixing it would probably cause way too many bugs :|
-        val contents = managed(Source.fromFile(getResourceFile(resultFileName + ".txt"), "UTF-8"))
-          .map(_.mkString)
-          .opt
-          .get
-        l shouldReturn contents
-      case res => fail(s"Invalid result: <$res>")
-    }
+  ): Assertion = parseDocument(htmlFileName, trackNumber) match {
+    case LyricParseResult.Lyrics(l) =>
+      // RichFile.readAll doesn't read the final linebreak... Fixing it would probably cause way too many bugs :|
+      val contents = managed(Source.fromFile(getResourceFile(resultFileName + ".txt"), "UTF-8"))
+        .map(_.mkString)
+        .opt
+        .get
+      l shouldReturn contents
+    case res => fail(s"Invalid result: <$res>")
+  }
   protected[retrievers] def verifyNoLyrics(
       htmlFileName: String,
       trackNumber: TrackNumber = 1,
-  ): Assertion =
-    parseDocument(htmlFileName, trackNumber) match {
-      case NoLyrics => Succeeded
-      case res => fail(s"Invalid result; expected no lyrics, but got: <$res>")
-    }
+  ): Assertion = parseDocument(htmlFileName, trackNumber) match {
+    case NoLyrics => Succeeded
+    case res => fail(s"Invalid result; expected no lyrics, but got: <$res>")
+  }
 
   protected[retrievers] def verifyInstrumental(
       htmlFileName: String,
       trackNumber: TrackNumber = 1,
-  ): Assertion =
-    (parseDocument(htmlFileName, trackNumber) should be).an(instrumental)
+  ): Assertion = (parseDocument(htmlFileName, trackNumber) should be).an(instrumental)
   private def parseDocument(htmlFileName: String, trackNumber: TrackNumber = 1): LyricParseResult =
     parser(getDocument(htmlFileName + ".html"), factory.song(trackNumber = trackNumber))
 }

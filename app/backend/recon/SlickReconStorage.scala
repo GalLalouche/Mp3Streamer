@@ -114,9 +114,7 @@ private[backend] class SlickAlbumReconStorage @Inject() (
     .map(_.map(e => e._1 -> (e._2, e._3)).toMap)
     .map(normalizedToRecon =>
       Function.unlift(album =>
-        normalizedToRecon
-          .get(album.normalize)
-          .map(Function.tupled(aux.toStoredReconResult)),
+        normalizedToRecon.get(album.normalize).map(Function.tupled(aux.toStoredReconResult)),
       ),
     )
   override def cachedKeys =

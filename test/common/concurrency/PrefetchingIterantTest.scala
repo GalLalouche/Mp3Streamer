@@ -12,7 +12,7 @@ import common.test.AsyncAuxSpecs
 class PrefetchingIterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
   implicit override def executionContext: ExecutionContext = ThreadlessContext
 
-  private class TogellableProducer extends SimpleTypedActor[Unit, Option[Int]] {
+  private class ToggleableProducer extends SimpleTypedActor[Unit, Option[Int]] {
     var counter = 1
     private var stopped = false
     def stop(): Unit = stopped = true
@@ -26,7 +26,7 @@ class PrefetchingIterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
       }
   }
 
-  private val actor = new TogellableProducer
+  private val actor = new ToggleableProducer
 
   private val $ : Iterant[Future, Int] =
     Iterant.prefetching(Iterant.unfold(OptionT(actor ! ())), 10)

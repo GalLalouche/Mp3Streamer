@@ -13,6 +13,7 @@ import common.rich.func.kats.ToMoreUnorderedFoldableOps.toMoreUnorderedFoldableO
 
 import common.json.RichJson._
 import common.rich.RichT.richT
+import common.rich.primitives.RichOption.richOption
 
 private class AlbumReconciler @Inject() (
     ec: ExecutionContext,
@@ -35,14 +36,9 @@ private class AlbumReconciler @Inject() (
     .iterator
     .filter(_.has("first-release-date"))
     .filter(_.ostr("primary-type").exists(Set("Album", "EP")))
-    // TODO topByFilter?
     .fproduct(js => albumReconScorer(album(js, a.artist), a))
     .filter(_._2 >= 0.85)
     .maximumByOption(_._2)
-    .map(_._1)
-    .map(_.str("id").thrush(ReconID.validateOrThrow))
-    .<| {
-      case None => scribe.debug(s"Could not reconcile album: <$a>")
-      case _ => ()
-    }
+    .map(_._1.str("id") |> ReconID.validateOrThrow)
+    .<|(_.ifNone(scribe.debug(s"Could not reconcile album: <$a>")))
 }

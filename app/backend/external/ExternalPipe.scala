@@ -30,7 +30,8 @@ import common.rich.primitives.RichOption.richOption
  *   Any additional, standalone reconciliations that can be performed
  * @param expanders
  *   Attempts to expand the links found by scraping the initial set
- * @param markers:
+ * @param markers
+ *   Adds special markers to the links, e.g., new or missing
  */
 private class ExternalPipe[R <: Reconcilable](
     reconciler: Retriever[R, ReconID],
