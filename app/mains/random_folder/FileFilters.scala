@@ -11,14 +11,13 @@ import play.api.libs.json.Json
 import common.Filter
 import common.io.{IODirectory, IOFile}
 import common.json.RichJson.DynamicJson
+import common.rich.RichT.lazyT
 import common.rich.collections.RichSet.richSet
 
 private object FileFilters {
   private def removeGenres(genreFinder: GenreFinder, f: File)(
       g: PartialFunction[Genre, Boolean],
-  ): Boolean =
-    // TODO RichPartialFunction.getOrElse
-    g.lift(genreFinder(IODirectory(f.getParent))).getOrElse(true)
+  ): Boolean = g.applyOrElse(genreFinder(IODirectory(f.getParent)), true.const)
   class SansMetal @Inject() (genreFinder: GenreFinder) extends Filter[IOFile] {
     override def passes(f: IOFile): Boolean = removeGenres(genreFinder, f.file) { case Metal(_) =>
       false

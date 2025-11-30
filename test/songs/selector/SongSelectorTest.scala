@@ -2,7 +2,7 @@ package songs.selector
 
 import backend.module.{FakeMusicFinder, TestModuleConfiguration}
 import backend.recon.{Album, Artist, Track}
-import backend.score.{CachedModelScorer, ModelScore, OptionalModelScore, ScoreBasedProbability}
+import backend.score.{IndividualScorer, ModelScore, OptionalModelScore, ScoreBasedProbability}
 import com.google.inject.Guice
 import genre.GenreFinder
 import models.{FakeModelFactory, MemorySong, Song}
@@ -14,7 +14,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 import common.guice.RichModule.richModule
-import common.io.{DirectoryRef, FileRef}
+import common.io.DirectoryRef
 import common.test.AuxSpecs
 
 class SongSelectorTest
@@ -38,12 +38,10 @@ class SongSelectorTest
           override def apply(s: Song) = 0.5
           override def apply(s: ModelScore) = 0.5
         })
-        bind[CachedModelScorer].toInstance(new CachedModelScorer {
-          override def explicitScore(a: Artist) = ???
-          override def explicitScore(a: Album) = ???
+        bind[IndividualScorer].toInstance(new IndividualScorer {
+          override def explicitScore(a: Artist): OptionalModelScore = ???
+          override def explicitScore(a: Album): OptionalModelScore = ???
           override def explicitScore(t: Track) = OptionalModelScore.Scored(ModelScore.Okay)
-          override def aggregateScore(f: FileRef) = ???
-          override def fullInfo(t: Track) = ???
         })
       }
     }),

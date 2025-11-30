@@ -3,7 +3,7 @@ package backend.score.file
 import java.util.regex.Pattern
 
 import backend.recon.{Album, Artist, Track}
-import backend.score.{CachedModelScorer, OptionalModelScore}
+import backend.score.{IndividualScorer, OptionalModelScore}
 import backend.score.file.ScoreParser.OrgPrefix
 import backend.score.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
 import com.google.inject.Inject
@@ -25,7 +25,7 @@ private class ScoreParser @Inject() (
     artistScoreStorage: ArtistScoreStorage,
     albumScoreStorage: AlbumScoreStorage,
     trackScoreStorage: TrackScoreStorage,
-    cachedModelScorer: CachedModelScorer,
+    scorer: IndividualScorer,
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
@@ -62,9 +62,9 @@ private class ScoreParser @Inject() (
         return None
     $.filter(e =>
       e._1.fold(
-        cachedModelScorer.explicitScore,
-        cachedModelScorer.explicitScore,
-        cachedModelScorer.explicitScore,
+        scorer.explicitScore,
+        scorer.explicitScore,
+        scorer.explicitScore,
       ) != e._2,
     ).toOption.listen(e => scribe.info(s"Storing <$e>"))
   }

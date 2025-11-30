@@ -1,7 +1,7 @@
 package backend.score
 
-import backend.recon.{Album, Artist, Track}
 import backend.recon.Reconcilable.SongExtractor
+import backend.recon.Track
 import models.{FakeModelFactory, Song}
 import org.scalatest.tags.Slow
 import org.scalatest.wordspec.AnyWordSpec
@@ -38,14 +38,10 @@ class FlatScoreBasedProbabilityTest extends AnyWordSpec with AuxSpecs with Mocki
         val songs = Vector.tabulate(20000)(i => modelFactory.song(title = i.toString))
         val tracks = songs.mapBy(_.track)
         val songScores = songs.view.map(_.file: FileRef).map(_ -> randomScore).toMap
-        object FakeModelScorer extends CachedModelScorer {
-          override def explicitScore(a: Artist) = ???
-          override def explicitScore(a: Album) = ???
-          override def explicitScore(t: Track) = ???
+        object FakeModelScorer extends AggregateScorer {
           override def aggregateScore(f: FileRef) =
             songScores(f).onlyIf(random.flipCoin(0.95)).toOptionalModelScore
           override def aggregateScore(t: Track) = aggregateScore(tracks(t).file)
-          override def fullInfo(t: Track) = ???
         }
         val allFiles = songScores.keys.toVector
         val $ = FlatScoreBasedProbability.withoutAsserts(

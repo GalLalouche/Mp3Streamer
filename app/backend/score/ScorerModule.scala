@@ -12,12 +12,14 @@ object ScorerModule extends ScalaModule {
     bind[StorageScorer[Album]].to[AlbumScoreStorage]
     bind[StorageScorer[Track]].to[TrackScoreStorage]
     bind[ScoreBasedProbability].to[FlatScoreBasedProbability]
-    bind[CachedModelScorer].to[CachedModelScorerState]
+    bind[AggregateScorer].to[CachedModelScorerState]
+    bind[IndividualScorer].to[CachedModelScorerState]
+    bind[FullInfoScorer].to[CachedModelScorerState]
     bind[FullInfoModelScorer].to[ScorerModel]
   }
 
   @Provides private def provideScoreBasedProbability(
-      scorer: CachedModelScorer,
+      scorer: AggregateScorer,
       mf: MusicFinder,
   ): FlatScoreBasedProbability = {
     def requiredProbability: ModelScore => Double = {

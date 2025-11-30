@@ -1,7 +1,7 @@
 package songs.selector
 
 import backend.recon.Reconcilable.SongExtractor
-import backend.score.{CachedModelScorer, FullInfoScore, ScoreSource}
+import backend.score.IndividualScorer
 import genre.{Genre, GenreFinder}
 import models.Song
 import org.apache.commons.lang3.StringUtils
@@ -13,7 +13,7 @@ import common.rich.primitives.RichBoolean.richBoolean
 
 private class LengthFilter(
     genreFinder: GenreFinder,
-    scorer: CachedModelScorer,
+    scorer: IndividualScorer,
     minLength: Duration,
 ) extends Filter[Song] {
   override def passes(song: Song): Boolean = genreFinder.forArtist(song.artist) match {
@@ -24,8 +24,5 @@ private class LengthFilter(
   }
 
   // If a specific song has been explicitly scored, it overrides the length requirements.
-  private def hasExplicitSongScore(song: Song): Boolean = scorer.fullInfo(song.track) match {
-    case FullInfoScore.Default => false
-    case FullInfoScore.Scored(_, source, _, _, _) => source == ScoreSource.Song
-  }
+  private def hasExplicitSongScore(song: Song): Boolean = scorer.explicitScore(song.track).isDefined
 }

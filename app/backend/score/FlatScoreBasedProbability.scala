@@ -12,7 +12,7 @@ import common.rich.primitives.RichDouble.richDouble
 /** Returns a [[ModelScore]] based weight for the song to be chosen. */
 @Singleton private class FlatScoreBasedProbability private (
     defaultScore: Percentage,
-    scorer: CachedModelScorer,
+    scorer: AggregateScorer,
     probabilities: Map[ModelScore, Percentage],
 ) extends ScoreBasedProbability {
   def apply(s: Song): Percentage =
@@ -25,7 +25,7 @@ private object FlatScoreBasedProbability {
   def apply(
       map: ModelScore => Double,
       defaultScore: Percentage,
-      scorer: CachedModelScorer,
+      scorer: AggregateScorer,
       songFiles: IndexedSeq[FileRef],
       withAsserts: Boolean,
   ): FlatScoreBasedProbability = {
@@ -95,14 +95,14 @@ private object FlatScoreBasedProbability {
   def withAsserts(
       map: ModelScore => Double,
       defaultScore: Percentage,
-      scorer: CachedModelScorer,
+      scorer: AggregateScorer,
       songFiles: IndexedSeq[FileRef],
   ): FlatScoreBasedProbability = apply(map, defaultScore, scorer, songFiles, withAsserts = true)
 
   private[score] def withoutAsserts(
       map: ModelScore => Double,
       defaultScore: Percentage,
-      scorer: CachedModelScorer,
+      scorer: AggregateScorer,
       songFiles: IndexedSeq[FileRef],
   ): FlatScoreBasedProbability = apply(map, defaultScore, scorer, songFiles, withAsserts = false)
 }

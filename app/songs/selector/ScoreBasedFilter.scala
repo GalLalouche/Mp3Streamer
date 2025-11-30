@@ -1,7 +1,7 @@
 package songs.selector
 
 import backend.recon.Reconcilable.SongExtractor
-import backend.score.{CachedModelScorer, ScoreBasedProbability}
+import backend.score.{FullInfoScorer, ScoreBasedProbability}
 import backend.score.FullInfoScore.Scored
 import com.google.inject.Inject
 import models.Song
@@ -13,12 +13,12 @@ import common.rich.RichT.richT
 
 private class ScoreBasedFilter @Inject() (
     random: Random,
-    cachedModelScorer: CachedModelScorer,
+    scorer: FullInfoScorer,
     scoreBasedProbability: ScoreBasedProbability,
 ) extends Filter[Song] {
   override def passes(song: Song): Boolean = {
     val percentage = scoreBasedProbability(song)
-    val fullInfoScore = cachedModelScorer.fullInfo(song.track)
+    val fullInfoScore = scorer.fullInfo(song.track)
     val score = fullInfoScore.toOptionalModelScore
     val source = fullInfoScore.safeCast[Scored].map(_.source).getOrElse("N/A")
     val shortSongString = s"${song.artistName} - ${song.title} (${score.entryName}, $source)"

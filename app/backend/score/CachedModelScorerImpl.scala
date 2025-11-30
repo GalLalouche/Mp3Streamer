@@ -29,7 +29,7 @@ private class CachedModelScorerImpl @Inject() (
     reconFactory: ReconcilableFactory,
     songTagParser: SongTagParser,
     ec: ExecutionContext,
-) extends CachedModelScorer {
+) {
   private implicit val iec: ExecutionContext = ec
 
   private lazy val songScores: Map[YearlessTrack, ModelScore] =
@@ -42,14 +42,13 @@ private class CachedModelScorerImpl @Inject() (
     explicitScore(_).toModelScore.hoistId,
     explicitScore(_).toModelScore.hoistId,
   )
-  override def explicitScore(a: Artist): OptionalModelScore =
-    artistScores.get(a).toOptionalModelScore
-  override def explicitScore(a: Album): OptionalModelScore =
+  def explicitScore(a: Artist): OptionalModelScore = artistScores.get(a).toOptionalModelScore
+  def explicitScore(a: Album): OptionalModelScore =
     albumScores.get(a.toYearless).toOptionalModelScore
-  override def explicitScore(t: Track): OptionalModelScore =
+  def explicitScore(t: Track): OptionalModelScore =
     songScores.get(t.toYearless).toOptionalModelScore
 
-  override def aggregateScore(f: FileRef): OptionalModelScore = {
+  def aggregateScore(f: FileRef): OptionalModelScore = {
     lazy val id3Song = songTagParser(f)
     val songTitle =
       reconFactory.trySongInfo(f).|>(toOption(f, "song")).map(_._2).getOrElse(id3Song.title)
@@ -63,7 +62,7 @@ private class CachedModelScorerImpl @Inject() (
       .toOptionalModelScore
   }
 
-  override def fullInfo(t: Track) = aux(t)
+  def fullInfo(t: Track): Id[FullInfoScore] = aux(t)
 
   private def toOption[A](fileRef: FileRef, subject: String)(t: Try[A]): Option[A] = t match {
     case Failure(exception) =>

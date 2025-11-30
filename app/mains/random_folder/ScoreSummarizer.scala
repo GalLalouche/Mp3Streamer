@@ -1,7 +1,7 @@
 package mains.random_folder
 
 import backend.recon.Reconcilable.SongExtractor
-import backend.score.{CachedModelScorer, ModelScore}
+import backend.score.{AggregateScorer, ModelScore}
 import com.google.inject.Inject
 import musicfinder.SongDirectoryParser
 
@@ -11,7 +11,7 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class ScoreSummarizer @Inject() (
     songDirectoryParser: SongDirectoryParser,
-    scorer: CachedModelScorer,
+    scorer: AggregateScorer,
 ) {
   def summary(
       outputDir: IODirectory,

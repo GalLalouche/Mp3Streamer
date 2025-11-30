@@ -1,6 +1,6 @@
 package songs.selector
 
-import backend.score.CachedModelScorer
+import backend.score.IndividualScorer
 import com.google.inject.Provides
 import genre.GenreFinder
 import musicfinder.MusicFinder
@@ -20,6 +20,6 @@ private[songs] object SelectorModule extends ScalaModule with ModuleUtils {
 
   @Provides private def lengthFilter(
       genreFinder: GenreFinder,
-      cachedModelScorer: CachedModelScorer,
-  ) = new LengthFilter(genreFinder, cachedModelScorer, minLength = 2.minutes)
+      scorer: IndividualScorer,
+  ) = new LengthFilter(genreFinder, scorer, minLength = 2.minutes)
 }

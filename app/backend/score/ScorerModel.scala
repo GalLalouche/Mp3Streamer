@@ -19,11 +19,10 @@ private class ScorerModel @Inject() (
     ec: ExecutionContext,
     fileScorer: FileScorer,
 ) extends FullInfoModelScorer {
-  override def apply(s: Song): Future[FullInfoScore] = aux(s.track)
+  override def apply(s: Song): Future[FullInfoScore] =
+    Future.successful(cachedModelScorerState.fullInfo(s.track))
 
   private implicit val iec: ExecutionContext = ec
-  private val aux =
-    new CompositeScorer[Future](trackScorer.apply, albumScorer.apply, artistScorer.apply)
 
   override def updateSongScore(song: Song, score: OptionalModelScore): Future[Unit] =
     trackScorer.updateScore(song.track, score) >> cachedModelScorerState.update()

@@ -1,7 +1,7 @@
 package backend.score.file
 
 import backend.recon.Reconcilable.SongExtractor
-import backend.score.CachedModelScorer
+import backend.score.IndividualScorer
 import com.google.inject.Inject
 import models.{AlbumDir, ArtistDir, Song}
 
@@ -19,7 +19,7 @@ private object Scoreable {
     def scoreFormat: String = ev.scoreFormat(a)
   }
 
-  class ScoreableImpl @Inject() (scorer: CachedModelScorer) {
+  class ScoreableImpl @Inject() (scorer: IndividualScorer) {
     def artistDir: Scoreable[ArtistDir] = new Scoreable[ArtistDir] {
       override type Child = AlbumDir
       override def childrenEv: Scoreable[AlbumDir] = albumDir
