@@ -39,13 +39,13 @@ private object ScorerFormatter {
 
   private implicit val songScoreJsonable: JsonWriteable[FullInfoScore] = {
     case FullInfoScore.Default => Json.obj()
-    case FullInfoScore.Scored(score, source, song, album, artist) =>
+    case scored: FullInfoScore.Scored =>
       Json.obj(
-        "score" -> score.entryName,
-        "source" -> source.toString,
-        "song" -> song.entryName,
-        "album" -> album.entryName,
-        "artist" -> artist.entryName,
+        "score" -> scored.score.entryName,
+        "source" -> scored.source.toString,
+        "song" -> scored.songScore.entryName,
+        "album" -> scored.albumScore.entryName,
+        "artist" -> scored.artistScore.entryName,
       )
   }
 }

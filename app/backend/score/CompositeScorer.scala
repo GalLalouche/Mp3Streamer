@@ -1,6 +1,7 @@
 package backend.score
 
 import backend.recon.{Album, Artist, Track}
+import backend.score.FullInfoScore.{AlbumScored, ArtistScored, SongScored}
 
 import cats.FlatMap
 import cats.data.OptionT
@@ -19,18 +20,9 @@ private class CompositeScorer[M[_]: FlatMap](
     songScore <- songScorer(t).value
     albumScore <- albumScorer(t.album).value
     artistScore <- artistScorer(t.artist).value
-  } yield {
-    def makeScored(source: ScoreSource)(score: ModelScore) = FullInfoScore.Scored(
-      score,
-      source,
-      songScore.toOptionalModelScore,
-      albumScore.toOptionalModelScore,
-      artistScore.toOptionalModelScore,
-    )
-    songScore
-      .map(makeScored(ScoreSource.Song))
-      .orElse(albumScore.map(makeScored(ScoreSource.Album)))
-      .orElse(artistScore.map(makeScored(ScoreSource.Artist)))
-      .getOrElse(FullInfoScore.Default)
-  }
+  } yield songScore
+    .map(SongScored(_, albumScore.toOptionalModelScore, artistScore.toOptionalModelScore))
+    .orElse(albumScore.map(AlbumScored(_, artistScore.toOptionalModelScore)))
+    .orElse(artistScore.map(ArtistScored))
+    .getOrElse(FullInfoScore.Default)
 }

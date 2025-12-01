@@ -127,13 +127,13 @@ private object FoobarScorer {
         albumScore = OptionalModelScore.Default.entryName,
         artistScore = OptionalModelScore.Default.entryName,
       )
-    case FullInfoScore.Scored(score, source, songScore, albumScore, artistScore) =>
+    case scored: FullInfoScore.Scored =>
       NullableSongScore(
-        score = score.entryName,
-        source = source.toString,
-        songScore = songScore.entryName,
-        albumScore = albumScore.entryName,
-        artistScore = artistScore.entryName,
+        score = scored.score.entryName,
+        source = scored.source.toString,
+        scored.songScore.entryName,
+        scored.albumScore.entryName,
+        scored.artistScore.entryName,
       )
   }
   private val comboValues = OptionalModelScore.entryNames
