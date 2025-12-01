@@ -10,6 +10,8 @@ import org.scalatestplus.mockito.MockitoSugar
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
+import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
+
 import common.io.FileRef
 import common.rich.RichEnumeratum.richEnumeratum
 import common.rich.RichRandom.richRandom
@@ -39,8 +41,15 @@ class FlatScoreBasedProbabilityTest extends AnyWordSpec with AuxSpecs with Mocki
         val tracks = songs.mapBy(_.track)
         val songScores = songs.view.map(_.file: FileRef).map(_ -> randomScore).toMap
         object FakeModelScorer extends AggregateScorer {
-          override def aggregateScore(f: FileRef) =
-            songScores(f).onlyIf(random.flipCoin(0.95)).toOptionalModelScore
+          override def aggregateScore(f: FileRef) = {
+            SourcedOptionalModelScore
+            songScores(f)
+              .onlyIf(random.flipCoin(0.95))
+              .mapHeadOrElse(
+                SourcedOptionalModelScore.Scored(_, ScoreSource.Song),
+                SourcedOptionalModelScore.Default,
+              )
+          }
           override def aggregateScore(t: Track) = aggregateScore(tracks(t).file)
         }
         val allFiles = songScores.keys.toVector

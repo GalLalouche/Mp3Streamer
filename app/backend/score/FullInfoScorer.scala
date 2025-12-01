@@ -2,6 +2,6 @@ package backend.score
 
 import backend.recon.Track
 
-trait FullInfoScorer {
+private trait FullInfoScorer {
   def fullInfo(s: Track): FullInfoScore
 }

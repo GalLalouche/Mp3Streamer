@@ -48,7 +48,7 @@ private class CachedModelScorerImpl @Inject() (
   def explicitScore(t: Track): OptionalModelScore =
     songScores.get(t.toYearless).toOptionalModelScore
 
-  def aggregateScore(f: FileRef): OptionalModelScore = {
+  def aggregateScore(f: FileRef): SourcedOptionalModelScore = {
     lazy val id3Song = songTagParser(f)
     val songTitle =
       reconFactory.trySongInfo(f).|>(toOption(f, "song")).map(_._2).getOrElse(id3Song.title)
@@ -57,9 +57,10 @@ private class CachedModelScorerImpl @Inject() (
     val artist = album.artist
     songScores
       .get(YearlessTrack(songTitle, album))
-      .orElse(albumScores.get(album))
-      .orElse(artistScores.get(artist))
-      .toOptionalModelScore
+      .map(SourcedOptionalModelScore.Scored(_, ScoreSource.Song))
+      .orElse(albumScores.get(album).map(SourcedOptionalModelScore.Scored(_, ScoreSource.Album)))
+      .orElse(artistScores.get(artist).map(SourcedOptionalModelScore.Scored(_, ScoreSource.Artist)))
+      .getOrElse(SourcedOptionalModelScore.Default)
   }
 
   def fullInfo(t: Track): Id[FullInfoScore] = aux(t)
