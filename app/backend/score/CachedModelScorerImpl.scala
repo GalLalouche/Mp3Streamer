@@ -10,6 +10,7 @@ import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
 
 import cats.Id
+import cats.implicits.toBifunctorOps
 import common.rich.func.kats.ToTransableOps.toHoistIdOps
 
 import common.io.FileRef
@@ -52,8 +53,10 @@ private class CachedModelScorerImpl @Inject() (
     lazy val id3Song = songTagParser(f)
     val songTitle =
       reconFactory.trySongInfo(f).|>(toOption(f, "song")).map(_._2).getOrElse(id3Song.title)
-    val album =
-      reconFactory.toAlbum(f.parent).|>(toOption(f, "album")).getOrElse(id3Song.release).toYearless
+    val album = {
+      val albumAsTry = reconFactory.toAlbum(f.parent).leftMap(e => new Exception(e.toString)).toTry
+      toOption(f, "album")(albumAsTry).getOrElse(id3Song.release).toYearless
+    }
     val artist = album.artist
     songScores
       .get(YearlessTrack(songTitle, album))

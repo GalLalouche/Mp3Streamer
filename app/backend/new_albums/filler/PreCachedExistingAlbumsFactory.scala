@@ -23,7 +23,7 @@ private class PreCachedExistingAlbumsFactory @Inject() (
   private def toAlbum(dir: DirectoryRef): Option[Album] =
     reconcilableFactory
       .toAlbum(dir)
-      .<|(_.failed.foreach(scribe.error(s"Failed to convert <$dir> to an album", _)))
+      .<|(_.left.foreach(e => scribe.error(s"Failed to convert <$dir> to an album due to <$e>")))
       .toOption
   def singleArtist(artist: Artist): PreCachedExistingAlbums = {
     val artistDir: DirectoryRef = artistDirsIndex

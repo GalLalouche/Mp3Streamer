@@ -2,12 +2,14 @@ package backend.recon
 
 import backend.new_albums.IgnoredArtists
 import backend.recon.Reconcilable.SongExtractor
+import backend.recon.ReconcilableFactory.AlbumParseError
+import backend.recon.ReconcilableFactory.AlbumParseError.{NoSongs, SinglesDirectory, UnparsableName}
 import com.google.common.annotations.VisibleForTesting
 import com.google.inject.Inject
 import models.{SongTitle, TrackNumber}
 import musicfinder.{ArtistDirsIndex, MusicFinder, SongDirectoryParser}
 
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 import common.io.{DirectoryRef, FileRef}
 import common.rich.RichT._
@@ -23,9 +25,9 @@ class ReconcilableFactory @Inject() (
   private type S = mf.S
 
   // This is Try so the error could be reserved.
-  def toAlbum(dir: DirectoryRef): Try[Album] =
+  def toAlbum(dir: DirectoryRef): Either[AlbumParseError, Album] =
     if (directoryDiscovery.shouldIgnore(dir))
-      Failure(new IllegalArgumentException(s"'$dir' belongs to a Classical artist"))
+      Left(AlbumParseError.ClassicalArtist)
     else if (dir.name.take(4).exists(_.isDigit))
       dir.name.split(" ", 2) match {
         case Array(yearStr, title) =>
@@ -34,19 +36,19 @@ class ReconcilableFactory @Inject() (
             yearStr.length == 4 || yearStr.length == 5,
             s"<$yearStr> has weird format for <$dir>",
           )
-          Success(
+          Right(
             Album(
               title,
               yearStr.take(4).toInt,
               artistDirsIndex.forDir(dir.parent).toOption.getOrElse(extractArtistFromAlbumDir(dir)),
             ),
           )
-        case _ => Failure(new IllegalArgumentException(s"Bad name for <$dir>"))
+        case _ => Left(UnparsableName)
       }
     else if (dir.name == "Singles")
-      Failure(new Exception("Singles directory"))
+      Left(SinglesDirectory)
     else
-      Success(songDirectoryParser(dir).headOption.getOrThrow(s"Problem with $dir").release)
+      songDirectoryParser(dir).headOption.map(_.release).toRight(NoSongs)
 
   /** Throws if artist could not be extracted! */
   def extractArtistFromAlbumDir(albumDir: DirectoryRef): Artist =
@@ -58,14 +60,22 @@ class ReconcilableFactory @Inject() (
     trySongInfo(f).getOrElse(songDirectoryParser(f).toTuple(_.trackNumber, _.title))
 }
 
-private object ReconcilableFactory {
+object ReconcilableFactory {
   private val DashRegex = """(\d+) - (.*)\.[^.]+""".r
   private val DotRegex = """(\d+)\. (.*)\.[^.]+""".r
 
   private val compositeGroupMatch = Vector(DashRegex, DotRegex)
   @VisibleForTesting
-  def capture(fileName: String): Option[(TrackNumber, SongTitle)] =
+  private[recon] def capture(fileName: String): Option[(TrackNumber, SongTitle)] =
     compositeGroupMatch
       .firstSome(_.findAllIn(fileName).optFilter(_.matchData.nonEmpty))
       .map(_.toTuple(_.group(1).toInt, _.group(2)))
+
+  sealed trait AlbumParseError
+  object AlbumParseError {
+    case object SinglesDirectory extends AlbumParseError
+    case object ClassicalArtist extends AlbumParseError
+    case object NoSongs extends AlbumParseError
+    case object UnparsableName extends AlbumParseError
+  }
 }

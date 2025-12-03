@@ -2,6 +2,7 @@ package backend.new_albums.filler
 
 import backend.new_albums.DirectoryDiscovery
 import backend.recon.{Album, Artist, ReconcilableFactory}
+import backend.recon.ReconcilableFactory.AlbumParseError.SinglesDirectory
 import com.google.inject.Inject
 import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
 import musicfinder.ArtistDirsIndex
@@ -46,5 +47,14 @@ private class RealTimeExistingAlbums @Inject() (
       .getOrThrow(s"Could not find albums for artist $artist")
 
   private def getAlbums(artist: Artist): Option[Set[Album]] =
-    artistDirsIndex.forArtist(artist).map(_.dirs.map(reconcilableFactory.toAlbum(_).get).toSet)
+    artistDirsIndex
+      .forArtist(artist)
+      .map(
+        _.dirs
+          .flatMap(reconcilableFactory.toAlbum(_) match {
+            case Left(SinglesDirectory) => None
+            case Right(a) => Some(a)
+          })
+          .toSet,
+      )
 }

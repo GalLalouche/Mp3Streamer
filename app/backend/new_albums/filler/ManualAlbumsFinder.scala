@@ -7,10 +7,13 @@ import musicfinder.{MusicFinder, SongDirectoryParser}
 
 import scala.concurrent.Future
 
+import cats.implicits.toBifunctorOps
+
 import common.TimedLogger
 import common.concurrency.SimpleTypedActor
 import common.io.DirectoryRef
 import common.rich.RichT.richT
+import common.rich.primitives.RichEither.richEitherString
 
 @Singleton private class ManualAlbumsFinder @Inject() (
     timed: TimedLogger,
@@ -28,7 +31,7 @@ import common.rich.RichT.richT
   ) {
     mf.albumDirs
       .filter(songDirectoryParser(_).head.artist == artist)
-      .map((e: DirectoryRef) => reconcilableFactory.toAlbum(e).get)
+      .map((e: DirectoryRef) => reconcilableFactory.toAlbum(e).leftMap(_.toString).getOrThrow)
       .toSet
       .optFilter(_.nonEmpty)
   }
