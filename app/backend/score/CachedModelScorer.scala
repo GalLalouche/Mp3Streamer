@@ -20,10 +20,10 @@ import common.rich.primitives.RichBoolean.richBoolean
 
 /**
  * Works by first loading all entries from storage and caching them inside a map. Useful for
- * scripts, as it has much lower answer latency, but obviously not that useful for a running server
- * since it won't get updated.
+ * scripts, as it has much lower answer latency, but in a running server its updates need to be
+ * managed.
  */
-private class CachedModelScorerImpl @Inject() (
+private class CachedModelScorer @Inject() (
     artistScorer: ArtistScoreStorage,
     albumScorer: AlbumScoreStorage,
     songScorer: TrackScoreStorage,

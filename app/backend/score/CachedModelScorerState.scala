@@ -12,7 +12,7 @@ import common.io.FileRef
 import common.rich.RichFuture.richFuture
 
 @Singleton private class CachedModelScorerState @Inject() (
-    provider: Provider[CachedModelScorerImpl],
+    provider: Provider[CachedModelScorer],
     factory: UpdatableProxyFactory,
     ec: ExecutionContext,
 ) extends AggregateScorer
@@ -21,8 +21,8 @@ import common.rich.RichFuture.richFuture
   private implicit val iec: ExecutionContext = ec
   // TODO unblock. This is actually harder than it seems, since the entire point of
   //  CachedModelScorer is that it *isn't* async!
-  private lazy val updatable: UpdatableProxy[CachedModelScorerImpl] =
-    factory.initialize[CachedModelScorerImpl](provider.get).get
+  private lazy val updatable: UpdatableProxy[CachedModelScorer] =
+    factory.initialize(provider.get).get
   def update(): Future[Unit] = updatable.update().void
 
   override def explicitScore(a: Artist) = updatable.get.explicitScore(a)
