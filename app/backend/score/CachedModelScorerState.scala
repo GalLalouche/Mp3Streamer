@@ -19,10 +19,9 @@ import common.rich.RichFuture.richFuture
     with IndividualScorer
     with FullInfoScorer {
   private implicit val iec: ExecutionContext = ec
-  // TODO unblock. This is actually harder than it seems, since the entire point of
-  //  CachedModelScorer is that it *isn't* async!
-  private lazy val updatable: UpdatableProxy[CachedModelScorer] =
-    factory.initialize(provider.get).get
+  // Start the computation in a non-blocking way.
+  private val futureStarting = factory.initialize(provider.get)
+  private lazy val updatable: UpdatableProxy[CachedModelScorer] = futureStarting.get
   def update(): Future[Unit] = updatable.update().void
 
   override def explicitScore(a: Artist) = updatable.get.explicitScore(a)
