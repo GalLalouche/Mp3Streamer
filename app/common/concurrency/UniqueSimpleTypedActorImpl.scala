@@ -5,8 +5,7 @@ import java.util
 import scala.concurrent.{ExecutionContext, Future}
 
 import cats.implicits.toFunctorOps
-
-import common.rich.RichT._
+import common.rich.func.kats.ToMoreMonadErrorOps.toMoreMonadErrorOps
 
 private class UniqueSimpleTypedActorImpl[Msg, Result](
     name: String,
@@ -21,7 +20,7 @@ private class UniqueSimpleTypedActorImpl[Msg, Result](
       msg,
       (_, result) =>
         if (result == null)
-          Future(f(msg)).<|(_.onComplete(clear(msg).const))
+          Future(f(msg)).listenAny(clear(msg))
         else {
           scribe.trace(s"$name: Ignoring non-unique msg <${describeMessage(msg)}>")
           result
