@@ -16,8 +16,8 @@ import common.json.ToJsonableOps.jsonifySingle
 class ScorerFormatter @Inject() ($ : ScorerModel, ec: ExecutionContext) {
   private implicit val iec: ExecutionContext = ec
   import ScorerFormatter.songScoreJsonable
-  def getScore(filePath: String): Future[JsValue] =
-    $(IOSongTagParser(new File(filePath))).map(_.jsonify)
+  def getScore(filePath: String): JsValue =
+    $(IOSongTagParser(new File(filePath))).jsonify
 
   def updateSongScore(filePath: String, score: String): Future[Unit] =
     update($.updateSongScore, filePath, score)

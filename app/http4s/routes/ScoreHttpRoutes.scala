@@ -10,7 +10,7 @@ import cats.effect.IO
 
 private class ScoreHttpRoutes @Inject() ($ : ScorerFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
-    case GET -> path => Ok(fromFuture($.getScore(decodePath(path))))
+    case GET -> path => Ok($.getScore(decodePath(path)))
     // PATCH? It's about as close as it gets I guess...
     case PATCH -> path => Ok(fromFuture($.openScoreFile(decodePath(path))))
     // Doesn't make a whole of sense from a REST standpoint, but it's easier than fiddling with

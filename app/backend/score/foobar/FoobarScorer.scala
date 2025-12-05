@@ -79,8 +79,8 @@ private class FoobarScorer @Inject() (
   def update(nowPlayingSimpleOutput: File, onScoreChange: () => Any): Future[Pane] = for {
     song <- currentlyPlayingSong(nowPlayingSimpleOutput)
     _ <- reconcileArtist(song.artist)
-    score <- scorer(song)
   } yield {
+    val score = scorer(song)
     val nullableScore = makeNullableSongScore(score)
     val individualScores: Pane = new GridPane {
       hgap = 10
