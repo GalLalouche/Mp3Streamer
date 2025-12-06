@@ -2,17 +2,18 @@ package common.concurrency
 
 import java.util.concurrent.Semaphore
 
-import org.scalatest.{Assertion, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AnyFreeSpec
 
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
+import common.rich.primitives.RichInt.Rich
 import common.test.AuxSpecs
 
 class UniqueSimpleTypedActorImplTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
-  "unique" in repeat {
+  "unique" in 1000.parTimes {
     val sb = new StringBuilder
     val semaphore = new Semaphore(0)
     val $ = SimpleTypedActor.unique[String, Unit](
@@ -37,7 +38,7 @@ class UniqueSimpleTypedActorImplTest extends AnyFreeSpec with OneInstancePerTest
     sb.toString shouldReturn "foofoo"
   }
 
-  "failures" in repeat {
+  "failures" in 100.parTimes {
     val semaphore = new Semaphore(0)
     var counter = 0
     val $ = SimpleTypedActor.unique[String, Unit](
@@ -58,6 +59,4 @@ class UniqueSimpleTypedActorImplTest extends AnyFreeSpec with OneInstancePerTest
     e2.getMessage shouldReturn "Whoopsiesfoo"
     counter shouldReturn 2
   }
-  // TODO generalize
-  private def repeat(f: => Assertion): Unit = for (_ <- 0 to 1000) f
 }

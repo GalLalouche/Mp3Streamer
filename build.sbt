@@ -56,6 +56,7 @@ libraryDependencies ++= Seq(
   "net.codingwell" %% "scala-guice" % "7.0.0",
   "org.apache.commons" % "commons-io" % "1.3.2",
   "org.apache.commons" % "commons-lang3" % "3.17.0",
+  "org.jboss.threads" % "jboss-threads" % "3.9.2",
   "org.jsoup" % "jsoup" % "1.12.1",
   "org.openjfx" % "javafx" % "21.0.6",
   "org.openjfx" % "javafx-controls" % "21.0.6",

@@ -6,5 +6,5 @@ import scala.concurrent.duration.Duration
 object DaemonExecutionContext {
   def single(name: String): ExecutionContext = new AggressiveSingleThreadContext(name)
   def apply(name: String, n: Int, keepAlive: Duration = Duration.Zero): ExecutionContext =
-    ExecutionContext.fromExecutorService(DaemonBoundPool(name, n, keepAlive))
+    ExecutionContext.fromExecutorService(ElasticExecutor(name, keepAlive, n, daemon = true))
 }

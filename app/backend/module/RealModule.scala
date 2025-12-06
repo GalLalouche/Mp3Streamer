@@ -34,10 +34,10 @@ object RealModule extends ScalaModule with ModuleUtils {
         // default() and default(defaultValuesUsedInTheGoddamnDefault) to be the same, but you'd be wrong.
         executor = AsyncExecutor.apply(
           name = "Slick SQLite",
-          maxConnections = 20,
-          minThreads = 20,
-          maxThreads = 20,
-          queueSize = 5000,
+          minThreads = 0,
+          maxThreads = 10,
+          queueSize = -1, // i.e., unlimited
+          maxConnections = Int.MaxValue, // Mandatory since for unlimited queue size.
         ),
       )
       // SQLite doesn't seem to mind non-unique names.

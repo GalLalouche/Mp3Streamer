@@ -9,11 +9,12 @@ import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.Server
 import org.http4s.server.middleware.ErrorHandling
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.Duration
 
 import cats.data.OptionT
 import cats.effect.{ExitCode, IO, IOApp, Resource}
-import cats.effect.unsafe.IORuntimeConfig
+import cats.effect.unsafe.{IORuntime, IORuntimeConfig}
 
 private class Main @Inject() (routes: Provider[HttpRoutes[IO]]) {
   lazy val app: HttpApp[IO] =
@@ -25,13 +26,23 @@ private class Main @Inject() (routes: Provider[HttpRoutes[IO]]) {
 }
 
 private object Main extends IOApp {
+  private val injector = Guice.createInjector(Http4sModule)
+  protected override def runtime: IORuntime = {
+    val (scheduler, shutdownScheduler) = IORuntime.createDefaultScheduler()
+    val (blockingEC, shutdownBlockingEC) = IORuntime.createDefaultBlockingExecutionContext()
+    IORuntime(
+      injector.instance[ExecutionContext],
+      blockingEC,
+      scheduler,
+      () => { shutdownScheduler(); shutdownBlockingEC() },
+      runtimeConfig,
+    )
+  }
   protected override def runtimeConfig: IORuntimeConfig =
     super.runtimeConfig.copy(cpuStarvationCheckThreshold = 1)
 
-  override def run(args: List[String]): IO[ExitCode] = {
-    val injector = Guice.createInjector(Http4sModule)
+  override def run(args: List[String]): IO[ExitCode] =
     run(injector.instance[Main], port"9000").useForever
-  }
 
   def run(main: Main, port: Port): Resource[IO, Server] =
     EmberServerBuilder
