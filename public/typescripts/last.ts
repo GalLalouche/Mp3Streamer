@@ -55,9 +55,9 @@ function updateAlbums(albums: Album[]): void {
 }
 
 async function dequeue(): Promise<void> {
-  const [head, tail] = await $.post(prefix + "/dequeue").toPromise()
+  const [head, _] = await $.post(prefix + "/dequeue").toPromise()
   await $.get("data/album/" + head.dir, e => gplaylist.add(e, false)).toPromise()
-  updateAlbums(tail)
+  return LastAlbum.updateLatestAlbum()
 }
 
 $(function () {
