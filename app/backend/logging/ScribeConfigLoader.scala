@@ -15,7 +15,11 @@ object ScribeConfigLoader {
     val resources = getClass.getClassLoader.getResources("backend/logging")
     // When running in production mode, this will also pull up all the resources from inside the
     // compiled JAR for some reason.
-    val dirs = Collections.list(resources).asScala.filterNot(_.getFile.contains(".jar"))
+    val dirs = Collections
+      .list(resources)
+      .asScala
+      .filterNot(_.getFile.contains(".jar"))
+      .filterNot(_.getFile.contains("test-classes"))
     for {
       resourceDir <- dirs.singleOpt
       if File(resourceDir).exists

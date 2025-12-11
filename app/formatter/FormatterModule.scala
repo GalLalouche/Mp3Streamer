@@ -31,6 +31,7 @@ class FormatterModule @VisibleForTesting() (level: Option[Level]) extends ScalaM
     levelToUse match {
       case Some(value) =>
         ScribeUtils.setRootLevel(value)
+        ScribeUtils.makePretty()
         ScribeConfigLoader.go()
       case None => ScribeUtils.noLogs()
     }
