@@ -12,7 +12,7 @@ private class RateLimitedActorAsyncImpl[Msg, Result](
     f: Msg => Future[Result],
     rateLimit: Duration,
 ) extends SimpleTypedActor[Msg, Result] {
-  private val ec: ExecutionContext = SingleThreadedJobQueue.executionContext(name)
+  private val ec: ExecutionContext = DaemonExecutionContext.single(name)
   private val lastRun = new AtomicLong(0)
   private val i = new AtomicInteger(0)
   def !(m: => Msg): Future[Result] = RichFuture.fromCallback(callback =>

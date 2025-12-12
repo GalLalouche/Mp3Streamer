@@ -10,7 +10,7 @@ import common.rich.RichFuture
 /** It's a single threaded future factory basically. */
 private class SimpleTypedActorAsyncImpl[Msg, Result](name: String, f: Msg => Future[Result])
     extends SimpleTypedActor[Msg, Result] {
-  private implicit val ec: ExecutionContext = SingleThreadedJobQueue.executionContext(name)
+  private implicit val ec: ExecutionContext = DaemonExecutionContext.single(name)
   def !(m: => Msg): Future[Result] =
     RichFuture.fromTryCallback(c =>
       ec.execute(() =>
