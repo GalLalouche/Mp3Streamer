@@ -8,6 +8,7 @@ import './jquery_common_xhr.js'
 import {PLAYLIST_NAME_KEY, Poster} from "./poster.js"
 import {Volume} from "./volume.js"
 import {gplayer, gplaylist, Song} from "./types.js"
+import {isMuted} from "./initialization.js";
 
 $(function () {
     class PlaylistJson {
@@ -131,6 +132,8 @@ $(function () {
     })
 
     const ONE_MINUTE = 60 * 1000
-    setInterval(() => saveBackup(true), ONE_MINUTE)
+    if (isMuted().isFalse()) {
+      setInterval(() => saveBackup(true), ONE_MINUTE)
+    }
   },
 )
