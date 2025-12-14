@@ -1,5 +1,6 @@
 package backend.module
 
+import backend.logging.ScribeUtils
 import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext
@@ -12,6 +13,8 @@ class StandaloneModule(random: Random) extends ScalaModule {
 
     install(RealInternetTalkerModule.daemonic)
     install(RealModule)
+
+    ScribeUtils.makePretty()
   }
 }
 object StandaloneModule extends StandaloneModule(Random)
