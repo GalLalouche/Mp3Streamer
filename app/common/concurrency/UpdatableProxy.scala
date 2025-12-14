@@ -1,9 +1,12 @@
 package common.concurrency
 
+import java.util.concurrent.atomic.AtomicReference
+
 import scala.concurrent.Future
 
 import common.TimedLogger
 import common.concurrency.UpdatableProxy.Update
+import common.rich.RichT.richT
 
 /**
  * Can update itself asynchronously while still serving the old value. This differs from
@@ -12,7 +15,7 @@ import common.concurrency.UpdatableProxy.Update
  * process (hence the use of [[Future]] all around).
  */
 class UpdatableProxy[A] private[concurrency] (
-    private var state: A,
+    private val state: AtomicReference[A],
     updateSelf: () => A,
     name: String,
     timedLogger: TimedLogger,
@@ -20,17 +23,16 @@ class UpdatableProxy[A] private[concurrency] (
   def update(): Future[A] = actor ! Update.FromFunction
   // To avoid data races, we still go through the actor.
   override def set(a: A): Future[A] = actor ! Update.FromValue(a)
-  override def get: A = state
+  override def get: A = state.get()
 
   private lazy val actor = SimpleTypedActor[Update[A], A](
     name + " Updatable",
     {
       case Update.FromFunction =>
-        timedLogger("Updating " + name, scribe.debug(_)) { state = updateSelf(); state }
+        timedLogger("Updating " + name, scribe.debug(_))(updateSelf() <| state.set)
       case Update.FromValue(a) =>
         scribe.debug(s"Updating $name manually")
-        state = a
-        state
+        a <| state.set
     },
   )
 }

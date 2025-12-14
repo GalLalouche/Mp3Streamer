@@ -1,5 +1,7 @@
 package common.concurrency
 
+import java.util.concurrent.atomic.AtomicReference
+
 import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,7 +18,7 @@ class UpdatableProxyFactory @Inject() (timedLogger: TimedLogger) {
       updateSelf: () => A,
       name: String,
   ): UpdatableProxy[A] = new UpdatableProxy[A](
-    initialState,
+    new AtomicReference(initialState),
     updateSelf,
     name,
     timedLogger,
@@ -26,7 +28,7 @@ class UpdatableProxyFactory @Inject() (timedLogger: TimedLogger) {
       updateSelf: () => A,
   )(implicit ec: ExecutionContext): Future[UpdatableProxy[A]] = Future(
     new UpdatableProxy[A](
-      updateSelf(),
+      new AtomicReference[A](updateSelf()),
       updateSelf,
       manifest.runtimeClass.getSimpleName,
       timedLogger,

@@ -33,6 +33,7 @@ object ReportObservable {
   )
   def apply[Agg, Result](o: Observable[Report[Agg, Result]]): ReportObservable[Agg, Result] = ro =>
     o.subscribe(new Observer[Report[Agg, Result]] {
+      // Everything is synchronized, so this doesn't need to be atomic.
       private var hasCompleted = false
       private var hasErrored = false
       override def onNext(value: Report[Agg, Result]) = synchronized {
@@ -54,7 +55,7 @@ object ReportObservable {
         hasErrored = true
         ro.onError(error)
       }
-      override def onCompleted() = {
+      override def onCompleted() = synchronized {
         require(hasCompleted)
         require(hasErrored.isFalse)
       }
