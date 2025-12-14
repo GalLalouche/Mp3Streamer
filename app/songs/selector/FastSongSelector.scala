@@ -3,6 +3,7 @@ package songs.selector
 import com.google.inject.Inject
 import models.Song
 import musicfinder.{MusicFinder, SongDirectoryParser}
+import scribe.Level
 
 import scala.annotation.tailrec
 import scala.util.Random
@@ -21,7 +22,7 @@ private class FastSongSelector @Inject() (
     timedLogger: TimedLogger,
     random: Random,
 ) extends SongSelector {
-  final override def randomSong(): Song = timedLogger.apply("fastRandomSong", scribe.debug(_)) {
+  final override def randomSong(): Song = timedLogger.apply("fastRandomSong", Level.Debug) {
     @tailrec def go(dir: DirectoryRef): Song = {
       val dirs = dir.dirs
       if (dirs.isEmpty) {

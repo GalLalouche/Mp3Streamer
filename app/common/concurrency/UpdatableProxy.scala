@@ -2,6 +2,8 @@ package common.concurrency
 
 import java.util.concurrent.atomic.AtomicReference
 
+import scribe.Level
+
 import scala.concurrent.Future
 
 import common.TimedLogger
@@ -29,7 +31,7 @@ class UpdatableProxy[A] private[concurrency] (
     name + " Updatable",
     {
       case Update.FromFunction =>
-        timedLogger("Updating " + name, scribe.debug(_))(updateSelf() <| state.set)
+        timedLogger("Updating " + name, Level.Debug)(updateSelf() <| state.set)
       case Update.FromValue(a) =>
         scribe.debug(s"Updating $name manually")
         a <| state.set

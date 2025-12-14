@@ -2,6 +2,7 @@ package backend.search
 
 import com.google.inject.Inject
 import models.{AlbumDir, ArtistDir, ModelJsonable, Song}
+import scribe.Level
 
 import scala.collection.mutable
 
@@ -19,7 +20,7 @@ private class CompositeIndexFactory @Inject() (
     mj: ModelJsonable,
 ) {
   import mj._
-  def create() = timedLogger("Creating index", scribe.info(_)) {
+  def create() = timedLogger("Creating index", Level.Info) {
     val indexBuilder = WeightedIndexBuilder
     val flyweightSongs = mutable.Map[FileRef, Song]()
     trait Flyweight[T] {
