@@ -1,12 +1,12 @@
-package common.ds
+package common.ds.trie
 
 import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AnyFreeSpec
 
 import common.test.AuxSpecs
 
-class TrieTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
-  private var $ = Trie.empty[Int]
+class MyScalaTrieTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
+  private var $ = MyScalaTrie.empty[Int]
 
   "empty" - {
     "returns an empty for anything" in {
@@ -71,14 +71,16 @@ class TrieTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
 
   "from" - {
     "fromMap" in {
-      val $ = Trie.fromMap(Map("foo" -> 1, "bar" -> 2, "foobar" -> 3))
+      val $ = MyScalaTrie.fromMap(Map("foo" -> 1, "bar" -> 2, "foobar" -> 3))
       $ should have size 3
       $.exact("foo") shouldReturn Vector(1)
       $.withPrefix("foo") shouldMultiSetEqual Vector(1, 3)
     }
     "fromMultiMap" in {
       val $ =
-        Trie.fromMultiMap(Map("foo" -> Vector(1, 4), "bar" -> Vector(2), "foobar" -> Vector(3)))
+        MyScalaTrie.fromMultiMap(
+          Map("foo" -> Vector(1, 4), "bar" -> Vector(2), "foobar" -> Vector(3)),
+        )
       $ should have size 4
       $.exact("foo") shouldMultiSetEqual Vector(1, 4)
       $.withPrefix("foo") shouldMultiSetEqual Vector(1, 4, 3)

@@ -7,7 +7,7 @@ import backend.search.WeightedIndexable.ops._
 import cats.Semigroup
 import cats.implicits.toFunctorOps
 
-import common.ds.Trie
+import common.ds.trie.{MyScalaTrie, Trie}
 import common.rich.collections.RichMap._
 import common.rich.collections.RichTraversableOnce._
 
@@ -29,7 +29,7 @@ private object WeightedIndexBuilder {
     val scoredDocumentByTerm: Map[String, Seq[(T, Weight)]] = documentsToScoredTerms
       .aggregateMap(_._2._1, e => Set(e._1 -> e._2._2))
       .properMapValues(_.toVector.sortBy(_._2))
-    new WeightedIndex(Trie.fromMultiMap(scoredDocumentByTerm))
+    new WeightedIndex(MyScalaTrie.fromMultiMap(scoredDocumentByTerm))
   }
 
   private class WeightedIndex[T: WeightedIndexable](trie: Trie[(T, Weight)]) extends Index[T] {

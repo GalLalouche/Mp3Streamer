@@ -29,7 +29,11 @@ class RefreshableRetriever[Key, Value](
     onlineRetriever(k).flatTap(freshnessStorage.update(k, _).value)
   override def apply(k: Key): Future[Value] = needsRefresh(k).flatMap { isOld =>
     lazy val oldData = freshnessStorage.load(k).get
-    if (isOld) refresh(k).handleButKeepOriginal(oldData.const) else oldData
+    if (isOld) {
+      scribe.debug(s"Refreshing data for <$k>")
+      refresh(k).handleButKeepOriginal(oldData.const)
+    } else
+      oldData
   }
 
   def withAge(k: Key): Future[(Value, Freshness)] = for {
