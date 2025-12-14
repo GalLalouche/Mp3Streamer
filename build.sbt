@@ -90,5 +90,6 @@ libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionSch
 lazy val runHttp4s = taskKey[Unit]("Test")
 lazy val root = (project in file("."))
   .settings(
+    Compile / run / mainClass := Some("http4s.Main"),
     reStart / mainClass := Some("http4s.Main"),
   )
