@@ -1,6 +1,7 @@
 package backend.search
 
 import alleycats.std.iterable.alleycatsStdIterableTraverse
+import backend.search.WeightedIndexable.{weightAddExact, Weight}
 import backend.search.WeightedIndexable.ops._
 
 import cats.Semigroup
@@ -18,20 +19,20 @@ import common.rich.collections.RichTraversableOnce._
  * for multiple terms, the sum of all the term scores as the final score for the document is taken.
  */
 private object WeightedIndexBuilder {
-  private implicit object DoubleSemi extends Semigroup[Double] {
-    override def combine(f1: Double, f2: Double): Double = f1 + f2
+  private implicit object WeightSemi extends Semigroup[Weight] {
+    override def combine(f1: Weight, f2: Weight): Weight = weightAddExact(f1, f2)
   }
 
   def buildIndexFor[T: WeightedIndexable](ts: Iterable[T]): Index[T] = {
-    val documentsToScoredTerms: IterableOnce[(T, (String, Double))] =
+    val documentsToScoredTerms: IterableOnce[(T, (String, Weight))] =
       ts.view.flatMap(e => e.terms.tupleLeft(e))
-    val scoredDocumentByTerm: Map[String, Seq[(T, Double)]] = documentsToScoredTerms
+    val scoredDocumentByTerm: Map[String, Seq[(T, Weight)]] = documentsToScoredTerms
       .aggregateMap(_._2._1, e => Set(e._1 -> e._2._2))
       .properMapValues(_.toVector.sortBy(_._2))
     new WeightedIndex(Trie.fromMultiMap(scoredDocumentByTerm))
   }
 
-  private class WeightedIndex[T: WeightedIndexable](trie: Trie[(T, Double)]) extends Index[T] {
+  private class WeightedIndex[T: WeightedIndexable](trie: Trie[(T, Weight)]) extends Index[T] {
     override def findIntersection(ss: Iterable[String]): Seq[T] = {
       val lastQuery :: allButLast = ss.toList.reverse
       allButLast

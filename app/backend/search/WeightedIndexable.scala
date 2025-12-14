@@ -11,8 +11,8 @@ import common.rich.primitives.RichString.richString
   protected def mainTerm(t: T): String
   protected def secondaryTerms(t: T): Iterable[String]
   private def split(s: String): Set[String] = s.toLowerCase.tokenize(StringReconScorer.Tokens).toSet
-  private def weigh(s: Set[String], weight: Double) = s.map(_ -> weight)
-  def terms(t: T): Iterable[(String, Double)] = {
+  private def weigh(s: Set[String], weight: Weight) = s.map(_ -> weight)
+  def terms(t: T): Iterable[(String, Weight)] = {
     val primaryTerms = split(mainTerm(t))
     weigh(primaryTerms, PrimaryWeight) ++
       weigh(secondaryTerms(t).flatMap(split).toSet.filterNot(primaryTerms), SecondaryWeight)
@@ -21,8 +21,15 @@ import common.rich.primitives.RichString.richString
 }
 
 private object WeightedIndexable {
-  private val PrimaryWeight = 1.0
-  private val SecondaryWeight = 0.1
+  type Weight = Short
+  def weightAddExact(w1: Weight, w2: Weight): Weight = {
+    val sum = w1 + w2
+    if (sum > Short.MaxValue)
+      throw new ArithmeticException(s"Sum of $w1 + $w2 would overflow")
+    sum.toShort
+  }
+  private val PrimaryWeight: Weight = 10
+  private val SecondaryWeight: Weight = 1
   implicit object SongIndexer extends WeightedIndexable[Song] {
     private def classicalMusicTerms(s: Song): Iterable[String] =
       s.composer ++ s.orchestra ++ s.conductor ++ s.opus ++ s.performanceYear.map(_.toString)

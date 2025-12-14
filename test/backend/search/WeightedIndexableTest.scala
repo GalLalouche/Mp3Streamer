@@ -1,9 +1,10 @@
 package backend.search
 
 import backend.search.WeightedIndexable.ops._
-import common.test.AuxSpecs
 import models.{FakeModelFactory, Song}
 import org.scalatest.freespec.AnyFreeSpec
+
+import common.test.AuxSpecs
 
 class WeightedIndexableTest extends AnyFreeSpec with AuxSpecs {
   private val factory = new FakeModelFactory
@@ -28,29 +29,29 @@ class WeightedIndexableTest extends AnyFreeSpec with AuxSpecs {
         name = "foo foo bar",
         albums = Vector(factory.album(title = "should be ignored")),
       )
-      .terms shouldMultiSetEqual Vector("foo" -> 1.0, "bar" -> 1.0)
+      .terms shouldMultiSetEqual Vector("foo" -> 10, "bar" -> 10)
   }
   "song" - {
     "regular song" in {
       song.terms shouldMultiSetEqual
-        Vector("foo" -> 1.0, "bar" -> 1.0, "bazz" -> 0.1, "quxx" -> 0.1, "1999" -> 0.1)
+        Vector("foo" -> 10, "bar" -> 10, "bazz" -> 1, "quxx" -> 1, "1999" -> 1)
     }
     "classical song" in {
       classicalSong.terms shouldMultiSetEqual Vector(
-        "foo" -> 1.0,
-        "bar" -> 1.0,
-        "bazz" -> 0.1,
-        "quxx" -> 0.1,
-        "1999" -> 0.1,
-        "compy" -> 0.1,
-        "orchy" -> 0.1,
-        "opy" -> 0.1,
-        "2001" -> 0.1,
+        "foo" -> 10,
+        "bar" -> 10,
+        "bazz" -> 1,
+        "quxx" -> 1,
+        "1999" -> 1,
+        "compy" -> 1,
+        "orchy" -> 1,
+        "opy" -> 1,
+        "2001" -> 1,
       )
     }
   }
   "Album" in {
     factory.album(title = "foo1 bar1 bar1", songs = Vector(song)).terms shouldMultiSetEqual
-      Vector("foo1" -> 1.0, "bar1" -> 1.0, "bazz" -> 0.1, "quxx" -> 0.1, "1999" -> 0.1)
+      Vector("foo1" -> 10, "bar1" -> 10, "bazz" -> 1, "quxx" -> 1, "1999" -> 1)
   }
 }
