@@ -1,7 +1,5 @@
 package common.concurrency
 
-import java.util.concurrent.atomic.{AtomicInteger, AtomicLong}
-
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration.Duration
 
@@ -13,22 +11,22 @@ private class RateLimitedActorAsyncImpl[Msg, Result](
     rateLimit: Duration,
 ) extends SimpleTypedActor[Msg, Result] {
   private val ec: ExecutionContext = DaemonExecutionContext.single(name)
-  private val lastRun = new AtomicLong(0)
-  private val i = new AtomicInteger(0)
+  // No need to synchronize these since we're on a single thread.
+  private var lastRun = 0L
+  private var i = 0
   def !(m: => Msg): Future[Result] = RichFuture.fromCallback(callback =>
     ec.execute { () =>
       val now = System.currentTimeMillis()
-      val index = i.incrementAndGet()
-      scribe.trace(s"<$index>: <$now>")
-      val l = lastRun.getAndSet(now)
-      val sleepTime = l - now + rateLimit.toMillis
+      scribe.trace(s"<$i>: <$lastRun>")
+      i += 1
+      val sleepTime = lastRun - now + rateLimit.toMillis
       if (sleepTime > 0) {
-        scribe.trace(s"<$i>: Now: <$now>, last run time: <$l>, sleeping for <$sleepTime>")
+        scribe.trace(s"<$i>: Now: <$now>, last run time: <$lastRun>, sleeping for <$sleepTime>")
         Thread.sleep(sleepTime)
       }
       scribe.trace(s"<$i> start @ ${System.currentTimeMillis()}")
       val $ = Await.result(f(m), Duration.Inf)
-      lastRun.set(System.currentTimeMillis())
+      lastRun = System.currentTimeMillis()
       scribe.trace(s"<$i> done  @ ${System.currentTimeMillis()}")
       callback($)
     },
