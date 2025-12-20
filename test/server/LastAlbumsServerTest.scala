@@ -46,6 +46,43 @@ private class LastAlbumsServerTest(serverModule: Module)
     } yield result.parse[Seq[AlbumDir]] shouldReturn Vector(a1, a2)
   }
 
+  "get returns albums when multiple ones are added before calling update" in {
+    val a1 = createAlbumWithSong()
+    val a2 = createAlbumWithSong()
+    for {
+      update <- postJson(uri"last_albums/update")
+      result <- getJson(uri"last_albums")
+    } yield assertAll(
+      update.parse[Seq[AlbumDir]] shouldReturn Vector(a1, a2),
+      result.parse[Seq[AlbumDir]] shouldReturn Vector(a1, a2),
+    )
+  }
+
+  "Multiple updates, dequeues" in {
+    val a1 = createAlbumWithSong()
+    val a2 = createAlbumWithSong()
+    for {
+      update1 <- postJson(uri"last_albums/update")
+      result1 <- getJson(uri"last_albums")
+      dequeue1 <- dequeue()
+      a3 = createAlbumWithSong()
+      update2 <- postJson(uri"last_albums/update")
+      dequeue2 <- dequeue()
+      result2 <- getJson(uri"last_albums")
+      deque3 <- dequeue()
+      result3 <- getJson(uri"last_albums")
+    } yield assertAll(
+      update1.parse[Seq[AlbumDir]] shouldReturn Vector(a1, a2),
+      result1.parse[Seq[AlbumDir]] shouldReturn Vector(a1, a2),
+      dequeue1 shouldReturn (a1, Vector(a2)),
+      update2.parse[Seq[AlbumDir]] shouldReturn Vector(a2, a3),
+      dequeue2 shouldReturn (a2, Vector(a3)),
+      result2.parse[Seq[AlbumDir]] shouldReturn Vector(a3),
+      deque3 shouldReturn (a3, Vector()),
+      result3.parse[Seq[AlbumDir]] shouldReturn Vector(),
+    )
+  }
+
   "dequeue returns 404 when queue is empty" in {
     postRaw(uri"last_albums/dequeue").map(_.code shouldReturn StatusCode.NotFound)
   }
@@ -69,6 +106,9 @@ private class LastAlbumsServerTest(serverModule: Module)
   private val factory = new FakeModelFactory(injector.instance[MemoryRoot])
   private val mf = injector.instance[FakeMusicFinder]
   private val clock = injector.instance[FakeClock]
+
+  private def dequeue(): Future[(AlbumDir, Seq[AlbumDir])] =
+    postString(uri"last_albums/dequeue").map(Json.parse(_).parse[(AlbumDir, Seq[AlbumDir])])
 
   private def createAlbumWithSong() = {
     clock.advance(1)

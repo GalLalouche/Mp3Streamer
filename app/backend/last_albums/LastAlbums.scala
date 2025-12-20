@@ -15,13 +15,15 @@ import common.json.ToJsonableOps.{jsonifySingle, parseJsValue}
 
 private class LastAlbums private (
     private val queue: Queue[AlbumDir],
-    private val lastUpdateTime: LocalDateTime,
+    val lastUpdateTime: LocalDateTime,
 ) {
   def this(now: LocalDateTime) = this(Queue.empty, now)
   def enqueue(albumDir: AlbumDir): LastAlbums = {
     val modified = albumDir.dir.lastModified
     if (modified <= lastUpdateTime) this else new LastAlbums(queue.enqueue(albumDir), modified)
   }
+  def enqueueAll(albumDirs: Seq[AlbumDir]): LastAlbums =
+    albumDirs.sortBy(_.dir.lastModified).foldLeft(this)(_.enqueue(_))
   def dequeue: Option[(AlbumDir, LastAlbums)] =
     queue.dequeueOption.map(__2.modify(new LastAlbums(_, lastUpdateTime)))
   def albums: Seq[AlbumDir] = queue

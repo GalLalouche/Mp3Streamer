@@ -33,7 +33,7 @@ class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder with 
   def copySong(path: Seq[String], s: MemorySong): MemorySong =
     copy(s, path.foldLeft(dirToAddSongsTo)(_ addSubDir _).addFile(s.file.name))
   def copyAlbum(albumDir: AlbumDir): AlbumDir =
-    albumDir.copy(dir = dirToAddSongsTo.addSubDir(albumDir.dir.name))
+    albumDir.copy(dir = dirToAddSongsTo.addSubDir(albumDir.dir.name, albumDir.dir.lastModified))
   override def apply(f: FileRef): MemorySong = pathToSongs(f.path)
   protected override def normalizeArtistName(name: ArtistName): DirectoryName = name
 }

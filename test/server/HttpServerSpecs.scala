@@ -9,7 +9,7 @@ import net.codingwell.scalaguice.ScalaModule
 import org.scalatest.{Assertion, BeforeAndAfterAll, Succeeded}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.tags.Slow
-import play.api.libs.json.{JsArray, JsObject, JsValue}
+import play.api.libs.json.{JsArray, JsObject, Json, JsValue}
 import sttp.client3
 import sttp.client3.{asByteArray, HttpClientFutureBackend, ResolveRelativeUrisBackend, Response}
 import sttp.client3.playJson._
@@ -22,6 +22,7 @@ import cats.implicits.catsSyntaxApplicativeByName
 import common.concurrency.DaemonExecutionContext
 import common.guice.RichModule.richModule
 import common.rich.RichFuture.richFuture
+import common.rich.RichT.richT
 import common.rich.primitives.RichEither._
 import common.test.AsyncAuxSpecs
 
@@ -75,6 +76,7 @@ private abstract class HttpServerSpecs(serverModule: Module)
     backend.send(request.put(u).body(json)).map(_.body.getOrThrow)
 
   def postString(u: Uri): Future[String] = post(u).map(_.body.getOrThrow)
+  def postJson(u: Uri): Future[JsValue] = post(u).map(_.body.getOrThrow |> Json.parse)
   def postRaw(u: Uri): Future[Response[_]] = post(u)
   private def post(u: Uri) = backend.send(request.post(u))
 

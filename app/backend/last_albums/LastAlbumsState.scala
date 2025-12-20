@@ -13,6 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import cats.data.OptionT
 import cats.implicits.{toFunctorOps, toTraverseOps}
 
+import common.concurrency.Producer
 import common.json.saver.JsonableCOWFactory
 import common.rich.RichTime.RichClock
 
@@ -24,8 +25,10 @@ import common.rich.RichTime.RichClock
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
-  def update(): Future[Seq[AlbumDir]] =
-    lastAlbumProvider.last.flatMap(ad => lastAlbums.modify(_.enqueue(ad))).map(_.albums)
+  def update(): Future[Seq[AlbumDir]] = for {
+    newAlbums <- lastAlbumsUnique.!()
+    updated <- lastAlbums.modify(_.enqueueAll(newAlbums))
+  } yield updated.albums
   /** If there's anything to pop, returns the next item and tail. */
   private[last_albums] def dequeue(): FutureOption[(AlbumDir, Seq[AlbumDir])] =
     OptionT(lastAlbums.get.dequeue.traverse { case (dir, albums) =>
@@ -42,4 +45,8 @@ import common.rich.RichTime.RichClock
 
     factory[LastAlbums]
   }
+  private val lastAlbumsUnique = Producer.unique[Seq[AlbumDir]](
+    "LastAlbumsState",
+    lastAlbumProvider.since(lastAlbums.get.lastUpdateTime),
+  )
 }

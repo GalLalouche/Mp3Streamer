@@ -1,9 +1,9 @@
 package backend.recent
 
+import java.time.LocalDateTime
+
 import models.AlbumDir
 
-import scala.concurrent.Future
-
 trait LastAlbumProvider {
-  def last: Future[AlbumDir]
+  def since(since: LocalDateTime): Seq[AlbumDir]
 }
