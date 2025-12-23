@@ -68,7 +68,10 @@ private class FixLabels @Inject() (
       musicFiles.map(AudioFileIO.read).hasSameValues(_.getTag.getFirst(FieldKey.DISC_NO)).isFalse
 
     musicFiles.foreach(fixFile(_, fixDiscNumber = hasNonTrivialDiscNumber))
-    musicFiles.foreach(f => f.renameTo(new File(f.parent, newFileName(f))))
+    musicFiles.foreach(f =>
+      if (f.renameTo(new File(f.parent, newFileName(f))).isFalse)
+        scribe.warn(s"Could not rename file ${f.path} to ${newFileName(f)}"),
+    )
 
     val expectedName = {
       val (year, album) = songDirParser(ioDir).map(_.toTuple(_.year, _.albumName)).toSet.single

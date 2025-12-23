@@ -15,11 +15,11 @@ import common.rich.RichFuture._
 import common.rich.RichT._
 
 /** Things that talk to the outside world. Spo-o-o-o-ky IO! */
-final class InternetTalker @Inject() (wsClientProver: Provider[WSClient], ec: ExecutionContext) {
+final class InternetTalker @Inject() (wsClientProvider: Provider[WSClient], ec: ExecutionContext) {
   private implicit def iec: ExecutionContext = ec
 
   def useWs[T](f: Retriever[WSClient, T]): Future[T] = {
-    val client = wsClientProver.get()
+    val client = wsClientProvider.get()
     val $ =
       try f(client)
       catch {

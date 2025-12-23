@@ -53,8 +53,8 @@ private[mains] class DownloadCover @Inject() (
       case OpenBrowser =>
         BrowserUtils.pointBrowserTo(searchUrl)
         // String interpolation is acting funky for some reason (will fail at runtime for unicode).
-        throw new CoverException.UserOpenedBrowser
-      case Cancelled => throw new CoverException.UserClosedGUI
+        throw CoverException.UserOpenedBrowser
+      case Cancelled => throw CoverException.UserClosedGUI
     }
   }
 
@@ -84,7 +84,7 @@ private object DownloadCover {
   private def fileMover(f: FolderImage)(outputDirectory: Directory): Unit = {
     val file = f.file.asInstanceOf[IOFile].file
     if (file.parent == outputDirectory && file.name.equalsIgnoreCase("folder.jpg")) {
-      RichFileUtils.rename(file, "folder.jpg") // canonize casing
+      RichFileUtils.rename(file, "folder.jpg") // canonicalize casing
       return // This can happen if a local file named folder.jpg is chosen.
     }
 

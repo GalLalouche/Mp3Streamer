@@ -34,7 +34,7 @@ class ComposedFreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshne
   override def update(k: Key, v: Value) = storage.update(k, v |> now) |> toValue
   /** A utility when the value is [[Unit]]. Returns [[true]] if a value was updated. */
   def update(k: Key)(implicit ev: Unit =:= Value): Future[Boolean] =
-    storage.update(k, now(ev())).value.map(_.isDefined)
+    storage.update(k, now(ev(()))).value.map(_.isDefined)
   override def replace(k: Key, v: Value) = storage.replace(k, v |> now) |> toValue
   // Also updates the timestamp to now
   override def mapStore(mode: StoreMode, k: Key, f: Value => Value, default: => Value) =

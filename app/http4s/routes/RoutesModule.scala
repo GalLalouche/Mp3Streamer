@@ -34,9 +34,7 @@ private[http4s] object RoutesModule extends ScalaModule {
   ): HttpRoutes[IO] = Router(
     "" -> application.routes,
     "" -> asset.routes,
-    "test" -> HttpRoutes.of[IO] { case GET -> Root =>
-      Ok("test")
-    },
+    "test" -> HttpRoutes.of[IO] { case GET -> Root => Ok("test") },
     "data" -> song.routes,
     "external" -> external.routes,
     "index" -> index.routes,
