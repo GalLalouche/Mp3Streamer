@@ -4,7 +4,7 @@ import java.util.concurrent.LinkedBlockingQueue
 
 import org.scalatest.freespec.AsyncFreeSpec
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 import scala.jdk.CollectionConverters._
 
@@ -16,19 +16,21 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.test.AsyncAuxSpecs
 
 class RateLimitedActorAsyncImplTest extends AsyncFreeSpec with AsyncAuxSpecs {
-  "rate limited" in {
+  private implicit val ec: ExecutionContext =
+    DaemonExecutionContext("RateLimitedActorAsyncImplTest", 4)
+  "rate limited and FIFO ordered" in {
     val queue = new LinkedBlockingQueue[(Int, Long)]()
     val limit = 10L
     val $ = SimpleTypedActor.asyncRateLimited[Int, Unit](
       "name",
-      i => Future.successful(queue.put(i, System.currentTimeMillis())),
+      i => Future(queue.put(i, System.currentTimeMillis())),
       limit.millis,
     )
-    val vector = 1.to(5).toVector
+    val vector = 1.to(20).toVector
     vector.traverse($ ! _) >| {
-      val v = queue.asScala.toVector
-      v.map(_._1) shouldReturn vector
-      all(v.map(_._2).pairSliding.map(_.swap.reduce(_ - _)).toVector) should be >= limit
+      val (numbers, times) = queue.asScala.toVector.unzip
+      numbers shouldReturn vector
+      all(times.pairSliding.map(_.swap.reduce(_ - _)).toVector) should be >= limit
     }
   }
 }
