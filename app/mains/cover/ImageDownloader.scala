@@ -1,6 +1,7 @@
 package mains.cover
 
 import java.awt.Image
+import java.util.UUID
 
 import backend.Retriever
 import com.google.inject.Inject
@@ -24,7 +25,7 @@ private class ImageDownloader @Inject() (it: InternetTalker, ec: ExecutionContex
       it
         .asBrowser(url, _.bytes, 5.seconds)
         .map { bytes =>
-          val file = outputDirectory.addFile(s"${System.currentTimeMillis()}img.jpg").write(bytes)
+          val file = outputDirectory.addFile(s"${UUID.randomUUID()}-img.jpg").write(bytes)
           folderImage(file, local = false, w = width, h = height, ImageSource.toImage(file))
         }
         .listenError(e => scribe.error(s"Error downloading file <$url>", e))

@@ -1,7 +1,5 @@
 package common.concurrency
 
-import java.util.concurrent.atomic.AtomicReference
-
 import scribe.Level
 
 import scala.concurrent.Future
@@ -17,24 +15,25 @@ import common.rich.RichT.richT
  * process (hence the use of [[Future]] all around).
  */
 class UpdatableProxy[A] private[concurrency] (
-    private val state: AtomicReference[A],
+    @volatile private var state: A,
     updateSelf: () => A,
     name: String,
     timedLogger: TimedLogger,
 ) extends ActorState[A, A] {
   def update(): Future[A] = actor ! Update.FromFunction
-  // To avoid data races, we still go through the actor.
+  // To avoid data races with update(), we still go through the actor to ensure a happens-before
+  // relationship on the same thread.
   override def set(a: A): Future[A] = actor ! Update.FromValue(a)
-  override def get: A = state.get()
+  override def get: A = state
 
   private lazy val actor = SimpleTypedActor[Update[A], A](
     name + " Updatable",
     {
       case Update.FromFunction =>
-        timedLogger("Updating " + name, Level.Debug)(updateSelf() <| state.set)
+        timedLogger("Updating " + name, Level.Debug)(updateSelf().<|(state = _))
       case Update.FromValue(a) =>
         scribe.debug(s"Updating $name manually")
-        a <| state.set
+        a.<|(state = _)
     },
   )
 }

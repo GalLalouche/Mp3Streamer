@@ -23,7 +23,7 @@ private class JsonableCOWImpl[Input, Internal: JsonableSaveable: Manifest, Outpu
   override def get: Output = value
   override def set(newValue: Input): Future[Output] = actor ! newValue
 
-  private var value = internalToOutput(implicitly[JsonableSaveable[Internal]].load(saver))
+  @volatile private var value = internalToOutput(implicitly[JsonableSaveable[Internal]].load(saver))
   private val actor = SimpleTypedActor[Input, Output](
     s"JsonablePersistentValue <${manifest.runtimeClass.simpleName}>",
     newInput => {

@@ -7,9 +7,10 @@ import java.util.concurrent.atomic.{AtomicInteger, AtomicLong}
 import com.google.common.annotations.VisibleForTesting
 import mains.fixer.PythonLanguageDetector.Encoding
 
+import scala.annotation.tailrec
 import scala.concurrent.duration.Duration
 import scala.io.Source
-import scala.util.Try
+import scala.util.{Try, Using}
 import scala.util.control.Breaks.{break, breakable}
 
 import cats.syntax.either.catsSyntaxEither
@@ -36,10 +37,15 @@ private class PythonLanguageDetector private (timeout: Duration) {
     if (process.getErrorStream.available() > 0)
       return readErrorAndFail
     outStream.flush()
-    val lines = Source.fromInputStream(process.getInputStream).getLines()
-    if (lines.hasNext.isFalse)
-      return readErrorAndFail
-    lines.next()
+    @tailrec def readLine(): Option[String] = {
+      val $ = process.getInputStream.readLine()
+      if ($.contains("")) readLine() else $
+    }
+
+    readLine() match {
+      case None => return readErrorAndFail
+      case Some(line) => line
+    }
   }).toEither.leftMap {
     case io: IOException => io
     case e: Throwable => throw e
@@ -48,7 +54,8 @@ private class PythonLanguageDetector private (timeout: Duration) {
   private def readErrorAndFail = Left(
     new IOException(
       "Python code failed: " +
-        Source.fromInputStream(process.getErrorStream).getLines().mkString("\n"),
+        Using(Source.fromInputStream(process.getErrorStream))(_.getLines().mkString("\n"))
+          .getOrElse("Could not read error"),
     ),
   )
 
@@ -56,7 +63,7 @@ private class PythonLanguageDetector private (timeout: Duration) {
     creationCount.incrementAndGet()
     scribe.trace("Creating new Python language detection process")
     val tempFile = File.createTempFile("language_detector", ".py").<|(_.deleteOnExit())
-    getClass.getResourceAsStream("language_detector.py").writeTo(tempFile)
+    Using.resource(getClass.getResourceAsStream("language_detector.py"))(_.writeTo(tempFile))
     val $ = new ProcessBuilder()
       .command("python", tempFile.getAbsolutePath)
       .<|(_.environment().put("PYTHONIOENCODING", Encoding.toString))

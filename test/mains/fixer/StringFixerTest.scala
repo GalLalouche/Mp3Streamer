@@ -1,10 +1,11 @@
 package mains.fixer
 
 import backend.module.TestModuleConfiguration
-import common.test.AuxSpecs
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.tagobjects.Slow
+
+import common.test.AuxSpecs
 
 class StringFixerTest extends AnyFreeSpec with AuxSpecs {
   private val $ = TestModuleConfiguration().injector.instance[StringFixer]
@@ -12,6 +13,10 @@ class StringFixerTest extends AnyFreeSpec with AuxSpecs {
   private def verifyFix(original: String, fix: String): Unit = $(original) shouldReturn fix
   private def verifyEmptyFix(original: String): Unit = verifyFix(original, original)
 
+  "Edge cases" in {
+    verifyEmptyFix("")
+    verifyFix("    ", "")
+  }
   "Stupid spaces" in {
     verifyFix("  Foo Bar ", "Foo Bar")
     // List is from https://stackoverflow.com/a/28295597/736508

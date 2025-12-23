@@ -5,7 +5,7 @@ import org.scalatest.freespec.AnyFreeSpec
 
 class AlbumParserTest extends AnyFreeSpec with LyricsSpec {
   private[retrievers] override def parser = AlbumParser
-  "English" - {
+  "English" in {
     verifyLyrics("bandcamp_album_english", "bandcamp_english", trackNumber = 2)
   }
   "Hebrew" in {

@@ -64,6 +64,8 @@ class StringFixer @Inject() (detectLanguage: DetectLanguage) {
 
   def apply(s: String): String = {
     val trimmed = s.replaceAll(AllSpaces, " ").trim
+    if (trimmed.isEmpty)
+      return trimmed
     if (trimmed.hasHebrew)
       trimmed
         .replaceAll(

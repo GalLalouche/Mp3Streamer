@@ -3,7 +3,15 @@ package common.concurrency
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 
-/** It's a single threaded future factory, basically. */
+/**
+ * It's a single threaded future factory, basically. A note on thread-safety guarantees: while it is
+ * *not* guaranteed that all messages will be processed by the *same* thread, it *is* guaranteed
+ * that they are processed one at a time, i.e., no two messages will be processed concurrently. It
+ * is also not required to synchronize or otherwise safely publish whatever data *only* the actor
+ * sees, since the execution of different tasks has a happens-before relationship (any data seen by
+ * other threads needs to be safely published, of course). Finally, it is also guaranteed that
+ * messages are processed in the order they are sent, if these messages share a happens-before link.
+ */
 trait SimpleTypedActor[Msg, +Result] {
   def !(m: => Msg): Future[Result]
 }
