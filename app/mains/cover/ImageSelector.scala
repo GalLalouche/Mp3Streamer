@@ -1,6 +1,7 @@
 package mains.cover
 
 import com.google.inject.Inject
+import mains.cover.ImageSelector._
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.swing.Frame
@@ -17,18 +18,23 @@ private class ImageSelector @Inject() (
 )() {
   private implicit val iec: ExecutionContext = ec
   def select(images: FutureIterant[FolderImage]): Future[ImageChoice] = {
-    val promise = Promise[ImageChoice]()
-    val frame =
-      new Frame <| (_.reactions += { case _: WindowClosing => promise.success(Cancelled) })
-    val panel = factory(images, cols = 3, rows = 2) <| (_.reactions += {
+    val $ = Promise[ImageChoice]()
+    val frame = new Frame <| (_.reactions += { case _: WindowClosing => $.success(Cancelled) })
+    val panel = factory(images, cols = Cols, rows = Rows) <| (_.reactions += {
       case _: ComponentAdded =>
         frame.pack()
         frame.repaint()
-      case e: ImageChoice => promise.success(e)
+      case e: ImageChoice => $.success(e)
     })
     frame.contents = panel
     panel.refresh()
     frame.open()
-    promise.future |< frame.dispose()
+    $.future |< frame.dispose()
   }
+}
+
+private object ImageSelector {
+  val Cols: Int = 3
+  val Rows: Int = 2
+  val ImagesPerPage: Int = Cols * Rows
 }

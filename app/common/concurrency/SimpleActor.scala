@@ -12,7 +12,9 @@ import scala.concurrent.Future
 trait SimpleActor[Msg] extends SimpleTypedActor[Msg, Unit]
 object SimpleActor {
   def apply[Msg](name: String, f: Msg => Any): SimpleActor[Msg] =
-    new SimpleTypedActorImpl(name, f).void
+    new SimpleTypedActorImpl[Msg, Unit](name, f(_)).void
+  def withSelf[Msg](name: String, f: (Msg, SimpleTypedActor[Msg, Unit]) => Any): SimpleActor[Msg] =
+    new SimpleTypedActorImpl[Msg, Unit](name, f(_, _)).void
   def async[Msg](name: String, f: Msg => Future[Any]): SimpleActor[Msg] =
     new SimpleTypedActorAsyncImpl(name, f).void
   def unique[Msg](name: String, f: Msg => Any): SimpleActor[Msg] =
