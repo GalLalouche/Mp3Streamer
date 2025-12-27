@@ -4,16 +4,16 @@ import com.google.inject.{Guice, Inject}
 import io.lemonlabs.uri.Url
 import mains.{BrowserUtils, IOUtils, MainsModule}
 import mains.cover.DownloadCover._
-import mains.cover.image.ImageAPISearch
+import mains.cover.image.{ImageAPIFetcher, ImageAPISearch}
 import models.AlbumDirFactory
 import musicfinder.SongDirectoryParser
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 import common.concurrency.{FutureIterant, Iterant}
 import common.io.{IODirectory, IOFile}
-import common.rich.RichFuture.richFuture
 import common.rich.path.{Directory, RichFileUtils, TempDirectory}
 import common.rich.path.RichFile.richFile
 
@@ -58,19 +58,20 @@ private[mains] class DownloadCover @Inject() (
     }
   }
 
-  private def selectImage(imageURLs: FutureIterant[ImageSource]): Future[ImageChoice] = {
-    val sourceToImage = imageDownloader.withOutput(IODirectory(DownloadCover.tempFolder))
+  private def selectImage(imageURLs: FutureIterant[ImageSource]): Future[ImageChoice] =
     imageSelector.select(
       Iterant
-        .prefetching(imageURLs.filter(i => i.isSquare && i.width >= 500), 12)
-        .mapF(
-          // TODO filterSuccessful in rich whatever.
-          sourceToImage(_).toTry.map(_.toOption),
+        .parallelPrefetching[ImageSource, Try[FolderImage]](
+          imageURLs.filter(i => i.isSquare && i.width >= 500),
+          imageDownloader.withOutput(IODirectory(DownloadCover.tempFolder)),
+          prefetchSize = ImageAPIFetcher.ResultsPerQuery - ImageSelector.ImagesPerPage,
+          parallelism = ImageSelector.ImagesPerPage,
         )
+        // TODO filterSuccessful in rich whatever. FunctorFilter?
+        .map(_.toOption)
         .filter(_.isDefined)
         .map(_.get),
     )
-  }
 }
 
 private object DownloadCover {
@@ -101,9 +102,7 @@ private object DownloadCover {
     injector
       .instance[DownloadCover]
       .apply(folder)
-      .collectHandle { case _: CoverException =>
-        _ => ()
-      }
+      .collectHandle { case _: CoverException => _ => () }
       .get
       .apply(folder)
   }
