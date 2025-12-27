@@ -43,9 +43,9 @@ class ElasticExecutorTest extends AnyFreeSpec with AuxSpecs {
     }
     cdl.await()
     keepAlive.toMillis.toInt.times {
-      val internal = new CountDownLatch(1)
+      val internal = SingleLatch()
       $.execute { () =>
-        internal.countDown()
+        internal.release()
       }
       internal.await()
       Thread.sleep(2)
@@ -58,19 +58,19 @@ class ElasticExecutorTest extends AnyFreeSpec with AuxSpecs {
   "Uses elastic thread creation (threads aren't created if there are idle threads)" taggedAs Slow in 10
     .parTimes {
       val bound = 3
-      val keepAlive = 300.millis
+      val keepAlive = 400.millis
       val $ = ElasticExecutor("test", daemon = true, keepAlive = keepAlive, bound = bound)
       val n = 5
       val cdl = new CountDownLatch(n)
       (1 to n).foreach { i =>
-        val localCdl = new CountDownLatch(1)
+        val localCdl = SingleLatch()
         $.execute { () =>
           Thread.sleep(1)
           cdl.countDown()
           localCdl.await()
         }
-        localCdl.countDown()
-        Thread.sleep(100)
+        localCdl.release()
+        Thread.sleep(200)
       }
 
       cdl.await()
