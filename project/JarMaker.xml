@@ -12,28 +12,25 @@
     <jar destfile="d:/Mp3Mains.jar" filesetmanifest="mergewithoutmain">
       <manifest>
         <!-- Generated using get_attributes.py -->
-        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/local/org.me/scalacommon_2.12/1.0/jars/scalacommon_2.12.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/.ivy2/local/org.me/scalacommon_2.13/2.0/jars/scalacommon_2.13.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/.m2/repository/my/net/jthink/jaudiotagger/3.0.3-SNAPSHOT/jaudiotagger-3.0.3-SNAPSHOT.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.sbt/boot/scala-2.12.20/lib/scala-compiler.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.sbt/boot/scala-2.12.20/lib/scala-library.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/.sbt/boot/scala-2.12.20/lib/scala-reflect.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/aopalliance/aopalliance/1.0/aopalliance-1.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/ch/qos/logback/logback-core/1.3.15/logback-core-1.3.15.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/co/fs2/fs2-core_2.12/3.11.0/fs2-core_2.12-3.11.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/co/fs2/fs2-io_2.12/3.11.0/fs2-io_2.12-3.11.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/beachape/enumeratum-macros_2.12/1.7.5/enumeratum-macros_2.12-1.7.5.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/beachape/enumeratum_2.12/1.7.5/enumeratum_2.12-1.7.5.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/chuusai/shapeless_2.12/2.3.3/shapeless_2.12-2.3.3.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/comcast/ip4s-core_2.12/3.6.0/ip4s-core_2.12-3.6.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/co/fs2/fs2-core_2.13/3.11.0/fs2-core_2.13-3.11.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/co/fs2/fs2-io_2.13/3.11.0/fs2-io_2.13-3.11.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/beachape/enumeratum-macros_2.13/1.7.5/enumeratum-macros_2.13-1.7.5.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/beachape/enumeratum_2.13/1.7.5/enumeratum_2.13-1.7.5.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/chuusai/shapeless_2.13/2.3.3/shapeless_2.13-2.3.3.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/comcast/ip4s-core_2.13/3.6.0/ip4s-core_2.13-3.6.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.14.3/jackson-annotations-2.14.3.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.14.3/jackson-core-2.14.3.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.14.3/jackson-databind-2.14.3.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.14.3/jackson-datatype-jdk8-2.14.3.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.14.3/jackson-datatype-jsr310-2.14.3.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/github/julien-truffaut/monocle-core_2.12/1.5.0/monocle-core_2.12-1.5.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/github/julien-truffaut/monocle-macro_2.12/1.5.0/monocle-macro_2.12-1.5.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/github/mpilquist/simulacrum_2.12/0.19.0/simulacrum_2.12-0.19.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/github/pathikrit/better-files_2.12/3.9.1/better-files_2.12-3.9.1.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/github/julien-truffaut/monocle-core_2.13/2.1.0/monocle-core_2.13-2.1.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/github/julien-truffaut/monocle-macro_2.13/2.1.0/monocle-macro_2.13-2.1.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/github/mpilquist/simulacrum_2.13/0.19.0/simulacrum_2.13-0.19.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/github/pathikrit/better-files_2.13/3.9.1/better-files_2.13-3.9.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations/2.18.0/error_prone_annotations-2.18.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar" />
@@ -42,97 +39,107 @@
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/google/inject/extensions/guice-assistedinject/7.0.0/guice-assistedinject-7.0.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/google/inject/guice/7.0.0/guice-7.0.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/google/j2objc/j2objc-annotations/1.3/j2objc-annotations-1.3.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/google/protobuf/protobuf-java/3.10.0/protobuf-java-3.10.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/h2database/h2/1.4.196/h2-1.4.196.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/jsuereth/scala-arm_2.12/2.0/scala-arm_2.12-2.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/lihaoyi/sourcecode_2.12/0.4.2/sourcecode_2.12-0.4.2.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/outr/moduload_2.12/1.1.7/moduload_2.12-1.1.7.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/outr/perfolation_2.12/1.2.11/perfolation_2.12-1.2.11.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/outr/scribe-slf4j_2.12/3.15.2/scribe-slf4j_2.12-3.15.2.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/outr/scribe_2.12/3.15.2/scribe_2.12-3.15.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/lihaoyi/sourcecode_2.13/0.4.2/sourcecode_2.13-0.4.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/michaelpollmeier/scala-arm_2.13/2.1/scala-arm_2.13-2.1.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/outr/moduload_2.13/1.1.7/moduload_2.13-1.1.7.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/outr/perfolation_2.13/1.2.12/perfolation_2.13-1.2.12.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/outr/scribe_2.13/3.17.0/scribe_2.13-3.17.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/twitter/hpack/1.0.2/hpack-1.0.2.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.12/2.6.1/akka-actor_2.12-2.6.1.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/akka/akka-protobuf-v3_2.12/2.6.1/akka-protobuf-v3_2.12-2.6.1.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/akka/akka-stream_2.12/2.6.1/akka-stream_2.12-2.6.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/config/1.4.3/config-1.4.3.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/play/cachecontrol_2.12/2.0.0/cachecontrol_2.12-2.0.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/play/play-ahc-ws-standalone_2.12/2.1.11/play-ahc-ws-standalone_2.12-2.1.11.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/play/play-functional_2.12/2.8.2/play-functional_2.12-2.8.2.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/play/play-json_2.12/2.8.2/play-json_2.12-2.8.2.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/play/play-ws-standalone-json_2.12/2.1.11/play-ws-standalone-json_2.12-2.1.11.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/play/play-ws-standalone_2.12/2.1.11/play-ws-standalone_2.12-2.1.11.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/play/shaded-asynchttpclient/2.1.11/shaded-asynchttpclient-2.1.11.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/play/shaded-oauth/2.1.11/shaded-oauth-2.1.11.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/slick/slick_2.12/3.3.3/slick_2.12-3.3.3.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/ssl-config-core_2.12/0.4.3/ssl-config-core_2.12-0.4.3.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/slick/slick_2.13/3.3.3/slick_2.13-3.3.3.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/com/typesafe/ssl-config-core_2.13/0.6.1/ssl-config-core_2.13-0.6.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/commons-beanutils/commons-beanutils/1.9.4/commons-beanutils-1.9.4.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/commons-digester/commons-digester/2.1/commons-digester-2.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/commons-io/commons-io/1.3.2/commons-io-1.3.2.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/commons-logging/commons-logging/1.3.2/commons-logging-1.3.2.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/commons-validator/commons-validator/1.9.0/commons-validator-1.9.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/lemonlabs/scala-uri_2.12/3.0.0/scala-uri_2.12-3.0.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/lemonlabs/scala-uri_2.13/3.0.0/scala-uri_2.13-3.0.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/reactivex/rxjava/1.2.4/rxjava-1.2.4.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/reactivex/rxscala_2.12/0.27.0/rxscala_2.12-0.27.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/reactivex/rxscala_2.13/0.27.0/rxscala_2.13-0.27.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/smallrye/common/smallrye-common-annotation/2.14.0/smallrye-common-annotation-2.14.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/smallrye/common/smallrye-common-constraint/2.14.0/smallrye-common-constraint-2.14.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/smallrye/common/smallrye-common-cpu/2.14.0/smallrye-common-cpu-2.14.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/smallrye/common/smallrye-common-expression/2.4.0/smallrye-common-expression-2.4.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/smallrye/common/smallrye-common-function/2.14.0/smallrye-common-function-2.14.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/smallrye/common/smallrye-common-net/2.4.0/smallrye-common-net-2.4.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/smallrye/common/smallrye-common-os/2.4.0/smallrye-common-os-2.4.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/io/smallrye/common/smallrye-common-ref/2.4.0/smallrye-common-ref-2.4.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/jakarta/inject/jakarta.inject-api/2.0.1/jakarta.inject-api-2.0.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/javax/inject/javax.inject/1/javax.inject-1.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/joda-time/joda-time/2.10.5/joda-time-2.10.5.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/me/tongfei/progressbar/0.10.1/progressbar-0.10.1.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/net/codingwell/scala-guice_2.12/4.2.1/scala-guice_2.12-4.2.1.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/net/codingwell/scala-guice_2.13/7.0.0/scala-guice_2.13-7.0.0.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-actor_2.13/1.0.3/pekko-actor_2.13-1.0.3.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-protobuf-v3_2.13/1.0.3/pekko-protobuf-v3_2.13-1.0.3.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/apache/pekko/pekko-stream_2.13/1.0.3/pekko-stream_2.13-1.0.3.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/checkerframework/checker-qual/3.12.0/checker-qual-3.12.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-client_2.12/0.23.30/http4s-client_2.12-0.23.30.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-core_2.12/0.23.30/http4s-core_2.12-0.23.30.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-crypto_2.12/0.2.4/http4s-crypto_2.12-0.2.4.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-dsl_2.12/0.23.30/http4s-dsl_2.12-0.23.30.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-ember-client_2.12/0.23.30/http4s-ember-client_2.12-0.23.30.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-ember-core_2.12/0.23.30/http4s-ember-core_2.12-0.23.30.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-ember-server_2.12/0.23.30/http4s-ember-server_2.12-0.23.30.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-server_2.12/0.23.30/http4s-server_2.12-0.23.30.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-client_2.13/0.23.30/http4s-client_2.13-0.23.30.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-core_2.13/0.23.30/http4s-core_2.13-0.23.30.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-crypto_2.13/0.2.4/http4s-crypto_2.13-0.2.4.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-dsl_2.13/0.23.30/http4s-dsl_2.13-0.23.30.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-ember-client_2.13/0.23.30/http4s-ember-client_2.13-0.23.30.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-ember-core_2.13/0.23.30/http4s-ember-core_2.13-0.23.30.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-ember-server_2.13/0.23.30/http4s-ember-server_2.13-0.23.30.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/http4s/http4s-server_2.13/0.23.30/http4s-server_2.13-0.23.30.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/jboss/logging/jboss-logging/3.6.1.Final/jboss-logging-3.6.1.Final.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/jboss/threads/jboss-threads/3.9.2/jboss-threads-3.9.2.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/jline/jline-native/3.24.1/jline-native-3.24.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/jline/jline-terminal/3.24.1/jline-terminal-3.24.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/jsoup/jsoup/1.12.1/jsoup-1.12.1.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/log4s/log4s_2.12/1.10.0/log4s_2.12-1.10.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-base/21.0.6/javafx-base-21.0.6-win.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-base/21.0.6/javafx-base-21.0.6.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-controls/21.0.6/javafx-controls-21.0.6-win.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-controls/21.0.6/javafx-controls-21.0.6.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-graphics/21.0.6/javafx-graphics-21.0.6-win.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-graphics/21.0.6/javafx-graphics-21.0.6.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/parboiled/parboiled_2.12/2.2.1/parboiled_2.12-2.2.1.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/playframework/play-functional_2.12/3.0.4/play-functional_2.12-3.0.4.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/playframework/play-json_2.12/3.0.4/play-json_2.12-3.0.4.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.3/reactive-streams-1.0.3.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-collection-compat_2.12/2.12.0/scala-collection-compat_2.12-2.12.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-java8-compat_2.12/0.9.1/scala-java8-compat_2.12-0.9.1.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-parser-combinators_2.12/1.1.2/scala-parser-combinators_2.12-1.1.2.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-swing_2.12/3.0.0/scala-swing_2.12-3.0.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-xml_2.12/2.3.0/scala-xml_2.12-2.3.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scalactic/scalactic_2.12/3.0.4/scalactic_2.12-3.0.4.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scalafx/scalafx_2.12/17.0.1-R26/scalafx_2.12-17.0.1-R26.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scalamacros/paradise_2.12.20/2.1.1/paradise_2.12.20-2.1.1.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scalatest/scalatest_2.12/3.0.4/scalatest_2.12-3.0.4.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scalaz/scalaz-concurrent_2.12/7.2.18/scalaz-concurrent_2.12-7.2.18.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.2.18/scalaz-core_2.12-7.2.18.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scalaz/scalaz-effect_2.12/7.2.18/scalaz-effect_2.12-7.2.18.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scodec/scodec-bits_2.12/1.1.38/scodec-bits_2.12-1.1.38.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/case-insensitive_2.12/1.4.2/case-insensitive_2.12-1.4.2.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-core_2.12/2.11.0/cats-core_2.12-2.11.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-effect-kernel_2.12/3.5.7/cats-effect-kernel_2.12-3.5.7.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-effect-std_2.12/3.5.7/cats-effect-std_2.12-3.5.7.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-effect_2.12/3.5.4/cats-effect_2.12-3.5.4.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-kernel_2.12/2.11.0/cats-kernel_2.12-2.11.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-parse_2.12/1.0.0/cats-parse_2.12-1.0.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/keypool_2.12/0.4.10/keypool_2.12-0.4.10.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/literally_2.12/1.1.0/literally_2.12-1.1.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/log4cats-core_2.12/2.7.0/log4cats-core_2.12-2.7.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/log4cats-slf4j_2.12/2.7.0/log4cats-slf4j_2.12-2.7.0.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/macro-compat_2.12/1.1.1/macro-compat_2.12-1.1.1.jar" />
-        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/vault_2.12/3.6.0/vault_2.12-3.6.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/log4s/log4s_2.13/1.10.0/log4s_2.13-1.10.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-base/24.0.2/javafx-base-24.0.2-win.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-base/24.0.2/javafx-base-24.0.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-controls/24.0.2/javafx-controls-24.0.2-win.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-controls/24.0.2/javafx-controls-24.0.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-fxml/24.0.2/javafx-fxml-24.0.2-win.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-fxml/24.0.2/javafx-fxml-24.0.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-graphics/24.0.2/javafx-graphics-24.0.2-win.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-graphics/24.0.2/javafx-graphics-24.0.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-media/24.0.2/javafx-media-24.0.2-win.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-media/24.0.2/javafx-media-24.0.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-swing/24.0.2/javafx-swing-24.0.2-win.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-swing/24.0.2/javafx-swing-24.0.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-web/24.0.2/javafx-web-24.0.2-win.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/openjfx/javafx-web/24.0.2/javafx-web-24.0.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/parboiled/parboiled_2.13/2.2.1/parboiled_2.13-2.2.1.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/playframework/cachecontrol_2.13/3.0.1/cachecontrol_2.13-3.0.1.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/playframework/play-ahc-ws-standalone_2.13/3.0.8/play-ahc-ws-standalone_2.13-3.0.8.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/playframework/play-functional_2.13/3.0.5/play-functional_2.13-3.0.5.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/playframework/play-json_2.13/3.0.5/play-json_2.13-3.0.5.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/playframework/play-ws-standalone-json_2.13/3.0.8/play-ws-standalone-json_2.13-3.0.8.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/playframework/play-ws-standalone_2.13/3.0.8/play-ws-standalone_2.13-3.0.8.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/playframework/shaded-asynchttpclient/3.0.8/shaded-asynchttpclient-3.0.8.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/playframework/shaded-oauth/3.0.8/shaded-oauth-3.0.8.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-collection-compat_2.13/2.11.0/scala-collection-compat_2.13-2.11.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-parser-combinators_2.13/1.1.2/scala-parser-combinators_2.13-1.1.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scala-lang/modules/scala-swing_2.13/3.0.0/scala-swing_2.13-3.0.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.17/scala-library-2.13.17.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.17/scala-reflect-2.13.17.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scalafx/scalafx_2.13/24.0.2-R36/scalafx_2.13-24.0.2-R36.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/scodec/scodec-bits_2.13/1.1.38/scodec-bits_2.13-1.1.38.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/alleycats-core_2.13/2.13.0/alleycats-core_2.13-2.13.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/case-insensitive_2.13/1.4.2/case-insensitive_2.13-1.4.2.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-core_2.13/2.13.0/cats-core_2.13-2.13.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-effect-kernel_2.13/3.5.7/cats-effect-kernel_2.13-3.5.7.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-effect-std_2.13/3.5.7/cats-effect-std_2.13-3.5.7.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-effect_2.13/3.5.4/cats-effect_2.13-3.5.4.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-free_2.13/2.1.1/cats-free_2.13-2.1.1.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-kernel_2.13/2.13.0/cats-kernel_2.13-2.13.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-macros_2.13/2.1.1/cats-macros_2.13-2.1.1.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/cats-parse_2.13/1.0.0/cats-parse_2.13-1.0.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/keypool_2.13/0.4.10/keypool_2.13-0.4.10.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/literally_2.13/1.1.0/literally_2.13-1.1.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/log4cats-core_2.13/2.7.0/log4cats-core_2.13-2.7.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/log4cats-slf4j_2.13/2.7.0/log4cats-slf4j_2.13-2.7.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/typelevel/vault_2.13/3.6.0/vault_2.13-3.6.0.jar" />
+        <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/wildfly/common/wildfly-common/2.0.1/wildfly-common-2.0.1.jar" />
         <attribute name="Class-Path" value="/C:/Users/Gal/AppData/Local/Coursier/Cache/v1/https/repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.49.0.0/sqlite-jdbc-3.49.0.0.jar" />
       </manifest>
-      <fileset dir="J:/dev/web/Mp3Streamer/target/scala-2.12/classes">
+      <fileset dir="J:/dev/web/Mp3Streamer/target/scala-2.13/classes">
         <include name="common/"/>
         <!-- TODO remove controller modules from AllModules; add them just to the module needed by http4s -->
         <include name="controllers/"/>
