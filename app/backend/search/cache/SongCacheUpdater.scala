@@ -4,9 +4,11 @@ import com.google.inject.Inject
 import models.{AlbumDir, ArtistDir, ModelJsonable, Song}
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
+import scribe.Level
 
 import scala.concurrent.ExecutionContext
 
+import common.TimedLogger
 import common.concurrency.report.ReportObserver
 import common.json.saver.JsonableSaver
 import common.rich.RichT.richT
@@ -17,6 +19,7 @@ private[search] class SongCacheUpdater @Inject() (
     builder: SongCacheBuilder,
     ec: ExecutionContext,
     mj: ModelJsonable,
+    timedLogger: TimedLogger,
 ) {
   import mj._
 
@@ -30,7 +33,6 @@ private[search] class SongCacheUpdater @Inject() (
           scribe.trace(a.toString)
         }
         override def onComplete(result: SongCache): Unit = {
-          $.onCompleted()
           if (original == result) {
             scribe.info("No change in cache.")
             if (
@@ -39,8 +41,10 @@ private[search] class SongCacheUpdater @Inject() (
             )
               if (forceRefresh)
                 scribe.info("Force refresh requested, recreating everything")
-              else
+              else {
+                $.onCompleted()
                 return
+              }
             else
               scribe.info("Some indices are missing, recreating everything.")
           }
@@ -50,7 +54,8 @@ private[search] class SongCacheUpdater @Inject() (
             .foreach(deleted => scribe.info("Deleted files:\n" + deleted.mkString("\n")))
 
           saver.saveObject(result)
-          splitter(result.songs)
+          timedLogger("Recreating indices", Level.Info)(splitter(result.songs))
+          $.onCompleted()
         }
         override def onError(t: Throwable) = throw t
       }),
