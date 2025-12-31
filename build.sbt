@@ -88,6 +88,7 @@ scalacOptions += "-Ymacro-annotations"
 scalacOptions += "-deprecation"
 
 libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
+run / fork := true
 lazy val runHttp4s = taskKey[Unit]("Test")
 lazy val root = (project in file("."))
   .settings(
