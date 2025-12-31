@@ -11,6 +11,7 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.Success
 
 import cats.implicits.catsSyntaxFlatMapOps
+import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.concurrency.SimpleActor
 import common.io.DirectoryRef
@@ -40,9 +41,12 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
         .go(forceRefresh)
         .groupByBuffer(_.song.toTuple(_.artistName, _.albumName))
         .doOnNext(newDirObserver onNext _._2.mapSingle(_.song.file.parent))
-        .doOnCompleted($.complete(Success(())))
         .doOnCompleted(
-          songSelectorState.update() >> searchState.update() >> lastAlbumState.update(),
+          songSelectorState
+            .update()
+            .>>(searchState.update())
+            .>>(lastAlbumState.update())
+            .>|($.complete(Success(()))),
         )
         .subscribe()
       $.future.get
