@@ -17,6 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import cats.data.OptionT
 import common.rich.func.kats.RichOptionT.richOptionT
 
+import common.TimedLogger
 import common.io.{InternetTalker, IODirectory}
 import common.rich.RichFuture._
 import common.rich.RichT._
@@ -35,6 +36,7 @@ private[mains] class FolderFixer @Inject() private (
     stringFixer: StringFixer,
     newArtistFolderCreator: NewArtistFolderCreator,
     ec: ExecutionContext,
+    timedLogger: TimedLogger,
 ) {
   private implicit val iec: ExecutionContext = ec
 
@@ -71,12 +73,9 @@ private[mains] class FolderFixer @Inject() private (
         newArtistFolderCreator
           .selectGenreDirAndPopupBrowser(artist)
           .map(_.addSubDir(stringFixer(artistNameNormalizer(artist))))
+    moved <- fixedDirectory.map(d => timedLogger("Moving folder")(d.move(destinationParent)))
     folderImageMover <- folderImage
-    fixed <- fixedDirectory
-  } yield {
-    println("Copying folder image")
-    fixed.move(destinationParent).<|(folderImageMover)
-  }
+  } yield moved <| folderImageMover
 
   private def replaceDirectory(
       artist: String,
@@ -127,7 +126,9 @@ private[mains] class FolderFixer @Inject() private (
     val newDir = dir.parent.addSubDir(newName)
     newDir.deleteAll() // delete previous directory if it exists
 
-    dir.better.copyTo(newDir.better, overwrite = true)
+    // TODO add a progress bar here
+    // TODO this should be done before changing the ID3 tags, so the tags are not modified on the source files
+    timedLogger("Copying directory")(dir.better.copyTo(newDir.better, overwrite = true))
     newDir
   }
 
