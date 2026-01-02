@@ -1,13 +1,10 @@
 package mains.fixer
 
-import java.net.ConnectException
-
 import backend.FutureOption
 import backend.recon.Artist
 import backend.recon.Reconcilable.SongExtractor
 import better.files.File.CopyOptions
 import com.google.inject.{Guice, Inject}
-import io.lemonlabs.uri.Url
 import mains.{IOUtils, MainsModule}
 import mains.cover.{CoverException, DownloadCover}
 import mains.fixer.FolderFixer.{Overwrite, TempLarge}
@@ -18,10 +15,7 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import scala.concurrent.{ExecutionContext, Future}
 
 import cats.data.OptionT
-import cats.implicits.catsSyntaxFlatMapOps
 import common.rich.func.kats.RichOptionT.richOptionT
-import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
-import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.io.{InternetTalker, IODirectory}
 import common.rich.RichFuture._
@@ -51,7 +45,6 @@ private[mains] class FolderFixer @Inject() private (
     val fixedDirectory = Future(fixLabels.fix(cloneDir(folder)))
     moveDirectory(artist.name, destination.map(_.dir), folderImage, fixedDirectory)
       .map(finish(folder, _))
-      .>>(updateServer())
       .get
   }
 
@@ -122,17 +115,6 @@ private[mains] class FolderFixer @Inject() private (
     require(target != null, s"Missing environment variable $TempLarge")
     println(s"Moving folder <$folder> to <$target>")
     RichFileUtils.move(folder, Directory(target))
-  }
-
-  private def updateServer(): Future[Unit] = {
-    println("Updating remote server if running...")
-    it.get(Url("http://localhost:9000/debug/smart_refresh"))
-      .asByName(println("Updated!"))
-      .collectHandle { case e: ConnectException =>
-        println("Could not connect to the server, maybe it's down? " + e.getMessage)
-        ()
-      }
-      .listenError(e => println("Failed to update server: " + e.getMessage))
   }
 
   private def findArtistDirectory(folder: Directory): (Artist, FutureOption[IODirectory]) = {
