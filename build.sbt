@@ -31,10 +31,12 @@ val guiceVersion = "7.0.0"
 val monocleVersion = "2.1.0"
 val playStandaloneVersion = "3.0.8"
 val scalazVersion = "7.2.36"
-val scribeVersion = "3.15.2"
+val scribeVersion = "3.17.0"
+val logbackVersion = "1.5.23"
 libraryDependencies ++= Seq(
   // noinspection SbtDependencyVersionInspection (Newer JDK version).
-  "ch.qos.logback" % "logback-core" % "1.3.15",
+  "ch.qos.logback" % "logback-classic" % logbackVersion,
+  "ch.qos.logback" % "logback-core" % logbackVersion,
   "com.beachape" %% "enumeratum" % "1.7.5",
   "com.github.julien-truffaut" %% "monocle-core" % monocleVersion,
   "com.github.julien-truffaut" %% "monocle-macro" % monocleVersion,
@@ -45,7 +47,6 @@ libraryDependencies ++= Seq(
   "com.h2database" % "h2" % "1.4.196",
   "com.michaelpollmeier" %% "scala-arm" % "2.1",
   "com.outr" %% "scribe" % scribeVersion,
-  "com.outr" %% "scribe-slf4j" % scribeVersion,
   "com.typesafe" % "config" % "1.4.3",
   "com.typesafe.slick" %% "slick" % "3.3.3",
   "commons-validator" % "commons-validator" % "1.9.0",
