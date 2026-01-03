@@ -16,9 +16,9 @@ import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 import common.concurrency.SimpleActor
 import common.io.DirectoryRef
 import common.rich.RichFuture.richFuture
-import common.rich.RichObservable.richObservable
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rx.RichObservable.richObservable
 
 /**
  * Wraps [[SongCacheUpdater]] so it updates [[SearchState], [[SongSearchState]], and

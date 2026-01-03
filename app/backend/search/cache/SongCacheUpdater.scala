@@ -9,9 +9,9 @@ import scribe.Level
 import scala.concurrent.ExecutionContext
 
 import common.TimedLogger
-import common.concurrency.report.ReportObserver
 import common.json.saver.JsonableSaver
 import common.rich.RichT.richT
+import common.rx.report.ReportObserver
 
 private[search] class SongCacheUpdater @Inject() (
     saver: JsonableSaver,
@@ -28,11 +28,11 @@ private[search] class SongCacheUpdater @Inject() (
     val $ = ReplaySubject[TimestampedSong]()
     ec.execute(() =>
       builder.updating(original)(new ReportObserver[TimestampedSong, SongCache] {
-        override def onStep(a: TimestampedSong) = {
+        override def onNext(a: TimestampedSong) = {
           $.onNext(a)
           scribe.trace(a.toString)
         }
-        override def onComplete(result: SongCache): Unit = {
+        override def onCompleted(result: SongCache): Unit = {
           if (original == result) {
             scribe.info("No change in cache.")
             if (

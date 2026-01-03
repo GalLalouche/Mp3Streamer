@@ -12,10 +12,10 @@ import common.rich.func.kats.ObservableInstances._
 
 import common.concurrency.SimpleActor
 import common.rich.RichFuture._
-import common.rich.RichObservable
-import common.rich.RichObservable._
-import common.rich.RichObservableSpecVer.richObservableSpecVer
 import common.rich.primitives.RichBoolean.richBoolean
+import common.rx.RichObservable
+import common.rx.RichObservable._
+import common.rx.RichObservableSpecVer.richObservableSpecVer
 
 private class ReconFiller[R <: Reconcilable](
     reconciler: Reconciler[R],
