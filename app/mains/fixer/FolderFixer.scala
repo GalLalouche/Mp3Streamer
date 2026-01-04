@@ -126,8 +126,6 @@ private[mains] class FolderFixer @Inject() private (
     val newDir = dir.parent.addSubDir(newName)
     newDir.deleteAll() // delete previous directory if it exists
 
-    // TODO add a progress bar here
-    // TODO this should be done before changing the ID3 tags, so the tags are not modified on the source files
     timedLogger("Copying directory")(dir.better.copyTo(newDir.better, overwrite = true))
     newDir
   }
