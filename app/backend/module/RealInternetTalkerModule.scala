@@ -16,10 +16,10 @@ private class RealInternetTalkerModule private (am: Materializer) extends ScalaM
 object RealInternetTalkerModule {
   private val warningOnlyConfig: Config = ConfigFactory
     .load()
-    .withValue("akka.loglevel", ConfigValueFactory.fromAnyRef("WARNING"))
-    .withValue("akka.stdout-loglevel", ConfigValueFactory.fromAnyRef("WARNING"))
+    .withValue("pekko.loglevel", ConfigValueFactory.fromAnyRef("WARNING"))
+    .withValue("pekko.stdout-loglevel", ConfigValueFactory.fromAnyRef("WARNING"))
   private val warningOnlyDaemonicConfig: Config =
-    warningOnlyConfig.withValue("akka.daemonic", ConfigValueFactory.fromAnyRef(true))
+    warningOnlyConfig.withValue("pekko.daemonic", ConfigValueFactory.fromAnyRef(true))
   def daemonic: Module = new RealInternetTalkerModule(
     Materializer(ActorSystem.create("Standalone-Config-WS-System", warningOnlyDaemonicConfig)),
   )
