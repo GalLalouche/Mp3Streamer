@@ -11,9 +11,8 @@ import com.google.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-import cats.implicits.{catsSyntaxFlatMapOps, toFoldableOps, toFunctorOps}
+import cats.implicits.toFoldableOps
 import common.rich.func.TuplePLenses.__1
-import common.rich.func.kats.PlainSeqInstances.plainSeqInstances
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.Trither
@@ -40,11 +39,11 @@ private class ScoreParser @Inject() (
     val (artists, albums, tracks) =
       Trither.partition(changes.view.map(_.reduce(_.tritherStrengthenLeft(_))))
     // FIXME multiple overwrite void silently fails on foreign key error
-    // This isn't very efficient, since we're performing each update as a separate statement, but
-    // since we expect the number of changes to be relatively small, this should be fine.
-    artists.traverse_(Function.tupled(artistScoreStorage.updateScore)).void >>
-      albums.traverse_(Function.tupled(albumScoreStorage.updateScore)).void >>
-      tracks.traverse_(Function.tupled(trackScoreStorage.updateScore)).void
+    Vector(
+      artistScoreStorage.updateAll(artists),
+      albumScoreStorage.updateAll(albums),
+      trackScoreStorage.updateAll(tracks),
+    ).sequence_
   }
 
   // Returns None if line isn't a score line, or if the score hasn't changed.
