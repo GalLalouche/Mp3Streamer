@@ -37,13 +37,14 @@ class OnlineRetrieverCacher[Key, Value](
   override def update(k: Key, v: Value) = localStorage.update(k, v)
   override def replace(k: Key, v: Value) = localStorage.replace(k, v)
   override def store(k: Key, v: Value) = localStorage.store(k, v)
-  override def storeMultiple(kvs: Seq[(Key, Value)]) = localStorage.storeMultiple(kvs)
-  override def overwriteMultipleVoid(kvs: Seq[(Key, Value)]) =
+  override def storeMultiple(kvs: Iterable[(Key, Value)]) = localStorage.storeMultiple(kvs)
+  override def overwriteMultipleVoid(kvs: Iterable[(Key, Value)]) =
     localStorage.overwriteMultipleVoid(kvs)
   override def mapStore(mode: StoreMode, k: Key, f: Value => Value, default: => Value) =
     localStorage.mapStore(mode, k, f, default)
   override def load(k: Key) = localStorage.load(k)
   override def exists(k: Key) = localStorage.exists(k)
   override def delete(k: Key) = localStorage.delete(k)
+  override def deleteAll(ks: Iterable[Key]) = localStorage.deleteAll(ks)
   override def utils = localStorage.utils
 }

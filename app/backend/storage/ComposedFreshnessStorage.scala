@@ -25,9 +25,9 @@ class ComposedFreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshne
   override def foreverFresh(k: Key, v: Value): Future[Unit] =
     storage.store(k, v -> AlwaysFresh)
   override def store(k: Key, v: Value) = storage.store(k, v |> now)
-  override def storeMultiple(kvs: Seq[(Key, Value)]) =
+  override def storeMultiple(kvs: Iterable[(Key, Value)]) =
     storage storeMultiple kvs.map(_.modifySecond(now))
-  override def overwriteMultipleVoid(kvs: Seq[(Key, Value)]) =
+  override def overwriteMultipleVoid(kvs: Iterable[(Key, Value)]) =
     storage overwriteMultipleVoid kvs.map(_.modifySecond(now))
   override def load(k: Key) = storage.load(k) |> toValue
   override def exists(k: Key) = storage.exists(k)
@@ -40,5 +40,6 @@ class ComposedFreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshne
   override def mapStore(mode: StoreMode, k: Key, f: Value => Value, default: => Value) =
     storage.mapStore(mode, k, e => now(f(e._1)), default |> now) |> toValue
   override def delete(k: Key) = storage.delete(k).map(_._1)
+  override def deleteAll(keys: Iterable[Key]) = storage.deleteAll(keys)
   override def utils = storage.utils
 }
