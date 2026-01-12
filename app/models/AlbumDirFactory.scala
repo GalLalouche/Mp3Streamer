@@ -5,6 +5,7 @@ import musicfinder.SongDirectoryParser
 
 import common.io.DirectoryRef
 import common.rich.RichT.richT
+import common.rich.collections.RichIterator.richIterator
 
 class AlbumDirFactory @Inject() (songDirectoryParser: SongDirectoryParser) {
   def fromDir(dir: DirectoryRef): AlbumDir = {
@@ -12,7 +13,7 @@ class AlbumDirFactory @Inject() (songDirectoryParser: SongDirectoryParser) {
       songDirectoryParser(dir)
         .requiring(_.nonEmpty, s"Cannot create an album of an empty dir <$dir>")
         .sortBy(_.trackNumber)
-        .toVector
+
     val firstSong = songs.head
     AlbumDir(
       dir = dir,

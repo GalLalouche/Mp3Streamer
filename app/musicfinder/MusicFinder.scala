@@ -38,7 +38,7 @@ trait MusicFinder { self =>
     // Because some albums have, e.g., cover subdirectories
     .filter(_.files.exists(f => extensions.contains(f.extension)))
   def getSongFiles: View[S#F] = albumDirs.flatMap(getSongFilesInDir)
-  def getSongFilesInDir(d: DirectoryRef): Seq[S#F] =
+  def getSongFilesInDir(d: DirectoryRef): Iterator[S#F] =
     d.asInstanceOf[S#D].files.filter(f => extensions.contains(f.extension))
 
   final type DirView = View[S#D]

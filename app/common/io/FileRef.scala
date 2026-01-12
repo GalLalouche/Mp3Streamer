@@ -74,16 +74,14 @@ trait DirectoryRef extends PathRef { self =>
   def getFile(name: String): Option[S#F]
   def addSubDir(name: String): S#D
   def getDir(name: String): Option[S#D]
-  def dirs: Seq[S#D]
-  def files: Seq[S#F]
-  def paths: Seq[S#P] = dirs.++(files).asInstanceOf[Seq[S#P]]
+  def dirs: Iterator[S#D]
+  def files: Iterator[S#F]
+  def paths: Iterator[S#P] = dirs.++(files).asInstanceOf[Iterator[S#P]]
   def isDescendant(path: String): Boolean =
     Paths.get(path).normalize().startsWith(Paths.get(this.path).normalize())
-  def deepDirs: Seq[S#D] = {
-    val d = dirs
-    d ++ d.flatMap(_.deepDirs).asInstanceOf[Seq[S#D]]
-  }
-  def deepFiles: Seq[S#F] = files ++ dirs.flatMap(_.deepFiles).asInstanceOf[Seq[S#F]]
+  def deepDirs: Iterator[S#D] =
+    dirs.flatMap(d => Iterator(d) ++ d.deepDirs.asInstanceOf[Iterator[S#D]])
+  def deepFiles: Iterator[S#F] = files ++ dirs.flatMap(_.deepFiles.asInstanceOf[Iterator[S#F]])
   def lastModified: LocalDateTime
   // TODO freaking unfoldables already
   override def parents =

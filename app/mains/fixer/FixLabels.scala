@@ -57,7 +57,7 @@ private class FixLabels @Inject() (
     dir.files.filter(_.extension == "m3u").foreach(_.delete)
 
     val ioDir = IODirectory(dir)
-    val musicFiles = mf.getSongFilesInDir(ioDir).map(_.file)
+    val musicFiles = mf.getSongFilesInDir(ioDir).map(_.file).toVector
     require(
       musicFiles.nonEmpty,
       s"Could not find any songs in $dir - maybe they're in subfolders...",

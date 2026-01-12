@@ -6,18 +6,20 @@ import musicfinder.ArtistDirsIndex
 
 import common.io.DirectoryRef
 import common.rich.RichT.richT
-import common.rich.collections.RichMap.richMap
+import common.rich.collections.RichIterator.richIterator
 import common.rich.primitives.RichOption.richOption
 
 private class PreCachedExistingAlbumsFactory @Inject() (
     artistDirsIndex: ArtistDirsIndex,
     reconcilableFactory: ReconcilableFactory,
 ) {
-  def from(albums: Iterable[DirectoryRef]) = new PreCachedExistingAlbums(
+  def from(albums: Iterator[DirectoryRef]) = new PreCachedExistingAlbums(
     albums
       .flatMap(toAlbum)
       .groupBy(_.artist)
-      .properMapValues(_.toSet),
+      .view
+      .mapValues(_.toSet)
+      .toMap,
   )
 
   private def toAlbum(dir: DirectoryRef): Option[Album] =
@@ -29,6 +31,6 @@ private class PreCachedExistingAlbumsFactory @Inject() (
     val artistDir: DirectoryRef = artistDirsIndex
       .forArtist(artist)
       .getOrThrow(s"Could not find directory for artist <${artist.name}>")
-    from((artistDir.dirs: Seq[DirectoryRef]).mapIf(_.isEmpty).to(Vector(artistDir)))
+    from((artistDir.dirs: Iterator[DirectoryRef]).mapIf(_.isEmpty).to(Iterator(artistDir)))
   }
 }

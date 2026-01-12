@@ -48,11 +48,11 @@ class ReconcilableFactory @Inject() (
     else if (dir.name == "Singles")
       Left(SinglesDirectory)
     else
-      songDirectoryParser(dir).headOption.map(_.release).toRight(NoSongs)
+      songDirectoryParser(dir).nextOption().map(_.release).toRight(NoSongs)
 
   /** Throws if artist could not be extracted! */
   def extractArtistFromAlbumDir(albumDir: DirectoryRef): Artist =
-    songDirectoryParser(albumDir).head.artist
+    songDirectoryParser(albumDir).next().artist
 
   def trySongInfo(f: FileRef): Try[(TrackNumber, SongTitle)] =
     ReconcilableFactory.capture(f.name).toTry(new Exception(s"$f has invalid file name"))

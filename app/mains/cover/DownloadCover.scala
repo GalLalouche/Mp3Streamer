@@ -10,7 +10,7 @@ import musicfinder.SongDirectoryParser
 import net.codingwell.scalaguice.InjectorExtensions._
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 import common.concurrency.{FutureIterant, Iterant}
 import common.io.{IODirectory, IOFile}
@@ -38,7 +38,7 @@ private[mains] class DownloadCover @Inject() (
    *   temporary files.
    */
   def apply(albumDir: Directory): Future[Directory => Unit] = {
-    val album = songDirectoryParser(IODirectory(albumDir)).head.album
+    val album = songDirectoryParser(IODirectory(albumDir)).next().album
     val searchUrl = Url
       .parse("https://www.google.com/search")
       .withQueryString(

@@ -117,7 +117,7 @@ private[mains] class FolderFixer @Inject() private (
   }
 
   private def findArtistDirectory(folder: Directory): (Artist, FutureOption[IODirectory]) = {
-    val artist = songDirectoryParser(IODirectory(folder)).head.artist
+    val artist = songDirectoryParser(IODirectory(folder)).next().artist
     (artist, OptionT(Future(artistDirsIndex.forArtist(artist).map(_.asInstanceOf[IODirectory]))))
   }
 

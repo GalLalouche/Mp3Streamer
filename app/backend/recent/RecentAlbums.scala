@@ -13,7 +13,9 @@ import cats.syntax.apply.catsSyntaxApplyOps
 
 import common.io.{DirectoryRef, FileRef}
 import common.rich.RichT._
-import common.rich.RichTime._
+import common.rich.RichTime
+import common.rich.RichTime.RichClock
+import common.rich.collections.RichIterator.richIterator
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class RecentAlbums @Inject() (
@@ -29,10 +31,9 @@ private class RecentAlbums @Inject() (
   def all(amount: Int): Seq[AlbumDir] = mf.albumDirs |> go(amount)
   def double(amount: Int): Seq[AlbumDir] = mf.albumDirs.filter(isDoubleAlbum) |> go(amount)
   override def since(lastDuration: LocalDateTime): Seq[AlbumDir] =
-    mf.albumDirs
+    (mf.albumDirs.iterator: Iterator[DirectoryRef])
       .filter(_.lastModified >= lastDuration)
-      .toVector
-      .sortBy(_.lastModified)(OrderingLocalDateTime.reverse)
+      .sortBy(_.lastModified)(RichTime.OrderingLocalDateTime.reverse)
       .map(makeAlbum)
   def sinceDays(d: Int): Seq[AlbumDir] = since(_.minusDays(d))
   def sinceMonths(m: Int): Seq[AlbumDir] = since(_.minusMonths(m))

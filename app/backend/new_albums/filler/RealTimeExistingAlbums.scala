@@ -30,7 +30,7 @@ private class RealTimeExistingAlbums @Inject() (
   private implicit val iec: ExecutionContext = ec
   override def artists: Iterable[Artist] = timed("Fetching artists (lazy)", scribe.info(_)) {
     directoryDiscovery.artistDirectories.flatMap { artistDir =>
-      lazy val albumDir = artistDir.dirs.headOption.getOrThrow(s"Problem with $artistDir")
+      lazy val albumDir = artistDir.dirs.nextOption().getOrThrow(s"Problem with $artistDir")
       artistDirsIndex.forDir(artistDir) match {
         case SingleArtist(artist) => Vector(artist)
         case MultipleArtists(artists) => artists

@@ -47,7 +47,7 @@ private class FlacSplitter @Inject() (cueSplitter: CueSplitter, mf: IOMusicFinde
   def apply(cueFile: File): Unit = {
     val dir = cueFile.parent
     val bigFlacFile = {
-      val $ = dir.files.filter(_.extension == "flac")
+      val $ = dir.files.filter(_.extension == "flac").toVector
       if ($.hasExactlySizeOf(1))
         $.single
       else

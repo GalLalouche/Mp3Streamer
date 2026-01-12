@@ -49,7 +49,7 @@ private class ArtistNameAdder @Inject() (
   private def getSongFile(dir: IODirectory): File = {
     val songFiles = mf.getSongFilesInDir(dir)
     if (songFiles.isEmpty) {
-      val nestedFiles = dir.dirs.flatMap(mf.getSongFilesInDir)
+      val nestedFiles = dir.dirs.flatMap(mf.getSongFilesInDir).toVector
       if (
         nestedFiles.nonEmpty &&
         nestedFiles.hasSameValues(songTagParser(_).toTuple(_.artistName, _.albumName))
@@ -58,6 +58,6 @@ private class ArtistNameAdder @Inject() (
       else
         throw new NoSuchElementException(s"Could not extract a song from '$dir'")
     } else
-      songFiles.head.file
+      songFiles.next().file
   }
 }

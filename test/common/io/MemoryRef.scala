@@ -68,8 +68,8 @@ sealed abstract class MemoryDir(val path: String) extends DirectoryRef with Memo
     dirsByName += ((name, $))
     $
   }
-  override def dirs: Seq[MemoryDir] = dirsByName.values.toSeq.sortBy(_.name)
-  override def files = filesByName.values.toSeq.sortBy(_.name)
+  override def dirs: Iterator[MemoryDir] = dirsByName.values.toSeq.sortBy(_.name).iterator
+  override def files: Iterator[MemoryFile] = filesByName.values.toSeq.sortBy(_.name).iterator
 
   def deleteFile(name: String): Boolean = {
     val hasFile = filesByName.contains(name)

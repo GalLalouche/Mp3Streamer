@@ -42,9 +42,9 @@ private class NewArtistFolderCreator @Inject() (
       maxRows = MaxRows,
       iconSideInPixels = IconSideInPixels,
       bigIconMultiplayer = BigIconMultiplayer,
-      subGenreDirs = Seq("Rock", "Metal").map(genre(_).dirs),
+      subGenreDirs = Vector("Rock", "Metal").map(genre(_).dirs.toVector),
       // Classical isn't here since classical music has its own special ordering mechanism.
-      bigGenreDirs = Seq("Blues", "Jazz", "New Age", "Musicals").map(genre),
+      bigGenreDirs = Vector("Blues", "Jazz", "New Age", "Musicals").map(genre),
     )
 
     val $ = Promise[Directory]()

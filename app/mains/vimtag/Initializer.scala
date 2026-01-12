@@ -23,13 +23,13 @@ private class Initializer @Inject() (
   private class Extractor(dir: DirectoryRef) {
     private def unsupportedFilesMsg = {
       val unsupportedFiles =
-        dir.deepFiles.view.map(_.extension).filter(mf.unsupportedExtensions).toSet
+        dir.deepFiles.map(_.extension).filter(mf.unsupportedExtensions).toSet
       s"; However, it did contain unsupported files with extensions: $unsupportedFiles"
         .monoidFilter(unsupportedFiles.nonEmpty)
     }
 
     private lazy val songFiles =
-      (dir +: dir.dirs)
+      (dir +: dir.dirs.toVector)
         .flatMap(optionalSongFinder.apply)
         .requiring(_.nonEmpty, s"No ${mf.extensions} files found in directory$unsupportedFilesMsg")
     private lazy val ordering: Ordering[OptionalSong] =

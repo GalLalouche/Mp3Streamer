@@ -17,7 +17,7 @@ private object SongGroupsUpdater {
     val dir = Directory(directory)
     val prefixes: Set[String] = trackNumbers.map(_.toString.mapIf(_.length < 2).to("0" + _)).toSet
     def isPrefix(s: String) = prefixes.exists(s.startsWith)
-    val songs = dir.files.filter(_.getName |> isPrefix)
+    val songs = dir.files.filter(_.getName |> isPrefix).toVector
     SongGroup(songs.sortBy(_.getName).map(IOSong.read))
   }
 

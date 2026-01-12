@@ -96,9 +96,11 @@ class IODirectory private (val dir: Directory) extends IOPath(dir.dir) with Dire
   override def getFile(name: String) = optionalFile(name).map(IOFile.apply)
   override def dirs = dir.dirs.map(new IODirectory(_))
   override def files = dir.files.map(IOFile.apply)
+  override def paths: Iterator[IOPath] =
+    dir.listFiles.iterator.map(f => if (f.isDirectory) new IODirectory(Directory(f)) else IOFile(f))
   override def lastModified: LocalDateTime = dir.dir |> FileUtils.lastModified
-  override def deepDirs: Seq[IODirectory] = dir.deepDirs.map(new IODirectory(_))
-  override def deepFiles: Seq[IOFile] = dir.deepFiles.map(new IOFile(_))
+  override def deepDirs: Iterator[IODirectory] = dir.deepDirs.map(new IODirectory(_))
+  override def deepFiles: Iterator[IOFile] = dir.deepFiles.map(new IOFile(_))
 
   override def equals(other: Any): Boolean = other match {
     case that: IODirectory => this.isInstanceOf[IODirectory] && dir == that.dir

@@ -30,7 +30,7 @@ import common.rich.primitives.RichEither.richEitherString
     scribe.warn(_),
   ) {
     mf.albumDirs
-      .filter(songDirectoryParser(_).head.artist == artist)
+      .filter(songDirectoryParser(_).next().artist == artist)
       .map((e: DirectoryRef) => reconcilableFactory.toAlbum(e).leftMap(_.toString).getOrThrow)
       .toSet
       .optFilter(_.nonEmpty)
