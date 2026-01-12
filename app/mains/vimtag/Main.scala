@@ -23,6 +23,7 @@ object Main {
     val injector = Guice.createInjector(StandaloneModule, TableModule)
     val vimEdit = injector.instance[VimEdit]
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
+    require(args.length == 1, "Usage: The only argument should be the directory to edit tags in.")
     val dir = IODirectory(IOUtils.decodeFile(args.view.single))
     val initialLines = injector.instance[Initializer].apply(dir)
     val (file, lines) = vimEdit(initialLines)

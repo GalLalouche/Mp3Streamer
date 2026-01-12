@@ -24,17 +24,23 @@ private object IOUtils {
    */
   def decodeFile(path: String): File = {
     val file = new File(path)
+    require(file.getParentFile != null, s"File has no parent: $path; path is invalid or root.")
+    require(file.getParentFile.exists(), s"Parent directory does not exist: ${file.getParent}")
     new File(decode(IODirectory(file.getParentFile), file.getName).path)
   }
 
   @VisibleForTesting
   private[mains] def decode(parent: DirectoryRef, fileName: String): PathRef =
     parent.getFile(fileName).getOrElse {
-      require(fileName.contains('?'), "Can only attempt to decode files with '?' in their name")
-      require(
-        parent.path.contains('?').isFalse,
-        "Can only attempt to decode files without '?' in their parent's path",
-      )
-      parent.paths.minBy(f => Levenshtein.distance(f.name, fileName))
+      if (fileName.contains('?')) {
+        require(
+          parent.path.contains('?').isFalse,
+          "Can only attempt to decode files without '?' in their parent's path",
+        )
+        parent.paths.minBy(f => Levenshtein.distance(f.name, fileName))
+      } else
+        throw new IllegalArgumentException(
+          s"File <$fileName> not found in directory <${parent.path}>",
+        )
     }
 }
