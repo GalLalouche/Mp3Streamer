@@ -6,7 +6,8 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AnyFreeSpec
 
 import common.io.MemoryRoot
-import common.rich.collections.RichTraversableOnce._
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rx.RichObservable.richObservable
 import common.test.AuxSpecs
 
 class MusicFinderTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
@@ -25,7 +26,7 @@ class MusicFinderTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs 
 
   "getSongFilters" - {
     "find nothing" - {
-      def verifyIsEmpty() = mf.getSongFiles shouldBe empty
+      def verifyIsEmpty() = mf.getSongFiles.toVectorBlocking shouldBe empty
       "when subdirs are empty" in {
         root.addSubDir("a").addSubDir("b").addSubDir("c")
         root.addSubDir("b").addSubDir("b").addSubDir("c")
@@ -48,7 +49,7 @@ class MusicFinderTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs 
 
     "Find song" in {
       val f = root.addSubDir("a").addSubDir("b").addFile("foo.mp3")
-      mf.getSongFiles.single shouldReturn f
+      mf.getSongFiles.toVectorBlocking.single shouldReturn f
     }
   }
 
@@ -75,7 +76,11 @@ class MusicFinderTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs 
       flatArtistWithSong.addFile("song.mp3")
       d.addSubDir("d'").addSubDir("d''") // Flat artist without songs
 
-      mf.albumDirs shouldMultiSetEqual Vector(artistWithSong, subGenreWithSong, flatArtistWithSong)
+      mf.albumDirs.toVectorBlocking shouldMultiSetEqual Vector(
+        artistWithSong,
+        subGenreWithSong,
+        flatArtistWithSong,
+      )
     }
   }
 }

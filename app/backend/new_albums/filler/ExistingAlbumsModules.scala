@@ -32,7 +32,7 @@ object ExistingAlbumsModules {
         timed: TimedLogger,
         directoryDiscovery: DirectoryDiscovery,
     ): PreCachedExistingAlbums = timed("Creating cache", scribe.info(_)) {
-      factory.from(directoryDiscovery.albumDirectories.iterator)
+      factory.from(directoryDiscovery.albumDirectories)
     }
   }
   private def overriding(overridenModule: Module)(existingAlbumsModule: Module): Injector =

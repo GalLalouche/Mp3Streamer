@@ -11,9 +11,9 @@ import cats.implicits.toBifunctorOps
 
 import common.TimedLogger
 import common.concurrency.SimpleTypedActor
-import common.io.DirectoryRef
 import common.rich.RichT.richT
 import common.rich.primitives.RichEither.richEitherString
+import common.rx.RichObservable.richObservable
 
 @Singleton private class ManualAlbumsFinder @Inject() (
     timed: TimedLogger,
@@ -31,8 +31,8 @@ import common.rich.primitives.RichEither.richEitherString
   ) {
     mf.albumDirs
       .filter(songDirectoryParser(_).next().artist == artist)
-      .map((e: DirectoryRef) => reconcilableFactory.toAlbum(e).leftMap(_.toString).getOrThrow)
-      .toSet
+      .map(reconcilableFactory.toAlbum(_).leftMap(_.toString).getOrThrow)
+      .buildBlocking(Set.newBuilder)
       .optFilter(_.nonEmpty)
   }
 }

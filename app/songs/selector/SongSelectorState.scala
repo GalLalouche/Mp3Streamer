@@ -9,6 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import cats.implicits.toFunctorOps
 
 import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
+import common.rx.RichObservable.richObservable
 
 // A stupid hack to make SongSelectorState lazy (since initializing all the songs takes a while) while
 // remaining transparent to clients.
@@ -22,7 +23,7 @@ import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
   private implicit val iec: ExecutionContext = ec
   private val updater: UpdatableProxy[SongSelector] = factory(
     fastSongSelector,
-    () => ssFactory.get().withSongs(mf.getSongFiles.toVector),
+    () => ssFactory.get().withSongs(mf.getSongFiles.toVectorBlocking),
   )
   def update(): Future[Unit] = updater.update().void
   update()

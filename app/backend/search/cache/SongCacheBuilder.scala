@@ -5,7 +5,6 @@ import java.time.Clock
 import com.google.inject.Inject
 import models.SongTagParser
 import musicfinder.MusicFinder
-import rx.lang.scala.Observable
 
 import common.TimedLogger
 import common.io.FileRef
@@ -24,9 +23,7 @@ private class SongCacheBuilder @Inject() (
   def updating(sc: SongCache): ReportObservable[TimestampedSong, SongCache] =
     ReportObservable.filteringAggregator(
       observable = {
-        val songFiles = timedLogger("fetching song files", scribe.info(_))(
-          Observable.from(mf.getSongFiles.toVector),
-        )
+        val songFiles = timedLogger("fetching song files", scribe.info(_))(mf.getSongFiles)
         songFiles.map(f => sc.needsUpdate(f) :-> (_.fold(extractSongMetadata(f), sc.get(f).get)))
       },
       finisher = SongCache.from,

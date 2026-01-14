@@ -5,18 +5,19 @@ import java.time.{Clock, LocalDate, LocalDateTime}
 import com.google.inject.Inject
 import models.{AlbumDir, AlbumDirFactory, SongTagParser}
 import musicfinder.MusicFinder
+import rx.lang.scala.Observable
 
 import scala.Ordering.Implicits._
-import scala.collection.View
 
 import cats.syntax.apply.catsSyntaxApplyOps
 
+import common.TopKBuilder
 import common.io.{DirectoryRef, FileRef}
 import common.rich.RichT._
 import common.rich.RichTime
 import common.rich.RichTime.RichClock
 import common.rich.collections.RichIterator.richIterator
-import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rx.RichObservable.richObservable
 
 private class RecentAlbums @Inject() (
     mf: MusicFinder,
@@ -24,15 +25,18 @@ private class RecentAlbums @Inject() (
     albumFactory: AlbumDirFactory,
     clock: Clock,
 ) extends LastAlbumProvider {
-  // recent doesn't care about songs.
+  // recent doesn't care about songs. TODO fromDirWithoutSongs
   private def makeAlbum(dir: DirectoryRef) = albumFactory.fromDir(dir).copy(songs = Nil)
-  private def go(amount: Int)(dirs: View[DirectoryRef]) =
-    dirs.topK(amount)(Ordering.by(_.lastModified)).map(makeAlbum)
+  private def go(amount: Int)(dirs: Observable[DirectoryRef]) =
+    dirs
+      .buildBlocking(TopKBuilder[DirectoryRef](amount)(Ordering.by(_.lastModified)))
+      .map(makeAlbum)
   def all(amount: Int): Seq[AlbumDir] = mf.albumDirs |> go(amount)
   def double(amount: Int): Seq[AlbumDir] = mf.albumDirs.filter(isDoubleAlbum) |> go(amount)
   override def since(lastDuration: LocalDateTime): Seq[AlbumDir] =
-    (mf.albumDirs.iterator: Iterator[DirectoryRef])
+    mf.albumDirs
       .filter(_.lastModified >= lastDuration)
+      .toVectorBlocking // TODO we can seq and sort at the same time.
       .sortBy(_.lastModified)(RichTime.OrderingLocalDateTime.reverse)
       .map(makeAlbum)
   def sinceDays(d: Int): Seq[AlbumDir] = since(_.minusDays(d))

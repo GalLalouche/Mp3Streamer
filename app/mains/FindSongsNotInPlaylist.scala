@@ -14,6 +14,7 @@ import common.rich.func.kats.ToMoreTraverseFilterOps.toMoreTraverseFilterOps
 import common.rich.RichT.richT
 import common.rich.path.RichFile._
 import common.rich.primitives.RichString._
+import common.rx.RichObservable.richObservable
 
 // finds songs that are in the music directory but are not saved in the playlist file
 object FindSongsNotInPlaylist {
@@ -40,7 +41,8 @@ object FindSongsNotInPlaylist {
         .map(normalizePath)
         .toSet
     println(s"playlist songs |${playlistSongs.size}|")
-    val realSongs = musicFiles.getSongFiles.map(_.path |> normalizePath).toSet
+    val realSongs =
+      musicFiles.getSongFiles.map(_.path |> normalizePath).buildBlocking(Set.newBuilder)
     println(s"actual songs |${realSongs.size}|")
     val playlistMissing = realSongs.diff(playlistSongs).toVector.sorted
     playlistMissing
@@ -51,7 +53,7 @@ object FindSongsNotInPlaylist {
     val serverMissing = playlistSongs.diff(realSongs).toList.sorted
     println(
       s"Server is missing ${serverMissing.size} songs.${(" It's possible that these songs are in the playlist but the files themselves have been deleted, " +
-          "or were added from a different folder, e.g., bittorent.").monoidFilter(serverMissing.nonEmpty)}",
+          "or were added from a different folder, e.g., bittorrent.").monoidFilter(serverMissing.nonEmpty)}",
     )
     println(serverMissing.mkString("\n"))
     println(s"Playlist is missing ${playlistMissing.size} songs")

@@ -3,23 +3,25 @@ package backend.new_albums.filler
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import com.google.inject.Inject
 import musicfinder.ArtistDirsIndex
+import rx.lang.scala.Observable
 
 import common.io.DirectoryRef
 import common.rich.RichT.richT
-import common.rich.collections.RichIterator.richIterator
+import common.rich.collections.RichMap._
 import common.rich.primitives.RichOption.richOption
+import common.rx.RichObservable.richObservable
 
 private class PreCachedExistingAlbumsFactory @Inject() (
     artistDirsIndex: ArtistDirsIndex,
     reconcilableFactory: ReconcilableFactory,
 ) {
-  def from(albums: Iterator[DirectoryRef]) = new PreCachedExistingAlbums(
+  def from(albums: Observable[DirectoryRef]) = new PreCachedExistingAlbums(
     albums
-      .flatMap(toAlbum)
+      .flatMap(d => Observable.from(toAlbum(d).asIterable))
+      // TODO build a grouper
+      .toVectorBlocking
       .groupBy(_.artist)
-      .view
-      .mapValues(_.toSet)
-      .toMap,
+      .properMapValues(_.toSet),
   )
 
   private def toAlbum(dir: DirectoryRef): Option[Album] =
@@ -31,6 +33,9 @@ private class PreCachedExistingAlbumsFactory @Inject() (
     val artistDir: DirectoryRef = artistDirsIndex
       .forArtist(artist)
       .getOrThrow(s"Could not find directory for artist <${artist.name}>")
-    from((artistDir.dirs: Iterator[DirectoryRef]).mapIf(_.isEmpty).to(Iterator(artistDir)))
+    from(
+      if (artistDir.dirs.isEmpty) Observable.just(artistDir)
+      else Observable.from(artistDir.dirs.toVector),
+    )
   }
 }

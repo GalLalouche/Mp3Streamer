@@ -2,10 +2,12 @@ package musicfinder
 
 import models.ArtistName
 import musicfinder.MusicFinder.DirectoryName
+import rx.lang.scala.Observable
 
 import scala.collection.View
 
 import common.io.{DirectoryRef, RefSystem}
+import common.rich.collections.RichIterable
 
 trait MusicFinder { self =>
   type S <: RefSystem { type S = self.S }
@@ -31,17 +33,19 @@ trait MusicFinder { self =>
 
   protected def normalizeArtistName(name: ArtistName): DirectoryName
 
-  def albumDirs: DirView = albumDirs(genreDirs.view)
+  def albumDirs: DirView = albumDirs(startingFrom = genreDirs)
   protected def genreDirs: Seq[S#D] = allGenres.sorted.map(getDir)
-  def albumDirs(startingFrom: View[S#D]): DirView = startingFrom
-    .flatMap(_.deepDirs)
+  def albumDirs(startingFrom: Iterable[S#D]): DirView = Observable
+    .from(startingFrom)
+    .flatMap(_.deepDirsObservable.asInstanceOf[Observable[S#D]])
     // Because some albums have, e.g., cover subdirectories
     .filter(_.files.exists(f => extensions.contains(f.extension)))
-  def getSongFiles: View[S#F] = albumDirs.flatMap(getSongFilesInDir)
+  def getSongFiles: Observable[S#F] =
+    albumDirs.flatMapIterable(d => RichIterable.from(() => getSongFilesInDir(d)))
   def getSongFilesInDir(d: DirectoryRef): Iterator[S#F] =
     d.asInstanceOf[S#D].files.filter(f => extensions.contains(f.extension))
 
-  final type DirView = View[S#D]
+  final type DirView = Observable[S#D]
 }
 
 object MusicFinder {

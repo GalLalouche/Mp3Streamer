@@ -7,7 +7,8 @@ import musicfinder.MusicFinder
 import scala.util.Random
 
 import common.{Filter, TimedLogger}
-import common.io.RefSystem
+import common.io.{FileRef, RefSystem}
+import common.rx.RichObservable.richObservable
 
 class MultiStageSongSelectorFactory @Inject() (
     musicFinder: MusicFinder,
@@ -17,8 +18,8 @@ class MultiStageSongSelectorFactory @Inject() (
     lengthFilter: LengthFilter,
     timedLogger: TimedLogger,
 ) {
-  def withSongs[Sys <: RefSystem](songs: IndexedSeq[Sys#F]): MultiStageSongSelector[Sys] =
-    new MultiStageSongSelector(songs)(
+  def withSongs[Sys <: RefSystem](songs: IndexedSeq[FileRef]): MultiStageSongSelector[Sys] =
+    new MultiStageSongSelector(songs.asInstanceOf[IndexedSeq[Sys#F]])(
       musicFinder,
       songTagParser,
       random,
@@ -26,5 +27,6 @@ class MultiStageSongSelectorFactory @Inject() (
       lengthFilter && scoreBasedFilter,
       timedLogger,
     )
-  def apply(): MultiStageSongSelector[_] = withSongs(musicFinder.getSongFiles.toVector)
+  def apply(): MultiStageSongSelector[_] =
+    withSongs[RefSystem](musicFinder.getSongFiles.toVectorBlocking)
 }

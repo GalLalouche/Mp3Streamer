@@ -2,6 +2,7 @@ package backend.new_albums
 
 import com.google.inject.Inject
 import musicfinder.MusicFinder
+import rx.lang.scala.Observable
 
 import scala.collection.View
 
@@ -16,7 +17,7 @@ private class DirectoryDiscovery @Inject() (mf: MusicFinder) extends IgnoredArti
     IgnoredFolders.exists(genrePrefix.startsWith)
   }
   def artistDirectories: View[DirectoryRef] = artistDirectoriesTyped
-  def albumDirectories: View[DirectoryRef] = mf.albumDirs(artistDirectoriesTyped)
+  def albumDirectories: Observable[DirectoryRef] = mf.albumDirs(artistDirectoriesTyped)
 
   private def artistDirectoriesTyped: View[S#D] = mf.artistDirs.filterNot(shouldIgnore)
   private val prefixLength = {

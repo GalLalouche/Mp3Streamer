@@ -4,6 +4,8 @@ import java.io.InputStream
 import java.nio.file.Paths
 import java.time.LocalDateTime
 
+import rx.lang.scala.Observable
+
 import common.rich.RichT._
 
 trait RefSystem { self =>
@@ -79,8 +81,10 @@ trait DirectoryRef extends PathRef { self =>
   def paths: Iterator[S#P] = dirs.++(files).asInstanceOf[Iterator[S#P]]
   def isDescendant(path: String): Boolean =
     Paths.get(path).normalize().startsWith(Paths.get(this.path).normalize())
+  // TODO no reason to have this default. Make it abstract and implement in MemoryDir.
   def deepDirs: Iterator[S#D] =
     dirs.flatMap(d => Iterator(d) ++ d.deepDirs.asInstanceOf[Iterator[S#D]])
+  def deepDirsObservable: Observable[DirectoryRef] = Observable.from(deepDirs.toVector)
   def deepFiles: Iterator[S#F] = files ++ dirs.flatMap(_.deepFiles.asInstanceOf[Iterator[S#F]])
   def lastModified: LocalDateTime
   // TODO freaking unfoldables already

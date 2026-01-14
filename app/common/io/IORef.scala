@@ -6,6 +6,7 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.time.{Clock, LocalDateTime, ZoneId}
 
 import better.files.{File => BFile, FileExtensions}
+import rx.lang.scala.Observable
 
 import common.rich.RichT._
 import common.rich.path.{Directory, RichFile}
@@ -100,6 +101,8 @@ class IODirectory private (val dir: Directory) extends IOPath(dir.dir) with Dire
     dir.listFiles.iterator.map(f => if (f.isDirectory) new IODirectory(Directory(f)) else IOFile(f))
   override def lastModified: LocalDateTime = dir.dir |> FileUtils.lastModified
   override def deepDirs: Iterator[IODirectory] = dir.deepDirs.map(new IODirectory(_))
+  override def deepDirsObservable: Observable[DirectoryRef] =
+    dir.deepDirsObservable.map(d => new IODirectory(d._1))
   override def deepFiles: Iterator[IOFile] = dir.deepFiles.map(new IOFile(_))
 
   override def equals(other: Any): Boolean = other match {
