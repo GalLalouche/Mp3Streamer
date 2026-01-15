@@ -11,7 +11,6 @@ import scala.annotation.tailrec
 import scala.concurrent.duration.Duration
 import scala.io.Source
 import scala.util.{Try, Using}
-import scala.util.control.Breaks.{break, breakable}
 
 import cats.syntax.either.catsSyntaxEither
 
@@ -30,7 +29,7 @@ private class PythonLanguageDetector private (timeout: Duration) {
 
   def detect(s: String): Either[IOException, String] = Try(synchronized {
     lastUsed.set(System.currentTimeMillis)
-    if (process.isAlive.isFalse)
+    if (process == null || process.isAlive.isFalse)
       process = createProcess()
     val outStream = process.getOutputStream
     outStream.write(s"$s\n".getBytes(Encoding))
@@ -70,8 +69,8 @@ private class PythonLanguageDetector private (timeout: Duration) {
       .start()
     // Monitor thread to kill the process after enough idle time has passed. This isn't done in
     // the Python code, since, "surprisingly", waiting on input with a timeout is a PITA.
-    new Thread(() =>
-      breakable {
+    new Thread(new Runnable {
+      override def run(): Unit =
         while (true) {
           val beforeSleep = System.currentTimeMillis()
           Thread.sleep(timeout.toMillis)
@@ -79,15 +78,16 @@ private class PythonLanguageDetector private (timeout: Duration) {
           // Double-checked locking.
           if (shouldTerminate)
             PythonLanguageDetector.this.synchronized {
+              assert(process != null)
               if (shouldTerminate) {
                 scribe.trace(s"Terminating Python language detection process after $timeout idle")
                 $.destroy()
-                break()
+                process = null
+                return
               }
             }
         }
-      },
-    ).<|(_.setDaemon(true)).<|(_.setName("PythonLanguageDetector monitor")).start()
+    }).<|(_.setDaemon(true)).<|(_.setName("PythonLanguageDetector monitor")).start()
     $
   }
 }
