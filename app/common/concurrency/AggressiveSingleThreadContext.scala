@@ -17,7 +17,7 @@ private class AggressiveSingleThreadContext(queueName: String) extends Execution
   private val queue = new ThreadPoolExecutor(
     0, // corePoolSize
     1, // maxPoolSize
-    0, // keepAliveTime
+    1, // keepAliveTime
     java.util.concurrent.TimeUnit.SECONDS,
     new LinkedBlockingQueue[Runnable](),
     new Thread(_, threadName()).<|(_.setDaemon(true)),
