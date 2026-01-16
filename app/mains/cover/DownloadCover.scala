@@ -52,7 +52,7 @@ private[mains] class DownloadCover @Inject() (
       case Selected(img) => fileMover(img) _
       case OpenBrowser =>
         BrowserUtils.pointBrowserTo(searchUrl)
-        // String interpolation is acting funky for some reason (will fail at runtime for unicode).
+        // String interpolation is acting funky for some reason (will fail at runtime for Unicode).
         throw CoverException.UserOpenedBrowser
       case Cancelled => throw CoverException.UserClosedGUI
     }

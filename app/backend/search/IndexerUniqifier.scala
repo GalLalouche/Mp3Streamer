@@ -46,7 +46,7 @@ import common.rx.RichObservable.richObservable
             songSelectorState.update(),
             searchState.update(),
             lastAlbumState.update(),
-          ).sequence.>|($.complete(Success(()))),
+          ).sequence >| $.complete(Success(())),
         )
         .subscribe()
       $.future.get
