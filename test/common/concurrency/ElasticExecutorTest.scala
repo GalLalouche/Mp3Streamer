@@ -5,6 +5,7 @@ import java.util.concurrent.CountDownLatch
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.tagobjects.Slow
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.DurationInt
 
 import common.rich.primitives.RichInt.Rich
@@ -55,27 +56,27 @@ class ElasticExecutorTest extends AnyFreeSpec with AuxSpecs {
     $.getPoolSize shouldReturn 1
   }
 
-  "Uses elastic thread creation (threads aren't created if there are idle threads)" taggedAs Slow in 10
-    .parTimes {
-      val bound = 3
-      val keepAlive = 400.millis
-      val $ = ElasticExecutor("test", daemon = true, keepAlive = keepAlive, bound = bound)
-      val n = 5
-      val cdl = new CountDownLatch(n)
-      (1 to n).foreach { i =>
-        val localCdl = SingleLatch()
-        $.execute { () =>
-          Thread.sleep(1)
-          cdl.countDown()
-          localCdl.await()
-        }
-        localCdl.release()
-        Thread.sleep(200)
+  implicit val executionContext: ExecutionContext = DaemonExecutionContext("ElasticExecutorTest", 8)
+  "Elastic thread creation (No creation if there are idle ones)" taggedAs Slow in 10.parTimes {
+    val bound = 3
+    val keepAlive = 400.millis
+    val $ = ElasticExecutor("test", daemon = true, keepAlive = keepAlive, bound = bound)
+    val n = 5
+    val cdl = new CountDownLatch(n)
+    n.times {
+      val localCdl = SingleLatch()
+      $.execute { () =>
+        Thread.sleep(1)
+        cdl.countDown()
+        localCdl.await()
       }
-
-      cdl.await()
-      $.getLargestPoolSize shouldReturn 1
-      Thread.sleep(keepAlive.toMillis * 3)
-      $.getPoolSize shouldReturn 0
+      localCdl.release()
+      Thread.sleep(200)
     }
+
+    cdl.await()
+    $.getLargestPoolSize shouldReturn 1
+    Thread.sleep(keepAlive.toMillis * 3)
+    $.getPoolSize shouldReturn 0
+  }
 }

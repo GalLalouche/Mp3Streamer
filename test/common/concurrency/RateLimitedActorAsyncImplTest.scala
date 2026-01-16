@@ -18,7 +18,7 @@ import common.test.AsyncAuxSpecs
 class RateLimitedActorAsyncImplTest extends AsyncFreeSpec with AsyncAuxSpecs {
   private implicit val ec: ExecutionContext =
     DaemonExecutionContext("RateLimitedActorAsyncImplTest", 4)
-  "rate limited and FIFO ordered" in {
+  "rate limited and FIFO ordered" in 10.assertParTimes {
     val queue = new LinkedBlockingQueue[(Int, Long)]()
     val limit = 10L
     val $ = SimpleTypedActor.asyncRateLimited[Int, Unit](

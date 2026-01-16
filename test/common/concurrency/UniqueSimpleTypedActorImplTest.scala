@@ -9,10 +9,10 @@ import scala.concurrent._
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-import common.rich.primitives.RichInt.Rich
 import common.test.AuxSpecs
 
 class UniqueSimpleTypedActorImplTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
+  implicit val executionContext: ExecutionContext = DaemonExecutionContext("ElasticExecutorTest", 8)
   "unique" in 1000.parTimes {
     val sb = new StringBuilder
     val semaphore = new Semaphore(0)
