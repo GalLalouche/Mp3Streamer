@@ -10,7 +10,7 @@ import musicfinder.ArtistDirsIndex
 import scala.concurrent.ExecutionContext
 
 import common.TimedLogger
-import common.rich.RichFuture.richFuture
+import common.rich.RichFuture.richFutureBlocking
 import common.rich.primitives.RichOption.richOption
 
 /**
@@ -27,7 +27,6 @@ private class RealTimeExistingAlbums @Inject() (
     manualAlbumsFinder: ManualAlbumsFinder,
     ec: ExecutionContext,
 ) extends ExistingAlbums {
-  private implicit val iec: ExecutionContext = ec
   override def artists: Iterable[Artist] = timed("Fetching artists (lazy)", scribe.info(_)) {
     directoryDiscovery.artistDirectories.flatMap { artistDir =>
       lazy val albumDir = artistDir.dirs.nextOption().getOrThrow(s"Problem with $artistDir")

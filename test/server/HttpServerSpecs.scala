@@ -21,7 +21,7 @@ import cats.implicits.catsSyntaxApplicativeByName
 
 import common.concurrency.DaemonExecutionContext
 import common.guice.RichModule.richModule
-import common.rich.RichFuture.richFuture
+import common.rich.RichFuture.richFutureBlocking
 import common.rich.RichT.richT
 import common.rich.primitives.RichEither._
 import common.test.AsyncAuxSpecs
@@ -90,10 +90,10 @@ private abstract class HttpServerSpecs(serverModule: Module)
         case (o1: JsObject, o2: JsObject) =>
           o1.value.keys shouldContainAllOf o2.keys
           for (k <- o2.keys)
-            o1.value(k) shouldContain (o2.value(k))
+            o1.value(k) shouldContain o2.value(k)
         case (a1: JsArray, a2: JsArray) =>
           for (i <- a2.value.indices)
-            a1.value(i) shouldContain (a2.value(i))
+            a1.value(i) shouldContain a2.value(i)
         case (j1, j2) => j1 shouldReturn j2
       }
       Succeeded

@@ -1,11 +1,9 @@
 package backend.new_albums.filler.storage
 
-import backend.module.StandaloneModule
 import backend.new_albums.ArtistNewAlbums
 import backend.new_albums.filler.{FilterExistingAlbums, NewAlbumRecon}
 import backend.recon.{Artist, IgnoredReconResult, ReconID}
-import com.google.inject.{Guice, Inject}
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+import com.google.inject.Inject
 
 import scala.concurrent.ExecutionContext
 
@@ -42,19 +40,4 @@ private class CachedNewAlbumStorageImpl @Inject() (
   override def unignore(artist: Artist) = lastFetchTime.unignore(artist).void
   override def removeAlbum(reconID: ReconID) = newAlbumStorage.removeAlbum(reconID)
   override def ignore(reconID: ReconID) = newAlbumStorage.ignoreAlbum(reconID)
-}
-
-private object CachedNewAlbumStorageImpl {
-  def main(args: Array[String]): Unit = {
-    import common.rich.RichFuture._
-    val injector = Guice.createInjector(StandaloneModule, FillerStorageModule)
-    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    println(
-      injector
-        .instance[CachedNewAlbumStorage]
-        .all
-        .value
-        .get,
-    )
-  }
 }

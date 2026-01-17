@@ -3,12 +3,10 @@ package backend.new_albums.filler.storage
 import java.time.{Clock, LocalDateTime, ZoneOffset}
 
 import backend.FutureOption
-import backend.module.StandaloneModule
 import backend.new_albums.filler.storage.LastFetchTimeImpl.prependUnit
 import backend.recon.{Artist, ArtistReconStorage}
 import backend.storage.{ComposedFreshnessStorage, DatedFreshness, Freshness}
-import com.google.inject.{Guice, Inject}
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+import com.google.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -21,7 +19,6 @@ import common.rich.func.kats.ToMoreInvariantOps.toMoreInvariantOps
 import common.rich.func.kats.ToMoreMonadErrorOps._
 import monocle.Iso
 
-import common.rich.RichFuture.richFuture
 import common.storage.Storage
 
 private class LastFetchTimeImpl @Inject() (
@@ -56,14 +53,4 @@ private class LastFetchTimeImpl @Inject() (
 
 private object LastFetchTimeImpl {
   private def prependUnit[A] = Iso[A, (Unit, A)](().->)(_._2)
-
-  def main(args: Array[String]): Unit = {
-    val injector = Guice.createInjector(StandaloneModule, FillerStorageModule)
-    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    injector
-      .instance[SlickLastFetchTimeStorage]
-      .utils
-      .createTableIfNotExists()
-      .get
-  }
 }

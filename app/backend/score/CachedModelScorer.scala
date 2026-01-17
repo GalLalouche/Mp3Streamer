@@ -1,6 +1,6 @@
 package backend.score
 
-import backend.recon.{Album, Artist, ReconcilableFactory, Track, YearlessAlbum, YearlessTrack}
+import backend.recon._
 import backend.recon.Reconcilable.SongExtractor
 import backend.score.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
 import com.google.inject.Inject
@@ -14,7 +14,7 @@ import cats.implicits.toBifunctorOps
 import common.rich.func.kats.ToTransableOps.toHoistIdOps
 
 import common.io.FileRef
-import common.rich.RichFuture.richFuture
+import common.rich.RichFuture.richFutureBlocking
 import common.rich.RichT.richT
 import common.rich.primitives.RichBoolean.richBoolean
 

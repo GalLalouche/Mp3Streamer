@@ -8,7 +8,7 @@ import com.google.inject.assistedinject.Assisted
 import mains.SwingUtils._
 
 import scala.concurrent.ExecutionContext
-import scala.swing.{Button, Component, Dimension, GridPanel, TextArea}
+import scala.swing._
 import scala.util.{Failure, Success, Try}
 
 import cats.instances.future.catsStdInstancesForFuture
@@ -16,7 +16,7 @@ import common.rich.func.kats.RichOptionT.richOptionT
 import common.rich.func.kats.ToMoreMonoidOps._
 
 import common.concurrency.FutureIterant
-import common.rich.RichFuture.richFuture
+import common.rich.RichFuture.richFutureBlocking
 import common.rich.RichT._
 
 /** Eventually publishes an ImageChoice event. */

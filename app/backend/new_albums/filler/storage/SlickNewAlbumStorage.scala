@@ -3,16 +3,14 @@ package backend.new_albums.filler.storage
 import java.time.LocalDate
 
 import backend.mb.AlbumType
-import backend.module.StandaloneModule
 import backend.new_albums.{AddedAlbumCount, ArtistNewAlbums, NewAlbum}
 import backend.new_albums.filler.NewAlbumRecon
 import backend.recon.{Artist, ReconID, SlickArtistReconStorage}
 import backend.score.OptionalModelScore
 import backend.score.storage.ArtistScoreStorage
 import backend.storage.{DbProvider, JdbcMappers, SlickSingleKeyColumnStorageTemplateFromConf}
-import com.google.inject.{Guice, Inject}
+import com.google.inject.Inject
 import models.AlbumTitle
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import slick.ast.BaseTypedType
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -23,7 +21,6 @@ import common.rich.func.kats.Nesteds.SeqT
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.kats.ToMoreMonadErrorOps._
 
-import common.rich.RichFuture.richFuture
 import common.rich.RichT.richT
 import common.rich.RichTime.OrderingLocalDate
 import common.rich.RichTuple._
@@ -236,16 +233,4 @@ private class SlickNewAlbumStorage @Inject() (
     removeAlbum(reconID) >> updateAlbum(_.isIgnored)(reconID)
   override def deleteAll(artist: Artist) =
     db.run(tableQuery.filter(e => e.artist === artist).delete).void
-}
-
-private object SlickNewAlbumStorage {
-  def main(args: Array[String]): Unit = {
-    val injector = Guice.createInjector(StandaloneModule, FillerStorageModule)
-    implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
-    injector
-      .instance[SlickNewAlbumStorage]
-      .utils
-      .createTableIfNotExists()
-      .get
-  }
 }
