@@ -3,7 +3,7 @@ package mains
 import java.io.File
 
 import com.google.inject.{ImplementedBy, Inject}
-import musicfinder.MusicFinder
+import musicfinder.SongFileFinder
 
 import common.io.DirectoryRef
 
@@ -12,8 +12,8 @@ private trait OptionalSongFinder {
   def apply(d: DirectoryRef): Iterator[OptionalSong]
 }
 private object OptionalSongFinder {
-  class OptionalSongFinderImpl @Inject() (mf: MusicFinder) extends OptionalSongFinder {
+  class OptionalSongFinderImpl @Inject() (sff: SongFileFinder) extends OptionalSongFinder {
     override def apply(d: DirectoryRef): Iterator[OptionalSong] =
-      mf.getSongFilesInDir(d).map(e => OptionalSongTagParser(new File(e.path)))
+      sff.getSongFilesInDir(d).map(e => OptionalSongTagParser(new File(e.path)))
   }
 }

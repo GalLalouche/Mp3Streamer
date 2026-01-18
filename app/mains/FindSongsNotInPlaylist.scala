@@ -5,7 +5,7 @@ import java.time.Duration
 
 import backend.module.StandaloneModule
 import com.google.inject.Guice
-import musicfinder.{ArtistNameNormalizer, IOMusicFinder}
+import musicfinder.IOMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 import common.rich.func.kats.ToMoreMonoidOps._
@@ -21,12 +21,7 @@ object FindSongsNotInPlaylist {
   private val UtfBytemarkPrefix = 65279
   private def normalizePath(s: String) = s.toLowerCase.simpleReplace("""\""", "/")
   def main(args: Array[String]): Unit = {
-    val artistNameNormalizer = Guice.createInjector(StandaloneModule).instance[ArtistNameNormalizer]
-    val musicFiles = new IOMusicFinder(artistNameNormalizer) {
-      override val extensions =
-        Set("mp3", "flac", "ape", "wma", "mp4", "wav", "aiff", "aac", "ogg", "m4a")
-      override val unsupportedExtensions = Set()
-    }
+    val musicFiles = Guice.createInjector(StandaloneModule).instance[IOMusicFiles]
     val file = musicFiles.baseDir.addFile("playlist.m3u8").file
     if (Duration.ofMillis(System.currentTimeMillis() - file.lastModified()).toHours > 1)
       throw new IllegalStateException("Please update the playlist file.")

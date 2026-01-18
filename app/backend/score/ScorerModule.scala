@@ -3,7 +3,7 @@ package backend.score
 import backend.recon.{Album, Artist, Track}
 import backend.score.storage.{AlbumScoreStorage, ArtistScoreStorage, StorageScorer, TrackScoreStorage}
 import com.google.inject.Provides
-import musicfinder.MusicFinder
+import musicfinder.MusicFiles
 import net.codingwell.scalaguice.ScalaModule
 
 import common.rx.RichObservable.richObservable
@@ -22,7 +22,7 @@ object ScorerModule extends ScalaModule {
 
   @Provides private def provideScoreBasedProbability(
       scorer: AggregateScorer,
-      mf: MusicFinder,
+      mf: MusicFiles,
   ): FlatScoreBasedProbability = {
     def requiredProbability: ModelScore => Double = {
       case ModelScore.Crappy => 0

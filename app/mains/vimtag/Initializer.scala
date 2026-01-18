@@ -2,9 +2,9 @@ package mains.vimtag
 
 import com.google.inject.Inject
 import mains.{OptionalSong, OptionalSongFinder}
-import mains.vimtag.Initializer.InitialLines
+import mains.vimtag.Initializer.{InitialLines, UnsupportedExtensions}
 import models.TypeAliases.TrackNumber
-import musicfinder.MusicFinder
+import musicfinder.SongFileFinder
 
 import common.rich.func.kats.ToMoreMonoidOps.monoidFilter
 
@@ -16,14 +16,15 @@ import common.rich.primitives.RichBoolean.richBoolean
 
 /** Sets up the initial lines and writes usage instructions. */
 private class Initializer @Inject() (
-    mf: MusicFinder,
+    sff: SongFileFinder,
     optionalSongFinder: OptionalSongFinder,
     aux: IndividualInitializer,
 ) {
   private class Extractor(dir: DirectoryRef) {
     private def unsupportedFilesMsg = {
+
       val unsupportedFiles =
-        dir.deepFiles.map(_.extension).filter(mf.unsupportedExtensions).toSet
+        dir.deepFiles.map(_.extension).filter(UnsupportedExtensions).toSet
       s"; However, it did contain unsupported files with extensions: $unsupportedFiles"
         .monoidFilter(unsupportedFiles.nonEmpty)
     }
@@ -31,7 +32,7 @@ private class Initializer @Inject() (
     private lazy val songFiles =
       (dir +: dir.dirs.toVector)
         .flatMap(optionalSongFinder.apply)
-        .requiring(_.nonEmpty, s"No ${mf.extensions} files found in directory$unsupportedFilesMsg")
+        .requiring(_.nonEmpty, s"No ${sff.extensions} files found in directory$unsupportedFilesMsg")
     private lazy val ordering: Ordering[OptionalSong] =
       if (songFiles.forall(_.trackNumber.isDefined))
         Ordering.by(_.toTuple(_.directory, _.trackNumber))
@@ -119,6 +120,7 @@ private class Initializer @Inject() (
   }
 }
 private object Initializer {
+  private val UnsupportedExtensions = Set("ape", "wma", "mp4", "wav", "aiff", "aac", "ogg", "m4a")
   private def flatten(xs: Seq[Any]): Seq[String] = xs.flatMap {
     case xs: Seq[_] => xs.map(_.toString)
     case s: String => Vector(s)

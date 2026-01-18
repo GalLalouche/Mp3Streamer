@@ -1,27 +1,21 @@
 package musicfinder
 
-import backend.module.FakeMusicFinder
-import models.ArtistName
 import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AnyFreeSpec
 
 import common.io.MemoryRoot
-import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.rich.collections.RichTraversableOnce._
 import common.rx.RichObservable.richObservable
 import common.test.AuxSpecs
 
-class MusicFinderTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
+class MusicFilesTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
   private val root = new MemoryRoot
-  private val mf = new FakeMusicFinder(root) {
-    protected override def genresWithSubGenres = Vector("a", "b", "c")
-    override def flatGenres = Vector("d")
+  private val mf = new FakeMusicFilesImpl(
+    root,
+    genresWithSubGenres = Vector("a", "b", "c"),
+    flatGenres = Vector("d"),
+  ) {
     (genresWithSubGenres ++ flatGenres).foreach(root.addSubDir)
-    override val extensions = Set("mp3", "flac")
-    override def normalizeArtistName(x: ArtistName) = x match {
-      case "foo" => "FOO"
-      case "moo" => "bazz"
-      case x => x
-    }
   }
 
   "getSongFilters" - {

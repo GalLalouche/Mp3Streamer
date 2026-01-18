@@ -1,7 +1,7 @@
 package songs.selector
 
 import models.{Song, SongTagParser}
-import musicfinder.MusicFinder
+import musicfinder.MusicFiles
 import songs.selector.MultiStageSongSelector.fileFilterSetter
 
 import scala.annotation.tailrec
@@ -20,7 +20,7 @@ import common.rich.primitives.RichBoolean.richBoolean
  * require parsing the song's ID3.
  */
 class MultiStageSongSelector[Sys <: RefSystem](private val songs: IndexedSeq[Sys#F])(
-    private val musicFinder: MusicFinder,
+    private val musicFiles: MusicFiles,
     private val songTagParser: SongTagParser,
     private val random: Random,
     private val fileFilter: Filter[Sys#F],
@@ -51,7 +51,7 @@ object MultiStageSongSelector {
     Setter[MultiStageSongSelector[Sys], Filter[Sys#F]](f =>
       ss =>
         new MultiStageSongSelector[Sys](ss.songs)(
-          ss.musicFinder,
+          ss.musicFiles,
           ss.songTagParser,
           ss.random,
           f(ss.fileFilter),
@@ -63,7 +63,7 @@ object MultiStageSongSelector {
     Setter[MultiStageSongSelector[Sys], Filter[Song]](f =>
       ss =>
         new MultiStageSongSelector[Sys](ss.songs)(
-          ss.musicFinder,
+          ss.musicFiles,
           ss.songTagParser,
           ss.random,
           ss.fileFilter,

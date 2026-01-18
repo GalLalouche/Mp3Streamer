@@ -1,10 +1,11 @@
 package backend.score
 
-import backend.module.{FakeMusicFinder, TestModuleConfiguration}
+import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, ArtistReconStorage, StoredReconResult}
 import backend.recon.Reconcilable.SongExtractor
 import backend.score.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
 import models.{IOSong, Song}
+import musicfinder.{FakeMusicFiles, FakeMusicFilesImpl}
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AsyncFreeSpec
@@ -26,8 +27,8 @@ class ScorerFormatterTest
     // Using EachAsync because https://github.com/scala/bug/issues/9304
     with BeforeAndAfterEachAsync
     with OneInstancePerTest {
-  private val musicFinder: FakeMusicFinder = new FakeMusicFinder(new MemoryRoot)
-  private val injector = TestModuleConfiguration(_mf = musicFinder).injector
+  private val musicFiles: FakeMusicFiles = FakeMusicFilesImpl(new MemoryRoot)
+  private val injector = TestModuleConfiguration(_mf = musicFiles).injector
   implicit override def executionContext: ExecutionContext = injector.instance[ExecutionContext]
   private val song: Song = IOSong.read(getResourceFile("/models/song.mp3"))
   // Not using the extension methods here to avoid importing bugs from it.

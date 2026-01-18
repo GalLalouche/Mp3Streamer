@@ -8,7 +8,7 @@ import backend.storage.DbProvider
 import com.google.inject.Provides
 import models.ModelJsonable.SongParser
 import models.SongTagParser
-import musicfinder.{MusicFinder, PosterLookup}
+import musicfinder.{FakeMusicFiles, MusicFiles, PosterLookup}
 import net.codingwell.scalaguice.ScalaModule
 
 import common.FakeClock
@@ -23,9 +23,9 @@ private object TestModule extends ScalaModule with ModuleUtils {
     bind[DbProvider].toInstance(H2MemProvider.nextNew())
     bind[SongParser].to[MemorySongParser]
     bind[PathRefFactory].to[MemoryPathRefFactory]
-    bind[SongTagParser].to[FakeMusicFinder]
+    bind[SongTagParser].to[FakeMusicFiles]
     requireBinding[MemoryRoot]
-    requireBinding[FakeMusicFinder]
+    requireBinding[FakeMusicFiles]
     // TODO this should be a handler!
     // bind[Logger].toInstance(new StringBuilderLogger(new mutable.StringBuilder))
     ScribeUtils.noLogs()
@@ -47,5 +47,5 @@ private object TestModule extends ScalaModule with ModuleUtils {
   private def provideMemoryRoot(directoryRef: MemoryRoot): DirectoryRef = directoryRef
 
   @Provides
-  private def provideMusicFinder(mf: FakeMusicFinder): MusicFinder = mf
+  private def provideMusicFinder(mf: FakeMusicFiles): MusicFiles = mf
 }

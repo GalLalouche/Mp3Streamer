@@ -1,11 +1,12 @@
 package songs.selector
 
-import backend.module.{FakeMusicFinder, TestModuleConfiguration}
+import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, Track}
 import backend.score.{IndividualScorer, ModelScore, OptionalModelScore, ScoreBasedProbability}
 import com.google.inject.Guice
 import genre.GenreFinder
 import models.{FakeModelFactory, MemorySong, Song}
+import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions._
 import net.codingwell.scalaguice.ScalaModule
 import org.scalacheck.Arbitrary._
@@ -50,7 +51,7 @@ class SongSelectorTest
     forAll { ss: Vector[MemorySong] =>
       whenever(ss.nonEmpty) {
         val injector = createInjector
-        val mf = injector.instance[FakeMusicFinder]
+        val mf = injector.instance[FakeMusicFiles]
         val songs = ss.map(mf.copySong)
 
         val $ = injector.instance[SongSelector]

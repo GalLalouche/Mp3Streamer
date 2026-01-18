@@ -28,6 +28,8 @@ private class RealTimeExistingAlbums @Inject() (
     ec: ExecutionContext,
 ) extends ExistingAlbums {
   override def artists: Iterable[Artist] = timed("Fetching artists (lazy)", scribe.info(_)) {
+    // TODO 1. this should probably work with Observable
+    // TODO 2. RichObservable to Iterable with a buffer or something?
     directoryDiscovery.artistDirectories.flatMap { artistDir =>
       lazy val albumDir = artistDir.dirs.nextOption().getOrThrow(s"Problem with $artistDir")
       artistDirsIndex.forDir(artistDir) match {
@@ -37,7 +39,7 @@ private class RealTimeExistingAlbums @Inject() (
           scribe.warn(s"Artist directory <${artistDir.path}> does not appear in index")
           Vector(reconcilableFactory.extractArtistFromAlbumDir(albumDir))
       }
-    }.toVector
+    }
   }
 
   override def albums: Artist => Set[Album] = artist =>

@@ -4,7 +4,7 @@ import java.time.Clock
 
 import com.google.inject.Inject
 import models.SongTagParser
-import musicfinder.MusicFinder
+import musicfinder.MusicFiles
 
 import common.TimedLogger
 import common.io.FileRef
@@ -15,7 +15,7 @@ import common.rx.report.ReportObservable
 import common.rx.report.ReportObservable.ReportObservable
 
 private class SongCacheBuilder @Inject() (
-    mf: MusicFinder,
+    mf: MusicFiles,
     songTagParser: SongTagParser,
     clock: Clock,
     timedLogger: TimedLogger,

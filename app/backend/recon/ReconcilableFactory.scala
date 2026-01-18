@@ -7,7 +7,7 @@ import backend.recon.ReconcilableFactory.AlbumParseError.{NoSongs, SinglesDirect
 import com.google.common.annotations.VisibleForTesting
 import com.google.inject.Inject
 import models.{SongTitle, TrackNumber}
-import musicfinder.{ArtistDirsIndex, MusicFinder, SongDirectoryParser}
+import musicfinder.{ArtistDirsIndex, SongDirectoryParser}
 
 import scala.util.Try
 
@@ -17,13 +17,10 @@ import common.rich.collections.RichSeq._
 import common.rich.primitives.RichOption.richOption
 
 class ReconcilableFactory @Inject() (
-    mf: MusicFinder,
     songDirectoryParser: SongDirectoryParser,
     artistDirsIndex: ArtistDirsIndex,
     directoryDiscovery: IgnoredArtists,
 ) {
-  private type S = mf.S
-
   // This is Try so the error could be reserved.
   def toAlbum(dir: DirectoryRef): Either[AlbumParseError, Album] =
     if (directoryDiscovery.shouldIgnore(dir))
