@@ -1,8 +1,8 @@
 package mains.vimtag
 
-import backend.module.FakeMusicFinder
 import mains.{OptionalSong, OptionalSongFinder}
 import models.{FakeModelFactory, SongTitle, TrackNumber}
+import musicfinder.{FakeMusicFilesImpl, FakeSongFileFinder}
 import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AnyFreeSpec
 
@@ -13,7 +13,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
     extends AnyFreeSpec
     with AuxSpecs
     with OneInstancePerTest {
-  private val mf = new FakeMusicFinder(new MemoryRoot)
+  private val mf = FakeMusicFilesImpl(new MemoryRoot)
   private val osf = new OptionalSongFinder {
     override def apply(d: DirectoryRef): Iterator[OptionalSong] =
       d.files.map(mf.apply _ andThen OptionalSong.from)
@@ -67,7 +67,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
     )
 
     val parser = new Parser(ip)
-    val initializer = new Initializer(mf, osf, ii)
+    val initializer = new Initializer(FakeSongFileFinder, osf, ii)
 
     val initial = initializer.apply(s1.file.parent)
     val res = parser(initial.initialValues)(initial.lines)
@@ -122,7 +122,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
     val dir = newSong(3, "a").file.parent
 
     val parser = new Parser(ip)
-    val initializer = new Initializer(mf, osf, ii)
+    val initializer = new Initializer(FakeSongFileFinder, osf, ii)
 
     val initial = initializer.apply(dir)
     val res = parser(initial.initialValues)(initial.lines)
@@ -152,7 +152,7 @@ abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualPa
     val dir = newSong(2, "b", "d").file.parent.parent
 
     val parser = new Parser(ip)
-    val initializer = new Initializer(mf, osf, ii)
+    val initializer = new Initializer(FakeSongFileFinder, osf, ii)
 
     val initial = initializer.apply(dir)
     val res = parser(initial.initialValues)(initial.lines)

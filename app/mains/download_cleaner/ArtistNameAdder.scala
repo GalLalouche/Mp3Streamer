@@ -7,8 +7,8 @@ import java.nio.file.attribute.FileTime
 import com.google.inject.Inject
 import mains.OptionalSongTagParser
 import models.SongTagParser
-import musicfinder.{ArtistNameNormalizer, IOMusicFinder}
-import org.apache.commons.lang3.StringUtils.containsIgnoreCase
+import musicfinder.{ArtistNameNormalizer, IOSongFileFinder}
+import org.apache.commons.lang3.Strings
 
 import common.io.IODirectory
 import common.rich.RichT.richT
@@ -18,9 +18,9 @@ import common.rich.primitives.RichBoolean.richBoolean
 
 /** Adds the artist name to the folder if it doesn't contain it already. */
 private class ArtistNameAdder @Inject() (
-    mf: IOMusicFinder,
     artistNameNormalizer: ArtistNameNormalizer,
     songTagParser: SongTagParser,
+    sff: IOSongFileFinder,
 ) extends Cleaner {
   override def apply(dir: IODirectory): Unit = dir.dirs.foreach(go)
   private def go(dir: IODirectory): Unit = try {
@@ -29,7 +29,7 @@ private class ArtistNameAdder @Inject() (
     val artistName = artistNameNormalizer(song.artistName.get)
     val originalTime = FileTime.fromMillis(dir.dir.lastModified)
     val dirName = dir.name
-    val needsArtist = containsIgnoreCase(dirName, artistName).isFalse
+    val needsArtist = Strings.CI.contains(dirName, artistName).isFalse
     lazy val year = yearOption.get.toString
     val needsYear = yearOption.isDefined && dirName.contains(year).isFalse
     val newName = (needsArtist, needsYear) match {
@@ -47,9 +47,9 @@ private class ArtistNameAdder @Inject() (
   }
 
   private def getSongFile(dir: IODirectory): File = {
-    val songFiles = mf.getSongFilesInDir(dir)
+    val songFiles = sff.getSongFilesInDir(dir)
     if (songFiles.isEmpty) {
-      val nestedFiles = dir.dirs.flatMap(mf.getSongFilesInDir).toVector
+      val nestedFiles = dir.dirs.flatMap(sff.getSongFilesInDir).toVector
       if (
         nestedFiles.nonEmpty &&
         nestedFiles.hasSameValues(songTagParser(_).toTuple(_.artistName, _.albumName))

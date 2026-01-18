@@ -1,8 +1,8 @@
 package server
 
-import backend.module.FakeMusicFinder
 import com.google.inject.Module
 import models.{AlbumDir, FakeModelFactory}
+import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.Json
 import sttp.client3.UriContext
@@ -104,7 +104,7 @@ private class LastAlbumsServerTest(serverModule: Module)
   }
 
   private val factory = new FakeModelFactory(injector.instance[MemoryRoot])
-  private val mf = injector.instance[FakeMusicFinder]
+  private val mf = injector.instance[FakeMusicFiles]
   private val clock = injector.instance[FakeClock]
 
   private def dequeue(): Future[(AlbumDir, Seq[AlbumDir])] =

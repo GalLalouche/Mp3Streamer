@@ -3,7 +3,7 @@ package songs.selector
 import backend.score.IndividualScorer
 import com.google.inject.Provides
 import genre.GenreFinder
-import musicfinder.MusicFinder
+import musicfinder.MusicFiles
 import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext
@@ -14,7 +14,7 @@ import common.guice.ModuleUtils
 private[songs] object SelectorModule extends ScalaModule with ModuleUtils {
   override def configure(): Unit = {
     requireBinding[ExecutionContext]
-    requireBinding[MusicFinder]
+    requireBinding[MusicFiles]
     bind[SongSelector].to[SongSelectorState]
   }
 

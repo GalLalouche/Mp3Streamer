@@ -90,18 +90,18 @@ class IODirectory private (val dir: Directory) extends IOPath(dir.dir) with Dire
   override def addFile(name: String) = IOFile(dir.addFile(name))
   private def optionalFile(name: String): Option[File] =
     Option(new File(dir.dir, name)).filter(_.exists)
-  override def getDir(name: String) =
+  override def getDir(name: String): Option[IODirectory] =
     // TODO redundant check in Directory.apply
     optionalFile(name).filter(_.isDirectory).map(e => new IODirectory(Directory(e)))
-  override def addSubDir(name: String) = new IODirectory(dir.addSubDir(name))
+  override def addSubDir(name: String): IODirectory = new IODirectory(dir.addSubDir(name))
   override def getFile(name: String) = optionalFile(name).map(IOFile.apply)
-  override def dirs = dir.dirs.map(new IODirectory(_))
+  override def dirs: Iterator[IODirectory] = dir.dirs.map(new IODirectory(_))
   override def files = dir.files.map(IOFile.apply)
   override def paths: Iterator[IOPath] =
     dir.listFiles.iterator.map(f => if (f.isDirectory) new IODirectory(Directory(f)) else IOFile(f))
   override def lastModified: LocalDateTime = dir.dir |> FileUtils.lastModified
   override def deepDirs: Iterator[IODirectory] = dir.deepDirs.map(new IODirectory(_))
-  override def deepDirsObservable: Observable[DirectoryRef] =
+  override def deepDirsObservable: Observable[IODirectory] =
     dir.deepDirsObservable.map(d => new IODirectory(d._1))
   override def deepFiles: Iterator[IOFile] = dir.deepFiles.map(new IOFile(_))
 

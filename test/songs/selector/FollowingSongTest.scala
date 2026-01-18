@@ -1,7 +1,8 @@
 package songs.selector
 
-import backend.module.{FakeMusicFinder, TestModuleConfiguration}
+import backend.module.TestModuleConfiguration
 import models.FakeModelFactory
+import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AnyFreeSpec
@@ -17,7 +18,7 @@ class FollowingSongTest
   private val factory = new FakeModelFactory()
   "next song" in {
     val injector = TestModuleConfiguration().injector
-    val mf = injector.instance[FakeMusicFinder]
+    val mf = injector.instance[FakeMusicFiles]
     val song1 =
       mf.copySong(factory.song(albumName = "album", artistName = "artist", trackNumber = 1))
     val song2 =

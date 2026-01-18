@@ -4,7 +4,7 @@ import java.time.{Clock, LocalDate, LocalDateTime}
 
 import com.google.inject.Inject
 import models.{AlbumDir, AlbumDirFactory, SongTagParser}
-import musicfinder.MusicFinder
+import musicfinder.{MusicFiles, SongFileFinder}
 import rx.lang.scala.Observable
 
 import scala.Ordering.Implicits._
@@ -20,7 +20,8 @@ import common.rich.collections.RichIterator.richIterator
 import common.rx.RichObservable.richObservable
 
 private class RecentAlbums @Inject() (
-    mf: MusicFinder,
+    finder: SongFileFinder,
+    mf: MusicFiles,
     songTagParser: SongTagParser,
     albumFactory: AlbumDirFactory,
     clock: Clock,
@@ -44,7 +45,7 @@ private class RecentAlbums @Inject() (
   private def since(f: LocalDate => LocalDate): Seq[AlbumDir] =
     since(f(clock.getLocalDate).atStartOfDay)
   private def isDoubleAlbum(dir: DirectoryRef): Boolean = {
-    val songs = mf.getSongFilesInDir(dir).sortBy(_.name)
+    val songs = finder.getSongFilesInDir(dir).sortBy(_.name)
     def discNumber(s: FileRef) = songTagParser(s).discNumber
     discNumber(songs.head).map2(discNumber(songs.last))(_ != _).getOrElse(false)
   }

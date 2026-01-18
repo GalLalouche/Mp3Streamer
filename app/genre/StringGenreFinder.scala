@@ -3,15 +3,15 @@ package genre
 import backend.recon.Artist
 import com.google.inject.{Inject, Singleton}
 import genre.Genre.Musicals
-import musicfinder.MusicFinder
+import musicfinder.MusicFiles
 
 import common.TimedLogger
 import common.io.DirectoryRef
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichOption.richOption
 
-@Singleton private class StringGenreFinder @Inject() (mf: MusicFinder, timedLogger: TimedLogger) {
-  private lazy val artistDirs: Map[Artist, mf.S#D] =
+@Singleton private class StringGenreFinder @Inject() (mf: MusicFiles, timedLogger: TimedLogger) {
+  private lazy val artistDirs: Map[Artist, DirectoryRef] =
     timedLogger("Fetching artistDirs")(mf.artistDirs).mapBy(Artist apply _.name)
 
   def forArtist(artist: backend.recon.Artist): Option[StringGenre] =

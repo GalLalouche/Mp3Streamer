@@ -3,7 +3,7 @@ package mains.splitter
 import java.io.File
 
 import com.google.inject.Inject
-import musicfinder.IOMusicFinder
+import musicfinder.IOSongFileFinder
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
@@ -16,7 +16,7 @@ import common.rich.path.{Directory, RichFileUtils}
 import common.rich.path.RichFile._
 
 // Splits cue file and fixes the flac output.
-private class FlacSplitter @Inject() (cueSplitter: CueSplitter, mf: IOMusicFinder) {
+private class FlacSplitter @Inject() (cueSplitter: CueSplitter, sff: IOSongFileFinder) {
   private def clean(output: Directory, destination: Directory, bigFlac: File): Unit = {
     println("Moving flac files to parent dir")
     output.files.find(_.name == "00. (HTOA).flac").foreach(_.delete())
@@ -33,7 +33,7 @@ private class FlacSplitter @Inject() (cueSplitter: CueSplitter, mf: IOMusicFinde
       .asScala
       .headOption
       .foreach(year =>
-        mf.getSongFilesInDir(IODirectory(destination)).foreach { f =>
+        sff.getSongFilesInDir(IODirectory(destination)).foreach { f =>
           val audioFile = AudioFileIO.read(f.file)
           if (audioFile.getTag.getFields(FieldKey.YEAR).isEmpty) {
             println("Fixing year on " + f.name)

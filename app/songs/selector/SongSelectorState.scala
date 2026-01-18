@@ -2,7 +2,7 @@ package songs.selector
 
 import com.google.inject.{Inject, Provider, Singleton}
 import models.Song
-import musicfinder.MusicFinder
+import musicfinder.MusicFiles
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -14,7 +14,7 @@ import common.rx.RichObservable.richObservable
 // A stupid hack to make SongSelectorState lazy (since initializing all the songs takes a while) while
 // remaining transparent to clients.
 @Singleton class SongSelectorState @Inject() (
-    mf: MusicFinder,
+    mf: MusicFiles,
     fastSongSelector: FastSongSelector,
     ssFactory: Provider[MultiStageSongSelectorFactory],
     factory: UpdatableProxyFactory,

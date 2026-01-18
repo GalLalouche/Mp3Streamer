@@ -3,6 +3,7 @@ package backend.module
 import com.google.inject.{Guice, Injector, Module, Provides}
 import com.google.inject.util.Modules
 import io.lemonlabs.uri.Url
+import musicfinder.{FakeMusicFiles, FakeMusicFilesImpl, FakeSongFileFinder, SongFileFinder}
 import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext
@@ -17,7 +18,7 @@ case class TestModuleConfiguration(
       override def reportFailure(cause: Throwable): Unit = throw cause
       override def execute(runnable: Runnable): Unit = runnable.run()
     },
-    private val _mf: FakeMusicFinder = null,
+    private val _mf: FakeMusicFiles = null,
     private val _root: MemoryRoot = new MemoryRoot,
     private val _urlToBytesMapper: PartialFunction[Url, Array[Byte]] = PartialFunction.empty,
     private val _urlToResponseMapper: PartialFunction[Url, FakeWSResponse] = PartialFunction.empty,
@@ -31,7 +32,8 @@ case class TestModuleConfiguration(
         bind[MemoryRoot].toInstance(_root)
         bind[DirectoryRef].annotatedWith[BaseDirectory].toInstance(_root)
         bind[ExecutionContext].toInstance(_ec)
-        bind[FakeMusicFinder].toInstance(_mf.opt.getOrElse(new FakeMusicFinder(_root)))
+        bind[FakeMusicFiles].toInstance(_mf.opt.getOrElse(FakeMusicFilesImpl(_root)))
+        bind[SongFileFinder].toInstance(FakeSongFileFinder)
       }
 
       @Provides

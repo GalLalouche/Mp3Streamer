@@ -5,12 +5,12 @@ import mains.BrowserUtils
 import mains.fixer.NewArtistFolderCreator.{BigIconMultiplayer, IconSideInPixels, MaxRows}
 import mains.fixer.new_artist.GenrePanel
 import models.TypeAliases.ArtistName
-import musicfinder.IOMusicFinder
 
 import scala.concurrent.{Future, Promise}
 import scala.swing.Frame
 import scala.swing.event.WindowClosing
 
+import common.io.{BaseDirectory, IODirectory}
 import common.rich.path.Directory
 import common.rich.primitives.RichOption.richOption
 
@@ -28,16 +28,14 @@ import common.rich.primitives.RichOption.richOption
  *                || Doom
  * }}}
  */
-private class NewArtistFolderCreator @Inject() (
-    mf: IOMusicFinder,
-) {
+private class NewArtistFolderCreator @Inject() (@BaseDirectory baseDir: IODirectory) {
   def selectGenreDirAndPopupBrowser(name: ArtistName): Future[Directory] = {
     BrowserUtils.searchForLucky(name + " rateyourmusic")
     selectGenreDir(name)
   }
   def selectGenreDir(name: ArtistName): Future[Directory] = {
     def genre(dirName: String): Directory =
-      mf.baseDir.getDir(dirName).getOrThrow(s"Could not find genre dir <$dirName>").dir
+      baseDir.getDir(dirName).getOrThrow(s"Could not find genre dir <$dirName>").dir
     val panel = GenrePanel(
       maxRows = MaxRows,
       iconSideInPixels = IconSideInPixels,

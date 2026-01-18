@@ -2,7 +2,7 @@ package songs.selector
 
 import com.google.inject.Inject
 import models.SongTagParser
-import musicfinder.MusicFinder
+import musicfinder.MusicFiles
 
 import scala.util.Random
 
@@ -11,7 +11,7 @@ import common.io.{FileRef, RefSystem}
 import common.rx.RichObservable.richObservable
 
 class MultiStageSongSelectorFactory @Inject() (
-    musicFinder: MusicFinder,
+    mf: MusicFiles,
     songTagParser: SongTagParser,
     random: Random,
     scoreBasedFilter: ScoreBasedFilter,
@@ -20,7 +20,7 @@ class MultiStageSongSelectorFactory @Inject() (
 ) {
   def withSongs[Sys <: RefSystem](songs: IndexedSeq[FileRef]): MultiStageSongSelector[Sys] =
     new MultiStageSongSelector(songs.asInstanceOf[IndexedSeq[Sys#F]])(
-      musicFinder,
+      mf,
       songTagParser,
       random,
       Filter.always,
@@ -28,5 +28,5 @@ class MultiStageSongSelectorFactory @Inject() (
       timedLogger,
     )
   def apply(): MultiStageSongSelector[_] =
-    withSongs[RefSystem](musicFinder.getSongFiles.toVectorBlocking)
+    withSongs[RefSystem](mf.getSongFiles.toVectorBlocking)
 }

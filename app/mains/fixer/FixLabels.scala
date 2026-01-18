@@ -5,7 +5,7 @@ import java.util.regex.Pattern
 
 import com.google.inject.Inject
 import models.IOSong
-import musicfinder.{IOMusicFinder, SongDirectoryParser}
+import musicfinder.{IOSongFileFinder, SongDirectoryParser}
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
@@ -25,9 +25,9 @@ import common.rich.primitives.RichString._
 
 /** Fixes ID3 tags on mp3 and flac files to proper casing, delete unused tags, etc. */
 private class FixLabels @Inject() (
-    mf: IOMusicFinder,
     songDirParser: SongDirectoryParser,
     fixLabelsUtils: FixLabelsUtils,
+    sff: IOSongFileFinder,
 ) {
   private def fixFile(f: File, fixDiscNumber: Boolean): Unit = {
     val audioFile = AudioFileIO.read(f)
@@ -57,7 +57,7 @@ private class FixLabels @Inject() (
     dir.files.filter(_.extension == "m3u").foreach(_.delete)
 
     val ioDir = IODirectory(dir)
-    val musicFiles = mf.getSongFilesInDir(ioDir).map(_.file).toVector
+    val musicFiles = sff.getSongFilesInDir(ioDir).map(_.file).toVector
     require(
       musicFiles.nonEmpty,
       s"Could not find any songs in $dir - maybe they're in subfolders...",

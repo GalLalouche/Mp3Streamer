@@ -2,7 +2,7 @@ package songs.selector
 
 import com.google.inject.Inject
 import models.Song
-import musicfinder.{MusicFinder, SongDirectoryParser}
+import musicfinder.{MusicFiles, SongDirectoryParser}
 import scribe.Level
 
 import scala.annotation.tailrec
@@ -17,7 +17,7 @@ import common.rich.RichRandomSpecVer.richRandomSpecVer
  * loading TBs of songs and scoring them takes a while apparently).
  */
 private class FastSongSelector @Inject() (
-    mf: MusicFinder,
+    mf: MusicFiles,
     songDirectoryParser: SongDirectoryParser,
     timedLogger: TimedLogger,
     random: Random,

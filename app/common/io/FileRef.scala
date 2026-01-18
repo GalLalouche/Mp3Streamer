@@ -14,6 +14,9 @@ trait RefSystem { self =>
   type F <: FileRef { type S = self.S }
   type D <: DirectoryRef { type S = self.S }
 }
+object RefSystem {
+  type Aux[S0] = RefSystem { type S = S0 }
+}
 
 /** Either a file or a directory. */
 trait PathRef {
@@ -68,7 +71,6 @@ trait FileRef extends PathRef {
   override def parents = parent +: parent.parents.asInstanceOf[Seq[S#D]]
   override val hasParent = true
 }
-
 /** Must exist. */
 trait DirectoryRef extends PathRef { self =>
   type S <: RefSystem
@@ -84,7 +86,7 @@ trait DirectoryRef extends PathRef { self =>
   // TODO no reason to have this default. Make it abstract and implement in MemoryDir.
   def deepDirs: Iterator[S#D] =
     dirs.flatMap(d => Iterator(d) ++ d.deepDirs.asInstanceOf[Iterator[S#D]])
-  def deepDirsObservable: Observable[DirectoryRef] = Observable.from(deepDirs.toVector)
+  def deepDirsObservable: Observable[S#D] = Observable.from(deepDirs.toVector)
   def deepFiles: Iterator[S#F] = files ++ dirs.flatMap(_.deepFiles.asInstanceOf[Iterator[S#F]])
   def lastModified: LocalDateTime
   // TODO freaking unfoldables already

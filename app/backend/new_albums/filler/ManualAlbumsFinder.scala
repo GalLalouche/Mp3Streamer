@@ -3,7 +3,7 @@ package backend.new_albums.filler
 import backend.recon.{Album, Artist, ReconcilableFactory}
 import backend.recon.Reconcilable.SongExtractor
 import com.google.inject.{Inject, Singleton}
-import musicfinder.{MusicFinder, SongDirectoryParser}
+import musicfinder.{MusicFiles, SongDirectoryParser}
 
 import scala.concurrent.Future
 
@@ -17,7 +17,7 @@ import common.rx.RichObservable.richObservable
 
 @Singleton private class ManualAlbumsFinder @Inject() (
     timed: TimedLogger,
-    mf: MusicFinder,
+    mf: MusicFiles,
     songDirectoryParser: SongDirectoryParser,
     reconcilableFactory: ReconcilableFactory,
 ) extends SimpleTypedActor[Artist, Option[Set[Album]]] {

@@ -1,21 +1,18 @@
-package backend.module
+package musicfinder
 
-import models.{AlbumDir, ArtistName, MemorySong, SongTagParser}
-import musicfinder.MusicFinder
-import musicfinder.MusicFinder.DirectoryName
+import models.{AlbumDir, MemorySong}
 
 import scala.collection.mutable
 
 import common.io.{FileRef, MemoryDir, MemoryFile, MemorySystem}
 import common.rich.RichT._
 
-class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder with SongTagParser {
-  override type S = MemorySystem
-  override val extensions = Set("mp3")
-  override val unsupportedExtensions = Set()
-  protected override def genresWithSubGenres: Seq[String] = Vector("music")
-  override def flatGenres: Seq[String] = Nil
-  override def genreDirs: Seq[MemoryDir] = super.genreDirs
+private class FakeMusicFilesImpl(
+    _baseDir: MemoryDir,
+    override val genresWithSubGenres: Seq[String],
+    override val flatGenres: Seq[String],
+) extends MusicFilesImpl[MemorySystem](_baseDir, FakeSongFileFinder)
+    with FakeMusicFiles {
   private val dirToAddSongsTo = baseDir.addSubDir(genresWithSubGenres.head)
   private val pathToSongs = mutable.HashMap[String, MemorySong]()
 
@@ -35,5 +32,11 @@ class FakeMusicFinder(override val baseDir: MemoryDir) extends MusicFinder with 
   def copyAlbum(albumDir: AlbumDir): AlbumDir =
     albumDir.copy(dir = dirToAddSongsTo.addSubDir(albumDir.dir.name, albumDir.dir.lastModified))
   override def apply(f: FileRef): MemorySong = pathToSongs(f.path)
-  protected override def normalizeArtistName(name: ArtistName): DirectoryName = name
+}
+object FakeMusicFilesImpl {
+  def apply(
+      baseDir: MemoryDir,
+      genresWithSubGenres: Seq[String] = Vector("music"),
+      flatGenres: Seq[String] = Nil,
+  ): FakeMusicFiles = new FakeMusicFilesImpl(baseDir, genresWithSubGenres, flatGenres)
 }
