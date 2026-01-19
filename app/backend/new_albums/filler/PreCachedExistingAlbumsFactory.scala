@@ -7,7 +7,6 @@ import rx.lang.scala.Observable
 
 import common.io.DirectoryRef
 import common.rich.RichT.richT
-import common.rich.collections.RichMap._
 import common.rich.primitives.RichOption.richOption
 import common.rx.RichObservable.richObservable
 
@@ -18,10 +17,7 @@ private class PreCachedExistingAlbumsFactory @Inject() (
   def from(albums: Observable[DirectoryRef]) = new PreCachedExistingAlbums(
     albums
       .flatMap(d => Observable.from(toAlbum(d).asIterable))
-      // TODO build a grouper
-      .toVectorBlocking
-      .groupBy(_.artist)
-      .properMapValues(_.toSet),
+      .toMultiMapBlocking(_.artist)(_.toSet),
   )
 
   private def toAlbum(dir: DirectoryRef): Option[Album] =
