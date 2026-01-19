@@ -57,7 +57,7 @@ class MusicFilesTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
       b.addSubDir("b'") // Folder is assumed to be a subgenre and therefore should not be listed.
       val artistInFlatGenre = d.addSubDir("d'")
 
-      mf.artistDirs shouldMultiSetEqual Vector(artistInSubGenre, artistInFlatGenre)
+      mf.artistDirs.toVectorBlocking shouldMultiSetEqual Vector(artistInSubGenre, artistInFlatGenre)
     }
     "albums in flat and subgenres" in {
       val artistWithSong = a.addSubDir("a'").addSubDir("a''").addSubDir("a'''")

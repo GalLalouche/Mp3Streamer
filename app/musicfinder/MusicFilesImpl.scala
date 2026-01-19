@@ -2,8 +2,6 @@ package musicfinder
 
 import rx.lang.scala.Observable
 
-import scala.collection.View
-
 import common.io.{DirectoryRef, RefSystem}
 import common.rich.collections.RichIterable
 
@@ -21,11 +19,13 @@ private abstract class MusicFilesImpl[S <: RefSystem.Aux[S]](
   private def getDir(name: String): S#D = baseDir.getDir(name).get
   private def allGenres = genresWithSubGenres ++ flatGenres
   override def genreDirsWithSubGenres: Seq[S#D] = genresWithSubGenres.map(getDir)
-  override def artistDirs: View[S#D] = {
-    def getDirs(xs: Seq[String]): View[S#D] =
-      xs.view.flatMap(getDir(_).dirs)
+  override def artistDirs: Observable[S#D] = {
+    def getDirs(xs: Seq[String]): Observable[S#D] =
+      Observable.from(xs).map(getDir(_).dirs).flatMapIterable(i => RichIterable.from(() => i))
 
-    getDirs(genresWithSubGenres).flatMap(_.dirs) ++ getDirs(flatGenres)
+    getDirs(genresWithSubGenres).flatMap(d =>
+      Observable.from(RichIterable.from(() => d.dirs)),
+    ) ++ getDirs(flatGenres)
   }
 
   protected def genreDirs: Seq[S#D] = allGenres.sorted.map(getDir)

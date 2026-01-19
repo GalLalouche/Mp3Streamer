@@ -6,10 +6,8 @@ import backend.recon.ReconcilableFactory.AlbumParseError.SinglesDirectory
 import com.google.inject.Inject
 import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
 import musicfinder.ArtistDirsIndex
+import rx.lang.scala.Observable
 
-import scala.concurrent.ExecutionContext
-
-import common.TimedLogger
 import common.rich.RichFuture.richFutureBlocking
 import common.rich.primitives.RichOption.richOption
 
@@ -23,14 +21,10 @@ private class RealTimeExistingAlbums @Inject() (
     reconcilableFactory: ReconcilableFactory,
     directoryDiscovery: DirectoryDiscovery,
     artistDirsIndex: ArtistDirsIndex,
-    timed: TimedLogger,
     manualAlbumsFinder: ManualAlbumsFinder,
-    ec: ExecutionContext,
 ) extends ExistingAlbums {
-  override def artists: Iterable[Artist] = timed("Fetching artists (lazy)", scribe.info(_)) {
-    // TODO 1. this should probably work with Observable
-    // TODO 2. RichObservable to Iterable with a buffer or something?
-    directoryDiscovery.artistDirectories.flatMap { artistDir =>
+  override def artists: Observable[Artist] =
+    directoryDiscovery.artistDirectories.flatMapIterable { artistDir =>
       lazy val albumDir = artistDir.dirs.nextOption().getOrThrow(s"Problem with $artistDir")
       artistDirsIndex.forDir(artistDir) match {
         case SingleArtist(artist) => Vector(artist)
@@ -40,7 +34,6 @@ private class RealTimeExistingAlbums @Inject() (
           Vector(reconcilableFactory.extractArtistFromAlbumDir(albumDir))
       }
     }
-  }
 
   override def albums: Artist => Set[Album] = artist =>
     getAlbums(artist)
