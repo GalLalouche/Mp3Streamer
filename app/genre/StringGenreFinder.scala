@@ -9,10 +9,12 @@ import common.TimedLogger
 import common.io.DirectoryRef
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichOption.richOption
+import common.rx.RichObservable.richObservable
 
 @Singleton private class StringGenreFinder @Inject() (mf: MusicFiles, timedLogger: TimedLogger) {
   private lazy val artistDirs: Map[Artist, DirectoryRef] =
-    timedLogger("Fetching artistDirs")(mf.artistDirs).mapBy(Artist apply _.name)
+    // TODO groupBy inside the observable.
+    timedLogger("Fetching artistDirs")(mf.artistDirs).toVectorBlocking.mapBy(Artist apply _.name)
 
   def forArtist(artist: backend.recon.Artist): Option[StringGenre] =
     artistDirs.get(artist).map(forDir)

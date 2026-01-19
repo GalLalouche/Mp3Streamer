@@ -35,12 +35,12 @@ private class ReconFiller[R <: Reconcilable](
 
   private def go(r: R): Observable[ReconID] =
     RichObservable.from(reconciler(r)).filterFuture(aux.verify(r, _))
-  private def newRecons(rs: Iterable[R]): Observable[(R, ReconID)] = {
+  private def newRecons(rs: Observable[R]): Observable[(R, ReconID)] = {
     def hasNoRecon(r: R): Boolean = cache(r).isFalse
     // Taking only a partial amount to avoid DOSing musicbrainz and also make manual fixing more manageable.
-    Observable.from(rs.filter(hasNoRecon)).take(10).mproduct(go)
+    rs.filter(hasNoRecon).take(10).mproduct(go)
   }
 
-  def go(rs: Iterable[R]): Future[_] =
+  def go(rs: Observable[R]): Future[_] =
     newRecons(rs).observeOn(ImmediateScheduler()).doOnEach(storer ! _).toFuture
 }

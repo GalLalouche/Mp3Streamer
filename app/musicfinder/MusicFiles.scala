@@ -2,8 +2,6 @@ package musicfinder
 
 import rx.lang.scala.Observable
 
-import scala.collection.View
-
 import common.io.{DirectoryRef, FileRef}
 
 /** Provides access to music on the filesystem, using some base directory and a list of a genres. */
@@ -12,7 +10,7 @@ trait MusicFiles {
   /** Dirs which host artists/albums at the top level, e.g., musicals. */
   def flatGenres: Seq[String]
   def genreDirsWithSubGenres: Seq[DirectoryRef]
-  def artistDirs: View[DirectoryRef]
+  def artistDirs: Observable[DirectoryRef]
   /** All song files found in the music base directory. */
   def getSongFiles: Observable[FileRef]
   def albumDirs: Observable[DirectoryRef]

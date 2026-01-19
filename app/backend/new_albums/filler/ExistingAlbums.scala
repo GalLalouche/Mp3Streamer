@@ -1,9 +1,10 @@
 package backend.new_albums.filler
 
 import backend.recon.{Album, Artist}
+import rx.lang.scala.Observable
 
 private trait ExistingAlbums {
-  def artists: Iterable[Artist]
+  def artists: Observable[Artist]
   def albums: Artist => Set[Album]
-  def allAlbums: Iterable[Album] = artists.flatMap(albums)
+  def allAlbums: Observable[Album] = artists.flatMapIterable(albums)
 }
