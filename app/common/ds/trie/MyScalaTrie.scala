@@ -7,9 +7,10 @@ object MyScalaTrie extends TrieBuilder {
   private case class TrieImpl[+A](map: Map[Char, TrieImpl[A]], values: Vector[A])
       extends PersistentTrie[A] {
     private def getOrEmpty(c: Char): TrieImpl[A] = map.getOrElse(c, Empty)
-    override def +[B >: A](e: (String, B)): TrieImpl[B] =
-      if (e._1.isEmpty) copy(values = values :+ e._2)
-      else copy(map = map + (e._1.head -> (getOrEmpty(e._1.head) + (e._1.tail -> e._2))))
+    override def +[B >: A](e: (String, B)): TrieImpl[B] = add(e._1, 0, e._2)
+    private def add[B >: A](s: String, offset: Int, b: B): TrieImpl[B] =
+      if (offset == s.length) copy(values = values :+ b)
+      else copy(map = map + (s(offset) -> getOrEmpty(s(offset)).add(s, offset + 1, b)))
     private def allValues: Iterable[A] = values ++ map.values.flatMap(_.allValues)
     override lazy val size: Int = values.size + map.valuesIterator.map(_.size).sum
     @tailrec

@@ -7,9 +7,8 @@ import backend.search.WeightedIndexable.ops._
 import cats.Semigroup
 import cats.implicits.toFunctorOps
 
-import common.ds.trie.{MyScalaTrie, Trie}
+import common.ds.trie.{MutableTrie, Trie}
 import common.rich.collections.RichMap._
-import common.rich.collections.RichTraversableOnce._
 
 /**
  * Weighing allows ranking of different term sources. Like a regular index, every term points to a
@@ -24,12 +23,12 @@ private object WeightedIndexBuilder {
   }
 
   def buildIndexFor[T: WeightedIndexable](ts: Iterable[T]): Index[T] = {
-    val documentsToScoredTerms: IterableOnce[(T, (String, Weight))] =
+    val documentsToScoredTerms: Iterable[(T, (String, Weight))] =
       ts.view.flatMap(e => e.terms.tupleLeft(e))
-    val scoredDocumentByTerm: Map[String, Seq[(T, Weight)]] = documentsToScoredTerms
-      .aggregateMap(_._2._1, e => Set(e._1 -> e._2._2))
-      .properMapValues(_.toVector.sortBy(_._2))
-    new WeightedIndex(MyScalaTrie.fromMultiMap(scoredDocumentByTerm))
+
+    val scoredDocumentByTerm: Map[String, Iterable[(T, Weight)]] =
+      documentsToScoredTerms.groupMap(e => e._2._1)(e => e._1 -> e._2._2)
+    new WeightedIndex(MutableTrie.fromMultiMap(scoredDocumentByTerm))
   }
 
   private class WeightedIndex[T: WeightedIndexable](trie: Trie[(T, Weight)]) extends Index[T] {

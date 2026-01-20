@@ -9,7 +9,7 @@ import common.json.Jsonable
 
 /** Index for songs, albums and artists. */
 private class CompositeIndex(
-    songs: Index[Song],
+    val songs: Index[Song],
     albums: Index[AlbumDir],
     artists: Index[ArtistDir],
     mj: ModelJsonable,
