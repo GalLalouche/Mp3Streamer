@@ -20,7 +20,7 @@ private class CompositeIndexFactory @Inject() (
     mj: ModelJsonable,
 ) {
   import mj._
-  def create() = timedLogger("Creating index", Level.Info) {
+  def create(): CompositeIndex = timedLogger("Creating index", Level.Info) {
     val indexBuilder = WeightedIndexBuilder
     val flyweightSongs = mutable.Map[FileRef, Song]()
     trait Flyweight[T] {
@@ -56,5 +56,3 @@ private class CompositeIndexFactory @Inject() (
     new CompositeIndex(loadIndex[Song], loadIndex[AlbumDir], loadIndex[ArtistDir], mj)
   }
 }
-
-private object CompositeIndexFactory {}

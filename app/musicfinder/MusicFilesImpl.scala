@@ -41,7 +41,3 @@ private abstract class MusicFilesImpl[S <: RefSystem.Aux[S]](
   private def getSongFilesInDir(d: DirectoryRef): Iterator[S#F] =
     sff.getSongFilesInDir(d).asInstanceOf[Iterator[S#F]]
 }
-
-object MusicFilesImpl {
-  type DirectoryName = String
-}

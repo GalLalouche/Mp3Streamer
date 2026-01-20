@@ -5,8 +5,9 @@ import com.google.inject.Inject
 import musicfinder.ArtistDirsIndex
 import rx.lang.scala.Observable
 
+import common.rich.func.kats.ToMoreMonadErrorOps.toMoreApplicativeErrorOps
+
 import common.io.DirectoryRef
-import common.rich.RichT.richT
 import common.rich.primitives.RichOption.richOption
 import common.rx.RichObservable.richObservable
 
@@ -23,7 +24,7 @@ private class PreCachedExistingAlbumsFactory @Inject() (
   private def toAlbum(dir: DirectoryRef): Option[Album] =
     reconcilableFactory
       .toAlbum(dir)
-      .<|(_.left.foreach(e => scribe.error(s"Failed to convert <$dir> to an album due to <$e>")))
+      .listenError(e => scribe.error(s"Failed to convert <$dir> to an album due to <$e>"))
       .toOption
   def singleArtist(artist: Artist): PreCachedExistingAlbums = {
     val artistDir: DirectoryRef = artistDirsIndex

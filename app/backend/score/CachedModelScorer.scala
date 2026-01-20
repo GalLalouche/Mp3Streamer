@@ -6,17 +6,18 @@ import backend.score.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreS
 import com.google.inject.Inject
 import models.SongTagParser
 
+import scala.collection.Map
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
 
 import cats.Id
-import cats.implicits.toBifunctorOps
 import common.rich.func.kats.ToTransableOps.toHoistIdOps
 
 import common.io.FileRef
 import common.rich.RichFuture.richFutureBlocking
 import common.rich.RichT.richT
 import common.rich.primitives.RichBoolean.richBoolean
+import common.rich.primitives.RichEither.richEither
 
 /**
  * Works by first loading all entries from storage and caching them inside a map. Useful for
@@ -31,8 +32,6 @@ private class CachedModelScorer @Inject() (
     songTagParser: SongTagParser,
     ec: ExecutionContext,
 ) {
-  private implicit val iec: ExecutionContext = ec
-
   private lazy val songScores: Map[YearlessTrack, ModelScore] =
     songScorer.loadAllScores.value.get.toMap
   private lazy val albumScores: Map[YearlessAlbum, ModelScore] =
@@ -54,7 +53,7 @@ private class CachedModelScorer @Inject() (
     val songTitle =
       reconFactory.trySongInfo(f).|>(toOption(f, "song")).map(_._2).getOrElse(id3Song.title)
     val album = {
-      val albumAsTry = reconFactory.toAlbum(f.parent).leftMap(e => new Exception(e.toString)).toTry
+      val albumAsTry = reconFactory.toAlbum(f.parent).toErrorTry
       toOption(f, "album")(albumAsTry).getOrElse(id3Song.release).toYearless
     }
     val artist = album.artist

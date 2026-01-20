@@ -6,7 +6,7 @@ object MyScalaTrie extends TrieBuilder {
   // This is a case class to get free copy.
   private case class TrieImpl[+A](map: Map[Char, TrieImpl[A]], values: Vector[A])
       extends PersistentTrie[A] {
-    private def getOrEmpty(c: Char): TrieImpl[A] = map.getOrElse(c, Nil)
+    private def getOrEmpty(c: Char): TrieImpl[A] = map.getOrElse(c, Empty)
     override def +[B >: A](e: (String, B)): TrieImpl[B] =
       if (e._1.isEmpty) copy(values = values :+ e._2)
       else copy(map = map + (e._1.head -> (getOrEmpty(e._1.head) + (e._1.tail -> e._2))))
@@ -19,9 +19,9 @@ object MyScalaTrie extends TrieBuilder {
     override def exact(key: String): Iterable[A] = aux(key, onEmptyKey = _.values)
   }
 
-  private val Nil: TrieImpl[Nothing] = TrieImpl(Map.empty, Vector.empty)
+  private val Empty: TrieImpl[Nothing] = TrieImpl(Map.empty, Vector.empty)
 
-  override def empty[A]: PersistentTrie[A] = Nil
+  override def empty[A]: PersistentTrie[A] = Empty
   override def fromMap[A](map: Map[String, A]): PersistentTrie[A] = map.foldLeft(empty[A])(_ + _)
   override def fromMultiMap[A](map: Map[String, Iterable[A]]): PersistentTrie[A] =
     map.foldLeft(empty[A]) { case (trie, (key, value)) =>
