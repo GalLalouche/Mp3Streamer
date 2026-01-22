@@ -14,6 +14,7 @@ import scala.util.Try
 import common.io.{DirectoryRef, FileRef}
 import common.rich.RichT._
 import common.rich.collections.RichSeq._
+import common.rich.primitives.RichEither.ToError
 import common.rich.primitives.RichOption.richOption
 
 class ReconcilableFactory @Inject() (
@@ -74,5 +75,7 @@ object ReconcilableFactory {
     case object ClassicalArtist extends AlbumParseError
     case object NoSongs extends AlbumParseError
     case object UnparsableName extends AlbumParseError
+
+    implicit val toError: ToError[AlbumParseError] = ToError.fromToString[AlbumParseError]
   }
 }

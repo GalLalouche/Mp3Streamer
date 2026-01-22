@@ -16,6 +16,12 @@ class ArtistDirFactory @Inject() (
     flu: FixLabelsUtils,
     artistDirsIndex: ArtistDirsIndex,
 ) {
+  def fromDir(dir: DirectoryRef): ArtistDir = ArtistDir(
+    dir,
+    dir.name,
+    // If dirs is empty, this a single album artist, e.g., greatest hits.
+    dir.dirs.map(af.fromDir).toSet.mapIf(_.isEmpty).to(Set(af.fromDir(dir))),
+  )
   def fromSong(song: Song): ArtistDir = {
     val artist = flu.validFileName(song.artistName.toLowerCase).toLowerCase
     @tailrec def go(file: PathRef): DirectoryRef = file match {
@@ -25,13 +31,6 @@ class ArtistDirFactory @Inject() (
         else artistDirsIndex.forArtist(song.artist).getOrThrow(s"No artist found for <$song>")
     }
 
-    val dir = go(song.file)
-
-    ArtistDir(
-      dir,
-      dir.name,
-      // If dirs is empty, this a single album artist, e.g., greatest hits.
-      dir.dirs.map(af.fromDir).toSet.mapIf(_.isEmpty).to(Set(af.fromDir(dir))),
-    )
+    fromDir(go(song.file))
   }
 }
