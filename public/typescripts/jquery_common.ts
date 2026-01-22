@@ -1,5 +1,5 @@
 // TODO this should be turned into a proper module probably, or at least add a comment as to why it isn't.
-import jqXHR = JQuery.jqXHR
+import jqXHR = JQuery.jqXHR;
 
 type Method = "POST" | "PUT"
 
@@ -125,6 +125,7 @@ function validateBoxAndButton(
 interface JQuery {
   custom_overflown(): boolean
   custom_tooltip(text: string): JQuery
+  custom_remove_tooltip(): JQuery
   appendBr(): JQuery
 }
 
@@ -134,6 +135,10 @@ $.fn.custom_overflown = function () {
 }
 $.fn.custom_tooltip = function (text) {
   this.attr('title', text)
+  return this
+}
+$.fn.custom_remove_tooltip = function () {
+  this.removeAttr('title')
   return this
 }
 

@@ -43,6 +43,7 @@ function write(text: string): JQuery<HTMLElement> {
 let nonEmptyQueue: boolean = false
 
 function updateAlbums(albums: Album[]): void {
+  $("#last_album").find("span").custom_remove_tooltip()
   if (albums.length == 0) {
     write("No new albums")
     return
