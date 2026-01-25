@@ -1,7 +1,7 @@
 package backend.search
 
 import com.google.inject.Inject
-import models.{AlbumDir, ArtistDir, ModelJsonable, Song}
+import models.{AlbumDir, ArtistDir, Song}
 import scribe.Level
 
 import scala.collection.mutable
@@ -11,15 +11,11 @@ import monocle.Traversal
 
 import common.TimedLogger
 import common.io.FileRef
-import common.json.Jsonable
-import common.json.saver.JsonableSaver
 
 private class CompositeIndexFactory @Inject() (
-    saver: JsonableSaver,
+    loader: IndexLoader,
     timedLogger: TimedLogger,
-    mj: ModelJsonable,
 ) {
-  import mj._
   def create(): CompositeIndex = timedLogger("Creating index", Level.Info) {
     val indexBuilder = WeightedIndexBuilder
     val flyweightSongs = mutable.Map[FileRef, Song]()
@@ -45,14 +41,12 @@ private class CompositeIndexFactory @Inject() (
           .modify(AlbumDirFlyweight.replaceWithCached)
       }
     }
-    def loadIndex[T: Jsonable: WeightedIndexable: Manifest: Flyweight] =
-      indexBuilder.buildIndexFor {
-        val (result, errors) = saver.loadArrayHandleErrors[T]
-        errors.foreach(
-          scribe.warn("Index parsing error; can be caused by missing/moved files", _),
-        )
-        result.map(implicitly[Flyweight[T]].replaceWithCached)
-      }
-    new CompositeIndex(loadIndex[Song], loadIndex[AlbumDir], loadIndex[ArtistDir], mj)
+    def flyweight[A: WeightedIndexable: Flyweight](xs: Seq[A]) =
+      indexBuilder.buildIndexFor(xs.map(implicitly[Flyweight[A]].replaceWithCached))
+    new CompositeIndex(
+      flyweight(loader.loadSongs),
+      flyweight(loader.loadAlbums),
+      flyweight(loader.loadArtists),
+    )
   }
 }
