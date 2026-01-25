@@ -1,15 +1,18 @@
 package common.io
 
 import java.io._
-import java.nio.file.Files
+import java.nio.file.{DirectoryStream, Files, Path}
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.{Clock, LocalDateTime, ZoneId}
 
 import better.files.{File => BFile, FileExtensions}
 import rx.lang.scala.Observable
 
+import scala.util.Using
+
 import common.rich.RichT._
 import common.rich.path.{Directory, RichFile}
+import common.rich.primitives.RichString.richString
 
 private[this] object FileUtils {
   private val currentZone = Clock.systemDefaultZone().getZone
@@ -92,12 +95,18 @@ class IODirectory private (val dir: Directory) extends IOPath(dir.dir) with Dire
   private def optionalFile(name: String): Option[File] =
     Option(new File(dir.dir, name)).filter(_.exists)
   override def getDir(name: String): Option[IODirectory] =
-    // TODO redundant check in Directory.apply
-    optionalFile(name).filter(_.isDirectory).map(e => new IODirectory(Directory(e)))
+    optionalFile(name).filter(_.isDirectory).map(e => new IODirectory(Directory.unsafe(e)))
   override def addSubDir(name: String): IODirectory = new IODirectory(dir.addSubDir(name))
   override def getFile(name: String) = optionalFile(name).map(IOFile.apply)
   override def dirs: Iterator[IODirectory] = dir.dirs.map(new IODirectory(_))
   override def files = dir.files.map(IOFile.apply)
+  override def containsFileWithExtension(extensions: Iterable[String]): Boolean = {
+    val filter: DirectoryStream.Filter[Path] = entry => {
+      val name = entry.getFileName.toString
+      extensions.exists(name.endsWithCaseInsensitive)
+    }
+    Using.resource(Files.newDirectoryStream(dir.dir.toPath, filter))(_.iterator.hasNext)
+  }
   override def paths: Iterator[IOPath] =
     dir.listFiles.iterator.map(f => if (f.isDirectory) new IODirectory(Directory(f)) else IOFile(f))
   override def lastModified: LocalDateTime = dir.dir |> FileUtils.lastModified

@@ -81,6 +81,10 @@ trait DirectoryRef extends PathRef { self =>
   def getDir(name: String): Option[S#D]
   def dirs: Iterator[S#D]
   def files: Iterator[S#F]
+  def containsFileWithExtension(extensions: Iterable[String]): Boolean = {
+    val set = extensions.toSet
+    files.exists(set contains _.extension)
+  }
   def paths: Iterator[S#P] = dirs.++(files).asInstanceOf[Iterator[S#P]]
   def isDescendant(path: String): Boolean =
     Paths.get(path).normalize().startsWith(Paths.get(this.path).normalize())
