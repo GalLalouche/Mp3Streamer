@@ -1,6 +1,6 @@
 package common.io
 
-import java.io.InputStream
+import java.io.{InputStream, OutputStream}
 import java.nio.file.Paths
 import java.time.LocalDateTime
 
@@ -44,6 +44,7 @@ trait FileRef extends PathRef {
   def bytes: Array[Byte]
   def write(s: String): S#F
   def write(bs: Array[Byte]): S#F
+  def outputStream: OutputStream
   def clear(): FileRef = write("")
   def appendLine(line: String): S#F
   def readAll: String

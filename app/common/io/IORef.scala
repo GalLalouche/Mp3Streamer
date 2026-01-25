@@ -1,6 +1,6 @@
 package common.io
 
-import java.io.{File, FileInputStream, InputStream, IOException}
+import java.io._
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.{Clock, LocalDateTime, ZoneId}
@@ -80,6 +80,7 @@ case class IOFile(_file: File) extends IOPath(_file) with FileRef {
     Files.readAttributes(file.toPath, classOf[BasicFileAttributes]).lastAccessTime().toInstant,
     ZoneId.systemDefault(),
   )
+  override def outputStream: OutputStream = new FileOutputStream(file)
 }
 object IOFile {
   def apply(str: String): IOFile = apply(new File(str))

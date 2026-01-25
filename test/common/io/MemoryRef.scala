@@ -1,12 +1,13 @@
 package common.io
 
-import java.io.InputStream
+import java.io.{ByteArrayOutputStream, InputStream, OutputStream}
+import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import java.util.concurrent.ConcurrentHashMap
 
 import scala.jdk.CollectionConverters._
 
-import common.rich.primitives.RichString._
+import common.rich.primitives.RichString.richString
 
 trait MemorySystem extends RefSystem {
   override type S = MemorySystem
@@ -20,27 +21,22 @@ sealed trait MemoryPath extends PathRef {
 }
 
 case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with MemoryPath {
-  private var content: String = ""
+  private var content: Array[Byte] = new Array[Byte](0)
   private var lastUpdatedTime: LocalDateTime = _
   touch()
   private def touch(): Unit =
     lastUpdatedTime = LocalDateTime.now
-  override def bytes = content.getBytes
-  override def write(bs: Array[Byte]): MemoryFile =
-    write(new String(bs))
-  override def write(s: String) = {
-    content = s
-    touch()
-    this
-  }
+  override def bytes = content
+  override def write(bs: Array[Byte]): MemoryFile = { content = bs; this }
+  override def write(s: String) = write(s.getBytes(StandardCharsets.UTF_8))
   override def appendLine(line: String) = {
-    content += line
+    content ++= line.getBytes(StandardCharsets.UTF_8)
     touch()
     this
   }
 
-  override def readAll: String = content
-  override def inputStream: InputStream = content.toInputStream
+  override def readAll: String = new String(content, StandardCharsets.UTF_8)
+  override def inputStream: InputStream = readAll.toInputStream
   override def path: String = parent.path + "/" + name
   override def lastModified = lastUpdatedTime
   override def size = bytes.length
@@ -49,6 +45,12 @@ case class MemoryFile(parent: MemoryDir, name: String) extends FileRef with Memo
 
   override val creationTime = LocalDateTime.now()
   override def lastAccessTime = LocalDateTime.now()
+  override def outputStream: OutputStream = new ByteArrayOutputStream {
+    override def write(b: Array[Byte], off: Int, len: Int): Unit = {
+      MemoryFile.this.content ++= b.slice(off, off + len)
+      touch()
+    }
+  }
 }
 
 sealed abstract class MemoryDir(val path: String) extends DirectoryRef with MemoryPath {
