@@ -55,6 +55,7 @@ libraryDependencies ++= Seq(
   "me.tongfei" % "progressbar" % "0.10.1",
   "my.net.jthink" % "jaudiotagger" % "3.0.3-SNAPSHOT",
   "net.codingwell" %% "scala-guice" % "7.0.0",
+  "org.apache.avro" % "avro" % "1.12.1",
   "org.apache.commons" % "commons-io" % "1.3.2",
   "org.apache.commons" % "commons-lang3" % "3.20.0",
   "org.jboss.threads" % "jboss-threads" % "3.9.2",

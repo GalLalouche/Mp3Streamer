@@ -1,38 +1,40 @@
 package backend.search.cache
 
 import com.google.inject.Inject
-import models.{AlbumDir, ArtistDir, ModelJsonable, Song}
+import models.{AlbumDir, ArtistDir, Song}
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
 import scribe.Level
 
 import scala.concurrent.ExecutionContext
 
-import common.TimedLogger
-import common.json.saver.JsonableSaver
+import common.{AvroableSaver, TimedLogger}
+import common.io.avro.ModelAvroable
 import common.rich.RichT.richT
 import common.rx.report.ReportObserver
 
 private[search] class SongCacheUpdater @Inject() (
-    saver: JsonableSaver,
+    saver: AvroableSaver,
     splitter: SongCacheSaver,
     builder: SongCacheBuilder,
     ec: ExecutionContext,
-    mj: ModelJsonable,
+    ma: ModelAvroable,
     timedLogger: TimedLogger,
 ) {
-  import mj._
+  import ma._
 
   def go(forceRefresh: Boolean): Observable[TimestampedSong] = {
-    val original = saver.loadObject[SongCache]
+    val original = SongCache.load(saver)
     val $ = ReplaySubject[TimestampedSong]()
-    ec.execute(() =>
+    ec.execute { () =>
+      // TODO use the observer below somehow?
+      val timerObserver = timedLogger.async("Updating song cache (async)", Level.Info)
       builder.updating(original)(new ReportObserver[TimestampedSong, SongCache] {
         override def onNext(a: TimestampedSong) = {
           $.onNext(a)
           scribe.trace(a.toString)
         }
-        override def onCompleted(result: SongCache): Unit = {
+        override def onCompleted(result: SongCache): Unit = try {
           if (original == result) {
             scribe.info("No change in cache.")
             if (
@@ -53,13 +55,14 @@ private[search] class SongCacheUpdater @Inject() (
             .optFilter(_.nonEmpty)
             .foreach(deleted => scribe.info("Deleted files:\n" + deleted.mkString("\n")))
 
-          saver.saveObject(result)
+          result.save(saver)
           timedLogger("Recreating indices", Level.Info)(splitter(result.songs))
           $.onCompleted()
-        }
+        } finally
+          timerObserver.onCompleted()
         override def onError(t: Throwable) = throw t
-      }),
-    )
+      })
+    }
     $
   }
 }

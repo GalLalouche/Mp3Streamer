@@ -1,14 +1,18 @@
 package backend.module
 
-import com.google.inject.Inject
-import common.json.RichJson.DynamicJson
 import java.util.concurrent.TimeUnit
+
+import com.google.inject.Inject
 import models.MemorySong
 import models.ModelJsonable.SongParser
 import play.api.libs.json.JsObject
+
 import scala.concurrent.duration.Duration
 
-private class MemorySongParser @Inject() (pathFactory: MemoryPathRefFactory) extends SongParser {
+import common.json.RichJson.DynamicJson
+
+private class MemorySongJsonableParser @Inject() (pathFactory: MemoryPathRefFactory)
+    extends SongParser {
   override def parse(json: JsObject): MemorySong = MemorySong(
     file = pathFactory.parseFilePath(json.str("file")),
     title = json.str("title"),

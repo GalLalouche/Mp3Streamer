@@ -6,8 +6,7 @@ import java.util.logging.LogManager
 import backend.logging.ScribeUtils
 import backend.storage.DbProvider
 import com.google.inject.Provides
-import models.ModelJsonable.SongParser
-import models.SongTagParser
+import models.{ModelJsonable, SongTagParser}
 import musicfinder.{FakeMusicFiles, MusicFiles, PosterLookup}
 import net.codingwell.scalaguice.ScalaModule
 
@@ -15,13 +14,15 @@ import common.FakeClock
 import common.guice.ModuleUtils
 import common.guice.RichModule.richModule
 import common.io.{DirectoryRef, MemoryRoot, PathRefFactory, RootDirectory}
+import common.io.avro.ModelAvroable
 
 private object TestModule extends ScalaModule with ModuleUtils {
   LogManager.getLogManager.readConfiguration(getClass.getResourceAsStream("/logging.properties"))
   override def configure(): Unit = {
     bind[FakeClock].toInstance(new FakeClock)
     bind[DbProvider].toInstance(H2MemProvider.nextNew())
-    bind[SongParser].to[MemorySongParser]
+    bind[ModelJsonable.SongParser].to[MemorySongJsonableParser]
+    bind[ModelAvroable.SongParser].to[MemorySongAvroableParser]
     bind[PathRefFactory].to[MemoryPathRefFactory]
     bind[SongTagParser].to[FakeMusicFiles]
     requireBinding[MemoryRoot]

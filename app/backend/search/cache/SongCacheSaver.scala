@@ -4,8 +4,8 @@ import com.google.inject.Inject
 import models.{AlbumDir, ArtistDir, Song}
 import musicfinder.ArtistDirsIndex
 
-import common.json.Jsonable
-import common.json.saver.JsonableSaver
+import common.AvroableSaver
+import common.io.avro.Avroable
 import common.rich.RichT.richT
 
 /**
@@ -13,15 +13,15 @@ import common.rich.RichT.richT
  * builder.
  */
 private class SongCacheSaver @Inject() (
-    jsonableSaver: JsonableSaver,
+    saver: AvroableSaver,
     artistDirsIndexState: ArtistDirsIndex,
 ) {
   def apply(songs: Iterable[Song])(implicit
-      songJsonable: Jsonable[Song],
-      albumJsonable: Jsonable[AlbumDir],
-      artistJsonable: Jsonable[ArtistDir],
+      songJsonable: Avroable[Song],
+      albumJsonable: Avroable[AlbumDir],
+      artistJsonable: Avroable[ArtistDir],
   ): Unit = {
-    jsonableSaver.saveArray(songs)
+    saver.save(songs)
     val albums = songs
       .groupBy(_.file.parent)
       .map { case (parent, songs) =>
@@ -34,7 +34,7 @@ private class SongCacheSaver @Inject() (
           songs.toVector,
         )
       }
-      .toSet <| jsonableSaver.saveArray
+      .toSet <| saver.save
 
     val artists = albums
       .groupBy(_.toTuple(_.dir.parent, _.artistName))
@@ -44,6 +44,6 @@ private class SongCacheSaver @Inject() (
       .toVector
       .sortBy(_.toTuple(_.dir.parent.path, _.name))
     artistDirsIndexState.update(artists)
-    jsonableSaver.saveArray[ArtistDir](artists)
+    saver.save(artists)
   }
 }

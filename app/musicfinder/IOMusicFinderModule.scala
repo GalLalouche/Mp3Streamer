@@ -1,10 +1,10 @@
 package musicfinder
 
 import models.ModelJsonable
-import models.ModelJsonable.SongParser
 import net.codingwell.scalaguice.ScalaModule
 
 import common.io._
+import common.io.avro.ModelAvroable
 
 object IOMusicFinderModule extends ScalaModule {
   private[musicfinder] val BaseDir: IODirectory = IODirectory("G:/media/music")
@@ -15,7 +15,8 @@ object IOMusicFinderModule extends ScalaModule {
     bind[IOMusicFiles].to[IOMusicFilesImpl]
     bind[SongFileFinder].to[IOSongFileFinder]
     bind[IOSongFileFinder].toInstance(new IOSongFileFinder)
-    bind[SongParser].toInstance(ModelJsonable.IOSongJsonParser)
+    bind[ModelJsonable.SongParser].toInstance(ModelJsonable.IOSongJsonParser)
+    bind[ModelAvroable.SongParser].toInstance(ModelAvroable.IOSongAvroParser)
     bind[PathRefFactory].toInstance(IOPathRefFactory)
     bind[PosterLookup].toInstance(PosterLookup.IOPosterLookup)
   }
