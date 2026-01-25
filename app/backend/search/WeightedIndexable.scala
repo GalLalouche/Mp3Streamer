@@ -5,19 +5,26 @@ import backend.search.WeightedIndexable._
 import models.{AlbumDir, ArtistDir, Song}
 import simulacrum.typeclass
 
+import scala.collection.View
+
+import cats.syntax.functor.toFunctorOps
+import common.rich.func.kats.MoreIterableInstances.iterableInstances
+
+import common.rich.collections.RichIterable.distinctIterable
 import common.rich.primitives.RichString.richString
 
 @typeclass private trait WeightedIndexable[T] {
-  protected def mainTerm(t: T): String
-  protected def secondaryTerms(t: T): Iterable[String]
-  private def split(s: String): Set[String] = s.toLowerCase.tokenize(StringReconScorer.Tokens).toSet
-  private def weigh(s: Set[String], weight: Weight) = s.map(_ -> weight)
   def terms(t: T): Iterable[(String, Weight)] = {
-    val primaryTerms = split(mainTerm(t))
+    val primaryTerms = split(mainTerm(t)).toVector
+    val primaryTermsSet = primaryTerms.toSet
     weigh(primaryTerms, PrimaryWeight) ++
-      weigh(secondaryTerms(t).flatMap(split).toSet.filterNot(primaryTerms), SecondaryWeight)
+      weigh(secondaryTerms(t).view.flatMap(split).filterNot(primaryTermsSet), SecondaryWeight)
   }
   def sortBy(t: T): Product
+  protected def mainTerm(t: T): String
+  protected def secondaryTerms(t: T): Iterable[String]
+  private def split(s: String): Iterator[String] = s.toLowerCase.tokenize(StringReconScorer.Tokens)
+  private def weigh(s: Iterable[String], weight: Weight) = s.distinct.tupleRight(weight)
 }
 
 private object WeightedIndexable {
@@ -35,14 +42,14 @@ private object WeightedIndexable {
       s.composer ++ s.orchestra ++ s.conductor ++ s.opus ++ s.performanceYear.map(_.toString)
     protected override def mainTerm(t: Song) = t.title
     override def secondaryTerms(t: Song) =
-      Set(t.artistName, t.albumName, t.year.toString) ++ classicalMusicTerms(t)
+      View(t.artistName, t.albumName, t.year.toString) ++ classicalMusicTerms(t)
     override def sortBy(s: Song): Product =
       (s.artistName, s.title, s.year, s.performanceYear, s.albumName, s.trackNumber)
   }
   implicit object AlbumIndex extends WeightedIndexable[AlbumDir] {
     protected override def mainTerm(t: AlbumDir) = t.title
     protected override def secondaryTerms(t: AlbumDir) =
-      t.songs.flatMap(SongIndexer.secondaryTerms).toSet
+      t.songs.view.flatMap(SongIndexer.secondaryTerms)
     override def sortBy(a: AlbumDir): Product = (a.artistName, a.year, a.title)
   }
   implicit object ArtistIndex extends WeightedIndexable[ArtistDir] {
