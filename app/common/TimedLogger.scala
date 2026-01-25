@@ -21,4 +21,16 @@ class TimedLogger @Inject() {
         throw e
     }
   }
+
+  def async(task: String, level: Level = Level.Trace): CompletionObserver =
+    async(task, scribe.log(level, MDC.instance, _))
+  def async(task: String, logger: String => Unit): CompletionObserver = {
+    val start = System.currentTimeMillis
+    logger(s"starts $task")
+    CompletionObserver(
+      onCompleted = () => logger(s"$task took ${System.currentTimeMillis - start} ms"),
+      onError =
+        e => logger(s"$task FAILED after ${System.currentTimeMillis - start} ms: ${e.getMessage}"),
+    )
+  }
 }
