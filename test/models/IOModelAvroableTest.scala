@@ -13,7 +13,7 @@ import scala.concurrent.duration.Duration
 import common.AvroableSpecs
 import common.io.{IODirectory, IOFile, IOPathRefFactory}
 import common.io.avro.ModelAvroable
-import common.rich.path.TempDirectory
+import common.rich.path.ref.io.TempDirectory
 
 @Slow
 class IOModelAvroableTest extends AvroableSpecs with OneInstancePerTest {

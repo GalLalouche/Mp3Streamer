@@ -120,7 +120,7 @@ class IODirectory private (val dir: Directory) extends IOPath(dir.dir) with Dire
     case _ => false
   }
 
-  override def hashCode(): Int = dir.hashCode()
+  override def hashCode(): Int = dir.hashCode
   override def toString = s"IODirectory($dir)"
   override def clear(): IODirectory = {
     dir.clear()

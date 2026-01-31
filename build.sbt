@@ -70,7 +70,7 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "alleycats-core" % catsVersion,
   "org.typelevel" %% "cats-core" % catsVersion,
   "org.xerial" % "sqlite-jdbc" % "3.49.0.0",
-  ("org.me" %% "scalacommon" % "2.0").changing(),
+  ("org.me" %% "scalacommon" % "2.1").changing(),
   // Test stuff
   "org.scalatest" %% "scalatest" % "3.2.19" % Test,
   "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % Test,
@@ -79,6 +79,7 @@ libraryDependencies ++= Seq(
   "com.softwaremill.sttp.client3" %% "play2-json" % "3.10.3" % Test,
   "org.mockito" % "mockito-core" % "5.15.2" % Test,
   "org.scalacheck" %% "scalacheck" % "1.18.1" % Test,
+  ("org.me" %% "scalacommon-test" % "2.1" % Test).changing(),
 
   // http4s stuff
   "org.http4s" %% "http4s-ember-client" % http4sVersion,

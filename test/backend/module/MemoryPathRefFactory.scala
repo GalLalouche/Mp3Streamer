@@ -1,7 +1,8 @@
 package backend.module
 
 import com.google.inject.Inject
-import common.io.{MemoryDir, MemoryFile, MemoryPath, MemoryRoot, PathRefFactory}
+
+import common.io._
 import common.rich.primitives.RichOption.richOption
 
 private class MemoryPathRefFactory @Inject() (root: MemoryRoot) extends PathRefFactory {
@@ -48,7 +49,7 @@ private class MemoryPathRefFactory @Inject() (root: MemoryRoot) extends PathRefF
   }
 }
 
-object MemoryPathRefFactory {
+private object MemoryPathRefFactory {
   private val RootRegexStr = """root\((\d+)\)/"""
   private val PathRegex = s"$RootRegexStr/(.*)".r
   private val RootRegex = RootRegexStr.r

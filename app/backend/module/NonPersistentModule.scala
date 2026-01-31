@@ -10,7 +10,7 @@ import slick.jdbc.{H2Profile, JdbcProfile}
 import scala.concurrent.ExecutionContext
 
 import common.io.{DirectoryRef, IODirectory, RootDirectory}
-import common.rich.path.TempDirectory
+import common.rich.path.ref.io.TempDirectory
 
 object NonPersistentModule extends ScalaModule {
   override def configure(): Unit = {

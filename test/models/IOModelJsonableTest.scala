@@ -2,7 +2,7 @@ package models
 
 import common.JsonableSpecs
 import common.io.{IODirectory, IOFile, IOPathRefFactory}
-import common.rich.path.TempDirectory
+import common.rich.path.ref.io.TempDirectory
 import java.io.File
 import java.util.concurrent.TimeUnit
 import org.scalacheck.Arbitrary.arbitrary
