@@ -2,7 +2,7 @@ package song_encoder
 
 import com.google.inject.ImplementedBy
 
-import common.io.FileRef
+import common.path.ref.FileRef
 
 @ImplementedBy(classOf[DbPowerampCodec])
 private trait SongEncoder {

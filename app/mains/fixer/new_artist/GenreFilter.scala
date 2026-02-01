@@ -5,7 +5,7 @@ import java.awt.Dimension
 import mains.SwingUtils._
 import rx.lang.scala.{Observable, Subject}
 
-import scala.swing.{BoxPanel, Label, Orientation, Panel, TextField}
+import scala.swing._
 import scala.swing.event.{Key, KeyReleased, ValueChanged}
 
 import common.rich.RichT.richT

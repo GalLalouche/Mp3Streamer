@@ -8,13 +8,13 @@ import song_encoder.DbPowerampCodec.{quote, ConverterFile, DevNull}
 import scala.sys.process.{Process, ProcessLogger}
 
 import common.TimedLogger
-import common.io.{FileRef, IOFile}
-import common.rich.path.RichFile._
+import common.path.ref.FileRef
+import common.path.ref.io.IOFile
 
 private class DbPowerampCodec @Inject() (timed: TimedLogger) extends SongEncoder {
   override def encode(srcFile: FileRef, dstFile: FileRef): Unit = {
     val args = Vector(
-      ConverterFile.path,
+      ConverterFile.getPath,
       "-infile=" + quote(srcFile.path),
       "-outfile=" + quote(dstFile.path),
       "-convert_to=" + quote("mp3 (lame)"),
@@ -25,7 +25,7 @@ private class DbPowerampCodec @Inject() (timed: TimedLogger) extends SongEncoder
       if (Process(args) !< DevNull != 0)
         throw new IOException("DbPowerAmp failed to convert file")
     }
-    TagCopier(srcFile.asInstanceOf[IOFile].file, dstFile.asInstanceOf[IOFile].file)
+    TagCopier(srcFile.asInstanceOf[IOFile], dstFile.asInstanceOf[IOFile])
   }
 }
 

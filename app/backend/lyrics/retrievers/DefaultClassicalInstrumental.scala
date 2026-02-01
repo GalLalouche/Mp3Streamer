@@ -3,7 +3,7 @@ package backend.lyrics.retrievers
 import scala.annotation.tailrec
 import scala.concurrent.Future
 
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 
 private object DefaultClassicalInstrumental extends ActiveRetriever {
   @tailrec private def isInstrumental(f: DirectoryRef): Boolean =

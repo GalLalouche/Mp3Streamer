@@ -4,7 +4,7 @@ import java.io.File
 
 import scala.concurrent.duration.Duration
 
-import common.io.IOFile
+import common.path.ref.io.IOFile
 
 case class IOSong(
     file: IOFile,

@@ -1,11 +1,13 @@
 package backend
 
 import backend.module.TestModuleConfiguration
-import common.storage.Storage
-import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
 import org.scalatest.AsyncTestSuite
 import org.scalatest.tags.Slow
+
 import scala.concurrent.Future
+
+import common.storage.Storage
+import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
 
 @Slow
 trait StorageSetup extends AsyncAuxSpecs with BeforeAndAfterEachAsync { self: AsyncTestSuite =>

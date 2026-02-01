@@ -4,8 +4,9 @@ import models.{AlbumDir, MemorySong}
 
 import scala.collection.mutable
 
-import common.io.{FileRef, MemoryDir, MemoryFile, MemorySystem}
 import common.rich.RichT._
+import common.path.ref.FileRef
+import common.test.memory_ref.{MemoryDir, MemoryFile, MemorySystem}
 
 private class FakeMusicFilesImpl(
     _baseDir: MemoryDir,
@@ -30,7 +31,7 @@ private class FakeMusicFilesImpl(
   def copySong(path: Seq[String], s: MemorySong): MemorySong =
     copy(s, path.foldLeft(dirToAddSongsTo)(_ addSubDir _).addFile(s.file.name))
   def copyAlbum(albumDir: AlbumDir): AlbumDir =
-    albumDir.copy(dir = dirToAddSongsTo.addSubDir(albumDir.dir.name, albumDir.dir.lastModified))
+    albumDir.copy(dir = dirToAddSongsTo.addSubDir(albumDir.dir.name, albumDir.dir.lastModifiedTime))
   override def apply(f: FileRef): MemorySong = pathToSongs(f.path)
 }
 object FakeMusicFilesImpl {

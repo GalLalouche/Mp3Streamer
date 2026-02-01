@@ -5,7 +5,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.Suite
 
-import common.rich.path.RichFile._
+import common.rich.RichFile._
 import common.rich.primitives.RichOption.richOption
 import common.test.AuxSpecs
 

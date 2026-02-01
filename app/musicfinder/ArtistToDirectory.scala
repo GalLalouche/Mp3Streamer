@@ -4,9 +4,9 @@ import backend.recon.Artist
 import models.ArtistDir
 import play.api.libs.json.{JsArray, JsString, JsValue}
 
-import common.io.{DirectoryRef, PathRefFactory}
 import common.json.Jsonable
 import common.json.ToJsonableOps.jsonifyArray
+import common.path.ref.{DirectoryRef, PathRefFactory}
 
 // Much faster to parse and jsonify than ArtistDir.
 private case class ArtistToDirectory(artist: Artist, dir: DirectoryRef)

@@ -1,6 +1,6 @@
 package models
 
-import common.io.FileRef
+import common.path.ref.FileRef
 
 trait SongTagParser {
   def apply(file: FileRef): Song

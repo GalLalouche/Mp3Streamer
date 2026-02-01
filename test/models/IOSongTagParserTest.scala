@@ -1,12 +1,16 @@
 package models
 
+import java.io.File
+
 import better.files.FileExtensions
-import common.test.{AuxSpecs, DirectorySpecs}
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
-import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.OptionValues.convertOptionToValuable
+import org.scalatest.freespec.AnyFreeSpec
+
 import scala.concurrent.duration.DurationInt
+
+import common.test.{AuxSpecs, DirectorySpecs}
 
 class IOSongTagParserTest extends AnyFreeSpec with AuxSpecs with DirectorySpecs {
   private def getSong(location: String) = getResourceFile(location)
@@ -34,7 +38,8 @@ class IOSongTagParserTest extends AnyFreeSpec with AuxSpecs with DirectorySpecs 
       "parse year from directory if no year tag" in {
         val existingFile = getResourceFile("song.mp3")
         val dir = tempDir.addSubDir("2020 foo bar")
-        val copiedFile = existingFile.toScala.copyTo(dir.\(existingFile.getName).toScala).toJava
+        val copiedFile =
+          existingFile.toScala.copyTo(new File(dir, existingFile.getName).toScala).toJava
 
         val audioFile = AudioFileIO.read(copiedFile)
         val tag = audioFile.getTag

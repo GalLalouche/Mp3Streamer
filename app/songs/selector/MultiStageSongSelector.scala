@@ -11,7 +11,7 @@ import monocle.Monocle.toApplySetterOps
 import monocle.Setter
 
 import common.{Filter, TimedLogger}
-import common.io.RefSystem
+import common.path.ref.RefSystem
 import common.rich.RichRandomSpecVer.richRandomSpecVer
 import common.rich.primitives.RichBoolean.richBoolean
 

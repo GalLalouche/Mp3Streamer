@@ -8,19 +8,17 @@ import mains.SwingUtils._
 
 import scala.swing.{BoxPanel, Label, Orientation}
 
+import common.path.ref.io.IODirectory
 import common.rich.RichT._
-import common.rich.path.Directory
 
 private class GenreBox(
-    val directory: Directory,
+    val directory: IODirectory,
     orientation: Orientation.Value,
     fontSize: Option[Int],
     iconSideInPixels: Int,
 ) extends BoxPanel(orientation) {
-  private val folderImage: File = directory
-    .\("folder.jpg")
-    .optFilter(_.exists)
-    .getOrElse(directory / "folder.png")
+  private val folderImage: File =
+    directory.getSubPath("folder.jpg").filter(_.exists).getOrElse(directory / "folder.png").asFile
   private val image = ImageIO
     .read(folderImage)
     .toSquareImageIcon(iconSideInPixels)

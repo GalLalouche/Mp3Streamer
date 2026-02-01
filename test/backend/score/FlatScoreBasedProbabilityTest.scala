@@ -12,12 +12,12 @@ import scala.util.Random
 
 import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
-import common.io.FileRef
 import common.rich.RichEnumeratum.richEnumeratum
 import common.rich.RichRandom.richRandom
 import common.rich.RichRandomSpecVer.richRandomSpecVer
 import common.rich.RichT.lazyT
 import common.rich.collections.RichTraversableOnce._
+import common.path.ref.FileRef
 import common.test.AuxSpecs
 
 @Slow

@@ -14,9 +14,11 @@ import scala.concurrent.Future
 import cats.implicits.catsSyntaxFlatMapOps
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
-import common.io.{DirectoryRef, MemoryRoot, RootDirectory}
+import common.io.RootDirectory
 import common.json.RichJson.ImmutableJsonArray
 import common.json.ToJsonableOps.jsonifySingle
+import common.path.ref.DirectoryRef
+import common.test.memory_ref.MemoryRoot
 
 private class PlaylistTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)

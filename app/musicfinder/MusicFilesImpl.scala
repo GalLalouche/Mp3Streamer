@@ -1,8 +1,10 @@
 package musicfinder
 
+import java.nio.file.attribute.BasicFileAttributes
+
 import rx.lang.scala.Observable
 
-import common.io.{DirectoryRef, RefSystem}
+import common.path.ref.{DirectoryRef, RefSystem}
 import common.rich.collections.RichIterable
 
 private abstract class MusicFilesImpl[S <: RefSystem.Aux[S]](
@@ -29,13 +31,16 @@ private abstract class MusicFilesImpl[S <: RefSystem.Aux[S]](
   }
 
   protected def genreDirs: Seq[S#D] = allGenres.sorted.map(getDir)
-  override def albumDirs: Observable[S#D] = albumDirs(Observable.from(genreDirs))
-  override def albumDirs(startingFrom: Observable[DirectoryRef]): Observable[S#D] =
+  override def albumDirsWithAttributes: Observable[(S#D, BasicFileAttributes)] =
+    albumDirsWithAttributes(Observable.from(genreDirs))
+  override def albumDirsWithAttributes(
+      startingFrom: Observable[DirectoryRef],
+  ): Observable[(S#D, BasicFileAttributes)] =
     startingFrom
-      .asInstanceOf[Observable[S#D]]
       .flatMap(_.deepDirsObservable)
+      .asInstanceOf[Observable[(S#D, BasicFileAttributes)]]
       // Because some albums have, e.g., cover subdirectories
-      .filter(sff.hasSongFiles)
+      .filter(sff hasSongFiles _._1)
   override def getSongFiles: Observable[S#F] =
     albumDirs.flatMapIterable(d => RichIterable.from(() => getSongFilesInDir(d)))
   private def getSongFilesInDir(d: DirectoryRef): Iterator[S#F] =

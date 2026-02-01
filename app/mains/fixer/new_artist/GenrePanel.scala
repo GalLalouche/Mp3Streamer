@@ -13,10 +13,10 @@ import cats.data.State
 import cats.implicits.{catsSyntaxFlatMapOps, toFunctorOps, toTraverseOps}
 import common.rich.func.kats.RichState.richState
 
+import common.path.ref.io.IODirectory
 import common.rich.RichT.lazyT
 import common.rich.RichTuple.richSameTuple2
 import common.rich.collections.RichTraversableOnce._
-import common.rich.path.Directory
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichInt.Rich
 
@@ -26,10 +26,10 @@ private[fixer] class GenrePanel private (
     iconSideInPixels: Int,
     bigIconMultiplayer: Int,
 ) extends GridBagPanel {
-  private val clickSubject = Subject[Directory]()
-  def clicks: Observable[Directory] = clickSubject
+  private val clickSubject = Subject[IODirectory]()
+  def clicks: Observable[IODirectory] = clickSubject
 
-  private def addSubGenres(dirs: Seq[Directory]): UpdatingColumns[Unit] = dirs
+  private def addSubGenres(dirs: Seq[IODirectory]): UpdatingColumns[Unit] = dirs
     .sortBy(_.name)
     .zipWithIndex
     .traverse { case (dir, index) =>
@@ -42,7 +42,7 @@ private[fixer] class GenrePanel private (
     }
     .>>(State.modify(_ + dirs.length.ceilDiv(maxRows)))
 
-  private def addBigSizeIcon(dir: Directory): UpdatingColumns[Unit] =
+  private def addBigSizeIcon(dir: IODirectory): UpdatingColumns[Unit] =
     dynamicConstraint(
       relativeGenreIndex = 0,
       width = bigIconMultiplayer,
@@ -141,7 +141,7 @@ private[fixer] class GenrePanel private (
   }
 
   private def genreBox(
-      d: Directory,
+      d: IODirectory,
       orientation: Orientation.Value,
       sideMultiplayer: Int,
       fontSize: Option[Int],
@@ -182,8 +182,8 @@ object GenrePanel {
       maxRows: Int,
       iconSideInPixels: Int,
       bigIconMultiplayer: Int,
-      subGenreDirs: Seq[Seq[Directory]],
-      bigGenreDirs: Seq[Directory],
+      subGenreDirs: Seq[Seq[IODirectory]],
+      bigGenreDirs: Seq[IODirectory],
   ): GenrePanel = {
     val $ = new GenrePanel(
       maxRows = maxRows,

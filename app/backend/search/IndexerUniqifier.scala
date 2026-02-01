@@ -14,7 +14,7 @@ import cats.implicits.toTraverseOps
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.concurrency.SimpleActor
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 import common.rich.RichFuture.richFutureBlocking
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce

@@ -10,8 +10,8 @@ import scala.concurrent.{Future, Promise}
 import scala.swing.Frame
 import scala.swing.event.WindowClosing
 
-import common.io.{BaseDirectory, IODirectory}
-import common.rich.path.Directory
+import common.io.BaseDirectory
+import common.path.ref.io.IODirectory
 import common.rich.primitives.RichOption.richOption
 
 /**
@@ -29,13 +29,13 @@ import common.rich.primitives.RichOption.richOption
  * }}}
  */
 private class NewArtistFolderCreator @Inject() (@BaseDirectory baseDir: IODirectory) {
-  def selectGenreDirAndPopupBrowser(name: ArtistName): Future[Directory] = {
+  def selectGenreDirAndPopupBrowser(name: ArtistName): Future[IODirectory] = {
     BrowserUtils.searchForLucky(name + " rateyourmusic")
     selectGenreDir(name)
   }
-  def selectGenreDir(name: ArtistName): Future[Directory] = {
-    def genre(dirName: String): Directory =
-      baseDir.getDir(dirName).getOrThrow(s"Could not find genre dir <$dirName>").dir
+  def selectGenreDir(name: ArtistName): Future[IODirectory] = {
+    def genre(dirName: String): IODirectory =
+      baseDir.getDir(dirName).getOrThrow(s"Could not find genre dir <$dirName>")
     val panel = GenrePanel(
       maxRows = MaxRows,
       iconSideInPixels = IconSideInPixels,
@@ -45,7 +45,7 @@ private class NewArtistFolderCreator @Inject() (@BaseDirectory baseDir: IODirect
       bigGenreDirs = Vector("Blues", "Jazz", "New Age", "Musicals").map(genre),
     )
 
-    val $ = Promise[Directory]()
+    val $ = Promise[IODirectory]()
     val frame = new Frame {
       reactions += { case _: WindowClosing => $.failure(new Exception("User closed the window")) }
     }

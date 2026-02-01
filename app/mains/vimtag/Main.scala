@@ -11,7 +11,7 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import scala.concurrent.ExecutionContext
 import scala.io.StdIn
 
-import common.io.IODirectory
+import common.path.ref.io.IODirectory
 import common.rich.RichFuture._
 import common.rich.collections.RichTraversableOnce._
 

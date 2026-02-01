@@ -4,7 +4,7 @@ import com.google.inject.Inject
 import musicfinder.MusicFiles
 import rx.lang.scala.Observable
 
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 
 private class DirectoryDiscovery @Inject() (mf: MusicFiles) extends IgnoredArtists {
   private val IgnoredFolders = Vector("Classical", "Musicals")

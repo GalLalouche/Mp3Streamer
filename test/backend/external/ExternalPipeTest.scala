@@ -5,12 +5,15 @@ import backend.external.expansions.ExternalLinkExpander
 import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.{LinkRetriever, LinkRetrievers}
 import backend.recon.{Album, ReconID}
-import cats.data.OptionT
-import common.rich.RichT._
-import common.test.AuxSpecs
 import io.lemonlabs.uri.Url
 import org.scalatest.freespec.AsyncFreeSpec
+
 import scala.concurrent.Future
+
+import cats.data.OptionT
+
+import common.rich.RichT._
+import common.test.AuxSpecs
 
 class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
   private val existingHost: Host = Host("existinghost", Url.parse("existinghosturl"))

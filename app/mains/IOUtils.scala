@@ -7,7 +7,8 @@ import org.jline.utils.Levenshtein
 
 import scala.sys.process.Process
 
-import common.io.{DirectoryRef, IODirectory, PathRef}
+import common.path.ref.{DirectoryRef, PathRef}
+import common.path.ref.io.IODirectory
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichString._
 
@@ -31,7 +32,7 @@ private object IOUtils {
 
   @VisibleForTesting
   private[mains] def decode(parent: DirectoryRef, fileName: String): PathRef =
-    parent.getFile(fileName).getOrElse {
+    parent.getSubPath(fileName).getOrElse {
       if (fileName.contains('?')) {
         require(
           parent.path.contains('?').isFalse,

@@ -1,13 +1,15 @@
 package mains.fixer
 
 import backend.module.TestModuleConfiguration
-import common.test.AuxSpecs
 import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.{FieldKey, Tag}
 import org.scalatest.freespec.AnyFreeSpec
+
 import scala.jdk.CollectionConverters._
+
+import common.test.AuxSpecs
 
 class FixLabelsUtilsTest extends AnyFreeSpec with AuxSpecs {
   private val $ = new TestModuleConfiguration().injector.instance[FixLabelsUtils]

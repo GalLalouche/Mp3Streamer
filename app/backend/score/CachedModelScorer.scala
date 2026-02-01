@@ -13,7 +13,7 @@ import scala.util.{Failure, Success, Try}
 import cats.Id
 import common.rich.func.kats.ToTransableOps.toHoistIdOps
 
-import common.io.FileRef
+import common.path.ref.FileRef
 import common.rich.RichFuture.richFutureBlocking
 import common.rich.RichT.richT
 import common.rich.primitives.RichBoolean.richBoolean

@@ -6,7 +6,8 @@ import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalacheck.Arbitrary
 
 import common.JsonableSpecs
-import common.io.{MemoryRoot, PathRefFactory}
+import common.path.ref.PathRefFactory
+import common.test.memory_ref.MemoryRoot
 
 private class ArtistToDirectoryTest extends JsonableSpecs {
   private val injector = TestModuleConfiguration().injector

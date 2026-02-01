@@ -1,12 +1,16 @@
 package server
 
-import com.google.inject.Module
-import common.io.{BaseDirectory, DirectoryRef, IODirectory}
-import common.rich.path.RichFile.richFile
 import java.io.File
+
+import com.google.inject.Module
 import net.codingwell.scalaguice.ScalaModule
 import org.scalatest.BeforeAndAfterEach
 import sttp.client3.UriContext
+
+import common.io.BaseDirectory
+import common.rich.RichFile.richFile
+import common.path.ref.DirectoryRef
+import common.path.ref.io.IODirectory
 
 private class StreamTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)

@@ -5,9 +5,9 @@ import org.scalatest.Suite
 import org.scalatest.propspec.AnyPropSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-import common.io.MemoryRoot
 import common.io.avro.Avroable
 import common.test.AuxSpecs
+import common.test.memory_ref.MemoryRoot
 
 trait AvroableSpecs extends AnyPropSpec with ScalaCheckDrivenPropertyChecks with AuxSpecs {
   self: Suite =>

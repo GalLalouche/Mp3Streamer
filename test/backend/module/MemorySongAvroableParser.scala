@@ -10,8 +10,9 @@ import scala.concurrent.duration.Duration
 
 import common.io.avro.ModelAvroable.SongParser
 import common.io.avro.RichAvro.richGenericRecord
+import common.test.memory_ref.MemoryRefFactory
 
-private class MemorySongAvroableParser @Inject() (pathFactory: MemoryPathRefFactory)
+private class MemorySongAvroableParser @Inject() (pathFactory: MemoryRefFactory)
     extends SongParser {
   override def parse(r: GenericRecord): MemorySong = MemorySong(
     file = pathFactory.parseFilePath(r.getString("file")),

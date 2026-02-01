@@ -9,7 +9,7 @@ import scala.annotation.tailrec
 import scala.util.Random
 
 import common.TimedLogger
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 import common.rich.RichRandomSpecVer.richRandomSpecVer
 
 /**

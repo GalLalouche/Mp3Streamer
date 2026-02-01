@@ -9,19 +9,19 @@ import org.jaudiotagger.tag.FieldKey
 
 import scala.jdk.CollectionConverters._
 
-import common.io.IODirectory
+import common.path.PathUtils
+import common.path.ref.io.IODirectory
+import common.rich.RichFile._
 import common.rich.collections.RichIterable._
 import common.rich.collections.RichTraversableOnce._
-import common.rich.path.{Directory, RichFileUtils}
-import common.rich.path.RichFile._
 
 // Splits cue file and fixes the flac output.
 private class FlacSplitter @Inject() (cueSplitter: CueSplitter, sff: IOSongFileFinder) {
-  private def clean(output: Directory, destination: Directory, bigFlac: File): Unit = {
+  private def clean(output: IODirectory, destination: IODirectory, bigFlac: File): Unit = {
     println("Moving flac files to parent dir")
     output.files.find(_.name == "00. (HTOA).flac").foreach(_.delete())
     output.files.find(_.name == "garbage.cue").foreach(_.delete())
-    output.files.filter(_.extension == "flac").foreach(f => RichFileUtils.move(f, destination))
+    output.files.filter(_.extension == "flac").foreach(f => PathUtils.move(f, destination))
     println("Deleting convert dir")
     output.deleteAll()
 
@@ -33,8 +33,8 @@ private class FlacSplitter @Inject() (cueSplitter: CueSplitter, sff: IOSongFileF
       .asScala
       .headOption
       .foreach(year =>
-        sff.getSongFilesInDir(IODirectory(destination)).foreach { f =>
-          val audioFile = AudioFileIO.read(f.file)
+        sff.getSongFilesInDir(destination).foreach { f =>
+          val audioFile = AudioFileIO.read(f)
           if (audioFile.getTag.getFields(FieldKey.YEAR).isEmpty) {
             println("Fixing year on " + f.name)
             audioFile.getTag.setField(year)

@@ -6,7 +6,7 @@ import com.google.inject.Inject
 import musicfinder.SongDirectoryParser
 
 import common.Percentage
-import common.io.IODirectory
+import common.path.ref.io.IODirectory
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class ScoreSummarizer @Inject() (

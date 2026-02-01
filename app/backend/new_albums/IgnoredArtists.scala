@@ -2,7 +2,7 @@ package backend.new_albums
 
 import com.google.inject.ImplementedBy
 
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 
 @ImplementedBy(classOf[DirectoryDiscovery])
 trait IgnoredArtists {

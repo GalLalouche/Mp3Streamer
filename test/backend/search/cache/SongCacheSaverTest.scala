@@ -8,9 +8,9 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.mockito.MockitoSugar
 
 import common.AvroableSaver
-import common.io.MemoryRoot
 import common.io.avro.ModelAvroable
 import common.test.{AuxSpecs, MoreMockitoSugar}
+import common.test.memory_ref.MemoryRoot
 
 class SongCacheSaverTest extends AnyFreeSpec with AuxSpecs with MockitoSugar with MoreMockitoSugar {
   "saves and updates index" in {

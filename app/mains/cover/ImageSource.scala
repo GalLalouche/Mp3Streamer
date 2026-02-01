@@ -5,7 +5,8 @@ import javax.imageio.ImageIO
 
 import io.lemonlabs.uri.Url
 
-import common.io.{FileRef, IOFile}
+import common.path.ref.FileRef
+import common.path.ref.io.IOFile
 
 private sealed trait ImageSource {
   def width: Int
@@ -23,5 +24,5 @@ private case class LocalSource(file: FileRef) extends ImageSource {
 }
 
 private object ImageSource {
-  def toImage(f: FileRef): BufferedImage = ImageIO.read(f.asInstanceOf[IOFile].file)
+  def toImage(f: FileRef): BufferedImage = ImageIO.read(f.asInstanceOf[IOFile])
 }

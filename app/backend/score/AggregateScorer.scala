@@ -2,7 +2,7 @@ package backend.score
 
 import backend.recon.Track
 
-import common.io.FileRef
+import common.path.ref.FileRef
 
 trait AggregateScorer {
   /**

@@ -8,7 +8,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import cats.implicits.toFunctorOps
 
 import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
-import common.io.FileRef
+import common.path.ref.FileRef
 import common.rich.RichFuture.richFutureBlocking
 
 @Singleton private class CachedModelScorerState @Inject() (

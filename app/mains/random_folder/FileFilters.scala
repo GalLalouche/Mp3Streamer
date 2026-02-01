@@ -9,8 +9,8 @@ import genre.Genre.{Classical, Metal, NewAge}
 import play.api.libs.json.Json
 
 import common.Filter
-import common.io.{IODirectory, IOFile}
 import common.json.RichJson.DynamicJson
+import common.path.ref.io.{IODirectory, IOFile}
 import common.rich.RichT.lazyT
 import common.rich.collections.RichSet.richSet
 
@@ -19,12 +19,12 @@ private object FileFilters {
       g: PartialFunction[Genre, Boolean],
   ): Boolean = g.applyOrElse(genreFinder(IODirectory(f.getParent)), true.const)
   class SansMetal @Inject() (genreFinder: GenreFinder) extends Filter[IOFile] {
-    override def passes(f: IOFile): Boolean = removeGenres(genreFinder, f.file) { case Metal(_) =>
+    override def passes(f: IOFile): Boolean = removeGenres(genreFinder, f) { case Metal(_) =>
       false
     }
   }
   class PartyDude @Inject() (genreFinder: GenreFinder) extends Filter[IOFile] {
-    override def passes(f: IOFile): Boolean = removeGenres(genreFinder, f.file) {
+    override def passes(f: IOFile): Boolean = removeGenres(genreFinder, f) {
       case Metal(_) => false
       case Classical | NewAge => false
     }

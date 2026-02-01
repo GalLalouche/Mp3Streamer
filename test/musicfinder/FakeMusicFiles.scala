@@ -2,7 +2,7 @@ package musicfinder
 
 import models.{AlbumDir, MemorySong, SongTagParser}
 
-import common.io.FileRef
+import common.path.ref.FileRef
 
 trait FakeMusicFiles extends MusicFiles with SongTagParser {
   def copySong(s: MemorySong): MemorySong

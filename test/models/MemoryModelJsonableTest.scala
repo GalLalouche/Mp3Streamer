@@ -3,7 +3,7 @@ package models
 import backend.module.TestModuleConfiguration
 import com.google.inject.Injector
 import common.JsonableSpecs
-import common.io.MemoryRoot
+import common.test.memory_ref.MemoryRoot
 import models.ArbitraryModels._
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.OneInstancePerTest

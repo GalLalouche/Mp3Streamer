@@ -4,7 +4,7 @@ import java.io.File
 
 import scala.sys.process.Process
 
-import common.rich.path.RichFile._
+import common.rich.RichFile._
 
 private object Mp3SpltSplitter extends CueSplitter {
   private val Mp3SpltPath = new File("""C:\Program Files (x86)\mp3splt""")
@@ -18,7 +18,7 @@ private object Mp3SpltSplitter extends CueSplitter {
         cueFile.getAbsolutePath,
         "-d",
         output.path,
-        flacFile.path,
+        flacFile.getPath,
       ),
       Mp3SpltPath,
     ).!

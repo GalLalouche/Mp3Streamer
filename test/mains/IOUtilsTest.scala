@@ -1,7 +1,7 @@
 package mains
 
-import common.io.MemoryRoot
 import common.test.AuxSpecs
+import common.test.memory_ref.MemoryRoot
 import org.scalatest.freespec.AnyFreeSpec
 
 class IOUtilsTest extends AnyFreeSpec with AuxSpecs {

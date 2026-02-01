@@ -11,8 +11,9 @@ import scala.util.{Try, Using}
 
 import common.rich.func.kats.ToMoreFoldableOps.EitherFoldableOps
 
-import common.io.{DirectoryRef, RootDirectory}
+import common.io.RootDirectory
 import common.io.avro.{Avroable, AvroReadable}
+import common.path.ref.DirectoryRef
 import common.rich.primitives.RichString._
 
 class AvroableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {

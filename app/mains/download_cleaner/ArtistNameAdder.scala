@@ -10,10 +10,10 @@ import models.SongTagParser
 import musicfinder.{ArtistNameNormalizer, IOSongFileFinder}
 import org.apache.commons.lang3.Strings
 
-import common.io.IODirectory
+import common.path.PathUtils
+import common.path.ref.io.IODirectory
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
-import common.rich.path.RichFileUtils
 import common.rich.primitives.RichBoolean.richBoolean
 
 /** Adds the artist name to the folder if it doesn't contain it already. */
@@ -27,7 +27,7 @@ private class ArtistNameAdder @Inject() (
     val song = OptionalSongTagParser(getSongFile(dir))
     val yearOption: Option[Int] = song.year
     val artistName = artistNameNormalizer(song.artistName.get)
-    val originalTime = FileTime.fromMillis(dir.dir.lastModified)
+    val originalTime = FileTime.fromMillis(dir.lastModified())
     val dirName = dir.name
     val needsArtist = Strings.CI.contains(dirName, artistName).isFalse
     lazy val year = yearOption.get.toString
@@ -41,7 +41,7 @@ private class ArtistNameAdder @Inject() (
     assert(newName.contains("Some(").isFalse)
     assert(newName != dirName)
     println(s"Renaming <$dirName> to <$newName>")
-    RichFileUtils.rename(dir.dir, newName).toPath.<|(Files.setLastModifiedTime(_, originalTime))
+    PathUtils.rename(dir, newName).toPath.<|(Files.setLastModifiedTime(_, originalTime))
   } catch {
     case e: Exception => println(s"Error in <$dir>: ${e.getMessage}")
   }
@@ -54,10 +54,10 @@ private class ArtistNameAdder @Inject() (
         nestedFiles.nonEmpty &&
         nestedFiles.hasSameValues(songTagParser(_).toTuple(_.artistName, _.albumName))
       )
-        nestedFiles.head.file
+        nestedFiles.head
       else
         throw new NoSuchElementException(s"Could not extract a song from '$dir'")
     } else
-      songFiles.next().file
+      songFiles.next()
   }
 }

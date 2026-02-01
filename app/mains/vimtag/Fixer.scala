@@ -14,11 +14,11 @@ import org.jaudiotagger.tag.id3.ID3v24Tag
 
 import common.TagUtils._
 import common.guice.RichModule.richModule
-import common.io.{DirectoryRef, IODirectory}
+import common.path.PathUtils
+import common.path.ref.DirectoryRef
+import common.path.ref.io.IODirectory
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce._
-import common.rich.path.RichFile._
-import common.rich.path.RichFileUtils
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichInt._
 
@@ -41,7 +41,7 @@ private object Fixer {
         }
     }))
     for ((individual, index) <- parsedId3.songId3s.zipWithIndex) {
-      val file = ioDir.getFile(individual.relativeFileName).get.file
+      val file = ioDir.getFile(individual.relativeFileName).get
       val audioFile = AudioFileIO.read(file)
       val existingTag = audioFile.getTag
       val newTag = {
@@ -79,17 +79,19 @@ private object Fixer {
       audioFile.commit()
       // FolderFixer renames files anyway
       if (fixFolder.isFalse && replaceExisting.isFalse && renameFiles)
-        RichFileUtils.rename(
+        PathUtils.rename(
           file,
-          injector.instance[FixLabelsUtils].newFileName(IOSongTagParser.apply(file), file.extension),
+          injector
+            .instance[FixLabelsUtils]
+            .newFileName(IOSongTagParser.apply(file.asFile), file.extension),
         )
-      else if (file.parent != ioDir.dir)
-        RichFileUtils.move(file, ioDir.dir)
+      else if (file.parent != ioDir)
+        PathUtils.move(file, ioDir)
     }
-    ioDir.dir.dirs.filter(_.deepPaths.isEmpty).foreach(_.dir.delete())
+    ioDir.dirs.filter(_.deepPaths.isEmpty).foreach(_.delete())
     if (replaceExisting)
-      injector.instance[FolderFixer].replace(ioDir.dir)
+      injector.instance[FolderFixer].replace(ioDir)
     else if (fixFolder)
-      injector.instance[FolderFixer].run(ioDir.dir)
+      injector.instance[FolderFixer].run(ioDir)
   }
 }

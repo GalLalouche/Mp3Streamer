@@ -11,15 +11,16 @@ import scala.concurrent.duration.Duration
 import scala.util.Try
 
 import common.TagUtils.richTag
-import common.io.{FileRef, IOFile}
+import common.path.ref.FileRef
+import common.path.ref.io.IOFile
+import common.rich.RichFile._
 import common.rich.RichT._
 import common.rich.collections.RichIterator._
 import common.rich.collections.RichTraversableOnce._
-import common.rich.path.RichFile._
 import common.rich.primitives.RichOption._
 
 object IOSongTagParser extends SongTagParser {
-  override def apply(file: FileRef): Song = apply(file.asInstanceOf[IOFile].file)
+  override def apply(file: FileRef): Song = apply(file.asInstanceOf[IOFile].asFile)
   def apply(file: File): IOSong = apply(AudioFileIO.read(file))
   def apply(audioFile: AudioFile): IOSong = {
     val file = audioFile.getFile

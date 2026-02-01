@@ -17,8 +17,8 @@ import scala.concurrent.ExecutionContext
 import cats.implicits.{catsSyntaxFlatMapOps, toTraverseOps}
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
-import common.io.MemoryRoot
 import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
+import common.test.memory_ref.MemoryRoot
 
 @Slow
 class ScorerFormatterTest

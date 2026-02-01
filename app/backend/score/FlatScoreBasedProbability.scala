@@ -5,7 +5,7 @@ import com.google.inject.Singleton
 import models.Song
 
 import common.Percentage
-import common.io.FileRef
+import common.path.ref.FileRef
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichDouble.richDouble
 

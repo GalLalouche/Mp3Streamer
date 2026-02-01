@@ -10,7 +10,7 @@ import scala.sys.process.stringSeqToProcess
 import cats.syntax.flatMap.catsSyntaxFlatMapOps
 
 import common.VimLauncher.VimLocation
-import common.rich.path.RichFile.richFile
+import common.rich.RichFile.richFile
 
 /** Launches vim as an external application for editing files. */
 class VimLauncher @Inject() private (ec: ExecutionContext) {
@@ -33,7 +33,7 @@ class VimLauncher @Inject() private (ec: ExecutionContext) {
    * complete when the editor has been closed. Also useful if you want to hold the file later on.
    */
   def withFile(file: File, additionalCommandlineArgs: Seq[String]): Future[Seq[String]] = Future {
-    (VimLocation +: additionalCommandlineArgs :+ file.path).!!
+    (VimLocation +: additionalCommandlineArgs :+ file.getPath).!!
     file.lines.toVector
   }
 }

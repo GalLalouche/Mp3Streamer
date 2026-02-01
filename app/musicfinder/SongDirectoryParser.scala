@@ -3,7 +3,7 @@ package musicfinder
 import com.google.inject.Inject
 import models.{Song, SongTagParser}
 
-import common.io.{DirectoryRef, FileRef}
+import common.path.ref.{DirectoryRef, FileRef}
 
 class SongDirectoryParser @Inject() (sff: SongFileFinder, parser: SongTagParser)
     extends SongTagParser {

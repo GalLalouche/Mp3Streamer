@@ -8,10 +8,11 @@ import play.api.libs.json.{JsObject, Json}
 
 import scala.concurrent.duration.Duration
 
-import common.io.{IOFile, PathRefFactory}
 import common.json.OJsonable
 import common.json.RichJson._
 import common.json.ToJsonableOps._
+import common.path.ref.PathRefFactory
+import common.path.ref.io.IOFile
 
 class ModelJsonable @Inject() (
     songParser: SongParser,
@@ -48,7 +49,7 @@ class ModelJsonable @Inject() (
       "songs" -> a.songs.jsonify,
     )
     override def parse(json: JsObject): AlbumDir = AlbumDir(
-      pathRefParser.parseDirPath(json.str("dir")),
+      pathRefParser.parseDirPathUnsafe(json.str("dir")),
       title = json.str("title"),
       artistName = json.str("artistName"),
       year = json.int("year"),
@@ -62,7 +63,7 @@ class ModelJsonable @Inject() (
         Json.obj("dir" -> a.dir.path, "name" -> a.name, "albums" -> a.albums.jsonify)
       override def parse(json: JsObject): ArtistDir = {
         val albums: Seq[AlbumDir] = json.value("albums").parse[Seq[AlbumDir]]
-        ArtistDir(pathRefParser.parseDirPath(json.str("dir")), json.str("name"), albums.toSet)
+        ArtistDir(pathRefParser.parseDirPathUnsafe(json.str("dir")), json.str("name"), albums.toSet)
       }
     }
 }
@@ -72,7 +73,7 @@ object ModelJsonable {
   }
   object IOSongJsonParser extends SongParser {
     override def parse(json: JsObject): IOSong = IOSong(
-      file = IOFile(json.str("file")),
+      file = IOFile.unsafe(json.str("file")),
       title = json.str("title"),
       artistName = json.str("artistName"),
       albumName = json.str("albumName"),

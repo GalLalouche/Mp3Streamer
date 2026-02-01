@@ -1,7 +1,8 @@
 package models
 
-import common.io.MemoryFile
 import scala.concurrent.duration.Duration
+
+import common.test.memory_ref.MemoryFile
 
 case class MemorySong(
     file: MemoryFile,

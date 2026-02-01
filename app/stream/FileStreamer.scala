@@ -4,7 +4,7 @@ import java.net.HttpURLConnection
 
 import common.rich.func.kats.ToMoreFoldableOps._
 
-import common.io.FileRef
+import common.path.ref.FileRef
 import common.rich.primitives.RichString._
 
 private object FileStreamer {

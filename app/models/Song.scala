@@ -2,7 +2,7 @@ package models
 
 import scala.concurrent.duration.Duration
 
-import common.io.FileRef
+import common.path.ref.FileRef
 
 trait Song {
   def file: FileRef

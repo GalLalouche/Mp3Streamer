@@ -15,7 +15,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 import common.guice.RichModule.richModule
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 import common.test.AuxSpecs
 
 class SongSelectorTest

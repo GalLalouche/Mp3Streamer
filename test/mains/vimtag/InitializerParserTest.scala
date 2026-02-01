@@ -6,8 +6,9 @@ import musicfinder.{FakeMusicFilesImpl, FakeSongFileFinder}
 import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AnyFreeSpec
 
-import common.io.{DirectoryRef, MemoryRoot}
+import common.path.ref.DirectoryRef
 import common.test.AuxSpecs
+import common.test.memory_ref.MemoryRoot
 
 abstract class InitializerParserTest(ii: IndividualInitializer, ip: IndividualParser)
     extends AnyFreeSpec
