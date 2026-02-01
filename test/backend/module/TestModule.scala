@@ -13,8 +13,10 @@ import net.codingwell.scalaguice.ScalaModule
 import common.FakeClock
 import common.guice.ModuleUtils
 import common.guice.RichModule.richModule
-import common.io.{DirectoryRef, MemoryRoot, PathRefFactory, RootDirectory}
+import common.io.RootDirectory
 import common.io.avro.ModelAvroable
+import common.path.ref.{DirectoryRef, PathRefFactory}
+import common.test.memory_ref.{MemoryRefFactory, MemoryRoot}
 
 private object TestModule extends ScalaModule with ModuleUtils {
   LogManager.getLogManager.readConfiguration(getClass.getResourceAsStream("/logging.properties"))
@@ -23,7 +25,7 @@ private object TestModule extends ScalaModule with ModuleUtils {
     bind[DbProvider].toInstance(H2MemProvider.nextNew())
     bind[ModelJsonable.SongParser].to[MemorySongJsonableParser]
     bind[ModelAvroable.SongParser].to[MemorySongAvroableParser]
-    bind[PathRefFactory].to[MemoryPathRefFactory]
+    bind[PathRefFactory].to[MemoryRefFactory]
     bind[SongTagParser].to[FakeMusicFiles]
     requireBinding[MemoryRoot]
     requireBinding[FakeMusicFiles]
@@ -38,6 +40,9 @@ private object TestModule extends ScalaModule with ModuleUtils {
     @Provides private def posterLookup(@RootDirectory rootDirectory: DirectoryRef): PosterLookup =
       s => rootDirectory.addFile(s.title + ".poster.jpg")
   }
+
+  @Provides
+  private def provideMemoryRefFactory(root: MemoryRoot): MemoryRefFactory = MemoryRefFactory(root)
 
   // Ensures that the non-fake bindings will be the same as the fake ones.
   @Provides

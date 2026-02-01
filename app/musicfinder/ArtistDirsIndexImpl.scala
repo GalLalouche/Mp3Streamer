@@ -8,9 +8,9 @@ import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
 import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 import common.concurrency.ActorState
-import common.io.DirectoryRef
 import common.json.Jsonable
 import common.json.saver.{JsonableCOWFactory, JsonableSaveable}
+import common.path.ref.DirectoryRef
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichBoolean.richBoolean

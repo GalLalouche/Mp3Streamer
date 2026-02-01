@@ -6,18 +6,19 @@ import play.api.libs.json.{JsArray, JsValue}
 import scala.math.Ordering.Implicits._
 
 import common.AvroableSaver
-import common.io.FileRef
 import common.io.avro.Avroable
 import common.json.Jsonable
 import common.json.RichJson.ImmutableJsonArray
 import common.json.ToJsonableOps._
+import common.path.ref.FileRef
 import common.rich.RichT.richT
 import common.rich.RichTime._
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 class SongCache private (private val songsByFile: Map[FileRef, TimestampedSong]) {
   def songs: Iterable[Song] = songsByFile.values.map(_.song)
-  def needsUpdate(f: FileRef): Boolean = songsByFile.get(f).forall(_.updateTime <= f.lastModified)
+  def needsUpdate(f: FileRef): Boolean =
+    songsByFile.get(f).forall(_.updateTime <= f.lastModifiedTime)
   def get: FileRef => Option[TimestampedSong] = songsByFile.get
   def getDeleted(newCache: SongCache): Iterable[TimestampedSong] =
     songsByFile.filterNot(newCache.songsByFile contains _._1).values

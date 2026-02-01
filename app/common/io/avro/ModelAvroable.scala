@@ -1,7 +1,5 @@
 package common.io.avro
 
-import java.io.File
-
 import com.google.inject.Inject
 import models.{AlbumDir, ArtistDir, IOSong, Song}
 import org.apache.avro.{Schema, SchemaBuilder}
@@ -9,9 +7,10 @@ import org.apache.avro.generic.{GenericData, GenericRecord}
 
 import scala.concurrent.duration.DurationInt
 
-import common.io.{IOFile, PathRefFactory}
 import common.io.avro.ModelAvroable.SongParser
 import common.io.avro.RichAvro.{richGenericDataRecord, richGenericRecord, AvroableSeqOps}
+import common.path.ref.PathRefFactory
+import common.path.ref.io.IOFile
 
 class ModelAvroable @Inject() (
     songParser: SongParser,
@@ -56,7 +55,7 @@ class ModelAvroable @Inject() (
       }
 
       override def fromRecord(r: GenericRecord): AlbumDir = AlbumDir(
-        dir = pathRefParser.parseDirPath(r.getString("dir")),
+        dir = pathRefParser.parseDirPathUnsafe(r.getString("dir")),
         title = r.getString("title"),
         artistName = r.getString("artistName"),
         year = r.getInt("year"),
@@ -78,7 +77,7 @@ class ModelAvroable @Inject() (
     }
 
     override def fromRecord(r: GenericRecord): ArtistDir = ArtistDir(
-      dir = pathRefParser.parseDirPath(r.getString("dir")),
+      dir = pathRefParser.parseDirPathUnsafe(r.getString("dir")),
       name = r.getString("name"),
       _albums = r.getArray[AlbumDir]("albums").toSet,
     )
@@ -139,7 +138,7 @@ object ModelAvroable {
   }
   object IOSongAvroParser extends SongParser {
     override def parse(r: GenericRecord): IOSong = IOSong(
-      file = IOFile(new File(r.getString("file"))),
+      file = IOFile.unsafe(r.getString("file")),
       title = r.getString("title"),
       artistName = r.getString("artistName"),
       albumName = r.getString("albumName"),

@@ -8,7 +8,8 @@ import song_encoder.Mp3Encoder
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.io.{FileDownloadValidator, IOFile}
+import common.io.FileDownloadValidator
+import common.path.ref.io.IOFile
 
 class StreamFormatter @Inject() (
     encoder: Mp3Encoder,

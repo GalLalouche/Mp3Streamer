@@ -4,7 +4,7 @@ import java.util.regex.Pattern
 
 import models.Song
 
-import common.io.{DirectoryRef, FileRef}
+import common.path.ref.{DirectoryRef, FileRef}
 import common.rich.primitives.RichString._
 
 trait PosterLookup {

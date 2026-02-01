@@ -10,7 +10,7 @@ import monocle.Monocle.toApplyLensOps
 import monocle.Traversal
 
 import common.TimedLogger
-import common.io.FileRef
+import common.path.ref.FileRef
 
 private class CompositeIndexFactory @Inject() (
     loader: IndexLoader,

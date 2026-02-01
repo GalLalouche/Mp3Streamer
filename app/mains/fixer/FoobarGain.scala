@@ -6,8 +6,7 @@ import musicfinder.IOSongFileFinder
 
 import scala.sys.process._
 
-import common.io.IODirectory
-import common.rich.path.Directory
+import common.path.ref.io.IODirectory
 import common.rich.primitives.RichString._
 
 private class FoobarGain @Inject() (
@@ -17,8 +16,8 @@ private class FoobarGain @Inject() (
    * Calculates the track gain of the files in the directory. Since this uses Foobar2000, there's no
    * way to verify that the task completed. Therefore, just run this last and hope for the best :|
    */
-  def apply(d: Directory): Unit = {
-    val fileNames = sff.getSongFilesInDir(IODirectory(d)).map(_.path.quote).mkString(" ")
+  def apply(d: IODirectory): Unit = {
+    val fileNames = sff.getSongFilesInDir(d).map(_.path.quote).mkString(" ")
     s"$FoobarPath $ReplayGainCommand $fileNames".run()
   }
 }

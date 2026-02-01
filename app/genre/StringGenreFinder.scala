@@ -6,7 +6,7 @@ import genre.Genre.Musicals
 import musicfinder.MusicFiles
 
 import common.TimedLogger
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichOption.richOption
 import common.rx.RichObservable.richObservable

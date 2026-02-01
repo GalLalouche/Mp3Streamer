@@ -9,13 +9,14 @@ import slick.jdbc.{H2Profile, JdbcProfile}
 
 import scala.concurrent.ExecutionContext
 
-import common.io.{DirectoryRef, IODirectory, RootDirectory}
-import common.rich.path.ref.io.TempDirectory
+import common.io.RootDirectory
+import common.path.ref.DirectoryRef
+import common.path.ref.io.TempDirectory
 
 object NonPersistentModule extends ScalaModule {
   override def configure(): Unit = {
     bind[Clock].toInstance(Clock.systemDefaultZone)
-    bind[DirectoryRef].annotatedWith[RootDirectory].toInstance(IODirectory(TempDirectory()))
+    bind[DirectoryRef].annotatedWith[RootDirectory].toInstance(TempDirectory())
     bind[DbProvider].toInstance(new DbProvider {
       override lazy val profile: JdbcProfile = H2Profile
       override lazy val db: profile.backend.DatabaseDef =

@@ -3,10 +3,10 @@ package musicfinder
 import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AnyFreeSpec
 
-import common.io.MemoryRoot
 import common.rich.collections.RichTraversableOnce._
 import common.rx.RichObservable.richObservable
 import common.test.AuxSpecs
+import common.test.memory_ref.MemoryRoot
 
 class MusicFilesTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
   private val root = new MemoryRoot

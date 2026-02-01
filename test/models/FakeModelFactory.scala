@@ -9,7 +9,7 @@ import org.scalacheck.Arbitrary.arbitrary
 
 import scala.concurrent.duration.Duration
 
-import common.io.MemoryRoot
+import common.test.memory_ref.MemoryRoot
 
 class FakeModelFactory(root: MemoryRoot = new MemoryRoot) {
   def album(

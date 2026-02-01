@@ -5,9 +5,10 @@ import models.Song
 
 import cats.syntax.functor.toFunctorOps
 
-import common.io.{DirectoryRef, RootDirectory}
+import common.io.RootDirectory
 import common.json.Jsonable
 import common.json.ToJsonableOps._
+import common.path.ref.DirectoryRef
 import common.rich.RichT._
 
 private class SongGroups @Inject() (@RootDirectory rootDirectory: DirectoryRef) {

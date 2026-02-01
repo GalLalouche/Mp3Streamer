@@ -2,11 +2,13 @@ package mains.splitter
 
 import java.io.File
 
-import common.rich.path.Directory
-import common.rich.path.RichFile._
+import common.path.ref.io.IODirectory
+import common.rich.RichFile._
 
 private trait CueSplitter {
-  def apply(cueFile: File, flacFile: File): Directory
-  def apply(cueFile: File): Directory =
-    apply(cueFile, flacFile = cueFile.parent / (cueFile.nameWithoutExtension + ".flac"))
+  def apply(cueFile: File, flacFile: File): IODirectory
+  def apply(cueFile: File): IODirectory = apply(
+    cueFile,
+    flacFile = (cueFile.parent / (cueFile.nameWithoutExtension + ".flac")).asFile,
+  )
 }

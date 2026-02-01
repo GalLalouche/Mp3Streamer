@@ -7,17 +7,16 @@ import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
 
 import common.TagUtils.richTag
-import common.rich.path.RichFile._
 
 private object OptionalSongTagParser {
   def apply(file: File): OptionalSong = {
     val tag = AudioFileIO.read(file).getTag
     if (tag == null)
-      OptionalSong.empty(file.path)
+      OptionalSong.empty(file.getPath)
     else {
       val year = IOSongTagParser.extractYear(file, tag)
       OptionalSong(
-        file = file.path,
+        file = file.getPath,
         title = tag.firstNonEmpty(FieldKey.TITLE),
         artistName = tag.firstNonEmpty(FieldKey.ARTIST),
         albumName = tag.firstNonEmpty(FieldKey.ALBUM),

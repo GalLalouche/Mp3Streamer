@@ -7,8 +7,8 @@ import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.freespec.AnyFreeSpec
 
-import common.io.MemoryRoot
 import common.test.AuxSpecs
+import common.test.memory_ref.MemoryRoot
 
 class StringGenreTest extends AnyFreeSpec with AuxSpecs with BeforeAndAfterAll {
   private val root = new MemoryRoot

@@ -12,9 +12,9 @@ import scala.language.implicitConversions
 
 import cats.data.Reader
 
-import common.io.PathRefFactory
 import common.json.JsonWriteable
 import common.json.ToJsonableOps._
+import common.path.ref.PathRefFactory
 import common.rich.RichT._
 
 class SongFormatter @Inject() (

@@ -19,9 +19,9 @@ import cats.implicits.{catsSyntaxIfM, toFunctorOps}
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 import common.rich.func.kats.ToMoreMonadErrorOps.toMoreApplicativeErrorOps
 
+import common.rich.RichFile.richFile
 import common.rich.RichFuture.richFuture
 import common.rich.RichT.richT
-import common.rich.path.RichFile.richFile
 import common.scalafx.Builders
 import common.scalafx.RichNode.richNode
 

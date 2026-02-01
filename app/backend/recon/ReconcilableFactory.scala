@@ -11,7 +11,7 @@ import musicfinder.{ArtistDirsIndex, SongDirectoryParser}
 
 import scala.util.Try
 
-import common.io.{DirectoryRef, FileRef}
+import common.path.ref.{DirectoryRef, FileRef}
 import common.rich.RichT._
 import common.rich.collections.RichSeq._
 import common.rich.primitives.RichEither.ToError

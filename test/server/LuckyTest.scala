@@ -8,7 +8,7 @@ import sttp.client3.UriContext
 import sttp.model.{Header, StatusCode}
 
 import common.RichUrl
-import common.rich.path.RichFile.richFile
+import common.rich.RichFile.richFile
 
 private class LuckyTest(module: Module) extends HttpServerSpecs(module: Module) {
   protected override def baseTestModule = super.baseTestModule.copy(_urlToResponseMapper = {

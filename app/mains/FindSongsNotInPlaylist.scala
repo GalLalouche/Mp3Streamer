@@ -11,8 +11,8 @@ import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import common.rich.func.kats.ToMoreMonoidOps._
 import common.rich.func.kats.ToMoreTraverseFilterOps.toMoreTraverseFilterOps
 
+import common.rich.RichFile._
 import common.rich.RichT.richT
-import common.rich.path.RichFile._
 import common.rich.primitives.RichString._
 import common.rx.RichObservable.richObservable
 
@@ -22,7 +22,7 @@ object FindSongsNotInPlaylist {
   private def normalizePath(s: String) = s.toLowerCase.simpleReplace("""\""", "/")
   def main(args: Array[String]): Unit = {
     val musicFiles = Guice.createInjector(StandaloneModule).instance[IOMusicFiles]
-    val file = musicFiles.baseDir.addFile("playlist.m3u8").file
+    val file = musicFiles.baseDir.addFile("playlist.m3u8")
     if (Duration.ofMillis(System.currentTimeMillis() - file.lastModified()).toHours > 1)
       throw new IllegalStateException("Please update the playlist file.")
     val playlistSongs =
@@ -41,7 +41,7 @@ object FindSongsNotInPlaylist {
     println(s"actual songs |${realSongs.size}|")
     val playlistMissing = realSongs.diff(playlistSongs).toVector.sorted
     playlistMissing
-      .map(new File(_).parent.dir)
+      .map(new File(_).parent)
       .uniqueBy(_.getAbsolutePath)
       .take(10)
       .foreach(IOUtils.focus)

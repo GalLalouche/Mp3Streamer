@@ -7,7 +7,7 @@ import rx.lang.scala.Observable
 
 import common.rich.func.kats.ToMoreMonadErrorOps.toMoreApplicativeErrorOps
 
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 import common.rich.primitives.RichOption.richOption
 import common.rx.RichObservable.richObservable
 

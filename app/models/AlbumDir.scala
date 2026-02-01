@@ -4,7 +4,7 @@ import backend.recon.Album
 
 import monocle.macros.Lenses
 
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 
 /**
  * An album directory (contrast with [[backend.recon.Album]]) is a concrete directory containing

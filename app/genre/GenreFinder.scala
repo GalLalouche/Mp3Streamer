@@ -3,7 +3,7 @@ package genre
 import com.google.inject.Inject
 import genre.Genre.Classical
 
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 
 class GenreFinder @Inject() (stringGenreFinder: StringGenreFinder) {
   def forArtist(artist: backend.recon.Artist): Option[Genre] =

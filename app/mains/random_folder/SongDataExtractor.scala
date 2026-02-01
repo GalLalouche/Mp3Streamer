@@ -7,14 +7,13 @@ import com.google.inject.Inject
 import genre.GenreFinder
 import mains.random_folder
 
-import common.io.IODirectory
-import common.rich.path.Directory
-import common.rich.path.RichFile._
+import common.path.ref.io.IODirectory
+import common.rich.RichFile._
 import common.rich.primitives.RichBoolean._
 
 private class SongDataExtractor @Inject() (genreFinder: GenreFinder) {
-  private def go(artistDir: Directory, album: String) = random_folder.SongData(
-    genre = genreFinder(IODirectory(artistDir)),
+  private def go(artistDir: IODirectory, album: String) = random_folder.SongData(
+    genre = genreFinder(artistDir),
     artist = Artist(artistDir.name),
     album = album.toLowerCase,
   )

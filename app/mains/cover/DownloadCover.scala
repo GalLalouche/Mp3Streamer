@@ -13,9 +13,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 import common.concurrency.{FutureIterant, Iterant}
-import common.io.{IODirectory, IOFile}
-import common.rich.path.{Directory, RichFileUtils, TempDirectory}
-import common.rich.path.RichFile.richFile
+import common.path.PathUtils
+import common.path.ref.io.{IODirectory, IOFile, TempDirectory}
 
 private[mains] class DownloadCover @Inject() (
     ec: ExecutionContext,
@@ -37,8 +36,8 @@ private[mains] class DownloadCover @Inject() (
    *   A future command that moves the downloaded file to the input directory and deletes all
    *   temporary files.
    */
-  def apply(albumDir: Directory): Future[Directory => Unit] = {
-    val album = songDirectoryParser(IODirectory(albumDir)).next().album
+  def apply(albumDir: IODirectory): Future[IODirectory => Unit] = {
+    val album = songDirectoryParser(albumDir).next().album
     val searchUrl = Url
       .parse("https://www.google.com/search")
       .withQueryString(
@@ -47,7 +46,7 @@ private[mains] class DownloadCover @Inject() (
         "q" -> s"${album.artistName} ${album.title}",
       )
     val urls = imageFinder(s"${album.artistName} ${album.title}", maxCalls = 10)
-    val locals = LocalImageFetcher(IODirectory(albumDir))
+    val locals = LocalImageFetcher(albumDir)
     selectImage(locals ++ urls).map {
       case Selected(img) => fileMover(img) _
       case OpenBrowser =>
@@ -63,7 +62,7 @@ private[mains] class DownloadCover @Inject() (
       Iterant
         .parallelPrefetching[ImageSource, Try[FolderImage]](
           imageURLs.filter(i => i.isSquare && i.width >= 500),
-          imageDownloader.withOutput(IODirectory(DownloadCover.tempFolder)),
+          imageDownloader.withOutput(DownloadCover.tempFolder),
           prefetchSize = ImageAPIFetcher.ResultsPerQuery - ImageSelector.ImagesPerPage,
           parallelism = ImageSelector.ImagesPerPage,
         )
@@ -75,17 +74,17 @@ private[mains] class DownloadCover @Inject() (
 }
 
 private object DownloadCover {
-  private lazy val tempFolder: Directory = TempDirectory.apply()
+  private lazy val tempFolder: IODirectory = TempDirectory.apply()
 
   private val SearchType = "tbm"
   private val ImageSearch = "isch"
   private val ImageType = "tbs"
   private val Square = "iar:s"
 
-  private def fileMover(f: FolderImage)(outputDirectory: Directory): Unit = {
-    val file = f.file.asInstanceOf[IOFile].file
+  private def fileMover(f: FolderImage)(outputDirectory: IODirectory): Unit = {
+    val file = f.file.asInstanceOf[IOFile]
     if (file.parent == outputDirectory && file.name.equalsIgnoreCase("folder.jpg")) {
-      RichFileUtils.rename(file, "folder.jpg") // canonicalize casing
+      PathUtils.rename(file, "folder.jpg") // canonicalize casing
       return // This can happen if a local file named folder.jpg is chosen.
     }
 
@@ -96,7 +95,7 @@ private object DownloadCover {
     import common.rich.RichFuture._
     import common.rich.func.kats.ToMoreMonadErrorOps._
     val injector = Guice.createInjector(MainsModule)
-    val folder = Directory(IOUtils.decodeFile(args.mkString(" ")))
+    val folder = IODirectory(IOUtils.decodeFile(args.mkString(" ")))
     println("Downloading cover image for " + folder.path)
     implicit val ec: ExecutionContext = injector.instance[ExecutionContext]
     injector

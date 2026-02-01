@@ -10,8 +10,9 @@ import play.api.libs.json.JsObject
 import scala.concurrent.duration.Duration
 
 import common.json.RichJson.DynamicJson
+import common.test.memory_ref.MemoryRefFactory
 
-private class MemorySongJsonableParser @Inject() (pathFactory: MemoryPathRefFactory)
+private class MemorySongJsonableParser @Inject() (pathFactory: MemoryRefFactory)
     extends SongParser {
   override def parse(json: JsObject): MemorySong = MemorySong(
     file = pathFactory.parseFilePath(json.str("file")),

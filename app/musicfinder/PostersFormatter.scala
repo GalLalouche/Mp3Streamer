@@ -9,7 +9,8 @@ import musicfinder.PostersFormatter.AllowedExtensions
 
 import scala.concurrent.ExecutionContext
 
-import common.io.{FileDownloadValidator, IODirectory}
+import common.io.FileDownloadValidator
+import common.path.ref.io.IODirectory
 import common.rich.primitives.RichBoolean.richBoolean
 
 class PostersFormatter @Inject() (

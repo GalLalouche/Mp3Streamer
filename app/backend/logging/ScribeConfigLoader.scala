@@ -7,7 +7,7 @@ import com.typesafe.config.ConfigFactory
 
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, MapHasAsScala}
 
-import common.io.IODirectory
+import common.path.ref.io.IODirectory
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 object ScribeConfigLoader {
@@ -29,7 +29,7 @@ object ScribeConfigLoader {
     } {
       val props = new Properties
       props.load(file.inputStream)
-      val conf = ConfigFactory.parseFile(file.file)
+      val conf = ConfigFactory.parseFile(file)
       for ((k, v) <- conf.root.asScala)
         ScribeUtils.setLevel(k, v.unwrapped.toString)
     }

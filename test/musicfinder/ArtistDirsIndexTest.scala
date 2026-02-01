@@ -9,9 +9,10 @@ import org.scalatest.Inspectors.forAll
 import org.scalatest.OptionValues._
 import org.scalatest.freespec.AnyFreeSpec
 
-import common.io.{DirectoryRef, MemoryRoot, PathRefFactory}
 import common.json.saver.{JsonableCOWFactory, JsonableSaver}
+import common.path.ref.{DirectoryRef, PathRefFactory}
 import common.test.AuxSpecs
+import common.test.memory_ref.MemoryRoot
 
 class ArtistDirsIndexTest extends AnyFreeSpec with AuxSpecs {
   private val injector = TestModuleConfiguration().injector

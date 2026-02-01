@@ -1,8 +1,9 @@
 package mains.vimtag.table
 
-import common.test.AuxSpecs
-import mains.vimtag.{Change, Common, Empty, Keep, Parser}
+import mains.vimtag._
 import org.scalatest.freespec.AnyFreeSpec
+
+import common.test.AuxSpecs
 
 class TableParserTest extends AnyFreeSpec with AuxSpecs {
   private val $ = new Parser(TableParser)

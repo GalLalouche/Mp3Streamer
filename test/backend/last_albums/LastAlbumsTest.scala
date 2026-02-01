@@ -9,11 +9,11 @@ import org.scalatest.OptionValues._
 import org.scalatest.freespec.AnyFreeSpec
 
 import common.FakeClock
-import common.io.MemoryRoot
 import common.json.saver.JsonableSaver
 import common.rich.RichT.richT
 import common.rich.RichTime.RichClock
 import common.test.AuxSpecs
+import common.test.memory_ref.MemoryRoot
 
 class LastAlbumsTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
   private val injector: Injector = TestModuleConfiguration().injector

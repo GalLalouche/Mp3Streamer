@@ -14,11 +14,11 @@ import cats.Monad
 import cats.implicits.toFunctorOps
 
 import common.FakeClock
-import common.io.MemoryRoot
 import common.json.ToJsonableOps.parseJsValue
 import common.rich.RichT.{lazyT, richT}
 import common.rich.RichTime.RichClock
 import common.test.BeforeAndAfterEachAsync
+import common.test.memory_ref.MemoryRoot
 
 private class LastAlbumsServerTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)

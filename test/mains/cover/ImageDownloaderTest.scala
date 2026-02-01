@@ -5,9 +5,9 @@ import io.lemonlabs.uri.Url
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.freespec.AsyncFreeSpec
 
-import common.io.MemoryRoot
 import common.rich.RichT._
 import common.test.AuxSpecs
+import common.test.memory_ref.MemoryRoot
 
 class ImageDownloaderTest extends AsyncFreeSpec with AuxSpecs {
   private val tempDir = new MemoryRoot

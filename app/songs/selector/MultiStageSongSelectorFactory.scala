@@ -7,7 +7,7 @@ import musicfinder.MusicFiles
 import scala.util.Random
 
 import common.{Filter, TimedLogger}
-import common.io.{FileRef, RefSystem}
+import common.path.ref.{FileRef, RefSystem}
 import common.rx.RichObservable.richObservable
 
 class MultiStageSongSelectorFactory @Inject() (

@@ -14,7 +14,7 @@ import org.scalatest.freespec.AsyncFreeSpec
 
 import scala.concurrent.Future
 
-import common.rich.path.RichFile.richFile
+import common.rich.RichFile.richFile
 import common.test.AsyncAuxSpecs
 
 trait LyricsRetrieverIntegrationTemplate extends AsyncFreeSpec with AsyncAuxSpecs { self: Suite =>

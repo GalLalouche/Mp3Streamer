@@ -6,7 +6,7 @@ import com.google.inject.Inject
 import models.SongTagParser
 import musicfinder.MusicFiles
 
-import common.io.FileRef
+import common.path.ref.FileRef
 import common.rich.RichT.richT
 import common.rich.RichTime.RichClock
 import common.rich.primitives.RichBoolean.richBoolean

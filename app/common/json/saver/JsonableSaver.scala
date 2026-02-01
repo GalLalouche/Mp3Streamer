@@ -11,10 +11,11 @@ import scala.util.Try
 
 import common.rich.func.kats.ToMoreFoldableOps._
 
-import common.io.{DirectoryRef, RootDirectory}
+import common.io.RootDirectory
 import common.json.Jsonable
 import common.json.ToJsonableOps._
 import common.json.saver.JsonableSaver.Encoding
+import common.path.ref.DirectoryRef
 import common.rich.RichT._
 import common.rich.primitives.RichOption._
 import common.rich.primitives.RichString._
@@ -68,7 +69,7 @@ class JsonableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
   def exists[T: Jsonable: Manifest]: Boolean = lastUpdateTime.isDefined
   // Require T: Jsonable, otherwise T will always be inferred as Nothing
   def lastUpdateTime[T: Jsonable: Manifest]: Option[LocalDateTime] =
-    workingDir.getFile(jsonFileName).map(_.lastModified)
+    workingDir.getFile(jsonFileName).map(_.lastModifiedTime)
 }
 
 private object JsonableSaver {

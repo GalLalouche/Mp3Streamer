@@ -3,7 +3,7 @@ package mains.cover
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.concurrency.{FutureIterant, Iterant}
-import common.io.{DirectoryRef, FileRef}
+import common.path.ref.{DirectoryRef, FileRef}
 
 private object LocalImageFetcher {
   private val Extensions = Set("jpg", "png")

@@ -14,7 +14,7 @@ import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 import common.TimedLogger
 import common.concurrency.SimpleTypedActor
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 import common.rich.RichT.richT
 import common.rich.primitives.RichEither.richEither
 import common.rx.RichObservable.richObservable

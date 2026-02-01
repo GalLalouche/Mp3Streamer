@@ -6,8 +6,10 @@ import com.google.inject.Module
 import net.codingwell.scalaguice.ScalaModule
 import sttp.client3.UriContext
 
-import common.io.{BaseDirectory, DirectoryRef, IODirectory}
-import common.rich.path.RichFile.richFile
+import common.io.BaseDirectory
+import common.rich.RichFile.richFile
+import common.path.ref.DirectoryRef
+import common.path.ref.io.IODirectory
 
 private class PosterTest(serverModule: Module) extends HttpServerSpecs(serverModule) {
   protected override lazy val overridingModule = new ScalaModule {

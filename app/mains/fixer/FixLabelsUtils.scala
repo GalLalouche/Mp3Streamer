@@ -13,8 +13,8 @@ import org.jaudiotagger.tag.id3.ID3v24Tag
 
 import scala.annotation.tailrec
 
+import common.rich.RichFile.richFile
 import common.rich.RichT._
-import common.rich.path.RichFile.richFile
 import common.rich.primitives.RichInt.Rich
 import common.rich.primitives.RichString.richString
 

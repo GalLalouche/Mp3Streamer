@@ -7,7 +7,7 @@ import rx.lang.scala.{Observable, Observer}
 
 import common.PipeSubject
 import common.guice.PrivateModuleUtils
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 
 object RecentModule extends ScalaPrivateModule with PrivateModuleUtils {
   private type DirToAlbum = PipeSubject[DirectoryRef, AlbumDir]

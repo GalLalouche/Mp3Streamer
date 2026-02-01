@@ -21,10 +21,9 @@ import scala.util.Random
 import monocle.Monocle.toApplySetterOps
 
 import common.Filter
-import common.io.{IOFile, IOSystem}
+import common.path.ref.io.{IODirectory, IOFile, IOSystem}
+import common.rich.RichFile._
 import common.rich.collections.RichSeq._
-import common.rich.path.Directory
-import common.rich.path.RichFile._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichInt._
 
@@ -37,7 +36,7 @@ private class RandomFolderCreator @Inject() (
   private val random = new Random(seed)
   private val tempDirectoryName = System.getenv("TEMP_LARGE").ensuring(_ != null)
 
-  private def createPlaylistFile(outputDir: Directory, name: String): File = {
+  private def createPlaylistFile(outputDir: IODirectory, name: String): File = {
     val playlistFile = outputDir.addFile(s"$name.m3u")
     outputDir.files.map(_.name).foreach(playlistFile.appendLine)
     playlistFile
@@ -48,17 +47,17 @@ private class RandomFolderCreator @Inject() (
     songSelector
       .applySetter(MultiStageSongSelector.fileFilterSetter)
       .modify(new Filter[IOFile] {
-        override def passes(a: IOFile) = result.contains(a.file).isFalse
+        override def passes(a: IOFile) = result.contains(a).isFalse
       }.&&)
     while (result.size < numberOfSongsToCreate) {
       val nextSong = songSelector.randomSong()
-      result += nextSong.file.asInstanceOf[IOFile].file
+      result += nextSong.file.asInstanceOf[IOFile]
       pb.step()
     }
     result.toSet
   }
 
-  private def copyFileToOutputDir(outputDir: Directory, pb: ProgressBar, padLength: Int)(
+  private def copyFileToOutputDir(outputDir: IODirectory, pb: ProgressBar, padLength: Int)(
       f: File,
       index: Int,
   ): Unit = try {
@@ -72,7 +71,7 @@ private class RandomFolderCreator @Inject() (
       try {
         audioFile.getTag.setField(
           StandardArtwork.createArtworkFromFile(
-            posterLookup.getCoverArt(IOSong.read(f)).asInstanceOf[IOFile].file,
+            posterLookup.getCoverArt(IOSong.read(f)).asInstanceOf[IOFile],
           ),
         )
         audioFile.commit()
@@ -82,7 +81,7 @@ private class RandomFolderCreator @Inject() (
         case e @ (_: CannotWriteException | _: UnableToRenameFileException) => e.printStackTrace()
       }
     val targetFileName =
-      new File(outputDir.dir, s"${index.padLeftZeros(padLength)}.${tempFile.extension}")
+      new File(outputDir, s"${index.padLeftZeros(padLength)}.${tempFile.extension}")
     assert(targetFileName.exists().isFalse)
     tempFile.renameTo(targetFileName)
     pb.step()
@@ -92,9 +91,9 @@ private class RandomFolderCreator @Inject() (
 
   private def copy(
       songs: Iterable[File],
-      outputDir: Directory,
+      outputDir: IODirectory,
       playlistName: String,
-  ): Directory = {
+  ): IODirectory = {
     assert(outputDir.deepPaths.isEmpty)
     val shuffledSongs = songs.toVector.shuffle(random)
     val padLength = shuffledSongs.size.toString.length
@@ -115,7 +114,11 @@ private class RandomFolderCreator @Inject() (
     val songs = managed(new ProgressBar("Choosing songs", numberOfSongsToCreate))
       .acquireAndGet(createSongSet(numberOfSongsToCreate))
     assert(songs.size == numberOfSongsToCreate)
-    copy(songs, Directory.makeDir(tempDirectoryName).addSubDir(outputFolder).clear(), playlistName)
+    copy(
+      songs,
+      IODirectory.makeDir(tempDirectoryName).addSubDir(outputFolder).clear(),
+      playlistName,
+    )
   }
   def dumpAll(n: Int): Unit = dumpAll(
     numberOfSongsToCreate = n,
@@ -134,11 +137,11 @@ private class RandomFolderCreator @Inject() (
   def copyFilteredSongs(
       outputName: String = "Processed Filtered Songs",
       playlistName: String,
-  ): Directory = {
-    val dir = Directory.makeDir(s"$tempDirectoryName/$FilteredSongsDirName")
+  ): IODirectory = {
+    val dir = IODirectory.makeDir(s"$tempDirectoryName/$FilteredSongsDirName")
     // The extra files mess up the copy.
     dir.files.filter(Set("m3u", "txt") contains _.extension).foreach(_.delete())
     val songs = dir.files.toSet
-    copy(songs, Directory.makeDir(s"$tempDirectoryName/$outputName").clear(), playlistName)
+    copy(songs, IODirectory.makeDir(s"$tempDirectoryName/$outputName").clear(), playlistName)
   }
 }

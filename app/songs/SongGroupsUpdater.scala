@@ -3,8 +3,8 @@ package songs
 import models.{IOSong, ModelJsonable, Song, TrackNumber}
 
 import common.json.OJsonable
+import common.path.ref.io.IODirectory
 import common.rich.RichT._
-import common.rich.path.Directory
 
 private object SongGroupsUpdater {
   private def trackNumbers(
@@ -14,7 +14,7 @@ private object SongGroupsUpdater {
       trackNumbersRest: TrackNumber*,
   ): SongGroup = {
     val trackNumbers = trackNumbersFirst :: trackNumbersSecond :: trackNumbersRest.toList
-    val dir = Directory(directory)
+    val dir = IODirectory(directory)
     val prefixes: Set[String] = trackNumbers.map(_.toString.mapIf(_.length < 2).to("0" + _)).toSet
     def isPrefix(s: String) = prefixes.exists(s.startsWith)
     val songs = dir.files.filter(_.getName |> isPrefix).toVector

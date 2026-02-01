@@ -19,11 +19,11 @@ private class LastAlbums private (
 ) {
   def this(now: LocalDateTime) = this(Queue.empty, now)
   def enqueue(albumDir: AlbumDir): LastAlbums = {
-    val modified = albumDir.dir.lastModified
+    val modified = albumDir.dir.lastModifiedTime
     if (modified <= lastUpdateTime) this else new LastAlbums(queue.enqueue(albumDir), modified)
   }
   def enqueueAll(albumDirs: Seq[AlbumDir]): LastAlbums =
-    albumDirs.sortBy(_.dir.lastModified).foldLeft(this)(_.enqueue(_))
+    albumDirs.sortBy(_.dir.lastModifiedTime).foldLeft(this)(_.enqueue(_))
   def dequeue: Option[(AlbumDir, LastAlbums)] =
     queue.dequeueOption.map(__2.modify(new LastAlbums(_, lastUpdateTime)))
   def albums: Seq[AlbumDir] = queue

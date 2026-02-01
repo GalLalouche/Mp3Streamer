@@ -12,7 +12,9 @@ import slick.util.AsyncExecutor
 import scala.concurrent.ExecutionContext
 
 import common.guice.ModuleUtils
-import common.io.{DirectoryRef, InternetTalker, IODirectory, RootDirectory}
+import common.io.{InternetTalker, RootDirectory}
+import common.path.ref.DirectoryRef
+import common.path.ref.io.IODirectory
 import common.rich.RichT._
 
 object RealModule extends ScalaModule with ModuleUtils {
@@ -52,5 +54,5 @@ object RealModule extends ScalaModule with ModuleUtils {
   }
 
   @Provides @Singleton @RootDirectory private def rootDirectory: DirectoryRef =
-    IODirectory.apply("g:/media/streamer/")
+    IODirectory("g:/media/streamer/")
 }

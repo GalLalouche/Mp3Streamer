@@ -5,7 +5,7 @@ import java.io.File
 import com.google.inject.{ImplementedBy, Inject}
 import musicfinder.SongFileFinder
 
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 
 @ImplementedBy(classOf[OptionalSongFinder.OptionalSongFinderImpl])
 private trait OptionalSongFinder {

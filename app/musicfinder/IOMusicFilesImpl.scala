@@ -2,7 +2,8 @@ package musicfinder
 
 import com.google.inject.Inject
 
-import common.io.{BaseDirectory, IODirectory, IOSystem}
+import common.io.BaseDirectory
+import common.path.ref.io.{IODirectory, IOSystem}
 
 /** Can be extended to override its values in scripts. */
 private class IOMusicFilesImpl @Inject() (

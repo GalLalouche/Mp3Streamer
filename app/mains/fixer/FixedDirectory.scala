@@ -5,15 +5,16 @@ import rx.lang.scala.Observer
 
 import scala.util.Using
 
-import common.rich.path.{Directory, ObservableRichFileUtils}
-import common.rich.path.ObservableRichFileUtils.MoveFileProgress
+import common.path.ObservablePathUtils
+import common.path.ObservablePathUtils.MoveFileProgress
+import common.path.ref.io.IODirectory
 import common.rx.report.ReportObserver
 
-private class FixedDirectory(val dir: Directory, val name: String) {
-  def move(to: Directory): Directory = Using.resource(new ProgressBar("Moving directory", 0)) {
+private class FixedDirectory(val dir: IODirectory, val name: String) {
+  def move(to: IODirectory): IODirectory = Using.resource(new ProgressBar("Moving directory", 0)) {
     pb =>
-      ReportObserver.asReturnValue[MoveFileProgress, Directory](
-        ObservableRichFileUtils.move(dir, to, name, _),
+      ReportObserver.asReturnValue[MoveFileProgress, IODirectory](
+        ObservablePathUtils.move(dir, to, name, _),
       )(Observer(onNext = p => {
         pb.maxHint(p.total.toLong)
         pb.stepTo(p.processed.toLong)

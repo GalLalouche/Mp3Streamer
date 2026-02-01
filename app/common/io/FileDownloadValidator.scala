@@ -5,6 +5,7 @@ import java.io.File
 import better.files.FileExtensions
 import com.google.inject.Inject
 
+import common.path.ref.DirectoryRef
 import common.rich.primitives.RichOption.richOption
 
 /**

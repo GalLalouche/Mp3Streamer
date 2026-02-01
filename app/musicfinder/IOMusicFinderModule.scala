@@ -5,6 +5,8 @@ import net.codingwell.scalaguice.ScalaModule
 
 import common.io._
 import common.io.avro.ModelAvroable
+import common.path.ref.{DirectoryRef, PathRefFactory}
+import common.path.ref.io.{IODirectory, IOPathRefFactory}
 
 object IOMusicFinderModule extends ScalaModule {
   private[musicfinder] val BaseDir: IODirectory = IODirectory("G:/media/music")

@@ -9,7 +9,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 
 import common.concurrency.SimpleTypedActor
-import common.io.{DirectoryRef, FileRef, FolderCleaner, RootDirectory}
+import common.io.{FolderCleaner, RootDirectory}
+import common.path.ref.{DirectoryRef, FileRef}
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichString._

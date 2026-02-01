@@ -13,8 +13,9 @@ import scala.util.{Success, Try}
 import common.rich.func.kats.ToMoreMonadErrorOps.toMoreApplicativeErrorOps
 
 import common.concurrency.ExplicitRetriever
-import common.io.{DirectoryRef, FileRef, InternetTalkerFactory}
+import common.io.InternetTalkerFactory
 import common.io.RichWSResponse.richWSResponse
+import common.path.ref.{DirectoryRef, FileRef}
 import common.rich.RichFuture.richFuture
 
 /** Downloads images and saves them to a directory; local image sources will be noop-ed. */

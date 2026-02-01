@@ -8,7 +8,7 @@ import musicfinder.SongFileFinder
 
 import common.rich.func.kats.ToMoreMonoidOps.monoidFilter
 
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 import common.rich.RichT._
 import common.rich.RichTuple.richTuple2
 import common.rich.collections.RichSeq._
@@ -56,9 +56,10 @@ private class Initializer @Inject() (
 
     private def sequence(f: OptionalSong => String): Seq[String] = songs.map(f(_))
     private def relativize(s: String): String = s
-      .requiring(_.startsWith(dir.path), s"Directory: <${dir.path}> is not a prefix to file <$s>")
+      .requiring(_.startsWith(dir.path), s"IODirectory: <${dir.path}> is not a prefix to file <$s>")
       .drop(dir.path.length)
       .stripPrefix("/")
+      .stripPrefix("\\")
     def files: Seq[String] = sequence(_.file |> relativize)
     def titles: Seq[String] = sequence(_.title.getOrElse(""))
     def tracks: Seq[TrackNumber] = songs.zipWithIndex

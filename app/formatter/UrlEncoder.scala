@@ -2,7 +2,7 @@ package formatter
 
 import models.Song
 
-import common.io.PathRef
+import common.path.ref.PathRef
 
 trait UrlEncoder {
   def apply(s: String): String

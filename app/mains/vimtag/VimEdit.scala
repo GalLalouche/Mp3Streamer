@@ -9,7 +9,7 @@ import mains.vimtag.VimEdit._
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.VimLauncher
-import common.rich.path.RichFile.richFile
+import common.rich.RichFile.richFile
 import common.rich.primitives.RichString._
 
 private class VimEdit @Inject() (

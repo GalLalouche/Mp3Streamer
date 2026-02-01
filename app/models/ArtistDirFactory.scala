@@ -7,7 +7,7 @@ import musicfinder.ArtistDirsIndex
 
 import scala.annotation.tailrec
 
-import common.io.{DirectoryRef, PathRef}
+import common.path.ref.{DirectoryRef, PathRef}
 import common.rich.RichT.richT
 import common.rich.primitives.RichOption.richOption
 

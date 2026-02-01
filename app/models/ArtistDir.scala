@@ -4,7 +4,7 @@ import backend.recon.Artist
 
 import monocle.Lens
 
-import common.io.DirectoryRef
+import common.path.ref.DirectoryRef
 
 /**
  * An artist directory (contrast with [[backend.recon.Artist]]) is a concrete directory containing

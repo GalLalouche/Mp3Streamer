@@ -14,12 +14,10 @@ import scala.util.Try
 
 import common.rich.func.kats.ToMoreMonadErrorOps._
 
-import common.io.IODirectory
+import common.path.ref.io.IODirectory
+import common.rich.RichFile.richFile
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce._
-import common.rich.path.Directory
-import common.rich.path.RichFile.richFile
-import common.rich.path.RichPath.poorPath
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichString._
 
@@ -40,27 +38,27 @@ private class FixLabels @Inject() (
   private def newFileName(f: File): String = fixLabelsUtils.newFileName(IOSong.read(f), f.extension)
 
   @tailrec
-  private def renameFolder(source: Directory, initialName: String): Directory = {
+  private def renameFolder(source: IODirectory, initialName: String): IODirectory = {
     val file = new File(source.parent, initialName)
-    if (source.dir.renameTo(file)) Directory(file) else renameFolder(source, initialName + "_temp")
+    if (source.renameTo(file)) IODirectory(file)
+    else renameFolder(source, initialName + "_temp")
   }
 
-  def fix(dir: Directory): FixedDirectory = {
+  def fix(ioDir: IODirectory): FixedDirectory = {
     def containsASingleFileWithExtension(extension: String) =
-      dir.files.count(_.extension == extension) == 1
+      ioDir.files.count(_.extension == extension) == 1
     require(
       (containsASingleFileWithExtension("flac") && containsASingleFileWithExtension("cue")).isFalse,
       "Folder contains an unsplit flac file; please split the file and try again.",
     )
 
-    dir.files.foreach(_.setWritable(true)) // Stupid bittorrent.
-    dir.files.filter(_.extension == "m3u").foreach(_.delete)
+    ioDir.files.foreach(_.setWritable(true)) // Stupid bittorrent.
+    ioDir.files.filter(_.extension == "m3u").foreach(_.delete)
 
-    val ioDir = IODirectory(dir)
-    val musicFiles = sff.getSongFilesInDir(ioDir).map(_.file).toVector
+    val musicFiles = sff.getSongFilesInDir(ioDir).toVector
     require(
       musicFiles.nonEmpty,
-      s"Could not find any songs in $dir - maybe they're in subfolders...",
+      s"Could not find any songs in $ioDir - maybe they're in subfolders...",
     )
 
     // As opposed to 1/1–Fuck those guys.
@@ -79,13 +77,13 @@ private class FixLabels @Inject() (
       s"$year ${fixLabelsUtils.validFileName(album).removeAll(FixLabels.EndingDots)}"
     }
 
-    Try(new FixedDirectory(renameFolder(dir, expectedName), expectedName))
+    Try(new FixedDirectory(renameFolder(ioDir, expectedName), expectedName))
       .mapError(new Exception("could not rename the folder", _))
       .get
   }
 
   // "This should never happen" now that validFileName is used!
-  def verify(dir: Directory): Boolean =
+  def verify(dir: IODirectory): Boolean =
     dir.files.filter(Set("mp3", "flac") contains _.extension).forall(f => f.name == newFileName(f))
 }
 
