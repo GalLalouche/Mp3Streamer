@@ -6,8 +6,6 @@ import com.google.inject.Provides
 import musicfinder.MusicFiles
 import net.codingwell.scalaguice.ScalaModule
 
-import common.rx.RichObservable.richObservable
-
 object ScorerModule extends ScalaModule {
   override def configure(): Unit = {
     bind[StorageScorer[Artist]].to[ArtistScoreStorage]
@@ -37,7 +35,7 @@ object ScorerModule extends ScalaModule {
       requiredProbability,
       defaultScore,
       scorer,
-      mf.getSongFiles.toVectorBlocking,
+      mf.getSongFiles,
     )
   }
 }
