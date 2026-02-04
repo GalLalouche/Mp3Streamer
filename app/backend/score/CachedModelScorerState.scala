@@ -27,7 +27,7 @@ import common.rich.RichFuture.richFutureBlocking
   override def explicitScore(a: Artist) = updatable.get.explicitScore(a)
   override def explicitScore(a: Album) = updatable.get.explicitScore(a)
   override def explicitScore(s: Track) = updatable.get.explicitScore(s)
-  override def aggregateScore(f: FileRef) = updatable.get.aggregateScore(f)
+  override def tryAggregateScore(f: FileRef) = updatable.get.tryAggregateScore(f)
   override def aggregateScore(s: Track): SourcedOptionalModelScore =
     fullInfo(s).sourcedOptionalModelScore
   override def fullInfo(s: Track) = updatable.get.fullInfo(s)

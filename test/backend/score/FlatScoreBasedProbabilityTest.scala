@@ -2,22 +2,25 @@ package backend.score
 
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon.Track
+import backend.score.ModelScore.Okay
 import models.{FakeModelFactory, Song}
 import org.scalatest.tags.Slow
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
+import rx.lang.scala.Observable
 
+import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
 import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
+import common.path.ref.FileRef
 import common.rich.RichEnumeratum.richEnumeratum
 import common.rich.RichRandom.richRandom
 import common.rich.RichRandomSpecVer.richRandomSpecVer
 import common.rich.RichT.lazyT
 import common.rich.collections.RichTraversableOnce._
-import common.path.ref.FileRef
 import common.test.AuxSpecs
 
 @Slow
@@ -35,40 +38,69 @@ class FlatScoreBasedProbabilityTest extends AnyWordSpec with AuxSpecs with Mocki
     ModelScore.values.foreach(score =>
       s"return correct probability for $score" in {
         val random = new Random
-        def randomScore: ModelScore = ModelScore.random(random)
+        def randomScore: Option[ModelScore] =
+          ModelScore.random(random).onlyIf(random.flipCoin(0.95))
         val modelFactory = new FakeModelFactory
         val songs = Vector.tabulate(20000)(i => modelFactory.song(title = i.toString))
         val tracks = songs.mapBy(_.track)
         val songScores = songs.view.map(_.file: FileRef).map(_ -> randomScore).toMap
         object FakeModelScorer extends AggregateScorer {
-          override def aggregateScore(f: FileRef) = {
-            SourcedOptionalModelScore
-            songScores(f)
-              .onlyIf(random.flipCoin(0.95))
-              .mapHeadOrElse(
-                SourcedOptionalModelScore.Scored(_, ScoreSource.Song),
-                SourcedOptionalModelScore.Default,
-              )
-          }
-          override def aggregateScore(t: Track) = aggregateScore(tracks(t).file)
+          override def tryAggregateScore(f: FileRef) = randomSelect(
+            random,
+            List(
+              1 -> None,
+              9 -> {
+                val source = randomSelect(
+                  random,
+                  List(
+                    1 -> ScoreSource.Artist,
+                    2 -> ScoreSource.Album,
+                    5 -> ScoreSource.Song,
+                  ),
+                )
+                Some(
+                  songScores(f).mapHeadOrElse(
+                    SourcedOptionalModelScore.Scored(_, source),
+                    SourcedOptionalModelScore.Default,
+                  ),
+                )
+              },
+            ),
+          )
+          override def aggregateScore(t: Track) = songScores(tracks(t).file).mapHeadOrElse(
+            SourcedOptionalModelScore.Scored(_, ScoreSource.Song),
+            SourcedOptionalModelScore.Default,
+          )
         }
-        val allFiles = songScores.keys.toVector
         val $ = FlatScoreBasedProbability.withoutAsserts(
           requiredProbability,
           defaultScore = 0.1,
           FakeModelScorer,
-          allFiles,
+          Observable.from(songScores.keys),
         )
         val buffer = new ArrayBuffer[FileRef]()
-        while (buffer.length < 1000) {
+        while (buffer.length < 10000) {
           val nextSong: Song = random.select(songs)
           if ($(nextSong).roll(random))
             buffer += nextSong.file
         }
-        buffer.percentageSatisfying(songScores(_) == score) shouldBe requiredProbability(
-          score,
-        ) +- 0.05
+        val satisfyingPercentage =
+          buffer.percentageSatisfying(songScores(_).getOrElse(Okay) == score)
+        satisfyingPercentage shouldBe requiredProbability(score) +- 0.05
       },
     )
+  }
+
+  // TODO move to ScalaCommon
+  private def randomSelect[A](random: Random, seq: Seq[(Int, A)]): A = {
+    val total = seq.view.map(_._1).sum
+    val r = random.nextInt(total)
+    @tailrec def go(sum: Int, remaining: List[(Int, A)]): A = remaining match {
+      case Nil => throw new AssertionError("Should never happen since total > 0")
+      case (count, a) :: tail =>
+        val newSum = sum + count
+        if (newSum > r) a else go(newSum, tail)
+    }
+    go(0, seq.toList)
   }
 }

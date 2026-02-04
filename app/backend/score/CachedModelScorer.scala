@@ -1,13 +1,11 @@
 package backend.score
 
 import backend.recon._
-import backend.recon.Reconcilable.SongExtractor
 import backend.score.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
 import com.google.inject.Inject
 import models.SongTagParser
 
 import scala.collection.Map
-import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success, Try}
 
 import cats.Id
@@ -30,7 +28,6 @@ private class CachedModelScorer @Inject() (
     songScorer: TrackScoreStorage,
     reconFactory: ReconcilableFactory,
     songTagParser: SongTagParser,
-    ec: ExecutionContext,
 ) {
   private lazy val songScores: Map[YearlessTrack, ModelScore] =
     songScorer.loadAllScores.value.get.toMap
@@ -48,14 +45,13 @@ private class CachedModelScorer @Inject() (
   def explicitScore(t: Track): OptionalModelScore =
     songScores.get(t.toYearless).toOptionalModelScore
 
-  def aggregateScore(f: FileRef): SourcedOptionalModelScore = {
-    lazy val id3Song = songTagParser(f)
-    val songTitle =
-      reconFactory.trySongInfo(f).|>(toOption(f, "song")).map(_._2).getOrElse(id3Song.title)
-    val album = {
+  def tryAggregateScore(f: FileRef): Option[SourcedOptionalModelScore] = for {
+    songTitle <- reconFactory.trySongInfo(f).|>(toOption(f, "song")).map(_._2)
+    album <- {
       val albumAsTry = reconFactory.toAlbum(f.parent).toErrorTry
-      toOption(f, "album")(albumAsTry).getOrElse(id3Song.release).toYearless
+      toOption(f, "album")(albumAsTry).map(_.toYearless)
     }
+  } yield {
     val artist = album.artist
     songScores
       .get(YearlessTrack(songTitle, album))
