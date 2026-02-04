@@ -13,6 +13,7 @@ import org.jaudiotagger.tag.id3.ID3v24Tag
 
 import scala.annotation.tailrec
 
+import common.path.ref.io.IOFile
 import common.rich.RichFile.richFile
 import common.rich.RichT._
 import common.rich.primitives.RichInt.Rich
@@ -20,8 +21,8 @@ import common.rich.primitives.RichString.richString
 
 class FixLabelsUtils @Inject() (stringFixer: StringFixer) {
   // If fixDiscNumber is false, it will be removed, unless the title indicates it is a bonus track.
-  def getFixedTag(audioFile: AudioFile, fixDiscNumber: Boolean): Tag = {
-    val song = IOSongTagParser(audioFile)
+  def getFixedTag(ioFile: IOFile, audioFile: AudioFile, fixDiscNumber: Boolean): Tag = {
+    val song = IOSongTagParser(audioFile, ioFile)
     val $ = if (audioFile.getFile.extension.equalsIgnoreCase("flac")) new FlacTag else new ID3v24Tag
 
     @tailrec

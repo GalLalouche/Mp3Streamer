@@ -9,18 +9,22 @@ import org.scalatest.freespec.AnyFreeSpec
 
 import scala.jdk.CollectionConverters._
 
+import common.path.ref.io.IOFile
 import common.test.AuxSpecs
 
 class FixLabelsUtilsTest extends AnyFreeSpec with AuxSpecs {
-  private val $ = new TestModuleConfiguration().injector.instance[FixLabelsUtils]
+  private val $ = TestModuleConfiguration().injector.instance[FixLabelsUtils]
 
-  private def getSongFile(path: String) = AudioFileIO.read(getResourceFile("../../models/" + path))
+  private def getFixedTag(path: String, fixDiscNumber: Boolean) = {
+    val file = IOFile(getResourceFile("../../models/" + path))
+    $.getFixedTag(file, AudioFileIO.read(file), fixDiscNumber)
+  }
   private def getTagValue(t: Tag)(f: FieldKey): String = t.getFirst(f)
 
   "fixTag" - {
     "mp3" - {
       "basic info" - {
-        val fixedTag = $.getFixedTag(getSongFile("song.mp3"), fixDiscNumber = false)
+        val fixedTag = getFixedTag("song.mp3", fixDiscNumber = false)
         "correct fixes" in {
           val getTag = getTagValue(fixedTag) _
           getTag(FieldKey.TITLE) shouldReturn "Hidden Track"
@@ -33,24 +37,23 @@ class FixLabelsUtilsTest extends AnyFreeSpec with AuxSpecs {
           fixedTag.getFields.asScala.size shouldReturn 5
         }
         "Bonus track suffix is added to disc number" in {
-          val tag = $.getFixedTag(getSongFile("songWithBonusTrackName.mp3"), fixDiscNumber = false)
+          val tag = getFixedTag("songWithBonusTrackName.mp3", fixDiscNumber = false)
           getTagValue(tag)(FieldKey.DISC_NO) shouldReturn "Bonus"
           getTagValue(tag)(FieldKey.TITLE) shouldReturn "Hidden Track"
         }
         "Bonus track suffix is added to disc number (brackets)" in {
-          val tag =
-            $.getFixedTag(getSongFile("songWithBonusTrackNameBrackets.mp3"), fixDiscNumber = false)
+          val tag = getFixedTag("songWithBonusTrackNameBrackets.mp3", fixDiscNumber = false)
           getTagValue(tag)(FieldKey.DISC_NO) shouldReturn "Bonus"
           getTagValue(tag)(FieldKey.TITLE) shouldReturn "Hidden Track"
         }
       }
       "When asked to fix discNumber" - {
         "String is unmodified" in {
-          val fixedTag = $.getFixedTag(getSongFile("songWithMoreInfo.mp3"), fixDiscNumber = true)
+          val fixedTag = getFixedTag("songWithMoreInfo.mp3", fixDiscNumber = true)
           getTagValue(fixedTag)(FieldKey.DISC_NO) shouldReturn "Foobar"
         }
         "Partial number is truncated" in {
-          val fixedTag = $.getFixedTag(getSongFile("flacWithMoreInfo.flac"), fixDiscNumber = true)
+          val fixedTag = getFixedTag("flacWithMoreInfo.flac", fixDiscNumber = true)
           getTagValue(fixedTag)(FieldKey.DISC_NO) shouldReturn "1"
         }
       }

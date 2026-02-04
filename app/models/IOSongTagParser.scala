@@ -20,13 +20,13 @@ import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichOption._
 
 object IOSongTagParser extends SongTagParser {
-  override def apply(file: FileRef): Song = apply(file.asInstanceOf[IOFile].asFile)
-  def apply(file: File): IOSong = apply(AudioFileIO.read(file))
-  def apply(audioFile: AudioFile): IOSong = {
-    val file = audioFile.getFile
+  override def apply(file: FileRef): Song = apply(file.asInstanceOf[IOFile])
+  def apply(file: File): IOSong = apply(IOFile(file))
+  private def apply(ioFile: IOFile): IOSong = apply(AudioFileIO.read(ioFile), ioFile)
+  def apply(audioFile: AudioFile, file: IOFile): IOSong = {
     val (tag, header) = audioFile.toTuple(_.getTag, _.getAudioHeader)
     IOSong(
-      file = IOFile(file),
+      file = file,
       title = tag.getFirst(FieldKey.TITLE),
       artistName = tag.getFirst(FieldKey.ARTIST),
       albumName = tag.getFirst(FieldKey.ALBUM),
