@@ -14,7 +14,7 @@ import scala.util.Try
 
 import common.rich.func.kats.ToMoreMonadErrorOps._
 
-import common.path.ref.io.IODirectory
+import common.path.ref.io.{IODirectory, IOFile}
 import common.rich.RichFile.richFile
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce._
@@ -27,9 +27,9 @@ private class FixLabels @Inject() (
     fixLabelsUtils: FixLabelsUtils,
     sff: IOSongFileFinder,
 ) {
-  private def fixFile(f: File, fixDiscNumber: Boolean): Unit = {
+  private def fixFile(f: IOFile, fixDiscNumber: Boolean): Unit = {
     val audioFile = AudioFileIO.read(f)
-    val newTag = fixLabelsUtils.getFixedTag(audioFile, fixDiscNumber)
+    val newTag = fixLabelsUtils.getFixedTag(f, audioFile, fixDiscNumber)
     audioFile.delete()
     audioFile.setTag(newTag)
     audioFile.commit()
