@@ -3,7 +3,6 @@ package backend.score
 import backend.recon._
 import backend.score.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
 import com.google.inject.Inject
-import models.SongTagParser
 
 import scala.collection.Map
 import scala.util.{Failure, Success, Try}
@@ -27,7 +26,6 @@ private class CachedModelScorer @Inject() (
     albumScorer: AlbumScoreStorage,
     songScorer: TrackScoreStorage,
     reconFactory: ReconcilableFactory,
-    songTagParser: SongTagParser,
 ) {
   private lazy val songScores: Map[YearlessTrack, ModelScore] =
     songScorer.loadAllScores.value.get.toMap
@@ -48,7 +46,7 @@ private class CachedModelScorer @Inject() (
   def tryAggregateScore(f: FileRef): Option[SourcedOptionalModelScore] = for {
     songTitle <- reconFactory.trySongInfo(f).|>(toOption(f, "song")).map(_._2)
     album <- {
-      val albumAsTry = reconFactory.toAlbum(f.parent).toErrorTry
+      val albumAsTry = reconFactory.toAlbumFromFileOnly(f.parent).toErrorTry
       toOption(f, "album")(albumAsTry).map(_.toYearless)
     }
   } yield {
