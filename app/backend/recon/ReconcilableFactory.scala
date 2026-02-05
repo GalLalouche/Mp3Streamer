@@ -11,6 +11,8 @@ import musicfinder.{ArtistDirsIndex, SongDirectoryParser}
 
 import scala.util.Try
 
+import cats.implicits.catsSyntaxApplicativeError
+
 import common.path.ref.{DirectoryRef, FileRef}
 import common.rich.RichT._
 import common.rich.collections.RichSeq._
@@ -22,8 +24,8 @@ class ReconcilableFactory @Inject() (
     artistDirsIndex: ArtistDirsIndex,
     directoryDiscovery: IgnoredArtists,
 ) {
-  // This is Try so the error could be reserved.
-  def toAlbum(dir: DirectoryRef): Either[AlbumParseError, Album] =
+  /** Does not parse ID3 tags, only uses the directory name. */
+  def toAlbumFromFileOnly(dir: DirectoryRef): Either[AlbumParseError, Album] =
     if (directoryDiscovery.shouldIgnore(dir))
       Left(AlbumParseError.ClassicalArtist)
     else if (dir.name.take(4).exists(_.isDigit))
@@ -34,19 +36,24 @@ class ReconcilableFactory @Inject() (
             yearStr.length == 4 || yearStr.length == 5,
             s"<$yearStr> has weird format for <$dir>",
           )
-          Right(
-            Album(
-              title,
-              yearStr.take(4).toInt,
-              artistDirsIndex.forDir(dir.parent).toOption.getOrElse(extractArtistFromAlbumDir(dir)),
-            ),
-          )
+          artistDirsIndex
+            .forDir(dir.parent)
+            .toOption
+            .map(Album(title, yearStr.take(4).toInt, _))
+            .toRight(UnparsableName)
         case _ => Left(UnparsableName)
       }
     else if (dir.name == "Singles")
       Left(SinglesDirectory)
     else
+      Left(UnparsableName)
+
+  /** Unlike the above, will resort to parsing ID3 tags if the directory name is not parsable. */
+  def toAlbum(dir: DirectoryRef): Either[AlbumParseError, Album] =
+    toAlbumFromFileOnly(dir).recoverWith { case UnparsableName =>
+      scribe.warn(s"Album directory <$dir> does not have a parsable name.")
       songDirectoryParser(dir).nextOption().map(_.release).toRight(NoSongs)
+    }
 
   /** Throws if artist could not be extracted! */
   def extractArtistFromAlbumDir(albumDir: DirectoryRef): Artist =
