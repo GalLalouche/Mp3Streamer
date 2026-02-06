@@ -8,4 +8,5 @@ abstract class SongFileFinder {
   def getSongFilesInDir(d: DirectoryRef): Iterator[FileRef] =
     d.files.filter(extensions exists _.hasExtension)
   def hasSongFiles(dir: DirectoryRef): Boolean = dir.containsFileWithExtension(extensions)
+  def matchesExtension(f: FileRef): Boolean = extensions.exists(f.hasExtension)
 }

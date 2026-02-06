@@ -42,7 +42,9 @@ private abstract class MusicFilesImpl[S <: RefSystem.Aux[S]](
       // Because some albums have, e.g., cover subdirectories
       .filter(sff hasSongFiles _._1)
   override def getSongFiles: Observable[S#F] =
-    albumDirs.flatMapIterable(d => RichIterable.from(() => getSongFilesInDir(d)))
-  private def getSongFilesInDir(d: DirectoryRef): Iterator[S#F] =
-    sff.getSongFilesInDir(d).asInstanceOf[Iterator[S#F]]
+    Observable
+      .from(genreDirs)
+      .flatMap(_.deepFilesObservable)
+      .map(_._1)
+      .filter(sff.matchesExtension)
 }

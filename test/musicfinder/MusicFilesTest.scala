@@ -32,7 +32,7 @@ class MusicFilesTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
         verifyIsEmpty()
       }
       "when file is in unlisted dir" in {
-        root.addSubDir("d").addFile("foo.mp3")
+        root.addSubDir("e").addFile("foo.mp3")
         verifyIsEmpty()
       }
       "when file has wrong extension" in {
