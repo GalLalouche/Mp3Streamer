@@ -12,6 +12,6 @@ trait SongSelector {
   @tailrec
   private def randomSongWithExtension(ext: String): Song = {
     val $ = randomSong()
-    if ($.file.extension == ext) $ else randomSongWithExtension(ext)
+    if ($.file.hasExtension(ext)) $ else randomSongWithExtension(ext)
   }
 }

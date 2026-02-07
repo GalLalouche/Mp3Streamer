@@ -140,7 +140,7 @@ private class RandomFolderCreator @Inject() (
   ): IODirectory = {
     val dir = IODirectory.makeDir(s"$tempDirectoryName/$FilteredSongsDirName")
     // The extra files mess up the copy.
-    dir.files.filter(Set("m3u", "txt") contains _.extension).foreach(_.delete())
+    dir.files.filter(_.extensionIsAnyOf("m3u", "txt")).foreach(_.delete())
     val songs = dir.files.toSet
     copy(songs, IODirectory.makeDir(s"$tempDirectoryName/$outputName").clear(), playlistName)
   }

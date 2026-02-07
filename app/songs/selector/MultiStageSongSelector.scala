@@ -39,7 +39,7 @@ class MultiStageSongSelector[Sys <: RefSystem](private val songs: IndexedSeq[Sys
     }
   }
   private def withExtensionFilter(extension: String): SongSelector = {
-    val filter: Filter[Sys#F] = _.extension == extension
+    val filter: Filter[Sys#F] = _.hasExtension(extension)
     this.applySetter(fileFilterSetter[Sys]).modify(filter.&&)
   }
   override def randomMp3Song(): Song = withExtensionFilter("mp3").randomSong()

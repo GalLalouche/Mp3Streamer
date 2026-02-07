@@ -25,7 +25,7 @@ object ScribeConfigLoader {
       if File(resourceDir).exists
       dir = IODirectory(resourceDir.getFile)
       file <- dir.files
-      if file.extension == "conf"
+      if file.hasExtension("conf")
     } {
       val props = new Properties
       props.load(file.inputStream)

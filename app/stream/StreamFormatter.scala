@@ -21,7 +21,7 @@ class StreamFormatter @Inject() (
   def apply(path: String, range: Option[String], needsEncoding: Boolean): Future[StreamResult] = {
     fileDownloadValidator(new File(path), sff.extensions)
     val file = IOFile(path)
-    val codec = if (needsEncoding || file.extension == "mp3") "audio/mpeg" else "audio/flac"
+    val codec = if (needsEncoding || file.hasExtension("mp3")) "audio/mpeg" else "audio/flac"
     val maybeEncodedFile = if (needsEncoding) encoder ! file else Future.successful(file)
     maybeEncodedFile.map(FileStreamer(_, codec, range).addHeaders("Codec" -> codec))
   }
