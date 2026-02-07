@@ -3,7 +3,6 @@ package backend.score
 import backend.recon.{Album, Artist, Track}
 import backend.score.storage.{AlbumScoreStorage, ArtistScoreStorage, StorageScorer, TrackScoreStorage}
 import com.google.inject.Provides
-import musicfinder.MusicFiles
 import net.codingwell.scalaguice.ScalaModule
 
 object ScorerModule extends ScalaModule {
@@ -11,17 +10,15 @@ object ScorerModule extends ScalaModule {
     bind[StorageScorer[Artist]].to[ArtistScoreStorage]
     bind[StorageScorer[Album]].to[AlbumScoreStorage]
     bind[StorageScorer[Track]].to[TrackScoreStorage]
-    bind[ScoreBasedProbability].to[FlatScoreBasedProbability]
     bind[AggregateScorer].to[CachedModelScorerState]
     bind[IndividualScorer].to[CachedModelScorerState]
     bind[FullInfoScorer].to[CachedModelScorerState]
     bind[FullInfoModelScorer].to[ScorerModel]
   }
 
-  @Provides private def provideScoreBasedProbability(
+  @Provides private def provideScoreBasedProbabilityFactory(
       scorer: AggregateScorer,
-      mf: MusicFiles,
-  ): FlatScoreBasedProbability = {
+  ): ScoreBasedProbabilityFactory = songs => {
     def requiredProbability: ModelScore => Double = {
       case ModelScore.Crappy => 0
       case ModelScore.Meh => 0.02
@@ -31,11 +28,6 @@ object ScorerModule extends ScalaModule {
       case ModelScore.Amazing => 0.18
     }
     val defaultScore = requiredProbability(ModelScore.Okay)
-    FlatScoreBasedProbability.withAsserts(
-      requiredProbability,
-      defaultScore,
-      scorer,
-      mf.getSongFiles,
-    )
+    FlatScoreBasedProbability.withAsserts(requiredProbability, defaultScore, scorer, songs)
   }
 }

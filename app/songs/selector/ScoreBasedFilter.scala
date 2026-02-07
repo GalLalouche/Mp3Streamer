@@ -2,14 +2,13 @@ package songs.selector
 
 import backend.recon.Reconcilable.SongExtractor
 import backend.score.{AggregateScorer, ScoreBasedProbability}
-import com.google.inject.Inject
 import models.Song
 
 import scala.util.Random
 
 import common.Filter
 
-private class ScoreBasedFilter @Inject() (
+private class ScoreBasedFilter(
     random: Random,
     scorer: AggregateScorer,
     scoreBasedProbability: ScoreBasedProbability,
