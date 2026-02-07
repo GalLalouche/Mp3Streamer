@@ -1,5 +1,6 @@
 package songs.selector
 
+import backend.score.{AggregateScorer, ScoreBasedProbabilityFactory}
 import com.google.inject.Inject
 import models.SongTagParser
 import musicfinder.MusicFiles
@@ -14,7 +15,8 @@ class MultiStageSongSelectorFactory @Inject() (
     mf: MusicFiles,
     songTagParser: SongTagParser,
     random: Random,
-    scoreBasedFilter: ScoreBasedFilter,
+    sbpFactory: ScoreBasedProbabilityFactory,
+    aggregateScorer: AggregateScorer,
     lengthFilter: LengthFilter,
     timedLogger: TimedLogger,
 ) {
@@ -24,7 +26,7 @@ class MultiStageSongSelectorFactory @Inject() (
       songTagParser,
       random,
       Filter.always,
-      lengthFilter && scoreBasedFilter,
+      lengthFilter && new ScoreBasedFilter(random, aggregateScorer, sbpFactory(songs)),
       timedLogger,
     )
   def apply(): MultiStageSongSelector[_] =

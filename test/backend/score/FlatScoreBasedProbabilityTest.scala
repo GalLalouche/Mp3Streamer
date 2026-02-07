@@ -7,7 +7,6 @@ import models.{FakeModelFactory, Song}
 import org.scalatest.tags.Slow
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
-import rx.lang.scala.Observable
 
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
@@ -76,7 +75,7 @@ class FlatScoreBasedProbabilityTest extends AnyWordSpec with AuxSpecs with Mocki
           requiredProbability,
           defaultScore = 0.1,
           FakeModelScorer,
-          Observable.from(songScores.keys),
+          songScores.keys.toVector,
         )
         val buffer = new ArrayBuffer[FileRef]()
         while (buffer.length < 10000) {

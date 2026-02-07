@@ -4,13 +4,12 @@ import backend.recon.Reconcilable.SongExtractor
 import backend.score.OptionalModelScore.Default
 import com.google.inject.Singleton
 import models.Song
-import rx.lang.scala.Observable
 
 import common.Percentage
 import common.path.ref.FileRef
 import common.rich.RichT.richT
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichDouble.richDouble
-import common.rx.RichObservable.richObservable
 
 /** Returns a [[ModelScore]] based weight for the song to be chosen. */
 @Singleton private class FlatScoreBasedProbability private (
@@ -46,7 +45,7 @@ private object FlatScoreBasedProbability {
       target: ModelScore => Double,
       defaultScore: Percentage,
       scorer: AggregateScorer,
-      songFiles: Observable[FileRef],
+      songFiles: Seq[FileRef],
       withAsserts: Boolean,
   ): FlatScoreBasedProbability = {
     { // Validate input sum.
@@ -64,9 +63,9 @@ private object FlatScoreBasedProbability {
       // ignore those, since parsing the ID3 of all those tags would be too slow, and it doesn't
       // affect the probability distribution all that much, based on benchmarks (about 0.01
       // difference in some of the probabilities).
-      val optionalFrequencies: Map[Option[OptionalModelScore], Int] = songFiles
+      val optionalFrequencies: Map[Option[OptionalModelScore], Int] = songFiles.view
         .map(scorer.tryAggregateScore(_).map(_.toOptionalModelScore))
-        .frequenciesBlocking
+        .frequencies
 
       val total = optionalFrequencies.values.sum
 
@@ -139,13 +138,13 @@ private object FlatScoreBasedProbability {
       map: ModelScore => Double,
       defaultScore: Percentage,
       scorer: AggregateScorer,
-      songFiles: Observable[FileRef],
+      songFiles: Seq[FileRef],
   ): FlatScoreBasedProbability = apply(map, defaultScore, scorer, songFiles, withAsserts = true)
 
   private[score] def withoutAsserts(
       map: ModelScore => Double,
       defaultScore: Percentage,
       scorer: AggregateScorer,
-      songFiles: Observable[FileRef],
+      songFiles: Seq[FileRef],
   ): FlatScoreBasedProbability = apply(map, defaultScore, scorer, songFiles, withAsserts = false)
 }

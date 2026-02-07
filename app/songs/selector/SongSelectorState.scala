@@ -11,8 +11,8 @@ import cats.implicits.toFunctorOps
 import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
 import common.rx.RichObservable.richObservable
 
-// A stupid hack to make SongSelectorState lazy (since initializing all the songs takes a while) while
-// remaining transparent to clients.
+// A stupid hack to make SongSelectorState lazy (since initializing all the songs takes a while)
+// while remaining transparent to clients.
 @Singleton class SongSelectorState @Inject() (
     mf: MusicFiles,
     fastSongSelector: FastSongSelector,
