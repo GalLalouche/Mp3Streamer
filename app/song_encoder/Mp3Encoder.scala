@@ -28,7 +28,7 @@ class Mp3Encoder @Inject() (
   private val actor = SimpleTypedActor.unique("Mp3Encoder", encodeFileIfNeeded)
 
   private def encodeFileIfNeeded(f: FileRef) =
-    f.mapIf(_.extension.equalsIgnoreCase("mp3").isFalse).to(encode(_))
+    f.mapIf(_.hasExtension("mp3").isFalse).to(encode(_))
 
   private def encode(file: FileRef): FileRef = {
     require(file.exists)

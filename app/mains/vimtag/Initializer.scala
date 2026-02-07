@@ -22,9 +22,7 @@ private class Initializer @Inject() (
 ) {
   private class Extractor(dir: DirectoryRef) {
     private def unsupportedFilesMsg = {
-
-      val unsupportedFiles =
-        dir.deepFiles.map(_.extension).filter(UnsupportedExtensions).toSet
+      val unsupportedFiles = dir.deepFiles.filter(_.extensionIsAnyOf(UnsupportedExtensions))
       s"; However, it did contain unsupported files with extensions: $unsupportedFiles"
         .monoidFilter(unsupportedFiles.nonEmpty)
     }

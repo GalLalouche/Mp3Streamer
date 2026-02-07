@@ -46,14 +46,14 @@ private class FixLabels @Inject() (
 
   def fix(ioDir: IODirectory): FixedDirectory = {
     def containsASingleFileWithExtension(extension: String) =
-      ioDir.files.count(_.extension == extension) == 1
+      ioDir.files.count(_.hasExtension(extension)) == 1
     require(
       (containsASingleFileWithExtension("flac") && containsASingleFileWithExtension("cue")).isFalse,
       "Folder contains an unsplit flac file; please split the file and try again.",
     )
 
     ioDir.files.foreach(_.setWritable(true)) // Stupid bittorrent.
-    ioDir.files.filter(_.extension == "m3u").foreach(_.delete)
+    ioDir.files.filter(_.hasExtension("m3u")).foreach(_.delete)
 
     val musicFiles = sff.getSongFilesInDir(ioDir).toVector
     require(
@@ -84,7 +84,7 @@ private class FixLabels @Inject() (
 
   // "This should never happen" now that validFileName is used!
   def verify(dir: IODirectory): Boolean =
-    dir.files.filter(Set("mp3", "flac") contains _.extension).forall(f => f.name == newFileName(f))
+    sff.getSongFilesInDir(dir).forall(f => f.name == newFileName(f))
 }
 
 private object FixLabels {

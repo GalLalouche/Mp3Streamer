@@ -21,7 +21,7 @@ private class FlacSplitter @Inject() (cueSplitter: CueSplitter, sff: IOSongFileF
     println("Moving flac files to parent dir")
     output.files.find(_.name == "00. (HTOA).flac").foreach(_.delete())
     output.files.find(_.name == "garbage.cue").foreach(_.delete())
-    output.files.filter(_.extension == "flac").foreach(f => PathUtils.move(f, destination))
+    output.files.filter(_.hasExtension("flac")).foreach(f => PathUtils.move(f, destination))
     println("Deleting convert dir")
     output.deleteAll()
 
@@ -47,7 +47,7 @@ private class FlacSplitter @Inject() (cueSplitter: CueSplitter, sff: IOSongFileF
   def apply(cueFile: File): Unit = {
     val dir = cueFile.parent
     val bigFlacFile = {
-      val $ = dir.files.filter(_.extension == "flac").toVector
+      val $ = dir.files.filter(_.hasExtension("flac")).toVector
       if ($.hasExactlySizeOf(1))
         $.single
       else
