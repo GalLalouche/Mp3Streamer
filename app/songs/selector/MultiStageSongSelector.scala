@@ -13,7 +13,6 @@ import monocle.Setter
 import common.{Filter, TimedLogger}
 import common.path.ref.RefSystem
 import common.rich.RichRandomSpecVer.richRandomSpecVer
-import common.rich.primitives.RichBoolean.richBoolean
 
 /**
  * Can filter both files and songs. Filtering at the file level is much faster since it doesn't
@@ -31,12 +30,11 @@ class MultiStageSongSelector[Sys <: RefSystem](private val songs: IndexedSeq[Sys
 
   @tailrec private def randomSongImpl(): Song = {
     val file = random.select(songs)
-    if (fileFilter.passes(file).isFalse)
-      randomSongImpl()
-    else {
+    if (fileFilter.passes(file)) {
       val song = songTagParser(file)
       if (songFilter.passes(song)) song else randomSongImpl()
-    }
+    } else
+      randomSongImpl()
   }
   private def withExtensionFilter(extension: String): SongSelector = {
     val filter: Filter[Sys#F] = _.hasExtension(extension)
