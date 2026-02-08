@@ -20,7 +20,6 @@ class AvroableSaver @Inject() (@RootDirectory rootDirectory: DirectoryRef) {
   private def workingDir = rootDirectory.addSubDir("data").addSubDir("avro")
   private def avroFileName[T: Manifest]: String =
     s"${manifest.runtimeClass.getSimpleName.removeAll(AvroableSaver.TrailingSlashes)}s.avro"
-  val path = new File("D:\\temp\\songs.avro")
   def save[A: Avroable: Manifest](values: IterableOnce[A]): Unit =
     saveExplicit(values, avroFileName[A])
   def saveExplicit[A: Avroable: Manifest](values: IterableOnce[A], fileName: String): Unit = {

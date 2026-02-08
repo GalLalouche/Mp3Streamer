@@ -5,11 +5,11 @@ import com.google.inject.{Inject, Singleton}
 import genre.GenreFinder
 import models.ArtistDir
 
-import common.json.saver.JsonableCOWFactory
+import common.io.avro.AvroableCOWFactory
 import common.path.ref.{DirectoryRef, PathRefFactory}
 
 @Singleton class ArtistDirsIndex @Inject() (
-    cowFactory: JsonableCOWFactory,
+    cowFactory: AvroableCOWFactory,
     genreFinder: GenreFinder,
     pathRefFactory: PathRefFactory,
 ) {

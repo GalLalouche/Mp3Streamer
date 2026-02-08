@@ -9,7 +9,8 @@ import org.scalatest.Inspectors.forAll
 import org.scalatest.OptionValues._
 import org.scalatest.freespec.AnyFreeSpec
 
-import common.json.saver.{JsonableCOWFactory, JsonableSaver}
+import common.AvroableSaver
+import common.io.avro.AvroableCOWFactory
 import common.path.ref.{DirectoryRef, PathRefFactory}
 import common.test.AuxSpecs
 import common.test.memory_ref.MemoryRoot
@@ -23,12 +24,12 @@ class ArtistDirsIndexTest extends AnyFreeSpec with AuxSpecs {
   private var dir2: DirectoryRef = _
   private var dir3: DirectoryRef = _
 
-  private def setup(saver: JsonableSaver): ArtistDirsIndex = {
+  private def setup(saver: AvroableSaver): ArtistDirsIndex = {
     dir1 = root.addSubDir("dir1")
     dir2 = root.addSubDir("dir2")
     dir3 = root.addSubDir("dir3")
     saver
-      .saveArray(
+      .save(
         Vector(
           ArtistToDirectory(Artist("foo"), dir1),
           ArtistToDirectory(Artist("bar"), dir1),
@@ -36,14 +37,14 @@ class ArtistDirsIndexTest extends AnyFreeSpec with AuxSpecs {
         ),
       )
     new ArtistDirsIndex(
-      new JsonableCOWFactory(saver),
+      new AvroableCOWFactory(saver),
       injector.instance[GenreFinder],
       factory,
     )
   }
 
   "initial value" - {
-    lazy val $ = setup(new JsonableSaver(new MemoryRoot))
+    lazy val $ = setup(new AvroableSaver(new MemoryRoot))
     "multiples" in {
       $.forDir(dir1) shouldReturn ArtistDirResult.MultipleArtists(
         Set(Artist("foo"), Artist("bar")),
@@ -61,7 +62,7 @@ class ArtistDirsIndexTest extends AnyFreeSpec with AuxSpecs {
   }
 
   "updated" - {
-    val saver = new JsonableSaver(new MemoryRoot)
+    val saver = new AvroableSaver(new MemoryRoot)
     val dir4 = root.addSubDir("dir4")
     val dir5 = root.addSubDir("dir5")
     lazy val $ = setup(saver)
@@ -84,7 +85,7 @@ class ArtistDirsIndexTest extends AnyFreeSpec with AuxSpecs {
   }
 
   "update with repeats" in {
-    val saver = new JsonableSaver(new MemoryRoot)
+    val saver = new AvroableSaver(new MemoryRoot)
     val dir1 = root.addSubDir("dir1")
     val dir2 = root.addSubDir("dir2")
     lazy val $ = setup(saver)

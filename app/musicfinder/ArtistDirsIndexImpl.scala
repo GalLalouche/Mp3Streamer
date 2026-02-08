@@ -8,8 +8,7 @@ import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
 import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 import common.concurrency.ActorState
-import common.json.Jsonable
-import common.json.saver.{JsonableCOWFactory, JsonableSaveable}
+import common.io.avro.{Avroable, AvroableCOWFactory, AvroableSaveable}
 import common.path.ref.DirectoryRef
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
@@ -34,10 +33,10 @@ private class ArtistDirsIndexImpl(
 }
 
 private object ArtistDirsIndexImpl {
-  def persistentValue(genreFinder: GenreFinder, factory: JsonableCOWFactory)(implicit
-      json: Jsonable[ArtistToDirectory],
+  def persistentValue(genreFinder: GenreFinder, factory: AvroableCOWFactory)(implicit
+      avro: Avroable[ArtistToDirectory],
   ): ActorState[Iterable[ArtistDir], ArtistDirsIndexImpl] = {
-    implicit val ev: JsonableSaveable[Seq[ArtistToDirectory]] = JsonableSaveable.fromJsonableLenient
+    implicit val ev: AvroableSaveable[Seq[ArtistToDirectory]] = AvroableSaveable.fromAvroableLenient
     factory[Iterable[ArtistDir], Seq[ArtistToDirectory], ArtistDirsIndexImpl](
       _.view
         .map(ArtistToDirectory.from)
