@@ -64,7 +64,7 @@ private class PythonLanguageDetector private (timeout: Duration) {
     val tempFile = File.createTempFile("language_detector", ".py").<|(_.deleteOnExit())
     Using.resource(getClass.getResourceAsStream("language_detector.py"))(_.writeTo(tempFile))
     val $ = new ProcessBuilder()
-      .command("python", tempFile.getAbsolutePath)
+      .command("python3", tempFile.getAbsolutePath)
       .<|(_.environment().put("PYTHONIOENCODING", Encoding.toString))
       .start()
     // Monitor thread to kill the process after enough idle time has passed. This isn't done in
