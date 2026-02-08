@@ -12,6 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 
 import cats.implicits.catsSyntaxApplicativeError
+import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.concurrency.SimpleTypedActor
@@ -23,8 +24,14 @@ private class JsonDownloader @Inject() (it: InternetTalker, ec: ExecutionContext
   private implicit val iec: ExecutionContext = ec
   private val userAgent: String = {
     val properties = new Properties
-    properties.load(getClass.getResourceAsStream("tokens.properties"))
-    properties.getProperty("userAgent").ensuring(_ != null)
+    // This can be null when testing on machines without this file.
+    Option(getClass.getResourceAsStream("tokens.properties")).mapHeadOrElse(
+      s => {
+        properties.load(s)
+        properties.getProperty("userAgent").ensuring(_ != null)
+      },
+      "no-agent",
+    )
   }
 
   def apply(method: String, params: (String, String)*): Future[JsObject] =
