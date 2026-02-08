@@ -10,6 +10,7 @@ __*
 .cache*
 .history
 .idea*
+.metals
 .project
 .settings
 .target
@@ -22,6 +23,7 @@ jPlayer
 !jPlayer/add-on/jplayer.playlist.js
 !jPlayer/jquery.jplayer.js
 logs
+project/metals.sbt
 project/project
 project/target
 projectFilesBackup
@@ -29,3 +31,4 @@ target
 tmp
 tokens.properties
 node_modules
+
