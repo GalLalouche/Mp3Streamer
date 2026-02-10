@@ -8,7 +8,6 @@ import org.scalatest.tags.Slow
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 
-import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
@@ -44,14 +43,12 @@ class FlatScoreBasedProbabilityTest extends AnyWordSpec with AuxSpecs with Mocki
         val tracks = songs.mapBy(_.track)
         val songScores = songs.view.map(_.file: FileRef).map(_ -> randomScore).toMap
         object FakeModelScorer extends AggregateScorer {
-          override def tryAggregateScore(f: FileRef) = randomSelect(
-            random,
-            List(
+          override def tryAggregateScore(f: FileRef) = random.selectW(
+            Vector(
               1 -> None,
               9 -> {
-                val source = randomSelect(
-                  random,
-                  List(
+                val source = random.selectW(
+                  Vector(
                     1 -> ScoreSource.Artist,
                     2 -> ScoreSource.Album,
                     5 -> ScoreSource.Song,
@@ -88,18 +85,5 @@ class FlatScoreBasedProbabilityTest extends AnyWordSpec with AuxSpecs with Mocki
         satisfyingPercentage shouldBe requiredProbability(score) +- 0.05
       },
     )
-  }
-
-  // TODO move to ScalaCommon
-  private def randomSelect[A](random: Random, seq: Seq[(Int, A)]): A = {
-    val total = seq.view.map(_._1).sum
-    val r = random.nextInt(total)
-    @tailrec def go(sum: Int, remaining: List[(Int, A)]): A = remaining match {
-      case Nil => throw new AssertionError("Should never happen since total > 0")
-      case (count, a) :: tail =>
-        val newSum = sum + count
-        if (newSum > r) a else go(newSum, tail)
-    }
-    go(0, seq.toList)
   }
 }

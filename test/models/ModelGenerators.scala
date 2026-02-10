@@ -5,11 +5,11 @@ import java.util.concurrent.TimeUnit
 
 import org.scalacheck.{Arbitrary, Gen, Shrink}
 import org.scalacheck.Arbitrary.arbitrary
-import org.scalacheck.util.Buildable
 
 import scala.concurrent.duration.Duration
 
 import common.path.ref.io.TempDirectory
+import common.test.MoreGen
 
 private object ModelGenerators {
   private val tempDir = TempDirectory()
@@ -121,7 +121,7 @@ private object ModelGenerators {
       title <- arbitraryString
       artistName <- arbitraryString
       year <- arbitrary[Int].map(_ % 3000)
-      songs <- containerOfN[Seq, Song](Gen.choose(1, 10))
+      songs <- MoreGen.containerOfN[Seq, Song](Gen.choose(1, 10))
     } yield AlbumDir(dir, title, artistName, year, songs)
   }
   implicit val shrinkAlbumDir: Shrink[AlbumDir] = Shrink { album =>
@@ -140,7 +140,7 @@ private object ModelGenerators {
     val dir = TempDirectory()
     for {
       name <- arbitraryString
-      albums <- containerOfN[Set, AlbumDir](Gen.choose(1, 10))
+      albums <- MoreGen.containerOfN[Set, AlbumDir](Gen.choose(1, 10))
     } yield ArtistDir(dir, name, albums)
   }
   implicit val shrinkArtistDir: Shrink[ArtistDir] = Shrink { artist =>
@@ -151,10 +151,4 @@ private object ModelGenerators {
       newAlbums <- shrunkAlbums
     } yield ArtistDir(artist.dir, newName, newAlbums.toSet)
   }
-
-  // TODO move to ScalaCommon
-  private def containerOfN[C[_], A: Arbitrary](n: Gen[Int])(implicit
-      evb: Buildable[A, C[A]],
-      evt: C[A] => Iterable[A],
-  ): Gen[C[A]] = n.flatMap(Gen.containerOfN[C, A](_, arbitrary[A]))
 }
