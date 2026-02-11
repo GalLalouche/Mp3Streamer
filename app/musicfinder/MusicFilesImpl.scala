@@ -1,10 +1,15 @@
 package musicfinder
 
 import java.nio.file.attribute.BasicFileAttributes
+import java.time.LocalDateTime
 
 import rx.lang.scala.Observable
 
+import scala.math.Ordered.orderingToOrdered
+
 import common.path.ref.{DirectoryRef, RefSystem}
+import common.rich.RichT.richT
+import common.rich.RichTime.RichFileTime
 import common.rich.collections.RichIterable
 
 private abstract class MusicFilesImpl[S <: RefSystem.Aux[S]](
@@ -31,13 +36,17 @@ private abstract class MusicFilesImpl[S <: RefSystem.Aux[S]](
   }
 
   protected def genreDirs: Seq[S#D] = allGenres.sorted.map(getDir)
-  override def albumDirsWithAttributes: Observable[(S#D, BasicFileAttributes)] =
-    albumDirsWithAttributes(Observable.from(genreDirs))
+  override def albumDirsWithAttributes(
+      since: Option[LocalDateTime],
+  ): Observable[(S#D, BasicFileAttributes)] =
+    albumDirsWithAttributes(Observable.from(genreDirs), since)
   override def albumDirsWithAttributes(
       startingFrom: Observable[DirectoryRef],
+      since: Option[LocalDateTime],
   ): Observable[(S#D, BasicFileAttributes)] =
     startingFrom
       .flatMap(_.deepDirsObservable)
+      .joinOption(since)((obs, t) => obs.filter(_._2.lastModifiedTime.toLocalDateTime >= t))
       .asInstanceOf[Observable[(S#D, BasicFileAttributes)]]
       // Because some albums have, e.g., cover subdirectories
       .filter(sff hasSongFiles _._1)

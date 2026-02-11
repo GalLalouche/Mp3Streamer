@@ -7,7 +7,6 @@ import models.{AlbumDir, AlbumDirFactory, SongTagParser}
 import musicfinder.{MusicFiles, SongFileFinder}
 
 import scala.collection.mutable
-import scala.math.Ordering.Implicits.infixOrderingOps
 
 import cats.syntax.apply.catsSyntaxApplyOps
 
@@ -28,8 +27,7 @@ private class RecentAlbums @Inject() (
   def all(amount: Int): Seq[AlbumDir] = sortedDirs().take(amount).toVector
   def double(amount: Int): Seq[AlbumDir] = sortedDirs().filter(isDoubleAlbum).take(amount).toVector
   override def since(lastDuration: LocalDateTime): Seq[AlbumDir] =
-    mf.albumDirsWithAttributes
-      .filter(_._2.lastModifiedTime.toLocalDateTime >= lastDuration)
+    mf.albumDirsWithAttributes(since = Some(lastDuration))
       .toVectorBlocking // TODO we can seq and sort at the same time.
       .sortBy(_._2.lastModifiedTime.toLocalDateTime)(RichTime.OrderingLocalDateTime.reverse)
       .map(_._1 |> makeAlbum)
@@ -45,10 +43,10 @@ private class RecentAlbums @Inject() (
   private def sortedDirs(): Iterator[AlbumDir] =
     mf.albumDirsWithAttributes
       .buildBlocking(mutable.ArrayBuilder.make)
-      .sortInPlaceBy(_._2.lastModifiedTime.toLocalDateTime)
-      .map(_._1)
-      .iterator
       // TODO this could be sped up even further with a heap, since it's O(n) for building!
+      .sortInPlaceBy(_._2.lastModifiedTime.toLocalDateTime)(RichTime.OrderingLocalDateTime.reverse)
+      .iterator
+      .map(_._1)
       .map(makeAlbum)
   // recent doesn't care about songs.
   private def makeAlbum(dir: DirectoryRef) = albumFactory.fromDirWithoutSongs(dir)

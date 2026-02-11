@@ -1,6 +1,7 @@
 package musicfinder
 
 import java.nio.file.attribute.BasicFileAttributes
+import java.time.LocalDateTime
 
 import rx.lang.scala.Observable
 
@@ -22,8 +23,14 @@ trait MusicFiles {
   def albumDirs: Observable[DirectoryRef] = albumDirsWithAttributes.map(_._1)
   def albumDirs(startingFrom: Observable[DirectoryRef]): Observable[DirectoryRef] =
     albumDirsWithAttributes(startingFrom).map(_._1)
-  def albumDirsWithAttributes: Observable[(DirectoryRef, BasicFileAttributes)]
+  final def albumDirsWithAttributes: DirsWithAttributes = albumDirsWithAttributes(None)
+  /** It's faster to filter by date than checking for the existence of song files. */
+  def albumDirsWithAttributes(since: Option[LocalDateTime]): DirsWithAttributes
+  /** It's faster to filter by date than checking for the existence of song files. */
   def albumDirsWithAttributes(
       startingFrom: Observable[DirectoryRef],
-  ): Observable[(DirectoryRef, BasicFileAttributes)]
+      since: Option[LocalDateTime] = None,
+  ): DirsWithAttributes
+
+  type DirsWithAttributes = Observable[(DirectoryRef, BasicFileAttributes)]
 }

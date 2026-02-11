@@ -1,6 +1,7 @@
 package musicfinder
 
 import java.nio.file.attribute.BasicFileAttributes
+import java.time.LocalDateTime
 
 import rx.lang.scala.Observable
 
@@ -17,8 +18,11 @@ trait IOMusicFiles extends MusicFiles {
     super.albumDirs.asInstanceOf[Observable[IODirectory]]
   override def albumDirs(startingFrom: Observable[DirectoryRef]): Observable[IODirectory] =
     super.albumDirs(startingFrom).asInstanceOf[Observable[IODirectory]]
-  override def albumDirsWithAttributes: Observable[(IODirectory, BasicFileAttributes)]
+  override def albumDirsWithAttributes(
+      since: Option[LocalDateTime],
+  ): Observable[(IODirectory, BasicFileAttributes)]
   override def albumDirsWithAttributes(
       startingFrom: Observable[DirectoryRef],
+      since: Option[LocalDateTime] = None,
   ): Observable[(IODirectory, BasicFileAttributes)]
 }
