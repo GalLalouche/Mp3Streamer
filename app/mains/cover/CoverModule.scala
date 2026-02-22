@@ -1,13 +1,13 @@
 package mains.cover
 
+import mains.cover.image.ImageModule
 import net.codingwell.scalaguice.ScalaModule
 
 import common.guice.ModuleUtils
-import common.io.google.GoogleModule
 
 private[mains] object CoverModule extends ScalaModule with ModuleUtils {
   override def configure(): Unit = {
-    install(GoogleModule)
+    install(ImageModule)
     install[AsyncFolderImagePanelFactory]
   }
 }

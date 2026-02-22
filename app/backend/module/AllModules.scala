@@ -13,15 +13,12 @@ import mains.fixer.FixerModule
 import net.codingwell.scalaguice.ScalaModule
 import songs.SongsModule
 
-import common.io.google.GoogleModule
-
 object AllModules extends ScalaModule {
   LogManager.getLogManager.readConfiguration(getClass.getResourceAsStream("/logging.properties"))
 
   override def configure(): Unit = {
     install(ExternalModule)
     install(FixerModule)
-    install(GoogleModule)
     install(LyricsModule)
     install(MbModule)
     install(NewAlbumsModule)

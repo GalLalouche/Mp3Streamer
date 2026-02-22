@@ -1,4 +1,4 @@
-package common.io.google;
+package mains.cover.image;
 
 import com.google.inject.BindingAnnotation;
 

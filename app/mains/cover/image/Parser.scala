@@ -9,15 +9,14 @@ import common.json.RichJson._
 private object Parser {
   def apply(json: JsObject): Seq[ImageSource] = {
     if (json.has("error"))
-      throw new Exception("API error: " + json./("error").str("message"))
+      throw new Exception("API error: " + json.str("error"))
     json
-      .array("items")
+      .array("images_results")
       .map { e =>
-        val image = e./("image")
         UrlSource(
-          Url.parse(e.str("link")),
-          width = image.int("width"),
-          height = image.int("height"),
+          Url.parse(e.str("original")),
+          width = e.int("original_width"),
+          height = e.int("original_height"),
         )
       }
   }
