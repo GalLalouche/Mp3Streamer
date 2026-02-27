@@ -78,6 +78,8 @@ private abstract class HttpServerSpecs(serverModule: Module)
   def patchRaw(u: Uri): Future[Response[_]] = backend.send(request.patch(u))
 
   def postString(u: Uri): Future[String] = post(u).map(_.body.getOrThrow)
+  def postString(u: Uri, json: JsValue): Future[String] =
+    backend.send(request.post(u).body(json)).map(_.body.getOrThrow)
   def postJson(u: Uri): Future[JsValue] = post(u).map(_.body.getOrThrow |> Json.parse)
   def postRaw(u: Uri): Future[Response[_]] = post(u)
   private def post(u: Uri) = backend.send(request.post(u))
