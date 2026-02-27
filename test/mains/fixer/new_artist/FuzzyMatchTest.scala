@@ -1,8 +1,9 @@
 package mains.fixer.new_artist
 
+import org.scalatest.freespec.AnyFreeSpec
+
 import common.rich.primitives.RichBoolean.richBoolean
 import common.test.AuxSpecs
-import org.scalatest.freespec.AnyFreeSpec
 
 class FuzzyMatchTest extends AnyFreeSpec with AuxSpecs {
   private implicit class MatchedString($ : String) {

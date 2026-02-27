@@ -1,7 +1,8 @@
 package common.io
 
-import common.test.AuxSpecs
 import org.scalatest.freespec.AnyFreeSpec
+
+import common.test.AuxSpecs
 
 class UtfDecoderTest extends AnyFreeSpec with AuxSpecs {
   "apply" in {

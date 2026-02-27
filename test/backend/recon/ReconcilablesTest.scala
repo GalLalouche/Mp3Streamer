@@ -1,13 +1,15 @@
 package backend.recon
 
-import cats.implicits.{catsSyntaxTuple2Semigroupal, catsSyntaxTuple3Semigroupal}
-import common.test.AuxSpecs
-import common.test.MoreGen.nonEmptyAlphaNumString
-import common.test.kats.GenInstances.MonadGen
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen.choose
 import org.scalatest.freespec.AnyFreeSpec
+
+import cats.implicits.{catsSyntaxTuple2Semigroupal, catsSyntaxTuple3Semigroupal}
+
+import common.test.AuxSpecs
+import common.test.MoreGen.nonEmptyAlphaNumString
+import common.test.kats.GenInstances.MonadGen
 
 class ReconcilablesTest extends AnyFreeSpec with AuxSpecs {
   "Artist" - {

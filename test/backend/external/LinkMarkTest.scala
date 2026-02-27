@@ -1,7 +1,8 @@
 package backend.external
 
-import common.test.AuxSpecs
 import org.scalatest.freespec.AnyFreeSpec
+
+import common.test.AuxSpecs
 
 class LinkMarkTest extends AnyFreeSpec with AuxSpecs {
   "Text" - {

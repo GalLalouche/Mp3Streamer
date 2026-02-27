@@ -1,7 +1,7 @@
 package backend.score.file
 
-import backend.recon.ReconcilablesTest.arbitraryAlbum
 import backend.recon.{Album, Artist}
+import backend.recon.ReconcilablesTest.arbitraryAlbum
 
 class AlbumScoreParserTest extends ScoreParserTestTemplate[Album] {
   protected override val basicInput: (Album, String) =

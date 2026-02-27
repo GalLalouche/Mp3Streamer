@@ -28,4 +28,6 @@ private[score] trait StorageScorer[A] { self: StorageTemplate[A, ModelScore] =>
 
     self.deleteAll(deletes) *> self.overwriteMultipleVoid(replacements)
   }
+
+  private[storage] def clear(): Future[_] = self.utils.clearTable()
 }

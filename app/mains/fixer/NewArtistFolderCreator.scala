@@ -52,6 +52,7 @@ private class NewArtistFolderCreator @Inject() (@BaseDirectory baseDir: IODirect
     frame.contents = panel
     frame.open()
     frame.title = "Select genre for " + name
+    // TODO Observable subscription has no onError; if it errors the Promise hangs forever
     panel.clicks.first.subscribe { d =>
       $.success(d)
       frame.dispose()

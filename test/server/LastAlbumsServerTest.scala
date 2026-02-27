@@ -1,7 +1,7 @@
 package server
 
 import com.google.inject.Module
-import models.{AlbumDir, FakeModelFactory}
+import models.{AlbumDir, FakeModelFactory, ModelJsonable}
 import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.Json
@@ -29,7 +29,10 @@ private class LastAlbumsServerTest(serverModule: Module)
         _ == StatusCode.NotFound,
       )
       .void
-  private val mj = injector.instance[models.ModelJsonable]
+  private val factory = new FakeModelFactory(injector.instance[MemoryRoot])
+  private val mf = injector.instance[FakeMusicFiles]
+  private val clock = injector.instance[FakeClock]
+  private val mj = injector.instance[ModelJsonable]
   import mj.albumDirJsonifier
 
   "get returns empty array initially" in {
@@ -69,7 +72,7 @@ private class LastAlbumsServerTest(serverModule: Module)
       update2 <- postJson(uri"last_albums/update")
       dequeue2 <- dequeue()
       result2 <- getJson(uri"last_albums")
-      deque3 <- dequeue()
+      dequeue3 <- dequeue()
       result3 <- getJson(uri"last_albums")
     } yield assertAll(
       update1.parse[Seq[AlbumDir]] shouldReturn Vector(a1, a2),
@@ -78,13 +81,13 @@ private class LastAlbumsServerTest(serverModule: Module)
       update2.parse[Seq[AlbumDir]] shouldReturn Vector(a2, a3),
       dequeue2 shouldReturn (a2, Vector(a3)),
       result2.parse[Seq[AlbumDir]] shouldReturn Vector(a3),
-      deque3 shouldReturn (a3, Vector()),
+      dequeue3 shouldReturn (a3, Vector()),
       result3.parse[Seq[AlbumDir]] shouldReturn Vector(),
     )
   }
 
   "dequeue returns 404 when queue is empty" in {
-    postRaw(uri"last_albums/dequeue").map(_.code shouldReturn StatusCode.NotFound)
+    postRaw(uri"last_albums/dequeue") codeShouldEventuallyReturn StatusCode.NotFound
   }
 
   "dequeue returns next album and removes it from list" in {
@@ -102,10 +105,6 @@ private class LastAlbumsServerTest(serverModule: Module)
       remainingAlbums.parse[Seq[AlbumDir]] shouldReturn Vector(a2, a3)
     }
   }
-
-  private val factory = new FakeModelFactory(injector.instance[MemoryRoot])
-  private val mf = injector.instance[FakeMusicFiles]
-  private val clock = injector.instance[FakeClock]
 
   private def dequeue(): Future[(AlbumDir, Seq[AlbumDir])] =
     postString(uri"last_albums/dequeue").map(Json.parse(_).parse[(AlbumDir, Seq[AlbumDir])])

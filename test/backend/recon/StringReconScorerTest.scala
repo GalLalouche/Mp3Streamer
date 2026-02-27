@@ -1,9 +1,10 @@
 package backend.recon
 
 import backend.module.TestModuleConfiguration
-import common.test.AuxSpecs
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import org.scalatest.freespec.AnyFreeSpec
+
+import common.test.AuxSpecs
 
 class StringReconScorerTest extends AnyFreeSpec with AuxSpecs {
   private val $ = TestModuleConfiguration().injector.instance[StringReconScorer]

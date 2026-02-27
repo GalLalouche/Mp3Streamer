@@ -4,6 +4,7 @@ import java.time.Clock
 import java.util.logging.LogManager
 
 import backend.logging.ScribeUtils
+import backend.lyrics.retrievers.genius.AccessToken
 import backend.storage.DbProvider
 import com.google.inject.Provides
 import models.{ModelJsonable, SongTagParser}
@@ -34,6 +35,9 @@ private object TestModule extends ScalaModule with ModuleUtils {
     // bind[Logger].toInstance(new StringBuilderLogger(new mutable.StringBuilder))
     ScribeUtils.noLogs()
 
+    // TODO TestModule should probably depend on CleanModule directly,
+    // since it's essentially a clean run on its own.
+    install(StorageAutoCreateModule)
     install(AllModules.overrideWith(TestModule.posterLookup))
   }
 

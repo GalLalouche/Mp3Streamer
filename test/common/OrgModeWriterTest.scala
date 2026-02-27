@@ -1,7 +1,8 @@
 package common
 
-import common.test.AuxSpecs
 import org.scalatest.freespec.AnyFreeSpec
+
+import common.test.AuxSpecs
 
 class OrgModeWriterTest extends AnyFreeSpec with AuxSpecs {
   "Basic example" in {

@@ -11,5 +11,5 @@ private case class ArtistNewAlbums(
     artistScore: OptionalModelScore,
     albums: Seq[NewAlbum],
 )
-// Needed for @lenses on a private case class.
+// Needed for @Lenses macro.
 private object ArtistNewAlbums {}

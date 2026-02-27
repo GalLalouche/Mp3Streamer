@@ -4,8 +4,8 @@ import models.{AlbumDir, MemorySong}
 
 import scala.collection.mutable
 
-import common.rich.RichT._
 import common.path.ref.FileRef
+import common.rich.RichT._
 import common.test.memory_ref.{MemoryDir, MemoryFile, MemorySystem}
 
 private class FakeMusicFilesImpl(

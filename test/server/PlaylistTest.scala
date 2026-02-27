@@ -4,7 +4,6 @@ import com.google.inject.Module
 import formatter.UrlDecoder
 import models.ModelJsonable
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.{JsArray, Json, JsString, JsValue}
 import playlist.PlaylistJsonableTest
 import sttp.client3.UriContext
@@ -12,18 +11,22 @@ import sttp.client3.UriContext
 import scala.concurrent.Future
 
 import cats.implicits.catsSyntaxFlatMapOps
+import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.io.RootDirectory
 import common.json.RichJson.ImmutableJsonArray
 import common.json.ToJsonableOps.jsonifySingle
 import common.path.ref.DirectoryRef
+import common.test.BeforeAndAfterEachAsync
+import common.test.GenOps.RichGen
 import common.test.memory_ref.MemoryRoot
 
 private class PlaylistTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)
-    with BeforeAndAfterEach {
-  override def afterEach(): Unit = injector.instance[DirectoryRef, RootDirectory].clear()
+    with BeforeAndAfterEachAsync {
+  override def afterEach(): Future[_] =
+    Future.successful(injector.instance[DirectoryRef, RootDirectory].clear())
   "set then get" in {
     putArbPlaylist("foobar") >>= (playlist =>
       checkAll(
@@ -56,14 +59,26 @@ private class PlaylistTest(serverModule: Module)
     } yield result
   }
 
-  "delete" in {
-    putArbPlaylist("foo") >> putArbPlaylist("bar") >> checkAll(
-      getPlaylists shouldEventuallyReturn Vector("bar", "foo"),
-      deleteString(uri"playlist/foo") shouldEventuallyReturn "true",
-      deleteString(uri"playlist/foo") shouldEventuallyReturn "false",
-      deleteString(uri"playlist/blabla") shouldEventuallyReturn "false",
-      getPlaylists shouldEventuallyReturn Vector("bar"),
-    )
+  "delete existing playlist removes it" in {
+    for {
+      _ <- putArbPlaylist("foo")
+      _ <- putArbPlaylist("bar")
+      result <- deleteString(uri"playlist/foo")
+      remaining <- getPlaylists
+    } yield {
+      result shouldReturn "true"
+      remaining shouldReturn Vector("bar")
+    }
+  }
+
+  "delete already-deleted playlist returns false" in {
+    putArbPlaylist("foo") *>>
+      deleteString(uri"playlist/foo") *>>
+      deleteString(uri"playlist/foo") shouldEventuallyReturn "false"
+  }
+
+  "delete non-existent playlist returns false" in {
+    deleteString(uri"playlist/blabla") shouldEventuallyReturn "false"
   }
 
   // TODO check both IO add memory?
@@ -71,13 +86,13 @@ private class PlaylistTest(serverModule: Module)
   import mj.songJsonifier
   private implicit val root: MemoryRoot = injector.instance[MemoryRoot]
   private def putArbPlaylist(name: String): Future[JsValue] = {
-    val $ = PlaylistJsonableTest.arbPlaylistJson.sample.get
+    val $ = PlaylistJsonableTest.arbPlaylistJson.getSample()
     (putString(uri"playlist/$name", $.jsonify) shouldEventuallyReturn name) >| $
   }
 
   private def getPlaylist(name: String): Future[JsValue] =
     getString(uri"playlist/$name").map(injector.instance[UrlDecoder].apply).map(Json.parse)
 
-  private def getPlaylists: Future[Seq[String]] =
-    getJson(uri"playlist/").map(_.as[JsArray].map(_.as[JsString].value))
+  private def getPlaylists: Future[Vector[String]] =
+    getJson(uri"playlist/").map(_.as[JsArray].map(_.as[JsString].value).toVector)
 }

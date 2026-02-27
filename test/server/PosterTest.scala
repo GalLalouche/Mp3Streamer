@@ -7,9 +7,9 @@ import net.codingwell.scalaguice.ScalaModule
 import sttp.client3.UriContext
 
 import common.io.BaseDirectory
-import common.rich.RichFile.richFile
 import common.path.ref.DirectoryRef
 import common.path.ref.io.IODirectory
+import common.rich.RichFile.richFile
 
 private class PosterTest(serverModule: Module) extends HttpServerSpecs(serverModule) {
   protected override lazy val overridingModule = new ScalaModule {

@@ -3,12 +3,12 @@ package musicfinder
 import models.ModelJsonable
 import net.codingwell.scalaguice.ScalaModule
 
+import common.guice.ModuleUtils
 import common.io._
 import common.io.avro.ModelAvroable
+import common.os.RichOs
 import common.path.ref.{DirectoryRef, PathRefFactory}
 import common.path.ref.io.{IODirectory, IOPathRefFactory}
-import common.guice.ModuleUtils
-import common.os.RichOs
 import common.path.ref.io.TempDirectory
 
 object IOMusicFinderModule extends ScalaModule with ModuleUtils {

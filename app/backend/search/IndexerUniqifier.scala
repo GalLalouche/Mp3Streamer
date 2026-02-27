@@ -7,15 +7,13 @@ import com.google.inject.{Inject, Singleton}
 import rx.lang.scala.Observer
 import songs.selector.SongSelectorState
 
-import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.util.Success
+import scala.concurrent.{Await, ExecutionContext, Future, Promise}
+import scala.concurrent.duration._
 
-import cats.implicits.toTraverseOps
-import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
+import cats.implicits.toFoldableOps
 
 import common.concurrency.SimpleActor
 import common.path.ref.DirectoryRef
-import common.rich.RichFuture.richFutureBlocking
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rx.RichObservable.richObservable
@@ -42,14 +40,16 @@ import common.rx.RichObservable.richObservable
         .groupByBuffer(_.song.toTuple(_.artistName, _.albumName))
         .doOnNext(newDirObserver onNext _._2.mapSingle(_.song.file.parent))
         .doOnCompleted(
-          Vector(
-            songSelectorState.update(),
-            searchState.update(),
-            lastAlbumState.update(),
-          ).sequence >| $.complete(Success(())),
+          $.completeWith(
+            Vector(
+              songSelectorState.update(),
+              searchState.update(),
+              lastAlbumState.update(),
+            ).sequence_,
+          ),
         )
         .subscribe()
-      $.future.get
+      Await.result($.future, 10.seconds)
     },
   )
   def go(forceRefresh: Boolean): Future[Unit] = uniqueExtra ! forceRefresh
