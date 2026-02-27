@@ -1,28 +1,16 @@
 package server
 
-import backend.score.{ModelScore, ScoreBasedProbability, ScoreBasedProbabilityFactory}
-import com.google.inject.{Module, Provides}
-import models.{FakeModelFactory, Song}
+import com.google.inject.Module
+import models.FakeModelFactory
 import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions._
-import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.json.{JsArray, JsObject}
 import sttp.client3.UriContext
 
-import common.Percentage
-import common.path.ref.FileRef
 import common.test.memory_ref.MemoryRoot
 
 private class SearchTest(serverModule: Module) extends HttpServerSpecs(serverModule) {
-  // Same override as IndexTest: the real ScoreBasedProbabilityFactory asserts fail with few songs.
-  override protected def overridingModule: Module = new ScalaModule {
-    @Provides private def scoreBasedProbabilityFactory: ScoreBasedProbabilityFactory =
-      (_: Seq[FileRef]) =>
-        new ScoreBasedProbability {
-          override def apply(s: Song): Percentage = Percentage(0.5)
-          override def apply(s: ModelScore): Percentage = Percentage(0.5)
-        }
-  }
+  override protected def overridingModule: Module = FakeScoreModule.module
 
   private val factory = new FakeModelFactory(injector.instance[MemoryRoot])
   private val mf = injector.instance[FakeMusicFiles]
@@ -46,6 +34,7 @@ private class SearchTest(serverModule: Module) extends HttpServerSpecs(serverMod
       _ <- indexed
       result <- getJson(uri"search/Bohemian")
     } yield {
+      result.as[JsObject].keys shouldReturn Set("songs", "albums", "artists")
       val songs = (result \ "songs").as[JsArray]
       songs.value should not be empty
       (songs.value.head \ "title").as[String] shouldReturn "Bohemian Rhapsody"
@@ -74,12 +63,4 @@ private class SearchTest(serverModule: Module) extends HttpServerSpecs(serverMod
     }
   }
 
-  "search response has expected JSON keys" in {
-    for {
-      _ <- indexed
-      result <- getJson(uri"search/Bohemian")
-    } yield {
-      result.as[JsObject].keys shouldReturn Set("songs", "albums", "artists")
-    }
-  }
 }
