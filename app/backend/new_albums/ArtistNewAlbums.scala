@@ -12,5 +12,4 @@ case class ArtistNewAlbums(
     artistScore: OptionalModelScore,
     albums: Seq[NewAlbum],
 )
-// Needed for @lenses on a private case class.
 object ArtistNewAlbums {}

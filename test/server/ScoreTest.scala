@@ -37,6 +37,7 @@ private class ScoreTest(serverModule: Module)
   private def asStorage(scorer: StorageScorer[_]): Storage[_, _] =
     scorer.asInstanceOf[Storage[_, _]]
 
+  // Children first to respect FK constraints.
   override def beforeEach(): Future[_] =
     asStorage(trackScorer).utils.clearTable() >>
       asStorage(albumScorer).utils.clearTable() >>

@@ -5,7 +5,7 @@ import java.time.LocalDate
 import backend.mb.AlbumType
 import backend.new_albums.NewAlbum
 import backend.new_albums.filler.storage.{LastFetchTime, NewAlbumStorage, StoredNewAlbum}
-import backend.recon.{Artist, ArtistReconStorage, ReconID, StoredReconResult}
+import backend.recon.{Artist, ArtistReconStorage, ReconID, ReconIDArbitrary, StoredReconResult}
 import com.google.inject.Module
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import play.api.libs.json.{Json, JsString}
@@ -13,6 +13,8 @@ import sttp.client3.UriContext
 import sttp.model.StatusCode
 
 import scala.concurrent.Future
+
+import cats.implicits.toFunctorOps
 
 import common.test.BeforeAndAfterEachAsync
 
@@ -24,26 +26,20 @@ private class NewAlbumTest(serverModule: Module)
   private lazy val lastFetchTime = injector.instance[LastFetchTime]
   private lazy val newAlbumStorage = injector.instance[NewAlbumStorage]
 
-  override def beforeEach(): Future[_] = Future.unit
+  // Cascades via FK to artist_last_album_update → new_album, and to artist_score.
+  override def afterEach(): Future[_] = artistReconStorage.utils.clearTable()
 
-  override def afterEach(): Future[_] =
-    artistReconStorage.utils.clearTable()
+  private def storeArtist(artistName: String): Future[Unit] = artistReconStorage.store(
+    Artist(artistName),
+    // TODO extract Gen.sample.get to a ScalaCommon utility
+    StoredReconResult.unignored(ReconIDArbitrary.gen.sample.get),
+  )
 
-  private def storeArtist(artistName: String): Future[Unit] = {
-    val artist = Artist(artistName)
-    val reconId = ReconID("00000000-0000-0000-0000-000000000001")
-    artistReconStorage.store(artist, StoredReconResult.unignored(reconId))
-  }
+  private def markArtistIgnored(artistName: String): Future[Unit] =
+    lastFetchTime.ignore(Artist(artistName))
 
-  private def markArtistIgnored(artistName: String): Future[Unit] = {
-    val artist = Artist(artistName)
-    lastFetchTime.ignore(artist)
-  }
-
-  private def markArtistWithFetchTime(artistName: String): Future[Unit] = {
-    val artist = Artist(artistName)
-    lastFetchTime.resetToEpoch(artist).map(_ => ())
-  }
+  private def markArtistWithFetchTime(artistName: String): Future[Unit] =
+    lastFetchTime.resetToEpoch(Artist(artistName)).void
 
   private def insertNewAlbum(
       reconId: String,
@@ -54,10 +50,11 @@ private class NewAlbumTest(serverModule: Module)
       isRemoved: Boolean = false,
       isIgnored: Boolean = false,
   ): Future[Unit] = {
-    val artist = Artist(artistName)
     val rid = ReconID(reconId)
-    val na = new NewAlbum(albumTitle, epochDay, artist, albumType, rid)
-    newAlbumStorage.store(rid, StoredNewAlbum(na, isRemoved, isIgnored))
+    newAlbumStorage.store(
+      rid,
+      StoredNewAlbum(new NewAlbum(albumTitle, epochDay, Artist(artistName), albumType, rid), isRemoved, isIgnored),
+    )
   }
 
   "GET albums returns empty array when no data exists" in {
@@ -102,7 +99,7 @@ private class NewAlbumTest(serverModule: Module)
 
   "PUT album remove returns 204" in {
     val artistName = "album test artist"
-    val reconId = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+    val reconId = ReconIDArbitrary.gen.sample.get.id
     for {
       _ <- storeArtist(artistName)
       _ <- markArtistWithFetchTime(artistName)
@@ -113,7 +110,7 @@ private class NewAlbumTest(serverModule: Module)
 
   "PUT album ignore returns 204" in {
     val artistName = "album ignore test artist"
-    val reconId = "11111111-2222-3333-4444-555555555555"
+    val reconId = ReconIDArbitrary.gen.sample.get.id
     for {
       _ <- storeArtist(artistName)
       _ <- markArtistWithFetchTime(artistName)

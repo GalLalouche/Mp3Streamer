@@ -1,13 +1,15 @@
 package server
 
 import backend.module.FakeWSResponse
-import backend.recon.{AlbumReconStorage, ArtistReconStorage}
+import backend.recon.{AlbumReconStorage, ArtistReconStorage, ReconIDArbitrary}
 import com.google.inject.Module
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import play.api.libs.json.{JsObject, Json}
 import sttp.client3.UriContext
 
 import scala.concurrent.Future
+
+import cats.implicits.catsSyntaxFlatMapOps
 
 import common.test.BeforeAndAfterEachAsync
 
@@ -25,10 +27,9 @@ private class ExternalTest(module: Module)
   private val artistReconStorage = injector.instance[ArtistReconStorage]
   private val albumReconStorage = injector.instance[AlbumReconStorage]
 
-  override def beforeEach(): Future[Unit] = for {
-    _ <- artistReconStorage.utils.clearOrCreateTable()
-    _ <- albumReconStorage.utils.clearOrCreateTable()
-  } yield ()
+  override def beforeEach(): Future[_] =
+    artistReconStorage.utils.clearOrCreateTable() >>
+      albumReconStorage.utils.clearOrCreateTable()
 
   "get external links" in {
     getJson(uri"external/$songPath").map { json =>
@@ -55,7 +56,7 @@ private class ExternalTest(module: Module)
   }
 
   "update artist recon" in {
-    val reconId = "12345678-1234-1234-1234-123456789abc"
+    val reconId = ReconIDArbitrary.gen.sample.get.id
     val body = Json.obj("artist" -> reconId)
     postString(uri"external/recons/$songPath", body).map { response =>
       // The recon update returns refreshed external links; with mocked 404s,
