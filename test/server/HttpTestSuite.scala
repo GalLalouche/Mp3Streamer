@@ -10,6 +10,7 @@ class HttpTestSuite(serverModule: Module) extends AsyncTestSuite {
     new ApplicationTest(serverModule),
     new AssetTest(serverModule),
     new ExternalTest(serverModule),
+    new IndexTest(serverModule),
     new LastAlbumsServerTest(serverModule),
     new LuckyTest(serverModule),
     new LyricsTest(serverModule),
@@ -18,6 +19,7 @@ class HttpTestSuite(serverModule: Module) extends AsyncTestSuite {
     new PosterTest(serverModule),
     new RecentTest(serverModule),
     new ScoreTest(serverModule),
+    new SearchTest(serverModule),
     new SongTest(serverModule),
     new StreamTest(serverModule),
   )
