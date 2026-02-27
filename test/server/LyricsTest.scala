@@ -2,7 +2,6 @@ package server
 
 import backend.lyrics.retrievers.InstrumentalArtistStorage
 import backend.recon.ArtistReconStorage
-import backend.storage.DbProvider
 import com.google.inject.Module
 import models.IOSong
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
@@ -26,22 +25,10 @@ private class LyricsTest(serverModule: Module)
 
   private val artistReconStorage = injector.instance[ArtistReconStorage]
   private val instrumentalArtistStorage = injector.instance[InstrumentalArtistStorage]
-  private val dbProvider = injector.instance[DbProvider]
-
-  import dbProvider.profile.api._
-
-  private def createLyricsTable: Future[Unit] = dbProvider.db.run(DBIO.seq(
-    sqlu"""CREATE TABLE IF NOT EXISTS "lyrics" (
-      "song" VARCHAR NOT NULL PRIMARY KEY,
-      "source" VARCHAR NOT NULL,
-      "lyrics" VARCHAR,
-      "url" VARCHAR)""",
-  ))
 
   protected override def beforeEach(): Future[_] =
     artistReconStorage.utils.clearOrCreateTable() >>
-      instrumentalArtistStorage.utils.clearOrCreateTable() >>
-      createLyricsTable
+      instrumentalArtistStorage.utils.clearOrCreateTable()
 
   "GET returns failure message when no lyrics are found" in {
     getString(uri"lyrics/$songPath") shouldEventuallyReturn "Failed to get lyrics :("

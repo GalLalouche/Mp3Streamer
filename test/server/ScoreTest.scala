@@ -1,7 +1,7 @@
 package server
 
-import backend.recon.{Artist, ArtistReconStorage, StoredReconResult}
-import backend.storage.DbProvider
+import backend.recon.{Album, Artist, ArtistReconStorage, StoredReconResult, Track}
+import backend.score.storage.StorageScorer
 import com.google.inject.Module
 import models.IOSong
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
@@ -13,6 +13,7 @@ import scala.concurrent.Future
 
 import cats.implicits.catsSyntaxFlatMapOps
 
+import common.storage.Storage
 import common.test.BeforeAndAfterEachAsync
 
 private class ScoreTest(serverModule: Module)
@@ -27,36 +28,20 @@ private class ScoreTest(serverModule: Module)
   private val path = new java.io.File(".").getCanonicalFile.toPath.relativize(file.toPath).toString
 
   private val artists = injector.instance[ArtistReconStorage]
-  private val dbProvider = injector.instance[DbProvider]
+  private val artistScorer = injector.instance[StorageScorer[Artist]]
+  private val albumScorer = injector.instance[StorageScorer[Album]]
+  private val trackScorer = injector.instance[StorageScorer[Track]]
 
-  import dbProvider.profile.api._
-
-  private def createAndClearScoreTables: Future[Unit] = {
-    val sql = DBIO.seq(
-      sqlu"""CREATE TABLE IF NOT EXISTS "artist_score" (
-        "name" VARCHAR NOT NULL PRIMARY KEY,
-        "score" VARCHAR NOT NULL)""",
-      sqlu"""CREATE TABLE IF NOT EXISTS "album_score" (
-        "artist" VARCHAR NOT NULL,
-        "title" VARCHAR NOT NULL,
-        "score" VARCHAR NOT NULL,
-        PRIMARY KEY ("artist", "title"))""",
-      sqlu"""CREATE TABLE IF NOT EXISTS "song_score" (
-        "artist" VARCHAR NOT NULL,
-        "album" VARCHAR NOT NULL,
-        "song" VARCHAR NOT NULL,
-        "score" VARCHAR NOT NULL,
-        PRIMARY KEY ("artist", "album", "song"))""",
-      sqlu"""DELETE FROM "song_score"""",
-      sqlu"""DELETE FROM "album_score"""",
-      sqlu"""DELETE FROM "artist_score"""",
-    )
-    dbProvider.db.run(sql)
-  }
+  // Safe: StorageScorer's self-type is StorageTemplate, which extends Storage.
+  // Guice binds to concrete classes (e.g., ArtistScoreStorage) that satisfy both.
+  private def asStorage(scorer: StorageScorer[_]): Storage[_, _] =
+    scorer.asInstanceOf[Storage[_, _]]
 
   override def beforeEach(): Future[_] =
-    artists.utils.clearOrCreateTable() >>
-      createAndClearScoreTables >>
+    asStorage(trackScorer).utils.clearTable() >>
+      asStorage(albumScorer).utils.clearTable() >>
+      asStorage(artistScorer).utils.clearTable() >>
+      artists.utils.clearOrCreateTable() >>
       artists.store(artist, StoredReconResult.StoredNull)
 
   "GET returns empty object when no score exists" in {

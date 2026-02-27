@@ -11,7 +11,8 @@ import common.rich.func.kats.PlainSeqInstances.plainSeqInstances
 
 import common.storage.StorageTemplate
 
-private[score] trait StorageScorer[A] { self: StorageTemplate[A, ModelScore] =>
+// TODO revisit visibility — widened for server test access
+trait StorageScorer[A] { self: StorageTemplate[A, ModelScore] =>
   protected implicit def ec: ExecutionContext
   final def apply(a: A): OptionT[Future, ModelScore] = load(a)
   final def updateScore(a: A, score: OptionalModelScore): Future[Unit] = (score.toModelScore match {

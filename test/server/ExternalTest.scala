@@ -2,15 +2,12 @@ package server
 
 import backend.module.FakeWSResponse
 import backend.recon.{AlbumReconStorage, ArtistReconStorage}
-import backend.storage.DbProvider
 import com.google.inject.Module
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import play.api.libs.json.{JsObject, Json}
 import sttp.client3.UriContext
 
 import scala.concurrent.Future
-
-import cats.implicits.catsSyntaxFlatMapOps
 
 import common.test.BeforeAndAfterEachAsync
 
@@ -27,38 +24,10 @@ private class ExternalTest(module: Module)
 
   private val artistReconStorage = injector.instance[ArtistReconStorage]
   private val albumReconStorage = injector.instance[AlbumReconStorage]
-  private val dbProvider = injector.instance[DbProvider]
-
-  import dbProvider.profile.api._
-
-  private def createExternalTables: Future[Unit] = dbProvider.db.run(DBIO.seq(
-    sqlu"""CREATE TABLE IF NOT EXISTS "artist_link" (
-      "name" VARCHAR NOT NULL PRIMARY KEY,
-      "encoded_links" VARCHAR NOT NULL,
-      "timestamp" TIMESTAMP)""",
-    sqlu"""CREATE TABLE IF NOT EXISTS "album_link" (
-      "album_artist" VARCHAR NOT NULL PRIMARY KEY,
-      "artist" VARCHAR NOT NULL,
-      "encoded_links" VARCHAR NOT NULL,
-      "timestamp" TIMESTAMP)""",
-    sqlu"""CREATE TABLE IF NOT EXISTS "artist_last_album_update" (
-      "name" VARCHAR NOT NULL PRIMARY KEY,
-      "timestamp" TIMESTAMP)""",
-    sqlu"""CREATE TABLE IF NOT EXISTS "new_album" (
-      "recon_id" VARCHAR NOT NULL,
-      "album" VARCHAR NOT NULL,
-      "type" VARCHAR NOT NULL,
-      "epoch_day" DATE NOT NULL,
-      "artist" VARCHAR NOT NULL,
-      "is_removed" BOOLEAN DEFAULT FALSE,
-      "is_ignored" BOOLEAN DEFAULT FALSE,
-      PRIMARY KEY ("album", "artist", "type"))""",
-  ))
 
   override def beforeEach(): Future[Unit] = for {
     _ <- artistReconStorage.utils.clearOrCreateTable()
     _ <- albumReconStorage.utils.clearOrCreateTable()
-    _ <- createExternalTables
   } yield ()
 
   "get external links" in {

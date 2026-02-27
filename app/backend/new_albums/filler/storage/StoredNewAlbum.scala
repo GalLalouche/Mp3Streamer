@@ -4,7 +4,8 @@ import backend.new_albums.NewAlbum
 import backend.new_albums.filler.NewAlbumRecon
 import backend.recon.ReconID
 
-private[filler] case class StoredNewAlbum(
+// TODO revisit visibility — widened for server test access
+case class StoredNewAlbum(
     na: NewAlbum,
     isRemoved: Boolean,
     isIgnored: Boolean,

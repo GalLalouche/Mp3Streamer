@@ -1,7 +1,11 @@
 package server
 
+import java.time.LocalDate
+
+import backend.mb.AlbumType
+import backend.new_albums.NewAlbum
+import backend.new_albums.filler.storage.{LastFetchTime, NewAlbumStorage, StoredNewAlbum}
 import backend.recon.{Artist, ArtistReconStorage, ReconID, StoredReconResult}
-import backend.storage.DbProvider
 import com.google.inject.Module
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 import play.api.libs.json.{Json, JsString}
@@ -17,46 +21,13 @@ private class NewAlbumTest(serverModule: Module)
     with BeforeAndAfterEachAsync {
 
   private lazy val artistReconStorage = injector.instance[ArtistReconStorage]
-  private lazy val dbProvider = injector.instance[DbProvider]
+  private lazy val lastFetchTime = injector.instance[LastFetchTime]
+  private lazy val newAlbumStorage = injector.instance[NewAlbumStorage]
 
-  import dbProvider.profile.api._
+  override def beforeEach(): Future[_] = Future.unit
 
-  private def setupTables(): Future[_] = {
-    val createArtistTable = artistReconStorage.utils.createTableIfNotExists()
-
-    val createOtherTables = dbProvider.db.run(DBIO.seq(
-      sqlu"""CREATE TABLE IF NOT EXISTS "artist_last_album_update" (
-        "name" VARCHAR PRIMARY KEY,
-        "timestamp" TIMESTAMP)""",
-      sqlu"""CREATE TABLE IF NOT EXISTS "new_album" (
-        "recon_id" VARCHAR,
-        "album" VARCHAR,
-        "type" VARCHAR,
-        "epoch_day" DATE,
-        "artist" VARCHAR,
-        "is_removed" BOOLEAN DEFAULT FALSE,
-        "is_ignored" BOOLEAN DEFAULT FALSE)""",
-      sqlu"""CREATE TABLE IF NOT EXISTS "artist_score" (
-        "name" VARCHAR PRIMARY KEY,
-        "score" VARCHAR)""",
-    ))
-
-    for {
-      _ <- createArtistTable
-      _ <- createOtherTables
-    } yield ()
-  }
-
-  override def beforeEach(): Future[_] = setupTables()
-
-  override def afterEach(): Future[_] = {
-    for {
-      _ <- dbProvider.db.run(sqlu"""DELETE FROM "new_album"""")
-      _ <- dbProvider.db.run(sqlu"""DELETE FROM "artist_last_album_update"""")
-      _ <- dbProvider.db.run(sqlu"""DELETE FROM "artist_score"""")
-      _ <- artistReconStorage.utils.clearTable()
-    } yield ()
-  }
+  override def afterEach(): Future[_] =
+    artistReconStorage.utils.clearTable()
 
   private def storeArtist(artistName: String): Future[Unit] = {
     val artist = Artist(artistName)
@@ -64,35 +35,29 @@ private class NewAlbumTest(serverModule: Module)
     artistReconStorage.store(artist, StoredReconResult.unignored(reconId))
   }
 
-  private def markArtistIgnored(artistName: String): Future[_] = {
-    val normalized = artistName.toLowerCase
-    dbProvider.db.run(
-      sqlu"""INSERT INTO "artist_last_album_update" ("name", "timestamp") VALUES ($normalized, NULL)""",
-    )
+  private def markArtistIgnored(artistName: String): Future[Unit] = {
+    val artist = Artist(artistName)
+    lastFetchTime.ignore(artist)
   }
 
-  private def markArtistWithFetchTime(artistName: String): Future[_] = {
-    val normalized = artistName.toLowerCase
-    dbProvider.db.run(
-      sqlu"""INSERT INTO "artist_last_album_update" ("name", "timestamp")
-             VALUES ($normalized, TIMESTAMP '1970-01-01 00:00:00')""",
-    )
+  private def markArtistWithFetchTime(artistName: String): Future[Unit] = {
+    val artist = Artist(artistName)
+    lastFetchTime.resetToEpoch(artist).map(_ => ())
   }
 
   private def insertNewAlbum(
       reconId: String,
       albumTitle: String,
       artistName: String,
-      albumType: String = "Album",
-      epochDay: java.sql.Date = java.sql.Date.valueOf("2024-01-15"),
+      albumType: AlbumType = AlbumType.Album,
+      epochDay: LocalDate = LocalDate.of(2024, 1, 15),
       isRemoved: Boolean = false,
       isIgnored: Boolean = false,
-  ): Future[_] = {
-    val normalized = artistName.toLowerCase
-    dbProvider.db.run(
-      sqlu"""INSERT INTO "new_album" ("recon_id", "album", "type", "epoch_day", "artist", "is_removed", "is_ignored")
-             VALUES ($reconId, $albumTitle, $albumType, $epochDay, $normalized, $isRemoved, $isIgnored)""",
-    )
+  ): Future[Unit] = {
+    val artist = Artist(artistName)
+    val rid = ReconID(reconId)
+    val na = new NewAlbum(albumTitle, epochDay, artist, albumType, rid)
+    newAlbumStorage.store(rid, StoredNewAlbum(na, isRemoved, isIgnored))
   }
 
   "GET albums returns empty array when no data exists" in {

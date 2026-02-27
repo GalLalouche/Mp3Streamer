@@ -8,7 +8,8 @@ import scala.concurrent.Future
 import cats.data.OptionT
 
 // TODO UnitRefreshableStorage
-private trait LastFetchTime {
+// TODO revisit visibility — widened for server test access
+trait LastFetchTime {
   def update(a: Artist): Future[Unit]
   def ignore(a: Artist): Future[Unit]
   def unignore(a: Artist): Future[Freshness]

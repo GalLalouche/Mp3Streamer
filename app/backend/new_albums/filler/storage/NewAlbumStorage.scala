@@ -11,7 +11,8 @@ import common.rich.func.kats.Nesteds.SeqT
 import common.storage.Storage
 
 // TODO Non-Keyed storage, or multi-valued storage
-private trait NewAlbumStorage extends Storage[ReconID, StoredNewAlbum] with NewAlbumCleaner {
+// TODO revisit visibility — widened for server test access
+trait NewAlbumStorage extends Storage[ReconID, StoredNewAlbum] with NewAlbumCleaner {
   /** Takes care of all the filterings (ignored artists, albums, etc.). */
   def all: SeqT[Future, ArtistNewAlbums]
   /**
