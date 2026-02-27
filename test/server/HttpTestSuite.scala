@@ -13,6 +13,7 @@ class HttpTestSuite(serverModule: Module) extends AsyncTestSuite {
     new LuckyTest(serverModule),
     new PlaylistTest(serverModule),
     new PosterTest(serverModule),
+    new SongTest(serverModule),
     new StreamTest(serverModule),
   )
 }
