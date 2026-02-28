@@ -2,14 +2,14 @@ package backend.lyrics.retrievers.genius
 
 import java.util.Properties
 
+import com.google.inject.{Provides, Singleton}
 import net.codingwell.scalaguice.ScalaModule
 
 private[lyrics] object GeniusModule extends ScalaModule {
-  override def configure(): Unit = {
+  @Provides @Singleton @AccessToken
+  private def accessToken: String = {
     val properties = new Properties()
     properties.load(getClass.getResourceAsStream("tokens.properties"))
-    bind[String]
-      .annotatedWith[AccessToken]
-      .toInstance(properties.get("accessToken").asInstanceOf[String])
+    properties.get("accessToken").asInstanceOf[String]
   }
 }
