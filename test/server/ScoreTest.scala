@@ -11,8 +11,7 @@ import sttp.model.StatusCode
 
 import scala.concurrent.Future
 
-import cats.implicits.catsSyntaxFlatMapOps
-
+import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 import common.storage.Storage
 import common.test.BeforeAndAfterEachAsync
 
@@ -22,10 +21,9 @@ private class ScoreTest(serverModule: Module)
 
   // Uses the real MP3 test resource because ScorerFormatter hardcodes IOSongTagParser.
   private val file = getResourceFile("/models/song.mp3")
-  private val song = IOSong.read(file)
-  private val artist = Artist(song.artistName)
+  private val artist = Artist(IOSong.read(file).artistName)
   // Must use a relative path because Http4sUtils.decodePath strips the leading '/'.
-  private val path = new java.io.File(".").getCanonicalFile.toPath.relativize(file.toPath).toString
+  private val path = relativePath(file)
 
   private val artists = injector.instance[ArtistReconStorage]
   private val artistScorer = injector.instance[StorageScorer[Artist]]
@@ -39,10 +37,10 @@ private class ScoreTest(serverModule: Module)
 
   // Children first to respect FK constraints.
   override def beforeEach(): Future[_] =
-    asStorage(trackScorer).utils.clearTable() >>
-      asStorage(albumScorer).utils.clearTable() >>
-      asStorage(artistScorer).utils.clearTable() >>
-      artists.utils.clearOrCreateTable() >>
+    asStorage(trackScorer).utils.clearTable() *>>
+      asStorage(albumScorer).utils.clearTable() *>>
+      asStorage(artistScorer).utils.clearTable() *>>
+      artists.utils.clearOrCreateTable() *>>
       artists.store(artist, StoredReconResult.StoredNull)
 
   "GET returns empty object when no score exists" in {
@@ -50,7 +48,7 @@ private class ScoreTest(serverModule: Module)
   }
 
   "PUT song score returns 204 NoContent" in {
-    putRaw(uri"score/song/Okay/$path").map(_.code shouldReturn StatusCode.NoContent)
+    putRaw(uri"score/song/Okay/$path") codeShouldEventuallyReturn StatusCode.NoContent
   }
 
   "PUT then GET returns updated song score" in {

@@ -16,15 +16,16 @@ import scala.concurrent.Future
 
 import cats.implicits.toFunctorOps
 
+import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 import common.test.BeforeAndAfterEachAsync
 
 private class NewAlbumTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)
     with BeforeAndAfterEachAsync {
 
-  private lazy val artistReconStorage = injector.instance[ArtistReconStorage]
-  private lazy val lastFetchTime = injector.instance[LastFetchTime]
-  private lazy val newAlbumStorage = injector.instance[NewAlbumStorage]
+  private val artistReconStorage = injector.instance[ArtistReconStorage]
+  private val lastFetchTime = injector.instance[LastFetchTime]
+  private val newAlbumStorage = injector.instance[NewAlbumStorage]
 
   // Cascades via FK to artist_last_album_update → new_album, and to artist_score.
   override def afterEach(): Future[_] = artistReconStorage.utils.clearTable()
@@ -62,60 +63,48 @@ private class NewAlbumTest(serverModule: Module)
   }
 
   "GET albums for unreconciled artist returns 404" in {
-    getRaw(uri"new_albums/albums/nonexistent_artist").map(_.code shouldReturn StatusCode.NotFound)
+    getRaw(uri"new_albums/albums/nonexistent_artist") codeShouldEventuallyReturn StatusCode.NotFound
   }
 
   "GET albums for ignored artist returns IGNORED" in {
     val artistName = "ignored artist"
-    for {
-      _ <- storeArtist(artistName)
-      _ <- markArtistIgnored(artistName)
-      result <- getJson(uri"new_albums/albums/$artistName")
-    } yield result shouldReturn JsString("IGNORED")
+    storeArtist(artistName) *>>
+      markArtistIgnored(artistName) *>>
+      getJson(uri"new_albums/albums/$artistName") shouldEventuallyReturn JsString("IGNORED")
   }
 
   "PUT artist remove returns 204" in {
-    putRaw(uri"new_albums/artist/remove/some_artist").map(
-      _.code shouldReturn StatusCode.NoContent,
-    )
+    putRaw(uri"new_albums/artist/remove/some_artist") codeShouldEventuallyReturn StatusCode.NoContent
   }
 
   "PUT artist ignore returns 204" in {
     val artistName = "artist to ignore"
-    for {
-      _ <- storeArtist(artistName)
-      response <- putRaw(uri"new_albums/artist/ignore/$artistName")
-    } yield response.code shouldReturn StatusCode.NoContent
+    storeArtist(artistName) *>>
+      putRaw(uri"new_albums/artist/ignore/$artistName") codeShouldEventuallyReturn StatusCode.NoContent
   }
 
   "PUT artist unignore returns 204" in {
     val artistName = "artist to unignore"
-    for {
-      _ <- storeArtist(artistName)
-      _ <- markArtistIgnored(artistName)
-      response <- putRaw(uri"new_albums/artist/unignore/$artistName")
-    } yield response.code shouldReturn StatusCode.NoContent
+    storeArtist(artistName) *>>
+      markArtistIgnored(artistName) *>>
+      putRaw(uri"new_albums/artist/unignore/$artistName") codeShouldEventuallyReturn StatusCode.NoContent
   }
 
   "PUT album remove returns 204" in {
     val artistName = "album test artist"
     val reconId = ReconIDArbitrary.gen.sample.get.id
-    for {
-      _ <- storeArtist(artistName)
-      _ <- markArtistWithFetchTime(artistName)
-      _ <- insertNewAlbum(reconId, "some album", artistName)
-      response <- putRaw(uri"new_albums/album/remove/$reconId")
-    } yield response.code shouldReturn StatusCode.NoContent
+    storeArtist(artistName) *>>
+      markArtistWithFetchTime(artistName) *>>
+      insertNewAlbum(reconId, "some album", artistName) *>>
+      putRaw(uri"new_albums/album/remove/$reconId") codeShouldEventuallyReturn StatusCode.NoContent
   }
 
   "PUT album ignore returns 204" in {
     val artistName = "album ignore test artist"
     val reconId = ReconIDArbitrary.gen.sample.get.id
-    for {
-      _ <- storeArtist(artistName)
-      _ <- markArtistWithFetchTime(artistName)
-      _ <- insertNewAlbum(reconId, "some album to ignore", artistName)
-      response <- putRaw(uri"new_albums/album/ignore/$reconId")
-    } yield response.code shouldReturn StatusCode.NoContent
+    storeArtist(artistName) *>>
+      markArtistWithFetchTime(artistName) *>>
+      insertNewAlbum(reconId, "some album to ignore", artistName) *>>
+      putRaw(uri"new_albums/album/ignore/$reconId") codeShouldEventuallyReturn StatusCode.NoContent
   }
 }

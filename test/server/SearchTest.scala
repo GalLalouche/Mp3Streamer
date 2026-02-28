@@ -4,9 +4,11 @@ import com.google.inject.Module
 import models.FakeModelFactory
 import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions._
-import play.api.libs.json.{JsArray, JsObject}
+import play.api.libs.json.JsObject
 import sttp.client3.UriContext
 
+import common.json.RichJson._
+import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 import common.test.memory_ref.MemoryRoot
 
 private class SearchTest(serverModule: Module) extends HttpServerSpecs(serverModule) {
@@ -30,36 +32,21 @@ private class SearchTest(serverModule: Module) extends HttpServerSpecs(serverMod
   private lazy val indexed = getString(uri"index/index")
 
   "search by song title" in {
-    for {
-      _ <- indexed
-      result <- getJson(uri"search/Bohemian")
-    } yield {
+    indexed *>> getJson(uri"search/Bohemian").map { result =>
       result.as[JsObject].keys shouldReturn Set("songs", "albums", "artists")
-      val songs = (result \ "songs").as[JsArray]
-      songs.value should not be empty
-      (songs.value.head \ "title").as[String] shouldReturn "Bohemian Rhapsody"
+      result.array("songs").value.head.str("title") shouldReturn "Bohemian Rhapsody"
     }
   }
 
   "search by artist name" in {
-    for {
-      _ <- indexed
-      result <- getJson(uri"search/Queen")
-    } yield {
-      val artists = (result \ "artists").as[JsArray]
-      artists.value should not be empty
-      (artists.value.head \ "name").as[String] shouldReturn "Queen"
-    }
+    indexed *>> getJson(uri"search/Queen").map(_.array("artists").value.head.str("name") shouldReturn "Queen")
   }
 
   "search with no results returns empty arrays" in {
-    for {
-      _ <- indexed
-      result <- getJson(uri"search/nonexistentterm")
-    } yield {
-      (result \ "songs").as[JsArray].value shouldBe empty
-      (result \ "albums").as[JsArray].value shouldBe empty
-      (result \ "artists").as[JsArray].value shouldBe empty
+    indexed *>> getJson(uri"search/nonexistentterm").map { result =>
+      result.array("songs").value shouldBe empty
+      result.array("albums").value shouldBe empty
+      result.array("artists").value shouldBe empty
     }
   }
 

@@ -1,15 +1,17 @@
 package server
 
 import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
 
 import com.google.inject.Module
-import models.{AlbumDir, FakeModelFactory}
+import models.{AlbumDir, FakeModelFactory, ModelJsonable}
 import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions._
-import play.api.libs.json.{JsArray, JsObject, JsValue}
-import sttp.client3.UriContext
+import sttp.model.Uri
 
 import common.FakeClock
+import common.json.ToJsonableOps.parseJsValue
+import common.rich.RichT.richT
 import common.rich.RichTime.RichClock
 import common.test.memory_ref.MemoryRoot
 
@@ -18,11 +20,8 @@ private class RecentTest(serverModule: Module) extends HttpServerSpecs(serverMod
   private val mf = injector.instance[FakeMusicFiles]
   private val clock = injector.instance[FakeClock]
 
-  private def createAlbumWithSong(lastModified: LocalDateTime = clock.getLocalDateTime) = {
-    val album = mf.copyAlbum(factory.album(lastModified = lastModified))
-    addSong(album)
-    album
-  }
+  private def createAlbumWithSong(lastModified: LocalDateTime = clock.getLocalDateTime) =
+    mf.copyAlbum(factory.album(lastModified = lastModified)) <| addSong
 
   private def addSong(d: AlbumDir) =
     mf.copySong(d.dir.name, factory.song(albumName = d.title, artistName = d.artistName))
@@ -52,39 +51,35 @@ private class RecentTest(serverModule: Module) extends HttpServerSpecs(serverMod
     album
   }
 
-  private def titles(json: JsValue): Seq[String] =
-    json.as[JsArray].value.map(_.as[JsObject].value("title").as[String]).toSeq
+  private val mj = injector.instance[ModelJsonable]
+  import mj.albumDirJsonifier
 
-  "all routes" in {
-    // Advance clock well past epoch so date arithmetic works (100 days in millis).
-    clock.advance(8640000000L)
-    val oldRegular = createAlbumWithSong()
-    clock.advance(1)
-    val oldDouble = createDoubleAlbumWithSongs()
+  private def verifyAlbums(path: String, expected: AlbumDir*) =
+    getJson(Uri.unsafeParse(s"recent/$path")).map(_.parse[Seq[AlbumDir]] shouldReturn expected.toVector)
 
-    // Advance 50 more days so recentAlbums are clearly within a 30d window.
-    clock.advance(4320000000L)
-    val newRegular = createAlbumWithSong()
-    clock.advance(1)
-    val newDouble = createDoubleAlbumWithSongs()
+  // Advance clock well past epoch so date arithmetic works.
+  clock.advance(TimeUnit.DAYS.toMillis(100))
+  private val oldRegular = createAlbumWithSong()
+  clock.advance(1)
+  private val oldDouble = createDoubleAlbumWithSongs()
 
-    for {
-      allDefault <- getJson(uri"recent/albums")
-      all2 <- getJson(uri"recent/albums/2")
-      doubleDefault <- getJson(uri"recent/double")
-      double1 <- getJson(uri"recent/double/1")
-      since30d <- getJson(uri"recent/since/30d")
-    } yield assertAll(
-      // /recent/albums returns all 4, most-recent-first
-      titles(allDefault) shouldReturn Seq(newDouble.title, newRegular.title, oldDouble.title, oldRegular.title),
-      // /recent/albums/2 returns 2 most recent
-      titles(all2) shouldReturn Seq(newDouble.title, newRegular.title),
-      // /recent/double returns only multi-disc albums, most-recent-first
-      titles(doubleDefault) shouldReturn Seq(newDouble.title, oldDouble.title),
-      // /recent/double/1 returns only the most recent double album
-      titles(double1) shouldReturn Seq(newDouble.title),
-      // /recent/since/30d returns only albums modified in the last 30 days
-      titles(since30d) shouldReturn Seq(newDouble.title, newRegular.title),
-    )
-  }
+  clock.advance(TimeUnit.DAYS.toMillis(50))
+  private val newRegular = createAlbumWithSong()
+  clock.advance(1)
+  private val newDouble = createDoubleAlbumWithSongs()
+
+  "albums returns all albums" in
+    verifyAlbums("albums", newDouble, newRegular, oldDouble, oldRegular)
+
+  "albums/2 returns only 2 most recent" in
+    verifyAlbums("albums/2", newDouble, newRegular)
+
+  "double returns only double albums" in
+    verifyAlbums("double", newDouble, oldDouble)
+
+  "double/1 returns only 1 most recent double" in
+    verifyAlbums("double/1", newDouble)
+
+  "since/30d returns albums from last 30 days" in
+    verifyAlbums("since/30d", newDouble, newRegular)
 }

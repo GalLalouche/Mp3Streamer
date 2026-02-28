@@ -1,5 +1,7 @@
 package server
 
+import java.net.URLEncoder
+
 import com.google.inject.Module
 import models.{FakeModelFactory, MemorySong}
 import musicfinder.FakeMusicFiles
@@ -21,7 +23,7 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
     trackNumber = 1,
     year = 2020,
   ))
-  private val mp3Song2 = mf.copySong(factory.song(
+  mf.copySong(factory.song(
     filePath = "song2.mp3",
     title = "Song Two",
     artistName = "TestArtist",
@@ -29,7 +31,7 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
     trackNumber = 2,
     year = 2020,
   ))
-  private val flacSong = mf.copySong(factory.song(
+  mf.copySong(factory.song(
     filePath = "song3.flac",
     title = "Song Three",
     artistName = "TestArtist",
@@ -56,9 +58,9 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
     discNumber = Some("2"),
   ))
 
-  private def encodedPath(song: MemorySong): String =
-    java.net.URLEncoder.encode(song.file.path, "UTF-8")
-  private def albumPath(song: MemorySong): String = song.file.parent.path
+  private def encode(path: String): String = URLEncoder.encode(path, "UTF-8")
+  private def encodedPath(song: MemorySong): String = encode(song.file.path)
+  private def encodedAlbumPath(song: MemorySong): String = encode(song.file.parent.path)
 
   "randomSong returns a valid song" in {
     getJson(Uri.unsafeParse("data/randomSong")).map { json =>
@@ -81,8 +83,7 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
   }
 
   "album returns all songs in the album" in {
-    val encodedAlbumPath = java.net.URLEncoder.encode(albumPath(mp3Song1), "UTF-8")
-    getJson(Uri.unsafeParse(s"data/album/$encodedAlbumPath")).map { json =>
+    getJson(Uri.unsafeParse(s"data/album/${encodedAlbumPath(mp3Song1)}")).map { json =>
       val songs = json.as[JsArray]
       songs.value should have size 3
       (songs(0) \ "title").as[String] shouldReturn "Song One"
@@ -92,8 +93,7 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
   }
 
   "disc returns songs filtered by disc number 1" in {
-    val encodedDiscPath = java.net.URLEncoder.encode(albumPath(disc1Song), "UTF-8")
-    getJson(Uri.unsafeParse(s"data/disc/1/$encodedDiscPath")).map { json =>
+    getJson(Uri.unsafeParse(s"data/disc/1/${encodedAlbumPath(disc1Song)}")).map { json =>
       val songs = json.as[JsArray]
       songs.value should have size 1
       (songs(0) \ "title").as[String] shouldReturn "Disc 1 Song"
@@ -101,8 +101,7 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
   }
 
   "disc returns songs filtered by disc number 2" in {
-    val encodedDiscPath = java.net.URLEncoder.encode(albumPath(disc2Song), "UTF-8")
-    getJson(Uri.unsafeParse(s"data/disc/2/$encodedDiscPath")).map { json =>
+    getJson(Uri.unsafeParse(s"data/disc/2/${encodedAlbumPath(disc2Song)}")).map { json =>
       val songs = json.as[JsArray]
       songs.value should have size 1
       (songs(0) \ "title").as[String] shouldReturn "Disc 2 Song"
@@ -110,8 +109,7 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
   }
 
   "song returns the requested song" in {
-    val encoded = encodedPath(mp3Song1)
-    getJson(Uri.unsafeParse(s"data/song/$encoded")).map { json =>
+    getJson(Uri.unsafeParse(s"data/song/${encodedPath(mp3Song1)}")).map { json =>
       (json \ "title").as[String] shouldReturn "Song One"
       (json \ "artistName").as[String] shouldReturn "TestArtist"
       (json \ "albumName").as[String] shouldReturn "TestAlbum"
@@ -121,8 +119,7 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
   }
 
   "nextSong returns the following track" in {
-    val encoded = encodedPath(mp3Song1)
-    getJson(Uri.unsafeParse(s"data/nextSong/$encoded")).map { json =>
+    getJson(Uri.unsafeParse(s"data/nextSong/${encodedPath(mp3Song1)}")).map { json =>
       (json \ "title").as[String] shouldReturn "Song Two"
       (json \ "track").as[Int] shouldReturn 2
     }

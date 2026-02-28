@@ -1,5 +1,6 @@
 package server
 
+import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
 import backend.module.TestModuleConfiguration
@@ -13,11 +14,9 @@ import play.api.libs.json.{JsArray, JsObject, Json, JsValue}
 import sttp.client3
 import sttp.client3.{asByteArray, HttpClientFutureBackend, ResolveRelativeUrisBackend, Response}
 import sttp.client3.playJson._
-import sttp.model.Uri
+import sttp.model.{StatusCode, Uri}
 
 import scala.concurrent.Future
-
-import cats.implicits.catsSyntaxApplicativeByName
 
 import common.concurrency.DaemonExecutionContext
 import common.guice.RichModule.richModule
@@ -39,6 +38,7 @@ private abstract class HttpServerSpecs(serverModule: Module)
     extends AsyncFreeSpec
     with AsyncAuxSpecs
     with BeforeAndAfterAll {
+  import HttpServerSpecs.{ErrorBody, SuccessBody}
   // Apparently, trying to load multiple test suites in HttpTestSuite would only work properly if
   // using the default execution context. Since that one is single threaded, and we don't want to
   // be, we have to resort to a few hacks:
@@ -48,7 +48,8 @@ private abstract class HttpServerSpecs(serverModule: Module)
   //    framework.
   private var runningServer: RunningServer = _
   protected override def beforeAll() = runningServer = injector.instance[Server].start(port).get
-  protected override def afterAll() = runningServer.stop().whenA(runningServer != null)
+  protected override def afterAll() =
+    if (runningServer != null) runningServer.stop() else Future.successful(())
   protected def baseTestModule: TestModuleConfiguration =
     TestModuleConfiguration(_ec = DaemonExecutionContext("HttpServerSpecs", n = 20))
   /** Used to override `serverModule`. */
@@ -58,7 +59,7 @@ private abstract class HttpServerSpecs(serverModule: Module)
   )
 
   private val port = HttpServerSpecs.port.getAndIncrement()
-  private def backend = ResolveRelativeUrisBackend(
+  private lazy val backend = ResolveRelativeUrisBackend(
     HttpClientFutureBackend(),
     Uri(scheme = "http", host = "localhost", port = port),
   )
@@ -68,14 +69,14 @@ private abstract class HttpServerSpecs(serverModule: Module)
     backend.send(request.get(u).response(asByteArray)).map(_.body.getOrThrow.array)
   def getString(u: Uri): Future[String] =
     backend.send(request.get(u)).map(_.body.getOrThrow)
-  def getRaw(u: Uri): Future[Response[_]] = backend.send(request.get(u))
+  def getRaw(u: Uri): Future[Response[Either[ErrorBody, SuccessBody]]] = backend.send(request.get(u))
   def getJson(u: Uri): Future[JsValue] =
     backend.send(request.get(u).response(asJson[JsValue])).map(_.body.getOrThrow)
 
   def putString(u: Uri, json: JsValue): Future[String] =
     backend.send(request.put(u).body(json)).map(_.body.getOrThrow)
-  def putRaw(u: Uri): Future[Response[_]] = backend.send(request.put(u))
-  def patchRaw(u: Uri): Future[Response[_]] = backend.send(request.patch(u))
+  def putRaw(u: Uri): Future[Response[Either[ErrorBody, SuccessBody]]] = backend.send(request.put(u))
+  def patchRaw(u: Uri): Future[Response[Either[ErrorBody, SuccessBody]]] = backend.send(request.patch(u))
 
   def postString(u: Uri): Future[String] = post(u).map(_.body.getOrThrow)
   def postString(u: Uri, json: JsValue): Future[String] =
@@ -83,11 +84,20 @@ private abstract class HttpServerSpecs(serverModule: Module)
   def postStringWithBody(u: Uri, body: String): Future[String] =
     backend.send(request.post(u).body(body)).map(_.body.getOrThrow)
   def postJson(u: Uri): Future[JsValue] = post(u).map(_.body.getOrThrow |> Json.parse)
-  def postRaw(u: Uri): Future[Response[_]] = post(u)
+  def postRaw(u: Uri): Future[Response[Either[ErrorBody, SuccessBody]]] = post(u)
   private def post(u: Uri) = backend.send(request.post(u))
 
   def deleteString(u: Uri): Future[String] =
     backend.send(request.delete(u)).map(_.body.getOrThrow)
+
+  private lazy val canonicalRoot = new File(".").getCanonicalFile.toPath
+  protected def relativePath(file: File): String =
+    canonicalRoot.relativize(file.toPath).toString
+
+  implicit class richResponseFutureSpecs(private val $ : Future[Response[Either[ErrorBody, SuccessBody]]]) {
+    def codeShouldEventuallyReturn(expected: StatusCode): Future[Assertion] =
+      $.map(_.code shouldReturn expected)
+  }
 
   // TODO Maybe use https://github.com/skyscreamer/JSONassert?
   implicit class jsValueSpecs(private val $ : JsValue) {
@@ -98,6 +108,7 @@ private abstract class HttpServerSpecs(serverModule: Module)
           for (k <- o2.keys)
             o1.value(k) shouldContain o2.value(k)
         case (a1: JsArray, a2: JsArray) =>
+          a1.value.size should be >= a2.value.size
           for (i <- a2.value.indices)
             a1.value(i) shouldContain a2.value(i)
         case (j1, j2) => j1 shouldReturn j2
@@ -108,5 +119,7 @@ private abstract class HttpServerSpecs(serverModule: Module)
 }
 
 private object HttpServerSpecs {
+  type ErrorBody = String
+  type SuccessBody = String
   private val port = new AtomicInteger(4242)
 }
