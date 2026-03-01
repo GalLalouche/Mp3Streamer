@@ -4,11 +4,14 @@ import java.time.LocalDate
 
 import backend.mb.AlbumType
 import backend.new_albums.NewAlbum
+import backend.new_albums.filler.ExistingAlbumsModules
 import backend.new_albums.filler.storage.{LastFetchTime, NewAlbumStorage, StoredNewAlbum}
 import backend.recon.{Artist, ArtistReconStorage, ReconID, ReconIDArbitrary, StoredReconResult}
 import com.google.inject.Module
+import models.FakeModelFactory
+import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import play.api.libs.json.{Json, JsString}
+import play.api.libs.json.{JsArray, Json, JsString}
 import sttp.client3.UriContext
 import sttp.model.StatusCode
 
@@ -17,15 +20,30 @@ import scala.concurrent.Future
 import cats.implicits.toFunctorOps
 import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 
+import common.guice.RichModule.richModule
+import common.json.RichJson._
 import common.test.BeforeAndAfterEachAsync
+import common.test.memory_ref.MemoryRoot
 
 private class NewAlbumTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)
     with BeforeAndAfterEachAsync {
+  protected override def overridingModule: Module =
+    FakeScoreModule.module.overrideWith(ExistingAlbumsModules.lazyAlbums)
 
   private val artistReconStorage = injector.instance[ArtistReconStorage]
   private val lastFetchTime = injector.instance[LastFetchTime]
   private val newAlbumStorage = injector.instance[NewAlbumStorage]
+
+  // Create a song for the happy-path artist so ExistingAlbums can find it.
+  injector
+    .instance[FakeMusicFiles]
+    .copySong(
+      new FakeModelFactory(injector.instance[MemoryRoot])
+        .song(artistName = "artist with albums", albumName = "Existing Album"),
+    )
+
+  private def indexed = getString(uri"index/index")
 
   // Cascades via FK to artist_last_album_update → new_album, and to artist_score.
   override def afterEach(): Future[_] = artistReconStorage.utils.clearTable()
@@ -116,5 +134,46 @@ private class NewAlbumTest(serverModule: Module)
       markArtistWithFetchTime(artistName) *>>
       insertNewAlbum(reconId, "some album to ignore", artistName) *>>
       putRaw(uri"new_albums/album/ignore/$reconId") codeShouldEventuallyReturn StatusCode.NoContent
+  }
+
+  "GET albums for artist with albums returns album array" in {
+    val artistName = "artist with albums"
+    val reconId1 = ReconIDArbitrary.gen.sample.get.id
+    val reconId2 = ReconIDArbitrary.gen.sample.get.id
+    // FakeClock is at epoch; album dates at/before epoch pass isReleased.
+    // resetToEpoch gives age=0 < 90d, so filler skips the external fetch.
+    indexed *>>
+      storeArtist(artistName) *>>
+      markArtistWithFetchTime(artistName) *>>
+      insertNewAlbum(
+        reconId1,
+        "First Album",
+        artistName,
+        epochDay = LocalDate.ofEpochDay(0),
+      ) *>>
+      insertNewAlbum(
+        reconId2,
+        "Second Album",
+        artistName,
+        albumType = AlbumType.EP,
+        epochDay = LocalDate.ofEpochDay(0),
+      ) *>>
+      getJson(uri"new_albums/albums/$artistName").map { result =>
+        val albums = result.as[JsArray].value
+        albums should have size 2
+        // Sorted by (albumType ordinal, -date): Album first, then EP.
+        val first = albums(0)
+        first.str("title") shouldReturn "First Album"
+        first.str("date") shouldReturn "1970/01/01"
+        first.str("artistName") shouldReturn artistName
+        first.str("albumType") shouldReturn "Album"
+        first.str("reconID") shouldReturn reconId1
+        val second = albums(1)
+        second.str("title") shouldReturn "Second Album"
+        second.str("date") shouldReturn "1970/01/01"
+        second.str("artistName") shouldReturn artistName
+        second.str("albumType") shouldReturn "EP"
+        second.str("reconID") shouldReturn reconId2
+      }
   }
 }

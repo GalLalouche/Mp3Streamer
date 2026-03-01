@@ -10,6 +10,7 @@ import sttp.client3.UriContext
 import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 
 import common.json.RichJson._
+import common.rich.collections.RichTraversableOnce._
 import common.test.memory_ref.MemoryRoot
 
 private class SearchTest(serverModule: Module) extends HttpServerSpecs(serverModule) {
@@ -33,13 +34,12 @@ private class SearchTest(serverModule: Module) extends HttpServerSpecs(serverMod
     ),
   )
 
-  // Indexing is lazy: triggered once, memoized via Future.
-  private lazy val indexed = getString(uri"index/index")
+  private def indexed = getString(uri"index/index")
 
   "search by song title" in {
     indexed *>> getJson(uri"search/Bohemian").map { result =>
       result.as[JsObject].keys shouldReturn Set("songs", "albums", "artists")
-      val song = result.array("songs").value.head
+      val song = result.array("songs").value.single
       song.str("title") shouldReturn "Bohemian Rhapsody"
       song.str("artistName") shouldReturn "Queen"
       song.str("albumName") shouldReturn "Night at the Opera"
@@ -50,13 +50,13 @@ private class SearchTest(serverModule: Module) extends HttpServerSpecs(serverMod
 
   "search by artist name" in {
     indexed *>> getJson(uri"search/Queen").map { result =>
-      val artist = result.array("artists").value.head
+      val artist = result.array("artists").value.single
       artist.str("name") shouldReturn "Queen"
-      val album = artist.objects("albums").head
+      val album = artist.objects("albums").single
       album.str("title") shouldReturn "Night at the Opera"
       album.str("artistName") shouldReturn "Queen"
       album.int("year") shouldReturn 2000
-      val song = album.array("songs").value.head
+      val song = album.array("songs").value.single
       song.str("title") shouldReturn "Bohemian Rhapsody"
       song.str("artistName") shouldReturn "Queen"
       song.str("albumName") shouldReturn "Night at the Opera"
