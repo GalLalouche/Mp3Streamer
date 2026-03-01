@@ -13,8 +13,8 @@ import common.json.Jsonable
 import common.json.RichJson._
 import common.json.ToJsonableOps._
 import common.json.saver.JsonableSaver
-import common.rich.RichT._
 import common.path.ref.DirectoryRef
+import common.rich.RichT._
 import common.test.AuxSpecs
 import common.test.memory_ref.MemoryRoot
 

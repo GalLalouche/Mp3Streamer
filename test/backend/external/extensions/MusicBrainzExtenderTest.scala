@@ -2,9 +2,10 @@ package backend.external.extensions
 
 import backend.external.{Host, LinkMark, MarkedLink}
 import backend.recon.{Album, Artist}
-import common.test.AuxSpecs
 import io.lemonlabs.uri.Url
 import org.scalatest.freespec.AnyFreeSpec
+
+import common.test.AuxSpecs
 
 class MusicBrainzExtenderTest extends AnyFreeSpec with AuxSpecs {
   "Preseeded" - {

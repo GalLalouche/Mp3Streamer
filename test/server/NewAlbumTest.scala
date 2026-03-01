@@ -15,8 +15,8 @@ import sttp.model.StatusCode
 import scala.concurrent.Future
 
 import cats.implicits.toFunctorOps
-
 import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
+
 import common.test.BeforeAndAfterEachAsync
 
 private class NewAlbumTest(serverModule: Module)
@@ -54,7 +54,11 @@ private class NewAlbumTest(serverModule: Module)
     val rid = ReconID(reconId)
     newAlbumStorage.store(
       rid,
-      StoredNewAlbum(new NewAlbum(albumTitle, epochDay, Artist(artistName), albumType, rid), isRemoved, isIgnored),
+      StoredNewAlbum(
+        new NewAlbum(albumTitle, epochDay, Artist(artistName), albumType, rid),
+        isRemoved,
+        isIgnored,
+      ),
     )
   }
 
@@ -74,20 +78,26 @@ private class NewAlbumTest(serverModule: Module)
   }
 
   "PUT artist remove returns 204" in {
-    putRaw(uri"new_albums/artist/remove/some_artist") codeShouldEventuallyReturn StatusCode.NoContent
+    putRaw(
+      uri"new_albums/artist/remove/some_artist",
+    ) codeShouldEventuallyReturn StatusCode.NoContent
   }
 
   "PUT artist ignore returns 204" in {
     val artistName = "artist to ignore"
     storeArtist(artistName) *>>
-      putRaw(uri"new_albums/artist/ignore/$artistName") codeShouldEventuallyReturn StatusCode.NoContent
+      putRaw(
+        uri"new_albums/artist/ignore/$artistName",
+      ) codeShouldEventuallyReturn StatusCode.NoContent
   }
 
   "PUT artist unignore returns 204" in {
     val artistName = "artist to unignore"
     storeArtist(artistName) *>>
       markArtistIgnored(artistName) *>>
-      putRaw(uri"new_albums/artist/unignore/$artistName") codeShouldEventuallyReturn StatusCode.NoContent
+      putRaw(
+        uri"new_albums/artist/unignore/$artistName",
+      ) codeShouldEventuallyReturn StatusCode.NoContent
   }
 
   "PUT album remove returns 204" in {

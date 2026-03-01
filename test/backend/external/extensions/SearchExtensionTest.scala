@@ -2,9 +2,10 @@ package backend.external.extensions
 
 import backend.external.{Host, LinkMark}
 import backend.recon.Artist
-import common.test.AuxSpecs
 import io.lemonlabs.uri.Url
 import org.scalatest.freespec.AnyFreeSpec
+
+import common.test.AuxSpecs
 
 class SearchExtensionTest extends AnyFreeSpec with AuxSpecs {
   "apply" in {

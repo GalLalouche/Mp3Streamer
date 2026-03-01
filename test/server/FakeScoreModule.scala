@@ -2,11 +2,11 @@ package server
 
 import backend.score.{ModelScore, ScoreBasedProbability, ScoreBasedProbabilityFactory}
 import com.google.inject.{Module, Provides}
+import models.Song
 import net.codingwell.scalaguice.ScalaModule
 
 import common.Percentage
 import common.path.ref.FileRef
-import models.Song
 
 /**
  * The real ScoreBasedProbabilityFactory has assertions that fail with very few songs (expects a

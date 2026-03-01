@@ -15,48 +15,58 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
   private val factory = new FakeModelFactory(injector.instance[MemoryRoot])
   private val mf = injector.instance[FakeMusicFiles]
 
-  private val mp3Song1 = mf.copySong(factory.song(
-    filePath = "song1.mp3",
-    title = "Song One",
-    artistName = "TestArtist",
-    albumName = "TestAlbum",
-    trackNumber = 1,
-    year = 2020,
-  ))
-  mf.copySong(factory.song(
-    filePath = "song2.mp3",
-    title = "Song Two",
-    artistName = "TestArtist",
-    albumName = "TestAlbum",
-    trackNumber = 2,
-    year = 2020,
-  ))
-  mf.copySong(factory.song(
-    filePath = "song3.flac",
-    title = "Song Three",
-    artistName = "TestArtist",
-    albumName = "TestAlbum",
-    trackNumber = 3,
-    year = 2020,
-  ))
-  private val disc1Song = mf.copySong(factory.song(
-    filePath = "disc1_song.mp3",
-    title = "Disc 1 Song",
-    artistName = "DiscArtist",
-    albumName = "DiscAlbum",
-    trackNumber = 1,
-    year = 2021,
-    discNumber = Some("1"),
-  ))
-  private val disc2Song = mf.copySong(factory.song(
-    filePath = "disc2_song.mp3",
-    title = "Disc 2 Song",
-    artistName = "DiscArtist",
-    albumName = "DiscAlbum",
-    trackNumber = 2,
-    year = 2021,
-    discNumber = Some("2"),
-  ))
+  private val mp3Song1 = mf.copySong(
+    factory.song(
+      filePath = "song1.mp3",
+      title = "Song One",
+      artistName = "TestArtist",
+      albumName = "TestAlbum",
+      trackNumber = 1,
+      year = 2020,
+    ),
+  )
+  mf.copySong(
+    factory.song(
+      filePath = "song2.mp3",
+      title = "Song Two",
+      artistName = "TestArtist",
+      albumName = "TestAlbum",
+      trackNumber = 2,
+      year = 2020,
+    ),
+  )
+  mf.copySong(
+    factory.song(
+      filePath = "song3.flac",
+      title = "Song Three",
+      artistName = "TestArtist",
+      albumName = "TestAlbum",
+      trackNumber = 3,
+      year = 2020,
+    ),
+  )
+  private val disc1Song = mf.copySong(
+    factory.song(
+      filePath = "disc1_song.mp3",
+      title = "Disc 1 Song",
+      artistName = "DiscArtist",
+      albumName = "DiscAlbum",
+      trackNumber = 1,
+      year = 2021,
+      discNumber = Some("1"),
+    ),
+  )
+  private val disc2Song = mf.copySong(
+    factory.song(
+      filePath = "disc2_song.mp3",
+      title = "Disc 2 Song",
+      artistName = "DiscArtist",
+      albumName = "DiscAlbum",
+      trackNumber = 2,
+      year = 2021,
+      discNumber = Some("2"),
+    ),
+  )
 
   private def encode(path: String): String = URLEncoder.encode(path, "UTF-8")
   private def encodedPath(song: MemorySong): String = encode(song.file.path)

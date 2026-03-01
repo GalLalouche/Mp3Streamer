@@ -69,14 +69,17 @@ private abstract class HttpServerSpecs(serverModule: Module)
     backend.send(request.get(u).response(asByteArray)).map(_.body.getOrThrow.array)
   def getString(u: Uri): Future[String] =
     backend.send(request.get(u)).map(_.body.getOrThrow)
-  def getRaw(u: Uri): Future[Response[Either[ErrorBody, SuccessBody]]] = backend.send(request.get(u))
+  def getRaw(u: Uri): Future[Response[Either[ErrorBody, SuccessBody]]] =
+    backend.send(request.get(u))
   def getJson(u: Uri): Future[JsValue] =
     backend.send(request.get(u).response(asJson[JsValue])).map(_.body.getOrThrow)
 
   def putString(u: Uri, json: JsValue): Future[String] =
     backend.send(request.put(u).body(json)).map(_.body.getOrThrow)
-  def putRaw(u: Uri): Future[Response[Either[ErrorBody, SuccessBody]]] = backend.send(request.put(u))
-  def patchRaw(u: Uri): Future[Response[Either[ErrorBody, SuccessBody]]] = backend.send(request.patch(u))
+  def putRaw(u: Uri): Future[Response[Either[ErrorBody, SuccessBody]]] =
+    backend.send(request.put(u))
+  def patchRaw(u: Uri): Future[Response[Either[ErrorBody, SuccessBody]]] =
+    backend.send(request.patch(u))
 
   def postString(u: Uri): Future[String] = post(u).map(_.body.getOrThrow)
   def postString(u: Uri, json: JsValue): Future[String] =
@@ -94,7 +97,9 @@ private abstract class HttpServerSpecs(serverModule: Module)
   protected def relativePath(file: File): String =
     canonicalRoot.relativize(file.toPath).toString
 
-  implicit class richResponseFutureSpecs(private val $ : Future[Response[Either[ErrorBody, SuccessBody]]]) {
+  implicit class richResponseFutureSpecs(
+      private val $ : Future[Response[Either[ErrorBody, SuccessBody]]],
+  ) {
     def codeShouldEventuallyReturn(expected: StatusCode): Future[Assertion] =
       $.map(_.code shouldReturn expected)
   }

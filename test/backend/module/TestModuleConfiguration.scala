@@ -10,8 +10,8 @@ import scala.concurrent.ExecutionContext
 
 import common.io.BaseDirectory
 import common.io.WSAliases._
-import common.rich.RichT._
 import common.path.ref.DirectoryRef
+import common.rich.RichT._
 import common.test.memory_ref.MemoryRoot
 
 // This is a case class so its copy constructor could be used by clients in order to configure it.

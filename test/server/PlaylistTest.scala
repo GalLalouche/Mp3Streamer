@@ -11,7 +11,6 @@ import sttp.client3.UriContext
 import scala.concurrent.Future
 
 import cats.implicits.catsSyntaxFlatMapOps
-
 import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
@@ -25,7 +24,8 @@ import common.test.memory_ref.MemoryRoot
 private class PlaylistTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)
     with BeforeAndAfterEachAsync {
-  override def afterEach(): Future[Unit] = Future.successful(injector.instance[DirectoryRef, RootDirectory].clear())
+  override def afterEach(): Future[Unit] =
+    Future.successful(injector.instance[DirectoryRef, RootDirectory].clear())
   "set then get" in {
     putArbPlaylist("foobar") >>= (playlist =>
       checkAll(

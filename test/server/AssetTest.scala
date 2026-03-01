@@ -10,7 +10,9 @@ import common.rich.RichFile.richFile
 
 private class AssetTest(serverModule: Module) extends HttpServerSpecs(serverModule) {
   "ts route returns typescript file" in {
-    getBytes(uri"/ts/common.ts") shouldEventuallyReturn new File("public/typescripts/common.ts").bytes
+    getBytes(uri"/ts/common.ts") shouldEventuallyReturn new File(
+      "public/typescripts/common.ts",
+    ).bytes
   }
 
   "ts route returns 404 for nonexistent file" in {

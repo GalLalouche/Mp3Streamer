@@ -55,7 +55,8 @@ private class RecentTest(serverModule: Module) extends HttpServerSpecs(serverMod
   import mj.albumDirJsonifier
 
   private def verifyAlbums(path: String, expected: AlbumDir*) =
-    getJson(Uri.unsafeParse(s"recent/$path")).map(_.parse[Seq[AlbumDir]] shouldReturn expected.toVector)
+    getJson(Uri.unsafeParse(s"recent/$path"))
+      .map(_.parse[Seq[AlbumDir]] shouldReturn expected.toVector)
 
   // Advance clock well past epoch so date arithmetic works.
   clock.advance(TimeUnit.DAYS.toMillis(100))

@@ -9,6 +9,7 @@ import sttp.client3.UriContext
 import scala.concurrent.Future
 
 import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
+
 import common.test.BeforeAndAfterEachAsync
 
 private class LyricsTest(serverModule: Module)
@@ -32,7 +33,9 @@ private class LyricsTest(serverModule: Module)
   private val instrumentalSongResponse =
     "<img src='assets/images/TrebleClef.png' width='30' height='68' /><b>Instrumental</b><br><br>Source: Manual override"
   "POST instrumental/song marks song as instrumental" in {
-    postString(uri"lyrics/instrumental/song/$songPath") shouldEventuallyReturn instrumentalSongResponse
+    postString(
+      uri"lyrics/instrumental/song/$songPath",
+    ) shouldEventuallyReturn instrumentalSongResponse
   }
 
   "GET returns cached instrumental after setting song as instrumental" in {

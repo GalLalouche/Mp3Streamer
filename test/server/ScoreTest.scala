@@ -12,6 +12,7 @@ import sttp.model.StatusCode
 import scala.concurrent.Future
 
 import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
+
 import common.storage.Storage
 import common.test.BeforeAndAfterEachAsync
 

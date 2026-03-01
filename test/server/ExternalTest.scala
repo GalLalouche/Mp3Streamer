@@ -10,7 +10,6 @@ import sttp.client3.UriContext
 import scala.concurrent.Future
 
 import cats.implicits.catsSyntaxFlatMapOps
-
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.test.BeforeAndAfterEachAsync
@@ -33,9 +32,9 @@ private class ExternalTest(module: Module)
       albumReconStorage.utils.clearOrCreateTable()
 
   // All external APIs are mocked to 404; these just verify the endpoints respond with valid JSON.
-  "get external links" in { getJson(uri"external/$songPath") >| succeed }
-  "refresh artist" in { getJson(uri"external/refresh/artist/$songPath") >| succeed }
-  "refresh album" in { getJson(uri"external/refresh/album/$songPath") >| succeed }
+  "get external links" in getJson(uri"external/$songPath") >| succeed
+  "refresh artist" in getJson(uri"external/refresh/artist/$songPath") >| succeed
+  "refresh album" in getJson(uri"external/refresh/album/$songPath") >| succeed
   "update artist recon" in {
     val reconId = ReconIDArbitrary.gen.sample.get.id
     postString(uri"external/recons/$songPath", Json.obj("artist" -> reconId)) >| succeed

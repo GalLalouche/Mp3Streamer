@@ -1,8 +1,9 @@
 package backend.external
 
-import common.test.AuxSpecs
 import io.lemonlabs.uri.Url
 import org.scalatest.freespec.AnyFreeSpec
+
+import common.test.AuxSpecs
 
 class HostTest extends AnyFreeSpec with AuxSpecs {
   "fromUrl" - {

@@ -1,8 +1,9 @@
 package genre
 
-import common.test.AuxSpecs
 import genre.Genre._
 import org.scalatest.freespec.AnyFreeSpec
+
+import common.test.AuxSpecs
 
 class EnumGenreTest extends AnyFreeSpec with AuxSpecs {
   "ordering" - {
