@@ -24,7 +24,14 @@ class PythonLanguageDetectorTest extends AnyFreeSpec with AuxSpecs {
 
   "Multiple processes" - {
     lazy val $ = PythonLanguageDetector.create(1.millisecond)
-    def detect(s: String) = $.detect(s).value
+    def detect(s: String) = {
+      val result = $.detect(s).value
+      // Sleep to ensure the 1ms idle-monitor has had time to kill the previous process.
+      // Without this, under CPU load, the monitor thread may not get scheduled between test cases,
+      // causing detect() to reuse the still-alive process instead of creating a new one.
+      Thread.sleep(50)
+      result
+    }
     "Hebrew" taggedAs Slow in { detect("דגשדגשדגשדג") shouldReturn "he" }
     "Japanese" taggedAs Slow in { detect("センチメートル") shouldReturn "ja" }
     "Chinese" taggedAs Slow in { detect("汉英词典") shouldReturn "zh-cn" }
