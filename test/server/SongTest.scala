@@ -9,6 +9,7 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import play.api.libs.json.{JsArray, JsObject, JsValue}
 import sttp.model.Uri
 
+import common.json.RichJson._
 import common.test.memory_ref.MemoryRoot
 
 private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModule) {
@@ -72,11 +73,25 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
   private def encodedPath(song: MemorySong): String = encode(song.file.path)
   private def encodedAlbumPath(song: MemorySong): String = encode(song.file.parent.path)
 
+  private def verifySong(
+      json: JsValue,
+      title: String,
+      artistName: String,
+      albumName: String,
+      track: Int,
+      year: Int,
+  ) = {
+    json.str("title") shouldReturn title
+    json.str("artistName") shouldReturn artistName
+    json.str("albumName") shouldReturn albumName
+    json.int("track") shouldReturn track
+    json.int("year") shouldReturn year
+  }
+
   "randomSong returns a valid song" in {
     getJson(Uri.unsafeParse("data/randomSong")).map { json =>
-      val obj = json.as[JsObject]
       val knownTitles = Set("Song One", "Song Two", "Song Three", "Disc 1 Song", "Disc 2 Song")
-      knownTitles should contain((obj \ "title").as[String])
+      knownTitles should contain(json.str("title"))
     }
   }
 
@@ -96,9 +111,9 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
     getJson(Uri.unsafeParse(s"data/album/${encodedAlbumPath(mp3Song1)}")).map { json =>
       val songs = json.as[JsArray]
       songs.value should have size 3
-      (songs(0) \ "title").as[String] shouldReturn "Song One"
-      (songs(1) \ "title").as[String] shouldReturn "Song Two"
-      (songs(2) \ "title").as[String] shouldReturn "Song Three"
+      verifySong(songs(0), "Song One", "TestArtist", "TestAlbum", 1, 2020)
+      verifySong(songs(1), "Song Two", "TestArtist", "TestAlbum", 2, 2020)
+      verifySong(songs(2), "Song Three", "TestArtist", "TestAlbum", 3, 2020)
     }
   }
 
@@ -106,7 +121,7 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
     getJson(Uri.unsafeParse(s"data/disc/1/${encodedAlbumPath(disc1Song)}")).map { json =>
       val songs = json.as[JsArray]
       songs.value should have size 1
-      (songs(0) \ "title").as[String] shouldReturn "Disc 1 Song"
+      verifySong(songs(0), "Disc 1 Song", "DiscArtist", "DiscAlbum", 1, 2021)
     }
   }
 
@@ -114,24 +129,19 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
     getJson(Uri.unsafeParse(s"data/disc/2/${encodedAlbumPath(disc2Song)}")).map { json =>
       val songs = json.as[JsArray]
       songs.value should have size 1
-      (songs(0) \ "title").as[String] shouldReturn "Disc 2 Song"
+      verifySong(songs(0), "Disc 2 Song", "DiscArtist", "DiscAlbum", 2, 2021)
     }
   }
 
   "song returns the requested song" in {
-    getJson(Uri.unsafeParse(s"data/song/${encodedPath(mp3Song1)}")).map { json =>
-      (json \ "title").as[String] shouldReturn "Song One"
-      (json \ "artistName").as[String] shouldReturn "TestArtist"
-      (json \ "albumName").as[String] shouldReturn "TestAlbum"
-      (json \ "track").as[Int] shouldReturn 1
-      (json \ "year").as[Int] shouldReturn 2020
-    }
+    getJson(Uri.unsafeParse(s"data/song/${encodedPath(mp3Song1)}")).map(
+      verifySong(_, "Song One", "TestArtist", "TestAlbum", 1, 2020),
+    )
   }
 
   "nextSong returns the following track" in {
-    getJson(Uri.unsafeParse(s"data/nextSong/${encodedPath(mp3Song1)}")).map { json =>
-      (json \ "title").as[String] shouldReturn "Song Two"
-      (json \ "track").as[Int] shouldReturn 2
-    }
+    getJson(Uri.unsafeParse(s"data/nextSong/${encodedPath(mp3Song1)}")).map(
+      verifySong(_, "Song Two", "TestArtist", "TestAlbum", 2, 2020),
+    )
   }
 }
