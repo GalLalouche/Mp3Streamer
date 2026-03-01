@@ -31,8 +31,8 @@ private class ScoreTest(serverModule: Module)
   private val albumScorer = injector.instance[StorageScorer[Album]]
   private val trackScorer = injector.instance[StorageScorer[Track]]
 
-  // Safe: StorageScorer's self-type is StorageTemplate, which extends Storage.
-  // Guice binds to concrete classes (e.g., ArtistScoreStorage) that satisfy both.
+  // StorageScorer's self-type is StorageTemplate which extends Storage;
+  // Guice binds concrete classes (e.g., ArtistScoreStorage) that satisfy both.
   private def asStorage(scorer: StorageScorer[_]): Storage[_, _] =
     scorer.asInstanceOf[Storage[_, _]]
 

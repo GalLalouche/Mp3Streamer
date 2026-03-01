@@ -68,17 +68,14 @@ private class NewAlbumTest(serverModule: Module)
       epochDay: LocalDate = LocalDate.of(2024, 1, 15),
       isRemoved: Boolean = false,
       isIgnored: Boolean = false,
-  ): Future[Unit] = {
-    val rid = ReconID(reconId)
-    newAlbumStorage.store(
-      rid,
-      StoredNewAlbum(
-        new NewAlbum(albumTitle, epochDay, Artist(artistName), albumType, rid),
-        isRemoved,
-        isIgnored,
-      ),
-    )
-  }
+  ): Future[Unit] = newAlbumStorage.store(
+    ReconID(reconId),
+    StoredNewAlbum(
+      new NewAlbum(albumTitle, epochDay, Artist(artistName), albumType, ReconID(reconId)),
+      isRemoved,
+      isIgnored,
+    ),
+  )
 
   "GET albums returns empty array when no data exists" in {
     getJson(uri"new_albums/albums") shouldEventuallyReturn Json.arr()

@@ -70,5 +70,4 @@ private class SearchTest(serverModule: Module) extends HttpServerSpecs(serverMod
       result.array("artists").value shouldBe empty
     }
   }
-
 }

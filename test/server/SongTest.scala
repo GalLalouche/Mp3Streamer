@@ -1,12 +1,15 @@
 package server
 
 import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 import com.google.inject.Module
 import models.{FakeModelFactory, MemorySong}
 import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions._
+import org.scalatest.Assertion
 import play.api.libs.json.{JsArray, JsObject, JsValue}
+import sttp.client3.UriContext
 import sttp.model.Uri
 
 import common.json.RichJson._
@@ -69,9 +72,10 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
     ),
   )
 
-  private def encode(path: String): String = URLEncoder.encode(path, "UTF-8")
-  private def encodedPath(song: MemorySong): String = encode(song.file.path)
-  private def encodedAlbumPath(song: MemorySong): String = encode(song.file.parent.path)
+  private def encodedPath(song: MemorySong): String =
+    URLEncoder.encode(song.file.path, StandardCharsets.UTF_8)
+  private def encodedAlbumPath(song: MemorySong): String =
+    URLEncoder.encode(song.file.parent.path, StandardCharsets.UTF_8)
 
   private def verifySong(
       json: JsValue,
@@ -80,7 +84,7 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
       albumName: String,
       track: Int,
       year: Int,
-  ) = {
+  ): Assertion = {
     json.str("title") shouldReturn title
     json.str("artistName") shouldReturn artistName
     json.str("albumName") shouldReturn albumName
@@ -89,20 +93,20 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
   }
 
   "randomSong returns a valid song" in {
-    getJson(Uri.unsafeParse("data/randomSong")).map { json =>
+    getJson(uri"data/randomSong").map { json =>
       val knownTitles = Set("Song One", "Song Two", "Song Three", "Disc 1 Song", "Disc 2 Song")
       knownTitles should contain(json.str("title"))
     }
   }
 
   "randomSong/mp3 returns an mp3 song" in {
-    getJson(Uri.unsafeParse("data/randomSong/mp3")).map { json =>
+    getJson(uri"data/randomSong/mp3").map { json =>
       json.as[JsObject].keys should contain("mp3")
     }
   }
 
   "randomSong/flac returns a flac song" in {
-    getJson(Uri.unsafeParse("data/randomSong/flac")).map { json =>
+    getJson(uri"data/randomSong/flac").map { json =>
       json.as[JsObject].keys should contain("flac")
     }
   }

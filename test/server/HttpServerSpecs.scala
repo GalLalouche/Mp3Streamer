@@ -30,7 +30,7 @@ import common.test.AsyncAuxSpecs
  * Instead, it initializes an HTTP server and just makes plain old HTTP requests to it. Mind you,
  * this not actually a proper "end-to-end" test, since, for example, it will not write to disk.
  *
- * @serverModule
+ * @param serverModule
  *   Should contain a binding for [[Server]].
  */
 @Slow
@@ -47,9 +47,9 @@ private abstract class HttpServerSpecs(serverModule: Module)
   // 2. The execution test passed via guice is different from the one provided by the async test
   //    framework.
   private var runningServer: RunningServer = _
-  protected override def beforeAll() = runningServer = injector.instance[Server].start(port).get
-  protected override def afterAll() =
-    if (runningServer != null) runningServer.stop() else Future.successful(())
+  protected override def beforeAll() =
+    runningServer = injector.instance[Server].start(port).get
+  protected override def afterAll() = runningServer.stop()
   protected def baseTestModule: TestModuleConfiguration =
     TestModuleConfiguration(_ec = DaemonExecutionContext("HttpServerSpecs", n = 20))
   /** Used to override `serverModule`. */
@@ -106,19 +106,16 @@ private abstract class HttpServerSpecs(serverModule: Module)
 
   // TODO Maybe use https://github.com/skyscreamer/JSONassert?
   implicit class jsValueSpecs(private val $ : JsValue) {
-    def shouldContain(other: JsValue): Assertion = {
-      ($, other) match {
-        case (o1: JsObject, o2: JsObject) =>
-          o1.value.keys shouldContainAllOf o2.keys
-          for (k <- o2.keys)
-            o1.value(k) shouldContain o2.value(k)
-        case (a1: JsArray, a2: JsArray) =>
-          a1.value.size should be >= a2.value.size
-          for (i <- a2.value.indices)
-            a1.value(i) shouldContain a2.value(i)
-        case (j1, j2) => j1 shouldReturn j2
-      }
-      Succeeded
+    def shouldContain(other: JsValue): Assertion = ($, other) match {
+      case (o1: JsObject, o2: JsObject) =>
+        o1.value.keys shouldContainAllOf o2.keys
+        for (k <- o2.keys) o1.value(k) shouldContain o2.value(k)
+        Succeeded
+      case (a1: JsArray, a2: JsArray) =>
+        a1.value.size should be >= a2.value.size
+        for (i <- a2.value.indices) a1.value(i) shouldContain a2.value(i)
+        Succeeded
+      case (j1, j2) => j1 shouldReturn j2
     }
   }
 }

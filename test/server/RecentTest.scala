@@ -1,13 +1,14 @@
 package server
 
 import java.time.LocalDateTime
-import java.util.concurrent.TimeUnit
 
 import com.google.inject.Module
 import models.{AlbumDir, FakeModelFactory, ModelJsonable}
 import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions._
 import sttp.model.Uri
+
+import scala.concurrent.duration._
 
 import common.FakeClock
 import common.json.ToJsonableOps.parseJsValue
@@ -58,13 +59,14 @@ private class RecentTest(serverModule: Module) extends HttpServerSpecs(serverMod
     getJson(Uri.unsafeParse(s"recent/$path"))
       .map(_.parse[Seq[AlbumDir]] shouldReturn expected.toVector)
 
-  // Advance clock well past epoch so date arithmetic works.
-  clock.advance(TimeUnit.DAYS.toMillis(100))
+  // Start well past epoch; subtracting N days from near-zero would produce a pre-epoch
+  // timestamp and the 'since' filter would match nothing.
+  clock.advance(100.days.toMillis)
   private val oldRegular = createAlbumWithSong()
   clock.advance(1)
   private val oldDouble = createDoubleAlbumWithSongs()
 
-  clock.advance(TimeUnit.DAYS.toMillis(50))
+  clock.advance(50.days.toMillis)
   private val newRegular = createAlbumWithSong()
   clock.advance(1)
   private val newDouble = createDoubleAlbumWithSongs()

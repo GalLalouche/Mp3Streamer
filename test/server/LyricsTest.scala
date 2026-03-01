@@ -15,7 +15,6 @@ import common.test.BeforeAndAfterEachAsync
 private class LyricsTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)
     with BeforeAndAfterEachAsync {
-
   // Must use a relative path because Http4sUtils.decodePath strips the leading '/'.
   private val songPath = relativePath(getResourceFile("/models/song.mp3"))
 

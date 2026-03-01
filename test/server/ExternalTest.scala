@@ -18,7 +18,7 @@ private class ExternalTest(module: Module)
     extends HttpServerSpecs(module)
     with BeforeAndAfterEachAsync {
   protected override def baseTestModule = super.baseTestModule.copy(
-    _urlToResponseMapper = { case _ => FakeWSResponse(status = 404) },
+    _urlToResponseMapper = _ => FakeWSResponse(status = 404),
   )
 
   // Must use a relative path because Http4sUtils.decodePath strips the leading '/'.
@@ -35,8 +35,6 @@ private class ExternalTest(module: Module)
   "get external links" in getJson(uri"external/$songPath") >| succeed
   "refresh artist" in getJson(uri"external/refresh/artist/$songPath") >| succeed
   "refresh album" in getJson(uri"external/refresh/album/$songPath") >| succeed
-  "update artist recon" in {
-    val reconId = ReconIDArbitrary.gen.sample.get.id
-    postString(uri"external/recons/$songPath", Json.obj("artist" -> reconId)) >| succeed
-  }
+  "update artist recon" in
+    postString(uri"external/recons/$songPath", Json.obj("artist" -> ReconIDArbitrary.gen.sample.get.id)) >| succeed
 }

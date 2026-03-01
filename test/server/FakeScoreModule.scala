@@ -6,7 +6,6 @@ import models.Song
 import net.codingwell.scalaguice.ScalaModule
 
 import common.Percentage
-import common.path.ref.FileRef
 
 /**
  * The real ScoreBasedProbabilityFactory has assertions that fail with very few songs (expects a
@@ -16,7 +15,7 @@ import common.path.ref.FileRef
 private[server] object FakeScoreModule {
   val module: Module = new ScalaModule {
     @Provides private def scoreBasedProbabilityFactory: ScoreBasedProbabilityFactory =
-      (_: Seq[FileRef]) =>
+      _ =>
         new ScoreBasedProbability {
           override def apply(s: Song): Percentage = Percentage(0.5)
           override def apply(s: ModelScore): Percentage = Percentage(0.5)

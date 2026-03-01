@@ -24,7 +24,7 @@ import common.test.memory_ref.MemoryRoot
 private class PlaylistTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)
     with BeforeAndAfterEachAsync {
-  override def afterEach(): Future[Unit] =
+  override def afterEach(): Future[_] =
     Future.successful(injector.instance[DirectoryRef, RootDirectory].clear())
   "set then get" in {
     putArbPlaylist("foobar") >>= (playlist =>

@@ -29,6 +29,9 @@ private class LastAlbumsServerTest(serverModule: Module)
         _ == StatusCode.NotFound,
       )
       .void
+  private val factory = new FakeModelFactory(injector.instance[MemoryRoot])
+  private val mf = injector.instance[FakeMusicFiles]
+  private val clock = injector.instance[FakeClock]
   private val mj = injector.instance[ModelJsonable]
   import mj.albumDirJsonifier
 
@@ -102,10 +105,6 @@ private class LastAlbumsServerTest(serverModule: Module)
       remainingAlbums.parse[Seq[AlbumDir]] shouldReturn Vector(a2, a3)
     }
   }
-
-  private val factory = new FakeModelFactory(injector.instance[MemoryRoot])
-  private val mf = injector.instance[FakeMusicFiles]
-  private val clock = injector.instance[FakeClock]
 
   private def dequeue(): Future[(AlbumDir, Seq[AlbumDir])] =
     postString(uri"last_albums/dequeue").map(Json.parse(_).parse[(AlbumDir, Seq[AlbumDir])])

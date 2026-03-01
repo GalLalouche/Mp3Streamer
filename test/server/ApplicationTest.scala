@@ -8,14 +8,14 @@ import sttp.client3.UriContext
 import common.rich.RichFile.richFile
 
 private class ApplicationTest(serverModule: Module) extends HttpServerSpecs(serverModule) {
-  private val expectedBytes = new File("public/html/main.html").bytes
+  private val mainHtmlBytes = new File("public/html/main.html").bytes
   "GET /" in {
-    getBytes(uri"/") shouldEventuallyReturn expectedBytes
+    getBytes(uri"/") shouldEventuallyReturn mainHtmlBytes
   }
   "GET /mute" in {
-    getBytes(uri"/mute") shouldEventuallyReturn expectedBytes
+    getBytes(uri"/mute") shouldEventuallyReturn mainHtmlBytes
   }
   "GET /mp3" in {
-    getBytes(uri"/mp3") shouldEventuallyReturn expectedBytes
+    getBytes(uri"/mp3") shouldEventuallyReturn mainHtmlBytes
   }
 }
