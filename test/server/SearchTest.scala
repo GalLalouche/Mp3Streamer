@@ -39,14 +39,28 @@ private class SearchTest(serverModule: Module) extends HttpServerSpecs(serverMod
   "search by song title" in {
     indexed *>> getJson(uri"search/Bohemian").map { result =>
       result.as[JsObject].keys shouldReturn Set("songs", "albums", "artists")
-      result.array("songs").value.head.str("title") shouldReturn "Bohemian Rhapsody"
+      val song = result.array("songs").value.head
+      song.str("title") shouldReturn "Bohemian Rhapsody"
+      song.str("artistName") shouldReturn "Queen"
+      song.str("albumName") shouldReturn "Night at the Opera"
+      song.int("track") shouldReturn 1
+      song.int("year") shouldReturn 2000
     }
   }
 
   "search by artist name" in {
-    indexed *>> getJson(uri"search/Queen").map(
-      _.array("artists").value.head.str("name") shouldReturn "Queen",
-    )
+    indexed *>> getJson(uri"search/Queen").map { result =>
+      val artist = result.array("artists").value.head
+      artist.str("name") shouldReturn "Queen"
+      val album = artist.objects("albums").head
+      album.str("title") shouldReturn "Night at the Opera"
+      album.str("artistName") shouldReturn "Queen"
+      album.int("year") shouldReturn 2000
+      val song = album.array("songs").value.head
+      song.str("title") shouldReturn "Bohemian Rhapsody"
+      song.str("artistName") shouldReturn "Queen"
+      song.str("albumName") shouldReturn "Night at the Opera"
+    }
   }
 
   "search with no results returns empty arrays" in {
