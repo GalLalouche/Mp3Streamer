@@ -14,7 +14,7 @@ private class AlbumReconVerifier @Inject() (
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
-  def apply(artist: Album, id: ReconID): Future[Boolean] =
+  def apply(artist: Album, artistId: ReconID): Future[Boolean] =
     for {
       storedArtistRecon <- artistReconStorage.load(artist.artist).get.map {
         case StoredReconResult.StoredNull =>
@@ -23,6 +23,6 @@ private class AlbumReconVerifier @Inject() (
           )
         case StoredReconResult.HasReconResult(reconId, _) => reconId
       }
-      artistsFromRecon <- getReleaseGroupArtists(id)
+      artistsFromRecon <- getReleaseGroupArtists(artistId)
     } yield artistsFromRecon.map(_._2).contains(storedArtistRecon)
 }

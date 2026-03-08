@@ -56,7 +56,7 @@ private class JsonDownloader @Inject() (it: InternetTalker, ec: ExecutionContext
         .get(),
     ).filterWithMessageF(
       _.status == HttpURLConnection.HTTP_OK,
-      m => s"HTTP response wasn't 200, was <${m.status}>: " + m.body,
+      m => s"HTTP response for <${m.uri}> wasn't 200, was <${m.status}>: " + m.body,
     ).map(_.body[JsValue].as[JsObject])
 }
 
