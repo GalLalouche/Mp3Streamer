@@ -33,11 +33,14 @@ private class Initializer @Inject() (
         .requiring(_.nonEmpty, s"No ${sff.extensions} files found in directory$unsupportedFilesMsg")
     private lazy val ordering: Ordering[OptionalSong] =
       if (songFiles.forall(_.trackNumber.isDefined))
-        Ordering.by(_.toTuple(_.directory, _.trackNumber))
+        if (songFiles.forall(_.discNumber.isDefined))
+          Ordering.by(_.toTuple(_.discNumber, _.trackNumber))
+        else
+          Ordering.by(_.toTuple(_.directory, _.trackNumber))
       else
         Ordering.by(_.file)
 
-    private lazy val songs = songFiles.sorted(ordering).toVector
+    private lazy val songs: Seq[OptionalSong] = songFiles.sorted(ordering)
     private def globalNamedTag[A](tagName: String, extractor: OptionalSong => Option[A]) =
       OptionalField(tagName.toUpperCase, songs.flatMap(extractor(_)))
     private def requiredNamedTag[A](tagName: String, extractor: OptionalSong => Option[A]) =
