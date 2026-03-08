@@ -17,33 +17,36 @@ import common.rich.primitives.RichString._
 private object LyricsParser extends SingleHostParser {
   override val source = "GeniusLyrics"
   override def apply(d: Document, s: Song): LyricParseResult = {
-    val v =
+    val elements =
       d.selectIterator("#lyrics-root div[data-lyrics-container]")
         .toVector
         .mapIf(_.isEmpty)
         .to(d.selectIterator(".lyrics").toVector)
-    if (v.isEmpty) {
-      val wholeText = d.wholeText
+    lazy val wholeText = d.wholeText
+    if (elements.isEmpty)
       if (wholeText.contains("This song is an instrumental"))
         LyricParseResult.Instrumental
-      else if (d.wholeText.contains("Lyrics for this song have yet to be transcribed"))
+      else if (wholeText.contains("Lyrics for this song have yet to be transcribed"))
         NoLyrics
       else
         throw new IllegalArgumentException("Unexpected HTML structure")
-    } else if (v == Vector("[Instrumental]") || v == Vector("Instrumental"))
+    else if (elements == Vector("[Instrumental]") || elements == Vector("Instrumental"))
       LyricParseResult.Instrumental
-    else if (d.wholeText.contains("Lyrics for this song have yet to be released"))
+    else if (wholeText.contains("Lyrics for this song have yet to be released"))
       LyricParseResult.NoLyrics
-    else
-      LyricParseResult.Lyrics(
-        v.flatMap(go)
-          .mkString("")
-          .removeAll(Annotations)
-          .replaceAll(GapBetweenAnnotations, "\n\n")
-          .replaceAll(SongParts, "\n\n")
-          .removeAll(EmptyLeadingLines)
-          |> HtmlLyricsUtils.addBreakLines,
-      )
+    else {
+      val parsed = elements
+        .flatMap(go)
+        .mkString("")
+        .removeAll(Annotations)
+        .replaceAll(GapBetweenAnnotations, "\n\n")
+        .replaceAll(SongParts, "\n\n")
+        .removeAll(EmptyLeadingLines)
+      if (parsed.exists(_.isLetter))
+        LyricParseResult.Lyrics(parsed |> HtmlLyricsUtils.addBreakLines)
+      else
+        LyricParseResult.NoLyrics
+    }
   }
 
   private val LineBreaks = Set("br", "div")

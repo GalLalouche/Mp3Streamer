@@ -16,5 +16,6 @@ class LyricsParserTest extends AnyFreeSpec with LyricsSpec {
     "instrumental" in verifyInstrumental("instrumental")
     "More BS brackets" in verifyLyrics("bs_brackets")
     "untranscribed" in verifyNoLyrics("untranscribed")
+    "stupid contributor" in verifyNoLyrics("stupid_contributor")
   }
 }
