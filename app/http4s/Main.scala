@@ -49,6 +49,7 @@ private object Main extends IOApp {
       .default[IO]
       .withPort(port)
       .withHttpApp(main.app)
+      .withHost(host"0.0.0.0")
       .withShutdownTimeout(Duration.Zero)
       .build
 }
