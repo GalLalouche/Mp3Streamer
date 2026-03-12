@@ -1,8 +1,9 @@
 package mains.vimtag
 
-import common.test.AuxSpecs
 import mains.vimtag.Flag.RemoveFeat
 import org.scalatest.freespec.AnyFreeSpec
+
+import common.test.AuxSpecs
 
 class FlagTest extends AnyFreeSpec with AuxSpecs {
   "RemoveFeat" - {
@@ -24,6 +25,9 @@ class FlagTest extends AnyFreeSpec with AuxSpecs {
       }
       "Case insensitive Featuring" in {
         RemoveFeat.removeFeat("Foo Bar (fEATurIng Moo)") shouldReturn "Foo Bar"
+      }
+      "Non-unicode space" in {
+        RemoveFeat.removeFeat("Lifers Too (feat. The Wonder Years)") shouldReturn "Lifers Too"
       }
     }
     "No parens" - {
