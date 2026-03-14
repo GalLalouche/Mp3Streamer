@@ -6,7 +6,7 @@ import backend.score.OptionalModelScore
 import monocle.macros.Lenses
 
 @Lenses
-// TODO revisit visibility — widened for server test access
+// TODO revisit visibility - widened for server test access
 case class ArtistNewAlbums(
     artist: Artist,
     artistScore: OptionalModelScore,

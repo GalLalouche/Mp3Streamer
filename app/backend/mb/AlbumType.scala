@@ -2,7 +2,7 @@ package backend.mb
 
 import enumeratum.{Enum, EnumEntry}
 
-// TODO revisit visibility — widened for server test access
+// TODO revisit visibility - widened for server test access
 sealed trait AlbumType extends EnumEntry
 object AlbumType extends Enum[AlbumType] {
   override val values = findValues
