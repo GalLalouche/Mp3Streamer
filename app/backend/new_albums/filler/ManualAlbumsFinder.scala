@@ -50,12 +50,9 @@ import common.rx.RichObservable.richObservable
 
   // Searching by Artist is A LOT faster than searching by Album.
   private def artistDir(artist: Artist): Observable[Option[ArtistDir]] = {
+    def containsSong(ad: ArtistDir): Boolean =
+      ad.albums.iterator.flatMap(_.songs).exists(_.artist == artist)
     val normalized = normalizer(artist.name)
-    def containsSong(ad: ArtistDir): Boolean = (for {
-      album <- ad.albums.iterator
-      song <- album.songs.iterator
-      // TODO ScalaCommon.or/end for unordered foldable.
-    } yield song.artist == artist).exists(identity)
     mf.artistDirs
       .filter(_.name == normalized)
       .map(artistDirFactory.fromDir)
