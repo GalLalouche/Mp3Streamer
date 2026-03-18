@@ -111,10 +111,11 @@ private[mains] class FolderFixer @Inject() private (
     }
 
   private def moveFolderToTemp(folder: IODirectory): Unit = {
-    val target = System.getenv(TempLarge)
-    require(target != null, s"Missing environment variable $TempLarge")
+    val tempLarge = System.getenv(TempLarge)
+    require(tempLarge != null, s"Missing environment variable $TempLarge")
+    val target = IODirectory(tempLarge).addSubDir("Processed folders")
     println(s"Moving folder <$folder> to <$target>")
-    PathUtils.move(folder, IODirectory(target))
+    PathUtils.move(folder, target)
   }
 
   private def findArtistDirectory(folder: IODirectory): (Artist, FutureOption[IODirectory]) = {
