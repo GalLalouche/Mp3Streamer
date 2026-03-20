@@ -93,6 +93,20 @@ class LastAlbumsTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
       remaining2.dequeue shouldReturn None
       remaining2.albums shouldBe empty
     }
+    "Handles missing folders" in {
+      val $ = create()
+      val album1 = album()
+      val withAlbum1 = $.enqueue(album1)
+      // FIXME unhack
+      album1.dir.parent.clear()
+      val album2 = album()
+
+      val withAlbum2 = withAlbum1.enqueue(album2)
+
+      val (dequeued, remaining) = withAlbum2.dequeue.value
+      dequeued shouldReturn album2
+      remaining.albums shouldBe empty
+    }
   }
 
   "persist" - {

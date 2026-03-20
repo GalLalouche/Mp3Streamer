@@ -8,8 +8,6 @@ import play.api.libs.json.JsValue
 import scala.collection.immutable.Queue
 import scala.math.Ordering.Implicits.infixOrderingOps
 
-import common.rich.func.TuplePLenses.__2
-
 import common.json.Jsonable
 import common.json.ToJsonableOps.{jsonifySingle, parseJsValue}
 
@@ -24,8 +22,15 @@ private class LastAlbums private (
   }
   def enqueueAll(albumDirs: Seq[AlbumDir]): LastAlbums =
     albumDirs.sortBy(_.dir.lastModifiedTime).foldLeft(this)(_.enqueue(_))
-  def dequeue: Option[(AlbumDir, LastAlbums)] =
-    queue.dequeueOption.map(__2.modify(new LastAlbums(_, lastUpdateTime)))
+  def dequeue: Option[(AlbumDir, LastAlbums)] = queue.dequeueOption.flatMap { case (album, tail) =>
+    val newLastAlbums = new LastAlbums(tail, lastUpdateTime)
+    if (album.dir.exists)
+      Some((album, newLastAlbums))
+    else {
+      scribe.warn(s"Album directory ${album.dir} no longer exists, skipping")
+      newLastAlbums.dequeue
+    }
+  }
   def albums: Seq[AlbumDir] = queue
 }
 
