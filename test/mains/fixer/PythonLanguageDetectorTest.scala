@@ -13,10 +13,11 @@ class PythonLanguageDetectorTest extends AnyFreeSpec with AuxSpecs {
     lazy val $ = PythonLanguageDetector.create(1.minute)
     // TODO Proper
     def detect(s: String) = $.detect(s).value
-    "Hebrew" in { detect("דגשדגשדגשדג") shouldReturn "he" }
-    "Japanese" in { detect("センチメートル") shouldReturn "ja" }
-    "Chinese" in { detect("汉英词典") shouldReturn "zh-cn" }
-    "English" in { detect("This is a word") shouldReturn "en" }
+    "Hebrew" in { detect("דגשדגשדגשדג") shouldReturn "HEBREW" }
+    "Japanese" in { detect("センチメートル") shouldReturn "JAPANESE" }
+    "Japanese mixed with english" in { detect("Syunikiss～二度目の哀悼～") shouldReturn "JAPANESE" }
+    "Chinese" in { detect("汉英词典") shouldReturn "CHINESE" }
+    "English" in { detect("This is a word") shouldReturn "ENGLISH" }
     "Creation count" in {
       $.creationCount.get shouldReturn 1
     }
@@ -32,10 +33,10 @@ class PythonLanguageDetectorTest extends AnyFreeSpec with AuxSpecs {
       Thread.sleep(50)
       result
     }
-    "Hebrew" taggedAs Slow in { detect("דגשדגשדגשדג") shouldReturn "he" }
-    "Japanese" taggedAs Slow in { detect("センチメートル") shouldReturn "ja" }
-    "Chinese" taggedAs Slow in { detect("汉英词典") shouldReturn "zh-cn" }
-    "English" taggedAs Slow in { detect("This is a word") shouldReturn "en" }
+    "Hebrew" taggedAs Slow in { detect("דגשדגשדגשדג") shouldReturn "HEBREW" }
+    "Japanese" taggedAs Slow in { detect("センチメートル") shouldReturn "JAPANESE" }
+    "Chinese" taggedAs Slow in { detect("汉英词典") shouldReturn "CHINESE" }
+    "English" taggedAs Slow in { detect("This is a word") shouldReturn "ENGLISH" }
     "Creation count" taggedAs Slow in { // Not really slow, but shouldn't run if the others didn't.
       $.creationCount.get shouldReturn 4
     }

@@ -59,8 +59,8 @@ class StringFixer @Inject() (detectLanguage: DetectLanguage) {
   protected def ignoreLangDetectionErrors: Boolean = false
   // TODO reuse this for Hebrew check as well?
   protected def isExemptLanguage(lang: String): Boolean =
-    // Japanese and Chinese. Life is too short to start asciing those.
-    lang == "ja" || lang.startsWith("ch") || lang.startsWith("zh") || lang == "ko"
+    // Japanese, Chinese, and Korean. Life is too short to start asciing those.
+    lang == "JAPANESE" || lang == "CHINESE" || lang == "KOREAN"
 
   def apply(s: String): String = {
     val trimmed = s.replaceAll(AllSpaces, " ").trim
