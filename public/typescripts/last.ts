@@ -35,6 +35,7 @@ async function forceUpdate(): Promise<Album[]> {
 }
 
 const ADD = "plus"
+const SKIP = "step-forward"
 
 function write(text: string): JQuery<HTMLElement> {
   return $("#last_album").empty().append(span(text))
@@ -52,10 +53,11 @@ function updateAlbums(albums: Album[]): void {
   nonEmptyQueue = true
   const extra = albums.length > 1 ? ` (+ ${albums.length - 1} more)` : ""
   const formatAlbum = (album: Album) => `${album.artistName}: ${album.title}`
-  const text = `${icon(ADD)} ${formatAlbum(firstAlbum)}${extra}`
+  const text = `${icon(ADD)} ${icon(SKIP)} ${formatAlbum(firstAlbum)}${extra}`
   console.log(`Updating last album: '${text}'`)
   const albumElement = write(text)
-  albumElement.find(".fa-" + ADD).on("click", (() => dequeue()))
+  albumElement.find(".fa-" + ADD).on("click", (() => dequeue())).custom_tooltip("Add to playlist")
+  albumElement.find(".fa-" + SKIP).on("click", (() => skip())).custom_tooltip("Drop from queue (do not add to playlist)")
   if (albumElement.custom_overflown() || extra.length > 0) {
     const formatted = albums.map(formatAlbum)
     const extraOverflowText = albums.length > 1 ? ` (+ ${formatted.slice(1).join(", ")})` : ""
@@ -64,10 +66,23 @@ function updateAlbums(albums: Album[]): void {
 }
 
 async function dequeue(): Promise<void> {
-  const [head, tail] = await $.post(prefix + "/dequeue").toPromise()
-  await $.get("data/album/" + head.dir, e => gplaylist.add(e, false)).toPromise()
-  nonEmptyQueue = tail.length > 0
-  return LastAlbum.updateLatestAlbum()
+  return dequeueAux(album =>
+    $.get("data/album/" + album.dir, e => gplaylist.add(e, true)).toPromise())
+}
+
+async function skip(): Promise<void> {
+  confirmDialogAsync("skip next album", () => dequeueAux(album => Promise.resolve()))
+}
+
+async function dequeueAux(f: (a: Album) => Promise<void>): Promise<void> {
+  try {
+    const [head, tail] = await $.post(prefix + "/dequeue").toPromise()
+    await f(head)
+    nonEmptyQueue = tail.length > 0
+    return LastAlbum.updateLatestAlbum()
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 $(function () {

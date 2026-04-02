@@ -1,33 +1,14 @@
 import {Album, Song} from "./types.js"
 
-function confirm(title: string, action: () => void): void {
-  $(`<div title="Really ${title}?">Are you sure?</div>`)
-    .dialog({
-      resizable: false,
-      height: "auto",
-      width: 400,
-      modal: true,
-      buttons: {
-        OK: function () {
-          action()
-          $(this).dialog("close")
-        },
-        Cancel: function () {
-          $(this).dialog("close")
-        },
-      },
-    })
-}
-
 function ignoreAlbum(artist: string, album: string, reconID: string, elementToRemove: JQuery<HTMLElement>): void {
-  confirm(
+  confirmDialog(
     `ignore ${artist} - ${album}`,
     () => $.put(`/new_albums/album/ignore/${reconID}`, () => elementToRemove.remove()),
   )
 }
 
 function ignoreArtist(song: Song): void {
-  confirm(
+  confirmDialog(
     "ignore " + song.artistName,
     () => $.put(
       '/new_albums/artist/ignore/' + song.artistName,
@@ -83,7 +64,7 @@ export function show(song: Song): void {
     }
     fieldSet.show()
     const b = button("Unignore Artist")
-    b.on("click", () => confirm(
+    b.on("click", () => confirmDialog(
       `unignore '${song.artistName}'?`,
       () => $.put(
         '/new_albums/artist/unignore/' + song.artistName,

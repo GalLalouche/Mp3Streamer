@@ -232,6 +232,30 @@ async function waitForElem(selector: string): Promise<Element> {
   })
 }
 
+function confirmDialog(title: string, action: () => void): void {
+  confirmDialogAsync(title, () => Promise.resolve().then(action))
+}
+
+function confirmDialogAsync(title: string, action: () => Promise<void>): void {
+  $(`<div title="Really ${title}?">Are you sure?</div>`)
+    .dialog({
+      resizable: false,
+      height: "auto",
+      width: 400,
+      modal: true,
+      buttons: {
+        OK: async function () {
+          await action()
+          $(this).dialog("close")
+        },
+        Cancel: function () {
+          $(this).dialog("close")
+        },
+      },
+    })
+}
+
+
 interface Promise<T> {
   void(): Promise<void>
 }
