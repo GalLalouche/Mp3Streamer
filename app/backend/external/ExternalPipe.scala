@@ -57,11 +57,16 @@ private class ExternalPipe[R <: Reconcilable](
 
   private def extractHosts(ls: BaseLinks[R]) = ls.map(_.host).toSet
 
-  private def applyNewHostReconcilers(entity: R, existingHosts: Set[Host]): Future[BaseLinks[R]] =
+  private def applyNewHostReconcilers(entity: R, existingHosts: Set[Host]): Future[BaseLinks[R]] = {
+    // A host is dominated if there's a more reliable host that can extract the same links.
+    def isDominated(hosts: Set[Host], host: Host): Boolean =
+      // Wikidata->Wikipedia extractor is more reliable than Wikipedia->Wikipedia.
+      host == Host.Wikipedia && hosts.contains(Host.Wikidata)
     standaloneReconcilers.get
-      .filterNot(existingHosts apply _.host)
+      .filterNot(e => existingHosts(e.host) || isDominated(existingHosts, e.host))
       .traverse(_(entity).value)
       .map(_.flatten)
+  }
 
   private def filterLinksWithNewHosts(
       existingLinks: BaseLinks[R],

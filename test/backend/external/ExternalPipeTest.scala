@@ -1,6 +1,6 @@
 package backend.external
 
-import backend.external.Host.{AllMusic, RateYourMusic, Wikipedia}
+import backend.external.Host.{AllMusic, RateYourMusic, Wikidata, Wikipedia}
 import backend.external.expansions.ExternalLinkExpander
 import backend.external.mark.ExternalLinkMarker
 import backend.external.recons.{LinkRetriever, LinkRetrievers}
@@ -166,5 +166,24 @@ class ExternalPipeTest extends AsyncFreeSpec with AuxSpecs {
       ),
     )
     $(null).map(_ shouldMultiSetEqual (existingMarkedLink +: expectedNewLinks))
+  }
+
+  "should ignore dominated extractor" in {
+    val wikiFromWiki = BaseLink[Album](Url.parse("wiki_from_wiki"), Wikipedia)
+    val wikiFromData = BaseLink[Album](Url.parse("wiki_from_data"), Wikipedia)
+    val wikidata = BaseLink[Album](Url.parse("wikidata"), Wikidata)
+    val $ = new ExternalPipe[Album](
+      ReconID("foobar") |> constFuture,
+      Vector(existingLink, wikidata) |> constFuture,
+      LinkRetrievers(constReconciler(Wikipedia, wikiFromWiki)),
+      Vector(constExpander(wikiFromData)),
+      Nil,
+    )
+    val expected = Vector(
+      existingMarkedLink,
+      MarkedLink.markExisting(wikidata),
+      MarkedLink.markNew(wikiFromData),
+    )
+    $(null).map(_ shouldMultiSetEqual expected)
   }
 }
