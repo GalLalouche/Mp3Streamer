@@ -3,11 +3,11 @@ package backend.recon
 import backend.new_albums.IgnoredArtists
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon.ReconcilableFactory.AlbumParseError
-import backend.recon.ReconcilableFactory.AlbumParseError.{NoSongs, SinglesDirectory, UnparsableName}
+import backend.recon.ReconcilableFactory.AlbumParseError.{MultipleArtistsIndexed, NoArtistIndexed, NoSongs, SinglesDirectory, UnparsableName}
 import com.google.common.annotations.VisibleForTesting
 import com.google.inject.Inject
 import models.{SongTitle, TrackNumber}
-import musicfinder.{ArtistDirsIndex, SongDirectoryParser}
+import musicfinder.{ArtistDirResult, ArtistDirsIndex, SongDirectoryParser}
 
 import scala.util.Try
 
@@ -36,11 +36,14 @@ class ReconcilableFactory @Inject() (
             yearStr.length == 4 || yearStr.length == 5,
             s"<$yearStr> has weird format for <$dir>",
           )
-          artistDirsIndex
-            .forDir(dir.parent)
-            .toOption
-            .map(Album(title, yearStr.take(4).toInt, _))
-            .toRight(UnparsableName)
+          artistDirsIndex.forDir(dir.parent) match {
+            case ArtistDirResult.SingleArtist(artist) =>
+              Right(Album(title, yearStr.take(4).toInt, artist))
+            case ArtistDirResult.MultipleArtists(artists) =>
+              Left(MultipleArtistsIndexed(artists))
+            case ArtistDirResult.NoMatch =>
+              Left(NoArtistIndexed)
+          }
         case _ => Left(UnparsableName)
       }
     else if (dir.name == "Singles")
@@ -49,11 +52,20 @@ class ReconcilableFactory @Inject() (
       Left(UnparsableName)
 
   /** Unlike the above, will resort to parsing ID3 tags if the directory name is not parsable. */
-  def toAlbum(dir: DirectoryRef): Either[AlbumParseError, Album] =
-    toAlbumFromFileOnly(dir).recoverWith { case UnparsableName =>
-      scribe.warn(s"Album directory <$dir> does not have a parsable name.")
-      songDirectoryParser(dir).nextOption().map(_.release).toRight(NoSongs)
+  def toAlbum(dir: DirectoryRef): Either[AlbumParseError, Album] = {
+    lazy val fallback = songDirectoryParser(dir).nextOption().map(_.release).toRight(NoSongs)
+    toAlbumFromFileOnly(dir).recoverWith {
+      case UnparsableName =>
+        scribe.warn(s"Album directory <$dir> does not have a parsable name.")
+        fallback
+      case MultipleArtistsIndexed(artists) =>
+        scribe.info(s"Multiple artists index for <${dir.parent}>: <$artists>")
+        fallback
+      case NoArtistIndexed =>
+        scribe.warn(s"No artists indexed for <${dir.parent}>")
+        fallback
     }
+  }
 
   /** Throws if artist could not be extracted! */
   def extractArtistFromAlbumDir(albumDir: DirectoryRef): Artist =
@@ -82,6 +94,8 @@ object ReconcilableFactory {
     case object ClassicalArtist extends AlbumParseError
     case object NoSongs extends AlbumParseError
     case object UnparsableName extends AlbumParseError
+    case class MultipleArtistsIndexed(artists: Set[Artist]) extends AlbumParseError
+    case object NoArtistIndexed extends AlbumParseError
 
     implicit val toError: ToError[AlbumParseError] = ToError.fromToString[AlbumParseError]
   }

@@ -25,7 +25,8 @@ import common.rx.RichObservable.richObservable
     fastSongSelector,
     () => ssFactory.get().withSongs(mf.getSongFiles.toVectorBlocking),
   )
+
   def update(): Future[Unit] = updater.update().void
-  update()
+  val ready: Future[Unit] = update().void
   override def randomSong(): Song = updater.get.randomSong()
 }
