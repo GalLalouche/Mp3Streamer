@@ -11,6 +11,7 @@ import monocle.macros.GenLens
 import common.io.WSAliases._
 import common.rich.RichT._
 import common.rich.collections.RichMap._
+import common.rich.collections.RichMap.richSemigroupMap
 import common.rich.collections.RichSeq._
 
 private case class FakeWSRequest private (
@@ -35,7 +36,10 @@ private case class FakeWSRequest private (
   override def withAuth(username: String, password: String, scheme: WSAuthScheme) = ???
   override def addHttpHeaders(hdrs: (String, String)*) =
     GenLens[FakeWSRequest](_.headers).modify(_.merge(hdrs.toMultiMap))(this)
-  override def addQueryStringParameters(parameters: (String, String)*) = ???
+  override def addQueryStringParameters(parameters: (String, String)*) =
+    copy(queryString = parameters.foldLeft(queryString) { case (map, (key, value)) =>
+      map.upsert(key, Vector(value))
+    })
   override def withFollowRedirects(follow: Boolean) =
     this.copy(followRedirects = Some(follow))
   override def withRequestTimeout(timeout: Duration) = this

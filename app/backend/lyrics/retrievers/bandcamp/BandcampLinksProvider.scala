@@ -1,8 +1,8 @@
 package backend.lyrics.retrievers.bandcamp
 
 import backend.FutureOption
-import backend.external.{Host, MbHtmlLinkExtractorHelper}
-import backend.mb.ReleaseGroupToReleases
+import backend.external.Host
+import backend.mb.{ExternalUrlFetcher, ReleaseGroupToReleases}
 import backend.recon.{Album, ReconID}
 import backend.recon.Reconcilable.SongExtractor
 import com.google.inject.Inject
@@ -24,12 +24,12 @@ import common.rich.collections.RichTraversableOnce._
  */
 private class BandcampLinksProvider @Inject() (
     musicBrainzReleaseFetcher: ReleaseGroupToReleases,
-    mbHtmlLinkExtractorHelper: MbHtmlLinkExtractorHelper,
+    externalUrlFetcher: ExternalUrlFetcher,
     ec: ExecutionContext,
 ) {
   implicit val iec: ExecutionContext = ec
   private def getBandcampLink(releaseID: ReconID): Future[Option[Url]] =
-    mbHtmlLinkExtractorHelper[Album]("release")(releaseID)
+    externalUrlFetcher[Album]("release")(releaseID)
       .map(_.find(_.host == Host.Bandcamp).map(_.link))
   def apply(s: Song): FutureOption[Url] =
     OptionT(musicBrainzReleaseFetcher(s.release).flatMap(_.mapFirstF(getBandcampLink)))
