@@ -46,11 +46,13 @@ class ReconcilableFactory @Inject() (
           }
         case _ => Left(UnparsableName)
       }
-    else if (dir.name == "Singles")
+    else if (isSingles(dir) || isSingles(dir.parent))
       Left(SinglesDirectory)
     else
       Left(UnparsableName)
 
+  private def isSingles(dir: DirectoryRef) =
+    dir.name == "Singles" || dir.name == "סינגלים"
   /** Unlike the above, will resort to parsing ID3 tags if the directory name is not parsable. */
   def toAlbum(dir: DirectoryRef): Either[AlbumParseError, Album] = {
     lazy val fallback = songDirectoryParser(dir).nextOption().map(_.release).toRight(NoSongs)

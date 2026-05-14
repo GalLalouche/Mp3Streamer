@@ -1,6 +1,7 @@
 package backend.new_albums.filler
 
 import backend.recon.{Album, Artist, ReconcilableFactory}
+import backend.recon.ReconcilableFactory.AlbumParseError.SinglesDirectory
 import com.google.inject.Inject
 import musicfinder.ArtistDirsIndex
 import rx.lang.scala.Observable
@@ -24,7 +25,10 @@ private class PreCachedExistingAlbumsFactory @Inject() (
   private def toAlbum(dir: DirectoryRef): Option[Album] =
     reconcilableFactory
       .toAlbum(dir)
-      .listenError(e => scribe.error(s"Failed to convert <$dir> to an album due to <$e>"))
+      .listenError {
+        case SinglesDirectory => scribe.trace(s"<$dir> is a singles directory")
+        case e => scribe.error(s"Failed to convert <$dir> to an album due to <$e>")
+      }
       .toOption
   def singleArtist(artist: Artist): PreCachedExistingAlbums = {
     val artistDir: DirectoryRef = artistDirsIndex
