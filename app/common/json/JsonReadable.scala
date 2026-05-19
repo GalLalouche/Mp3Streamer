@@ -15,4 +15,10 @@ object JsonReadable {
   implicit def jsonableReadable[A](implicit ev: Jsonable[A]): JsonReadable[A] = ev.parse
   implicit def seqTryJsonReadable[A: JsonReadable]: JsonReadable[Seq[Try[A]]] =
     _.as[JsArray].map(js => Try(js.parse[A]))
+  implicit def seqJsonReadable[A: JsonReadable]: JsonReadable[Seq[A]] =
+    _.as[JsArray].map(_.parse[A])
+  implicit def pairJsonReadable[A: JsonReadable, B: JsonReadable]: JsonReadable[(A, B)] = json => {
+    val seq = json.as[JsArray].value
+    seq(0).parse[A] -> seq(1).parse[B]
+  }
 }

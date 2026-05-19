@@ -1,10 +1,11 @@
 package server
 
 import com.google.inject.Module
-import models.{AlbumDir, FakeModelFactory, ModelJsonable}
+import formatter.{ControllerAlbumDirJsonifier, UrlDecoder}
+import models.{AlbumDir, FakeModelFactory}
 import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json, JsString}
 import sttp.client3.UriContext
 import sttp.model.StatusCode
 
@@ -14,6 +15,8 @@ import cats.Monad
 import cats.implicits.toFunctorOps
 
 import common.FakeClock
+import common.json.JsonReadable
+import common.json.RichJson.DynamicJson
 import common.json.ToJsonableOps.parseJsValue
 import common.rich.RichT.{lazyT, richT}
 import common.rich.RichTime.RichClock
@@ -32,8 +35,14 @@ private class LastAlbumsServerTest(serverModule: Module)
   private val factory = new FakeModelFactory(injector.instance[MemoryRoot])
   private val mf = injector.instance[FakeMusicFiles]
   private val clock = injector.instance[FakeClock]
-  private val mj = injector.instance[ModelJsonable]
-  import mj.albumDirJsonifier
+  private val mj = injector.instance[ControllerAlbumDirJsonifier]
+  private val decoder = injector.instance[UrlDecoder]
+
+  private implicit val albumDirParser: JsonReadable[AlbumDir] = json =>
+    mj.albumDirJsonable.parse(
+      json.asInstanceOf[JsObject] + ("dir" -> JsString(decoder(json.str("dir")))),
+    )
+  // private implicit val encoder: JsonWriteable[AlbumDir] = mj.albumDirJsonable
 
   "get returns empty array initially" in {
     getJson(uri"last_albums") shouldEventuallyReturn Json.arr()

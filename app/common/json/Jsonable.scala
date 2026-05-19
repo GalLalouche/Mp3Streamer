@@ -38,10 +38,7 @@ object Jsonable {
   implicit def pairJsonable[A: Jsonable, B: Jsonable]: Jsonable[(A, B)] = new Jsonable[(A, B)] {
     override def jsonify(t: (A, B)): JsValue =
       Json.arr(t._1.jsonify, t._2.jsonify)
-    override def parse(json: JsValue): (A, B) = {
-      val seq = json.as[JsArray].value
-      seq(0).parse[A] -> seq(1).parse[B]
-    }
+    override def parse(json: JsValue): (A, B) = JsonReadable.pairJsonReadable[A, B].parse(json)
   }
   def isoJsonable[A, B: Jsonable](aToB: Iso[A, B]): Jsonable[A] = new Jsonable[A] {
     override def parse(json: JsValue): A = aToB.reverseGet(json.parse[B])
