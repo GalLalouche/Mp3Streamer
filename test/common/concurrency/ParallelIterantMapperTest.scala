@@ -6,8 +6,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.tags.Slow
+import org.scalatest.time.SpanSugar.convertIntToGrainOfTime
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future, TimeoutException}
 import scala.util.Random
 
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
@@ -35,7 +36,7 @@ class ParallelIterantMapperTest extends AsyncFreeSpec with AsyncAuxSpecs with On
     }(ec)
   }
 
-  private def iterant(i: FutureIterant[Int], f: Int => Int) =
+  private def iterant(i: FutureIterant[Int], f: Int => Int): FutureIterant[Int] =
     Iterant.parallelPrefetching(i, mapper(f), prefetchSize = 10, parallelism = Parallelization)
 
   "basic infinite test (sync)" in {
@@ -89,6 +90,16 @@ class ParallelIterantMapperTest extends AsyncFreeSpec with AsyncAuxSpecs with On
 
     // Can't be sure how many actual threads this will end up using since it uses an elastic pool.
     takeTest(iter, 32, 32) >| { set.size() should be > 1 }
+  }
+
+  "data is not blocked if no futures are provided" - {
+    "empty" in 5.parTimes {
+      Await.result(iterant(Iterant.empty, _ => ???).step.value, 1.seconds) shouldBe empty
+    }
+    "stalled" in {
+      val $ = iterant(Iterant.forever[Future, Int](Future.never), _ => ???)
+      a[TimeoutException] should be thrownBy Await.result($.step.value, 200.millis)
+    }
   }
 
   private def takeTest(iter: FutureIterant[Int], n: Int, maxInt: Int) =

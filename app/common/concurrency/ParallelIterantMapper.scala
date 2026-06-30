@@ -3,14 +3,17 @@ package common.concurrency
 import java.util
 import java.util.concurrent.Semaphore
 
+import alleycats.Pure.pureFlatMapIsMonad
+import backend.FutureOption
+
 import scala.collection.mutable
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration.Duration
 
 import cats.data.OptionT
-import cats.implicits.{toFunctorOps, toTraverseOps}
+import cats.implicits.{catsSyntaxFlatMapOps, toFunctorOps}
 
-import common.concurrency.ParallelIterantMapper.{BlockingMap, MaxReached}
+import common.concurrency.ParallelIterantMapper.BlockingMap
 import common.rich.RichT.richT
 
 /**
@@ -36,25 +39,22 @@ private class ParallelIterantMapper[A, B] private (
   // - If the actor reaches the end of the iterant, it sets the max index of the blocking map,
   //   causing any further get calls beyond that index to throw an exception and interrupt any
   //   waiting threads.
-  private[this] val f =
-    curriedF.withExecutionContext(DaemonExecutionContext("ParallelIterantMapper", parallelism))
+  private val context: ExecutionContext =
+    DaemonExecutionContext("ParallelIterantMapper", parallelism)
+  private[this] val f = curriedF.withExecutionContext(context)
   private[this] val blockingMap = new BlockingMap[B](buffer)
   // Must be synchronized when read and written, since different threads can call get.
-  private[this] val results = new util.Vector[Future[B]]
-  private[this] def get(i: Int): Option[Future[B]] = {
+  private[this] val results = new util.Vector[FutureOption[B]]
+  private[this] def get(i: Int): FutureOption[B] = {
     if (i > blockingMap.maxIndex) // This one isn't strictly necessary for correctness.
-      return None
+      return OptionT.none
     // If the blocking map has not yet produced this index, we fill it up to the given index.
     if (results.size <= i)
       results.synchronized {
         while (results.size <= i)
-          try
-            results.add(blockingMap.get(i))
-          catch {
-            case MaxReached => return None
-          }
+          results.add(blockingMap.get(i)(context))
       }
-    Some(results.get(i))
+    results.get(i)
   }
 
   private[this] val blockingMapFiller = SimpleActor.withSelf[FutureIterant[A]](
@@ -73,7 +73,7 @@ private class ParallelIterantMapper[A, B] private (
   )
 
   private[this] class Stepper(index: Int) extends FutureIterant[B] {
-    override def step: Step[B] = OptionT(get(index).sequence).tupleRight(new Stepper(index + 1))
+    override def step: Step[B] = get(index).tupleRight(new Stepper(index + 1))
   }
   private def start(): Unit = blockingMapFiller ! _iterant
   private def iterant: Iterant[Future, B] = new Stepper(0)
@@ -89,14 +89,14 @@ private object ParallelIterantMapper {
       ec: ExecutionContext,
   ): FutureIterant[B] = new ParallelIterantMapper(iterant, f, n, parallelism).<|(_.start()).iterant
 
-  private object MaxReached extends RuntimeException
-
   /**
    * A map variant of a blocking queue. `get` blocks until `put` is called for the given key. Like a
    * queue, this get/put is a one time operation: after a get, the key/value is removed from the
    * map. And also like a queue, `put` will block if the maximal capacity has been reached.
    */
   private class BlockingMap[A](maxCapacity: Int) {
+    import common.concurrency.ParallelIterantMapper.BlockingMap.MaxReached
+
     private val futures = new mutable.HashMap[Int, Future[A]]()
     private val waiting = new mutable.HashMap[Int, SingleLatch]()
     private var _maxIndex: Int = Int.MaxValue
@@ -121,26 +121,37 @@ private object ParallelIterantMapper {
         nextIndex += 1
       }
     }
-    def get(k: Int): Future[A] = {
+    def get(k: Int)(implicit ec: ExecutionContext): FutureOption[A] = {
       val latch = synchronized {
         if (k >= maxIndex)
-          throw MaxReached
+          throw new MaxReached
         waiting.getOrElseUpdate(k, SingleLatch())
       }
-      latch.await()
-      synchronized {
-        waiting.remove(k).ensuring(_.isDefined)
-        semaphore.release()
-        futures.remove(k).get
+      // It's possible the latch will wait forever if the underlying iterant blocks. Since we want
+      // to allow clients to cancel the operation, we have to wrap it with a Future.
+      val futureWait = Future(
+        try { latch.await(); Some(()) }
+        catch { case _: MaxReached => None },
+      )
+      OptionT(futureWait) >> {
+        synchronized {
+          waiting.remove(k).ensuring(_.isDefined)
+          semaphore.release()
+          OptionT.liftF(futures.remove(k).get)
+        }
       }
     }
     def setMaxIndex(): Unit = synchronized {
       assert(_maxIndex == Int.MaxValue, "Max index can only be set once.")
       _maxIndex = nextIndex
-      val keysToRemove = waiting.keySet.view.filter(_ > maxIndex).toVector
-      keysToRemove.foreach(waiting.remove(_).get.interrupt(MaxReached))
+      val keysToRemove = waiting.keySet.view.filter(_ >= maxIndex).toVector
+      keysToRemove.foreach(waiting.remove(_).get.interrupt(new MaxReached))
       semaphore.drainPermits()
       semaphore.release(Int.MaxValue - maxCapacity) // Release all waiting puts.
     }
+  }
+
+  private object BlockingMap {
+    private class MaxReached extends RuntimeException
   }
 }

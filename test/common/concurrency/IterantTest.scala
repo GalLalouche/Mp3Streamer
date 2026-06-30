@@ -83,6 +83,24 @@ class IterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTe
     }
   }
 
+  "Errors are propagated" - {
+    "First error" in {
+      Iterant
+        .from[Future, Int](Future.failed(new Exception("First error")))
+        .step
+        .value
+        .failed
+        .map(_.getMessage shouldReturn "First error")
+    }
+    "Nth error" in {
+      val iterant = Iterant
+        .from[Future](0)
+        .mapF(i => if (i == 5) Future.failed(new Exception("Nth error")) else Future.successful(i))
+      iterant.batchStep(5).map(_._1) shouldEventuallyReturn (0 until 5)
+      iterant.batchStep(6).failed.map(_.getMessage shouldReturn "Nth error")
+    }
+  }
+
   private class InterlockingIterant(semaphore: Semaphore, from: Int, to: Int = Int.MaxValue)
       extends Iterant[Future, Int] {
     override def step = {
