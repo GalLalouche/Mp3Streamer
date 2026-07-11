@@ -125,7 +125,7 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
         AlbumMetadata(
           "Live at Fingerprints: Warts and All",
           LocalDate.of(2007, 10, 23),
-          AlbumType.EP,
+          AlbumType.LiveEP,
           ReconID("bd7b0573-0b62-3026-afdc-e5f2e12cfe61"),
           None,
         ),

@@ -26,7 +26,11 @@ private object AlbumParser {
     AlbumMetadata(
       title = fixQuotes(json.str("title")),
       releaseDate = date,
-      albumType = if (secondaryTypes.nonEmpty) AlbumType.Live else albumType,
+      albumType =
+        if (secondaryTypes.nonEmpty)
+          if (albumType == AlbumType.EP) AlbumType.LiveEP else AlbumType.Live
+        else
+          albumType,
       reconId = ReconID.validateOrThrow(json.str("id")),
       disambiguation = json.str("disambiguation").optFilter(_.nonEmpty),
     )
