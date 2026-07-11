@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project name="Create Runnable Jars for Project Mp3Streamer" default="make-jar">
   <target name="sbt-compile">
-    <exec executable="C:\Users\Gal\.gradle\jdks\oracle_corporation-24-amd64-windows.2\bin\java.exe" dir="..">
+    <exec executable="C:\Users\Gal\.gradle\jdks\oracle_corporation-24-amd64-windows.2\bin\java.exe" dir=".." failonerror="true">
       <arg value="-Xmx4g"/>
       <arg value="-jar"/>
       <arg value="j:\dev\lang\scala\sbt\bin\sbt-launch.jar"/>
