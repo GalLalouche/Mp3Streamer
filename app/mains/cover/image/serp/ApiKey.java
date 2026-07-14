@@ -1,4 +1,4 @@
-package mains.cover.image;
+package mains.cover.image.serp;
 
 import com.google.inject.BindingAnnotation;
 

@@ -1,13 +1,12 @@
 package mains.cover.image
 
-import io.lemonlabs.uri.Url
-import mains.cover.UrlSource
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify}
 import org.scalatest.Succeeded
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Json
 
 import scala.concurrent.Future
 
@@ -15,8 +14,8 @@ import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.test.AsyncAuxSpecs
 
-class ImageAPISearchTest extends AsyncFreeSpec with AsyncAuxSpecs with MockitoSugar {
-  private val imageApiFetcher = mock[ImageAPIFetcher]
+class ImageSearchTest extends AsyncFreeSpec with AsyncAuxSpecs with MockitoSugar {
+  private val imageApiFetcher = mock[ImageAPI]
   private val MinSide = 500
   Mockito
     .when(imageApiFetcher(any, any))
@@ -27,10 +26,14 @@ class ImageAPISearchTest extends AsyncFreeSpec with AsyncAuxSpecs with MockitoSu
         val isLargeEnough = i % 2 == 0
         val width = if (isLargeEnough) MinSide else MinSide / 2
         val height = if (isSquare) width else MinSide / 3
-        UrlSource(mock[Url], width = width, height = height)
+        Json.obj(
+          "original" -> s"https://example.com/image$i.jpg",
+          "original_width" -> width,
+          "original_height" -> height,
+        )
       })
     }
-  private val $ = new ImageAPISearch(executionContext, imageApiFetcher)
+  private val $ = new ImageSearch(executionContext, imageApiFetcher)
 
   "Does not fetch more than is needed" in {
     val seq = $("whatever", 1000).filter(i => i.isSquare && i.width >= MinSide).take(10).toSeq

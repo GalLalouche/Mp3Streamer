@@ -4,20 +4,14 @@ import io.lemonlabs.uri.Url
 import mains.cover.{ImageSource, UrlSource}
 import play.api.libs.json.JsObject
 
-import common.json.RichJson._
+import common.json.RichJson.DynamicJson
 
 private object Parser {
-  def apply(json: JsObject): Seq[ImageSource] = {
-    if (json.has("error"))
-      throw new Exception("API error: " + json.str("error"))
-    json
-      .array("images_results")
-      .map { e =>
-        UrlSource(
-          Url.parse(e.str("original")),
-          width = e.int("original_width"),
-          height = e.int("original_height"),
-        )
-      }
-  }
+  // Despite Scrappa's documentation claiming otherwise, the JSON returned by the API is identical
+  // to that of SerpAPI.
+  def apply(json: JsObject): ImageSource = UrlSource(
+    Url.parse(json.str("original")),
+    width = json.int("original_width"),
+    height = json.int("original_height"),
+  )
 }

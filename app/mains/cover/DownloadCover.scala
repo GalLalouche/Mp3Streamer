@@ -4,7 +4,7 @@ import com.google.inject.{Guice, Inject}
 import io.lemonlabs.uri.Url
 import mains.{BrowserUtils, IOUtils, MainsModule}
 import mains.cover.DownloadCover._
-import mains.cover.image.{ImageAPIFetcher, ImageAPISearch}
+import mains.cover.image.ImageSearch
 import models.AlbumDirFactory
 import musicfinder.SongDirectoryParser
 import net.codingwell.scalaguice.InjectorExtensions._
@@ -20,7 +20,7 @@ private[mains] class DownloadCover @Inject() (
     ec: ExecutionContext,
     songDirectoryParser: SongDirectoryParser,
     albumFactory: AlbumDirFactory,
-    imageFinder: ImageAPISearch,
+    imageFinder: ImageSearch,
     imageDownloader: ImageDownloader,
     imageSelector: ImageSelector,
 ) {
@@ -63,7 +63,7 @@ private[mains] class DownloadCover @Inject() (
         .parallelPrefetching[ImageSource, Try[FolderImage]](
           imageURLs.filter(i => i.isSquare && i.width >= 500),
           imageDownloader.withOutput(DownloadCover.tempFolder),
-          prefetchSize = ImageAPIFetcher.ResultsPerQuery - ImageSelector.ImagesPerPage,
+          prefetchSize = imageFinder.resultsPerQuery - ImageSelector.ImagesPerPage,
           parallelism = ImageSelector.ImagesPerPage,
         )
         // TODO filterSuccessful in rich whatever. FunctorFilter?
