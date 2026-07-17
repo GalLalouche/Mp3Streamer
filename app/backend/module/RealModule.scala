@@ -12,7 +12,7 @@ import slick.util.AsyncExecutor
 import scala.concurrent.ExecutionContext
 
 import common.guice.ModuleUtils
-import common.io.{InternetTalker, RootDirectory}
+import common.io.{InternetTalker, ProductionPropertiesHelper, PropertiesHelper, RootDirectory}
 import common.path.ref.DirectoryRef
 import common.path.ref.io.IODirectory
 import common.rich.RichT._
@@ -45,6 +45,7 @@ object RealModule extends ScalaModule with ModuleUtils {
       // SQLite doesn't seem to mind non-unique names.
       override def constraintMangler(name: String) = name
     })
+    bind[PropertiesHelper].toInstance(ProductionPropertiesHelper)
 
     requireBinding[ExecutionContext]
     requireBinding[InternetTalker]

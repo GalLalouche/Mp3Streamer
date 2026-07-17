@@ -8,7 +8,7 @@ import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext
 
-import common.io.BaseDirectory
+import common.io.{BaseDirectory, PropertiesHelper}
 import common.io.WSAliases._
 import common.path.ref.DirectoryRef
 import common.rich.RichT._
@@ -36,6 +36,7 @@ case class TestModuleConfiguration(
         bind[ExecutionContext].toInstance(_ec)
         bind[FakeMusicFiles].toInstance(_mf.opt.getOrElse(FakeMusicFilesImpl(_root)))
         bind[SongFileFinder].toInstance(FakeSongFileFinder)
+        bind[PropertiesHelper].toInstance(FakePropertiesHelper)
       }
 
       @Provides

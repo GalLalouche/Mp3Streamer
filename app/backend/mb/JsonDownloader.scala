@@ -1,7 +1,6 @@
 package backend.mb
 
 import java.net.HttpURLConnection
-import java.util.Properties
 
 import backend.mb.JsonDownloader.Input
 import com.google.inject.{Inject, Singleton}
@@ -12,27 +11,20 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 
 import cats.implicits.catsSyntaxApplicativeError
-import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 import common.rich.func.kats.ToMoreMonadErrorOps._
 
 import common.concurrency.SimpleTypedActor
-import common.io.InternetTalker
+import common.io.{InternetTalker, PropertiesHelper}
 import common.rich.primitives.RichBoolean._
 
 @Singleton
-private class JsonDownloader @Inject() (it: InternetTalker, ec: ExecutionContext) {
+private class JsonDownloader @Inject() (
+    ph: PropertiesHelper,
+    it: InternetTalker,
+    ec: ExecutionContext,
+) {
   private implicit val iec: ExecutionContext = ec
-  private val userAgent: String = {
-    val properties = new Properties
-    // This can be null when testing on machines without this file.
-    Option(getClass.getResourceAsStream("tokens.properties")).mapHeadOrElse(
-      s => {
-        properties.load(s)
-        properties.getProperty("userAgent").ensuring(_ != null)
-      },
-      "no-agent",
-    )
-  }
+  private val userAgent: String = ph.getOrElse(getClass, "userAgent", "no-agent")
 
   def apply(method: String, params: (String, String)*): Future[JsObject] =
     actor ! Input(method, params, times = 1)

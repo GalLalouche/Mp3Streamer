@@ -9,7 +9,7 @@ import slick.jdbc.{H2Profile, JdbcProfile}
 
 import scala.concurrent.ExecutionContext
 
-import common.io.RootDirectory
+import common.io.{ProductionPropertiesHelper, PropertiesHelper, RootDirectory}
 import common.path.ref.DirectoryRef
 import common.path.ref.io.TempDirectory
 
@@ -24,6 +24,7 @@ object NonPersistentModule extends ScalaModule {
       override def constraintMangler(name: String) = s"${UUID.randomUUID()}_$name"
     })
     bind[ExecutionContext].toInstance(ExecutionContext.Implicits.global)
+    bind[PropertiesHelper].toInstance(ProductionPropertiesHelper)
 
     install(RealInternetTalkerModule.daemonic)
     install(AllModules)

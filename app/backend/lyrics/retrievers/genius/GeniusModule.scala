@@ -1,15 +1,11 @@
 package backend.lyrics.retrievers.genius
 
-import java.util.Properties
-
 import com.google.inject.{Provides, Singleton}
 import net.codingwell.scalaguice.ScalaModule
 
+import common.io.PropertiesHelper
+
 private[lyrics] object GeniusModule extends ScalaModule {
   @Provides @Singleton @AccessToken
-  private def accessToken: String = {
-    val properties = new Properties()
-    properties.load(getClass.getResourceAsStream("tokens.properties"))
-    properties.get("accessToken").asInstanceOf[String]
-  }
+  private def accessToken(ph: PropertiesHelper): String = ph(getClass, "accessToken")
 }
