@@ -7,6 +7,12 @@ function ignoreAlbum(artist: string, album: string, reconID: string, elementToRe
   )
 }
 
+function copyPasteAlbum(artist: string, album: string): void {
+  const text = `${artist} ${album}`;
+  copyTextToClipboard(text)
+  newNotification("Copy-pasted", `'${text}' copied to clipboard`)
+}
+
 function ignoreArtist(song: Song): void {
   confirmDialog(
     "ignore " + song.artistName,
@@ -42,12 +48,15 @@ export function show(song: Song): void {
         (Math.ceil(diffTime) >= 365 ? albumDate.getFullYear() : album.date).toString()
       const li = $(
         `<li><span>
-                       ${dateString} ${album.title} (${album.albumType}) <button>Ignore</button>
-                     </span></li>`,
+           ${dateString} ${album.title} (${album.albumType})
+           <button class="copy">Copy</button>
+           <button class="ignore">Ignore</button>
+        </span></li>`,
       )
       const reconID = album.reconID
       assertDefined(reconID)
-      li.on('click', 'button', () => ignoreAlbum(song.artistName, album.title, reconID, li))
+      li.on('click', 'button.copy', () => copyPasteAlbum(song.artistName, album.title))
+      li.on('click', 'button.ignore', () => ignoreAlbum(song.artistName, album.title, reconID, li))
       ul.append(li)
     })
     fieldSet.append(ul)
