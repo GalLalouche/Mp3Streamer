@@ -70,8 +70,9 @@ async function dequeue(): Promise<void> {
     $.get("data/album/" + album.dir, e => gplaylist.add(e, true)).toPromise())
 }
 
-async function skip(): Promise<void> {
-  confirmDialogAsync("skip next album", () => dequeueAux(album => Promise.resolve()))
+function skip(): void {
+  // We don't use async here so skip doesn't wait for dequeue to end.
+  confirmDialog("skip next album", () => dequeueAux(album => Promise.resolve()))
 }
 
 async function dequeueAux(f: (a: Album) => Promise<void>): Promise<void> {
