@@ -5,6 +5,7 @@ import play.api.libs.json.JsObject
 import scala.concurrent.Future
 
 private trait ImageAPI {
+  /** `pageCount` is zero based. */
   def apply(terms: String, pageCount: Int): Future[Seq[JsObject]]
   def resultsPerQuery: Int
 }

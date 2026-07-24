@@ -3,6 +3,7 @@ package mains.cover.image.scrappa
 import com.google.inject.Inject
 import mains.cover.image.ImageAPI
 import mains.cover.image.scrappa.API.{MinSize, SquareImage}
+import org.http4s.Status
 import play.api.libs.json.JsObject
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,7 +31,12 @@ private class API @Inject() private (
         .addHttpHeaders("accept" -> "application/json")
         .addHttpHeaders("X-API-KEY" -> apiKey)
         .get(),
-    ).map(_.jsonArray.map(_.as[JsObject]))
+    ).map { r =>
+      if (r.status != Status.Ok.code)
+        throw new RuntimeException(s"Scrappa API failed: ${r.string}")
+      r.jsonArray.map(_.as[JsObject])
+    }
+
   override val resultsPerQuery: Int = 10
 }
 
