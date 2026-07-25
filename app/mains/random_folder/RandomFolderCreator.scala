@@ -21,6 +21,7 @@ import scala.util.Random
 import monocle.Monocle.toApplySetterOps
 
 import common.Filter
+import common.path.PathUtils
 import common.path.ref.io.{IODirectory, IOFile, IOSystem}
 import common.rich.RichFile._
 import common.rich.collections.RichSeq._
@@ -97,7 +98,7 @@ private class RandomFolderCreator @Inject() (
     assert(outputDir.deepPaths.isEmpty)
     val shuffledSongs = songs.toVector.shuffle(random)
     val padLength = shuffledSongs.size.toString.length
-    for (pb <- managed(new ProgressBar("Copying songs", shuffledSongs.size)))
+    for (pb <- managed(new ProgressBar(s"Copying songs", shuffledSongs.size)))
       shuffledSongs.zipWithIndex.foreach(
         Function.tupled(copyFileToOutputDir(outputDir, pb, padLength)),
       )
@@ -134,14 +135,12 @@ private class RandomFolderCreator @Inject() (
     playlistName = "running",
   )
 
-  def copyFilteredSongs(
-      outputName: String = "Processed Filtered Songs",
-      playlistName: String,
-  ): IODirectory = {
-    val dir = IODirectory.makeDir(s"$tempDirectoryName/$FilteredSongsDirName")
+  def moveFilteredSongs(outputName: String): IODirectory = {
+    val outputDir = IODirectory.makeDir(s"$tempDirectoryName/$outputName").clear()
     // The extra files mess up the copy.
-    dir.files.filter(_.extensionIsAnyOf("m3u", "txt")).foreach(_.delete())
-    val songs = dir.files.toSet
-    copy(songs, IODirectory.makeDir(s"$tempDirectoryName/$outputName").clear(), playlistName)
+    IODirectory(s"$tempDirectoryName/$FilteredSongsDirName").files
+      .filterNot(_.extensionIsAnyOf("m3u", "txt"))
+      .foreach(PathUtils.move(_, outputDir))
+    outputDir
   }
 }
