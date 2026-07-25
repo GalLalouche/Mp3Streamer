@@ -11,12 +11,12 @@ import musicfinder.{ArtistDirResult, ArtistDirsIndex, SongDirectoryParser}
 
 import scala.util.Try
 
-import cats.implicits.catsSyntaxApplicativeError
+import cats.implicits.{catsSyntaxApplicativeError, catsSyntaxApplyOps}
 
 import common.path.ref.{DirectoryRef, FileRef}
 import common.rich.RichT._
 import common.rich.collections.RichSeq._
-import common.rich.primitives.RichEither.ToError
+import common.rich.primitives.RichEither.{richEither, ToError}
 import common.rich.primitives.RichOption.richOption
 
 class ReconcilableFactory @Inject() (
@@ -75,6 +75,8 @@ class ReconcilableFactory @Inject() (
 
   def trySongInfo(f: FileRef): Try[(TrackNumber, SongTitle)] =
     ReconcilableFactory.capture(f.name).toTry(new Exception(s"$f has invalid file name"))
+  def tryTrack(f: FileRef): Try[Track] =
+    trySongInfo(f).map(_._2).map2(toAlbum(f.parent).toErrorTry)(Track.apply)
   def songInfo(f: FileRef): (TrackNumber, SongTitle) =
     trySongInfo(f).getOrElse(songDirectoryParser(f).toTuple(_.trackNumber, _.title))
 }

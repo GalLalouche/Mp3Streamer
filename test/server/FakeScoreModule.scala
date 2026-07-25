@@ -1,8 +1,8 @@
 package server
 
+import backend.recon.Track
 import backend.score.{ModelScore, ScoreBasedProbability, ScoreBasedProbabilityFactory}
 import com.google.inject.{Module, Provides}
-import models.Song
 import net.codingwell.scalaguice.ScalaModule
 
 import common.Percentage
@@ -17,7 +17,7 @@ private[server] object FakeScoreModule {
     @Provides private def scoreBasedProbabilityFactory: ScoreBasedProbabilityFactory =
       _ =>
         new ScoreBasedProbability {
-          override def apply(s: Song): Percentage = Percentage(0.5)
+          override def apply(t: Track): Percentage = Percentage(0.5)
           override def apply(s: ModelScore): Percentage = Percentage(0.5)
         }
   }

@@ -1,8 +1,7 @@
 package songs.selector
 
-import backend.recon.Reconcilable.SongExtractor
+import backend.recon.Track
 import backend.score.{AggregateScorer, ScoreBasedProbability}
-import models.Song
 
 import scala.util.Random
 
@@ -12,13 +11,13 @@ private class ScoreBasedFilter(
     random: Random,
     scorer: AggregateScorer,
     scoreBasedProbability: ScoreBasedProbability,
-) extends Filter[Song] {
-  override def passes(song: Song): Boolean = {
-    val percentage = scoreBasedProbability(song)
-    val aggregateScore = scorer.aggregateScore(song.track)
+) extends Filter[Track] {
+  override def passes(track: Track): Boolean = {
+    val percentage = scoreBasedProbability(track)
+    val aggregateScore = scorer.aggregateScore(track)
     val score = aggregateScore.toOptionalModelScore
     val source = aggregateScore.source.getOrElse("N/A")
-    val shortSongString = s"${song.artistName} - ${song.title} (${score.entryName}, $source)"
+    val shortSongString = s"${track.album.artist} - ${track.title} (${score.entryName}, $source)"
     val $ = percentage.roll(random)
     if ($) scribe.trace(s"Chose song <$shortSongString> with probability $percentage")
     else scribe.trace(s"Skipped song <$shortSongString> with probability ${percentage.inverse}")

@@ -77,7 +77,7 @@ class FlatScoreBasedProbabilityTest extends AnyWordSpec with AuxSpecs with Mocki
         val buffer = new ArrayBuffer[FileRef]()
         while (buffer.length < 10000) {
           val nextSong: Song = random.select(songs)
-          if ($(nextSong).roll(random))
+          if ($(nextSong.track).roll(random))
             buffer += nextSong.file
         }
         val satisfyingPercentage =

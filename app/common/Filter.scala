@@ -1,10 +1,12 @@
 package common
 
 import common.rich.primitives.RichBoolean
+import common.rich.primitives.RichBoolean.richBoolean
 
 // TODO ScalaCommon
 trait Filter[-A] {
   def passes(a: A): Boolean
+  def fails(a: A): Boolean = passes(a).isFalse
   def and[B <: A](other: Filter[B]): Filter[B] = RichBoolean.and(passes, other.passes).apply
   def &&[B <: A](other: Filter[B]): Filter[B] = and(other)
   def or[B <: A](other: Filter[B]): Filter[B] = RichBoolean.or(passes, other.passes).apply

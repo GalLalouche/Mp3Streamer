@@ -1,9 +1,8 @@
 package backend.score
 
-import backend.recon.Reconcilable.SongExtractor
+import backend.recon.Track
 import backend.score.OptionalModelScore.Default
 import com.google.inject.Singleton
-import models.Song
 
 import common.Percentage
 import common.path.ref.FileRef
@@ -17,9 +16,9 @@ import common.rich.primitives.RichDouble.richDouble
     scorer: AggregateScorer,
     probabilities: Map[ModelScore, Percentage],
 ) extends ScoreBasedProbability {
-  def apply(s: Song): Percentage =
-    scorer.aggregateScore(s.track).toModelScore.fold(defaultScore)(apply)
-  def apply(score: ModelScore): Percentage = probabilities(score)
+  override def apply(t: Track): Percentage =
+    scorer.aggregateScore(t).toModelScore.fold(defaultScore)(apply)
+  override def apply(score: ModelScore): Percentage = probabilities(score)
 }
 
 private object FlatScoreBasedProbability {

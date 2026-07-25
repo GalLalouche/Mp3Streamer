@@ -1,5 +1,6 @@
 package songs.selector
 
+import backend.recon.ReconcilableFactory
 import backend.score.{AggregateScorer, ScoreBasedProbabilityFactory}
 import com.google.inject.Inject
 import models.SongTagParser
@@ -13,6 +14,7 @@ import common.rx.RichObservable.richObservable
 
 class MultiStageSongSelectorFactory @Inject() (
     mf: MusicFiles,
+    rf: ReconcilableFactory,
     songTagParser: SongTagParser,
     random: Random,
     sbpFactory: ScoreBasedProbabilityFactory,
@@ -23,10 +25,12 @@ class MultiStageSongSelectorFactory @Inject() (
   def withSongs[Sys <: RefSystem](songs: IndexedSeq[FileRef]): MultiStageSongSelector[Sys] =
     new MultiStageSongSelector(songs.asInstanceOf[IndexedSeq[Sys#F]])(
       mf,
+      rf,
       songTagParser,
       random,
       Filter.always,
-      lengthFilter && new ScoreBasedFilter(random, aggregateScorer, sbpFactory(songs)),
+      new ScoreBasedFilter(random, aggregateScorer, sbpFactory(songs)),
+      lengthFilter,
       timedLogger,
     )
   def apply(): MultiStageSongSelector[_] =

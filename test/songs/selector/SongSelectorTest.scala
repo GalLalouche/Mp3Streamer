@@ -5,7 +5,7 @@ import backend.recon.{Album, Artist, Track}
 import backend.score.{IndividualScorer, ModelScore, OptionalModelScore, ScoreBasedProbability}
 import com.google.inject.Guice
 import genre.GenreFinder
-import models.{FakeModelFactory, MemorySong, Song}
+import models.{FakeModelFactory, MemorySong}
 import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions._
 import net.codingwell.scalaguice.ScalaModule
@@ -36,7 +36,7 @@ class SongSelectorTest
           override def apply(dir: DirectoryRef) = ???
         })
         bind[ScoreBasedProbability].toInstance(new ScoreBasedProbability {
-          override def apply(s: Song) = 0.5
+          override def apply(t: Track) = 0.5
           override def apply(s: ModelScore) = 0.5
         })
         bind[IndividualScorer].toInstance(new IndividualScorer {
