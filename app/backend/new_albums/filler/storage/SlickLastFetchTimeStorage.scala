@@ -3,7 +3,7 @@ package backend.new_albums.filler.storage
 import java.time.LocalDateTime
 
 import backend.recon.{Artist, SlickArtistReconStorage}
-import backend.storage.{DbProvider, SlickSingleKeyColumnStorageTemplateFromConf}
+import backend.storage.{DbProvider, JdbcMappers, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Inject
 import slick.ast.{BaseTypedType, ScalaBaseType}
 
@@ -16,6 +16,7 @@ private class SlickLastFetchTimeStorage @Inject() (
     protected val artistStorage: SlickArtistReconStorage,
 ) extends SlickSingleKeyColumnStorageTemplateFromConf[Artist, Option[LocalDateTime]](ec, dbP) {
   import profile.api._
+  private val mappers = new JdbcMappers()
 
   override type Id = String
   protected implicit override def btt: BaseTypedType[String] = ScalaBaseType.stringType
@@ -24,7 +25,7 @@ private class SlickLastFetchTimeStorage @Inject() (
   override type Entity = (String, Option[LocalDateTime])
   protected class Rows(tag: Tag) extends Table[Entity](tag, "artist_last_album_update") {
     def name = column[String]("name", O.PrimaryKey)
-    def artist = name.mapTo[Artist]
+    def artist = mappers.artistRep(name)
     def artist_fk = foreignKey("artist_fk", name, artistStorage.tableQuery)(
       _.name,
       onUpdate = ForeignKeyAction.Cascade,

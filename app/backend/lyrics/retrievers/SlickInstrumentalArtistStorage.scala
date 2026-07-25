@@ -1,7 +1,7 @@
 package backend.lyrics.retrievers
 
 import backend.recon.{Artist, SlickArtistReconStorage}
-import backend.storage.{DbProvider, IsomorphicSlickStorage}
+import backend.storage.{DbProvider, IsomorphicSlickStorage, JdbcMappers}
 import com.google.inject.{Inject, Singleton}
 import models.TypeAliases.ArtistName
 import slick.ast.{BaseTypedType, ScalaBaseType}
@@ -15,6 +15,7 @@ private class SlickInstrumentalArtistStorage @Inject() (
     protected val artistStorage: SlickArtistReconStorage,
 ) extends IsomorphicSlickStorage[Artist, Unit]()(ec, dbP) {
   import profile.api._
+  private val mappers = new JdbcMappers()
 
   protected override type Id = ArtistName
   protected implicit override def btt: BaseTypedType[Id] = ScalaBaseType.stringType
@@ -27,7 +28,7 @@ private class SlickInstrumentalArtistStorage @Inject() (
       onDelete = ForeignKeyAction.Cascade,
     )
     def * = name
-    def artist = name.mapTo[Artist]
+    def artist: Rep[Artist] = mappers.artistRep(name)
   }
   protected override type EntityTable = ArtistTable
   protected override val tableQuery = TableQuery[EntityTable]

@@ -1,11 +1,8 @@
 package backend.recon
 
-import java.util.Objects
-
 import models.{Song, SongTitle}
 import models.TypeAliases.{AlbumTitle, ArtistName}
-
-import monocle.macros.Lenses
+import org.typelevel.ci.CIString
 
 sealed trait Reconcilable {
   def normalize: String
@@ -16,19 +13,13 @@ sealed trait Reconcilable {
  * artist. In other words, while an [[models.ArtistDir]] has to physically exist on the filesystem,
  * an artist can represent artists which don't have any albums or directories downloaded.
  */
-// Note that this is only a case class for interoperability with Slick. Its implementation of
-// hashcode and equals are different from the default ones!
-// TODO why not use a case insensitive string here?
-@Lenses
-case class Artist(name: ArtistName) extends Reconcilable {
+case class Artist(private val _name: CIString) extends Reconcilable {
+  def name: ArtistName = _name.toString
   override def normalize: String = name.toLowerCase
-
-  override def equals(other: Any): Boolean = other match {
-    case that: Artist => this.name.equalsIgnoreCase(that.name)
-    case _ => false
-  }
-  override def hashCode: Int = normalize.hashCode
   override val artist: Artist = this
+}
+object Artist {
+  def apply(name: ArtistName) = new Artist(CIString(name))
 }
 
 /**
@@ -36,80 +27,50 @@ case class Artist(name: ArtistName) extends Reconcilable {
  * In other words, while an [[models.AlbumDir]] has to physically exist on the filesystem, a release
  * can represent albums which haven't yet been downloaded.
  */
-class Album(val title: AlbumTitle, val year: Int, override val artist: Artist)
+case class Album(private val _title: CIString, year: Int, override val artist: Artist)
     extends Reconcilable {
+  def title: AlbumTitle = _title.toString
   override def normalize: String = s"${artist.normalize} - ${title.toLowerCase}"
-  def toYearless = YearlessAlbum(title, artist)
-
-  override def equals(other: Any): Boolean = other match {
-    case that: Album =>
-      title.equalsIgnoreCase(that.title) && year == that.year && artist == that.artist
-    case _ => false
-  }
-  override def hashCode: Int = Objects.hashCode(title.toLowerCase, year, artist)
-  override def toString = s"Album($title, $year, $artist)"
+  def toYearless = YearlessAlbum(_title, artist)
 }
 object Album {
-  def apply(title: AlbumTitle, year: Int, artist: Artist) = new Album(title, year, artist)
+  def apply(title: AlbumTitle, year: Int, artist: Artist) = new Album(CIString(title), year, artist)
 }
 
 /** An album without a year. Used in places where we want to do comparisons which ignore years. */
-class YearlessAlbum(val title: AlbumTitle, val artist: Artist) {
-  override def equals(other: Any): Boolean = other match {
-    case that: YearlessAlbum =>
-      title.equalsIgnoreCase(that.title) && artist == that.artist
-    case _ => false
-  }
-  override def hashCode: Int = Objects.hashCode(title.toLowerCase, artist)
-  override def toString = s"YearlessAlbum($title, $artist)"
+case class YearlessAlbum(private val _title: CIString, artist: Artist) {
+  def title: AlbumTitle = _title.toString
 }
 object YearlessAlbum {
-  def apply(title: AlbumTitle, artist: Artist) = new YearlessAlbum(title, artist)
+  def apply(title: AlbumTitle, artist: Artist) = new YearlessAlbum(CIString(title), artist)
 }
 
-class Track(val title: SongTitle, val album: Album) extends Reconcilable {
-  private lazy val normalized = title.toLowerCase
+case class Track(_title: CIString, album: Album) extends Reconcilable {
+  def title: SongTitle = _title.toString
   override def artist: Artist = album.artist
-  def toYearless = new YearlessTrack(title, album.toYearless)
+  def toYearless = new YearlessTrack(_title, album.toYearless)
   override def normalize: String = ???
-
-  private def canEqual(other: Any): Boolean = other.isInstanceOf[Track]
-  override def equals(other: Any): Boolean = other match {
-    case that: Track =>
-      that.canEqual(this) &&
-      normalized == that.normalized &&
-      album == that.album
-    case _ => false
-  }
-  override def hashCode: Int = Objects.hashCode(normalized, album)
-
-  override def toString = s"Track($title, $album)"
 }
 object Track {
-  def apply(title: SongTitle, album: Album) = new Track(title, album)
+  def apply(title: SongTitle, album: Album) = new Track(CIString(title), album)
 }
 
 /**
  * A track whose album is without a year. Used in places where we want to do comparisons which
  * ignore years.
  */
-class YearlessTrack(val title: SongTitle, val album: YearlessAlbum) {
-  override def equals(other: Any): Boolean = other match {
-    case that: YearlessTrack =>
-      title.equalsIgnoreCase(that.title) && album == that.album
-    case _ => false
-  }
-  override def hashCode: Int = Objects.hashCode(title.toLowerCase, album)
-  override def toString = s"YearlessTrack($title, $album)"
+case class YearlessTrack(_title: CIString, album: YearlessAlbum) {
+  def title: SongTitle = _title.toString
+  def artist: Artist = album.artist
 }
 object YearlessTrack {
-  def apply(title: SongTitle, album: YearlessAlbum) = new YearlessTrack(title, album)
+  def apply(title: SongTitle, album: YearlessAlbum) = new YearlessTrack(CIString(title), album)
 }
 
 object Reconcilable {
   implicit class SongExtractor(private val $ : Song) extends AnyVal {
     def artist: Artist = Artist($.artistName)
-    def release: Album = new Album($.albumName, $.year, artist)
-    def track: Track = new Track($.title, release)
+    def release: Album = Album($.albumName, $.year, artist)
+    def track: Track = Track($.title, release)
   }
 }

@@ -8,6 +8,8 @@ import slick.ast.BaseTypedType
 
 import scala.concurrent.ExecutionContext
 
+import common.rich.RichT.richT
+
 private[backend] class ArtistScoreStorage @Inject() (
     protected override val ec: ExecutionContext,
     dbP: DbProvider,
@@ -27,7 +29,7 @@ private[backend] class ArtistScoreStorage @Inject() (
     def score = column[ModelScore]("score")
     def artist_fk =
       foreignKey("artist_fk", artist, artistStorage.tableQuery)(
-        _.name.mapTo[Artist],
+        _.name |> mappers.artistRep,
         onUpdate = ForeignKeyAction.Cascade,
         onDelete = ForeignKeyAction.Cascade,
       )

@@ -1,7 +1,7 @@
 package backend.recon
 
 import backend.recon.StoredReconResult.{HasReconResult, StoredNull}
-import backend.storage.{DbProvider, IsomorphicSlickStorage, SlickStorageTemplateFromConf}
+import backend.storage.{DbProvider, IsomorphicSlickStorage, JdbcMappers, SlickStorageTemplateFromConf}
 import com.google.inject.{Inject, Singleton}
 import slick.ast.{BaseTypedType, ScalaBaseType}
 import slick.jdbc.{JdbcProfile, JdbcType}
@@ -43,6 +43,7 @@ private[backend] class SlickArtistReconStorage @Inject() (
 
   protected override def extractId(a: Artist) = a.normalize
   import profile.api._
+  private val mappers = new JdbcMappers()
 
   override type Entity = (String, Option[ReconID], Boolean)
   protected class Rows(tag: Tag) extends Table[Entity](tag, "artist") {
@@ -51,7 +52,7 @@ private[backend] class SlickArtistReconStorage @Inject() (
     // TODO remove isIgnored
     def isIgnored = column[Boolean]("is_ignored", O.Default(false))
     def * = (name, reconId, isIgnored)
-    def artist = name.mapTo[Artist]
+    def artist = mappers.artistRep(name)
   }
   protected override type EntityTable = Rows
   val tableQuery = TableQuery[EntityTable]

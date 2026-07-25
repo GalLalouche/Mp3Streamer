@@ -36,7 +36,7 @@ private[score] class TrackScoreStorage @Inject() (
     def pk = primaryKey(dbP.constraintMangler("pk"), (artist, album, song))
     def artist_fk =
       foreignKey(dbP.constraintMangler("artist_fk"), artist, artistStorage.tableQuery)(
-        _.name.mapTo[Artist],
+        _.name |> mappers.artistRep,
       )
     def * = (artist, album, song, score)
   }
