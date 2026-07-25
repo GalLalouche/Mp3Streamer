@@ -4,19 +4,21 @@ import backend.recon.Reconcilable.SongExtractor
 import backend.score.{AggregateScorer, ModelScore}
 import com.google.inject.Inject
 import musicfinder.SongDirectoryParser
+import scribe.Level
 
-import common.Percentage
+import common.{Percentage, TimedLogger}
 import common.path.ref.io.IODirectory
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 
 private class ScoreSummarizer @Inject() (
     songDirectoryParser: SongDirectoryParser,
     scorer: AggregateScorer,
+    timedLogger: TimedLogger,
 ) {
   def summary(
       outputDir: IODirectory,
       totalSongs: Int,
-  ): Unit = {
+  ): Unit = timedLogger(s"Summarizing scores", Level.Debug) {
     val allScores =
       songDirectoryParser(outputDir)
         .map(_.track)

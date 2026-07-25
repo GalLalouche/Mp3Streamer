@@ -24,7 +24,6 @@ class MultiStageSongSelectorFactory @Inject() (
 ) {
   def withSongs[Sys <: RefSystem](songs: IndexedSeq[FileRef]): MultiStageSongSelector[Sys] =
     new MultiStageSongSelector(songs.asInstanceOf[IndexedSeq[Sys#F]])(
-      mf,
       rf,
       songTagParser,
       random,

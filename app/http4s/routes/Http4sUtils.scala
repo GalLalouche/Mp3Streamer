@@ -8,6 +8,7 @@ import fs2.io.file.Files
 import org.http4s.{EntityDecoder, EntityEncoder, MediaType, Request, Response, StaticFile, Uri}
 import org.http4s.dsl.io._
 import org.http4s.headers.{`Content-Type`, `User-Agent`, Referer}
+import org.typelevel.ci.CIString
 import play.api.libs.json.{Json, JsValue}
 
 import scala.concurrent.Future
@@ -17,6 +18,7 @@ import cats.effect.{Concurrent, IO}
 import cats.implicits.toFunctorOps
 
 import common.rich.RichT.richT
+import common.rich.primitives.RichString.richString
 
 private object Http4sUtils {
   def fromFuture[A](f: => Future[A]): IO[A] = IO.fromFuture(IO.blocking(f))
@@ -60,6 +62,7 @@ private object Http4sUtils {
   }
 
   def shouldEncodeMp3[F[_]](request: Request[F]): Boolean =
-    request.headers.get[`User-Agent`].exists(_.product.value.toLowerCase.contains("Chrome")) ||
-      request.headers.get[Referer].exists(_.uri.renderString.endsWith(".mp3"))
+    request.headers.get[`User-Agent`].exists(_.product.value.|>(CIString.apply).contains(Chrome)) ||
+      request.headers.get[Referer].exists(_.uri.renderString.endsWithCaseInsensitive(".mp3"))
+  private val Chrome = CIString("Chrome")
 }

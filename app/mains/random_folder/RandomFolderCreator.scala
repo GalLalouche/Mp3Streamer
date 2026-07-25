@@ -4,6 +4,7 @@ import java.io.File
 
 import com.google.inject.Inject
 import com.google.inject.assistedinject.Assisted
+import mains.random_folder.RandomFolderCreator.FilteredSongsDirName
 import me.tongfei.progressbar.ProgressBar
 import models.IOSong
 import musicfinder.PosterLookup
@@ -28,7 +29,7 @@ import common.rich.collections.RichSeq._
 import common.rich.primitives.RichBoolean._
 import common.rich.primitives.RichInt._
 
-/** Selects n random songs and dumps them in a folder on D:\ */
+/** Selects n random songs and dumps them in a folder on TEMP_LARGE */
 private class RandomFolderCreator @Inject() (
     @Seed seed: Long,
     @Assisted songSelector: MultiStageSongSelector[IOSystem],
@@ -47,8 +48,8 @@ private class RandomFolderCreator @Inject() (
     val result = new mutable.HashSet[File]
     songSelector
       .applySetter(MultiStageSongSelector.fileFilterSetter)
-      .modify(new Filter[IOFile] {
-        override def passes(a: IOFile) = result.contains(a).isFalse
+      .modify(new Filter[File] {
+        override def passes(a: File) = result.contains(a).isFalse
       }.&&)
     while (result.size < numberOfSongsToCreate) {
       val nextSong = songSelector.randomSong()
@@ -84,7 +85,8 @@ private class RandomFolderCreator @Inject() (
     val targetFileName =
       new File(outputDir, s"${index.padLeftZeros(padLength)}.${tempFile.extension}")
     assert(targetFileName.exists().isFalse)
-    tempFile.renameTo(targetFileName)
+    val success = tempFile.renameTo(targetFileName)
+    assert(success)
     pb.step()
   } catch {
     case e: Exception => println("\rFailed @ " + f); e.printStackTrace(); throw e
@@ -127,8 +129,6 @@ private class RandomFolderCreator @Inject() (
     playlistName = "random",
   )
 
-  private val FilteredSongsDirName = "Filtered Songs"
-
   def dumpFiltered(n: Int): Unit = dumpAll(
     numberOfSongsToCreate = n,
     outputFolder = FilteredSongsDirName,
@@ -143,4 +143,8 @@ private class RandomFolderCreator @Inject() (
       .foreach(PathUtils.move(_, outputDir))
     outputDir
   }
+}
+
+object RandomFolderCreator {
+  private val FilteredSongsDirName = "Filtered Songs"
 }

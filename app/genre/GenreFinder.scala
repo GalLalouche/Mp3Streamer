@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import genre.Genre.Classical
 
 import common.path.ref.DirectoryRef
+import common.rich.primitives.RichString._
 
 class GenreFinder @Inject() (stringGenreFinder: StringGenreFinder) {
   def forArtist(artist: backend.recon.Artist): Option[Genre] =
@@ -17,17 +18,17 @@ class GenreFinder @Inject() (stringGenreFinder: StringGenreFinder) {
   private def from(g: StringGenre): Genre = g match {
     case StringGenre.Flat(name) =>
       name match {
-        case "Blues" => Blues
-        case "Jazz" => Jazz
-        case "Musicals" => Musicals
-        case "New Age" => NewAge
-        case "Classical" => Classical
+        case ciMatch"Blues" => Blues
+        case ciMatch"Jazz" => Jazz
+        case ciMatch"Musicals" => Musicals
+        case ciMatch"New Age" => NewAge
+        case ciMatch"Classical" => Classical
         case e => throw new NoSuchElementException(e)
       }
     case StringGenre.Nested(top, sub) =>
-      top.toLowerCase match {
-        case "rock" => Rock(sub)
-        case "metal" => Metal(sub)
+      top match {
+        case ciMatch"Rock" => Rock(sub)
+        case ciMatch"Metal" => Metal(sub)
         case _ => throw new NoSuchElementException(top)
       }
   }

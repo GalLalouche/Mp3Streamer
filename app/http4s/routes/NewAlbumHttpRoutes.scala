@@ -18,8 +18,6 @@ import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 private class NewAlbumHttpRoutes @Inject() ($ : NewAlbumsFormatter, ec: ExecutionContext) {
   private implicit val iec: ExecutionContext = ec
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
-    // FIXME fix this
-    case GET -> Root / "index.html" => ???
     case GET -> Root / "albums" => Ok(fromFuture($.albums))
     case GET -> Root / "albums" / artist =>
       val notFound = NotFound(s"Artist <$artist> is not reconciled")

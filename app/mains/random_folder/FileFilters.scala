@@ -6,6 +6,7 @@ import backend.recon.Artist
 import com.google.inject.Inject
 import genre.{Genre, GenreFinder}
 import genre.Genre.{Classical, Metal, NewAge}
+import org.typelevel.ci.CIString
 import play.api.libs.json.Json
 
 import common.Filter
@@ -39,8 +40,8 @@ private object FileFilters {
       forbiddenGenres: Set[String],
       allowedArtists: Set[Artist],
       forbiddenArtists: Set[Artist],
-      allowedAlbums: Set[String],
-      forbiddenAlbums: Set[String],
+      allowedAlbums: Set[CIString],
+      forbiddenAlbums: Set[CIString],
   ) extends Filter[File] {
     override def passes(f: File): Boolean = {
       val data = sde(f)
@@ -59,14 +60,15 @@ private object FileFilters {
   }
   def fromConfig(sde: SongDataExtractor): Filter[File] = {
     val json = Json.parse(getClass.getResourceAsStream("config.json"))
-    def getSet(s: String): Set[String] = json.array(s).value.view.map(_.as[String]).toSet
+    def getSet[T](s: String, f: String => T) =
+      json.array(s).value.view.map(f.compose(_.as[String])).toSet
     new FilterConfig(
       sde,
-      forbiddenGenres = getSet("forbiddenGenres"),
-      allowedArtists = getSet("allowedArtists").map(Artist.apply),
-      forbiddenArtists = getSet("forbiddenArtists").map(Artist.apply),
-      allowedAlbums = getSet("allowedAlbums"),
-      forbiddenAlbums = getSet("forbiddenAlbums"),
+      forbiddenGenres = getSet("forbiddenGenres", identity),
+      allowedArtists = getSet("allowedArtists", Artist.apply),
+      forbiddenArtists = getSet("forbiddenArtists", Artist.apply),
+      allowedAlbums = getSet("allowedAlbums", CIString.apply),
+      forbiddenAlbums = getSet("forbiddenAlbums", CIString.apply),
     )
   }
 }

@@ -24,7 +24,7 @@ import common.rich.primitives.RichString.richString
   protected def mainTerm(t: T): String
   protected def secondaryTerms(t: T): Iterable[String]
   private def split(s: String): Iterator[String] = s.toLowerCase.tokenize(StringReconScorer.Tokens)
-  private def weigh(s: Iterable[String], weight: Weight) = s.distinct.tupleRight(weight)
+  private def weigh(s: Iterable[String], weight: Weight) = s.view.distinct.tupleRight(weight)
 }
 
 private object WeightedIndexable {

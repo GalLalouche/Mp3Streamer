@@ -3191,7 +3191,6 @@ public final class EnhancedQueueExecutor extends AbstractExecutorService impleme
     final long startMark = System.nanoTime();
     final ReentrantLock ql = new ReentrantLock();
     final Condition qc = ql.newCondition();
-    // todo: switch to array queue on a more optimistic day
     // protected by {@link #ql}
     ScheduledFutureQueue q = new TreeSetQueue();
     boolean shutdownDetected;
@@ -3450,11 +3449,6 @@ public final class EnhancedQueueExecutor extends AbstractExecutorService impleme
       int mask = arrayLength - 1;
       int head = this.head;
       int start = head + idx;
-      // TODO:
-      //    - change this to three calls to System.arraycopy
-      //    - one for the already-wrapped portion
-      //    - one for the portion that is being newly wrapped
-      //    - one for the leading (pre-wrap) portion
       for (int i = moveCnt - 1; i >= 0; i--) {
         int pos = start + i;
         array[pos + 1 & mask] = array[pos & mask];
@@ -3475,11 +3469,6 @@ public final class EnhancedQueueExecutor extends AbstractExecutorService impleme
       int mask = arrayLength - 1;
       int head = this.head;
       int start = head + idx - 1;
-      // TODO:
-      //    - change this to three calls to System.arraycopy
-      //    - one for the leading (pre-wrap) portion
-      //    - one for the portion that is being newly de-wrapped
-      //    - one for the already-wrapped portion
       for (int i = moveCnt - 1; i >= 0; i--) {
         int pos = start - i;
         array[pos - 1 & mask] = array[pos & mask];
@@ -3503,7 +3492,6 @@ public final class EnhancedQueueExecutor extends AbstractExecutorService impleme
     }
 
     public ScheduledFutureQueue grow() {
-      // todo: calibrate this threshold
       if (array.length >= 256) {
         return new TreeSetQueue(this);
       } else {

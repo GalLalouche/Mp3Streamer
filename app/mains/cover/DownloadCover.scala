@@ -66,10 +66,7 @@ private[mains] class DownloadCover @Inject() (
           prefetchSize = imageFinder.resultsPerQuery - ImageSelector.ImagesPerPage,
           parallelism = ImageSelector.ImagesPerPage,
         )
-        // TODO filterSuccessful in rich whatever. FunctorFilter?
-        .map(_.toOption)
-        .filter(_.isDefined)
-        .map(_.get),
+        .oMap(_.toOption),
     )
 }
 

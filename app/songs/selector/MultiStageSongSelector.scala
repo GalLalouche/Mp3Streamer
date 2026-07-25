@@ -3,7 +3,6 @@ package songs.selector
 import backend.recon.{ReconcilableFactory, Track}
 import backend.recon.Reconcilable.SongExtractor
 import models.{Song, SongTagParser}
-import musicfinder.MusicFiles
 import songs.selector.MultiStageSongSelector.fileFilterSetter
 
 import scala.annotation.tailrec
@@ -21,7 +20,6 @@ import common.rich.RichRandomSpecVer.richRandomSpecVer
  * it doesn't require parsing the song's ID3.
  */
 class MultiStageSongSelector[Sys <: RefSystem](private val songs: IndexedSeq[Sys#F])(
-    private val musicFiles: MusicFiles,
     private val reconcilableFactory: ReconcilableFactory,
     private val songTagParser: SongTagParser,
     private val random: Random,
@@ -63,7 +61,6 @@ object MultiStageSongSelector {
     Setter[MultiStageSongSelector[Sys], Filter[Sys#F]](f =>
       ss =>
         new MultiStageSongSelector[Sys](ss.songs)(
-          ss.musicFiles,
           ss.reconcilableFactory,
           ss.songTagParser,
           ss.random,
@@ -77,7 +74,6 @@ object MultiStageSongSelector {
     Setter[MultiStageSongSelector[Sys], Filter[Song]](f =>
       ss =>
         new MultiStageSongSelector[Sys](ss.songs)(
-          ss.musicFiles,
           ss.reconcilableFactory,
           ss.songTagParser,
           ss.random,

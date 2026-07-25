@@ -8,11 +8,13 @@ import com.google.inject.assistedinject.Assisted
 import mains.SwingUtils._
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.DurationInt
 import scala.swing._
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 import cats.instances.future.catsStdInstancesForFuture
 import common.rich.func.kats.RichOptionT.richOptionT
+import common.rich.func.kats.ToMoreMonadErrorOps.toMoreApplicativeErrorOps
 import common.rich.func.kats.ToMoreMonoidOps._
 
 import common.concurrency.FutureIterant
@@ -30,12 +32,9 @@ private class AsyncFolderImagePanel @Inject() (
   import AsyncFolderImagePanel._
 
   private var current = images.oMap(image =>
-    createImagePanel(image) match {
-      case Failure(e) =>
-        scribe.warn(s"Error converting <$image> to BufferImage", e)
-        None
-      case Success(value) => Some(value)
-    },
+    createImagePanel(image)
+      .listenError(e => scribe.warn(s"Error converting <$image> to BufferImage", e))
+      .toOption,
   )
 
   private def createImagePanel(fi: FolderImage): Try[Component] =
