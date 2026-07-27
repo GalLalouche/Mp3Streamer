@@ -2,7 +2,7 @@ package mains.random_folder
 
 import java.io.File
 
-import backend.recon.Artist
+import backend.recon.{Artist, ReconcilableFactory}
 import com.google.inject.Inject
 import genre.GenreFinder
 import org.typelevel.ci.CIString
@@ -18,11 +18,8 @@ private class SongDataExtractor @Inject() (genreFinder: GenreFinder) {
   )
   def apply(f: File): SongData = {
     val albumDir = f.parent
-    val albumName = albumDir.name
-    // Single artist dirs
-    // TODO extract this logic to somewhere else
-    if (albumName.take(4).forall(_.isDigit))
-      go(albumDir.parent, albumName)
+    if (ReconcilableFactory.hasYearPrefix(albumDir))
+      go(albumDir.parent, albumDir.name)
     else
       go(albumDir, "Single-artist-dir")
   }

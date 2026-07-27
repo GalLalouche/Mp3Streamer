@@ -1,8 +1,10 @@
 package backend.recon
 
+import java.util.regex.Pattern
+
 import backend.new_albums.IgnoredArtists
 import backend.recon.Reconcilable.SongExtractor
-import backend.recon.ReconcilableFactory.AlbumParseError
+import backend.recon.ReconcilableFactory.{hasYearPrefix, AlbumParseError}
 import backend.recon.ReconcilableFactory.AlbumParseError.{MultipleArtistsIndexed, NoArtistIndexed, NoSongs, SinglesDirectory, UnparsableName}
 import com.google.common.annotations.VisibleForTesting
 import com.google.inject.Inject
@@ -18,21 +20,21 @@ import common.rich.RichT._
 import common.rich.collections.RichSeq._
 import common.rich.primitives.RichEither.{richEither, ToError}
 import common.rich.primitives.RichOption.richOption
+import common.rich.primitives.RichString._
 
 class ReconcilableFactory @Inject() (
     songDirectoryParser: SongDirectoryParser,
     artistDirsIndex: ArtistDirsIndex,
-    directoryDiscovery: IgnoredArtists,
+    ignoreArtists: IgnoredArtists,
 ) {
   /** Does not parse ID3 tags, only uses the directory name. */
   def toAlbumFromFileOnly(dir: DirectoryRef): Either[AlbumParseError, Album] =
-    if (directoryDiscovery.shouldIgnore(dir))
+    if (ignoreArtists.shouldIgnore(dir))
       Left(AlbumParseError.ClassicalArtist)
-    else if (dir.name.take(4).exists(_.isDigit))
+    else if (hasYearPrefix(dir))
       dir.name.split(" ", 2) match {
         case Array(yearStr, title) =>
           assert(
-            // Some album years are suffixed with an ordering, e.g., 1969A.
             yearStr.length == 4 || yearStr.length == 5,
             s"<$yearStr> has weird format for <$dir>",
           )
@@ -103,4 +105,8 @@ object ReconcilableFactory {
 
     implicit val toError: ToError[AlbumParseError] = ToError.fromToString[AlbumParseError]
   }
+
+  def hasYearPrefix(dir: DirectoryRef): Boolean = dir.name.matches(YearPrefixRegex)
+  // Some album years are suffixed with an ordering, e.g., 1969A.
+  private val YearPrefixRegex = Pattern.compile("""\d{4}\w? .+""")
 }

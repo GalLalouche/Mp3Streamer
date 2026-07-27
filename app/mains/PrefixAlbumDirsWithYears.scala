@@ -1,5 +1,6 @@
 package mains
 
+import backend.recon.ReconcilableFactory
 import com.google.inject.Inject
 import musicfinder.SongDirectoryParser
 
@@ -8,7 +9,8 @@ import common.path.ref.io.IODirectory
 import common.rich.collections.RichTraversableOnce._
 
 private class PrefixAlbumDirsWithYears @Inject() (songDirectoryParser: SongDirectoryParser) {
-  def addYears(d: IODirectory): Unit = d.dirs.filterNot(hasYear).foreach(addYear)
+  def addYears(d: IODirectory): Unit =
+    d.dirs.filterNot(ReconcilableFactory.hasYearPrefix).foreach(addYear)
 
   private def addYear(d: IODirectory): Unit = try {
     val songs = songDirectoryParser(d)
@@ -19,5 +21,4 @@ private class PrefixAlbumDirsWithYears @Inject() (songDirectoryParser: SongDirec
       e.printStackTrace()
       println("Error renaming " + d)
   }
-  private def hasYear(d: IODirectory): Boolean = d.name.take(4).forall(_.isDigit)
 }
