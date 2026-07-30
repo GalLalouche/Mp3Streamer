@@ -15,7 +15,7 @@ import cats.implicits.{toFunctorOps, toTraverseOps}
 
 import common.concurrency.Producer
 import common.json.saver.JsonableCOWFactory
-import common.rich.RichTime.RichClock
+import common.rich.RichTime._
 
 @Singleton class LastAlbumsState @Inject() (
     lastAlbumProvider: LastAlbumProvider,
@@ -40,13 +40,13 @@ import common.rich.RichTime.RichClock
     import LastAlbums.jsonableLastAlbums
     import modelJsonable.albumDirJsonifier
     implicit val ZeroLastAlbums: Zero[LastAlbums] = new Zero[LastAlbums] {
-      def zero: LastAlbums = new LastAlbums(clock.getLocalDateTime)
+      def zero: LastAlbums = new LastAlbums(lastUpdateTime = clock.getLocalDateTime)
     }
 
     factory[LastAlbums]
   }
   private val lastAlbumsUnique = Producer.unique[Seq[AlbumDir]](
     "LastAlbumsState",
-    lastAlbumProvider.since(lastAlbums.get.lastUpdateTime),
+    lastAlbumProvider.since(lastAlbums.get.lastUpdateTime.toInstant(clock)),
   )
 }

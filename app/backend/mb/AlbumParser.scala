@@ -8,7 +8,6 @@ import play.api.libs.json.{JsObject, JsValue}
 
 import common.json.RichJson._
 import common.rich.RichT.richT
-import common.rich.RichTime.OrderingLocalDate
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
 

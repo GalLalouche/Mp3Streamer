@@ -16,8 +16,8 @@ class StringGenreTest extends AnyFreeSpec with AuxSpecs with BeforeAndAfterAll {
   private val flatGenres = Vector("d")
   private val mf = FakeMusicFilesImpl(
     root,
-    genresWithSubGenres,
-    flatGenres,
+    genresWithSubGenres = genresWithSubGenres,
+    flatGenres = flatGenres,
   )
   override def beforeAll(): Unit =
     (genresWithSubGenres ++ flatGenres).foreach(root.addSubDir)

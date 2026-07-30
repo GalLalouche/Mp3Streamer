@@ -15,7 +15,7 @@ private class LastAlbums private (
     private val queue: Queue[AlbumDir],
     val lastUpdateTime: LocalDateTime,
 ) {
-  def this(now: LocalDateTime) = this(Queue.empty, now)
+  def this(lastUpdateTime: LocalDateTime) = this(Queue.empty, lastUpdateTime)
   def enqueue(albumDir: AlbumDir): LastAlbums = {
     val modified = albumDir.dir.lastModifiedTime
     if (modified <= lastUpdateTime) this else new LastAlbums(queue.enqueue(albumDir), modified)

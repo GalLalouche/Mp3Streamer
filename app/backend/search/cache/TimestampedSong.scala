@@ -1,6 +1,6 @@
 package backend.search.cache
 
-import java.time.LocalDateTime
+import java.time.{Clock, LocalDateTime}
 
 import models.Song
 import org.apache.avro.{Schema, SchemaBuilder}
@@ -20,40 +20,34 @@ private[search] case class TimestampedSong(
 )
 
 private object TimestampedSong {
-  implicit def jsonableEv(implicit ev: Jsonable[Song]): Jsonable[TimestampedSong] =
-    new Jsonable[TimestampedSong] {
-      override def jsonify(e: TimestampedSong): JsValue = Json.obj(
-        "updateTime" -> e.updateTime.toMillis,
-        "song" -> e.song.jsonify,
-      )
-      override def parse(json: JsValue): TimestampedSong = TimestampedSong(
-        updateTime = json.long("updateTime").toLocalDateTime,
-        song = json./("song").parse[Song],
-      )
-    }
-  implicit def avroableEv(implicit ev: Avroable[Song]): Avroable[TimestampedSong] =
-    new Avroable[TimestampedSong] {
-      // override def jsonify(e: TimestampedSong): JsValue = Json.obj(
-      //  "updateTime" -> e.updateTime.toMillis,
-      //  "song" -> e.song.jsonify,
-      // )
-      // override def parse(json: JsValue): TimestampedSong = TimestampedSong(
-      //  updateTime = json.long("updateTime").toLocalDateTime,
-      //  song = json./("song").parse[Song],
-      // )
-      override def schema: Schema = timestampedSongSchema(ev.schema)
-      override def toRecord(a: TimestampedSong): GenericRecord = {
-        val $ = new GenericData.Record(schema)
-        $.put("updateTime", a.updateTime.toMillis)
-        $.put("song", ev.toRecord(a.song))
-        $
+  class Implicits(clock: Clock) {
+    implicit def jsonableEv(implicit ev: Jsonable[Song]): Jsonable[TimestampedSong] =
+      new Jsonable[TimestampedSong] {
+        override def jsonify(e: TimestampedSong): JsValue = Json.obj(
+          "updateTime" -> e.updateTime.toMillis(clock),
+          "song" -> e.song.jsonify,
+        )
+        override def parse(json: JsValue): TimestampedSong = TimestampedSong(
+          updateTime = json.long("updateTime").toLocalDateTime(clock),
+          song = json./("song").parse[Song],
+        )
       }
+    implicit def avroableEv(implicit ev: Avroable[Song]): Avroable[TimestampedSong] =
+      new Avroable[TimestampedSong] {
+        override def schema: Schema = timestampedSongSchema(ev.schema)
+        override def toRecord(a: TimestampedSong): GenericRecord = {
+          val $ = new GenericData.Record(schema)
+          $.put("updateTime", a.updateTime.toMillis(clock))
+          $.put("song", ev.toRecord(a.song))
+          $
+        }
 
-      override def fromRecord(r: GenericRecord): TimestampedSong = TimestampedSong(
-        updateTime = r.getLong("updateTime").toLocalDateTime,
-        song = r.parseInner[Song]("song"),
-      )
-    }
+        override def fromRecord(r: GenericRecord): TimestampedSong = TimestampedSong(
+          updateTime = r.getLong("updateTime").toLocalDateTime(clock),
+          song = r.parseInner[Song]("song"),
+        )
+      }
+  }
 
   // TODO cache this somehow
   private def timestampedSongSchema(songSchema: Schema) = SchemaBuilder

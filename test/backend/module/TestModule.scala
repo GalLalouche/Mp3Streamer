@@ -8,7 +8,6 @@ import backend.lyrics.retrievers.genius.AccessToken
 import backend.storage.DbProvider
 import com.google.inject.Provides
 import models.{ModelJsonable, SongTagParser}
-import backend.lyrics.retrievers.genius.AccessToken
 import musicfinder.{FakeMusicFiles, MusicFiles, PosterLookup}
 import net.codingwell.scalaguice.ScalaModule
 

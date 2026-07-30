@@ -12,7 +12,7 @@ import cats.implicits.catsSyntaxFlatMapOps
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.FakeClock
-import common.rich.RichTime.{RichInstant, RichLong}
+import common.rich.RichTime.{RichClock, RichLong}
 import common.storage.StoreMode
 import common.test.AsyncAuxSpecs
 
@@ -43,15 +43,15 @@ class ComposedFreshnessStorageTest
     }
     "existing data with timestamp" in {
       $.store(1, 2) >>
-        $.freshness(1).mapValue(_.localDateTime.value shouldReturn clock.instant().toLocalDateTime)
+        $.freshness(1).mapValue(_.localDateTime.value shouldReturn clock.getLocalDateTime)
     }
   }
   "mapStore updates timestamp" in {
     $.store(1, 2) >| clock.advance(1) >> checkAll(
-      $.freshness(1).mapValue(_.localDateTime.value shouldReturn 0.toLocalDateTime),
+      $.freshness(1).mapValue(_.localDateTime.value shouldReturn 0.toLocalDateTime(clock)),
       $.mapStore(StoreMode.Update, 1, _ * 2, ???).mapValue(_ shouldReturn 2),
       $.load(1).mapValue(_ shouldReturn 4),
-      $.freshness(1).mapValue(_.localDateTime.value shouldReturn 1.toLocalDateTime),
+      $.freshness(1).mapValue(_.localDateTime.value shouldReturn 1.toLocalDateTime(clock)),
     )
   }
 }

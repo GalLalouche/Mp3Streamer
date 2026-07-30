@@ -1,15 +1,11 @@
 package backend.search.cache
 
 import models.Song
-import play.api.libs.json.{JsArray, JsValue}
 
 import scala.math.Ordering.Implicits._
 
 import common.AvroableSaver
 import common.io.avro.Avroable
-import common.json.Jsonable
-import common.json.RichJson.ImmutableJsonArray
-import common.json.ToJsonableOps._
 import common.path.ref.FileRef
 import common.rich.RichT.richT
 import common.rich.RichTime._
@@ -36,13 +32,6 @@ object SongCache {
       scribe.warn("No existing SongCache found")
     new SongCache(xs.mapBy(_.song.file))
   }
-
-  implicit def jsonableEv(implicit ev: Jsonable[Song]): Jsonable[SongCache] =
-    new Jsonable[SongCache] {
-      override def jsonify(e: SongCache): JsValue = e.songsByFile.values.toVector.jsonifyArray
-      override def parse(json: JsValue): SongCache =
-        from(json.as[JsArray].map(_.parse[TimestampedSong]))
-    }
 
   // TODO this wasn't actually tested! Or rather, it was tested only when empty? The bug here was
   //  the difference in names between "SongCaches" and "TimestampedSongs", which would cause Avro to

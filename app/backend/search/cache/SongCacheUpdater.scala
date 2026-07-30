@@ -1,5 +1,7 @@
 package backend.search.cache
 
+import java.time.Clock
+
 import com.google.inject.Inject
 import models.{AlbumDir, ArtistDir, Song}
 import rx.lang.scala.Observable
@@ -9,7 +11,7 @@ import scribe.Level
 import scala.concurrent.ExecutionContext
 
 import common.{AvroableSaver, TimedLogger}
-import common.io.avro.ModelAvroable
+import common.io.avro.{Avroable, ModelAvroable}
 import common.rich.RichT.richT
 import common.rx.report.ReportObserver
 
@@ -19,10 +21,13 @@ private[search] class SongCacheUpdater @Inject() (
     builder: SongCacheBuilder,
     ec: ExecutionContext,
     ma: ModelAvroable,
+    clock: Clock,
     timedLogger: TimedLogger,
 ) {
   import ma._
 
+  private implicit val ev: Avroable[TimestampedSong] =
+    new TimestampedSong.Implicits(clock).avroableEv
   def go(forceRefresh: Boolean): Observable[TimestampedSong] = {
     val original = SongCache.load(saver)
     val $ = ReplaySubject[TimestampedSong]()

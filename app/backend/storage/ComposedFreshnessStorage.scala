@@ -7,7 +7,7 @@ import backend.FutureOption
 import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.RichT._
-import common.rich.RichTime.RichInstant
+import common.rich.RichTime.RichClock
 import common.rich.RichTuple._
 import common.storage.{Storage, StoreMode}
 
@@ -19,7 +19,7 @@ class ComposedFreshnessStorage[Key, Value](storage: Storage[Key, (Value, Freshne
     implicit ec: ExecutionContext,
 ) extends FreshnessStorage[Key, Value]
     with Storage[Key, Value] {
-  private def now(v: Value): (Value, Freshness) = v -> DatedFreshness(clock.instant.toLocalDateTime)
+  private def now(v: Value): (Value, Freshness) = v -> DatedFreshness(clock.getLocalDateTime)
   private def toValue[A](v: FutureOption[(Value, A)]): FutureOption[Value] = v.map(_._1)
   override def freshness(k: Key): FutureOption[Freshness] = storage.load(k).map(_._2)
   override def foreverFresh(k: Key, v: Value): Future[Unit] =
