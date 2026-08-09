@@ -1,21 +1,22 @@
 package mains.cover.image.serp
 
 import com.google.inject.Inject
+import common.io.InternetTalker
+import common.io.RichWSResponse._
+import common.json.RichJson.DynamicJson
 import mains.cover.image.ImageAPI
 import mains.cover.image.serp.API.{MinSize, SquareImage}
 import play.api.libs.json.JsObject
 
+import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.io.InternetTalker
-import common.io.RichWSResponse._
-import common.json.RichJson.DynamicJson
-
-private class API @Inject() private (
+private[image] class API @Inject() private (
     @ApiKey apiKey: String,
     it: InternetTalker,
     ec: ExecutionContext,
 ) extends ImageAPI {
+  override val toString = "Serp API"
   private implicit val iec: ExecutionContext = ec
   override def apply(terms: String, pageCount: Int): Future[Seq[JsObject]] =
     it.useWs(
@@ -30,6 +31,7 @@ private class API @Inject() private (
           "ijn" -> pageCount.toString,
         )
         .addHttpHeaders("accept" -> "application/json")
+        .withRequestTimeout(10.seconds)
         .get(),
     ).map { response =>
       val obj = response.jsonObject
