@@ -1,26 +1,28 @@
 package mains.cover.image
 
 import backend.module.TestModuleConfiguration
-import com.google.inject.{Guice, Module}
-import io.lemonlabs.uri.Url
-import mains.cover.UrlSource
-import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
-import org.scalatest.freespec.AsyncFreeSpec
-import play.api.libs.json.JsValue
-
+import com.google.inject.Guice
 import common.guice.RichModule.richModule
 import common.rich.RichT.lazyT
 import common.test.AuxSpecs
+import io.lemonlabs.uri.Url
+import mains.cover.UrlSource
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+import net.codingwell.scalaguice.ScalaModule
+import org.scalatest.freespec.AsyncFreeSpec
+import play.api.libs.json.Json
 
-abstract class ImageApiSourceTest(
-    module: Module,
-    json: JsValue,
-) extends AsyncFreeSpec
+private abstract class ImageApiSourceTest[Api <: ImageAPI: Manifest]
+    extends AsyncFreeSpec
     with AuxSpecs {
+  private val json = Json.parse(manifest.runtimeClass.getResourceAsStream("test.json"))
+
   private val injector =
     Guice.createInjector(
       TestModuleConfiguration(_urlToBytesMapper = json.toString.getBytes.partialConst).module
-        .overrideWith(module),
+        .overrideWith(new ScalaModule {
+          override def configure(): Unit = bind[ImageAPI].to[Api]
+        }),
     )
   private val $ = injector.instance[ImageSearch]
   "apply" in {

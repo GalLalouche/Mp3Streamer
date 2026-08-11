@@ -1,8 +1,8 @@
 package mains.cover.image.serp
 
 import com.google.inject.Inject
-import common.io.InternetTalker
 import common.io.RichWSResponse._
+import common.io.{InternetTalker, PropertiesHelper}
 import common.json.RichJson.DynamicJson
 import mains.cover.image.ImageAPI
 import mains.cover.image.serp.API.{MinSize, SquareImage}
@@ -12,12 +12,13 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
 private[image] class API @Inject() private (
-    @ApiKey apiKey: String,
+    ph: PropertiesHelper,
     it: InternetTalker,
     ec: ExecutionContext,
 ) extends ImageAPI {
   override val toString = "Serp API"
   private implicit val iec: ExecutionContext = ec
+  private lazy val apiKey = ph(getClass, "apiKey")
   override def apply(terms: String, pageCount: Int): Future[Seq[JsObject]] =
     it.useWs(
       _.url("https://serpapi.com/search.json")
@@ -41,7 +42,6 @@ private[image] class API @Inject() private (
     }
   override val resultsPerQuery: Int = 100
 }
-//https://serpapi.com/search.json?engine=google_images&q=flowers&location=Austin,+Texas,+United+States&google_domain=google.com&hl=en&gl=us
 
 private object API {
   // https://serpapi.com/google-images-api#api-parameters-advanced-filters-imgar
