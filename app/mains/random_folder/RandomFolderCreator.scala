@@ -1,12 +1,19 @@
 package mains.random_folder
 
-import java.io.File
-
 import com.google.inject.Inject
 import com.google.inject.assistedinject.Assisted
+import common.Filter
+import common.path.PathUtils
+import common.path.ref.FileRef
+import common.path.ref.io.{IODirectory, IOFile, IOSystem}
+import common.rich.RichFile._
+import common.rich.collections.RichSeq._
+import common.rich.primitives.RichBoolean._
+import common.rich.primitives.RichInt._
 import mains.random_folder.RandomFolderCreator.FilteredSongsDirName
 import me.tongfei.progressbar.ProgressBar
 import models.IOSong
+import monocle.Monocle.toApplySetterOps
 import musicfinder.PosterLookup
 import org.apache.commons.io.FileUtils
 import org.jaudiotagger.audio.AudioFileIO
@@ -16,18 +23,9 @@ import org.jaudiotagger.tag.images.StandardArtwork
 import resource._
 import songs.selector.MultiStageSongSelector
 
+import java.io.File
 import scala.collection.mutable
 import scala.util.Random
-
-import monocle.Monocle.toApplySetterOps
-
-import common.Filter
-import common.path.PathUtils
-import common.path.ref.io.{IODirectory, IOFile, IOSystem}
-import common.rich.RichFile._
-import common.rich.collections.RichSeq._
-import common.rich.primitives.RichBoolean._
-import common.rich.primitives.RichInt._
 
 /** Selects n random songs and dumps them in a folder on TEMP_LARGE */
 private class RandomFolderCreator @Inject() (
@@ -109,11 +107,25 @@ private class RandomFolderCreator @Inject() (
     outputDir
   }
 
+  /** Returns the original files. */
+  def dumpAll(n: Int): Iterable[FileRef] = dumpAll(
+    numberOfSongsToCreate = n,
+    outputFolder = "RandomSongsOutput",
+    playlistName = "random",
+  )
+
+  /** Returns the original files. */
+  def dumpFiltered(n: Int): Iterable[FileRef] = dumpAll(
+    numberOfSongsToCreate = n,
+    outputFolder = FilteredSongsDirName,
+    playlistName = "running",
+  )
+
   private def dumpAll(
       numberOfSongsToCreate: Int,
       outputFolder: String,
       playlistName: String,
-  ): Unit = {
+  ): Iterable[FileRef] = {
     val songs = managed(new ProgressBar("Choosing songs", numberOfSongsToCreate))
       .acquireAndGet(createSongSet(numberOfSongsToCreate))
     assert(songs.size == numberOfSongsToCreate)
@@ -122,18 +134,8 @@ private class RandomFolderCreator @Inject() (
       IODirectory.makeDir(tempDirectoryName).addSubDir(outputFolder).clear(),
       playlistName,
     )
+    songs.map(IOFile(_))
   }
-  def dumpAll(n: Int): Unit = dumpAll(
-    numberOfSongsToCreate = n,
-    outputFolder = "RandomSongsOutput",
-    playlistName = "random",
-  )
-
-  def dumpFiltered(n: Int): Unit = dumpAll(
-    numberOfSongsToCreate = n,
-    outputFolder = FilteredSongsDirName,
-    playlistName = "running",
-  )
 
   def moveFilteredSongs(outputName: String): IODirectory = {
     val outputDir = IODirectory.makeDir(s"$tempDirectoryName/$outputName").clear()

@@ -1,34 +1,19 @@
 package mains.random_folder
 
-import backend.recon.Reconcilable.SongExtractor
 import backend.score.{AggregateScorer, ModelScore}
 import com.google.inject.Inject
-import musicfinder.SongDirectoryParser
+import common.path.ref.FileRef
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
+import common.{Percentage, TimedLogger}
 import scribe.Level
 
-import common.{Percentage, TimedLogger}
-import common.path.ref.io.IODirectory
-import common.rich.collections.RichTraversableOnce.richTraversableOnce
-
-private class ScoreSummarizer @Inject() (
-    songDirectoryParser: SongDirectoryParser,
-    scorer: AggregateScorer,
-    timedLogger: TimedLogger,
-) {
-  def summary(
-      outputDir: IODirectory,
-      totalSongs: Int,
-  ): Unit = timedLogger(s"Summarizing scores", Level.Debug) {
-    val allScores =
-      songDirectoryParser(outputDir)
-        .map(_.track)
-        .flatMap(scorer.aggregateScore(_).toModelScore)
-        .frequencies
-    ModelScore.values.foreach(score =>
-      scribe.info(
-        s"Score $score makes up " +
-          s"${Percentage(allScores.getOrElse(score, 0).toDouble / totalSongs).prettyPrint(2)} of total playlist",
-      ),
-    )
+private class ScoreSummarizer @Inject() (scorer: AggregateScorer, timedLogger: TimedLogger) {
+  def summary(songs: Iterable[FileRef]): Unit = timedLogger(s"Summarizing scores", Level.Debug) {
+    val allScores = songs.flatMap(scorer.tryAggregateScore).flatMap(_.toModelScore).frequencies
+    val totalSongs = allScores.values.sum
+    ModelScore.values.foreach { score =>
+      val p = Percentage(allScores.getOrElse(score, 0).toDouble / totalSongs)
+      scribe.info(s"Score $score makes up ${p.prettyPrint(2)} of total playlist")
+    }
   }
 }
