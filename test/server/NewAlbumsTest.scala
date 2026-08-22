@@ -20,7 +20,6 @@ import scala.concurrent.Future
 import cats.implicits.toFunctorOps
 import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 
-import common.guice.RichModule.richModule
 import common.json.RichJson._
 import common.storage.Storage
 import common.test.BeforeAndAfterEachAsync
@@ -30,8 +29,7 @@ import common.test.memory_ref.MemoryRoot
 private class NewAlbumsTest(serverModule: Module)
     extends HttpServerSpecs(serverModule)
     with BeforeAndAfterEachAsync {
-  protected override def overridingModule: Module =
-    FakeScoreModule.module.overrideWith(ExistingAlbumsModules.lazyAlbums)
+  protected override def overridingModule: Module = ExistingAlbumsModules.lazyAlbums
 
   private val artistReconStorage = injector.instance[ArtistReconStorage]
   private val storage = injector.instance[Storage[ReconID, StoredNewAlbum]]

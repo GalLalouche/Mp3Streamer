@@ -3,10 +3,12 @@ package server
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
+import backend.score.ModelScore
 import com.google.inject.Module
 import models.{FakeModelFactory, MemorySong}
 import musicfinder.FakeMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions._
+import net.codingwell.scalaguice.ScalaModule
 import org.scalatest.Assertion
 import play.api.libs.json.{JsArray, JsObject, JsValue}
 import sttp.client3.UriContext
@@ -16,6 +18,10 @@ import common.json.RichJson._
 import common.test.memory_ref.MemoryRoot
 
 private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModule) {
+  protected override def overridingModule: Module = new ScalaModule {
+    override def configure(): Unit =
+      bind[Map[ModelScore, Any]].toInstance(Map(ModelScore.Okay -> 1.0))
+  }
   private val factory = new FakeModelFactory(injector.instance[MemoryRoot])
   private val mf = injector.instance[FakeMusicFiles]
 

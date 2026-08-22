@@ -1,13 +1,10 @@
 package songs.selector
 
-import backend.score.IndividualScorer
-import com.google.inject.Provides
-import genre.GenreFinder
 import musicfinder.MusicFiles
 import net.codingwell.scalaguice.ScalaModule
+import songs.selector.filter.FilterModule
 
 import scala.concurrent.ExecutionContext
-import scala.concurrent.duration.DurationInt
 
 import common.guice.ModuleUtils
 
@@ -16,10 +13,6 @@ private[songs] object SelectorModule extends ScalaModule with ModuleUtils {
     requireBinding[ExecutionContext]
     requireBinding[MusicFiles]
     bind[SongSelector].to[SongSelectorState]
+    install(FilterModule)
   }
-
-  @Provides private def lengthFilter(
-      genreFinder: GenreFinder,
-      scorer: IndividualScorer,
-  ) = new LengthFilter(genreFinder, scorer, minLength = 2.minutes)
 }

@@ -11,8 +11,6 @@ import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 import common.test.memory_ref.MemoryRoot
 
 private class IndexTest(serverModule: Module) extends HttpServerSpecs(serverModule) {
-  protected override def overridingModule: Module = FakeScoreModule.module
-
   // Indexing requires at least one song; without it, the score-based probability
   // computation divides by zero.
   injector

@@ -1,4 +1,4 @@
-package songs.selector
+package songs.selector.filter
 
 import backend.recon.Reconcilable.SongExtractor
 import backend.score.IndividualScorer

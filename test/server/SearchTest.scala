@@ -14,8 +14,6 @@ import common.rich.collections.RichTraversableOnce._
 import common.test.memory_ref.MemoryRoot
 
 private class SearchTest(serverModule: Module) extends HttpServerSpecs(serverModule) {
-  protected override def overridingModule: Module = FakeScoreModule.module
-
   private val factory = new FakeModelFactory(injector.instance[MemoryRoot])
   private val mf = injector.instance[FakeMusicFiles]
 
