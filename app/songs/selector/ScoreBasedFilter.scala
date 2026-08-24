@@ -5,22 +5,18 @@ import backend.score.{AggregateScorer, ScoreBasedProbability}
 
 import scala.util.Random
 
-import common.Filter
+import common.Percentage
 
 private class ScoreBasedFilter(
     random: Random,
     scorer: AggregateScorer,
     scoreBasedProbability: ScoreBasedProbability,
-) extends Filter[Track] {
-  override def passes(track: Track): Boolean = {
-    val percentage = scoreBasedProbability(track)
+) extends RandomFilterTemplate(random) {
+  protected override def aux(track: Track): (Percentage, String) = {
     val aggregateScore = scorer.aggregateScore(track)
     val score = aggregateScore.toOptionalModelScore
     val source = aggregateScore.source.getOrElse("N/A")
-    val shortSongString = s"${track.album.artist} - ${track.title} (${score.entryName}, $source)"
-    val $ = percentage.roll(random)
-    if ($) scribe.trace(s"Chose song <$shortSongString> with probability $percentage")
-    else scribe.trace(s"Skipped song <$shortSongString> with probability ${percentage.inverse}")
-    $
+    val description = s"(${score.entryName}, $source)"
+    (scoreBasedProbability(track), description)
   }
 }

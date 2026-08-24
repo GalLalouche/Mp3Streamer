@@ -4,8 +4,7 @@ import backend.recon.Track
 
 import scala.util.Random
 
-import common.{Filter, Percentage}
-import common.rich.RichRandom.richRandom
+import common.Percentage
 import common.rich.RichT.richT
 import common.rich.primitives.RichDouble.richDouble
 
@@ -39,9 +38,13 @@ import common.rich.primitives.RichDouble.richDouble
 private class SublinearScalingFilter(
     random: Random,
     scalingFactor: Percentage,
-    artistValueCount: ValueCounter,
-) extends Filter[Track] {
-  override def passes(track: Track): Boolean =
+    artistValueCount: ArtistQuantifier,
+) extends RandomFilterTemplate(random) {
+  protected override def aux(track: Track): (Percentage, String) =
     artistValueCount(track.artist)
-      .forall(valueCount => random.flipCoin(valueCount.requiring(_ > 0) ** (-scalingFactor.p)))
+      .map { valueCount =>
+        val result: Percentage = valueCount.requiring(_ > 0) ** (-scalingFactor.p)
+        (result, s"${artistValueCount.simpleName}: $valueCount")
+      }
+      .getOrElse(1, "Defaults to passing since valueCount was None")
 }
