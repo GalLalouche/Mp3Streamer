@@ -31,6 +31,10 @@ trait MusicFiles {
       startingFrom: Observable[DirectoryRef],
       since: Option[Instant] = None,
   ): DirsWithAttributes
+  def isGenreDir(dir: DirectoryRef): Boolean =
+    genreDirsWithSubGenres.contains(dir) ||
+      flatGenres.contains(dir.name) ||
+      genreDirsWithSubGenres.iterator.flatMap(_.dirs).contains(dir)
 
   type DirsWithAttributes = Observable[(DirectoryRef, BasicFileAttributes)]
 }

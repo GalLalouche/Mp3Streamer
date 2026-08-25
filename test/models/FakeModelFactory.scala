@@ -9,9 +9,9 @@ import org.scalacheck.Arbitrary.arbitrary
 
 import scala.concurrent.duration.Duration
 
-import common.test.memory_ref.MemoryRoot
+import common.test.memory_ref.{MemoryDir, MemoryRoot}
 
-class FakeModelFactory(root: MemoryRoot = new MemoryRoot) {
+class FakeModelFactory(root: MemoryDir = new MemoryRoot) {
   def album(
       title: AlbumTitle = UUID.randomUUID().toString,
       artistName: ArtistName = "artist",
@@ -42,8 +42,9 @@ class FakeModelFactory(root: MemoryRoot = new MemoryRoot) {
       orchestra: Option[String] = None,
       opus: Option[String] = None,
       performanceYear: Option[Int] = None,
+      folder: Option[MemoryDir] = None,
   ): MemorySong = MemorySong(
-    root.addSubDir(artistName).addSubDir(albumName).addFile(filePath),
+    folder.getOrElse(root.addSubDir(artistName).addSubDir(albumName)).addFile(filePath),
     title,
     artistName,
     albumName,
@@ -64,8 +65,8 @@ class FakeModelFactory(root: MemoryRoot = new MemoryRoot) {
       dirName: String = UUID.randomUUID().toString,
       name: ArtistName = "artist",
       albums: Seq[AlbumDir] = Nil,
-  ): ArtistDir =
-    ArtistDir(root.addSubDir(dirName), name, albums.toSet)
+  ): ArtistDir = ArtistDir(root.addSubDir(dirName), name, albums.toSet)
+
   implicit val arbSong: Arbitrary[MemorySong] = Arbitrary(
     for {
       title <- arbitrary[SongTitle]

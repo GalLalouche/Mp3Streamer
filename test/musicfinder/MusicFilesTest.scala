@@ -77,4 +77,21 @@ class MusicFilesTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
       )
     }
   }
+
+  "isGenreDir" - {
+    "flat" in {
+      mf.isGenreDir(root.addSubDir("d")) shouldBe true
+    }
+    "subgenre" in {
+      mf.isGenreDir(root.addSubDir("a")) shouldBe true
+      mf.isGenreDir(root.addSubDir("a").addSubDir("b")) shouldBe true
+    }
+    "not in root" in {
+      mf.isGenreDir(root.addSubDir("e")) shouldBe false
+    }
+    "not a genre" in {
+      mf.isGenreDir(root.addSubDir("a").addSubDir("b").addSubDir("c")) shouldBe false
+      mf.isGenreDir(root.addSubDir("d").addSubDir("e")) shouldBe false
+    }
+  }
 }
