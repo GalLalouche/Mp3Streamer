@@ -7,7 +7,7 @@ import com.google.inject.Inject
 import com.google.inject.assistedinject.Assisted
 import mains.SwingUtils._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, TimeoutException}
 import scala.concurrent.duration.DurationInt
 import scala.swing._
 import scala.util.Try
@@ -39,21 +39,22 @@ private class AsyncFolderImagePanel @Inject() (
 
   private def createImagePanel(fi: FolderImage): Try[Component] =
     createImageLabel(fi)
-      .map(Component.wrap(_).onMouseClick(() => AsyncFolderImagePanel.this.publish(Selected(fi))))
+      .map(Component.wrap(_).onMouseClick(() => this.publish(ImageChoice.Selected(fi))))
 
   def refresh(): Unit = {
     contents.clear()
     // Pre-populate the grid to avoid images moving around.
     val range = 0 until rows * cols
     range.map("Placeholder for image #".+).map(new TextArea(_)).foreach(contents.+=)
-    contents += Button("Fuck it, I'll do it myself!")(
-      AsyncFolderImagePanel.this.publish(OpenBrowser),
-    )
+    contents += Button("Fuck it, I'll do it myself!")(this.publish(ImageChoice.OpenBrowser))
     contents += Button("Show me more...")(refresh())
     for {
       currentIndex <- range
     } {
-      val (image, next) = current.step.get.get
+      val (image, next) = current.step.get.getOpt(30.seconds).getOrElse {
+        this.publish(ImageChoice.ImageServerTimeout)
+        throw new TimeoutException("Timed out waiting for image")
+      }
       current = next
       contents.synchronized {
         contents.update(currentIndex, image)

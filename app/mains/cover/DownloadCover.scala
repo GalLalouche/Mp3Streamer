@@ -48,12 +48,13 @@ private[mains] class DownloadCover @Inject() (
     val urls = imageFinder(s"${album.artistName} ${album.title}", maxCalls = 10)
     val locals = LocalImageFetcher(albumDir)
     selectImage(locals ++ urls).map {
-      case Selected(img) => fileMover(img) _
-      case OpenBrowser =>
+      case ImageChoice.Selected(img) => fileMover(img) _
+      case ImageChoice.OpenBrowser =>
         BrowserUtils.pointBrowserTo(searchUrl)
         // String interpolation is acting funky for some reason (will fail at runtime for Unicode).
         throw CoverException.UserOpenedBrowser
-      case Cancelled => throw CoverException.UserClosedGUI
+      case ImageChoice.Cancelled => throw CoverException.UserClosedGUI
+      case ImageChoice.ImageServerTimeout => throw CoverException.ImageServerTimeout
     }
   }
 

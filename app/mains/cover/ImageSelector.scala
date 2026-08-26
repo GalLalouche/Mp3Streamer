@@ -18,9 +18,9 @@ private class ImageSelector @Inject() (
 )() {
   private implicit val iec: ExecutionContext = ec
   def select(images: FutureIterant[FolderImage]): Future[ImageChoice] = {
-    // TODO Promise is only completed on success; errors will hang the caller forever
     val $ = Promise[ImageChoice]()
-    val frame = new Frame <| (_.reactions += { case _: WindowClosing => $.success(Cancelled) })
+    val frame =
+      new Frame <| (_.reactions += { case _: WindowClosing => $.success(ImageChoice.Cancelled) })
     val panel = factory(images, cols = Cols, rows = Rows) <| (_.reactions += {
       case _: ComponentAdded =>
         frame.pack()
