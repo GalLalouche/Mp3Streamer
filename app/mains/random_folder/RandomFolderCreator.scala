@@ -1,19 +1,12 @@
 package mains.random_folder
 
+import java.io.File
+
 import com.google.inject.Inject
 import com.google.inject.assistedinject.Assisted
-import common.Filter
-import common.path.PathUtils
-import common.path.ref.FileRef
-import common.path.ref.io.{IODirectory, IOFile, IOSystem}
-import common.rich.RichFile._
-import common.rich.collections.RichSeq._
-import common.rich.primitives.RichBoolean._
-import common.rich.primitives.RichInt._
 import mains.random_folder.RandomFolderCreator.FilteredSongsDirName
 import me.tongfei.progressbar.ProgressBar
 import models.IOSong
-import monocle.Monocle.toApplySetterOps
 import musicfinder.PosterLookup
 import org.apache.commons.io.FileUtils
 import org.jaudiotagger.audio.AudioFileIO
@@ -21,16 +14,24 @@ import org.jaudiotagger.audio.exceptions.{CannotWriteException, UnableToRenameFi
 import org.jaudiotagger.tag.FieldKey
 import org.jaudiotagger.tag.images.StandardArtwork
 import resource._
-import songs.selector.MultiStageSongSelector
+import songs.selector.ConfigurableSongSelector
 
-import java.io.File
 import scala.collection.mutable
 import scala.util.Random
+
+import common.path.PathUtils
+import common.path.ref.FileRef
+import common.path.ref.io.{IODirectory, IOFile}
+import common.rich.RichFile._
+import common.rich.collections.RichSeq._
+import common.rich.collections.RichSet.richSet
+import common.rich.primitives.RichBoolean._
+import common.rich.primitives.RichInt._
 
 /** Selects n random songs and dumps them in a folder on TEMP_LARGE */
 private class RandomFolderCreator @Inject() (
     @Seed seed: Long,
-    @Assisted songSelector: MultiStageSongSelector[IOSystem],
+    @Assisted songSelector: ConfigurableSongSelector,
     posterLookup: PosterLookup,
 ) {
   private val random = new Random(seed)
@@ -43,14 +44,11 @@ private class RandomFolderCreator @Inject() (
   }
 
   private def createSongSet(numberOfSongsToCreate: Int)(pb: ProgressBar): Set[File] = {
-    val result = new mutable.HashSet[File]
-    songSelector
-      .applySetter(MultiStageSongSelector.fileFilterSetter)
-      .modify(new Filter[File] {
-        override def passes(a: File) = result.contains(a).isFalse
-      }.&&)
+    val result = new mutable.HashSet[IOFile]
+    val uniqifier = songSelector
+      .withAdditionalFileFilter(f => result.doesNotContain(f.asInstanceOf[IOFile]))
     while (result.size < numberOfSongsToCreate) {
-      val nextSong = songSelector.randomSong()
+      val nextSong = uniqifier.randomSong()
       result += nextSong.file.asInstanceOf[IOFile]
       pb.step()
     }

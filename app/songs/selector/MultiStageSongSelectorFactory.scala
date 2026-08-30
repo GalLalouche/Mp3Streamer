@@ -4,7 +4,7 @@ import backend.recon.ReconcilableFactory
 import com.google.inject.Inject
 import models.SongTagParser
 import musicfinder.MusicFiles
-import songs.selector.filter.{MultiStageFilterFactory, ScoreFixingMultiStageFilter}
+import songs.selector.filter.MultiStageFilterFactory
 
 import scala.util.Random
 
@@ -12,7 +12,7 @@ import common.TimedLogger
 import common.path.ref.{FileRef, RefSystem}
 import common.rx.RichObservable.richObservable
 
-class MultiStageSongSelectorFactory @Inject() (
+private class MultiStageSongSelectorFactory @Inject() (
     mf: MusicFiles,
     rf: ReconcilableFactory,
     songTagParser: SongTagParser,

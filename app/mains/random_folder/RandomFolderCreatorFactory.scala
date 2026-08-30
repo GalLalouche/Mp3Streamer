@@ -1,9 +1,7 @@
 package mains.random_folder
 
-import songs.selector.MultiStageSongSelector
-
-import common.path.ref.io.IOSystem
+import songs.selector.ConfigurableSongSelector
 
 private trait RandomFolderCreatorFactory {
-  def create(ss: MultiStageSongSelector[IOSystem]): RandomFolderCreator
+  def create(ss: ConfigurableSongSelector): RandomFolderCreator
 }

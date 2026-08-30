@@ -29,4 +29,6 @@ import common.rx.RichObservable.richObservable
   def update(): Future[Unit] = updater.update().void
   val ready: Future[Unit] = update().void
   override def randomSong(): Song = updater.get.randomSong()
+  override def randomMp3Song(): Song = updater.get.randomMp3Song()
+  override def randomFlacSong(): Song = updater.get.randomFlacSong()
 }

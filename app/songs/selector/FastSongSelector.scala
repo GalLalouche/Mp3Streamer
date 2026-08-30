@@ -39,4 +39,13 @@ private class FastSongSelector @Inject() (
       case _: NoSuchElementException => randomSong()
     }
   }
+
+  override def randomMp3Song(): Song = randomSongWithExtension("mp3")
+  override def randomFlacSong(): Song = randomSongWithExtension("flac")
+
+  @tailrec
+  private def randomSongWithExtension(ext: String): Song = {
+    val $ = randomSong()
+    if ($.file.hasExtension(ext)) $ else randomSongWithExtension(ext)
+  }
 }

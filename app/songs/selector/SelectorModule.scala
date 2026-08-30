@@ -1,5 +1,6 @@
 package songs.selector
 
+import com.google.inject.{Provides, Singleton}
 import musicfinder.MusicFiles
 import net.codingwell.scalaguice.ScalaModule
 import songs.selector.filter.FilterModule
@@ -15,4 +16,8 @@ private[songs] object SelectorModule extends ScalaModule with ModuleUtils {
     bind[SongSelector].to[SongSelectorState]
     install(FilterModule)
   }
+
+  @Singleton @Provides private def provideConfigurableSongSelector(
+      mssf: MultiStageSongSelectorFactory,
+  ): ConfigurableSongSelector = mssf()
 }
