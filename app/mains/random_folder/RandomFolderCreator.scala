@@ -145,6 +145,6 @@ private class RandomFolderCreator @Inject() (
   }
 }
 
-object RandomFolderCreator {
+private object RandomFolderCreator {
   private val FilteredSongsDirName = "Filtered Songs"
 }
