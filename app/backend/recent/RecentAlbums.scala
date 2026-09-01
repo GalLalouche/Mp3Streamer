@@ -8,13 +8,13 @@ import com.google.inject.Inject
 import models.{AlbumDir, AlbumDirFactory, SongTagParser}
 import musicfinder.{MusicFiles, SongFileFinder}
 
-import scala.collection.mutable
-
 import cats.syntax.apply.catsSyntaxApplyOps
 
 import common.path.ref.{DirectoryRef, FileRef}
 import common.rich.RichT._
+import common.rich.collections.RichArray
 import common.rich.collections.RichIterator.richIterator
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rx.RichObservable.richObservable
 
 private class RecentAlbums @Inject() (
@@ -28,10 +28,7 @@ private class RecentAlbums @Inject() (
   def double(amount: Int): Seq[AlbumDir] = sortedDirs().filter(isDoubleAlbum).take(amount).toVector
   import RecentAlbums.fileTimeNewestOrdering
   override def since(since: Instant): Seq[AlbumDir] =
-    mf.albumDirsWithAttributes(Some(since))
-      .toVectorBlocking // TODO we can seq and sort at the same time.
-      .sorted
-      .map(_._1 |> makeAlbum)
+    mf.albumDirsWithAttributes(Some(since)).toVectorBlocking.sorted.map(_._1 |> makeAlbum)
   def sinceDays(d: Int): Seq[AlbumDir] = since(_.minus(d, ChronoUnit.DAYS))
   def sinceMonths(m: Int): Seq[AlbumDir] = since(_.minus(m, ChronoUnit.MONTHS))
   private def since(f: Instant => Instant): Seq[AlbumDir] =
@@ -43,10 +40,8 @@ private class RecentAlbums @Inject() (
   }
   private def sortedDirs(): Iterator[AlbumDir] =
     mf.albumDirsWithAttributes
-      .buildBlocking(mutable.ArrayBuilder.make)
-      // TODO this could be sped up even further with a heap, since it's O(n) for building!
-      .sortInPlace
-      .iterator
+      .buildBlocking(RichArray.arraySeqBuilder)
+      .sortedIterator
       .map(_._1)
       .map(makeAlbum)
   // recent doesn't care about songs.
