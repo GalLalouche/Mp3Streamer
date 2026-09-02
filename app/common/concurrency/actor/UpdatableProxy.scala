@@ -1,11 +1,11 @@
-package common.concurrency
+package common.concurrency.actor
 
 import scribe.Level
 
 import scala.concurrent.Future
 
 import common.TimedLogger
-import common.concurrency.UpdatableProxy.Update
+import common.concurrency.actor.UpdatableProxy.Update
 import common.rich.RichT.richT
 
 /**
@@ -14,7 +14,7 @@ import common.rich.RichT.richT
  * on updates, but also in that the proxy can update itself, and that it is assumed this is a long
  * process (hence the use of [[Future]] all around).
  */
-class UpdatableProxy[A] private[concurrency] (
+class UpdatableProxy[A] private[actor] (
     @volatile private var state: A,
     updateSelf: () => A,
     name: String,

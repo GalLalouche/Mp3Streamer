@@ -13,7 +13,7 @@ import cats.implicits.toBifunctorOps
 import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 import common.TimedLogger
-import common.concurrency.SimpleTypedActor
+import common.concurrency.actor.SimpleTypedActor
 import common.path.ref.DirectoryRef
 import common.rich.RichT.richT
 import common.rich.primitives.RichEither.richEither

@@ -8,7 +8,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 
-import common.concurrency.SimpleTypedActor
+import common.concurrency.actor.SimpleTypedActor
 import common.io.{FolderCleaner, RootDirectory}
 import common.path.ref.{DirectoryRef, FileRef}
 import common.rich.RichT._

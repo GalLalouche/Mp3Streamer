@@ -2,7 +2,7 @@ package common.json.saver
 
 import scala.concurrent.Future
 
-import common.concurrency.{ActorState, SimpleTypedActor}
+import common.concurrency.actor.{ActorState, SimpleTypedActor}
 import common.rich.RichT._
 
 /**

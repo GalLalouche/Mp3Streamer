@@ -12,7 +12,7 @@ import scala.concurrent.duration._
 
 import cats.implicits.toFoldableOps
 
-import common.concurrency.SimpleActor
+import common.concurrency.actor.SimpleActor
 import common.path.ref.DirectoryRef
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce

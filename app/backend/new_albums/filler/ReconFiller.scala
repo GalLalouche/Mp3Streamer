@@ -10,7 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import cats.implicits.toFlatMapOps
 import common.rich.func.kats.ObservableInstances._
 
-import common.concurrency.SimpleActor
+import common.concurrency.actor.SimpleActor
 import common.rich.RichFuture._
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rx.RichObservable

@@ -1,10 +1,11 @@
-package common.concurrency
+package common.concurrency.actor
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 import cats.implicits.toFunctorOps
 
+import common.concurrency.DaemonExecutionContext
 import common.rich.primitives.RichTry.richTry
 
 /** It's a single threaded future factory basically. */

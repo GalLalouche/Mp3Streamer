@@ -3,7 +3,7 @@ package common.json.saver
 import alleycats.Zero
 import com.google.inject.Inject
 
-import common.concurrency.ActorState
+import common.concurrency.actor.ActorState
 import common.json.Jsonable
 
 /**

@@ -11,6 +11,7 @@ import scala.jdk.CollectionConverters._
 
 import cats.data.OptionT
 
+import common.concurrency.actor.SimpleActor
 import common.rich.RichT.lazyT
 import common.test.AsyncAuxSpecs
 

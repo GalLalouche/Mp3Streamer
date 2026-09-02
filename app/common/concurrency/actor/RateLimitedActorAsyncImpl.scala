@@ -1,7 +1,9 @@
-package common.concurrency
+package common.concurrency.actor
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration.Duration
+
+import common.concurrency.DaemonExecutionContext
 
 private class RateLimitedActorAsyncImpl[Msg, Result](
     name: String,

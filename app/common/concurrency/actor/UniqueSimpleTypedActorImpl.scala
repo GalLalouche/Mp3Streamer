@@ -1,4 +1,4 @@
-package common.concurrency
+package common.concurrency.actor
 
 import java.util
 
@@ -6,6 +6,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import cats.implicits.toFunctorOps
 import common.rich.func.kats.ToMoreMonadErrorOps.toMoreMonadErrorOps
+
+import common.concurrency.DaemonExecutionContext
 
 private class UniqueSimpleTypedActorImpl[Msg, Result](
     name: String,

@@ -7,6 +7,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import cats.data.OptionT
 
+import common.concurrency.actor.SimpleTypedActor
 import common.test.AsyncAuxSpecs
 
 class PrefetchingIterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {

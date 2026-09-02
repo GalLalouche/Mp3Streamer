@@ -15,7 +15,7 @@ import scala.math.Ordered.orderingToOrdered
 import cats.implicits.{catsSyntaxFlatMapOps, catsSyntaxIfM}
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
-import common.concurrency.SimpleTypedActor
+import common.concurrency.actor.SimpleTypedActor
 import common.rich.RichTime.RichLocalDateTime
 
 @Singleton

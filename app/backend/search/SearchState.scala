@@ -7,7 +7,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import cats.implicits.toFunctorOps
 
-import common.concurrency.{UpdatableProxy, UpdatableProxyFactory}
+import common.concurrency.actor.{UpdatableProxy, UpdatableProxyFactory}
 
 @Singleton
 private class SearchState @Inject() (

@@ -1,4 +1,4 @@
-package common.concurrency
+package common.concurrency.actor
 
 import scala.concurrent.{ExecutionContext, Future}
 
