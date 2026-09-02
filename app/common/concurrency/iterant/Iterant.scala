@@ -24,7 +24,6 @@ import common.rich.collections.RichLinearSeq.richLinearSeq
  * of the `hasNext` and `next` pair. Since the computation is effectful, this becomes: `F[Option[(A,
  * Iterant[F, A])]]`, or using transformers: `OptionT[F, (A, Iterant[F, A)]`.
  */
-// TODO replace with fs2 streams?
 abstract class Iterant[F[_]: Monad, A] {
   final type Step[X] = OptionT[F, (X, Iterant[F, X])]
   /**

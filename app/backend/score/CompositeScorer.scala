@@ -10,8 +10,6 @@ import cats.syntax.functor.toFunctorOps
 
 /** Scores a song by trying multiple sources, from most specific score to least specific. */
 private class CompositeScorer[M[_]: FlatMap](
-    // TODO handle live/studio version differences using two different scorer: one uses album one doesn't
-    // TODO Also covers, by ignoring artist? This could lead to a further linking of multiple songs to a single source thereby creating my own private MusicBrainz :\
     songScorer: Track => OptionT[M, ModelScore],
     albumScorer: Album => OptionT[M, ModelScore],
     artistScorer: Artist => OptionT[M, ModelScore],

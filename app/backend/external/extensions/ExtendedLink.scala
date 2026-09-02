@@ -17,7 +17,6 @@ private[external] case class ExtendedLink[R <: Reconcilable](
   def unmark: ExtendedLink[_] = copy(mark = LinkMark.None)
 }
 private object ExtendedLink {
-  // TODO generify
   def extend[R <: Reconcilable](e: MarkedLink[R]) = new {
     def withLinks(links: Iterable[LinkExtension[R]]) =
       ExtendedLink[R](e.link, e.host, e.mark, links)

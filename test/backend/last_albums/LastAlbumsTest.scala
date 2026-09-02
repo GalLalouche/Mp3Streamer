@@ -97,7 +97,6 @@ class LastAlbumsTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
       val $ = create()
       val album1 = album()
       val withAlbum1 = $.enqueue(album1)
-      // FIXME unhack
       album1.dir.parent.clear()
       val album2 = album()
 
