@@ -9,27 +9,21 @@ import org.apache.avro.util.Utf8
 import scala.jdk.CollectionConverters._
 import scala.jdk.StreamConverters.IterableHasSeqStream
 
+import common.rich.primitives.RichOption.richOption
+
 object RichAvro {
-  // TODO reduce duplication of handling nulls
   implicit class richGenericRecord(private val $ : GenericRecord) extends AnyVal {
-    def getString(key: String): String = {
-      val res = getStringNullable(key)
-      if (res == null)
-        throw new NoSuchElementException(s"Field '$key' is null")
-      res
-    }
-    def optString(key: String): Option[String] = Option(getStringNullable(key))
-    private def getStringNullable(key: String): String =
-      $.get(key) match {
-        case null => null
-        case u: Utf8 => u.toString
-        case s: String => s
-        case _ =>
-          throw new IllegalStateException(
-            s"Field '$key' is of unexpected type: ${$.get(key).getClass}",
-          )
-      }
-    def getInt(key: String): Int = $.get(key).asInstanceOf[Int]
+    def getString(key: String): String = optOrThrow(key, optString)
+    def optString(key: String): Option[String] = Option($.get(key) match {
+      case null => null
+      case u: Utf8 => u.toString
+      case s: String => s
+      case _ =>
+        throw new IllegalStateException(
+          s"Field '$key' is of unexpected type: ${$.get(key).getClass}",
+        )
+    })
+    def getInt(key: String): Int = optOrThrow(key, optInt)
     def optInt(key: String): Option[Int] = $.get(key) match {
       case null => None
       case i: java.lang.Integer => Some(i)
@@ -39,7 +33,7 @@ object RichAvro {
         )
     }
     def getLong(key: String): Long = $.get(key).asInstanceOf[Long]
-    def getDouble(key: String): Double = $.get(key).asInstanceOf[Double]
+    def getDouble(key: String): Double = optOrThrow(key, optDouble)
     def optDouble(key: String): Option[Double] = $.get(key) match {
       case null => None
       case d: java.lang.Double => Some(d)
@@ -70,4 +64,7 @@ object RichAvro {
       as.asJavaSeqStream.map(avro.toRecord).toList,
     )
   }
+
+  private def optOrThrow[A](key: String, f: String => Option[A]): A =
+    f(key).getOrThrow(s"No value under key: '$key'")
 }
