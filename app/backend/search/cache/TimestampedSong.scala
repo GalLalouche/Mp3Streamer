@@ -7,6 +7,7 @@ import org.apache.avro.{Schema, SchemaBuilder}
 import org.apache.avro.generic.{GenericData, GenericRecord}
 import play.api.libs.json.{Json, JsValue}
 
+import common.CacheMap
 import common.io.avro.Avroable
 import common.io.avro.RichAvro.richGenericRecord
 import common.json.Jsonable
@@ -49,14 +50,15 @@ private object TimestampedSong {
       }
   }
 
-  // TODO cache this somehow
-  private def timestampedSongSchema(songSchema: Schema) = SchemaBuilder
-    .record("TimestampedSong")
-    .namespace("backend.search.cache")
-    .fields()
-    .requiredLong("updateTime")
-    .name("song")
-    .`type`(songSchema)
-    .noDefault()
-    .endRecord()
+  private val timestampedSongSchema: CacheMap[Schema, Schema] = CacheMap(songSchema =>
+    SchemaBuilder
+      .record("TimestampedSong")
+      .namespace("backend.search.cache")
+      .fields()
+      .requiredLong("updateTime")
+      .name("song")
+      .`type`(songSchema)
+      .noDefault()
+      .endRecord(),
+  )
 }
