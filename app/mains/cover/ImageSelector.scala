@@ -7,7 +7,7 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.swing.Frame
 import scala.swing.event.{ComponentAdded, WindowClosing}
 
-import common.concurrency.FutureIterant
+import common.concurrency.iterant.Iterant.FutureIterant
 import common.rich.RichFuture._
 import common.rich.RichT._
 

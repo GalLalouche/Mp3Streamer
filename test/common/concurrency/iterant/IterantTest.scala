@@ -1,4 +1,4 @@
-package common.concurrency
+package common.concurrency.iterant
 
 import java.util.concurrent.{LinkedBlockingQueue, Semaphore}
 import java.util.concurrent.atomic.AtomicInteger

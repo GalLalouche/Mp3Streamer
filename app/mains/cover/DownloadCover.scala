@@ -12,7 +12,8 @@ import net.codingwell.scalaguice.InjectorExtensions._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-import common.concurrency.{FutureIterant, Iterant}
+import common.concurrency.iterant.Iterant
+import common.concurrency.iterant.Iterant.FutureIterant
 import common.path.PathUtils
 import common.path.ref.io.{IODirectory, IOFile, TempDirectory}
 

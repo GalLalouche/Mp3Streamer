@@ -1,4 +1,4 @@
-package common.concurrency
+package common.concurrency.iterant
 
 import cats.{Eval, Monad}
 import cats.data.OptionT

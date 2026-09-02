@@ -1,4 +1,4 @@
-package common.concurrency
+package common.concurrency.iterant
 
 import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AsyncFreeSpec
