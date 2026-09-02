@@ -1,4 +1,4 @@
-package common.concurrency
+package common.concurrency.actor
 
 import java.util.concurrent.Semaphore
 
@@ -9,7 +9,8 @@ import org.scalatest.freespec.AsyncFreeSpec
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
 
-import common.concurrency.SimpleTypedActorImplTest.asyncAcquire
+import common.concurrency.DaemonExecutionContext
+import common.concurrency.actor.SimpleTypedActorImplTest.asyncAcquire
 import common.test.AsyncAuxSpecs
 
 class SimpleTypedActorImplTest extends AsyncFreeSpec with OneInstancePerTest with AsyncAuxSpecs {

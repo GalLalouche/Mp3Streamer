@@ -14,6 +14,7 @@ import cats.data.OptionT
 import cats.implicits.{catsSyntaxFlatMapOps, toFunctorOps}
 
 import common.concurrency.ParallelIterantMapper.BlockingMap
+import common.concurrency.actor.SimpleActor
 import common.rich.RichT.richT
 
 /**

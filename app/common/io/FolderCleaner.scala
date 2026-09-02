@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import scala.Ordering.Implicits._
 import scala.concurrent.Future
 
-import common.concurrency.Extra
+import common.concurrency.actor.Extra
 import common.path.ref.DirectoryRef
 import common.rich.RichTime.OrderingLocalDateTime
 

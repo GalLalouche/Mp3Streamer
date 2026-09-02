@@ -1,4 +1,4 @@
-package common.concurrency
+package common.concurrency.actor
 
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -11,6 +11,7 @@ import scala.jdk.CollectionConverters._
 import cats.implicits.toTraverseOps
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
+import common.concurrency.DaemonExecutionContext
 import common.rich.RichTuple.richTuple2
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.test.AsyncAuxSpecs

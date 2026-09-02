@@ -13,7 +13,7 @@ import scala.concurrent.duration._
 import cats.implicits.catsSyntaxApplicativeError
 import common.rich.func.kats.ToMoreMonadErrorOps._
 
-import common.concurrency.SimpleTypedActor
+import common.concurrency.actor.SimpleTypedActor
 import common.io.{InternetTalker, PropertiesHelper}
 import common.rich.primitives.RichBoolean._
 

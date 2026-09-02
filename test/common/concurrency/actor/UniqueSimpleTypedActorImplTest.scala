@@ -1,4 +1,4 @@
-package common.concurrency
+package common.concurrency.actor
 
 import java.util.concurrent.Semaphore
 
@@ -9,6 +9,7 @@ import scala.concurrent._
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
+import common.concurrency.DaemonExecutionContext
 import common.test.AuxSpecs
 
 class UniqueSimpleTypedActorImplTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {

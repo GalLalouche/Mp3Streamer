@@ -7,7 +7,7 @@ import musicfinder.ArtistDirResult.{MultipleArtists, NoMatch, SingleArtist}
 
 import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
-import common.concurrency.ActorState
+import common.concurrency.actor.ActorState
 import common.json.Jsonable
 import common.json.saver.{JsonableCOWFactory, JsonableSaveable}
 import common.path.ref.DirectoryRef

@@ -1,11 +1,11 @@
-package common.concurrency
+package common.concurrency.actor
 
 import scribe.Level
 
 import scala.concurrent.Future
 
 import common.TimedLogger
-import common.concurrency.UpdatableProxy.Update
+import common.concurrency.actor.UpdatableProxy.Update
 import common.rich.RichT.richT
 
 /**

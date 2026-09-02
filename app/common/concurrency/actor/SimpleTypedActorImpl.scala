@@ -1,8 +1,10 @@
-package common.concurrency
+package common.concurrency.actor
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import cats.implicits.toFunctorOps
+
+import common.concurrency.DaemonExecutionContext
 
 private class SimpleTypedActorImpl[Msg, +Result](
     name: String,

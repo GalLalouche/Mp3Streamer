@@ -9,7 +9,7 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.freespec.AsyncFreeSpec
 import play.api.libs.json.{JsNumber, JsValue}
 
-import common.concurrency.ActorState
+import common.concurrency.actor.ActorState
 import common.json.Jsonable
 import common.test.AsyncAuxSpecs
 
