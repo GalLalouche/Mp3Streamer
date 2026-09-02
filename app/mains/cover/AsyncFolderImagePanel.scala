@@ -17,7 +17,7 @@ import common.rich.func.kats.RichOptionT.richOptionT
 import common.rich.func.kats.ToMoreMonadErrorOps.toMoreApplicativeErrorOps
 import common.rich.func.kats.ToMoreMonoidOps._
 
-import common.concurrency.FutureIterant
+import common.concurrency.iterant.Iterant.FutureIterant
 import common.rich.RichFuture.richFutureBlocking
 import common.rich.RichT._
 

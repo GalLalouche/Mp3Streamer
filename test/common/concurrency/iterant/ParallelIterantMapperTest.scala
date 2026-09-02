@@ -1,4 +1,4 @@
-package common.concurrency
+package common.concurrency.iterant
 
 import java.util
 import java.util.concurrent.atomic.AtomicInteger
@@ -13,6 +13,8 @@ import scala.util.Random
 
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
+import common.concurrency.{DaemonExecutionContext, ExplicitRetriever}
+import common.concurrency.iterant.Iterant.FutureIterant
 import common.test.AsyncAuxSpecs
 
 @Slow
@@ -83,7 +85,7 @@ class ParallelIterantMapperTest extends AsyncFreeSpec with AsyncAuxSpecs with On
     val iter = iterant(
       sourceIterant.take(64),
       i => {
-        set.add(Thread.currentThread().getId)
+        set.add(Thread.currentThread().threadId())
         i * 2
       },
     )
