@@ -3,7 +3,6 @@ package backend.module
 import java.time.Clock
 
 import backend.storage.DbProvider
-import com.google.inject.{Provides, Singleton}
 import net.codingwell.scalaguice.ScalaModule
 import org.sqlite.SQLiteConfig
 import slick.jdbc.{JdbcProfile, SQLiteProfile}
@@ -46,6 +45,7 @@ object RealModule extends ScalaModule with ModuleUtils {
       override def constraintMangler(name: String) = name
     })
     bind[PropertiesHelper].toInstance(ProductionPropertiesHelper)
+    bind[DirectoryRef].annotatedWith[RootDirectory].toInstance(IODirectory("g:/media/streamer/"))
 
     requireBinding[ExecutionContext]
     requireBinding[InternetTalker]
@@ -53,7 +53,4 @@ object RealModule extends ScalaModule with ModuleUtils {
     install(AllModules)
     install(IOSongsModule)
   }
-
-  @Provides @Singleton @RootDirectory private def rootDirectory: DirectoryRef =
-    IODirectory("g:/media/streamer/")
 }

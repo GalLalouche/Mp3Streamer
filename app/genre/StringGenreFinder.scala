@@ -13,12 +13,10 @@ import common.rx.RichObservable.richObservable
 
 @Singleton private class StringGenreFinder @Inject() (mf: MusicFiles, timedLogger: TimedLogger) {
   private lazy val artistDirs: Map[Artist, DirectoryRef] =
-    timedLogger("Fetching artistDirs")(mf.artistDirs).toMultiMapBlocking(Artist apply _.name)(
-      _.single,
-    )
+    timedLogger("Fetching artistDirs for genreFinder")(mf.artistDirs)
+      .toMultiMapBlocking(Artist apply _.name)(_.single)
 
-  def forArtist(artist: backend.recon.Artist): Option[StringGenre] =
-    artistDirs.get(artist).map(forDir)
+  def forArtist(artist: Artist): Option[StringGenre] = artistDirs.get(artist).map(forDir)
 
   def forDir(dir: DirectoryRef): StringGenre = {
     require(

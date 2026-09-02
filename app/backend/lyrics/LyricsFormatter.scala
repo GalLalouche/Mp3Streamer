@@ -37,7 +37,7 @@ class LyricsFormatter @Inject() (ec: ExecutionContext, backend: LyricsBackend) {
 private object LyricsFormatter {
   // TODO replace with Writable typeclass?
   private def encodeUrl(sourceName: String): LyricsUrl => String = {
-    case LyricsUrl.Url(url: io.lemonlabs.uri.Url) =>
+    case LyricsUrl.Url(url: Url) =>
       s"""<a href="${url.toStringPunycode}" target="_blank">$sourceName</a>"""
     case _ => sourceName
   }
