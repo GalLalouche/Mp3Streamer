@@ -1,8 +1,8 @@
-package common.concurrency
+package common.concurrency.iterant
 
 import scala.concurrent.ExecutionContext
 
-object ThreadlessContext extends ExecutionContext {
+private object ThreadlessContext extends ExecutionContext {
   override def execute(runnable: Runnable): Unit = runnable.run()
   override def reportFailure(cause: Throwable): Unit = throw cause
 }

@@ -2,7 +2,8 @@ package mains.cover
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import common.concurrency.{FutureIterant, Iterant}
+import common.concurrency.iterant.Iterant
+import common.concurrency.iterant.Iterant.FutureIterant
 import common.path.ref.{DirectoryRef, FileRef}
 
 private object LocalImageFetcher {

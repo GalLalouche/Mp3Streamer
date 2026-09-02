@@ -1,4 +1,4 @@
-package common.concurrency
+package common.concurrency.iterant
 
 import java.util
 import java.util.concurrent.Semaphore
@@ -13,8 +13,10 @@ import scala.concurrent.duration.Duration
 import cats.data.OptionT
 import cats.implicits.{catsSyntaxFlatMapOps, toFunctorOps}
 
-import common.concurrency.ParallelIterantMapper.BlockingMap
+import common.concurrency.{DaemonExecutionContext, ExplicitRetriever, SingleLatch}
 import common.concurrency.actor.SimpleActor
+import common.concurrency.iterant.Iterant.FutureIterant
+import common.concurrency.iterant.ParallelIterantMapper.BlockingMap
 import common.rich.RichT.richT
 
 /**
@@ -96,7 +98,7 @@ private object ParallelIterantMapper {
    * map. And also like a queue, `put` will block if the maximal capacity has been reached.
    */
   private class BlockingMap[A](maxCapacity: Int) {
-    import common.concurrency.ParallelIterantMapper.BlockingMap.MaxReached
+    import ParallelIterantMapper.BlockingMap.MaxReached
 
     private val futures = new mutable.HashMap[Int, Future[A]]()
     private val waiting = new mutable.HashMap[Int, SingleLatch]()

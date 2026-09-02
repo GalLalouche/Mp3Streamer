@@ -7,7 +7,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.kats.ToMoreMonadErrorOps.toMoreApplicativeErrorOps
 
-import common.concurrency.{FutureIterant, Iterant}
+import common.concurrency.iterant.Iterant
+import common.concurrency.iterant.Iterant.FutureIterant
 
 private[cover] class ImageSearch @Inject() (
     ec: ExecutionContext,

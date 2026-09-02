@@ -1,7 +1,7 @@
-package common.concurrency
+package common.concurrency.iterant
 
 import scala.collection.LinearSeq
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 import cats.Monad
 import cats.data.OptionT
@@ -12,7 +12,8 @@ import common.rich.func.TuplePLenses.{__1, __2}
 import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 import common.rich.func.kats.Transable
 
-import common.concurrency.Iterant.TakeIterant
+import common.concurrency.ExplicitRetriever
+import common.concurrency.iterant.Iterant.TakeIterant
 import common.rich.collections.RichLinearSeq.richLinearSeq
 
 /**
@@ -21,7 +22,7 @@ import common.rich.collections.RichLinearSeq.richLinearSeq
  * In general, this can be thought of as the effectful equivalent of an [[Iterable]], where the
  * interface is the simpler (and not necessarily mutable)` next: Option[(A, Iterable[A])]` instead
  * of the `hasNext` and `next` pair. Since the computation is effectful, this becomes: `F[Option[(A,
- * Iterant[F, A])]]`, or using transformers: `OptionT[F, (A, Iterant[F, A)]`.
+ * Iterant[F, A])]]`, or using transformers: `OptionT[F, (A, Iterant[F, A])]`.
  */
 // TODO replace with fs2 streams?
 abstract class Iterant[F[_]: Monad, A] {
@@ -153,4 +154,6 @@ object Iterant {
       if (n == 0) OptionT.none
       else $.step.map(__2.modify(new TakeIterant(n - 1, _)))
   }
+
+  type FutureIterant[A] = Iterant[Future, A]
 }

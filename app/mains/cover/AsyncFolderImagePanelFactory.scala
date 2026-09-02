@@ -2,7 +2,7 @@ package mains.cover
 
 import com.google.inject.assistedinject.Assisted
 
-import common.concurrency.FutureIterant
+import common.concurrency.iterant.Iterant.FutureIterant
 
 private trait AsyncFolderImagePanelFactory {
   def apply(
