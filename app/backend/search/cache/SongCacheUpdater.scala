@@ -32,7 +32,6 @@ private[search] class SongCacheUpdater @Inject() (
     val original = SongCache.load(saver)
     val $ = ReplaySubject[TimestampedSong]()
     ec.execute { () =>
-      // TODO use the observer below somehow?
       val timerObserver = timedLogger.async("Updating song cache (async)", Level.Info)
       builder.updating(original)(new ReportObserver[TimestampedSong, SongCache] {
         override def onNext(a: TimestampedSong) = {

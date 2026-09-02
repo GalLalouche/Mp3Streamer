@@ -34,7 +34,6 @@ object MutableTrie {
     private val map = mutable.Map[Char, Node[A]]()
     private val values = mutable.ArrayBuffer[A]()
 
-    // TODO implement this using CharBuffer?
     @tailrec def go(s: String, offset: Int, elem: Iterable[A]): Unit =
       if (offset == s.length)
         values ++= elem

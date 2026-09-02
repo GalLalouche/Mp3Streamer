@@ -30,8 +30,6 @@ private object TestModule extends ScalaModule with ModuleUtils {
     bind[SongTagParser].to[FakeMusicFiles]
     requireBinding[MemoryRoot]
     requireBinding[FakeMusicFiles]
-    // TODO this should be a handler!
-    // bind[Logger].toInstance(new StringBuilderLogger(new mutable.StringBuilder))
     ScribeUtils.noLogs()
 
     // TODO TestModule should probably depend on CleanModule directly,
