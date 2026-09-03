@@ -2,7 +2,9 @@ package common
 
 import java.time.{Clock, Instant, ZoneId, ZoneOffset}
 
-class FakeClock extends Clock {
+import com.google.inject.Singleton
+
+@Singleton class FakeClock extends Clock {
   private var currentMillis = 0L
   def advance(millis: Long): Unit = currentMillis += millis
   override def withZone(zone: ZoneId) = ???
