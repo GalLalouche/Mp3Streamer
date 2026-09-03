@@ -1,13 +1,13 @@
 package backend.module
 
 import com.google.inject.{Guice, Injector, Module, Provides}
-import com.google.inject.util.Modules
 import io.lemonlabs.uri.Url
 import musicfinder.{FakeMusicFiles, FakeMusicFilesImpl, FakeSongFileFinder, SongFileFinder}
 import net.codingwell.scalaguice.ScalaModule
 
 import scala.concurrent.ExecutionContext
 
+import common.guice.RichModule.richModule
 import common.io.{BaseDirectory, PropertiesHelper}
 import common.io.WSAliases._
 import common.path.ref.DirectoryRef
@@ -27,22 +27,19 @@ case class TestModuleConfiguration(
     private val _requestToResponseMapper: PartialFunction[WSRequest, FakeWSResponse] =
       PartialFunction.empty,
 ) {
-  lazy val module: Module = Modules.combine(
-    TestModule,
-    new ScalaModule {
-      override def configure(): Unit = {
-        bind[MemoryRoot].toInstance(_root)
-        bind[DirectoryRef].annotatedWith[BaseDirectory].toInstance(_root)
-        bind[ExecutionContext].toInstance(_ec)
-        bind[FakeMusicFiles].toInstance(_mf.opt.getOrElse(FakeMusicFilesImpl(_root)))
-        bind[SongFileFinder].toInstance(FakeSongFileFinder)
-        bind[PropertiesHelper].toInstance(FakePropertiesHelper)
-      }
+  lazy val module: Module = TestModule.overrideWith(new ScalaModule {
+    override def configure(): Unit = {
+      bind[MemoryRoot].toInstance(_root)
+      bind[DirectoryRef].annotatedWith[BaseDirectory].toInstance(_root)
+      bind[ExecutionContext].toInstance(_ec)
+      bind[FakeMusicFiles].toInstance(_mf.opt.getOrElse(FakeMusicFilesImpl(_root)))
+      bind[SongFileFinder].toInstance(FakeSongFileFinder)
+      bind[PropertiesHelper].toInstance(FakePropertiesHelper)
+    }
 
-      @Provides
-      private def provideWSClient: WSClient = new FakeWSClient(getRequest)
-    },
-  )
+    @Provides
+    private def provideWSClient: WSClient = new FakeWSClient(getRequest)
+  })
 
   lazy val injector: Injector = Guice.createInjector(module)
 
