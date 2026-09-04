@@ -64,7 +64,7 @@ private[search] class SongCacheUpdater @Inject() (
           $.onCompleted()
         } finally
           timerObserver.onCompleted()
-        override def onError(t: Throwable) = throw t
+        override def onError(t: Throwable) = $.onError(t)
       })
     }
     $
