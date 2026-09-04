@@ -7,8 +7,7 @@ import com.google.inject.{Inject, Singleton}
 import rx.lang.scala.Observer
 import songs.selector.SongSelectorState
 
-import scala.concurrent.{Await, ExecutionContext, Future, Promise}
-import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future, Promise}
 
 import cats.implicits.toFoldableOps
 
@@ -31,13 +30,14 @@ import common.rx.RichObservable.richObservable
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
-  private val uniqueExtra = SimpleActor.unique[Boolean](
+  private val uniqueExtra = SimpleActor.uniqueAsync[Boolean](
     "Indexer extra uniqifier",
     forceRefresh => {
       val $ = Promise[Unit]()
       songCacheUpdater
         .go(forceRefresh)
         .groupByBuffer(_.song.toTuple(_.artistName, _.albumName))
+        .doOnError($.failure)
         .doOnNext(newDirObserver onNext _._2.mapSingle(_.song.file.parent))
         .doOnCompleted(
           $.completeWith(
@@ -49,7 +49,7 @@ import common.rx.RichObservable.richObservable
           ),
         )
         .subscribe()
-      Await.result($.future, 10.seconds)
+      $.future
     },
   )
   def go(forceRefresh: Boolean): Future[Unit] = uniqueExtra ! forceRefresh
