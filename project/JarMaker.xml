@@ -4,7 +4,7 @@
     <exec executable="C:\Users\Gal\.gradle\jdks\oracle_corporation-24-amd64-windows.2\bin\java.exe" dir=".." failonerror="true">
       <arg value="-Xmx4g"/>
       <arg value="-jar"/>
-      <arg value="j:\dev\lang\scala\sbt\bin\sbt-launch.jar"/>
+      <arg value="C:\Users\Gal\scoop\apps\sbt\1.10.7\bin\sbt-launch.jar"/>
       <arg value='"compile"'/>
     </exec>
   </target>
