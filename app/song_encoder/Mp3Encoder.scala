@@ -1,22 +1,24 @@
 package song_encoder
 
+import java.time.LocalDateTime
 import java.util.regex.Pattern
 
 import com.google.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.math.Ordering.Implicits.infixOrderingOps
 
 import common.rich.func.kats.ToMoreApplyOps.toMoreApplyOps
 
-import common.concurrency.actor.SimpleTypedActor
-import common.io.{FolderCleaner, RootDirectory}
+import common.concurrency.actor.{Extra, SimpleTypedActor}
+import common.io.RootDirectory
 import common.path.ref.{DirectoryRef, FileRef}
 import common.rich.RichT._
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rich.primitives.RichString._
 
 /** Encodes audio files to mp3. Also handles caching. */
-@Singleton // Needed for unique actor
+@Singleton // Needed for unique actors
 class Mp3Encoder @Inject() (
     @RootDirectory rootDirectory: DirectoryRef,
     encoder: SongEncoder,
@@ -24,10 +26,14 @@ class Mp3Encoder @Inject() (
 ) extends SimpleTypedActor[FileRef, FileRef] {
   private implicit val iec: ExecutionContext = ec
   private val outputDir = rootDirectory.addSubDir("musicOutput")
-  private val cleaner = new FolderCleaner(outputDir)
+  private val cleaner = Extra(s"FolderCleaner for <$outputDir>") {
+    val minimumCreationTime = LocalDateTime.now.minusWeeks(1)
+    outputDir.files.filter(_.lastAccessTime < minimumCreationTime).foreach(_.delete)
+  }
+
   private val actor = SimpleTypedActor.unique("Mp3Encoder", encodeFileIfNeeded)
 
-  private def encodeFileIfNeeded(f: FileRef) =
+  private def encodeFileIfNeeded(f: FileRef): FileRef =
     f.mapIf(_.hasExtension("mp3").isFalse).to(encode(_))
 
   private def encode(file: FileRef): FileRef = {
@@ -46,7 +52,7 @@ class Mp3Encoder @Inject() (
    *   The (possibly new) mp3 file created; The file will be created in the outputDir, and will be
    *   the absolute path of the file (with no spaces) with an "mp3" extension.
    */
-  override def !(m: => FileRef): Future[FileRef] = actor.!(m) <<* cleaner.clean()
+  override def !(m: => FileRef): Future[FileRef] = actor.!(m) <<* cleaner.!()
 }
 
 private object Mp3Encoder {
