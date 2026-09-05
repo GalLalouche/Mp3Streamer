@@ -1,5 +1,6 @@
 package backend.score
 
+import backend.score.model.{FullInfoScore, OptionalModelScore}
 import models.Song
 
 import scala.concurrent.Future

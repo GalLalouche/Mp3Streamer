@@ -1,4 +1,4 @@
-package backend.score
+package backend.score.model
 
 sealed trait SourcedOptionalModelScore {
   def isDefined: Boolean = this match {

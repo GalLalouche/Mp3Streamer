@@ -7,7 +7,7 @@ import backend.new_albums.NewAlbumsModel.{ArtistAlbums, ModelResult, NonIgnoredA
 import backend.new_albums.filler.NewAlbumFiller
 import backend.new_albums.filler.storage.FilledStorage
 import backend.recon.{Artist, IgnoredReconResult, ReconID}
-import backend.score.OptionalModelScore
+import backend.score.model.OptionalModelScore
 import com.google.inject.Inject
 import genre.{Genre, GenreFinder}
 import shapeless.syntax.std.tuple.productTupleOps

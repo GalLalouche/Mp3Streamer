@@ -1,6 +1,7 @@
 package backend.score
 
 import backend.recon.Track
+import backend.score.model.SourcedOptionalModelScore
 
 import common.path.ref.FileRef
 

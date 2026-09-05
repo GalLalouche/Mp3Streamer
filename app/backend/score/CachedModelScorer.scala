@@ -1,6 +1,7 @@
 package backend.score
 
 import backend.recon._
+import backend.score.model.{FullInfoScore, ModelScore, OptionalModelScore, ScoreSource, SourcedOptionalModelScore}
 import backend.score.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
 import com.google.inject.Inject
 

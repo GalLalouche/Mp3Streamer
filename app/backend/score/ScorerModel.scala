@@ -3,6 +3,7 @@ package backend.score
 import backend.recon.{Album, Artist, Track}
 import backend.recon.Reconcilable._
 import backend.score.file.FileScorer
+import backend.score.model.{FullInfoScore, OptionalModelScore}
 import backend.score.storage.StorageScorer
 import com.google.inject.Inject
 import models.Song
