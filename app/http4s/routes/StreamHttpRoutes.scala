@@ -1,7 +1,7 @@
 package http4s.routes
 
 import com.google.inject.Inject
-import http4s.routes.Http4sUtils.{decodePath, fromFuture, shouldEncodeMp3}
+import http4s.routes.Http4sUtils.decodePath
 import org.http4s.{Header, Headers, HttpRoutes, MediaType, Response, Status}
 import org.http4s.dsl.io._
 import org.http4s.headers.{`Content-Length`, `Content-Type`}
@@ -16,7 +16,7 @@ import common.rich.collections.RichTraversableOnce._
 private class StreamHttpRoutes @Inject() ($ : StreamFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] { case req @ GET -> "download" /: path =>
     val range = req.headers.get(CIString("Range")).map(_.toList.single.value)
-    fromFuture($(decodePath(path), range, shouldEncodeMp3(req))).map(toResponse)
+    IO.pure($(decodePath(path), range)).map(toResponse)
   }
 
   private def toResponse(sr: StreamResult): Response[IO] = Response[IO](
