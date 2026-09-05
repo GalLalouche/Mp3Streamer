@@ -13,32 +13,30 @@ import common.test.MoreGen
 
 private object ModelGenerators {
   private val tempDir = TempDirectory()
-  private val arbitraryString: Gen[String] = for {
+  private val genString: Gen[String] = for {
     c <- Gen.alphaNumChar
     s <- Gen.alphaNumStr.map(_.filterNot(_.toInt < 60))
   } yield c + s
-  private val arbitraryStringOpt: Gen[Option[String]] =
-    Arbitrary.arbOption[String](Arbitrary(arbitraryString)).arbitrary
-  private val arbitraryFileName: Gen[String] =
-    arbitraryString.filterNot(new File(tempDir, _).exists)
+  private val genStringOpt: Gen[Option[String]] = Gen.option(genString)
+  private val genFileName: Gen[String] = genString.filterNot(new File(tempDir, _).exists)
 
-  implicit val arbSong: Gen[Song] = for {
-    filePath <- arbitraryFileName
+  val genSong: Gen[Song] = for {
+    filePath <- genFileName
     file = tempDir.addFile(filePath)
-    title <- arbitraryString
-    artistName <- arbitraryString
-    albumName <- arbitraryString
+    title <- genString
+    artistName <- genString
+    albumName <- genString
     track <- arbitrary[TrackNumber].map(_ % 100)
     year <- arbitrary[Int].map(_ % 3000)
     bitRate <- arbitrary[Int].map(_ % 10000).map(_ / 32.0).map(_.toString)
     duration <- arbitrary[Int].map(_ % 1000)
     size <- arbitrary[Int]
-    discNumber <- arbitraryStringOpt
+    discNumber <- genStringOpt
     trackGain <- arbitrary[Option[Int]].map(_.map(_ % 10000).map(_ / 32.0))
-    composer <- arbitraryStringOpt
-    conductor <- arbitraryStringOpt
-    orchestra <- arbitraryStringOpt
-    opus <- arbitraryStringOpt
+    composer <- genStringOpt
+    conductor <- genStringOpt
+    orchestra <- genStringOpt
+    opus <- genStringOpt
     performanceYear <- arbitrary[Option[Int]].map(_.map(_ % 3000))
   } yield IOSong(
     file,
@@ -58,7 +56,8 @@ private object ModelGenerators {
     opus,
     performanceYear,
   )
-  private implicit val songShrink: Shrink[Song] = Shrink { song =>
+  implicit val arbSong: Arbitrary[Song] = Arbitrary(genSong)
+  implicit val songShrink: Shrink[Song] = Shrink { song =>
     val shrunkPath = Shrink.shrink(song.file.path).filter(_.nonEmpty)
     val shrunkTitles = Shrink.shrink(song.title)
     val shrunkArtistNames = Shrink.shrink(song.artistName)
@@ -114,12 +113,11 @@ private object ModelGenerators {
       newPerformanceYear,
     )
   }
-  private implicit def genToArb[T: Gen]: Arbitrary[T] = Arbitrary(implicitly[Gen[T]])
-  implicit lazy val arbAlbumDir: Gen[AlbumDir] = {
+  val genAlbumDir: Gen[AlbumDir] = {
     val dir = TempDirectory()
     for {
-      title <- arbitraryString
-      artistName <- arbitraryString
+      title <- genString
+      artistName <- genString
       year <- arbitrary[Int].map(_ % 3000)
       songs <- MoreGen.containerOfN[Seq, Song](Gen.choose(1, 10))
     } yield AlbumDir(dir, title, artistName, year, songs)
@@ -136,13 +134,15 @@ private object ModelGenerators {
       newSongs <- shrunkSongs
     } yield AlbumDir(album.dir, newTitle, newArtistName, newYear, newSongs)
   }
-  implicit lazy val arbArtist: Gen[ArtistDir] = {
+  implicit val arbAlbumDir: Arbitrary[AlbumDir] = Arbitrary(genAlbumDir)
+  val genArtistDir: Gen[ArtistDir] = {
     val dir = TempDirectory()
     for {
-      name <- arbitraryString
+      name <- genString
       albums <- MoreGen.containerOfN[Set, AlbumDir](Gen.choose(1, 10))
     } yield ArtistDir(dir, name, albums)
   }
+  implicit val arbArtistDir: Arbitrary[ArtistDir] = Arbitrary(genArtistDir)
   implicit val shrinkArtistDir: Shrink[ArtistDir] = Shrink { artist =>
     val shrunkNames = Shrink.shrink(artist.name)
     val shrunkAlbums = Shrink.shrink(artist.albums)
