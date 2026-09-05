@@ -1,7 +1,7 @@
 package backend.score.storage
 
 import backend.recon.{Artist, SlickArtistReconStorage}
-import backend.score.ModelScore
+import backend.score.model.ModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Inject
 import slick.ast.BaseTypedType

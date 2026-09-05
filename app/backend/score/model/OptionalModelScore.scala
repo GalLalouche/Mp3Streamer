@@ -1,4 +1,4 @@
-package backend.score
+package backend.score.model
 
 import scala.collection.immutable
 

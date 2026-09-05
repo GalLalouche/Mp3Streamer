@@ -1,8 +1,8 @@
 package backend.score.file
 
-import backend.score.{ModelScore, OptionalModelScore}
 import backend.score.file.OrgScoreFormatter.{PrefixSeparator, ScoreSeparator}
 import backend.score.file.ScoreParserTemplate.isDefault
+import backend.score.model.{ModelScore, OptionalModelScore}
 
 import scala.{util => su}
 import scala.util.{Failure, Success, Try}

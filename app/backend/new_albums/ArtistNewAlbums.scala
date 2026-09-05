@@ -1,7 +1,7 @@
 package backend.new_albums
 
 import backend.recon.Artist
-import backend.score.OptionalModelScore
+import backend.score.model.OptionalModelScore
 
 import monocle.macros.Lenses
 

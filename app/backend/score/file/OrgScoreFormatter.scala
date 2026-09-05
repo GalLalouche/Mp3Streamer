@@ -1,7 +1,7 @@
 package backend.score.file
 
 import backend.recon.{Album, Artist, Track}
-import backend.score.OptionalModelScore
+import backend.score.model.OptionalModelScore
 
 private object OrgScoreFormatter {
   val PrefixSeparator = ";"

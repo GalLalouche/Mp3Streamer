@@ -1,6 +1,6 @@
 package backend.score.file
 
-import backend.score.{ModelScore, OptionalModelScore}
+import backend.score.model.{ModelScore, OptionalModelScore}
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks

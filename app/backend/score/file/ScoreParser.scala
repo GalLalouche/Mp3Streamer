@@ -3,8 +3,9 @@ package backend.score.file
 import java.util.regex.Pattern
 
 import backend.recon.{Album, Artist, Track}
-import backend.score.{IndividualScorer, OptionalModelScore}
+import backend.score.IndividualScorer
 import backend.score.file.ScoreParser.OrgPrefix
+import backend.score.model.OptionalModelScore
 import backend.score.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
 import com.google.inject.Inject
 

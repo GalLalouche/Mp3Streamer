@@ -3,6 +3,7 @@ package backend.score
 import backend.module.TestModuleConfiguration
 import backend.recon.{Album, Artist, ArtistReconStorage, StoredReconResult}
 import backend.recon.Reconcilable.SongExtractor
+import backend.score.model.ModelScore
 import backend.score.storage.{AlbumScoreStorage, ArtistScoreStorage, TrackScoreStorage}
 import models.{IOSong, Song}
 import musicfinder.{FakeMusicFiles, FakeMusicFilesImpl}

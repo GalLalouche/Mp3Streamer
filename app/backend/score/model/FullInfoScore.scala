@@ -1,13 +1,13 @@
-package backend.score
+package backend.score.model
 
-private sealed trait FullInfoScore {
+private[score] sealed trait FullInfoScore {
   def toOptionalModelScore: OptionalModelScore = sourcedOptionalModelScore.toOptionalModelScore
   def sourcedOptionalModelScore: SourcedOptionalModelScore = this match {
     case FullInfoScore.Default => SourcedOptionalModelScore.Default
     case fi: FullInfoScore.Scored => SourcedOptionalModelScore.Scored(fi.score, fi.source)
   }
 }
-private object FullInfoScore {
+private[score] object FullInfoScore {
   case object Default extends FullInfoScore
   sealed trait Scored extends FullInfoScore {
     def score: ModelScore

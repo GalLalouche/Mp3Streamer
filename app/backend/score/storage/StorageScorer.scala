@@ -1,6 +1,6 @@
 package backend.score.storage
 
-import backend.score.{ModelScore, OptionalModelScore}
+import backend.score.model.{ModelScore, OptionalModelScore}
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -1,7 +1,7 @@
 package backend.score.storage
 
 import backend.recon.{Artist, SlickArtistReconStorage, Track, YearlessAlbum, YearlessTrack}
-import backend.score.ModelScore
+import backend.score.model.ModelScore
 import backend.storage.{DbProvider, JdbcMappers, SlickStorageTemplateFromConf}
 import com.google.inject.Inject
 import models.{AlbumTitle, SongTitle}
