@@ -6,15 +6,20 @@ import backend.recon.{Artist, ReconID}
 import mains.fixer.StringFixer
 import play.api.libs.json.{JsObject, JsValue}
 
+import scala.util.Try
+
+import common.TryOption
 import common.json.RichJson._
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
 
 private object AlbumParser {
-  def parseReleaseGroup(json: JsObject): Option[AlbumMetadata] = for {
+  def parseReleaseGroup(json: JsObject): TryOption[AlbumMetadata] = for {
     date <- parseDate(json)
-    albumType <- json.ostr("primary-type").flatMap(AlbumType.withNameOption)
+    albumType <- TryOption
+      .fromOption(json.ostr("primary-type"))
+      .flatMapF(pt => Try(AlbumType.withName(pt)))
     if ValidPrimaryTypes(albumType.entryName)
     // Secondary types includes compilations, demos, and other unwanted albums. But sometimes they
     // contain live information instead of it being embedded in the album type...
@@ -35,13 +40,16 @@ private object AlbumParser {
     )
   }
 
-  private def parseDate(js: JsValue): Option[LocalDate] = {
-    val $ = js.ostr(ReleaseDate).flatMap(DateFormatter.parse).map(_.toLocalDate)
-    if (js.has(ReleaseDate) && $.isEmpty)
-      // TODO replace logging with ADT Result type
-      scribe.warn(s"Could not parse $ReleaseDate from <$js>")
-    $
-  }
+  private def parseDate(js: JsValue): TryOption[LocalDate] =
+    TryOption.fromOption(js.ostr(ReleaseDate)).flatMap { dateStr =>
+      TryOption
+        .fromOption(DateFormatter.parse(dateStr).map(_.toLocalDate))
+        .orElse(
+          TryOption.Failure(
+            new IllegalArgumentException(s"Could not parse $ReleaseDate from <$dateStr>"),
+          ),
+        )
+    }
 
   def artistCredits(json: JsObject): Seq[(Artist, ReconID)] = json
     .objects("artist-credit")
@@ -57,14 +65,14 @@ private object AlbumParser {
   def releaseToReleaseGroups(js: JsValue): Seq[AlbumMetadata] = js
     .array("releases")
     .value
-    .flatMap(_ / "release-group" |> parseReleaseGroup)
+    .flatMap(e => (e / "release-group").|>(parseReleaseGroup(_).toOption))
     .groupBy(_.toTuple(_.title, _.albumType, _.disambiguation))
     .values
     .map(extractSingleRelease)
     .toVector
 
-  def releaseGroups(js: JsValue): Seq[AlbumMetadata] =
-    js.objects("release-groups").flatMap(parseReleaseGroup)
+  def releaseGroups(js: JsValue): Seq[Try[AlbumMetadata]] =
+    js.objects("release-groups").map(parseReleaseGroup).flatMap(_.run)
 
   private val ReleaseDate = "first-release-date"
   private val ValidPrimaryTypes = Set("Album", "EP", "Live")
