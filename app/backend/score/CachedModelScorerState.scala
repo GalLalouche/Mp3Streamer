@@ -1,6 +1,7 @@
 package backend.score
 
 import backend.recon.{Album, Artist, Track}
+import backend.score.model.SourcedOptionalModelScore
 import com.google.inject.{Inject, Provider, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}

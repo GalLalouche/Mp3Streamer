@@ -3,7 +3,7 @@ package server
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-import backend.score.ModelScore
+import backend.score.model.ModelScore
 import com.google.inject.Module
 import models.{FakeModelFactory, MemorySong}
 import musicfinder.FakeMusicFiles

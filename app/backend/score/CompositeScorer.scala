@@ -1,7 +1,8 @@
 package backend.score
 
 import backend.recon.{Album, Artist, Track}
-import backend.score.FullInfoScore.{AlbumScored, ArtistScored, SongScored}
+import backend.score.model.{FullInfoScore, ModelScore}
+import backend.score.model.FullInfoScore.{AlbumScored, ArtistScored, SongScored}
 
 import cats.FlatMap
 import cats.data.OptionT

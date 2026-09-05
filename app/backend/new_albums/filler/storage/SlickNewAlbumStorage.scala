@@ -6,7 +6,7 @@ import backend.mb.AlbumType
 import backend.new_albums.{AddedAlbumCount, ArtistNewAlbums, NewAlbum}
 import backend.new_albums.filler.NewAlbumRecon
 import backend.recon.{Artist, ReconID, SlickArtistReconStorage}
-import backend.score.OptionalModelScore
+import backend.score.model.OptionalModelScore
 import backend.score.storage.ArtistScoreStorage
 import backend.storage.{DbProvider, JdbcMappers, SlickSingleKeyColumnStorageTemplateFromConf}
 import com.google.inject.Inject

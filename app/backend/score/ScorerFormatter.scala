@@ -3,6 +3,7 @@ package backend.score
 import java.io.File
 
 import backend.score.ScorerFormatter.toSong
+import backend.score.model.{FullInfoScore, OptionalModelScore}
 import com.google.inject.Inject
 import models.{IOSongTagParser, Song}
 import play.api.libs.json.{Json, JsValue}

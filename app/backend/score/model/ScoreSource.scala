@@ -1,4 +1,4 @@
-package backend.score
+package backend.score.model
 
 sealed trait ScoreSource
 object ScoreSource {

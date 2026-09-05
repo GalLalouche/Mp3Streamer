@@ -1,6 +1,7 @@
 package backend.score
 
 import backend.recon.{Album, Artist, Track}
+import backend.score.model.OptionalModelScore
 
 /**
  * Item scores is the actual score set for the specific item, i.e., ignoring parent scores on

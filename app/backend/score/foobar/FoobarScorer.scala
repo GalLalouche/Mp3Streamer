@@ -5,7 +5,8 @@ import java.io.File
 import backend.mb.ArtistReconciler
 import backend.recon.{Artist, ArtistReconPusher, ArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
-import backend.score.{FullInfoModelScorer, FullInfoScore, OptionalModelScore, ScoreSource}
+import backend.score.FullInfoModelScorer
+import backend.score.model.{FullInfoScore, OptionalModelScore, ScoreSource}
 import com.google.inject.Inject
 import models.{IOSongTagParser, Song}
 
