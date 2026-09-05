@@ -8,11 +8,16 @@ import org.scalatest.OptionValues._
 import org.scalatest.freespec.AnyFreeSpec
 import play.api.libs.json.{JsObject, Json}
 
+import common.rich.func.kats.ToMoreFoldableOps._
+
+import common.TryOption
+import common.TryOption.NoValue
+import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.test.AuxSpecs
 
 class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
   private val $ = AlbumParser
-  private def parse(s: String): Option[AlbumMetadata] =
+  private def parse(s: String): TryOption[AlbumMetadata] =
     $.parseReleaseGroup(Json.parse(s.stripMargin).as[JsObject])
   "valid input" in {
     val result = parse("""{
@@ -24,7 +29,7 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
         |"primary-type": "Album",
         |"title": "ניתוקים",
         |"secondary-types": []
-        |}""").value
+        |}""").get
     inside(result) { case AlbumMetadata(title, releaseDate, albumType, reconId, disambiguation) =>
       title shouldReturn "ניתוקים"
       releaseDate shouldReturn LocalDate.of(2017, 7, 15)
@@ -44,7 +49,7 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
                          |"primary-type": "Album",
                          |"title": "ניתוקים",
                          |"secondary-types": []
-                         |}""").value
+                         |}""").get
     inside(result) { case AlbumMetadata(title, releaseDate, albumType, reconId, disambiguation) =>
       title shouldReturn "ניתוקים"
       releaseDate shouldReturn LocalDate.of(2017, 7, 15)
@@ -68,7 +73,7 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
         |"first-release-date": "2015-10-30",
         |"primary-type": "Album",
         |"primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc"
-        |}""") shouldReturn None
+        |}""") shouldReturn NoValue
   }
 
   "Returns none on invalid date" in {
@@ -81,55 +86,64 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
         |"secondary-types": [],
         |"first-release-date": "2011-??-12",
         |"title": "London or Paris, Berlin or Southend On Sea"
-        |}""") shouldReturn None
+        |}""")
+      .asInstanceOf[TryOption.Failure]
+      .exception
+      .getMessage shouldReturn "Could not parse first-release-date from <2011-??-12>"
   }
 
   "releaseGroup parsing" in {
-    $.releaseGroups(Json.parse(getClass.getResourceAsStream("release-group.json")))
-      .shouldContainExactly(
-        AlbumMetadata(
-          "O",
-          LocalDate.of(2002, 7, 22),
-          AlbumType.Album,
-          ReconID("d7e69fd9-59ac-3093-8b72-60b77a91b298"),
-          None,
-        ),
-        AlbumMetadata(
-          "9",
-          LocalDate.of(2006, 11, 6),
-          AlbumType.Album,
-          ReconID("0d673e32-4f95-348f-af28-3abc1353bff3"),
-          None,
-        ),
-        AlbumMetadata(
-          "My Favourite Faded Fantasy",
-          LocalDate.of(2014, 10, 31),
-          AlbumType.Album,
-          ReconID("72ea557d-b39d-4e06-bb17-e3bda5802d4b"),
-          None,
-        ),
-        AlbumMetadata(
-          "Live From the Union Chapel",
-          LocalDate.of(2003, 7, 1),
-          AlbumType.Live,
-          ReconID("076a1fb6-c1da-38dc-8bc0-1b7f4c2256f7"),
-          None,
-        ),
-        AlbumMetadata(
-          "2004 Live at Outremont Theatre, Montreal",
-          LocalDate.of(2004, 1, 1),
-          AlbumType.Live,
-          ReconID("0b2d6869-bc7b-4b8a-bc04-03d73f279831"),
-          None,
-        ),
-        AlbumMetadata(
-          "Live at Fingerprints: Warts and All",
-          LocalDate.of(2007, 10, 23),
-          AlbumType.LiveEP,
-          ReconID("bd7b0573-0b62-3026-afdc-e5f2e12cfe61"),
-          None,
-        ),
-      )
+    val (errors, successes) =
+      $.releaseGroups(Json.parse(getClass.getResourceAsStream("release-group.json")))
+        .map(_.toEither)
+        .partitionEithers
+    successes shouldContainExactly (
+      AlbumMetadata(
+        "O",
+        LocalDate.of(2002, 7, 22),
+        AlbumType.Album,
+        ReconID("d7e69fd9-59ac-3093-8b72-60b77a91b298"),
+        None,
+      ),
+      AlbumMetadata(
+        "9",
+        LocalDate.of(2006, 11, 6),
+        AlbumType.Album,
+        ReconID("0d673e32-4f95-348f-af28-3abc1353bff3"),
+        None,
+      ),
+      AlbumMetadata(
+        "My Favourite Faded Fantasy",
+        LocalDate.of(2014, 10, 31),
+        AlbumType.Album,
+        ReconID("72ea557d-b39d-4e06-bb17-e3bda5802d4b"),
+        None,
+      ),
+      AlbumMetadata(
+        "Live From the Union Chapel",
+        LocalDate.of(2003, 7, 1),
+        AlbumType.Live,
+        ReconID("076a1fb6-c1da-38dc-8bc0-1b7f4c2256f7"),
+        None,
+      ),
+      AlbumMetadata(
+        "2004 Live at Outremont Theatre, Montreal",
+        LocalDate.of(2004, 1, 1),
+        AlbumType.Live,
+        ReconID("0b2d6869-bc7b-4b8a-bc04-03d73f279831"),
+        None,
+      ),
+      AlbumMetadata(
+        "Live at Fingerprints: Warts and All",
+        LocalDate.of(2007, 10, 23),
+        AlbumType.LiveEP,
+        ReconID("bd7b0573-0b62-3026-afdc-e5f2e12cfe61"),
+        None,
+      ),
+    )
+    val single = errors.single
+    single shouldBe a[NoSuchElementException]
+    single.getMessage shouldReturn "Broadcast is not a member of Enum (Album, EP, Live, LiveEP, Compilation, Single)"
   }
 
   "releaseToReleaseGroups" - {
