@@ -5,8 +5,8 @@ import java.io.File
 import backend.mb.ArtistReconciler
 import backend.recon.{Artist, ArtistReconPusher, ArtistReconStorage}
 import backend.recon.Reconcilable.SongExtractor
-import backend.score.FullInfoModelScorer
 import backend.score.model.{FullInfoScore, OptionalModelScore, ScoreSource}
+import backend.score.scorer.ScoreModel
 import com.google.inject.Inject
 import models.{IOSongTagParser, Song}
 
@@ -30,7 +30,7 @@ private class FoobarScorer @Inject() (
     reconciler: ArtistReconciler,
     reconStorage: ArtistReconStorage,
     pusher: ArtistReconPusher,
-    scorer: FullInfoModelScorer,
+    scorer: ScoreModel,
     ec: ExecutionContext,
 ) {
   import FoobarScorer._

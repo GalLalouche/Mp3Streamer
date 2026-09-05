@@ -1,8 +1,8 @@
 package songs.selector.filter
 
 import backend.recon.Track
-import backend.score.AggregateScorer
 import backend.score.model.ModelScore
+import backend.score.scorer.AggregateScorer
 import jakarta.inject.Inject
 import models.Song
 import rx.lang.scala.Observer

@@ -2,21 +2,21 @@ package backend.score
 
 import java.io.File
 
-import backend.score.ScorerFormatter.toSong
+import backend.score.ScoreFormatter.toSong
 import backend.score.model.{FullInfoScore, OptionalModelScore}
+import backend.score.scorer.ScoreModel
 import com.google.inject.Inject
 import models.{IOSongTagParser, Song}
 import play.api.libs.json.{Json, JsValue}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 import common.json.JsonWriteable
 import common.json.ToJsonableOps.jsonifySingle
 
 /** Fetches and updates scores for songs, albums, and artists. */
-class ScorerFormatter @Inject() ($ : ScorerModel, ec: ExecutionContext) {
-  private implicit val iec: ExecutionContext = ec
-  import ScorerFormatter.songScoreJsonable
+class ScoreFormatter @Inject() ($ : ScoreModel) {
+  import ScoreFormatter.songScoreJsonable
   def getScore(filePath: String): JsValue =
     $(IOSongTagParser(new File(filePath))).jsonify
 
@@ -35,7 +35,7 @@ class ScorerFormatter @Inject() ($ : ScorerModel, ec: ExecutionContext) {
   def openScoreFile(filePath: String): Future[Unit] = $.openScoreFile(toSong(filePath))
 }
 
-private object ScorerFormatter {
+private object ScoreFormatter {
   private def toSong(path: String): Song = IOSongTagParser(new File(path))
 
   private implicit val songScoreJsonable: JsonWriteable[FullInfoScore] = {

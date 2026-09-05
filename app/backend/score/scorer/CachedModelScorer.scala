@@ -1,4 +1,4 @@
-package backend.score
+package backend.score.scorer
 
 import backend.recon._
 import backend.score.model.{FullInfoScore, ModelScore, OptionalModelScore, ScoreSource, SourcedOptionalModelScore}
