@@ -1,6 +1,6 @@
 package http4s.routes
 
-import backend.score.ScorerFormatter
+import backend.score.ScoreFormatter
 import com.google.inject.Inject
 import http4s.routes.Http4sUtils.{decodePath, fromFuture, jsonEncoder}
 import org.http4s.HttpRoutes
@@ -8,7 +8,7 @@ import org.http4s.dsl.io._
 
 import cats.effect.IO
 
-private class ScoreHttpRoutes @Inject() ($ : ScorerFormatter) {
+private class ScoreHttpRoutes @Inject() ($ : ScoreFormatter) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> path => Ok($.getScore(decodePath(path)))
     // PATCH? It's about as close as it gets I guess...

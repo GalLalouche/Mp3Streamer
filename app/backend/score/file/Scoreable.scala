@@ -1,7 +1,7 @@
 package backend.score.file
 
 import backend.recon.Reconcilable.SongExtractor
-import backend.score.IndividualScorer
+import backend.score.scorer.IndividualScorer
 import com.google.inject.Inject
 import models.{AlbumDir, ArtistDir, Song}
 

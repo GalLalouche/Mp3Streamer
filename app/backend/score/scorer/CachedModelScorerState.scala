@@ -1,4 +1,4 @@
-package backend.score
+package backend.score.scorer
 
 import backend.recon.{Album, Artist, Track}
 import backend.score.model.SourcedOptionalModelScore
@@ -17,8 +17,7 @@ import common.rich.RichFuture.richFutureBlocking
     factory: UpdatableProxyFactory,
     ec: ExecutionContext,
 ) extends AggregateScorer
-    with IndividualScorer
-    with FullInfoScorer {
+    with IndividualScorer {
   private implicit val iec: ExecutionContext = ec
   // Start the computation in a non-blocking way.
   private val futureStarting = factory.initialize(provider.get)
@@ -31,5 +30,5 @@ import common.rich.RichFuture.richFutureBlocking
   override def tryAggregateScore(f: FileRef) = updatable.get.tryAggregateScore(f)
   override def aggregateScore(s: Track): SourcedOptionalModelScore =
     fullInfo(s).sourcedOptionalModelScore
-  override def fullInfo(s: Track) = updatable.get.fullInfo(s)
+  def fullInfo(s: Track) = updatable.get.fullInfo(s)
 }

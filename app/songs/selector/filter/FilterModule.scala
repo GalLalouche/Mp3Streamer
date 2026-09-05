@@ -1,6 +1,6 @@
 package songs.selector.filter
 
-import backend.score.IndividualScorer
+import backend.score.scorer.IndividualScorer
 import com.google.inject.Provides
 import genre.GenreFinder
 import net.codingwell.scalaguice.ScalaModule
