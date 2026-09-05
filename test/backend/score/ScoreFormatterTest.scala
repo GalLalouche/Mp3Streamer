@@ -22,7 +22,7 @@ import common.test.{AsyncAuxSpecs, BeforeAndAfterEachAsync}
 import common.test.memory_ref.MemoryRoot
 
 @Slow
-class ScorerFormatterTest
+class ScoreFormatterTest
     extends AsyncFreeSpec
     with AsyncAuxSpecs
     // Using EachAsync because https://github.com/scala/bug/issues/9304
@@ -35,7 +35,7 @@ class ScorerFormatterTest
   // Not using the extension methods here to avoid importing bugs from it.
   private val artist = Artist(song.artistName)
   private val album = Album(song.albumName, song.year, artist)
-  private val $ = injector.instance[ScorerFormatter]
+  private val $ = injector.instance[ScoreFormatter]
   private val artists = injector.instance[ArtistReconStorage]
   private val artistScores = injector.instance[ArtistScoreStorage]
   private val albumScores = injector.instance[AlbumScoreStorage]

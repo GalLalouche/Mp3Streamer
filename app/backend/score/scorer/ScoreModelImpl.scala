@@ -1,4 +1,4 @@
-package backend.score
+package backend.score.scorer
 
 import backend.recon.{Album, Artist, Track}
 import backend.recon.Reconcilable._
@@ -12,15 +12,15 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import cats.implicits.catsSyntaxFlatMapOps
 
-private class ScorerModel @Inject() (
+private class ScoreModelImpl @Inject() (
     trackScorer: StorageScorer[Track],
     albumScorer: StorageScorer[Album],
     artistScorer: StorageScorer[Artist],
     cachedModelScorerState: CachedModelScorerState,
     ec: ExecutionContext,
     fileScorer: FileScorer,
-) extends FullInfoModelScorer {
-  def apply(s: Song): FullInfoScore = cachedModelScorerState.fullInfo(s.track)
+) extends ScoreModel {
+  override def apply(s: Song): FullInfoScore = cachedModelScorerState.fullInfo(s.track)
 
   private implicit val iec: ExecutionContext = ec
 
@@ -31,5 +31,6 @@ private class ScorerModel @Inject() (
   override def updateArtistScore(song: Song, score: OptionalModelScore): Future[Unit] =
     artistScorer.updateScore(song.artist, score) >> cachedModelScorerState.update()
 
-  def openScoreFile(song: Song): Future[Unit] = fileScorer(song) >> cachedModelScorerState.update()
+  override def openScoreFile(song: Song): Future[Unit] =
+    fileScorer(song) >> cachedModelScorerState.update()
 }

@@ -8,7 +8,7 @@ import backend.mb.MbModule
 import backend.new_albums.NewAlbumsModule
 import backend.recent.RecentModule
 import backend.recon.ReconModule
-import backend.score.ScorerModule
+import backend.score.ScoreModule
 import mains.fixer.FixerModule
 import net.codingwell.scalaguice.ScalaModule
 import songs.SongsModule
@@ -24,7 +24,7 @@ object AllModules extends ScalaModule {
     install(NewAlbumsModule)
     install(RecentModule)
     install(ReconModule)
-    install(ScorerModule)
+    install(ScoreModule)
     install(SongsModule)
   }
 }

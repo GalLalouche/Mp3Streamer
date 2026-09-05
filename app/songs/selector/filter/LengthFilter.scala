@@ -1,7 +1,7 @@
 package songs.selector.filter
 
 import backend.recon.Reconcilable.SongExtractor
-import backend.score.IndividualScorer
+import backend.score.scorer.IndividualScorer
 import genre.{Genre, GenreFinder}
 import models.Song
 import org.apache.commons.lang3.Strings

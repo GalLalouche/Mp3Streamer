@@ -1,4 +1,4 @@
-package backend.score
+package backend.score.scorer
 
 import backend.recon.Track
 import backend.score.model.SourcedOptionalModelScore

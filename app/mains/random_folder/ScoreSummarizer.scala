@@ -1,7 +1,7 @@
 package mains.random_folder
 
-import backend.score.AggregateScorer
 import backend.score.model.ModelScore
+import backend.score.scorer.AggregateScorer
 import com.google.inject.Inject
 import scribe.Level
 
