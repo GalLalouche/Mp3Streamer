@@ -7,8 +7,7 @@ import fs2.Chunk
 import fs2.io.file.Files
 import org.http4s.{EntityDecoder, EntityEncoder, MediaType, Request, Response, StaticFile, Uri}
 import org.http4s.dsl.io._
-import org.http4s.headers.{`Content-Type`, `User-Agent`, Referer}
-import org.typelevel.ci.CIString
+import org.http4s.headers.`Content-Type`
 import play.api.libs.json.{Json, JsValue}
 
 import scala.concurrent.Future
@@ -60,9 +59,4 @@ private object Http4sUtils {
     lazy val msg = s"Missing files should be handled by the formatter; missing file is <$file>"
     StaticFile.fromString(file.getAbsolutePath, Some(req)).getOrElseF(throw new AssertionError(msg))
   }
-
-  def shouldEncodeMp3[F[_]](request: Request[F]): Boolean =
-    request.headers.get[`User-Agent`].exists(_.product.value.|>(CIString.apply).contains(Chrome)) ||
-      request.headers.get[Referer].exists(_.uri.renderString.endsWithCaseInsensitive(".mp3"))
-  private val Chrome = CIString("Chrome")
 }
