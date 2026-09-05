@@ -1,16 +1,17 @@
 package songs
 
 import backend.module.TestModuleConfiguration
-import models.{FakeModelFactory, FakeModelJsonable}
+import com.google.inject.Injector
+import models.FakeModelFactory
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.scalatest.freespec.AnyFreeSpec
 
 import common.test.AuxSpecs
+import common.test.memory_ref.MemoryRoot
 
 class SongGroupsTest extends AnyFreeSpec with AuxSpecs {
-  private val fakeModelFactory = new FakeModelFactory
-  private val fakeJsonable = new FakeModelJsonable
-  import fakeJsonable._
+  private val injector: Injector = TestModuleConfiguration().injector
+  private val fakeModelFactory = new FakeModelFactory(injector.instance[MemoryRoot])
 
   private val song1 = fakeModelFactory.song()
   private val song2 = fakeModelFactory.song()
@@ -29,7 +30,7 @@ class SongGroupsTest extends AnyFreeSpec with AuxSpecs {
     $.get(song5) shouldReturn None
   }
   "save and load" in {
-    val $ = TestModuleConfiguration().injector.instance[SongGroups]
+    val $ = injector.instance[SongGroups]
     $.save(groups)
     $.load shouldReturn Set(group1, group2)
   }

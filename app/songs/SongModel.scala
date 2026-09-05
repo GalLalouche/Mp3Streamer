@@ -1,7 +1,6 @@
 package songs
 
 import com.google.inject.Inject
-import formatter.ControllerSongJsonifier
 import models._
 import songs.SongModel.SongOrGroup
 import songs.selector.{FollowingSong, SongSelectorState}
@@ -18,7 +17,6 @@ private class SongModel @Inject() (
     followingSong: FollowingSong,
     songTagParser: SongTagParser,
     pathRefFactory: PathRefFactory,
-    songJsonifier: ControllerSongJsonifier,
 ) {
   def randomSong(): SongOrGroup = group(songSelectorState.randomSong())
   def randomMp3Song(): SongOrGroup = group(songSelectorState.randomMp3Song())
@@ -37,7 +35,6 @@ private class SongModel @Inject() (
   def nextSong(path: String): Song =
     followingSong.next(songTagParser(pathRefFactory.parseFilePath(path))).get
 
-  import songJsonifier.songJsonable
   private val songGroups: Map[Song, SongGroup] = SongGroups.fromGroups(groups.load)
   private def group(s: Song): SongOrGroup = songGroups.get(s).toRight(s)
 }
