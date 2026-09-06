@@ -35,7 +35,7 @@ private class ImageSelector @Inject() (
 }
 
 private object ImageSelector {
-  val Cols: Int = 3
-  val Rows: Int = 2
+  private val Cols: Int = 3
+  private val Rows: Int = 2
   val ImagesPerPage: Int = Cols * Rows
 }

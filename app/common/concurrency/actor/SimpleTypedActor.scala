@@ -23,7 +23,10 @@ object SimpleTypedActor {
   def async[Msg, Result](name: String, f: Msg => Future[Result]): SimpleTypedActor[Msg, Result] =
     new SimpleTypedActorAsyncImpl(name, f)
 
-  /** Ensures at least [rateLimit] time has passed between handling messages. */
+  /**
+   * Ensures at least [rateLimit] time has passed between handling messages. Rate limiting is
+   * achieved by waiting between messages, not dropping.
+   */
   def asyncRateLimited[Msg, Result](
       name: String,
       f: Msg => Future[Result],
@@ -32,7 +35,7 @@ object SimpleTypedActor {
 
   /**
    * Ensures uniqueness of the messages in the message queue, i.e., if a sent message already exists
-   * in the queue it will be dropped. This can be used to avoid doing unnecessary work.
+   * in the queue, it will be dropped. This can be used to avoid doing unnecessary work.
    */
   def unique[Msg, Result](
       name: String,

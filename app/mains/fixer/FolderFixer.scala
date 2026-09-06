@@ -18,7 +18,6 @@ import cats.data.OptionT
 import common.rich.func.kats.RichOptionT.richOptionT
 
 import common.TimedLogger
-import common.io.InternetTalker
 import common.path.PathUtils
 import common.path.ref.io.IODirectory
 import common.rich.RichFuture._
@@ -31,7 +30,6 @@ private[mains] class FolderFixer @Inject() private (
     songDirectoryParser: SongDirectoryParser,
     artistDirsIndex: ArtistDirsIndex,
     artistNameNormalizer: ArtistNameNormalizer,
-    it: InternetTalker,
     foobarGain: FoobarGain,
     downloader: DownloadCover,
     stringFixer: StringFixer,

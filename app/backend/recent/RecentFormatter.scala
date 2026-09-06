@@ -15,9 +15,11 @@ class RecentFormatter @Inject() (
 ) {
   import mj.albumDirJsonifier
 
-  private def sinceDays(d: Int): Future[JsValue] = Future($.sinceDays(d)).map(_.jsonify)
-  private def sinceMonths(m: Int): Future[JsValue] =
-    Future($.sinceMonths(m)).map(_.jsonify)
+  private implicit val iec: ExecutionContext = ec
+
+  def all(amount: Int): Future[JsValue] = Future($.all(amount)).map(_.jsonify)
+  def double: Future[JsValue] = double(10)
+  def double(amount: Int): Future[JsValue] = Future($.double(amount)).map(_.jsonify)
   def since(dayString: String): Future[JsValue] = {
     val number = dayString.takeWhile(_.isDigit).toInt
     val last = dayString.last.toLower
@@ -29,9 +31,6 @@ class RecentFormatter @Inject() (
     }
   }
 
-  private implicit val iec: ExecutionContext = ec
-
-  def all(amount: Int): Future[JsValue] = Future($.all(amount)).map(_.jsonify)
-  def double: Future[JsValue] = double(10)
-  def double(amount: Int): Future[JsValue] = Future($.double(amount)).map(_.jsonify)
+  private def sinceDays(d: Int): Future[JsValue] = Future($.sinceDays(d)).map(_.jsonify)
+  private def sinceMonths(m: Int): Future[JsValue] = Future($.sinceMonths(m)).map(_.jsonify)
 }

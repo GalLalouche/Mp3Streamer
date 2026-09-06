@@ -8,8 +8,8 @@ import common.path.ref.DirectoryRef
 
 /**
  * An album directory (contrast with [[backend.recon.Album]]) is a concrete directory containing
- * music files. In other words, an AlbumDir has to physically exist on the filesystem, as well as
- * all of its song.
+ * music files. In other words, an [[AlbumDir]] has to physically exist on the filesystem, as well
+ * as all of its song.
  */
 @Lenses
 case class AlbumDir(

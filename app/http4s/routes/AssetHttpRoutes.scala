@@ -11,7 +11,6 @@ import org.http4s.headers.`Content-Type`
 
 import cats.effect.IO
 
-// Since 2.6 ruined their own assets controller :\
 private class AssetHttpRoutes @Inject() {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case req @ GET -> "assets" /: path => asset(req, decodePath(path))
