@@ -48,7 +48,7 @@ private class RecentModel @Inject() (
   private def makeAlbum(dir: DirectoryRef) = albumFactory.fromDirWithoutSongs(dir)
 }
 
-object RecentModel {
+private object RecentModel {
   private implicit val fileTimeNewestOrdering: Ordering[(DirectoryRef, BasicFileAttributes)] =
     Ordering
       .by[(DirectoryRef, BasicFileAttributes), Instant](_._2.lastModifiedTime.toInstant)
