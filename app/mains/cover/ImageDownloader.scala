@@ -29,7 +29,7 @@ private class ImageDownloader @Inject() (itf: InternetTalkerFactory) {
     val it = itf.withExecutionContext(ec)
 
     {
-      case UrlSource(url, width, height) =>
+      case ImageSource.UrlSource(url, width, height) =>
         it
           .asBrowser(url, _.bytes, 5.seconds)
           .map { bytes =>
@@ -38,7 +38,7 @@ private class ImageDownloader @Inject() (itf: InternetTalkerFactory) {
           }
           .listenError(e => scribe.error(s"Error downloading file <$url>", e))
           .toTry
-      case l: LocalSource =>
+      case l: ImageSource.LocalSource =>
         Future.successful(Success(folderImage(l.file, local = true, l.width, l.height, l.image)))
     }
   }
