@@ -16,7 +16,7 @@ object RecentModule extends ScalaPrivateModule with PrivateModuleUtils {
     bind[Observable[AlbumDir]].annotatedWith[NewDir].to[DirToAlbum]
     expose[Observer[DirectoryRef]].annotatedWith[NewDir]()
     expose[Observable[AlbumDir]].annotatedWith[NewDir]()
-    publicBind[LastAlbumProvider].to[RecentAlbums]
+    publicBind[LastAlbumProvider].to[RecentModel]
   }
 
   @Provides
