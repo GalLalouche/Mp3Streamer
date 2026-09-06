@@ -17,7 +17,7 @@ class ImageDownloaderTest extends AsyncFreeSpec with AuxSpecs {
     injector.instance[ImageDownloader].withOutput(tempDir).withExecutionContext(executionContext)
 
   "Remote" in {
-    $(UrlSource(Url.parse("http://foobar"), 500, 500)).map(_.get).map { fi =>
+    $(ImageSource.UrlSource(Url.parse("http://foobar"), 500, 500)).map(_.get).map { fi =>
       fi.file.bytes shouldReturn "foobar".getBytes
       fi.file.parent shouldBe tempDir
       fi.isLocal shouldReturn false
@@ -25,7 +25,7 @@ class ImageDownloaderTest extends AsyncFreeSpec with AuxSpecs {
   }
   "Local" in {
     val file = tempDir.addFile("foo")
-    $(LocalSource(file)).map(_.get).map { fi =>
+    $(ImageSource.LocalSource(file)).map(_.get).map { fi =>
       fi.file shouldReturn file
       fi.isLocal shouldReturn true
     }
