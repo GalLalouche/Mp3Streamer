@@ -11,6 +11,6 @@ private object LocalImageFetcher {
   private def isImage(f: FileRef) = f.extensionIsAnyOf(Extensions)
   def apply(dir: DirectoryRef)(implicit ec: ExecutionContext): FutureIterant[ImageSource] =
     Iterant.from[Future, ImageSource](
-      Future(dir.deepFiles.to(LazyList).filter(isImage).map(LocalSource)),
+      Future(dir.deepFiles.to(LazyList).filter(isImage).map(ImageSource.LocalSource)),
     )
 }
