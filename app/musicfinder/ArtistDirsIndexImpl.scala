@@ -16,9 +16,10 @@ import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rich.primitives.RichBoolean.richBoolean
 
 /**
- * Unfortunately, this isn't as trivial `Artist(dir.name)`, since many artists have a directory name
- * from the actual artist name. For examples, if the artist name isn't a valid directory name in
- * Windows (e.g., R.E.M.), or when multiple artists share the same parent directory (e.g., DT Sides)
+ * Unfortunately, this isn't as trivial `Artist(dir.name)`, since many artists have a different
+ * directory name from the actual artist name. For examples, if the artist name isn't a valid
+ * directory name in Windows (e.g., R.E.M.), or when multiple artists share the same parent
+ * directory (e.g., DT Sides).
  */
 private class ArtistDirsIndexImpl(
     dirToArtist: Map[DirectoryRef, Either[Artist, Set[Artist]]],

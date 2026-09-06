@@ -15,21 +15,10 @@ class UpdatableProxyFactory @Inject() (timedLogger: TimedLogger) {
       initialState: A,
       updateSelf: () => A,
       name: String,
-  ): UpdatableProxy[A] = new UpdatableProxy[A](
-    initialState,
-    updateSelf,
-    name,
-    timedLogger,
-  )
+  ): UpdatableProxy[A] = new UpdatableProxy[A](initialState, updateSelf, name, timedLogger)
 
   def initialize[A: Manifest](
       updateSelf: () => A,
-  )(implicit ec: ExecutionContext): Future[UpdatableProxy[A]] = Future(
-    new UpdatableProxy[A](
-      updateSelf(),
-      updateSelf,
-      manifest.runtimeClass.getSimpleName,
-      timedLogger,
-    ),
-  )
+  )(implicit ec: ExecutionContext): Future[UpdatableProxy[A]] =
+    Future(apply(initialState = updateSelf(), updateSelf))
 }
