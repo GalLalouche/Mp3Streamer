@@ -10,14 +10,14 @@ import common.json.ToJsonableOps._
 
 class RecentFormatter @Inject() (
     ec: ExecutionContext,
-    recentAlbums: RecentAlbums,
+    $ : RecentModel,
     mj: ModelJsonable,
 ) {
   import mj.albumDirJsonifier
 
-  private def sinceDays(d: Int): Future[JsValue] = Future(recentAlbums.sinceDays(d)).map(_.jsonify)
+  private def sinceDays(d: Int): Future[JsValue] = Future($.sinceDays(d)).map(_.jsonify)
   private def sinceMonths(m: Int): Future[JsValue] =
-    Future(recentAlbums.sinceMonths(m)).map(_.jsonify)
+    Future($.sinceMonths(m)).map(_.jsonify)
   def since(dayString: String): Future[JsValue] = {
     val number = dayString.takeWhile(_.isDigit).toInt
     val last = dayString.last.toLower
@@ -31,7 +31,7 @@ class RecentFormatter @Inject() (
 
   private implicit val iec: ExecutionContext = ec
 
-  def all(amount: Int): Future[JsValue] = Future(recentAlbums.all(amount)).map(_.jsonify)
+  def all(amount: Int): Future[JsValue] = Future($.all(amount)).map(_.jsonify)
   def double: Future[JsValue] = double(10)
-  def double(amount: Int): Future[JsValue] = Future(recentAlbums.double(amount)).map(_.jsonify)
+  def double(amount: Int): Future[JsValue] = Future($.double(amount)).map(_.jsonify)
 }
