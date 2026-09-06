@@ -17,7 +17,7 @@ import common.rich.collections.RichIterator.richIterator
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
 import common.rx.RichObservable.richObservable
 
-private class RecentAlbums @Inject() (
+private class RecentModel @Inject() (
     finder: SongFileFinder,
     mf: MusicFiles,
     songTagParser: SongTagParser,
@@ -26,7 +26,7 @@ private class RecentAlbums @Inject() (
 ) extends LastAlbumProvider {
   def all(amount: Int): Seq[AlbumDir] = sortedDirs().take(amount).toVector
   def double(amount: Int): Seq[AlbumDir] = sortedDirs().filter(isDoubleAlbum).take(amount).toVector
-  import RecentAlbums.fileTimeNewestOrdering
+  import RecentModel.fileTimeNewestOrdering
   override def since(since: Instant): Seq[AlbumDir] =
     mf.albumDirsWithAttributes(Some(since)).toVectorBlocking.sorted.map(_._1 |> makeAlbum)
   def sinceDays(d: Int): Seq[AlbumDir] = since(_.minus(d, ChronoUnit.DAYS))
@@ -48,7 +48,7 @@ private class RecentAlbums @Inject() (
   private def makeAlbum(dir: DirectoryRef) = albumFactory.fromDirWithoutSongs(dir)
 }
 
-object RecentAlbums {
+object RecentModel {
   private implicit val fileTimeNewestOrdering: Ordering[(DirectoryRef, BasicFileAttributes)] =
     Ordering
       .by[(DirectoryRef, BasicFileAttributes), Instant](_._2.lastModifiedTime.toInstant)
