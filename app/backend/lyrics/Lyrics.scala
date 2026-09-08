@@ -9,7 +9,6 @@ private case class HtmlLyrics(source: String, html: String, url: LyricsUrl) exte
   override def toString: String = s"(From $source, $url)\n$html"
 }
 private case class Instrumental(source: String, url: LyricsUrl) extends Lyrics {
-  override val html =
-    "<img src='assets/images/TrebleClef.png' width='30' height='68' /><b>Instrumental</b>"
+  override val html = "<img src='assets/images/TrebleClef.svg' width='60' /><b>Instrumental</b>"
   override def toString: String = s"(From $source, $url) Instrumental"
 }
