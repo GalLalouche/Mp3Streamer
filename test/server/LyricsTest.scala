@@ -30,7 +30,7 @@ private class LyricsTest(serverModule: Module)
   }
 
   private val instrumentalSongResponse =
-    "<img src='assets/images/TrebleClef.png' width='30' height='68' /><b>Instrumental</b><br><br>Source: Manual override"
+    "<img src='assets/images/TrebleClef.svg' width='60' /><b>Instrumental</b><br><br>Source: Manual override"
   "POST instrumental/song marks song as instrumental" in {
     postString(
       uri"lyrics/instrumental/song/$songPath",
@@ -44,7 +44,7 @@ private class LyricsTest(serverModule: Module)
 
   "POST instrumental/artist returns instrumental marker" in {
     postString(uri"lyrics/instrumental/artist/$songPath") shouldEventuallyReturn
-      "<img src='assets/images/TrebleClef.png' width='30' height='68' /><b>Instrumental</b><br><br>Source: Default for artist"
+      "<img src='assets/images/TrebleClef.svg' width='60' /><b>Instrumental</b><br><br>Source: Default for artist"
   }
 
   "POST push with unsupported URL returns error" in {
