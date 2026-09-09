@@ -7,8 +7,7 @@ import models.Song
 
 import scala.concurrent.Future
 
-/** Unified backend for [[LyricsFormatter]]. */
-private class LyricsBackend @Inject() (
+private class LyricsModel @Inject() (
     lc: LyricsCache,
     instrumentalArtist: InstrumentalArtist,
 ) {

@@ -11,27 +11,27 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import common.rich.func.kats.ToMoreMonadErrorOps._
 
-class LyricsFormatter @Inject() (ec: ExecutionContext, backend: LyricsBackend) {
+class LyricsFormatter @Inject() (ec: ExecutionContext, $ : LyricsModel) {
   private implicit val iec: ExecutionContext = ec
 
   def get(path: String): Future[String] =
-    backend
-      .find(IOSong.read(new File(path)))
+    $.find(IOSong.read(new File(path)))
       .map(LyricsFormatter.toString)
       // .listenError(_.printStackTrace())
       .orElseFlat("Failed to get lyrics :(")
   def push(path: String, url: Url): Future[String] =
-    backend.parse(url, IOSong.read(new File(path))).map {
+    $.parse(url, IOSong.read(new File(path))).map {
       case RetrievedLyricsResult.RetrievedLyrics(l) => LyricsFormatter.toString(l)
       case RetrievedLyricsResult.Error(e) => StringEscapeUtils.escapeXml11(e.getMessage)
       case RetrievedLyricsResult.NoLyrics => "No lyrics were found :("
     }
+  def setInstrumentalSong(path: String): Future[String] =
+    setInstrumentalAux(path, $.setInstrumentalSong)
+  def setInstrumentalArtist(path: String): Future[String] =
+    setInstrumentalAux(path, $.setInstrumentalArtist)
+
   private def setInstrumentalAux(path: String, f: Song => Future[Instrumental]) =
     f(IOSong.read(new File(path))).map(LyricsFormatter.toString)
-  def setInstrumentalSong(path: String): Future[String] =
-    setInstrumentalAux(path, backend.setInstrumentalSong)
-  def setInstrumentalArtist(path: String): Future[String] =
-    setInstrumentalAux(path, backend.setInstrumentalArtist)
 }
 
 private object LyricsFormatter {
