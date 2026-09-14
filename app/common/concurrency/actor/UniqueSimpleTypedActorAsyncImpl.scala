@@ -2,19 +2,15 @@ package common.concurrency.actor
 
 import java.util
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-import cats.implicits.toFunctorOps
 import common.rich.func.kats.ToMoreMonadErrorOps.toMoreMonadErrorOps
-
-import common.concurrency.DaemonExecutionContext
 
 private final class UniqueSimpleTypedActorAsyncImpl[Msg, Result](
     name: String,
     f: Msg => Future[Result],
-) extends SimpleTypedActor[Msg, Result] {
+) extends SimpleTypedActorTemplate[Msg, Result](name) {
   private val messages: util.Map[Msg, Future[Result]] = new util.HashMap()
-  implicit val ec: ExecutionContext = DaemonExecutionContext.single(name)
   private def clear(m: Msg): Unit = synchronized(messages.remove(m).ensuring(_ != null))
   override def !(m: => Msg): Future[Result] = synchronized {
     lazy val msg = m
@@ -29,8 +25,6 @@ private final class UniqueSimpleTypedActorAsyncImpl[Msg, Result](
         },
     )
   }
-
-  def void: SimpleActor[Msg] = UniqueSimpleTypedActorAsyncImpl.this.!(_).void
 
   def describeMessage(m: Msg): String = s"msg <$m>"
 }

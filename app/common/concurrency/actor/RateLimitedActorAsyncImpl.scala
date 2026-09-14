@@ -1,16 +1,13 @@
 package common.concurrency.actor
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
-
-import common.concurrency.DaemonExecutionContext
 
 private class RateLimitedActorAsyncImpl[Msg, Result](
     name: String,
     f: Msg => Future[Result],
     rateLimit: Duration,
-) extends SimpleTypedActor[Msg, Result] {
-  private implicit val ec: ExecutionContext = DaemonExecutionContext.single(name)
+) extends SimpleTypedActorTemplate[Msg, Result](name) {
   // No need to synchronize these since we're on a single thread.
   private var lastRun = 0L
   private var i = 0
