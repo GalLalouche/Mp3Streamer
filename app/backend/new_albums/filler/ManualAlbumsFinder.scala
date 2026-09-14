@@ -28,8 +28,8 @@ import common.rx.RichObservable.richObservable
     artistDirFactory: ArtistDirFactory,
     normalizer: ArtistNameNormalizer,
     reconcilableFactory: ReconcilableFactory,
-) extends SimpleTypedActor[Artist, Option[Set[Album]]] {
-  override def !(m: => Artist): Future[Option[Set[Album]]] = delegate ! m
+) {
+  def !(m: => Artist): Future[Option[Set[Album]]] = delegate ! m
 
   private val delegate = SimpleTypedActor("ManualAlbumsFinder", fallback)
 

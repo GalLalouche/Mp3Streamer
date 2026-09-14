@@ -14,6 +14,7 @@ import scala.concurrent.duration.Duration
  */
 trait SimpleTypedActor[Msg, +Result] {
   def !(m: => Msg): Future[Result]
+  def name: String
 }
 
 object SimpleTypedActor {
