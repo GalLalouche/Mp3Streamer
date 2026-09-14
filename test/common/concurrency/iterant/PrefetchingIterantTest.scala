@@ -25,6 +25,7 @@ class PrefetchingIterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
         counter += 1
         OptionT.some[Future]($).value
       }
+    override def name: String = "ToggleableProducer"
   }
 
   private val actor = new ToggleableProducer
