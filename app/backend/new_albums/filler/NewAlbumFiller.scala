@@ -15,7 +15,7 @@ import scala.math.Ordered.orderingToOrdered
 import cats.implicits.{catsSyntaxFlatMapOps, catsSyntaxIfM}
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
-import common.concurrency.actor.SimpleTypedActor
+import common.concurrency.actor.Actor
 import common.rich.RichTime.RichLocalDateTime
 
 @Singleton
@@ -56,10 +56,9 @@ private[new_albums] class NewAlbumFiller @Inject() private (
       )
 
   // TODO code duplication with RefreshableRetriever
-  private val finisher = SimpleTypedActor.async[(Seq[NewAlbumRecon], Set[Artist]), AddedAlbumCount](
-    "CacherFiller finisher",
-    Function.tupled(storage.storeNew),
-  )
+  private val finisher =
+    Actor[(Seq[NewAlbumRecon], Set[Artist]), AddedAlbumCount]("CacherFiller finisher")
+      .async(Function.tupled(storage.storeNew))
   private def ignore(reason: String) = {
     scribe.trace(reason)
     Future.successful(0: AddedAlbumCount)

@@ -11,7 +11,7 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
 
 import cats.implicits.toFoldableOps
 
-import common.concurrency.actor.SimpleActor
+import common.concurrency.actor.Actor
 import common.path.ref.DirectoryRef
 import common.rich.RichT.richT
 import common.rich.collections.RichTraversableOnce.richTraversableOnce
@@ -30,9 +30,9 @@ import common.rx.RichObservable.richObservable
     ec: ExecutionContext,
 ) {
   private implicit val iec: ExecutionContext = ec
-  private val uniqueExtra = SimpleActor.uniqueAsync[Boolean](
-    "Indexer extra uniqifier",
-    forceRefresh => {
+  private val uniqueExtra = Actor
+    .unique[Boolean, Unit]("Indexer extra uniqifier")
+    .async { forceRefresh =>
       val $ = Promise[Unit]()
       songCacheUpdater
         .go(forceRefresh)
@@ -50,7 +50,6 @@ import common.rx.RichObservable.richObservable
         )
         .subscribe()
       $.future
-    },
-  )
+    }
   def go(forceRefresh: Boolean): Future[Unit] = uniqueExtra ! forceRefresh
 }

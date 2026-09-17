@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import cats.data.OptionT
 import cats.implicits.{toFunctorOps, toTraverseOps}
 
-import common.concurrency.actor.Producer
+import common.concurrency.actor.Actor
 import common.json.saver.JsonableCOWFactory
 import common.rich.RichTime._
 
@@ -45,8 +45,7 @@ import common.rich.RichTime._
 
     factory[LastAlbums]
   }
-  private val lastAlbumsUnique = Producer.unique[Seq[AlbumDir]](
-    "LastAlbumsState",
-    lastAlbumProvider.since(lastAlbums.get.lastUpdateTime.toInstant(clock)),
-  )
+  private val lastAlbumsUnique = Actor
+    .unique[Unit, Seq[AlbumDir]]("LastAlbumsState")
+    .producer(lastAlbumProvider.since(lastAlbums.get.lastUpdateTime.toInstant(clock)))
 }

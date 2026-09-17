@@ -13,7 +13,7 @@ import cats.implicits.toBifunctorOps
 import common.rich.func.kats.ToMoreFoldableOps.toMoreFoldableOps
 
 import common.TimedLogger
-import common.concurrency.actor.SimpleTypedActor
+import common.concurrency.actor.Actor
 import common.path.ref.DirectoryRef
 import common.rich.RichT.richT
 import common.rich.primitives.RichEither.richEither
@@ -31,7 +31,7 @@ import common.rx.RichObservable.richObservable
 ) {
   def !(m: => Artist): Future[Option[Set[Album]]] = delegate ! m
 
-  private val delegate = SimpleTypedActor("ManualAlbumsFinder", fallback)
+  private val delegate = Actor("ManualAlbumsFinder")(fallback)
 
   private def fallback(artist: Artist): Option[Set[Album]] = timed(
     s"Cannot find directory for <$artist>, falling back to manual album search",

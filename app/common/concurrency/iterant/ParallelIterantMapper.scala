@@ -14,7 +14,7 @@ import cats.data.OptionT
 import cats.implicits.{catsSyntaxFlatMapOps, toFunctorOps}
 
 import common.concurrency.{DaemonExecutionContext, ExplicitRetriever, SingleLatch}
-import common.concurrency.actor.SimpleActor
+import common.concurrency.actor.Actor
 import common.concurrency.iterant.Iterant.FutureIterant
 import common.concurrency.iterant.ParallelIterantMapper.BlockingMap
 import common.rich.RichT.richT
@@ -60,20 +60,19 @@ private class ParallelIterantMapper[A, B] private (
     results.get(i)
   }
 
-  private[this] val blockingMapFiller = SimpleActor.withSelf[FutureIterant[A]](
-    "ParallelIterantMapper",
-    (iterant, self) =>
+  private[this] val blockingMapFiller =
+    Actor[FutureIterant[A], Unit]("ParallelIterantMapper").self((self, iterant) =>
       // We block here to avoid taking up a thread for foreach. This will just block up the current
       // actor thread, which is what we want.
       Await.result(iterant.step.value, Duration.Inf) match {
         case None => blockingMap.setMaxIndex()
         case Some((head, tail)) =>
-          // While fetching the next value is done sequentially, mapping is done in parallel up to the
-          // capacity of the blocking map and the parallelism parameter.
+          // While fetching the next value is done sequentially, mapping is done in parallel up to
+          // the capacity of the blocking map and the parallelism parameter.
           blockingMap.put(f(head))
           self ! tail
       },
-  )
+    )
 
   private[this] class Stepper(index: Int) extends FutureIterant[B] {
     override def step: Step[B] = get(index).tupleRight(new Stepper(index + 1))

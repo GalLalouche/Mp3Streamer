@@ -10,46 +10,45 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 
 import common.concurrency.DaemonExecutionContext
+import common.rich.RichFuture.richFutureBlocking
 import common.test.AuxSpecs
 
-class UniqueSimpleTypedActorImplTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
+class UniqueActorImplTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
   implicit val executionContext: ExecutionContext = DaemonExecutionContext("ElasticExecutorTest", 8)
   "unique" in 1000.parTimes {
     val sb = new StringBuilder
     val semaphore = new Semaphore(0)
-    val $ = SimpleTypedActor.unique[String, Unit](
-      "MyName",
-      m => {
-        semaphore.acquire()
-        sb.append(m)
-      },
-    )
+    var counter = 0
+    val $ = Actor.unique[String, Int]("MyName") { m =>
+      semaphore.acquire()
+      counter += 1
+      sb.append(m)
+      sb.append(counter)
+      m.length + counter
+    }
     val f = $ ! "foo"
     val g = $ ! "foo"
-    (f should be).theSameInstanceAs(g)
     semaphore.release(1)
-    Await.result(f, 1 second)
-    sb.toString shouldReturn "foo"
+    f.get(1 second) shouldReturn 4
+    g.isCompleted shouldReturn true
+    g.get shouldReturn 4
+    sb.toString shouldReturn "foo1"
 
     // Verifies clear
     val h = $ ! "foo"
-    (h shouldNot be).theSameInstanceAs(f)
     semaphore.release(1)
-    Await.result(h, 1 second)
-    sb.toString shouldReturn "foofoo"
+    h.get(1 second) shouldReturn 5
+    sb.toString shouldReturn "foo1foo2"
   }
 
   "failures" in 100.parTimes {
     val semaphore = new Semaphore(0)
     var counter = 0
-    val $ = SimpleTypedActor.unique[String, Unit](
-      "MyName",
-      m => {
-        semaphore.acquire()
-        counter += 1
-        throw new Exception("Whoopsies" + m)
-      },
-    )
+    val $ = Actor.unique[String, Unit]("MyName") { m =>
+      semaphore.acquire()
+      counter += 1
+      throw new Exception("Whoopsies" + m)
+    }
     val f = $ ! "foo"
     semaphore.release()
     val e = the[Exception] thrownBy (Await.result(f, 1 second))

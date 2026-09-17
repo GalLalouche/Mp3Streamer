@@ -1,17 +1,19 @@
 package common.concurrency.actor
 
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 
-private class RateLimitedActorAsyncImpl[Msg, Result](
+import common.rich.func.kats.PureError
+
+private class RateLimitedActorImpl[Msg, Result](
     name: String,
-    f: Msg => Future[Result],
+    f: ActorFunction[Msg, Result],
     rateLimit: Duration,
-) extends SimpleTypedActorTemplate[Msg, Result](name) {
-  // No need to synchronize these since we're on a single thread.
+) extends ActorTemplate[Msg, Result](name) {
+  // No need to synchronize because these are only accessed from the actor's thread.
   private var lastRun = 0L
   private var i = 0
-  def !(m: => Msg): Future[Result] = Future {
+  def !(m: => Msg): Future[Result] = Future.delegate {
     val now = System.currentTimeMillis()
     scribe.trace(s"<$i>: <$lastRun>")
     i += 1
@@ -21,10 +23,8 @@ private class RateLimitedActorAsyncImpl[Msg, Result](
       Thread.sleep(sleepTime)
     }
     scribe.trace(s"<$i> start @ ${System.currentTimeMillis()}")
-    // We use Await because this has to be a single Future task to ensure rate limiting.
-    val $ = Await.result(f(m), Duration.Inf)
+    val $ = PureError.tryWrap(f(this, m))
     lastRun = System.currentTimeMillis()
-    scribe.trace(s"<$i> done  @ ${System.currentTimeMillis()}")
     $
   }
 }

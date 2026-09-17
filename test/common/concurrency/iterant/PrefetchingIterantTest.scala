@@ -7,13 +7,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import cats.data.OptionT
 
-import common.concurrency.actor.SimpleTypedActor
+import common.concurrency.actor.Actor
 import common.test.AsyncAuxSpecs
 
 class PrefetchingIterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTest {
   implicit override def executionContext: ExecutionContext = ThreadlessContext
 
-  private class ToggleableProducer extends SimpleTypedActor[Unit, Option[Int]] {
+  private class ToggleableProducer extends Actor[Unit, Option[Int]] {
     var counter = 1
     private var stopped = false
     def stop(): Unit = stopped = true
