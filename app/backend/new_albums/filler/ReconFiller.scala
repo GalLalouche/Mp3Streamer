@@ -10,7 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import cats.implicits.toFlatMapOps
 import common.rich.func.kats.ObservableInstances._
 
-import common.concurrency.actor.SimpleActor
+import common.concurrency.actor.Actor
 import common.rich.RichFuture._
 import common.rich.primitives.RichBoolean.richBoolean
 import common.rx.RichObservable
@@ -23,15 +23,12 @@ private class ReconFiller[R <: Reconcilable](
     aux: ReconFillerAux[R],
 )(implicit ec: ExecutionContext) {
   private val cache = storage.cachedKeys.get
-  private val storer = SimpleActor.async[(R, ReconID)](
-    "storer",
-    { case (r, recondID) =>
-      scribe.info(
-        s"Storing <${aux.prettyPrint(r)}>: https://musicbrainz.org/${aux.musicBrainzPath}/${recondID.id}",
-      )
-      storage.store(r, HasReconResult(recondID, isIgnored = false))
-    },
-  )
+  private val storer = Actor[(R, ReconID), Unit]("storer").async { case (r, recondID) =>
+    scribe.info(
+      s"Storing <${aux.prettyPrint(r)}>: https://musicbrainz.org/${aux.musicBrainzPath}/${recondID.id}",
+    )
+    storage.store(r, HasReconResult(recondID, isIgnored = false))
+  }
 
   private def go(r: R): Observable[ReconID] =
     RichObservable.from(reconciler(r)).filterFuture(aux.verify(r, _))

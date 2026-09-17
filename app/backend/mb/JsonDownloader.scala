@@ -13,7 +13,7 @@ import scala.concurrent.duration._
 import cats.implicits.catsSyntaxApplicativeError
 import common.rich.func.kats.ToMoreMonadErrorOps._
 
-import common.concurrency.actor.SimpleTypedActor
+import common.concurrency.actor.Actor
 import common.io.{InternetTalker, PropertiesHelper}
 import common.rich.primitives.RichBoolean._
 
@@ -29,11 +29,9 @@ private class JsonDownloader @Inject() (
   def apply(method: String, params: (String, String)*): Future[JsObject] =
     actor ! Input(method, params, times = 1)
 
-  private val actor = SimpleTypedActor.asyncRateLimited[Input, JsObject](
-    "JsonDownloader",
-    { case Input(method, params, times) => aux(method, params, times) },
-    1.seconds,
-  )
+  private val actor = Actor
+    .rateLimited[Input, JsObject]("JsonDownloader", 1.seconds)
+    .async { case Input(method, params, times) => aux(method, params, times) }
   private def aux(method: String, params: Seq[(String, String)], times: Int): Future[JsObject] =
     getJson(method, params).handleErrorWith { e =>
       if (times <= 1)

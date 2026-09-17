@@ -12,18 +12,15 @@ import scala.language.postfixOps
 import common.concurrency.DaemonExecutionContext
 import common.test.AuxSpecs
 
-class UniqueSimpleTypedActorImplTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
+class UniqueActorImplTest extends AnyFreeSpec with OneInstancePerTest with AuxSpecs {
   implicit val executionContext: ExecutionContext = DaemonExecutionContext("ElasticExecutorTest", 8)
   "unique" in 1000.parTimes {
     val sb = new StringBuilder
     val semaphore = new Semaphore(0)
-    val $ = SimpleTypedActor.unique[String, Unit](
-      "MyName",
-      m => {
-        semaphore.acquire()
-        sb.append(m)
-      },
-    )
+    val $ = Actor.unique[String, Unit]("MyName") { m =>
+      semaphore.acquire()
+      sb.append(m)
+    }
     val f = $ ! "foo"
     val g = $ ! "foo"
     (f should be).theSameInstanceAs(g)
@@ -42,14 +39,11 @@ class UniqueSimpleTypedActorImplTest extends AnyFreeSpec with OneInstancePerTest
   "failures" in 100.parTimes {
     val semaphore = new Semaphore(0)
     var counter = 0
-    val $ = SimpleTypedActor.unique[String, Unit](
-      "MyName",
-      m => {
-        semaphore.acquire()
-        counter += 1
-        throw new Exception("Whoopsies" + m)
-      },
-    )
+    val $ = Actor.unique[String, Unit]("MyName") { m =>
+      semaphore.acquire()
+      counter += 1
+      throw new Exception("Whoopsies" + m)
+    }
     val f = $ ! "foo"
     semaphore.release()
     val e = the[Exception] thrownBy (Await.result(f, 1 second))

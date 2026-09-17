@@ -11,7 +11,7 @@ import scala.jdk.CollectionConverters._
 
 import cats.data.OptionT
 
-import common.concurrency.actor.SimpleActor
+import common.concurrency.actor.Actor
 import common.rich.RichT.lazyT
 import common.test.AsyncAuxSpecs
 
@@ -116,13 +116,12 @@ class IterantTest extends AsyncFreeSpec with AsyncAuxSpecs with OneInstancePerTe
   "batchStepping with observer" - {
     val semaphore = new Semaphore(2)
     val queue = new LinkedBlockingQueue[Int]
-    val actor = SimpleActor[Int](
+    val actor = Actor[Int, Unit](
       "foo",
-      { next =>
-        queue.put(next)
-        semaphore.release()
-      },
-    )
+    ) { next =>
+      queue.put(next)
+      semaphore.release()
+    }
     val onCompletedCount = new AtomicInteger(0)
 
     "interlocked" in {

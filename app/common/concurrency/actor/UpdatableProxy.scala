@@ -26,16 +26,13 @@ class UpdatableProxy[A] private[actor] (
   override def set(a: A): Future[A] = actor ! Update.FromValue(a)
   override def get: A = state
 
-  private lazy val actor = SimpleTypedActor[Update[A], A](
-    name + " Updatable",
-    {
-      case Update.FromFunction =>
-        timedLogger("Updating " + name, Level.Debug)(updateSelf().<|(state = _))
-      case Update.FromValue(a) =>
-        scribe.debug(s"Updating $name manually")
-        a.<|(state = _)
-    },
-  )
+  private lazy val actor = Actor[Update[A], A](name + " Updatable") {
+    case Update.FromFunction =>
+      timedLogger("Updating " + name, Level.Debug)(updateSelf().<|(state = _))
+    case Update.FromValue(a) =>
+      scribe.debug(s"Updating $name manually")
+      a.<|(state = _)
+  }
 }
 
 private object UpdatableProxy {
