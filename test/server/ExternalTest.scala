@@ -1,9 +1,13 @@
 package server
 
+import java.util.concurrent.TimeUnit
+
+import backend.mb.JsonDownloader
 import backend.module.FakeWSResponse
 import backend.recon.{AlbumReconStorage, ArtistReconStorage, ReconIDArbitrary}
 import com.google.inject.Module
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
+import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.json.Json
 import sttp.client3.UriContext
 
@@ -21,6 +25,12 @@ private class ExternalTest(module: Module)
   protected override def baseTestModule = super.baseTestModule.copy(
     _urlToResponseMapper = _ => FakeWSResponse(status = 404),
   )
+  protected override def overridingModule: Module = new ScalaModule {
+    override def configure(): Unit =
+      bind[TimeUnit]
+        .annotatedWithName(JsonDownloader.SleepingUnit)
+        .toInstance(TimeUnit.MICROSECONDS)
+  }
 
   // Must use a relative path because Http4sUtils.decodePath strips the leading '/'.
   private val songPath = relativePath(getResourceFile("/models/song.mp3"))
