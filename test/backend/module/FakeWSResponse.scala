@@ -22,5 +22,5 @@ case class FakeWSResponse(
   override def bodyAsBytes = ByteString(bytes)
   override def headers = allHeaders
   override def bodyAsSource = ???
-  override def uri: URI = ???
+  override def uri: URI = URI.create("http://some.fake.uri")
 }

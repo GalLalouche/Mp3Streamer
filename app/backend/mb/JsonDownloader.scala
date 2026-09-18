@@ -1,24 +1,27 @@
 package backend.mb
 
 import java.net.HttpURLConnection
+import java.util.concurrent.TimeUnit
 
-import backend.mb.JsonDownloader.Input
+import backend.mb.JsonDownloader.{Input, MaxRetries, SleepingUnit}
 import com.google.inject.{Inject, Singleton}
+import com.google.inject.name.Named
 import play.api.libs.json._
 import play.api.libs.ws.JsonBodyReadables.readableAsJson
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 
-import cats.implicits.catsSyntaxApplicativeError
-import common.rich.func.kats.ToMoreMonadErrorOps._
+import common.rich.func.kats.ToMoreMonadErrorOps.toMoreMonadErrorThrowableOps
 
 import common.concurrency.actor.Actor
 import common.io.{InternetTalker, PropertiesHelper}
-import common.rich.primitives.RichBoolean._
+import common.rich.primitives.RichBoolean.richBoolean
 
-@Singleton
+@Singleton // Singleton to ensure rate limiting.
 private class JsonDownloader @Inject() (
+    // Overriden by tests
+    @Named(SleepingUnit) sleepingUnit: TimeUnit,
     ph: PropertiesHelper,
     it: InternetTalker,
     ec: ExecutionContext,
@@ -27,21 +30,19 @@ private class JsonDownloader @Inject() (
   private val userAgent: String = ph.getOrElse(getClass, "userAgent", "no-agent")
 
   def apply(method: String, params: (String, String)*): Future[JsObject] =
-    actor ! Input(method, params, times = 1)
+    actor ! Input(method, params)
 
-  private val actor = Actor
-    .rateLimited[Input, JsObject]("JsonDownloader", 1.seconds)
-    .async { case Input(method, params, times) => aux(method, params, times) }
-  private def aux(method: String, params: Seq[(String, String)], times: Int): Future[JsObject] =
-    getJson(method, params).handleErrorWith { e =>
-      if (times <= 1)
-        Future.failed(new Exception(s"Failed retry; last failure was: <${e.getMessage}>"))
-      else {
-        if (e.isInstanceOf[FilteredException].isFalse)
-          println(e.getMessage)
-        actor ! Input(method, params, times - 1)
-      }
-    }
+  private val actor: Actor[Input, JsObject] = Actor
+    .exponentialBackoff(
+      "JsonDownloader",
+      MaxRetries,
+      // Allegedly it should be 1 second, but I'm getting too many 503s recently.
+      (new FiniteDuration(1, sleepingUnit) * 1.5).asInstanceOf[FiniteDuration],
+      e =>
+        if (e.isInstanceOf[NoSuchElementException].isFalse)
+          e.printStackTrace(),
+    )
+    .async { case Input(method, params) => getJson(method, params) }
 
   private def getJson(method: String, params: Seq[(String, String)]): Future[JsObject] =
     it.useWs(
@@ -57,6 +58,8 @@ private class JsonDownloader @Inject() (
     ).map(_.body[JsValue].as[JsObject])
 }
 
-private object JsonDownloader {
-  private case class Input(method: String, params: Seq[(String, String)], times: Int)
+object JsonDownloader {
+  private case class Input(method: String, params: Seq[(String, String)])
+  private final val MaxRetries = 3
+  final val SleepingUnit = "sleeping_unit"
 }

@@ -1,9 +1,12 @@
 package backend.mb
 
+import java.util.concurrent.TimeUnit
+
 import backend.OptionRetriever
 import backend.recon.{Album, Artist, Reconciler, ReconcilerCacher, ReconID}
 import backend.recon.StoredReconResult.{HasReconResult, StoredNull}
 import com.google.inject.Provides
+import com.google.inject.name.Named
 import net.codingwell.scalaguice.ScalaPrivateModule
 
 import scala.concurrent.ExecutionContext
@@ -13,6 +16,8 @@ import cats.data.OptionT
 object MbModule extends ScalaPrivateModule {
   override def configure(): Unit = {
     bind[Reconciler[Album]].to[AlbumReconciler]
+    bind[TimeUnit].annotatedWithName(JsonDownloader.SleepingUnit).toInstance(TimeUnit.SECONDS)
+    expose[TimeUnit].annotatedWithName(JsonDownloader.SleepingUnit)
     expose[Reconciler[Album]]
   }
 
