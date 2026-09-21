@@ -77,7 +77,7 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
   }
 
   "Returns none on invalid date" in {
-    parse("""{
+    val e = parse("""{
         |"id": "e96e6015-e6b2-4af6-88e2-d24ff79d18a5",
         |"secondary-type-ids": [],
         |"primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
@@ -89,7 +89,8 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
         |}""")
       .asInstanceOf[TryOption.Failure]
       .exception
-      .getMessage shouldReturn "Could not parse first-release-date from <2011-??-12>"
+    e.getMessage shouldReturn "Failure for <https://musicbrainz.org/release-group/e96e6015-e6b2-4af6-88e2-d24ff79d18a5>"
+    e.getCause.getMessage shouldReturn "Could not parse first-release-date from <2011-??-12>"
   }
 
   "releaseGroup parsing" in {
@@ -141,9 +142,9 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
         None,
       ),
     )
-    val single = errors.single
-    single shouldBe a[NoSuchElementException]
-    single.getMessage shouldReturn "Broadcast is not a member of Enum (Album, EP, Live, LiveEP, Compilation, Single)"
+    val error = errors.single
+    error.getMessage shouldReturn "Failure for <https://musicbrainz.org/release-group/4b47f495-da4c-4b41-9e32-866633b314c5>"
+    error.getCause.getMessage shouldReturn "Broadcast is not a member of Enum (Album, EP, Live, LiveEP, Compilation, Single)"
   }
 
   "releaseToReleaseGroups" - {

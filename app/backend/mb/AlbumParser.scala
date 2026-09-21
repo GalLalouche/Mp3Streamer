@@ -15,29 +15,38 @@ import common.rich.collections.RichTraversableOnce._
 import common.rich.primitives.RichString._
 
 private object AlbumParser {
-  def parseReleaseGroup(json: JsObject): TryOption[AlbumMetadata] = for {
-    date <- parseDate(json)
-    albumType <- TryOption
-      .fromOption(json.ostr("primary-type"))
-      .flatMapF(pt => Try(AlbumType.withName(pt)))
-    if ValidPrimaryTypes(albumType.entryName)
-    // Secondary types includes compilations, demos, and other unwanted albums. But sometimes they
-    // contain live information instead of it being embedded in the album type...
-    secondaryTypes = json.array("secondary-types").value.map(_.as[String].toLowerCase)
-    if secondaryTypes.fornone(_ != "live")
-  } yield {
-    assert(secondaryTypes.singleOpt.forall(_ == "live"))
-    AlbumMetadata(
-      title = fixQuotes(json.str("title")),
-      releaseDate = date,
-      albumType =
-        if (secondaryTypes.nonEmpty)
-          if (albumType == AlbumType.EP) AlbumType.LiveEP else AlbumType.Live
-        else
-          albumType,
-      reconId = ReconID.validateOrThrow(json.str("id")),
-      disambiguation = json.str("disambiguation").optFilter(_.nonEmpty),
-    )
+  def parseReleaseGroup(json: JsObject): TryOption[AlbumMetadata] = {
+    val reconId = ReconID.validateOrThrow(json.str("id"))
+    val $ = for {
+      date <- parseDate(json)
+      albumType <- TryOption
+        .fromOption(json.ostr("primary-type"))
+        .flatMapF(pt => Try(AlbumType.withName(pt)))
+      if ValidPrimaryTypes(albumType.entryName)
+      // Secondary types includes compilations, demos, and other unwanted albums. But sometimes they
+      // contain live information instead of it being embedded in the album type...
+      secondaryTypes = json.array("secondary-types").value.map(_.as[String].toLowerCase)
+      if secondaryTypes.fornone(_ != "live")
+    } yield {
+      assert(secondaryTypes.singleOpt.forall(_ == "live"))
+      AlbumMetadata(
+        title = fixQuotes(json.str("title")),
+        releaseDate = date,
+        albumType =
+          if (secondaryTypes.nonEmpty)
+            if (albumType == AlbumType.EP) AlbumType.LiveEP else AlbumType.Live
+          else
+            albumType,
+        reconId = reconId,
+        disambiguation = json.str("disambiguation").optFilter(_.nonEmpty),
+      )
+    }
+    $ match {
+      case TryOption.Failure(exception) =>
+        val url = s"https://musicbrainz.org/release-group/${reconId.id}"
+        TryOption.Failure(new Exception(s"Failure for <$url>", exception))
+      case e => e
+    }
   }
 
   private def parseDate(js: JsValue): TryOption[LocalDate] =
