@@ -1,7 +1,7 @@
 package common.concurrency.iterant
 
 import scala.collection.LinearSeq
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 import cats.Monad
 import cats.data.OptionT
@@ -132,8 +132,7 @@ object Iterant {
       f: ExplicitRetriever[A, B],
       prefetchSize: Int,
       parallelism: Int,
-  )(implicit ec: ExecutionContext): FutureIterant[B] =
-    ParallelIterantMapper($, f, prefetchSize, parallelism)
+  ): FutureIterant[B] = ParallelIterantMapper($, f, prefetchSize, parallelism)
   def forever[F[_]: Monad, A](f: => F[A]): Iterant[F, A] = new Iterant[F, A] {
     override lazy val step: Step[A] = OptionT.liftF(f.tupleRight(forever(f)))
   }

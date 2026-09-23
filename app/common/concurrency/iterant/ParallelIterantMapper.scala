@@ -4,7 +4,7 @@ import java.util
 import java.util.concurrent.Semaphore
 
 import alleycats.Pure.pureFlatMapIsMonad
-import backend.FutureOption
+import backend.{FutureOption, Retriever}
 
 import scala.collection.mutable
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -24,13 +24,12 @@ import common.rich.RichT.richT
  * `parallelism` threads) of an [[Iterant]].
  */
 private class ParallelIterantMapper[A, B] private (
-    _iterant: FutureIterant[A],
-    curriedF: ExplicitRetriever[A, B],
+    iterant: FutureIterant[A],
+    f: Retriever[A, B],
     buffer: Int,
-    parallelism: Int,
-)(implicit
-    ec: ExecutionContext, // The implicit is needed for the Monad instance.
+    ec: ExecutionContext,
 ) {
+  private implicit val iec: ExecutionContext = ec
   // The basic algorithm goes like this:
   // - The actual API exposed here is the iterant, which just calls get on successive indices,
   //   taking its values from the vector.
@@ -42,9 +41,6 @@ private class ParallelIterantMapper[A, B] private (
   // - If the actor reaches the end of the iterant, it sets the max index of the blocking map,
   //   causing any further get calls beyond that index to throw an exception and interrupt any
   //   waiting threads.
-  private val context: ExecutionContext =
-    DaemonExecutionContext("ParallelIterantMapper", parallelism)
-  private[this] val f = curriedF.withExecutionContext(context)
   private[this] val blockingMap = new BlockingMap[B](buffer)
   // Must be synchronized when read and written, since different threads can call get.
   private[this] val results = new util.Vector[FutureOption[B]]
@@ -55,7 +51,7 @@ private class ParallelIterantMapper[A, B] private (
     if (results.size <= i)
       results.synchronized {
         while (results.size <= i)
-          results.add(blockingMap.get(i)(context))
+          results.add(blockingMap.get(i))
       }
     results.get(i)
   }
@@ -77,8 +73,8 @@ private class ParallelIterantMapper[A, B] private (
   private[this] class Stepper(index: Int) extends FutureIterant[B] {
     override def step: Step[B] = get(index).tupleRight(new Stepper(index + 1))
   }
-  private def start(): Unit = blockingMapFiller ! _iterant
-  private def iterant: Iterant[Future, B] = new Stepper(0)
+  private def start(): Unit = blockingMapFiller ! iterant
+  private def stepper: Iterant[Future, B] = new Stepper(0)
 }
 
 private object ParallelIterantMapper {
@@ -87,9 +83,11 @@ private object ParallelIterantMapper {
       f: ExplicitRetriever[A, B],
       n: Int,
       parallelism: Int,
-  )(implicit
-      ec: ExecutionContext,
-  ): FutureIterant[B] = new ParallelIterantMapper(iterant, f, n, parallelism).<|(_.start()).iterant
+  ): FutureIterant[B] = {
+    val ec: ExecutionContext =
+      DaemonExecutionContext("ParallelIterantMapper", parallelism)
+    new ParallelIterantMapper(iterant, f.withExecutionContext(ec), n, ec).<|(_.start()).stepper
+  }
 
   /**
    * A map variant of a blocking queue. `get` blocks until `put` is called for the given key. Like a
