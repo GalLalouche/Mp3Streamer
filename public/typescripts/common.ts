@@ -288,3 +288,7 @@ function isFunction(e: any): e is Function {
 function isDefined<A>(e: A | undefined): e is A {
   return e !== undefined
 }
+
+function notImplemented(): never {
+  throw new Error("Not implemented")
+}

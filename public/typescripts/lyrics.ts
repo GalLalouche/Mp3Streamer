@@ -1,4 +1,5 @@
 import {gplayer, gplaylist, Song} from "./types.js"
+import * as API from "./api.js"
 
 export namespace Lyrics {
   export function show(song: Song): void {
@@ -6,7 +7,7 @@ export namespace Lyrics {
     helper.clearButtons()
     helper.autoScroll = true
     helper.lyricsContent.html("Fetching lyrics...")
-    $.get("lyrics/" + song.file, function (l) {
+    getLyrics(song).then(l => {
       helper.showLyrics(l)
       helper.scrollLyrics()
     })
@@ -14,6 +15,10 @@ export namespace Lyrics {
 }
 
 const getHelper = lazy(() => new Helper())
+
+async function getLyrics(song: Song): Promise<string> {
+  return API.get("lyrics/" + song.file).then(e => e as unknown as string)
+}
 
 const HEBREW_REGEX = /[\u0590-\u05FF]/
 
@@ -80,7 +85,7 @@ class Helper {
     scrollableElement.scroll(function () { // When the user scrolls manually, reset the baselines
       if (that.autoScroll.isFalse()) {
         that.scrollBaseline = scrollableElement.scrollTop()!
-        that.timeBaseline = that.scrollBaseline && gplayer.percentageOfSongPlayed()
+        that.timeBaseline = that.scrollBaseline && gplayer.percentageOfSongPlayed().zeroToHundred()
       }
       that.autoScroll = false
     })
@@ -103,7 +108,8 @@ class Helper {
   scrollLyrics(): void {
     // Don't start scrolling right at the beginning of the song if there is no baseline set
     const heightBaseline = this.scrollBaseline || (this.lyricsContent.height()! / -4)
-    const timePercentage = (gplayer.percentageOfSongPlayed() - this.timeBaseline) / 100.0
+    const timePercentage =
+      (gplayer.percentageOfSongPlayed().zeroToHundred() - this.timeBaseline) / 100.0
     this.autoScroll = true
     this.lyricBox.scrollTop(this.lyricBox.prop('scrollHeight') * timePercentage + heightBaseline)
   }

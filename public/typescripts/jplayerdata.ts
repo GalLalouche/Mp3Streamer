@@ -4,9 +4,10 @@ import {External} from './external.js'
 import {getDebugAlbum, getDebugSong, isMuted, WAIT_DELAY} from './initialization.js'
 import {Globals} from "./globals.js"
 import {gplaylist, Playlist, Song} from "./types.js"
-import {Volume} from "./volume.js"
+import {VolumeSetter} from "./volume_setter.js"
 import {Score} from "./score.js"
 import {Local} from "./local.js"
+import * as DataApi from "./data_api.js";
 
 declare class JPlayerPlaylist extends Playlist {
   add(song: Song, playNow: boolean): Promise<void>
@@ -33,7 +34,6 @@ interface PlaylistHacks {
 }
 
 $(function () {
-  const randomSongUrl = "data/randomSong"
   const JPLAYER_ID = "#jquery_jplayer_1"
   const playlist = new JPlayerPlaylist({
     jPlayer: JPLAYER_ID,
@@ -82,27 +82,25 @@ $(function () {
     // TODO use plain old observers here
     Lyrics.show(currentPlayingSong)
     External.show(currentPlayingSong)
-    Volume.setPeak(currentPlayingSong)
+    VolumeSetter.setPeak(currentPlayingSong)
     Score.show(currentPlayingSong)
     NewAlbumInfo.show(currentPlayingSong)
   }
   $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()
 
   function loadNextRandom(playNow: boolean): void {
-    $.get(randomSongUrl, function (data) {
-      return playlist.add(data, playNow)
-    })
+    DataApi.getRandomSong().then(song => playlist.add(song, playNow))
   }
 
   const debugStartSong = getDebugSong()
   const debugStartAlbum = getDebugAlbum()
   if (debugStartSong) {
     console.log(`Adding debug song <${debugStartSong}>`)
-    $.get("/data/song/" + debugStartSong, data => gplaylist.add(data, true))
+    DataApi.getSong(debugStartSong).then(data => gplaylist.add(data, true))
   } else if (debugStartAlbum) {
     console.log(`Adding debug album <${debugStartAlbum}>`)
     // No idea why this is reversed in the playlist :|
-    $.get("/data/albums/" + debugStartAlbum, data => gplaylist.add(data.reverse(), true))
+    DataApi.getAlbum("/data/albums/" + debugStartAlbum).then(data => gplaylist.add(data.reverse(), true))
   } else
     loadNextRandom(true)
   // Fetches new songs before current song ends.

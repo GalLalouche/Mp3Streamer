@@ -1,5 +1,6 @@
 import {gplayer, gplaylist, Song} from "./types.js"
 import {scanPlus, Search} from "./search.js"
+import * as DataApi from "./data_api.js";
 
 $(function () {
   $(document).keypress(function (e) {
@@ -64,9 +65,9 @@ $(function () {
       if ((same("artistName") && same("albumName") && currentSong.track + 1 === nextSong.track).isFalse())
         return
     }
-    $.get("data/nextSong/" + gplaylist.last().file, async function (song) {
-      return gplaylist.add(song, false)
-    })
+
+
+    DataApi.nextSong(gplaylist.last()).then(song => gplaylist.add(song, false))
   }
 
   $(document).on("click", ".poster", () => gplayer.togglePause())

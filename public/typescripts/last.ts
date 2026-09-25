@@ -1,5 +1,7 @@
 // A very simple module, showing the latest albums, so it can be easily added to the playlist.
 
+import * as DataApi from "./data_api.js";
+import * as API from "./api.js";
 import {Album, gplaylist} from "./types.js"
 
 export namespace LastAlbum {
@@ -25,9 +27,13 @@ function setFetchingText(): void {
 
 const prefix = "last_albums"
 
-async function getLastAlbums(): Promise<void> {
+async function updateLastAlbums(): Promise<void> {
   setFetchingText()
-  updateAlbums(await $.get(prefix).toPromise())
+  updateAlbums(await getLastAlbums())
+}
+
+async function getLastAlbums(): Promise<Album[]> {
+  return API.get(prefix).then(e => e as Album[])
 }
 
 async function forceUpdate(): Promise<Album[]> {
@@ -67,7 +73,7 @@ function updateAlbums(albums: Album[]): void {
 
 async function dequeue(): Promise<void> {
   return dequeueAux(album =>
-    $.get("data/album/" + album.dir, e => gplaylist.add(e, true)).toPromise())
+    DataApi.getAlbum(album.dir).then(e => gplaylist.add(e, true)))
 }
 
 function skip(): void {
@@ -88,5 +94,5 @@ async function dequeueAux(f: (a: Album) => Promise<void>): Promise<void> {
 
 $(function () {
   // noinspection JSIgnoredPromiseFromCall
-  getLastAlbums()
+  updateLastAlbums()
 })
