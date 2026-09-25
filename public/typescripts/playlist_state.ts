@@ -6,18 +6,28 @@
 
 import './jquery_common_xhr.js'
 import {PLAYLIST_NAME_KEY, Poster} from "./poster.js"
-import {Volume} from "./volume.js"
-import {gplayer, gplaylist, Song} from "./types.js"
+import {VolumeSetter} from "./volume_setter.js"
+import {Duration, gplayer, gplaylist, Song, Volume} from "./types.js"
 import {isMuted} from "./initialization.js";
+import * as API from "./api.js";
 
 $(function () {
     class PlaylistJson {
       constructor(
         public songs: Song[],
         public currentIndex: number,
-        public duration: number,
-        public volume: number,
+        public duration: Duration,
+        public volume: Volume,
       ) {}
+
+      static fromJson(json: API.RawJSON): PlaylistJson {
+        return new PlaylistJson(
+          json.songs.map(Song.fromJSON),
+          json.currentIndex as number,
+          Duration.fromJson(json.duration),
+          Volume.fromJSON(json.volume),
+        )
+      }
     }
 
     const body = $("body")
@@ -26,7 +36,7 @@ $(function () {
       body.on("click", "button#" + id, callback)
     }
 
-    listenToClick("load_playlist", () => $.get("playlist/", ids => chooseState(ids)))
+    listenToClick("load_playlist", () => getPlaylists().then(ids => chooseState(ids)))
 
     function chooseState(ids: string[]): void {
       // Create the dialog div
@@ -47,10 +57,16 @@ $(function () {
       $dialog.dialog("open")
     }
 
+    async function getPlaylist(id: string): Promise<PlaylistJson> {
+      return API.get("playlist/" + id).then(PlaylistJson.fromJson)
+    }
+
+    async function getPlaylists(): Promise<string[]> {
+      return API.get("playlists/").then(e => e as string[])
+    }
+
     async function loadPlaylist(id: string): Promise<void> {
-      $.get("playlist/" + id, async function (playlist: PlaylistJson) {
-        await setState(playlist)
-      })
+      return getPlaylist(id).then(setState)
     }
 
     function getState(): PlaylistJson {
@@ -60,7 +76,7 @@ $(function () {
         gplaylist.songs(),
         gplaylist.currentIndex(),
         gplayer.currentPlayingInSeconds(),
-        Volume.getVolumeBaseline(),
+        VolumeSetter.getVolumeBaseline(),
       )
     }
 
@@ -69,8 +85,8 @@ $(function () {
       gplayer.stop()
       await gplaylist.setPlaylist(state.songs, false)
       await gplaylist.select(state.currentIndex)
-      gplayer.skip(state.duration)
-      Volume.setManualVolume(state.volume)
+      gplayer.skipTo(state.duration)
+      VolumeSetter.setManualVolume(state.volume)
       // gplayer.playCurrentSong()
     }
 
@@ -84,7 +100,7 @@ $(function () {
         console.log(msg)
         return Promise.resolve({heading: 'Warning', text: msg, icon: 'warning'})
       }
-      state.volume = Volume.getVolumeBaseline()
+      state.volume = VolumeSetter.getVolumeBaseline()
       localStorage.setItem(backupKey, JSON.stringify(state))
       const playlistName = Poster.playlistName.val() as string
       if (playlistName) {
@@ -123,7 +139,7 @@ $(function () {
         $.toast("No backup to load!")
         return
       }
-      const state = JSON.parse(item)
+      const state = PlaylistJson.fromJson(JSON.parse(item))
       if (state.songs.length === 0) {
         console.log("Won't load empty backup")
         return

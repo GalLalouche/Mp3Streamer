@@ -1566,7 +1566,7 @@
 
         const v = this.options.verticalVolume ? y / h : x / w
         this.volume(v)
-        Volume.setManualVolume(v)
+        VolumeSetter.setManualVolume(Volume.fromPercentage(Percentage.fromMax1(v)))
       }
       if (this.options.muted) {
         this._muted(false)

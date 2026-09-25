@@ -1,3 +1,5 @@
+import * as DataApi from "./data_api.js";
+import * as API from "./api.js";
 import {LastAlbum} from "./last.js"
 import {Album, Artist, gplaylist, Song} from "./types.js"
 
@@ -18,10 +20,24 @@ const ADD_ENTIRE_ALBUM = "plus-square"
 const ADD_DISC = "plus-circle"
 const DOWNLOAD_FILE = "download"
 
-interface Results {
+class Results {
   songs: Song[]
   albums: Album[]
   artists: Artist[]
+
+  private constructor(songs: Song[], albums: Album[], artists: Artist[]) {
+    this.songs = songs
+    this.albums = albums
+    this.artists = artists
+  }
+
+  static fromJSON(json: API.RawJSON): Results {
+    return new Results(
+      json.songs.map(Song.fromJSON),
+      json.albums as Album[],
+      json.artists as Artist[]
+    )
+  }
 }
 
 
@@ -36,22 +52,21 @@ class Helper {
     this.results.on("click", '#song-results .fa', function (e) {
       const song = getData(this)
       const isPlay = e.target.classList.contains("fa-play")
-      $.get("data/song/" + song.file, e => gplaylist.add(e, isPlay))
+      DataApi.getSong(song.file).then(e => gplaylist.add(e, isPlay))
     })
     this.results.on("click", `.album-result .fa-${ADD_ENTIRE_ALBUM}`, function (e) {
       if (e.target !== this) // Prevents clicks on anything other than that selector.
         return
       const album = getData(this)
-      $.get("data/album/" + album.dir, e => gplaylist.add(e, false))
+      DataApi.getAlbum(album.dir).then(e => gplaylist.add(e, false))
     })
     this.results.on("click", `.album-result .fa-${ADD_DISC}`, function () {
       const album = getData(this)
       const discNumber = $(this).closest("td").text()
-      $.get(`data/disc/${discNumber}/${album.dir}`, e => gplaylist.add(e, false))
+      dataDisc(album, discNumber).then(e => gplaylist.add(e, false))
     })
     this.results.on("click", `.album-result .fa-${DOWNLOAD_FILE}`, function () {
-      const album = getData(this)
-      $.get("download/" + album.dir)
+      download(getData(this))
     })
 
 
@@ -184,12 +199,12 @@ class Helper {
 
     function search() {
       const searchTime = result.updateTimeOfLastInput()
-      const text = result.searchBox.val()
+      const text = result.searchBox.val() as string
       if (text === "") {
         result.clearResults()
         return
       }
-      $.get("search/" + text, e => result.setResults(e, searchTime))
+      searchApi(text).then(e => result.setResults(e, searchTime))
     }
 
     result.searchBox.bind('input change', search)
@@ -210,6 +225,18 @@ class Helper {
 
     return result
   }
+}
+
+async function dataDisc(album: Album, discNumber: string): Promise<Song[]> {
+  return DataApi.getSongsRawPath(`data/disc/${discNumber}/${album.dir}`)
+}
+
+function download(album: Album): void {
+  $.get("download/" + album.dir)
+}
+
+async function searchApi(text: string): Promise<Results> {
+  return API.get("search/" + text).then(Results.fromJSON)
 }
 
 async function scanAux(addNewAlbum: boolean): Promise<void> {

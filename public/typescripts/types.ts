@@ -1,14 +1,63 @@
 import {PlaylistCustomizations} from "./playlist_customizations.js"
 import {Globals} from "./globals.js"
+import {RawJSON} from "./api.js"
 
-export interface Song {
+export class Percentage {
+  private readonly _zero_to_one: number
+
+  private constructor(percentage: number) {
+    require(percentage <= 1)
+    require(percentage >= 0)
+    this._zero_to_one = percentage
+  }
+
+  static fromJSON(json: RawJSON) {return new Percentage(json as unknown as number)}
+  toJSON(): RawJSON {return this._zero_to_one as unknown as RawJSON}
+  static fromMax1(number: number) {return new Percentage(number)}
+  static fromMax100(number: number) {return new Percentage(number / 100.0)}
+
+  zeroToOne(): number {return this._zero_to_one}
+  zeroToHundred(): number {return this._zero_to_one * 100}
+  isZero(): boolean {
+    return this._zero_to_one === 0
+  }
+  times(number: number) {return Percentage.fromMax100(this.zeroToHundred() * number)}
+}
+
+export class Duration {
+  private readonly millis: number
+
+  private constructor(millis: number) {this.millis = millis}
+
+  static fromSeconds(seconds: number): Duration {return new Duration(seconds * 1000)}
+  static fromMillis(number: number) {return new Duration(number)}
+  // TODO This is definitely a bit of a hack. The problem is that currently the server send JSON with the
+  //  duration as seconds, and when this method is called we don't know if it's called from the
+  //  server or from a serialized version of the Duration class, e.g., as used for backups.
+  //  A better solution would be to serialize this as a tuple, and deserialize it as either a tuple
+  //  or a number.
+  static fromJson(json: RawJSON): Duration {return Duration.fromSeconds(json as unknown as number)}
+  toJSON(): RawJSON {return this.toSeconds() as unknown as RawJSON}
+
+  timeFormat(): string {return this.toSeconds().timeFormat()}
+  toSeconds(): number {return this.millis / 1000}
+  toMillis(): number {return this.millis}
+  plus(d: Duration): Duration {return new Duration(this.millis + d.millis)}
+  isGreaterThanOrEqual(duration: Duration): boolean {return this.millis >= duration.millis}
+  minus(fadeoutDuration: Duration): Duration {
+    return new Duration(Math.max(this.millis - fadeoutDuration.millis, 0))
+  }
+  min(duration: Duration): Duration { return this.millis < duration.millis ? this : duration }
+}
+
+export class Song {
   readonly title: string
   readonly artistName: string
   readonly albumName: string
   readonly track: number
   readonly year: number
   readonly bitrate: string
-  readonly duration: number
+  readonly duration: Duration
   readonly size: number
   readonly discNumber?: string
   readonly trackGain: number
@@ -26,8 +75,81 @@ export interface Song {
   // Either mp3 or flac should be available
   readonly mp3?: string
   readonly flac?: string
-
   offlineUrl?: string
+
+  static fromJSON(json: RawJSON): Song {
+    return new Song(
+      json.title,
+      json.artistName,
+      json.albumName,
+      json.track,
+      json.year,
+      json.bitrate,
+      Duration.fromJson(json.duration),
+      json.size,
+      json.discNumber,
+      json.trackGain,
+      json.composer,
+      json.conductor,
+      json.opus,
+      json.orchestra,
+      json.performanceYear,
+      json.file,
+      json.poster,
+      json.mp3,
+      json.flac,
+    )
+  }
+
+  private constructor(
+    title: string,
+    artistName: string,
+    albumName: string,
+    track: number,
+    year: number,
+    bitrate: string,
+    duration: Duration,
+    size: number,
+    discNumber: string | undefined,
+    trackGain: number,
+    composer: string | undefined,
+    conductor: string | undefined,
+    opus: string | undefined,
+    orchestra: string | undefined,
+    performanceYear: number | undefined,
+    file: string,
+    poster: string,
+    mp3: string | undefined,
+    flac: string | undefined,
+  ) {
+    this.title = title
+    this.artistName = artistName
+    this.albumName = albumName
+    this.track = track
+    this.year = year
+    this.bitrate = bitrate
+    this.duration = duration
+    this.size = size
+    this.discNumber = discNumber
+    this.trackGain = trackGain
+
+    this.composer = composer
+    this.conductor = conductor
+    this.opus = opus
+    this.orchestra = orchestra
+    this.performanceYear = performanceYear
+
+    this.file = file
+    this.poster = poster
+    this.mp3 = mp3
+    this.flac = flac
+    assert(
+      // It can be neither when it returns as search results, for example.
+      this.mp3 === undefined || this.flac === undefined,
+      "Song can't have both mp3 and flac",
+    )
+    this.offlineUrl = undefined
+  }
 }
 
 export function songPath(song: Song): string {
@@ -66,6 +188,7 @@ export abstract class Player {
   abstract load(song: Song): void
   abstract playCurrentSong(): void
   abstract stop(): void
+  /** Does not unpause. */
   abstract pause(): void
   abstract isPaused(): boolean
   restart(): void {
@@ -78,11 +201,11 @@ export abstract class Player {
     else
       this.pause()
   }
-  abstract percentageOfSongPlayed(): number
-  abstract currentPlayingInSeconds(): number
-  abstract setVolume(v: number): void
-  abstract getVolume(): number
-  abstract skip(seconds: number): void
+  abstract percentageOfSongPlayed(): Percentage
+  abstract currentPlayingInSeconds(): Duration
+  abstract setVolume(v: Volume): void
+  abstract getVolume(): Volume
+  abstract skipTo(duration: Duration): void
 }
 
 interface JPlayerElement {
@@ -100,7 +223,7 @@ export abstract class Playlist {
       await that.add(s, false)
     }
   }
-  abstract add(song: Song, playNow: boolean): Promise<void>
+  abstract add(song: Song | Song[], playNow: boolean): Promise<void>
   protected abstract _next(): void
   next(count?: number): void {
     count = count || 1
@@ -127,7 +250,7 @@ function makePlaylist(): Playlist {
   const result = new class extends Playlist {
     override currentIndex() {return pl().current}
     override songs() {return pl().playlist}
-    override add(song: Song, playNow: boolean): Promise<void> {return pl().add(song, playNow)}
+    override add(song: Song | Song[], playNow: boolean): Promise<void> {return pl().add(song, playNow)}
     override _next(): void {return pl().next()}
     override prev(): void {return pl().previous()}
     override async clear(): Promise<void> {
@@ -144,6 +267,28 @@ function makePlaylist(): Playlist {
 export const gplaylist: Playlist = makePlaylist()
 $exposeGlobally!(gplaylist)
 
+export class Volume {
+  private readonly volume: Percentage
+
+  private constructor(volume: Percentage) {
+    this.volume = volume
+  }
+
+  static fromJSON(json: RawJSON) {return new Volume(Percentage.fromJSON(json))}
+  toJSON(): RawJSON {return this.volume.toJSON()}
+  static fromPercentage(p: Percentage) {return new Volume(p)}
+
+  times(number: number): Volume {return new Volume(this.volume.times(number))}
+
+  setWidth(volumeBar: JQuery<HTMLElement>) {
+    volumeBar.css("width", `${this.volume}%`)
+  }
+  isMuted() {return this.volume.isZero()}
+
+  // TODO temporary, will be removed when the player no longer wraps jPlayer.
+  _volume(): Percentage {return this.volume}
+}
+
 export const gplayer = new class extends Player {
   private player(): JPlayerElement {return $("#jquery_jplayer_1") as unknown as JPlayerElement}
   override load(song: Song): void {this.player().jPlayer("setMedia", song)}
@@ -154,17 +299,24 @@ export const gplayer = new class extends Player {
   override isPaused(): boolean {return this.player().data().jPlayer.status.paused}
   override percentageOfSongPlayed() {
     const jPlayer = this.player().data().jPlayer
-    return jPlayer ? jPlayer.status.currentPercentAbsolute : undefined
+    return jPlayer ?
+      Percentage.fromMax100(jPlayer.status.currentPercentAbsolute) :
+      Percentage.fromMax1(0)
   }
-  override currentPlayingInSeconds(): number {
-    return this.player().data().jPlayer.status.currentTime
+  override currentPlayingInSeconds(): Duration {
+    return Duration.fromSeconds(this.player().data().jPlayer.status.currentTime)
   }
   private volumeBar() {return $(".jp-volume-bar-value")}
-  override getVolume(): number {return this.volumeBar().width()!}
-  setVolume(v: number): void {
-    this.volumeBar().width(`${v}%`)
-    this.player().jPlayer("volume", v / 100.0)
+  override getVolume(): Volume {
+    return Volume.fromPercentage(Percentage.fromMax100(this.volumeBar().width()!))
   }
-  override skip(seconds: number): void {this.player().jPlayer("play", seconds)}
+  override setVolume(v: Volume): void {
+    this.volumeBar().width(`${v}%`)
+    this.player().jPlayer("volume", v._volume().zeroToOne())
+  }
+  override skipTo(duration: Duration): void {this.player().jPlayer("play", duration.toSeconds())}
 }
+$exposeGlobally!(Duration)
+$exposeGlobally!(Percentage)
+$exposeGlobally!(Volume)
 $exposeGlobally!(gplayer)

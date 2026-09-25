@@ -1,4 +1,5 @@
 import {Album, Song} from "./types.js"
+import * as API from "./api.js"
 
 function ignoreAlbum(artist: string, album: string, reconID: string, elementToRemove: JQuery<HTMLElement>): void {
   confirmDialog(
@@ -64,8 +65,7 @@ export function show(song: Song): void {
 
   fieldSet.empty()
   fieldSet.append(elem("legend", `Fetching new albums for artist...`))
-  const requestUrl = "new_albums/albums/" + encodeURI(song.artistName)
-  $.get(requestUrl, function (albums: string | Album[]) {
+  api(song).then(albums => {
     fieldSet.empty()
     if (albums !== "IGNORED") {
       showAlbums(albums as Album[])
@@ -81,15 +81,23 @@ export function show(song: Song): void {
       )),
     )
     fieldSet.append(b)
-  }).fail(function (e: any) {
+  }).catch(function (e: any) {
     fieldSet.empty()
     // For uncaught errors, the responseText is a big ass HTML with a stacktrace.
     const errorMessage = e.responseText.length > 100
-      ? `<a href='${requestUrl}' target='_blank'>Click here for HTML</a>`
+      ? `<a href='${requestUrl(song)}' target='_blank'>Click here for HTML</a>`
       : `<br/>${e.responseText}`
     fieldSet.append(elem("legend", `Fetching new albums FAILED... ${errorMessage}`))
     const ignoreArtistButton = button("Ignore artist")
     ignoreArtistButton.click(() => ignoreArtist(song))
     fieldSet.append(ignoreArtistButton)
   })
+}
+
+function requestUrl(song: Song): string {
+  return "new_albums/albums/" + encodeURI(song.artistName)
+}
+
+async function api(song: Song): Promise<string | Album[]> {
+  return API.get(requestUrl(song)).then(e => e as string | Album[])
 }

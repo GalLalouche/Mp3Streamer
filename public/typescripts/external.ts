@@ -2,13 +2,13 @@ import './jquery_common_xhr.js'
 import {Poster} from "./poster.js"
 import {gplaylist, Song} from "./types.js"
 import {match} from 'ts-pattern'
+import * as API from './api.js'
 
 export namespace External {
   export function show(song: Song): void {
-    const externalUrl = REMOTE_PATH + song.file
     const helper = getHelper()
-    $.get(externalUrl, helper.showLinks(song))
-      .fail(function () {
+    getExternal(song).then(helper.showLinks(song))
+      .catch(function () {
         helper.cleanUp()
         // FIXME A better error message
         helper.externalDivs.append(span("Error occurred while fetching links"))
@@ -19,9 +19,9 @@ export namespace External {
     const refreshDisplay = song === gplaylist.currentPlayingSong()
     return Promise.all(
       externalEntityTypes.map(target =>
-        refreshDisplay ?
-          getHelper().refresh(target as ExternalEntityType)() :
-          $.get(refreshPath(target, song), function () {
+        refreshDisplay
+          ? getHelper().refresh(target as ExternalEntityType)()
+          : refresh(target, song).then(() => {
             console.log(`Successfully refreshed ${song.file}'s ${target} links`)
           }),
       ),
@@ -85,8 +85,7 @@ class Helper {
     return function () {
       const song = gplaylist.currentPlayingSong()
       // TODO showLinks should only fetch the links for the target.
-      return $.get(refreshPath(target, song), that.showLinks(song))
-        .toPromise().void()
+      return refresh(target, song).then(that.showLinks(song)).void()
     }
   }
   cleanUp() {
@@ -180,6 +179,18 @@ class Helper {
 
 function refreshPath(target: ExternalEntityType, song: Song): string {
   return `${REMOTE_PATH}refresh/${target.toLowerCase()}/${song.file}`
+}
+
+async function getExternalAux(path: string): Promise<ExternalResult> {
+  return API.get(path).then(e => e as ExternalResult)
+}
+
+async function getExternal(song: Song): Promise<ExternalResult> {
+  return getExternalAux(REMOTE_PATH + song.file)
+}
+
+async function refresh(target: ExternalEntityType, song: Song): Promise<ExternalResult> {
+  return getExternalAux(refreshPath(target, song))
 }
 
 interface Links {

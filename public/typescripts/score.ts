@@ -1,5 +1,6 @@
 // TODO use enums and use Object.values to get this list for the drop down list.
 import {gplaylist, Song} from "./types.js"
+import * as API from "./api.js"
 
 export namespace Score {
   export function setup(): void {
@@ -16,12 +17,16 @@ export namespace Score {
 
   export function show(song: Song): void {
     clearScores()
-    $.get("score/" + song.file, score => updateScore(song, score))
+    getScore(song).then(score => updateScore(song, score))
   }
 
   export function popup(song: Song): void {
-    $.get("score/" + song.file, scoreResult => scoreSliderDialog(song, scoreResult))
+    getScore(song).then(scoreResult => scoreSliderDialog(song, scoreResult))
   }
+}
+
+async function getScore(song: Song): Promise<ScoreResult> {
+  return API.get(`score/${song.file}`).then(e => e as ScoreResult)
 }
 
 async function setScore(song: Song, source: Source, score: Score): Promise<void> {

@@ -42,7 +42,6 @@ export namespace PlaylistCustomizations {
   }
 }
 
-
 $exposeGlobally!(PlaylistCustomizations)
 
 function isClassicalPiece(song: Song): boolean { return !!song.composer}
