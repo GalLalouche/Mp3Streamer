@@ -15,7 +15,7 @@ import common.rich.RichT._
 private class ImageSelector @Inject() (
     factory: AsyncFolderImagePanelFactory,
     ec: ExecutionContext,
-)() {
+) {
   private implicit val iec: ExecutionContext = ec
   def select(images: FutureIterant[FolderImage]): Future[ImageChoice] = {
     val $ = Promise[ImageChoice]()

@@ -36,7 +36,7 @@ private class ImageDownloader @Inject() (itf: InternetTalkerFactory) {
             val file = outputDirectory.addFile(s"${UUID.randomUUID()}-img.jpg").write(bytes)
             folderImage(file, local = false, w = width, h = height, ImageSource.toImage(file))
           }
-          .listenError(e => scribe.error(s"Error downloading file <$url>", e))
+          .listenError(scribe.error(s"Error downloading file <$url>", _))
           .toTry
       case l: ImageSource.LocalSource =>
         Future.successful(Success(folderImage(l.file, local = true, l.width, l.height, l.image)))
