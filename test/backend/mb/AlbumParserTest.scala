@@ -144,7 +144,7 @@ class AlbumParserTest extends AnyFreeSpec with AuxSpecs {
     )
     val error = errors.single
     error.getMessage shouldReturn "Failure for <https://musicbrainz.org/release-group/4b47f495-da4c-4b41-9e32-866633b314c5>"
-    error.getCause.getMessage shouldReturn "Broadcast is not a member of Enum (Album, EP, Live, LiveEP, Compilation, Single)"
+    error.getCause.getMessage shouldReturn "Broadcast is not a member of Enum (Album, EP, Live, LiveEP, Compilation, Single, Other)"
   }
 
   "releaseToReleaseGroups" - {

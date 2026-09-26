@@ -12,4 +12,5 @@ object AlbumType extends Enum[AlbumType] {
   case object LiveEP extends AlbumType
   case object Compilation extends AlbumType
   case object Single extends AlbumType
+  case object Other extends AlbumType
 }
