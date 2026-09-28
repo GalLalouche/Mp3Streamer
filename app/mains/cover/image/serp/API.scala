@@ -1,15 +1,16 @@
 package mains.cover.image.serp
 
 import com.google.inject.Inject
-import common.io.RichWSResponse._
-import common.io.{InternetTalker, PropertiesHelper}
-import common.json.RichJson.DynamicJson
 import mains.cover.image.ImageAPI
 import mains.cover.image.serp.API.{MinSize, SquareImage}
 import play.api.libs.json.JsObject
 
-import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.DurationInt
+
+import common.io.{InternetTalker, PropertiesHelper}
+import common.io.RichWSResponse._
+import common.json.RichJson.DynamicJson
 
 private[image] class API @Inject() private (
     ph: PropertiesHelper,
@@ -32,7 +33,7 @@ private[image] class API @Inject() private (
           "ijn" -> pageCount.toString,
         )
         .addHttpHeaders("accept" -> "application/json")
-        .withRequestTimeout(10.seconds)
+        .withRequestTimeout(5.seconds)
         .get(),
     ).map { response =>
       val obj = response.jsonObject

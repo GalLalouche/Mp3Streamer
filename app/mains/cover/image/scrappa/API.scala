@@ -1,16 +1,17 @@
 package mains.cover.image.scrappa
 
 import com.google.inject.Inject
-import common.io.RichWSResponse._
-import common.io.{InternetTalker, PropertiesHelper}
-import common.json.RichJson.ImmutableJsonArray
 import mains.cover.image.ImageAPI
 import mains.cover.image.scrappa.API.{MinSize, SquareImage}
 import org.http4s.Status
 import play.api.libs.json.JsObject
 
-import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.DurationInt
+
+import common.io.{InternetTalker, PropertiesHelper}
+import common.io.RichWSResponse._
+import common.json.RichJson.ImmutableJsonArray
 
 private[image] class API @Inject() private (
     ph: PropertiesHelper,
@@ -30,7 +31,7 @@ private[image] class API @Inject() private (
           MinSize,
           "page" -> (pageCount + 1).toString,
         )
-        .withRequestTimeout(10.seconds)
+        .withRequestTimeout(5.seconds)
         .addHttpHeaders("accept" -> "application/json")
         .addHttpHeaders("X-API-KEY" -> apiKey)
         .get(),
