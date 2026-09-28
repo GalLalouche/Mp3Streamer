@@ -22,13 +22,12 @@ class StringFixer @Inject() (detectLanguage: DetectLanguage) {
   def asciiNormalize(s: String): String = try {
     if (s.isWhitespaceOrEmpty)
       return s
-    val cleaned = this.withoutSpecialCharacters(s)
-    cleaned.keepAscii
-      .mapIf(_.length < cleaned.length)
+    val clean = this.withoutSpecialCharacters(s)
+    clean.keepAscii
+      .mapIf(_.length < clean.length)
       .to(
         asciiNormalize(
-          cleaned
-            .flatMap(a => toAscii.get(a).getOrThrow(s"Can't asciify '$a' (${a.toInt}) in '$s'")),
+          clean.flatMap(a => toAscii.get(a).getOrThrow(s"Can't asciify '$a' (${a.toInt}) in '$s'")),
         ),
       )
   } catch {
@@ -88,10 +87,12 @@ class StringFixer @Inject() (detectLanguage: DetectLanguage) {
 
   private def fixWord(unnormalizedWord: String, forceCapitalization: Boolean): String = {
     val word = asciiNormalize(unnormalizedWord)
-    if (forceCapitalization.isFalse && lowerCaseSet(word.toLowerCase)) word.toLowerCase
+    lazy val lowerCase = word.toLowerCase
+    if (forceCapitalization.isFalse && lowerCaseSet(lowerCase)) lowerCase
     else if (word.matches(MixedCapsPattern)) word // mixed caps
-    else if (word.head.isDigit) word.toLowerCase // 1st, 2nd, etc.
-    else if (word.matches(RomanPattern)) word.toUpperCase // roman numbers, also handles pronoun "I"
+    else if (word.head.isDigit) lowerCase // 1st, 2nd, etc.
+    else if (word.equalsIgnoreCase("i")) word.toUpperCase
+    else if (word.matches(RomanPattern)) word.toUpperCase
     else if (word.matches(DottedAcronymPattern)) word.toUpperCase // A.B.C. pattern
     else pascalCaseWord(word)
   }
@@ -117,7 +118,9 @@ object StringFixer {
     "can",
     "can't",
     "cannot",
+    "da",
     "de",
+    "di",
     "did",
     "didn't",
     "do",
@@ -133,6 +136,7 @@ object StringFixer {
     "have",
     "her",
     "his",
+    "il",
     "in",
     "into",
     "is",
@@ -140,6 +144,9 @@ object StringFixer {
     "it",
     "it's",
     "its",
+    "la",
+    "le",
+    "lo",
     "may",
     "me",
     "mine",
@@ -154,6 +161,7 @@ object StringFixer {
     "shall",
     "should",
     "so",
+    "su",
     "than",
     "that",
     "the",
@@ -190,7 +198,8 @@ object StringFixer {
 
   private def pascalCaseWord(w: String): String = w.toLowerCase.capitalize
 
-  private val RomanPattern = Pattern.compile("[IVXMLivxml]+")
+  // At least 3 to avoid uppercasing Italian propositions like "di" or "mi"
+  private val RomanPattern = Pattern.compile("[IVXMLivxml]{3,}")
   private val MixedCapsPattern = Pattern.compile(".*[A-Z].*")
   private val DottedAcronymPattern = Pattern.compile("(\\w\\.)+")
   private val ConjunctiveN = Pattern.compile(" '?[Nn]'")

@@ -66,13 +66,16 @@ class StringFixerTest extends AnyFreeSpec with AuxSpecs {
     verifyFix("a rock am i", "A Rock am I")
     verifyFix("Rock 'Em like a rock", "Rock 'em Like a Rock")
   }
-  "Is sorted" in {
+  "Is sorted and unique" in {
     StringFixer.lowerCaseWords.sorted shouldReturn StringFixer.lowerCaseWords
+    StringFixer.lowerCaseWords.distinct shouldReturn StringFixer.lowerCaseWords
   }
   "With dots" in {
     Vector("F.F.S.", "f.f.s.").foreach(verifyFix(_, "F.F.S."))
   }
   "Roman numerals" in {
+    verifyEmptyFix("MMXVI")
+    verifyFix("il libro di Maria", "Il Libro di Maria")
     verifyFix("mmxvi", "MMXVI")
   }
   "Asciify" in {
