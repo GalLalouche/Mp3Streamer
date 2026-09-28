@@ -1,3 +1,5 @@
+// Not a module and no namespace so everything here can just be used as is.
+
 function isEmptyObject(obj: object): boolean {
   for (const prop in obj)
     if (Object.prototype.hasOwnProperty.call(obj, prop))
@@ -54,7 +56,7 @@ function newNotification(title: string, body: string): Notification {
 
 function showDesktopNotification(title: string, body: string, timelimitInSeconds?: number) {
   let notification: Notification | null = null
-  if (!window.Notification)
+  if (isNullable(window.Notification))
     console.log('Browser does not support notifications.')
   if (Notification.permission === 'granted') {
     notification = newNotification(title, body)
@@ -87,7 +89,7 @@ function not(b: boolean): boolean {
 
 type ObjectIndex<K extends string | number | symbol, V> = {
   [P in K]: V
-};
+}
 
 interface Array<T> {
   custom_last(): T
@@ -112,6 +114,17 @@ Array.prototype.custom_sort_by = function <S, T>(f: (a: T) => S): T[] {
     })
     .map((e: [T, S]) => e[0])
 }
+
+interface Map<K, V> {
+  custom_get_or_throw(key: K): V
+}
+
+Map.prototype.custom_get_or_throw = function <K, V>(key: K): V {
+  const result = this.get(key)
+  if (result === undefined)
+    throw new Error("Key not found in map: " + key)
+  return result
+}
 Array.prototype.custom_group_by = function <S extends string | number | symbol, T>(f: (a: T) => S) {
   let result: ObjectIndex<S, T[]> = {} as unknown as ObjectIndex<S, T[]>
   this.forEach((e: T) => {
@@ -125,11 +138,7 @@ Array.prototype.custom_group_by = function <S extends string | number | symbol, 
 Array.prototype.custom_max = function () {
   let max: number | null = null
   for (const e of this) {
-    if (max === null) {
-      max = e
-    } else {
-      max = max > e ? max : e
-    }
+    max = max === null ? e : (max > e ? max : e)
   }
   return max
 }
@@ -142,7 +151,12 @@ function assert(condition: boolean, message?: string): asserts condition is true
 }
 
 function assertDefined<A>(e: A | undefined): asserts e is A {
-  assert(isDefined(e))
+  assert(isNonNullable(e))
+}
+
+function definedOrThrow<A>(e: A | undefined): A {
+  assertDefined(e)
+  return e
 }
 
 class AssertionError extends Error {
@@ -195,7 +209,7 @@ class IllegalArgumentException extends Error {
 }
 
 function require(cond: boolean, message?: string): void {
-  if (!cond)
+  if (not(cond))
     throw new IllegalArgumentException(message || "requirement failed")
 }
 
@@ -232,11 +246,7 @@ async function waitForElem(selector: string): Promise<Element> {
   })
 }
 
-function confirmDialog(title: string, action: () => void): void {
-  confirmDialogAsync(title, () => Promise.resolve().then(action))
-}
-
-function confirmDialogAsync(title: string, action: () => Promise<void>): void {
+function confirmDialog(title: string, action: () => void | Promise<void>): void {
   $(`<div title="Really ${title}?">Are you sure?</div>`)
     .dialog({
       resizable: false,
@@ -245,7 +255,9 @@ function confirmDialogAsync(title: string, action: () => Promise<void>): void {
       modal: true,
       buttons: {
         OK: async function () {
-          await action()
+          const result = action()
+          if (result instanceof Promise)
+            await result
           $(this).dialog("close")
         },
         Cancel: function () {
@@ -255,7 +267,6 @@ function confirmDialogAsync(title: string, action: () => Promise<void>): void {
     })
 }
 
-
 interface Promise<T> {
   void(): Promise<void>
 }
@@ -264,15 +275,15 @@ Promise.prototype.void = async function () {
   await this
 }
 
-function $exposeGlobally(obj: any): void {
-  (window as any).obj = obj
-}
-
-function $exposeGloballyExplicit(name: string, obj: any): void {
-  (window as any)[name] = obj
+function notImplemented(): never {
+  throw new Error("Not implemented")
 }
 
 // Type checkers
+interface ArrayConstructor {
+  isArray(arg: ReadonlyArray<any> | any): arg is ReadonlyArray<any>
+}
+
 function isString(e: any): e is string {
   return typeof e == "string"
 }
@@ -285,10 +296,10 @@ function isFunction(e: any): e is Function {
   return typeof e == "function"
 }
 
-function isDefined<A>(e: A | undefined): e is A {
-  return e !== undefined
+function isNonNullable<A>(e: A | undefined | null): e is NonNullable<A> {
+  return e !== null && e !== undefined
 }
 
-function notImplemented(): never {
-  throw new Error("Not implemented")
+function isNullable(e: unknown): e is null | undefined {
+  return e === null || e === undefined;
 }

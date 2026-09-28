@@ -1,28 +1,5 @@
-import {Album, Song} from "./types.js"
 import * as API from "./api.js"
-
-function ignoreAlbum(artist: string, album: string, reconID: string, elementToRemove: JQuery<HTMLElement>): void {
-  confirmDialog(
-    `ignore ${artist} - ${album}`,
-    () => $.put(`/new_albums/album/ignore/${reconID}`, () => elementToRemove.remove()),
-  )
-}
-
-function copyPasteAlbum(artist: string, album: string): void {
-  const text = `${artist} ${album}`;
-  copyTextToClipboard(text)
-  newNotification("Copy-pasted", `'${text}' copied to clipboard`)
-}
-
-function ignoreArtist(song: Song): void {
-  confirmDialog(
-    "ignore " + song.artistName,
-    () => $.put(
-      '/new_albums/artist/ignore/' + song.artistName,
-      () => show(song),
-    ),
-  )
-}
+import {Album, Song} from "./media.js"
 
 export function show(song: Song): void {
   const fieldSet = $("#new-albums")
@@ -54,8 +31,7 @@ export function show(song: Song): void {
            <button class="ignore">Ignore</button>
         </span></li>`,
       )
-      const reconID = album.reconID
-      assertDefined(reconID)
+      const reconID = definedOrThrow(album.reconID)
       li.on('click', 'button.copy', () => copyPasteAlbum(song.artistName, album.title))
       li.on('click', 'button.ignore', () => ignoreAlbum(song.artistName, album.title, reconID, li))
       ul.append(li)
@@ -92,6 +68,30 @@ export function show(song: Song): void {
     ignoreArtistButton.click(() => ignoreArtist(song))
     fieldSet.append(ignoreArtistButton)
   })
+}
+
+
+function ignoreAlbum(artist: string, album: string, reconID: string, elementToRemove: JQuery<HTMLElement>): void {
+  confirmDialog(
+    `ignore ${artist} - ${album}`,
+    () => $.put(`/new_albums/album/ignore/${reconID}`, () => elementToRemove.remove()),
+  )
+}
+
+function copyPasteAlbum(artist: string, album: string): void {
+  const text = `${artist} ${album}`
+  copyTextToClipboard(text)
+  newNotification("Copy-pasted", `'${text}' copied to clipboard`)
+}
+
+function ignoreArtist(song: Song): void {
+  confirmDialog(
+    "ignore " + song.artistName,
+    () => $.put(
+      '/new_albums/artist/ignore/' + song.artistName,
+      () => show(song),
+    ),
+  )
 }
 
 function requestUrl(song: Song): string {

@@ -1,24 +1,23 @@
 // A very simple module, showing the latest albums, so it can be easily added to the playlist.
 
-import * as DataApi from "./data_api.js";
-import * as API from "./api.js";
-import {Album, gplaylist} from "./types.js"
+import * as API from "./api.js"
+import * as DataApi from "./data_api.js"
+import {Album} from "./media.js"
+import {gplaylist} from "./player_singleton.js"
 
-export namespace LastAlbum {
-  export async function addNextNewAlbum(): Promise<void> {
-    if (nonEmptyQueue) { // If the queue isn't empty, dequeue first for faster update time.
-      await dequeue()
-      await updateLatestAlbum()
-    } else {
-      await updateLatestAlbum()
-      await dequeue()
-    }
+export async function addNextNewAlbum(): Promise<void> {
+  if (nonEmptyQueue) { // If the queue isn't empty, dequeue first for faster update time.
+    await dequeue()
+    await updateLatestAlbum()
+  } else {
+    await updateLatestAlbum()
+    await dequeue()
   }
+}
 
-  export async function updateLatestAlbum(): Promise<void> {
-    setFetchingText()
-    updateAlbums(await forceUpdate())
-  }
+export async function updateLatestAlbum(): Promise<void> {
+  setFetchingText()
+  updateAlbums(await forceUpdate())
 }
 
 function setFetchingText(): void {
@@ -86,7 +85,7 @@ async function dequeueAux(f: (a: Album) => Promise<void>): Promise<void> {
     const [head, tail] = await $.post(prefix + "/dequeue").toPromise()
     await f(head)
     nonEmptyQueue = tail.length > 0
-    return LastAlbum.updateLatestAlbum()
+    return updateLatestAlbum()
   } catch (e) {
     console.log(e)
   }

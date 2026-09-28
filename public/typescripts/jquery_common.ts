@@ -1,5 +1,9 @@
 // TODO this should be turned into a proper module probably, or at least add a comment as to why it isn't.
-import jqXHR = JQuery.jqXHR;
+import jqXHR = JQuery.jqXHR
+
+declare interface Percentage {
+  zeroToHundred(): number
+}
 
 type Method = "POST" | "PUT"
 
@@ -127,6 +131,7 @@ interface JQuery {
   custom_tooltip(text: string): JQuery
   custom_remove_tooltip(): JQuery
   appendBr(): JQuery
+  setWidth(p: Percentage): JQuery
 }
 
 $.fn.custom_overflown = function () {
@@ -144,5 +149,10 @@ $.fn.custom_remove_tooltip = function () {
 
 $.fn.appendBr = function () {
   this.append(br())
+  return this
+}
+
+$.fn.setWidth = function (p: Percentage) {
+  this.css('width', p.zeroToHundred() + '%')
   return this
 }

@@ -1,4 +1,3 @@
-export const WAIT_DELAY = 25
 export const isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) !== null
 
 export function isMuted(): boolean {return window.location.pathname === "/mute"}
@@ -10,7 +9,7 @@ export function isLocalHost(): boolean {
 const EncodedPlus = encodeURIComponent("+")
 
 // Manually decode + to %2B, since otherwise it will be interpreted as a space
-function getSearchParam(key: string): string | null {
+export function getSearchParam(key: string): string | null {
   return new URL(window.location.toString().replace("+", EncodedPlus)).searchParams.get(key)
 }
 

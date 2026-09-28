@@ -24,6 +24,14 @@ body {
   vertical-align: middle;
 }
 
+div.jp-playlist li div {
+  pointer-events: none;
+}
+
+div.jp-playlist li div * {
+  pointer-events: auto;
+}
+
 span.jp-playlist-item {
   color: #666 !important;
   display: inline;

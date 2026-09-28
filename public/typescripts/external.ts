@@ -1,32 +1,31 @@
 import './jquery_common_xhr.js'
-import {Poster} from "./poster.js"
-import {gplaylist, Song} from "./types.js"
 import {match} from 'ts-pattern'
 import * as API from './api.js'
+import {Song} from "./media.js"
+import {gplaylist} from "./player_singleton.js"
+import * as Poster from "./poster.js"
 
-export namespace External {
-  export function show(song: Song): void {
-    const helper = getHelper()
-    getExternal(song).then(helper.showLinks(song))
-      .catch(function () {
-        helper.cleanUp()
-        // FIXME A better error message
-        helper.externalDivs.append(span("Error occurred while fetching links"))
-      })
-  }
+export function show(song: Song): void {
+  const helper = getHelper()
+  getExternal(song).then(helper.showLinks(song))
+    .catch(function () {
+      helper.cleanUp()
+      // FIXME A better error message
+      helper.externalDivs.append(span("Error occurred while fetching links"))
+    })
+}
 
-  export async function refreshRemote(song: Song): Promise<void> {
-    const refreshDisplay = song === gplaylist.currentPlayingSong()
-    return Promise.all(
-      externalEntityTypes.map(target =>
-        refreshDisplay
-          ? getHelper().refresh(target as ExternalEntityType)()
-          : refresh(target, song).then(() => {
-            console.log(`Successfully refreshed ${song.file}'s ${target} links`)
-          }),
-      ),
-    ).void()
-  }
+export async function refreshRemote(song: Song): Promise<void> {
+  const refreshDisplay = song === gplaylist.currentPlayingSong()
+  return Promise.all(
+    externalEntityTypes.map(target =>
+      refreshDisplay
+        ? getHelper().refresh(target as ExternalEntityType)()
+        : refresh(target, song).then(() => {
+          console.log(`Successfully refreshed ${song.file}'s ${target} links`)
+        }),
+    ),
+  ).void()
 }
 
 const REMOTE_PATH = "external/"
@@ -55,7 +54,6 @@ class Helper {
     this.albumReconBox =
       $("<input class='external-recon-id' placeholder='Album ID' type='text'/>")
         .appendTo(this.externalAlbum)
-    const that = this
     this.externalAlbum.appendBr()
     const updateReconButton = button("Update Recon").appendTo(this.externalDivs)
     button("Refresh").appendTo(this.externalArtist).click(this.refresh("Artist").bind(this))
@@ -72,6 +70,7 @@ class Helper {
     })
 
     // TODO this is a hack to also handle all other fieldsets, probably shouldn't be in this file...
+    const that = this
     Poster.rgbListeners.push(rgb => {
       this.currentPosterRgb = rgb
       $("#field-set-group fieldset").each(function () {
@@ -81,11 +80,10 @@ class Helper {
   }
 
   refresh(target: ExternalEntityType): () => Promise<void> {
-    const that = this
-    return function () {
+    return () => {
       const song = gplaylist.currentPlayingSong()
       // TODO showLinks should only fetch the links for the target.
-      return refresh(target, song).then(that.showLinks(song)).void()
+      return refresh(target, song).then(this.showLinks(song)).void()
     }
   }
   cleanUp() {
@@ -93,7 +91,7 @@ class Helper {
     this.externalDivs.children('span').remove()
   }
   setLinkColor(e: JQuery<HTMLElement>): void {
-    if (!this.currentPosterRgb)
+    if (isNullable(this.currentPosterRgb))
       return
     const c1 = this.currentPosterRgb.makeLighter(0.5).toString()
     const c2 = this.currentPosterRgb.toString()
@@ -104,7 +102,6 @@ class Helper {
     const debugLink = REMOTE_PATH + song.file
     this.cleanUp()
     this.externalDivs.prepend(span("Fetching links..."))
-    const that = this
 
     function reconLink(entity: ExternalEntityType): string {
       function buildResult(query: string, type: string): string {
@@ -118,6 +115,8 @@ class Helper {
           return buildResult(`${song.artistName} ${song.albumName}`, "release_group")
       }
     }
+
+    const that = this
 
     function externalLinks(result: ExternalResult) {
       that.cleanUp()
@@ -169,7 +168,7 @@ class Helper {
 
     addIfNotEmpty(this.artistReconBox)
     addIfNotEmpty(this.albumReconBox)
-    if (!isEmptyObject(json)) {
+    if (not(isEmptyObject(json))) {
       const song = gplaylist.currentPlayingSong()
       const songPath = song.file
       postJson(REMOTE_PATH + "recons/" + songPath, json, this.showLinks(song))

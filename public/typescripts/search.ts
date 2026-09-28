@@ -1,15 +1,19 @@
-import * as DataApi from "./data_api.js";
-import * as API from "./api.js";
-import {LastAlbum} from "./last.js"
-import {Album, Artist, gplaylist, Song} from "./types.js"
+import * as API from "./api.js"
+import * as DataApi from "./data_api.js"
+import * as LastAlbum from "./last.js"
+import {Album, Artist, Song} from "./media.js"
+import {gplaylist} from "./player_singleton.js"
+import * as PlaylistCustomizations from "./playlist_customizations.js"
 
-export namespace Search {
-  export async function quickSearch(): Promise<void> {
-    const helper = getHelper()
-    helper.clearResults()
-    helper.searchBox.focus()
-    return scan()
-  }
+export async function quickSearch(): Promise<void> {
+  const helper = getHelper()
+  helper.clearResults()
+  helper.searchBox.focus()
+  return scan()
+}
+
+export async function scanPlus() {
+  return scanAux(true)
 }
 
 const getHelper = lazy(() => new Helper())
@@ -35,7 +39,7 @@ class Results {
     return new Results(
       json.songs.map(Song.fromJSON),
       json.albums as Album[],
-      json.artists as Artist[]
+      json.artists as Artist[],
     )
   }
 }
@@ -109,7 +113,7 @@ class Helper {
         li.appendTo(ul).data(e)
         li.attr("title", "")
         li.mouseover(function () {
-          if (!li.attr('title') && li.custom_overflown())
+          if (isNullable(li.attr('title')) && li.custom_overflown())
             li.custom_tooltip(`${itemProducer(e).split(">").custom_last().trim()}`)
         })
       })
@@ -121,7 +125,7 @@ class Helper {
 
     specificResults("songs", function (song: Song) {
         function suffix() {
-          if (!song.composer) // Assumes all classical pieces have a composer field.
+          if (isNullable(song.composer)) // Assumes all classical pieces have a composer field.
             return `${song.artistName}: ${song.title} (${song.duration.timeFormat()})`
 
           // TODO handle code duplication of all the toStrings for composers
@@ -137,12 +141,12 @@ class Helper {
     )
     $.each($(".song-result"), function () {
       const song = $(this).data() as Song
-      $(this).custom_tooltip(gplaylist.toString(song))
+      $(this).custom_tooltip(PlaylistCustomizations.mediaMetadataHtml(song))
     })
 
     specificResults("albums", function (album: Album) {
       function albumText() {
-        if (!album.composer) // Assumes all classical pieces have a composer field.
+        if (isNullable(album.composer)) // Assumes all classical pieces have a composer field.
           return `${album.artistName}: ${album.year || "NO_YEAR"} ${album.title}`
 
         const titleContainsComposer = album.title.toLowerCase().includes(album.composer.toLowerCase())
@@ -246,10 +250,6 @@ async function scanAux(addNewAlbum: boolean): Promise<void> {
 
 async function scan(): Promise<void> {
   return scanAux(false)
-}
-
-export async function scanPlus() {
-  return scanAux(true)
 }
 
 $(() => {

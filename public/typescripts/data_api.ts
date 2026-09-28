@@ -1,8 +1,8 @@
-import {Song} from "./types.js";
-import {get} from "./api.js";
+import {get, RawJSON} from "./api.js"
+import {Song} from "./media.js"
 
 
-export async function getSongRawPath(fullPath: string): Promise<Song> {
+async function getSongRawPath(fullPath: string): Promise<Song> {
   return get(fullPath).then(Song.fromJSON)
 }
 
@@ -19,7 +19,7 @@ export async function getRandomSong(): Promise<Song> {
 }
 
 export async function getSongsRawPath(path: string): Promise<Song[]> {
-  return get(path).then(d => (d as Song[]).map(Song.fromJSON))
+  return get(path).then(d => (d as RawJSON[]).map(Song.fromJSON))
 }
 
 export async function getAlbum(path: string): Promise<Song[]> {

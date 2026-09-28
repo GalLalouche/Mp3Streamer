@@ -1,53 +1,27 @@
+// FIXME this entire file should be expunged.
+import {Duration} from "./common_types.js"
+import * as DataApi from "./data_api.js"
+import * as External from './external.js'
+import {getDebugAlbum, getDebugSong, isMuted} from './initialization.js'
+import * as Local from "./local.js"
+import * as Lyrics from './lyrics.js'
+import {Song} from "./media.js"
 import * as NewAlbumInfo from './new_albums_info.js'
-import {Lyrics} from './lyrics.js'
-import {External} from './external.js'
-import {getDebugAlbum, getDebugSong, isMuted, WAIT_DELAY} from './initialization.js'
-import {Globals} from "./globals.js"
-import {gplaylist, Playlist, Song} from "./types.js"
-import {VolumeSetter} from "./volume_setter.js"
-import {Score} from "./score.js"
-import {Local} from "./local.js"
-import * as DataApi from "./data_api.js";
+import {gplayer, gplaylist} from "./player_singleton.js"
+import * as Poster from "./poster.js"
+import * as Score from "./score.js"
+import {PlayerEvent, TimeUpdate} from "./types.js"
 
-declare class JPlayerPlaylist extends Playlist {
-  add(song: Song, playNow: boolean): Promise<void>
-  protected _next(): void
-  play(index: number): Promise<void>
-  select(index: number): Promise<void>
-  prev(): void
-  currentIndex(): number
-  songs(): Song[]
+// TODO this entire file should split into jplayer specific hacks and more general code
 
-  constructor(
-    cssSelector: { jPlayer: string, cssSelectorAncestor: string },
-    playlist: Song[],
-    options: {
-      swfPath: string,
-      supplied: string,
-    },
-  )
-}
-
-interface PlaylistHacks {
-  oldNext: () => void
-  next: () => void
-}
+const WAIT_DELAY: Duration = Duration.fromSeconds(25)
 
 $(function () {
   const JPLAYER_ID = "#jquery_jplayer_1"
-  const playlist = new JPlayerPlaylist({
-    jPlayer: JPLAYER_ID,
-    cssSelectorAncestor: "#jp_container_1",
-  }, [], {
-    swfPath: "../js",
-    supplied: "webmv, ogv, m4a, oga, mp3, flac",
-  })
-  Globals.playlist = playlist
-  // Modify next to fetch a random song if in shuffle mode and at the last song
   // TODO move to playlist_customization
-  let hacks = playlist as unknown as PlaylistHacks
-  hacks.oldNext = playlist.next
-  const shouldLoadNextSongFromRandom = () => playlist.isLastSongPlaying()
+  let hacks = gplaylist as any
+  hacks.oldNext = hacks.next
+  const shouldLoadNextSongFromRandom = () => gplaylist.isLastSongPlaying()
   hacks.next = function () {
     if (shouldLoadNextSongFromRandom())
       loadNextRandom(true)
@@ -55,59 +29,61 @@ $(function () {
       hacks.oldNext()
   }
 
-  function jPlayerObject(): any {
-    return $(JPLAYER_ID).data('jPlayer')
-  }
-
-  const getMedia = () => jPlayerObject().htmlElement.media
-
   // On play event hook
-  // TODO don't call if the same song?
-  jPlayerObject().onPlay = function () {
-    const currentPlayingSong = playlist.currentPlayingSong()
-    const media = getMedia()
-    const songInfo = `${currentPlayingSong.artistName} - ${currentPlayingSong.title}`
-    Local.setOfflineUrl(currentPlayingSong).then(function () {
-      assert(currentPlayingSong.offlineUrl !== undefined)
-      if (currentPlayingSong.file === playlist.currentPlayingSong().file && media && media.offlineUrl === undefined)
-        media.offlineUrl = currentPlayingSong.offlineUrl
-    })
-    $(".jp-currently-playing").html(songInfo)
-    document.title = songInfo
-    $('#favicon').remove()
+  gplayer.listen(function (event: PlayerEvent) {
+    if (event instanceof Song) {
+      const currentPlayingSong = event
+      const songInfo = `${currentPlayingSong.artistName} - ${currentPlayingSong.title}`
+      Local.setOfflineUrl(currentPlayingSong).then(function () {
+        assertDefined(currentPlayingSong.offlineUrl)
+        // jplayer hack: update the offlineUrl for the media object
+        if ($(JPLAYER_ID).data('jPlayer')) {
+          const media = $(JPLAYER_ID).data('jPlayer').htmlElement.media
+          if (currentPlayingSong.file === gplaylist.currentPlayingSong().file && media && media.offlineUrl === undefined)
+            media.offlineUrl = currentPlayingSong.offlineUrl
+        }
+      })
+      $(".jp-currently-playing").html(songInfo)
+      document.title = songInfo
+      $('#favicon').remove()
 
-    $('head')
-      .append(`<link href="${($("img.poster")[0] as any).src}" id="favicon" rel="shortcut icon">`)
-
-    // TODO use plain old observers here
-    Lyrics.show(currentPlayingSong)
-    External.show(currentPlayingSong)
-    VolumeSetter.setPeak(currentPlayingSong)
-    Score.show(currentPlayingSong)
-    NewAlbumInfo.show(currentPlayingSong)
-  }
-  $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()
-
-  function loadNextRandom(playNow: boolean): void {
-    DataApi.getRandomSong().then(song => playlist.add(song, playNow))
-  }
+      // TODO use plain old observers here
+      // FIXME leftover of the old architecture.
+      Lyrics.show(currentPlayingSong)
+      External.show(currentPlayingSong)
+      Score.show(currentPlayingSong)
+      Poster.setImage(currentPlayingSong.poster)
+      $('head')
+        .append(`<link href="${($("img.poster")[0] as any).src}" id="favicon" rel="shortcut icon">`)
+      NewAlbumInfo.show(currentPlayingSong)
+    } else if (event instanceof TimeUpdate) {
+      // Fetches new songs before current song ends.
+      const isSongNearlyFinished = WAIT_DELAY.isGreaterThanOrEqual(event.totalDuration.minus(event.currentDuration))
+      if (shouldLoadNextSongFromRandom() && isSongNearlyFinished)
+        loadNextRandom(false)
+    }
+  })
 
   const debugStartSong = getDebugSong()
   const debugStartAlbum = getDebugAlbum()
-  if (debugStartSong) {
-    console.log(`Adding debug song <${debugStartSong}>`)
-    DataApi.getSong(debugStartSong).then(data => gplaylist.add(data, true))
-  } else if (debugStartAlbum) {
-    console.log(`Adding debug album <${debugStartAlbum}>`)
-    // No idea why this is reversed in the playlist :|
-    DataApi.getAlbum("/data/albums/" + debugStartAlbum).then(data => gplaylist.add(data.reverse(), true))
-  } else
-    loadNextRandom(true)
-  // Fetches new songs before current song ends.
-  setInterval(function () {
-    const media = getMedia()
-    const isSongNearlyFinished = media.duration - media.currentTime < WAIT_DELAY
-    if (shouldLoadNextSongFromRandom() && isSongNearlyFinished)
-      loadNextRandom(false)
-  }, (WAIT_DELAY - 5) * 1000)
+
+  $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()
+  assert(gplayer !== undefined, "gplayer is not initialized")
+  setup()
+
+  function setup(): void {
+    if (debugStartSong) {
+      console.log(`Adding debug song <${debugStartSong}>`)
+      DataApi.getSong(debugStartSong).then(data => gplaylist.add(data, true))
+    } else if (debugStartAlbum) {
+      console.log(`Adding debug album <${debugStartAlbum}>`)
+      // No idea why this is reversed in the playlist :|
+      DataApi.getAlbum("/data/albums/" + debugStartAlbum).then(data => gplaylist.add(data.reverse(), true))
+    } else
+      loadNextRandom(true)
+  }
+
+  function loadNextRandom(playNow: boolean): void {
+    DataApi.getRandomSong().then(song => gplaylist.add(song, playNow))
+  }
 })

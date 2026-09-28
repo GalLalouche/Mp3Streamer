@@ -1,17 +1,16 @@
-import {gplayer, gplaylist, Song} from "./types.js"
 import * as API from "./api.js"
+import {Song} from "./media.js"
+import {gplayer, gplaylist} from "./player_singleton.js"
 
-export namespace Lyrics {
-  export function show(song: Song): void {
-    const helper = getHelper()
-    helper.clearButtons()
-    helper.autoScroll = true
-    helper.lyricsContent.html("Fetching lyrics...")
-    getLyrics(song).then(l => {
-      helper.showLyrics(l)
-      helper.scrollLyrics()
-    })
-  }
+export function show(song: Song): void {
+  const helper = getHelper()
+  helper.clearButtons()
+  helper.autoScroll = true
+  helper.lyricsContent.html("Fetching lyrics...")
+  getLyrics(song).then(l => {
+    helper.showLyrics(l)
+    helper.scrollLyrics()
+  })
 }
 
 const getHelper = lazy(() => new Helper())

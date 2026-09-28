@@ -13,13 +13,10 @@
 <script type="text/javascript" src="assets/javascripts/jquery.livequery.js"></script>
 <script type="text/javascript" src="assets/javascripts/jquery-ui/jquery-ui.js"></script>
 <script type="text/javascript" src="assets/javascripts/toast/jquery.toast.min.js"></script>
-<script type="text/javascript" src="assets/javascripts/jPlayer/jquery.jplayer.js"></script>
-<script type="text/javascript" src="assets/javascripts/jPlayer/add-on/jplayer.playlist.js"></script>
 <script type="text/javascript" src="assets/javascripts/lib/css_browser_selector.js"></script>
 <script type="text/javascript" src="assets/javascripts/lib/vibrant.js"></script>
 <!-- Typescript modules -->
 <script type="module" src="ts/color-utils.js"></script>
-<script type="module" src="ts/jplayerdata.js"></script>
 <script type="module" src="ts/last.js"></script>
 <script type="module" src="ts/playlist_state.js"></script>
 <script type="module" src="ts/shortcuts.js"></script>
@@ -31,6 +28,7 @@
 <link href="assets/javascripts/jquery-ui/jquery-ui.css" rel="stylesheet"/>
 <link href="assets/stylesheets/font-awesome-4.5.0/css/font-awesome.css" rel="stylesheet"/>
 <link href="assets/javascripts/toast/jquery.toast.min.css" rel="stylesheet"/>
+<script type="module" src="ts/jplayerdata.js"></script>
 <head><title>My MP3 Site</title></head>
 <body>
 <div style="height: 25px" id="last_album"></div>
@@ -54,11 +52,15 @@
   <fieldset id="external-album" class="external"></fieldset>
   <fieldset id="new-albums"></fieldset>
 </div>
-<div id="jquery_jplayer_1" class="jp-jplayer"></div>
+<div id="jquery_jplayer_1" class="jp-jplayer" style="height:500px; width:500px;">
+  <img id="jp_poster_0" class="poster"/>
+</div>
+
 <div id="jp_container_1" class="jp-video jp-video-270p">
   <div class="jp-type-playlist">
     <div class="jp-gui">
-      <div class="jp-video-play">
+      <!-- TODO remove -->
+      <div class="jp-video-play" style="display: none;">
         <a href="javascript:" class="jp-video-play-icon" tabindex="1">play</a>
       </div>
       <div class="jp-interface">

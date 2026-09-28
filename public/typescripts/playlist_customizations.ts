@@ -1,50 +1,43 @@
 // Since jplayer.playlist.js is too freaking big, this extracts (some of) my customization.
+// FIXME merge this and the original playlist, rewrite the whole thing in typescript.
+//  Actually, this is only used for the metadata HTML? That's not a half-bad cohesive module. Should
+//  probably be renamed though.
 
-import {gplaylist, Song} from "./types.js"
-import {External} from "./external.js"
-import {Score} from "./score.js"
+import {match, P} from "ts-pattern"
+import * as External from "./external.js"
+import {GuiEvents, PlaylistEventTopic} from "./gui_events.js"
+import {ITEM_CLASS} from "./jplayer.playlist.js"
+import {Song} from "./media.js"
+import {gplaylist} from "./player_singleton.js"
+import * as Score from "./score.js"
 
-export namespace PlaylistCustomizations {
-  export function formattedMetadata(song: Song): string {
-    const res = additionalData(song)
-    const head = `<span dir="ltr">${res[0]}</span>`
-    res.shift()
-    res.push(song.bitrate + "kbps")
-    return `${head}, <span dir="ltr">${res.join(", ")}</span>`
-  }
+export function mediaMetadataHtml(song: Song): string {
+  const metadata =
+    `<span class="jp-artist" dir="ltr">${song.artistName}</span> ` +
+    `(<span class="jp-parens">${formattedMetadata(song)}</span>`
 
-  export function mediaMetadata(song: Song): string {
-    return [
-      song.title,
-      song.artistName,
-    ].concat(additionalData(song)).concat([
-      song.duration.timeFormat(),
-      song.bitrate + "kbps",
-    ]).join(", ")
-  }
-
-  // This is meant to be monkey-patched into playlist (hence the use of this.options).
-  export function mediaMetadataHtml(this: { options: any }, song: Song): string {
-    const metadata =
-      `<span class="jp-artist" dir="ltr">${song.artistName}</span> ` +
-      `(<span class="jp-parens">${PlaylistCustomizations.formattedMetadata(song)}</span>`
-
-    // Duration is appended manually outside of metadata to ensure that it is always displayed, even
-    // if metadata overflows. That's the reason for the odd parens too.
-    return (
-      `<span class='${this.options.playlistOptions.itemClass}' tabindex='1'>
+  // Duration is appended manually outside of metadata to ensure that it is always displayed, even
+  // if metadata overflows. That's the reason for the odd parens too.
+  return (
+    `<span class='${ITEM_CLASS}' tabindex='1'>
           <span class="width-limited-playlist-span">
             <span class="jp-title">${song.title}</span> <span class="jp-metadata">${metadata}</span>
           </span><!--
           --><span class="jp-list-duration">, ${song.duration.timeFormat()})</span>
         </span>`
-    )
-  }
+  )
 }
 
-$exposeGlobally!(PlaylistCustomizations)
 
-function isClassicalPiece(song: Song): boolean { return !!song.composer}
+function formattedMetadata(song: Song): string {
+  const res = additionalData(song)
+  const head = `<span dir="ltr">${res[0]}</span>`
+  res.shift()
+  res.push(song.bitrate + "kbps")
+  return `${head}, <span dir="ltr">${res.join(", ")}</span>`
+}
+
+function isClassicalPiece(song: Song): boolean {return !!song.composer}
 
 function additionalData(song: Song): string[] {
   if (isClassicalPiece(song).isFalse())
@@ -71,27 +64,28 @@ function additionalData(song: Song): string[] {
 
 $(function () {
   const playlistElement = $(".jp-playlist")
-  const playlist = gplaylist
   const playlistItem = "> ul > li"
 
   playlistElement.on("mouseover", playlistItem, function () {
     const listItem = $(this)
     // The listItem can't overflow; what can overflow is the width-limited descendent.
     if (listItem.find(".width-limited-playlist-span").custom_overflown()) {
-      const displayedIndex = playlist.getDisplayedIndex(listItem.index())
-      const song = playlist.songs()[displayedIndex]
-      listItem.custom_tooltip(playlist.toString(song))
+      const displayedIndex = gplaylist.getDisplayedIndex(listItem.index())
+      const song = gplaylist.songs()[displayedIndex]
+      listItem.custom_tooltip(mediaMetadataHtml(song))
     }
   })
   // Move to song on click.
-  playlistElement.on("click", playlistItem, async function (e) {
-    if (e.target.localName !== "span" && e.target.localName !== "img")
-      return // Only listens to clicks on the text or poster image, to avoid handling misclicks near the buttons.
-    const listItem = $(this)
-    const clickedIndex = playlist.getDisplayedIndex(listItem.index())
-    if (gplaylist.currentIndex() === clickedIndex)
-      return // Clicked song is currently playing.
-    return playlist.play(clickedIndex)
+  GuiEvents.listen(PlaylistEventTopic, async event => {
+    match(event)
+      .with('next', () => gplaylist.next())
+      .with('previous', () => gplaylist.prev())
+      .with({type: P.select("type"), index: P.select("index")}, ({type, index}) => {
+        match(type)
+          .with("select", () => gplaylist.select(index))
+          .with(P.select(), x => gplaylist.removeItem(index, x))
+          .exhaustive()
+      })
   })
 
   $("body").append(String.raw`
@@ -100,15 +94,15 @@ $(function () {
         <li><div><span class="menu-icon fa fa-refresh"></span> Refresh</div></li>
         <style>
         .ui-menu {
-            width: 150px;
-            background-color: white;
-            border: 1px solid #ccc;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            width: 150px
+            background-color: white
+            border: 1px solid #ccc
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2)
         }
         .menu-icon {
-            margin-right: 5px;
-            width: 15px;
-            text-align: center;
+            margin-right: 5px
+            width: 15px
+            text-align: center
         }
         </style>
     </ul>
@@ -124,7 +118,7 @@ $(function () {
       position: 'absolute',
     })
 
-    const song = playlist.songs()[playlist.getDisplayedIndex($(this).index())]
+    const song = gplaylist.songs()[gplaylist.getDisplayedIndex($(this).index())]
     contextMenu.one("click", "li", async function (e) {
       switch (e.target.textContent.trim()) {
         case "Score":
