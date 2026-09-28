@@ -1,25 +1,28 @@
-import {Song, Volume} from "./types.js";
+import {Duration, Song} from "./types.js";
 
 export namespace SecondaryPlayer {
-  const audio = document.createElement('audio');
+  const audio: HTMLAudioElement = document.createElement('audio');
 
-  export function play(song: Song, fromInSeconds: number): void {
+  export function play(song: Song, from: Duration): void {
     audio.src = song.offlineUrl!!
-    audio.volume = notImplemented() // VolumeSetter.getVolumeBaseline() / 100.0
+    audio.volume = notImplemented()
+    audio.currentTime = from.toSeconds()
     audio.play().catch((error) => {
       console.error("Error playing audio:", error);
     });
   }
 
-  export function stop(): void {
-    notImplemented()
+  export function reset(): void {
+    pause()
+    audio.removeAttribute('src')
+    audio.load()
   }
 
   export function pause(): void {
-    notImplemented()
+    audio.pause()
   }
 
-  export function updateVolume(v: Volume): void {
+  export function updateVolumeRatio(ratio: number): void {
     notImplemented()
   }
 }

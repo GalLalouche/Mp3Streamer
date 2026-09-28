@@ -184,6 +184,10 @@ export interface Artist {
   readonly albums: Album[]
 }
 
+export abstract class PlayerEvents {
+
+}
+
 export abstract class Player {
   abstract load(song: Song): void
   abstract playCurrentSong(): void
@@ -191,10 +195,6 @@ export abstract class Player {
   /** Does not unpause. */
   abstract pause(): void
   abstract isPaused(): boolean
-  restart(): void {
-    this.stop()
-    this.playCurrentSong()
-  }
   togglePause(): void {
     if (this.isPaused())
       this.playCurrentSong()
@@ -212,7 +212,6 @@ interface JPlayerElement {
   jPlayer(str: String, value: any): void
   data(): any
 }
-
 
 export abstract class Playlist {
   async clear(instant: boolean): Promise<void> {return this.setPlaylist([], instant)}
@@ -283,6 +282,9 @@ export class Volume {
   setWidth(volumeBar: JQuery<HTMLElement>) {
     volumeBar.css("width", `${this.volume}%`)
   }
+  setVolume(element: HTMLAudioElement): void {
+    element.volume = this.volume.zeroToOne()
+  }
   isMuted() {return this.volume.isZero()}
 
   // TODO temporary, will be removed when the player no longer wraps jPlayer.
@@ -316,6 +318,7 @@ export const gplayer = new class extends Player {
   }
   override skipTo(duration: Duration): void {this.player().jPlayer("play", duration.toSeconds())}
 }
+
 $exposeGlobally!(Duration)
 $exposeGlobally!(Percentage)
 $exposeGlobally!(Volume)

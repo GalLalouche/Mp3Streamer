@@ -16,8 +16,8 @@
  */
 /* global jPlayerPlaylist: true, jQuery:false, alert:false */
 
-(function($, undefined) {
-  JPlayerPlaylist = function(cssSelector, playlist, options) {
+(function ($, undefined) {
+  JPlayerPlaylist = function (cssSelector, playlist, options) {
     const self = this
 
     this.current = 0;
@@ -43,29 +43,30 @@
     // Override the cssSelectorAncestor given in options
     this.options.cssSelectorAncestor = this.cssSelector.cssSelectorAncestor;
 
+    // FIXME this should be made to work my player implementation. Starting with ready.
     // Create a ready event handler to initialize the playlist
-    $(this.cssSelector.jPlayer).bind($.jPlayer.event.ready, function() {
+    $(this.cssSelector.jPlayer).bind($.jPlayer.event.ready, function () {
       self._init();
     });
 
     // Create an ended event handler to move to the next item
-    $(this.cssSelector.jPlayer).bind($.jPlayer.event.ended, function() {
+    $(this.cssSelector.jPlayer).bind($.jPlayer.event.ended, function () {
       self.next();
     });
 
     // Create a play event handler to pause other instances
-    $(this.cssSelector.jPlayer).bind($.jPlayer.event.play, function() {
+    $(this.cssSelector.jPlayer).bind($.jPlayer.event.play, function () {
       $(this).jPlayer("pauseOthers");
     });
 
     // Create click handlers for the extra buttons that do playlist functions.
-    $(this.cssSelector.previous).click(function() {
+    $(this.cssSelector.previous).click(function () {
       self.previous();
       $(this).blur();
       return false;
     });
 
-    $(this.cssSelector.next).click(function() {
+    $(this.cssSelector.next).click(function () {
       self.next();
       $(this).blur();
       return false;
@@ -103,10 +104,10 @@
         removeDownClass: "jp-playlist-item-remove-down"
       }
     },
-    _getDisplayedIndex: function(index) {
+    _getDisplayedIndex: function (index) {
       return this.playlist.length - 1 - index;
     },
-    option: function(option, value) { // For changing playlist options only.
+    option: function (option, value) { // For changing playlist options only.
       if (value === undefined)
         return this.options.playlistOptions[option];
 
@@ -126,13 +127,13 @@
       }
       return this;
     },
-    _init: function(instant) {
+    _init: function (instant) {
       const self = this
       if (instant) {
         this._refresh(true);
         self.play(self.current);
       } else {
-        this._refresh(function() {
+        this._refresh(function () {
           if (self.options.playlistOptions.autoPlay)
             return self.play(self.current)
           else
@@ -140,12 +141,12 @@
         });
       }
     },
-    _initPlaylist: function(playlist) {
+    _initPlaylist: function (playlist) {
       this.current = 0;
       this.removing = false;
       this.playlist = $.extend(true, [], playlist); // Copy the Array of Objects
     },
-    _refresh: function(instant) {
+    _refresh: function (instant) {
       /*
        * instant: Can be undefined, true or a function.
        *  undefined -> use animation timings
@@ -157,7 +158,7 @@
       const playlistUl = $(this.cssSelector.playlist + " ul")
       if (instant && not($.isFunction(instant))) {
         playlistUl.empty();
-        this.playlist.forEach(function(v) {
+        this.playlist.forEach(function (v) {
           playlistUl.append(self._createListItem(v));
         })
         this._updateControls();
@@ -166,11 +167,11 @@
             ? this.options.playlistOptions.displayTime
             : 0
 
-        playlistUl.slideUp(displayTime, function() {
+        playlistUl.slideUp(displayTime, function () {
           const $this = $(this)
           $this.empty();
 
-          self.playlist.forEach(function(v) {
+          self.playlist.forEach(function (v) {
             $this.append(self._createListItem(v));
           });
           self._updateControls();
@@ -184,13 +185,14 @@
         });
       }
     },
-    _createListItem: function(media) {
+    _createListItem: function (media) {
       const self = this;
 
       // Wrap the <li> contents in a <div>
       let listItem = "<li><div>"
 
       const options = this.options.playlistOptions
+
       // Create remove controls
       function appendIcon(clazz, char) {
         listItem += `<a href='javascript:;' class='${options.removeItemClass} ${clazz}'>${char}</a>`;
@@ -200,7 +202,7 @@
       if (media.free) {
         let first = true;
         listItem += `<span class='${this.options.playlistOptions.freeGroupClass}'>(`;
-        $.each(media, function(property, value) {
+        $.each(media, function (property, value) {
           if ($.jPlayer.prototype.format[property]) {
             // property is a media format.
             if (first)
@@ -228,12 +230,12 @@
       })
       return result;
     },
-    _createItemHandlers: function() {
+    _createItemHandlers: function () {
       const self = this;
       // Create .live() handlers for the playlist items
       const playlistSelector = self.cssSelector.playlist
       $(`${(playlistSelector)} a.${this.options.playlistOptions.itemClass}`).off("click").on("click",
-          function() {
+          function () {
             const index = $(this).closest("li").index()
             // Need to swap since songs are in reverse
             const displayIndex = self._getDisplayedIndex(index);
@@ -247,29 +249,31 @@
 
       // Create .live() handlers that disable free media links to force access via right click.
       $(`${playlistSelector} a.${this.options.playlistOptions.freeItemClass}`).off("click").on(
-          "click", function() {
+          "click", function () {
             $(this).closest("li").find("." + self.options.playlistOptions.itemClass).click();
             $(this).blur();
             return false;
           });
 
       function tooltip(selector, text) {
-        $(`${playlistSelector} a.${selector}`).livequery(function() {
+        $(`${playlistSelector} a.${selector}`).livequery(function () {
           $(this).attr("title", text)
         })
       }
+
       const options = this.options.playlistOptions
       tooltip(options.removeThisClass, "remove this item from the playlist")
       tooltip(options.removeUpClass, "remove this item and all items above it from the playlist")
       tooltip(options.removeDownClass, "remove this item and all items below it from the playlist")
 
       // Create .live() handlers for the remove controls
-      $(playlistSelector).on("click", "a." + this.options.playlistOptions.removeItemClass, function() {
+      $(playlistSelector).on("click", "a." + this.options.playlistOptions.removeItemClass, function () {
         const trigger = $(this)
+
         function removeItemAux(nextFunction, who) {
           // This has to be calculated before the removal, otherwise the who element is empty
           const next = nextFunction(who)
-          self.remove(who.index(), function() {
+          self.remove(who.index(), function () {
             // if there is another next element to remove,
             // enqueue a removal after this current element is removed
             if (next.length > 0)
@@ -288,14 +292,14 @@
         return false;
       });
     },
-    _updateControls: function() {
+    _updateControls: function () {
       const controls = $(`${this.cssSelector.playlist} .${this.options.playlistOptions.removeItemClass}`)
       if (this.options.playlistOptions.enableRemoveControls)
         controls.show()
       else
         controls.hide()
     },
-    _highlight: function(index) {
+    _highlight: function (index) {
       if (this.playlist.length && index !== undefined) {
         $(`${this.cssSelector.playlist} .jp-playlist-current`).removeClass("jp-playlist-current");
         $(`${this.cssSelector.playlist} li:nth-child(${index + 1})`).addClass("jp-playlist-current")
@@ -306,11 +310,11 @@
                 + this.playlist[index].artistName + "</span>" : ""));
       }
     },
-    setPlaylist: async function(playlist, instant) {
+    setPlaylist: async function (playlist, instant) {
       this._initPlaylist(playlist);
       await this._init(instant);
     },
-    add: function(media, playNow) {
+    add: function (media, playNow) {
       const that = this
       if ($.isArray(media)) {
         media.forEach(x => that.add(x))
@@ -322,7 +326,7 @@
       }
       const playlistUl = $(this.cssSelector.playlist + " ul")
       playlistUl.prepend(this._createListItem(media)).find("li:first-child").hide()
-          .slideDown(this.options.playlistOptions.addTime, function() {
+          .slideDown(this.options.playlistOptions.addTime, function () {
             const regularHeightThreshold = 30
             const lastSong = playlistUl.find("li:first-child")
             if (lastSong.height() > regularHeightThreshold)
@@ -338,12 +342,12 @@
       else
         return Promise.resolve()
     },
-    remove: async function(index, onEnd) {
+    remove: async function (index, onEnd) {
       const self = this
 
       if (index === undefined) {
         this._initPlaylist([]);
-        this._refresh(function() {
+        this._refresh(function () {
           $(self.cssSelector.jPlayer).jPlayer("clearMedia");
         });
         return true;
@@ -358,7 +362,7 @@
 
       $(`${this.cssSelector.playlist} li:nth-child(${index + 1})`).slideUp(
           this.options.playlistOptions.removeTime,
-          function() {
+          function () {
             $(this).remove();
             const playlistIndex = self._getDisplayedIndex(index)
             self.playlist.splice(playlistIndex, 1);
@@ -381,7 +385,7 @@
           });
       return true;
     },
-    select: function(index) {
+    select: function (index) {
       if (index < 0)
         return arguments.callee(this.playlist.length + index)
       // index relates to end of array.
@@ -396,7 +400,7 @@
         return new Promise(f => f())
       }
     },
-    play: function(index) {
+    play: function (index) {
       if (index < 0)
         return arguments.callee(this.playlist.length + index)
       // index relates to end of array.
@@ -409,23 +413,23 @@
         return new Promise(f => f())
       }
     },
-    pause: function() {
+    pause: function () {
       $(this.cssSelector.jPlayer).jPlayer("pause");
     },
-    next: function() {
+    next: function () {
       const index = (this.current + 1 < this.playlist.length) ? this.current + 1 : 0
       if (index > 0)
         this.play(index);
     },
-    previous: function() {
+    previous: function () {
       const index = (this.current - 1 >= 0) ? this.current - 1 : this.playlist.length - 1
       if (index < this.playlist.length - 1)
         this.play(index);
     },
-    isLastSongPlaying: function() {
+    isLastSongPlaying: function () {
       return this.current === this.playlist.length - 1;
     },
-    currentPlayingSong: function() {
+    currentPlayingSong: function () {
       return this.playlist[this.current];
     }
   };

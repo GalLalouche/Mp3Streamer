@@ -1,4 +1,5 @@
-import {gplayer, Percentage, Song, Volume} from "./types.js"
+import {Percentage, Song, Volume} from "./types.js"
+import {gplayer} from "./player_singleton.js";
 
 const DEFAULT_GAIN = -10.0
 

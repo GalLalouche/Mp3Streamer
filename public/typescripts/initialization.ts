@@ -10,7 +10,7 @@ export function isLocalHost(): boolean {
 const EncodedPlus = encodeURIComponent("+")
 
 // Manually decode + to %2B, since otherwise it will be interpreted as a space
-function getSearchParam(key: string): string | null {
+export function getSearchParam(key: string): string | null {
   return new URL(window.location.toString().replace("+", EncodedPlus)).searchParams.get(key)
 }
 
@@ -32,3 +32,4 @@ if (window.history && history.pushState) {
     })
   })
 }
+$exposeGlobally!(getSearchParam)

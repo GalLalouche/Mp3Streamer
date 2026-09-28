@@ -7,9 +7,10 @@
 import './jquery_common_xhr.js'
 import {PLAYLIST_NAME_KEY, Poster} from "./poster.js"
 import {VolumeSetter} from "./volume_setter.js"
-import {Duration, gplayer, gplaylist, Song, Volume} from "./types.js"
+import {Duration, gplaylist, Song, Volume} from "./types.js"
 import {isMuted} from "./initialization.js";
 import * as API from "./api.js";
+import {gplayer} from "./player_singleton.js";
 
 $(function () {
     class PlaylistJson {
