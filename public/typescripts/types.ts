@@ -291,35 +291,6 @@ export class Volume {
   _volume(): Percentage {return this.volume}
 }
 
-export const gplayer = new class extends Player {
-  private player(): JPlayerElement {return $("#jquery_jplayer_1") as unknown as JPlayerElement}
-  override load(song: Song): void {this.player().jPlayer("setMedia", song)}
-  private click(what: string): void {$(".jp-" + what).click()}
-  override pause(): void {this.click("pause")}
-  override stop(): void {this.click("stop")}
-  override playCurrentSong(): void {this.click("play")}
-  override isPaused(): boolean {return this.player().data().jPlayer.status.paused}
-  override percentageOfSongPlayed() {
-    const jPlayer = this.player().data().jPlayer
-    return jPlayer ?
-      Percentage.fromMax100(jPlayer.status.currentPercentAbsolute) :
-      Percentage.fromMax1(0)
-  }
-  override currentPlayingInSeconds(): Duration {
-    return Duration.fromSeconds(this.player().data().jPlayer.status.currentTime)
-  }
-  private volumeBar() {return $(".jp-volume-bar-value")}
-  override getVolume(): Volume {
-    return Volume.fromPercentage(Percentage.fromMax100(this.volumeBar().width()!))
-  }
-  override setVolume(v: Volume): void {
-    this.volumeBar().width(`${v}%`)
-    this.player().jPlayer("volume", v._volume().zeroToOne())
-  }
-  override skipTo(duration: Duration): void {this.player().jPlayer("play", duration.toSeconds())}
-}
-
 $exposeGlobally!(Duration)
 $exposeGlobally!(Percentage)
 $exposeGlobally!(Volume)
-$exposeGlobally!(gplayer)
