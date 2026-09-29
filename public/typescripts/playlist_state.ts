@@ -76,7 +76,7 @@ $(function () {
       return new PlaylistJson(
         gplaylist.songs(),
         gplaylist.currentIndex(),
-        gplayer.currentPlayingInSeconds(),
+        gplayer.currentTime(),
         VolumeSetter.getVolumeBaseline(),
       )
     }

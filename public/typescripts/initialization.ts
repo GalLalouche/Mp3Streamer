@@ -1,4 +1,3 @@
-export const WAIT_DELAY = 25
 export const isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) !== null
 
 export function isMuted(): boolean {return window.location.pathname === "/mute"}

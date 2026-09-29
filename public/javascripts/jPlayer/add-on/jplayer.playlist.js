@@ -45,19 +45,24 @@
 
     // FIXME this should be made to work my player implementation. Starting with ready.
     // Create a ready event handler to initialize the playlist
-    $(this.cssSelector.jPlayer).bind($.jPlayer.event.ready, function () {
-      self._init();
-    });
-
-    // Create an ended event handler to move to the next item
-    $(this.cssSelector.jPlayer).bind($.jPlayer.event.ended, function () {
-      self.next();
-    });
-
-    // Create a play event handler to pause other instances
-    $(this.cssSelector.jPlayer).bind($.jPlayer.event.play, function () {
-      $(this).jPlayer("pauseOthers");
-    });
+    $(document).on(EventsForPlaylist, ElementEventForPlaylist, e => {
+      if (e === "READY") {
+        self._init();
+      } else if (e === "ENDED") {
+        self.next();
+      }
+    })
+    // gplayer.listen(e => {
+    // })
+    // $(this.cssSelector.jPlayer).bind($.jPlayer.event.ready, function () {
+    //   self._init();
+    // });
+    // $.on('#player_events')
+    //
+    // // Create an ended event handler to move to the next item
+    // $(this.cssSelector.jPlayer).bind($.jPlayer.event.ended, function () {
+    //   self.next();
+    // });
 
     // Create click handlers for the extra buttons that do playlist functions.
     $(this.cssSelector.previous).click(function () {
@@ -80,7 +85,7 @@
     this._createItemHandlers();
 
     // Instance jPlayer
-    $(this.cssSelector.jPlayer).jPlayer(this.options);
+    // $(this.cssSelector.jPlayer).jPlayer(this.options);
   };
 
   JPlayerPlaylist.prototype = {
@@ -240,7 +245,7 @@
             // Need to swap since songs are in reverse
             const displayIndex = self._getDisplayedIndex(index);
             if (self.current === displayIndex)
-              $(self.cssSelector.jPlayer).jPlayer("play");
+              gplayer.play()
             else
               self.play(displayIndex);
             $(this).blur();
@@ -310,10 +315,10 @@
                 + this.playlist[index].artistName + "</span>" : ""));
       }
     },
-    setPlaylist: async function (playlist, instant) {
-      this._initPlaylist(playlist);
-      await this._init(instant);
-    },
+    // setPlaylist: async function (playlist, instant) {
+    //   this._initPlaylist(playlist);
+    //   await this._init(instant);
+    // },
     add: function (media, playNow) {
       const that = this
       if ($.isArray(media)) {
@@ -348,7 +353,7 @@
       if (index === undefined) {
         this._initPlaylist([]);
         this._refresh(function () {
-          $(self.cssSelector.jPlayer).jPlayer("clearMedia");
+          gplayer.clear()
         });
         return true;
       }
@@ -374,7 +379,7 @@
               } else if (playlistIndex < self.current)
                 self.current--;
             } else {
-              $(self.cssSelector.jPlayer).jPlayer("clearMedia");
+              gplayer.clear()
               self.current = 0;
               self._updateControls();
             }
@@ -393,8 +398,7 @@
       if (index < this.playlist.length) {
         this.current = index;
         this._highlight(displayIndex);
-        return Local.maybePreLoad(this.playlist[this.current])
-            .then(s => $(this.cssSelector.jPlayer).jPlayer("setMedia", s));
+        return Local.maybePreLoad(this.playlist[this.current]).then(gplayer.load);
       } else {
         this.current = 0;
         return new Promise(f => f())
@@ -406,15 +410,15 @@
       // index relates to end of array.
       if (index < this.playlist.length) {
         if (this.playlist.length) {
-          return this.select(index).then(() => $(this.cssSelector.jPlayer).jPlayer("play"));
+          return this.select(index).then(() => gplayer.play());
         }
       } else if (index === undefined) {
-        $(this.cssSelector.jPlayer).jPlayer("play");
+        gplayer.play()
         return new Promise(f => f())
       }
     },
     pause: function () {
-      $(this.cssSelector.jPlayer).jPlayer("pause");
+      gplayer.pause()
     },
     next: function () {
       const index = (this.current + 1 < this.playlist.length) ? this.current + 1 : 0

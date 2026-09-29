@@ -176,7 +176,6 @@ export interface Album {
   readonly orchestra?: string
   readonly performanceYear?: number
   readonly discNumbers?: string[]
-
 }
 
 export interface Artist {
@@ -184,9 +183,17 @@ export interface Artist {
   readonly albums: Album[]
 }
 
-export abstract class PlayerEvents {
+export class TimeUpdate {
+  readonly currentDuration: Duration
+  readonly totalDuration: Duration
 
+  constructor(input: { currentDuration: Duration, totalDuration: Duration }) {
+    this.currentDuration = input.currentDuration
+    this.totalDuration = input.totalDuration
+  }
 }
+
+export type PlayerEvent = "ENDED" | TimeUpdate | Song
 
 export abstract class Player {
   abstract load(song: Song): void
@@ -202,15 +209,13 @@ export abstract class Player {
       this.pause()
   }
   abstract percentageOfSongPlayed(): Percentage
-  abstract currentPlayingInSeconds(): Duration
+  abstract duration(): Duration
+  abstract currentTime(): Duration
   abstract setVolume(v: Volume): void
   abstract getVolume(): Volume
   abstract skipTo(duration: Duration): void
-}
-
-interface JPlayerElement {
-  jPlayer(str: String, value: any): void
-  data(): any
+  abstract clear(): void
+  abstract listen(callback: (pe: PlayerEvent) => void): void
 }
 
 export abstract class Playlist {

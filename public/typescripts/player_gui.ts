@@ -51,12 +51,14 @@ export namespace PlayerGUI {
     notImplemented()
   }
 
-  export function updatePosition(time: Duration, total: Duration,): void {
+  export function updatePosition(input: { current: Duration, total: Duration }): void {
     // FIXME take this from the actual seekable value
     //  seekPercent = (this.status.duration > 0) ? 100 * this.html.seekable.end(t.seekable.length - 1) / this.status.duration : 100
+    const current = input.current
+    const total = input.total
     seekBar.css("width", "100%")
-    playBar.css("width", `${100 * time.toSeconds() / total.toSeconds()}%`)
-    currentTime.html(time.timeFormat())
+    playBar.css("width", `${100 * current.toSeconds() / total.toSeconds()}%`)
+    currentTime.html(current.timeFormat())
   }
 
   export function updateVolume(v: Volume): void {
