@@ -23,6 +23,7 @@ declare class JPlayerPlaylist extends Playlist {
   prev(): void
   currentIndex(): number
   songs(): Song[]
+  removeItemAux(index: any, next: (x: JQuery<HTMLElement>) => JQuery<HTMLElement>): void
 
   constructor(
     cssSelector: { jPlayer: string, cssSelectorAncestor: string },

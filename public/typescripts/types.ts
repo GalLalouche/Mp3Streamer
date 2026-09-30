@@ -249,6 +249,7 @@ export abstract class Playlist {
   // The list presentation reversed, so song at index 0 is actually the last song, not the first.
   getDisplayedIndex(index: number): number {return this.length() - 1 - index}
   isLastSongPlaying(): boolean {return this.currentIndex() == this.length() - 1}
+  abstract removeItemAux(index: any, next: (x: JQuery<HTMLElement>) => JQuery<HTMLElement>): void
 }
 
 function makePlaylist(): Playlist {
@@ -266,6 +267,9 @@ function makePlaylist(): Playlist {
     }
     override play(index: number): Promise<void> { return pl().play(index)}
     override select(index: number): Promise<void> {return pl().select(index)}
+    removeItemAux(index: any, next: (x: JQuery<HTMLElement>) => JQuery<HTMLElement>): void {
+      pl().removeItemAux(index, next)
+    }
   }
   $(function (): void {pl().getDisplayedIndex = result.getDisplayedIndex})
   return result

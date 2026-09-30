@@ -1,8 +1,11 @@
 // Since jplayer.playlist.js is too freaking big, this extracts (some of) my customization.
+// TODO merge this and the original playlist, rewrite the whole thing in typescript.
 
 import {gplaylist, Song} from "./types.js"
 import {External} from "./external.js"
 import {Score} from "./score.js"
+import {GuiEvents, PlaylistEventTopic} from "./gui_events.js";
+import {match, P} from "ts-pattern";
 
 export namespace PlaylistCustomizations {
   export function formattedMetadata(song: Song): string {
@@ -85,14 +88,18 @@ $(function () {
   })
   // Move to song on click.
   // FIXME this doesn't work on Chrome for some reason. It always registers the click as on the div.
-  playlistElement.on("click", playlistItem, async function (e) {
-    if (e.target.localName !== "span" && e.target.localName !== "img")
-      return // Only listens to clicks on the text or poster image, to avoid handling misclicks near the buttons.
-    const listItem = $(this)
-    const clickedIndex = playlist.getDisplayedIndex(listItem.index())
-    if (gplaylist.currentIndex() === clickedIndex)
-      return // Clicked song is currently playing.
-    return playlist.play(clickedIndex)
+  GuiEvents.listen(PlaylistEventTopic, async event => {
+    match(event)
+      .with('next', () => playlist.next())
+      .with('previous', () => playlist.prev())
+      .with({type: P.select("type"), index: P.select("index")}, ({type, index}) => {
+        match(type)
+          .with("select", () => playlist.select(index))
+          .with("x", () => playlist.removeItemAux(index, _ => $()))
+          .with("up", () => playlist.removeItemAux(index, x => x.prev()))
+          .with("down", () => playlist.removeItemAux(index, x => x.next()))
+          .exhaustive()
+      })
   })
 
   $("body").append(String.raw`
