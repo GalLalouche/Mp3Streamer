@@ -6,6 +6,10 @@ export namespace Poster {
   export let rgbListeners: ((rgb: RGB) => void)[] = []
   // TODO This *really* shouldn't be here, it's just that this button is near the poster :\
   export let playlistName: JQuery<HTMLElement>
+
+  export function setImage(url: string): void {
+    $("#jp_poster_0").attr("src", url)
+  }
 }
 
 $exposeGlobally!(Poster)

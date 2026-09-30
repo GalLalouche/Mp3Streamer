@@ -1,21 +1,37 @@
 import {Duration, Percentage, Player, PlayerEvent, Song, TimeUpdate, Volume} from "./types.js";
-import {PlayerGUI} from "./player_gui.js";
 
 /** Implements the Player interface using a hidden HTML5 audio element. */
 export class PlayerImpl extends Player {
+  listeners: ((pe: PlayerEvent) => void)[] = []
   private readonly html: HTMLAudioElement
-  constructor() {
+  private song?: Song
+  private constructor() {
     super()
     this.html = document.createElement("audio")
   }
 
-  // startGuiUpdates(): void {
-  //   this.html.ontimeupdate =
-  //     () => PlayerGUI.updatePosition(this.currentPlayingInSeconds(), this.getDuration())
-  //   this.html.onpause = () => PlayerGUI.setIsStopped()
-  //   this.html.onplay = () => PlayerGUI.setIsPlaying()
-  //   this.html.onvolumechange = () => PlayerGUI.updateVolume(this.getVolume())
-  // }
+  static create(): PlayerImpl {
+    const result = new PlayerImpl()
+    result.startGuiUpdates()
+    return result
+  }
+
+  startGuiUpdates(): void {
+    const that = this
+    this.html.ontimeupdate = () => that.publish(new TimeUpdate({
+      currentDuration: that.currentTime(),
+      totalDuration: that.duration()
+    }))
+    // this.html.onpause = () => that.maybePublish(new PlayerEvent("pause"))
+    // this.html.onplay = () => PlayerGUI.setIsPlaying()
+    // this.html.onvolumechange = () => PlayerGUI.updateVolume(this.getVolume())
+    this.html.onended = () => that.publish("ENDED")
+  }
+
+  publish(pe: PlayerEvent): void {
+    for (const listener of this.listeners)
+      listener(pe)
+  }
   //
   // stopGuiUpdates(): void {
   //   this.html.ontimeupdate = null
@@ -29,8 +45,10 @@ export class PlayerImpl extends Player {
   override isPaused(): boolean {return this.html.paused}
   // TODO should this be async to signify when done?
   override load(song: Song): void {
-    PlayerGUI.setCurrentSong(song)
+    // PlayerGUI.setCurrentSong(song)
     this.html.src = song.offlineUrl!! // FIXME this just assume the offline URL is already set
+    this.song = song
+    this.publish(song)
   }
   override pause(): void {
     this.html.pause()
@@ -49,7 +67,7 @@ export class PlayerImpl extends Player {
   }
   override setVolume(v: Volume): void {
     v.setVolume(this.html)
-    PlayerGUI.updateVolume(v)
+    // PlayerGUI.updateVolume(v)
   }
   override skipTo(duration: Duration): void {
     this.html.currentTime = duration.toSeconds()
@@ -66,12 +84,10 @@ export class PlayerImpl extends Player {
     return Duration.fromSeconds(this.html.duration)
   }
 
-  listen(callback: (pe: PlayerEvent) => void): void {
-    this.html.ontimeupdate = () =>
-      callback(new TimeUpdate({
-        currentDuration: this.currentTime(),
-        totalDuration: this.getDuration()
-      }))
-    this.html.onended = () => callback("ENDED")
+  override listen(callback: (pe: PlayerEvent) => void): void {
+    this.listeners.push(callback)
+  }
+  override unlisten(callback: (pe: PlayerEvent) => void): void {
+    this.listeners = this.listeners.filter(cb => cb !== callback)
   }
 }

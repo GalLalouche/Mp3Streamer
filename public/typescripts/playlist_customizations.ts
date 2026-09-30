@@ -84,6 +84,7 @@ $(function () {
     }
   })
   // Move to song on click.
+  // FIXME this doesn't work on Chrome for some reason. It always registers the click as on the div.
   playlistElement.on("click", playlistItem, async function (e) {
     if (e.target.localName !== "span" && e.target.localName !== "img")
       return // Only listens to clicks on the text or poster image, to avoid handling misclicks near the buttons.

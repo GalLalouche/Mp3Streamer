@@ -48,7 +48,7 @@ export namespace PlayerGUI {
     document.title = songInfo
     // FIXME Finish poster... seems the current implementation is very hacky and rewrites the poster
     //  element on every change instead of just changing the picture!
-    notImplemented()
+    // notImplemented()
   }
 
   export function updatePosition(input: { current: Duration, total: Duration }): void {

@@ -315,10 +315,10 @@
                 + this.playlist[index].artistName + "</span>" : ""));
       }
     },
-    // setPlaylist: async function (playlist, instant) {
-    //   this._initPlaylist(playlist);
-    //   await this._init(instant);
-    // },
+    setPlaylist: async function (playlist, instant) {
+      this._initPlaylist(playlist);
+      await this._init(instant);
+    },
     add: function (media, playNow) {
       const that = this
       if ($.isArray(media)) {
@@ -398,7 +398,7 @@
       if (index < this.playlist.length) {
         this.current = index;
         this._highlight(displayIndex);
-        return Local.maybePreLoad(this.playlist[this.current]).then(gplayer.load);
+        return Local.maybePreLoad(this.playlist[this.current]).then(e => gplayer.load(e));
       } else {
         this.current = 0;
         return new Promise(f => f())
@@ -410,7 +410,7 @@
       // index relates to end of array.
       if (index < this.playlist.length) {
         if (this.playlist.length) {
-          return this.select(index).then(() => gplayer.play());
+          return this.select(index).then(() => gplayer.playCurrentSong());
         }
       } else if (index === undefined) {
         gplayer.play()

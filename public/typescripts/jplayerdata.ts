@@ -9,6 +9,7 @@ import {Score} from "./score.js"
 import {Local} from "./local.js"
 import * as DataApi from "./data_api.js";
 import {EventForPlaylist, EventsForPlaylist, gplayer} from "./player_singleton.js";
+import {Poster} from "./poster.js";
 
 // TODO this entire file should split into jplayer specific hacks and more general code
 
@@ -68,22 +69,25 @@ $(function () {
       Local.setOfflineUrl(currentPlayingSong).then(function () {
         assert(currentPlayingSong.offlineUrl !== undefined)
         // jplayer hack: update the offlineUrl for the media object
-        const media = $(JPLAYER_ID).data('jPlayer').htmlElement.media
-        if (currentPlayingSong.file === playlist.currentPlayingSong().file && media && media.offlineUrl === undefined)
-          media.offlineUrl = currentPlayingSong.offlineUrl
+        if ($(JPLAYER_ID).data('jPlayer')) {
+          const media = $(JPLAYER_ID).data('jPlayer').htmlElement.media
+          if (currentPlayingSong.file === playlist.currentPlayingSong().file && media && media.offlineUrl === undefined)
+            media.offlineUrl = currentPlayingSong.offlineUrl
+        }
       })
       $(".jp-currently-playing").html(songInfo)
       document.title = songInfo
       $('#favicon').remove()
 
-      $('head')
-        .append(`<link href="${($("img.poster")[0] as any).src}" id="favicon" rel="shortcut icon">`)
-
       // TODO use plain old observers here
+      // FIXME leftover of the old architecture.
       Lyrics.show(currentPlayingSong)
       External.show(currentPlayingSong)
       VolumeSetter.setPeak(currentPlayingSong)
       Score.show(currentPlayingSong)
+      Poster.setImage(currentPlayingSong.poster)
+      $('head')
+        .append(`<link href="${($("img.poster")[0] as any).src}" id="favicon" rel="shortcut icon">`)
       NewAlbumInfo.show(currentPlayingSong)
     } else if (event instanceof TimeUpdate) {
       // Fetches new songs before current song ends.
@@ -97,11 +101,18 @@ $(function () {
   const debugStartAlbum = getDebugAlbum()
 
   $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()
-  $(document).on(EventsForPlaylist, e => {
-    let event = e as unknown as CustomEvent<EventForPlaylist>
-    if (event.detail != "READY") {
-      return
-    }
+  if (gplayer)
+    setup()
+  else
+    $(document).on(EventsForPlaylist, e => {
+      let event = e as unknown as CustomEvent<EventForPlaylist>
+      if (event.detail != "READY") {
+        return
+      }
+      setup()
+    })
+
+  function setup(): void {
     if (debugStartSong) {
       console.log(`Adding debug song <${debugStartSong}>`)
       DataApi.getSong(debugStartSong).then(data => gplaylist.add(data, true))
@@ -111,7 +122,7 @@ $(function () {
       DataApi.getAlbum("/data/albums/" + debugStartAlbum).then(data => gplaylist.add(data.reverse(), true))
     } else
       loadNextRandom(true)
-  })
+  }
 
   function loadNextRandom(playNow: boolean): void {
     DataApi.getRandomSong().then(song => playlist.add(song, playNow))

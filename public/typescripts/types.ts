@@ -6,8 +6,10 @@ export class Percentage {
   private readonly _zero_to_one: number
 
   private constructor(percentage: number) {
-    require(percentage <= 1)
-    require(percentage >= 0)
+    require(
+      percentage <= 1 && percentage >= 0,
+      `Percentage must be between 0 and 1, got ${percentage}`,
+    )
     this._zero_to_one = percentage
   }
 
@@ -216,6 +218,7 @@ export abstract class Player {
   abstract skipTo(duration: Duration): void
   abstract clear(): void
   abstract listen(callback: (pe: PlayerEvent) => void): void
+  abstract unlisten(callback: (pe: PlayerEvent) => void): void
 }
 
 export abstract class Playlist {
@@ -285,15 +288,14 @@ export class Volume {
   times(number: number): Volume {return new Volume(this.volume.times(number))}
 
   setWidth(volumeBar: JQuery<HTMLElement>) {
-    volumeBar.css("width", `${this.volume}%`)
+    volumeBar.css("width", `${this.volume.zeroToHundred()}%`)
   }
   setVolume(element: HTMLAudioElement): void {
     element.volume = this.volume.zeroToOne()
   }
   isMuted() {return this.volume.isZero()}
 
-  // TODO temporary, will be removed when the player no longer wraps jPlayer.
-  _volume(): Percentage {return this.volume}
+  percentage(): Percentage {return this.volume}
 }
 
 $exposeGlobally!(Duration)

@@ -1,7 +1,8 @@
-import {Duration, Percentage, Player, PlayerEvent, Song, TimeUpdate, Volume} from "./types.js";
+import {Duration, Percentage, Player, PlayerEvent, Song, Volume} from "./types.js";
 import {PlayerImpl} from "./player.js";
-import {getSearchParam} from "./initialization.js";
 import {PlayerGUI} from "./player_gui.js";
+import {VolumeSetter} from "./volume_setter.js";
+import {GuiEvents, PlayerControls, PlayerControlsTopic} from "./gui_events.js";
 
 interface JPlayerElement {
   jPlayer(str: String, value?: any): void
@@ -29,19 +30,31 @@ class SingletonPlayer extends Player {
   }
   static from(player: Player): SingletonPlayer {
     const result = new SingletonPlayer(player)
-    player.listen((pe: PlayerEvent) => {
+    result.listen((pe: PlayerEvent) => {
       if (pe == "ENDED")
-        playerEvents.dispatchEvent(new
-        CustomEvent<EventForPlaylist>(ElementEventForPlaylist, {detail: "ENDED"}))
+        playerEvents.dispatchEvent(
+          new CustomEvent<EventForPlaylist>(ElementEventForPlaylist, {detail: "ENDED"}))
       else {
         PlayerGUI.updatePosition({
           current: result.currentTime(),
           total: result.duration()
         })
+        PlayerGUI.setIsPlaying()
       }
       //   this.html.onpause = () => PlayerGUI.setIsStopped()
       //   this.html.onplay = () => PlayerGUI.setIsPlaying()
       //   this.html.onvolumechange = () => PlayerGUI.updateVolume(this.getVolume())
+    })
+    // TODO these listens should be made elsewhere
+    GuiEvents.listen(PlayerControlsTopic, (control: PlayerControls) => {
+      if (control == "play")
+        result.playCurrentSong()
+      else if (control == "stop")
+        result.stop()
+      else if (control == "pause")
+        result.pause()
+      else if (control instanceof Volume)
+        VolumeSetter.setManualVolume(control)
     })
     return result
   }
@@ -71,82 +84,50 @@ class SingletonPlayer extends Player {
   }
   override pause(): void {
     this.player.pause();
+    PlayerGUI.setIsStopped()
   }
-  setVolume(v: Volume): void {
-    this.player.setVolume(v);
+  override setVolume(v: Volume): void {
+    this.player.setVolume(v)
+    PlayerGUI.updateVolume(v)
   }
   override skipTo(duration: Duration): void {
     return this.player.skipTo(duration);
   }
   override stop(): void {
     this.player.stop();
+    PlayerGUI.setIsStopped()
   }
-  listen(callback: (pe: PlayerEvent) => void): void {
-    throw new AssertionError("SingletonPlayer.listen() should not be called");
+  override listen(callback: (pe: PlayerEvent) => void): void {
+    this.player.listen(callback);
+  }
+  override unlisten(callback: (pe: PlayerEvent) => void): void {
+    this.player.unlisten(callback);
   }
 }
 
 // TODO temporary, until this is refactored to use a proper singleton method.
 export let gplayer!: Player
-
-function extracted(): Player {
-  return getSearchParam("manual_player") != null
-    ? new PlayerImpl()
-    : new class extends Player {
-      private player(): JPlayerElement {return $("#jquery_jplayer_1") as unknown as JPlayerElement}
-      override load(song: Song): void {this.player().jPlayer("setMedia", song)}
-      private click(what: string): void {$(".jp-" + what).click()}
-      override pause(): void {this.click("pause")}
-      override stop(): void {this.click("stop")}
-      override playCurrentSong(): void {this.player().jPlayer("play")}
-      override isPaused(): boolean {return this.player().data().jPlayer.status.paused}
-      override percentageOfSongPlayed(): Percentage {
-        const jPlayer = this.player().data().jPlayer
-        return jPlayer ?
-          Percentage.fromMax100(jPlayer.status.currentPercentAbsolute) :
-          Percentage.fromMax1(0)
-      }
-      override duration(): Duration {
-        return Duration.fromSeconds(this.player().data().jPlayer.status.duration)
-      }
-      override currentTime(): Duration {
-        return Duration.fromSeconds(this.player().data().jPlayer.status.currentTime)
-      }
-      private volumeBar() {return $(".jp-volume-bar-value")}
-      override getVolume(): Volume {
-        return Volume.fromPercentage(Percentage.fromMax100(this.volumeBar().width()!))
-      }
-      override setVolume(v: Volume): void {
-        this.volumeBar().width(`${v}%`)
-        this.player().jPlayer("volume", v._volume().zeroToOne())
-      }
-      override skipTo(duration: Duration): void {this.player().jPlayer("play", duration.toSeconds())}
-      override clear(): void {this.player().jPlayer("clearMedia")}
-      listen(callback: (pe: PlayerEvent) => void): void {
-        const that = this
-
-        function aux(e: string, f: () => void) {
-          (that.player() as any as JQuery).bind(($ as any).jPlayer.event[e], f)
-        }
-
-        aux("ended", () => {callback("ENDED")})
-        aux("timeupdate", () => {
-          const jPlayer = that.player().data().jPlayer!
-          callback(new TimeUpdate({
-            currentDuration: Duration.fromSeconds(jPlayer.status.currentTime),
-            totalDuration: that.currentTime()
-          }))
-        })
-      }
-    };
-}
+// TODO extract?
+Object.defineProperty(globalThis, "gplayer", {
+  get: (): Player => gplayer,
+  set: (value: Player) => { gplayer = value },
+  configurable: true,
+})
 
 $(function () {
-  gplayer = SingletonPlayer.from(extracted())
+  gplayer = SingletonPlayer.from(PlayerImpl.create())
+  gplayer.setVolume(VolumeSetter.getVolumeBaseline())
   playerEvents = document.createElement("div")
   playerEvents.id = EventsForPlaylist
   playerEvents.dispatchEvent(new CustomEvent<EventForPlaylist>(ElementEventForPlaylist, {detail: "READY"}))
 })
-$exposeGlobally!(gplayer)
-$exposeGlobally!(EventsForPlaylist)
-$exposeGlobally!(ElementEventForPlaylist)
+window.EventsForPlaylist = EventsForPlaylist
+declare global {
+  var EventsForPlaylist: string
+  var ElementEventForPlaylist: string
+}
+globalThis.EventsForPlaylist = EventsForPlaylist
+globalThis.ElementEventForPlaylist = ElementEventForPlaylist
+// FIXME why did this stop working?
+// $exposeGlobally!(EventsForPlaylist)
+// $exposeGlobally!(ElementEventForPlaylist)

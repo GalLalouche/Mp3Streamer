@@ -13,7 +13,7 @@ $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
     return new Promise<any>((resolve, reject) => {
       this.then(
         (data: any) => resolve(data),
-        (jqXHR, textStatus, errorThrown) => reject(errorThrown),
+        (jqXHR, textStatus, errorThrown) => reject(jqXHR),
       )
     }) as any
   }

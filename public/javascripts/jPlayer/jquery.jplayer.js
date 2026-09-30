@@ -17,8 +17,7 @@
 /*global jQuery:false, ActiveXObject:false, alert:false */
 
 $(function () {
-  if (getSearchParam("manual_player") != null)
-    return;
+  return;
   // Adapted from jquery.ui.widget.js (1.8.7): $.widget.bridge
   $.fn.jPlayer = function (options) {
     const name = "jPlayer"
