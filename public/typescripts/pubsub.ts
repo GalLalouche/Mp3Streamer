@@ -1,4 +1,5 @@
 /** A generic pubsub system. Uncoupled to any one system or another. */
+// FIXME this was copy pasted from an agent with A LOT of extra explanation. Clean it up.
 declare const payloadType: unique symbol
 // `unique symbol` means this is the type of one specific symbol,
 // so it can identify one specific property in a type.

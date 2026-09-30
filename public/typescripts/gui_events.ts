@@ -1,6 +1,10 @@
+/**
+ * Playlist and player events. For the individual components like external, lyrics, etc. look to
+ * those modules specifically.
+ */
 import {PubSub, topic} from "./pubsub.js";
-
 import {Percentage, Volume} from "./types.js";
+
 
 export const GuiEvents: PubSub = new PubSub()
 

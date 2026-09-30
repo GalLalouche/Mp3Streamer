@@ -1,6 +1,6 @@
 // TODO use enums and use Object.values to get this list for the drop down list.
-import {gplaylist, Song} from "./types.js"
 import * as API from "./api.js"
+import {gplaylist, Song} from "./types.js"
 
 export namespace Score {
   export function setup(): void {

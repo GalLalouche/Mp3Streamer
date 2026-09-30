@@ -1,8 +1,8 @@
 import './jquery_common_xhr.js'
-import {Poster} from "./poster.js"
-import {gplaylist, Song} from "./types.js"
 import {match} from 'ts-pattern'
 import * as API from './api.js'
+import {Poster} from "./poster.js"
+import {gplaylist, Song} from "./types.js"
 
 export namespace External {
   export function show(song: Song): void {

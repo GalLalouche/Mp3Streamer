@@ -1,15 +1,15 @@
-import * as NewAlbumInfo from './new_albums_info.js'
-import {Lyrics} from './lyrics.js'
-import {External} from './external.js'
-import {getDebugAlbum, getDebugSong, isMuted} from './initialization.js'
-import {Globals} from "./globals.js"
-import {Duration, gplaylist, PlayerEvent, Playlist, Song, TimeUpdate} from "./types.js"
-import {VolumeSetter} from "./volume_setter.js"
-import {Score} from "./score.js"
-import {Local} from "./local.js"
 import * as DataApi from "./data_api.js";
+import {External} from './external.js'
+import {Globals} from "./globals.js"
+import {getDebugAlbum, getDebugSong, isMuted} from './initialization.js'
+import {Local} from "./local.js"
+import {Lyrics} from './lyrics.js'
+import * as NewAlbumInfo from './new_albums_info.js'
 import {EventForPlaylist, EventsForPlaylist, gplayer} from "./player_singleton.js";
 import {Poster} from "./poster.js";
+import {Score} from "./score.js"
+import {Duration, gplaylist, PlayerEvent, Playlist, Song, TimeUpdate} from "./types.js"
+import {VolumeSetter} from "./volume_setter.js"
 
 // TODO this entire file should split into jplayer specific hacks and more general code
 

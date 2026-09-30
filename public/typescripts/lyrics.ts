@@ -1,6 +1,6 @@
-import {gplaylist, Song} from "./types.js"
-import {gplayer} from "./player_singleton.js";
 import * as API from "./api.js"
+import {gplayer} from "./player_singleton.js";
+import {gplaylist, Song} from "./types.js"
 
 export namespace Lyrics {
   export function show(song: Song): void {

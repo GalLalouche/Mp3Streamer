@@ -1,8 +1,8 @@
-import {Duration, Percentage, Player, PlayerEvent, Song, Volume} from "./types.js";
+import {GuiEvents, PlayerControls, PlayerControlsTopic} from "./gui_events.js";
 import {PlayerImpl} from "./player.js";
 import {PlayerGUI} from "./player_gui.js";
+import {Duration, Percentage, Player, PlayerEvent, Song, Volume} from "./types.js";
 import {VolumeSetter} from "./volume_setter.js";
-import {GuiEvents, PlayerControls, PlayerControlsTopic} from "./gui_events.js";
 
 interface JPlayerElement {
   jPlayer(str: String, value?: any): void

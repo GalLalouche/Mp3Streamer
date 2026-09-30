@@ -1,11 +1,11 @@
 // Since jplayer.playlist.js is too freaking big, this extracts (some of) my customization.
-// TODO merge this and the original playlist, rewrite the whole thing in typescript.
+// FIXME merge this and the original playlist, rewrite the whole thing in typescript.
 
-import {gplaylist, Song} from "./types.js"
-import {External} from "./external.js"
-import {Score} from "./score.js"
-import {GuiEvents, PlaylistEventTopic} from "./gui_events.js";
 import {match, P} from "ts-pattern";
+import {External} from "./external.js"
+import {GuiEvents, PlaylistEventTopic} from "./gui_events.js";
+import {Score} from "./score.js"
+import {gplaylist, Song} from "./types.js"
 
 export namespace PlaylistCustomizations {
   export function formattedMetadata(song: Song): string {

@@ -1,5 +1,5 @@
-import * as DataApi from "./data_api.js";
 import * as API from "./api.js";
+import * as DataApi from "./data_api.js";
 import {LastAlbum} from "./last.js"
 import {Album, Artist, gplaylist, Song} from "./types.js"
 

@@ -1,6 +1,6 @@
-import {Song, songPath} from "./types.js"
-import {isLocalHost} from "./initialization.js"
 import {FileDownloader} from "./file_downloader.js"
+import {isLocalHost} from "./initialization.js"
+import {Song, songPath} from "./types.js"
 
 export namespace Local {
   const fileDownloader = new FileDownloader()

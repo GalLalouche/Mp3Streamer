@@ -1,6 +1,6 @@
-import {PlaylistCustomizations} from "./playlist_customizations.js"
-import {Globals} from "./globals.js"
 import {RawJSON} from "./api.js"
+import {Globals} from "./globals.js"
+import {PlaylistCustomizations} from "./playlist_customizations.js"
 
 export class Percentage {
   private readonly _zero_to_one: number
@@ -197,6 +197,8 @@ export class TimeUpdate {
 
 export type PlayerEvent = "ENDED" | TimeUpdate | Song
 
+export type PlayerEventListener = (pe: PlayerEvent) => void
+
 export abstract class Player {
   abstract load(song: Song): void
   abstract playCurrentSong(): void
@@ -217,8 +219,8 @@ export abstract class Player {
   abstract getVolume(): Volume
   abstract skipTo(duration: Duration): void
   abstract clear(): void
-  abstract listen(callback: (pe: PlayerEvent) => void): void
-  abstract unlisten(callback: (pe: PlayerEvent) => void): void
+  abstract listen(callback: PlayerEventListener): void
+  abstract unlisten(callback: PlayerEventListener): void
 }
 
 export abstract class Playlist {

@@ -1,3 +1,4 @@
+// FIXME remove and see what happens :D
 /*
  * jPlayer Plugin for jQuery JavaScript Library
  * http://www.jplayer.org

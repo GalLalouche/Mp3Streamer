@@ -1,5 +1,5 @@
-import {Album, Song} from "./types.js"
 import * as API from "./api.js"
+import {Album, Song} from "./types.js"
 
 function ignoreAlbum(artist: string, album: string, reconID: string, elementToRemove: JQuery<HTMLElement>): void {
   confirmDialog(

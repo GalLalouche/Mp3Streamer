@@ -1,5 +1,5 @@
-import {Duration, Song, Volume} from "./types.js";
 import {SecondaryPlayer} from "./secondary_player.js";
+import {Duration, Song, Volume} from "./types.js";
 
 export namespace FadeOut {
   let fadingPlayer: FadingPlayer | undefined

@@ -1,10 +1,9 @@
-import {Duration, Percentage, Player, PlayerEvent, Song, TimeUpdate, Volume} from "./types.js";
+import {Duration, Percentage, Player, PlayerEvent, PlayerEventListener, Song, TimeUpdate, Volume} from "./types.js";
 
 /** Implements the Player interface using a hidden HTML5 audio element. */
 export class PlayerImpl extends Player {
-  listeners: ((pe: PlayerEvent) => void)[] = []
+  listeners: PlayerEventListener[] = []
   private readonly html: HTMLAudioElement
-  private song?: Song
   private constructor() {
     super()
     this.html = document.createElement("audio")
@@ -47,7 +46,6 @@ export class PlayerImpl extends Player {
   override load(song: Song): void {
     // PlayerGUI.setCurrentSong(song)
     this.html.src = song.offlineUrl!! // FIXME this just assume the offline URL is already set
-    this.song = song
     this.publish(song)
   }
   override pause(): void {
@@ -80,14 +78,10 @@ export class PlayerImpl extends Player {
     this.stop()
     this.html.src = ""
   }
-  private getDuration() {
-    return Duration.fromSeconds(this.html.duration)
-  }
-
-  override listen(callback: (pe: PlayerEvent) => void): void {
+  override listen(callback: PlayerEventListener): void {
     this.listeners.push(callback)
   }
-  override unlisten(callback: (pe: PlayerEvent) => void): void {
+  override unlisten(callback: PlayerEventListener): void {
     this.listeners = this.listeners.filter(cb => cb !== callback)
   }
 }

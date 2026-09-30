@@ -1,7 +1,7 @@
-import {gplaylist, Song} from "./types.js"
-import {scanPlus, Search} from "./search.js"
 import * as DataApi from "./data_api.js";
 import {gplayer} from "./player_singleton.js";
+import {scanPlus, Search} from "./search.js"
+import {gplaylist, Song} from "./types.js"
 
 $(function () {
   $(document).keypress(function (e) {

@@ -1,5 +1,5 @@
-import {Song} from "./types.js";
 import {get} from "./api.js";
+import {Song} from "./types.js";
 
 
 export async function getSongRawPath(fullPath: string): Promise<Song> {

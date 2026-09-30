@@ -1,3 +1,4 @@
+// FIXME merge with the customizations, and remove
 /*
  * Playlist Object for the jPlayer Plugin http://www.jplayer.org Copyright (c)
  * 2009 - 2011 Happyworm Ltd Dual licensed under the MIT and GPL licenses. -

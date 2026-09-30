@@ -1,7 +1,7 @@
 // A very simple module, showing the latest albums, so it can be easily added to the playlist.
 
-import * as DataApi from "./data_api.js";
 import * as API from "./api.js";
+import * as DataApi from "./data_api.js";
 import {Album, gplaylist} from "./types.js"
 
 export namespace LastAlbum {

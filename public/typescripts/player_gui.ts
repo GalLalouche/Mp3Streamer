@@ -1,5 +1,6 @@
 import {Duration, Song, Volume} from "./types.js";
 
+/** GUI updates go *in* here, but not *from* here. See GuiEvents for the other direction. */
 let currentTime: JQuery<HTMLElement>
 let currentlyPlaying: JQuery<HTMLElement>
 let duration: JQuery<HTMLElement>
