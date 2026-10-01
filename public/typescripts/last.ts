@@ -2,7 +2,8 @@
 
 import * as API from "./api.js";
 import * as DataApi from "./data_api.js";
-import {Album, gplaylist} from "./types.js"
+import {gplaylist} from "./player_singleton.js";
+import {Album} from "./types.js"
 
 export namespace LastAlbum {
   export async function addNextNewAlbum(): Promise<void> {

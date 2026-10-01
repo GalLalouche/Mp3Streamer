@@ -1,6 +1,4 @@
 import {RawJSON} from "./api.js"
-import {Globals} from "./globals.js"
-import {PlaylistCustomizations} from "./playlist_customizations.js"
 
 export class Percentage {
   private readonly _zero_to_one: number
@@ -247,38 +245,12 @@ export abstract class Playlist {
   abstract songs(): Song[]
   last(): Song {return this.songs()[this.length() - 1]}
   length(): number {return this.songs().length}
-  toString(song: Song): string {return PlaylistCustomizations.mediaMetadata(song)}
   // The list presentation reversed, so song at index 0 is actually the last song, not the first.
   getDisplayedIndex(index: number): number {return this.length() - 1 - index}
   isLastSongPlaying(): boolean {return this.currentIndex() == this.length() - 1}
   abstract removeItemAux(index: any, next: (x: JQuery<HTMLElement>) => JQuery<HTMLElement>): void
 }
 
-function makePlaylist(): Playlist {
-  function pl(): any {return Globals.playlist}
-
-  const result = new class extends Playlist {
-    override currentIndex() {return pl().current}
-    override songs() {return pl().playlist}
-    override add(song: Song | Song[], playNow: boolean): Promise<void> {return pl().add(song, playNow)}
-    override _next(): void {return pl().next()}
-    override prev(): void {return pl().previous()}
-    override async clear(): Promise<void> {
-      const instant = true
-      return pl().setPlaylist([], instant)
-    }
-    override play(index: number): Promise<void> { return pl().play(index)}
-    override select(index: number): Promise<void> {return pl().select(index)}
-    removeItemAux(index: any, next: (x: JQuery<HTMLElement>) => JQuery<HTMLElement>): void {
-      pl().removeItemAux(index, next)
-    }
-  }
-  $(function (): void {pl().getDisplayedIndex = result.getDisplayedIndex})
-  return result
-}
-
-export const gplaylist: Playlist = makePlaylist()
-$exposeGlobally!(gplaylist)
 
 export class Volume {
   private readonly volume: Percentage

@@ -1,7 +1,8 @@
 import {GuiEvents, PlayerControls, PlayerControlsTopic} from "./gui_events.js";
+import {JPlayerPlaylist} from "./jplayer.playlist.js";
 import {PlayerImpl} from "./player.js";
 import {PlayerGUI} from "./player_gui.js";
-import {Duration, Percentage, Player, PlayerEvent, Song, Volume} from "./types.js";
+import {Duration, Percentage, Player, PlayerEvent, Playlist, Song, Volume} from "./types.js";
 import {VolumeSetter} from "./volume_setter.js";
 
 interface JPlayerElement {
@@ -107,27 +108,36 @@ class SingletonPlayer extends Player {
 
 // TODO temporary, until this is refactored to use a proper singleton method.
 export let gplayer!: Player
-// TODO extract?
-Object.defineProperty(globalThis, "gplayer", {
-  get: (): Player => gplayer,
-  set: (value: Player) => { gplayer = value },
-  configurable: true,
-})
 
+function makePlaylist(player: Player): Playlist {
+  const playlist = JPlayerPlaylist.create([], player)
+
+  return new class extends Playlist {
+    override currentIndex() {return playlist.current}
+    override songs() {return playlist.playlist}
+    override add(song: Song | Song[], playNow: boolean): Promise<void> {return playlist.add(song, playNow)}
+    override _next(): void {return playlist.next()}
+    override prev(): void {return playlist.previous()}
+    override async clear(): Promise<void> {
+      const instant = true
+      return playlist.setPlaylist([], instant)
+    }
+    override play(index: number): Promise<void> { return playlist.play(index)}
+    override select(index: number): Promise<void> {return playlist.select(index)}
+    removeItemAux(index: any, next: (x: JQuery<HTMLElement>) => JQuery<HTMLElement>): void {
+      playlist.removeItemAux(index, next)
+    }
+  }
+}
+
+export let gplaylist!: Playlist
+
+// TODO extract?
 $(function () {
   gplayer = SingletonPlayer.from(PlayerImpl.create())
+  gplaylist = makePlaylist(gplayer)
   gplayer.setVolume(VolumeSetter.getVolumeBaseline())
   playerEvents = document.createElement("div")
   playerEvents.id = EventsForPlaylist
   playerEvents.dispatchEvent(new CustomEvent<EventForPlaylist>(ElementEventForPlaylist, {detail: "READY"}))
 })
-window.EventsForPlaylist = EventsForPlaylist
-declare global {
-  var EventsForPlaylist: string
-  var ElementEventForPlaylist: string
-}
-globalThis.EventsForPlaylist = EventsForPlaylist
-globalThis.ElementEventForPlaylist = ElementEventForPlaylist
-// FIXME why did this stop working?
-// $exposeGlobally!(EventsForPlaylist)
-// $exposeGlobally!(ElementEventForPlaylist)

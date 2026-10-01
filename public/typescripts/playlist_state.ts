@@ -7,9 +7,9 @@
 import './jquery_common_xhr.js'
 import * as API from "./api.js";
 import {isMuted} from "./initialization.js";
-import {gplayer} from "./player_singleton.js";
+import {gplayer, gplaylist} from "./player_singleton.js";
 import {PLAYLIST_NAME_KEY, Poster} from "./poster.js"
-import {Duration, gplaylist, Song, Volume} from "./types.js"
+import {Duration, Song, Volume} from "./types.js"
 import {VolumeSetter} from "./volume_setter.js"
 
 $(function () {

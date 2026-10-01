@@ -1,6 +1,8 @@
 /**
  * Playlist and player events. For the individual components like external, lyrics, etc. look to
  * those modules specifically.
+ *
+ * Exists to decouple the GUI from the player and playlist logic.
  */
 import {PubSub, topic} from "./pubsub.js";
 import {Percentage, Volume} from "./types.js";

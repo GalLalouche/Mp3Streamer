@@ -1,4 +1,5 @@
 /** `any` by any other name */
+// FIXME could this be unknown instead?
 export interface RawJSON {
   [key: string]: any;
 }

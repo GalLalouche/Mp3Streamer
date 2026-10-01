@@ -1,39 +1,38 @@
 import * as DataApi from "./data_api.js";
 import {External} from './external.js'
-import {Globals} from "./globals.js"
 import {getDebugAlbum, getDebugSong, isMuted} from './initialization.js'
 import {Local} from "./local.js"
 import {Lyrics} from './lyrics.js'
 import * as NewAlbumInfo from './new_albums_info.js'
-import {EventForPlaylist, EventsForPlaylist, gplayer} from "./player_singleton.js";
+import {EventForPlaylist, EventsForPlaylist, gplayer, gplaylist} from "./player_singleton.js";
 import {Poster} from "./poster.js";
 import {Score} from "./score.js"
-import {Duration, gplaylist, PlayerEvent, Playlist, Song, TimeUpdate} from "./types.js"
+import {Duration, PlayerEvent, Song, TimeUpdate} from "./types.js"
 import {VolumeSetter} from "./volume_setter.js"
 
 // TODO this entire file should split into jplayer specific hacks and more general code
 
 const WAIT_DELAY: Duration = Duration.fromSeconds(25)
 
-declare class JPlayerPlaylist extends Playlist {
-  add(song: Song, playNow: boolean): Promise<void>
-  protected _next(): void
-  play(index: number): Promise<void>
-  select(index: number): Promise<void>
-  prev(): void
-  currentIndex(): number
-  songs(): Song[]
-  removeItemAux(index: any, next: (x: JQuery<HTMLElement>) => JQuery<HTMLElement>): void
-
-  constructor(
-    cssSelector: { jPlayer: string, cssSelectorAncestor: string },
-    playlist: Song[],
-    options: {
-      swfPath: string,
-      supplied: string,
-    },
-  )
-}
+// declare class JPlayerPlaylist extends Playlist {
+//   add(song: Song, playNow: boolean): Promise<void>
+//   protected _next(): void
+//   play(index: number): Promise<void>
+//   select(index: number): Promise<void>
+//   prev(): void
+//   currentIndex(): number
+//   songs(): Song[]
+//   removeItemAux(index: any, next: (x: JQuery<HTMLElement>) => JQuery<HTMLElement>): void
+//
+//   constructor(
+//     cssSelector: { jPlayer: string, cssSelectorAncestor: string },
+//     playlist: Song[],
+//     options: {
+//       swfPath: string,
+//       supplied: string,
+//     },
+//   )
+// }
 
 interface PlaylistHacks {
   oldNext: () => void
@@ -42,19 +41,19 @@ interface PlaylistHacks {
 
 $(function () {
   const JPLAYER_ID = "#jquery_jplayer_1"
-  const playlist = new JPlayerPlaylist({
-    jPlayer: JPLAYER_ID,
-    cssSelectorAncestor: "#jp_container_1",
-  }, [], {
-    swfPath: "../js",
-    supplied: "webmv, ogv, m4a, oga, mp3, flac",
-  })
-  Globals.playlist = playlist
+  // const playlist = new JPlayerPlaylist({
+  //   jPlayer: JPLAYER_ID,
+  //   cssSelectorAncestor: "#jp_container_1",
+  // }, [], {
+  //   swfPath: "../js",
+  //   supplied: "webmv, ogv, m4a, oga, mp3, flac",
+  // })
+  // Globals.playlist = playlist
   // Modify next to fetch a random song if in shuffle mode and at the last song
   // TODO move to playlist_customization
-  let hacks = playlist as unknown as PlaylistHacks
-  hacks.oldNext = playlist.next
-  const shouldLoadNextSongFromRandom = () => playlist.isLastSongPlaying()
+  let hacks = gplaylist as any
+  hacks.oldNext = hacks.next
+  const shouldLoadNextSongFromRandom = () => gplaylist.isLastSongPlaying()
   hacks.next = function () {
     if (shouldLoadNextSongFromRandom())
       loadNextRandom(true)
@@ -72,7 +71,7 @@ $(function () {
         // jplayer hack: update the offlineUrl for the media object
         if ($(JPLAYER_ID).data('jPlayer')) {
           const media = $(JPLAYER_ID).data('jPlayer').htmlElement.media
-          if (currentPlayingSong.file === playlist.currentPlayingSong().file && media && media.offlineUrl === undefined)
+          if (currentPlayingSong.file === gplaylist.currentPlayingSong().file && media && media.offlineUrl === undefined)
             media.offlineUrl = currentPlayingSong.offlineUrl
         }
       })
@@ -126,6 +125,6 @@ $(function () {
   }
 
   function loadNextRandom(playNow: boolean): void {
-    DataApi.getRandomSong().then(song => playlist.add(song, playNow))
+    DataApi.getRandomSong().then(song => gplaylist.add(song, playNow))
   }
 })

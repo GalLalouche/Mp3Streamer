@@ -4,8 +4,10 @@
 import {match, P} from "ts-pattern";
 import {External} from "./external.js"
 import {GuiEvents, PlaylistEventTopic} from "./gui_events.js";
+import {ITEM_CLASS} from "./jplayer.playlist.js";
+import {gplaylist} from "./player_singleton.js";
 import {Score} from "./score.js"
-import {gplaylist, Song} from "./types.js"
+import {Song} from "./types.js"
 
 export namespace PlaylistCustomizations {
   export function formattedMetadata(song: Song): string {
@@ -27,7 +29,7 @@ export namespace PlaylistCustomizations {
   }
 
   // This is meant to be monkey-patched into playlist (hence the use of this.options).
-  export function mediaMetadataHtml(this: { options: any }, song: Song): string {
+  export function mediaMetadataHtml(song: Song): string {
     const metadata =
       `<span class="jp-artist" dir="ltr">${song.artistName}</span> ` +
       `(<span class="jp-parens">${PlaylistCustomizations.formattedMetadata(song)}</span>`
@@ -35,7 +37,7 @@ export namespace PlaylistCustomizations {
     // Duration is appended manually outside of metadata to ensure that it is always displayed, even
     // if metadata overflows. That's the reason for the odd parens too.
     return (
-      `<span class='${this.options.playlistOptions.itemClass}' tabindex='1'>
+      `<span class='${ITEM_CLASS}' tabindex='1'>
           <span class="width-limited-playlist-span">
             <span class="jp-title">${song.title}</span> <span class="jp-metadata">${metadata}</span>
           </span><!--
@@ -74,30 +76,29 @@ function additionalData(song: Song): string[] {
 
 $(function () {
   const playlistElement = $(".jp-playlist")
-  const playlist = gplaylist
   const playlistItem = "> ul > li"
 
   playlistElement.on("mouseover", playlistItem, function () {
     const listItem = $(this)
     // The listItem can't overflow; what can overflow is the width-limited descendent.
     if (listItem.find(".width-limited-playlist-span").custom_overflown()) {
-      const displayedIndex = playlist.getDisplayedIndex(listItem.index())
-      const song = playlist.songs()[displayedIndex]
-      listItem.custom_tooltip(playlist.toString(song))
+      const displayedIndex = gplaylist.getDisplayedIndex(listItem.index())
+      const song = gplaylist.songs()[displayedIndex]
+      listItem.custom_tooltip(PlaylistCustomizations.mediaMetadataHtml(song))
     }
   })
   // Move to song on click.
   // FIXME this doesn't work on Chrome for some reason. It always registers the click as on the div.
   GuiEvents.listen(PlaylistEventTopic, async event => {
     match(event)
-      .with('next', () => playlist.next())
-      .with('previous', () => playlist.prev())
+      .with('next', () => gplaylist.next())
+      .with('previous', () => gplaylist.prev())
       .with({type: P.select("type"), index: P.select("index")}, ({type, index}) => {
         match(type)
-          .with("select", () => playlist.select(index))
-          .with("x", () => playlist.removeItemAux(index, _ => $()))
-          .with("up", () => playlist.removeItemAux(index, x => x.prev()))
-          .with("down", () => playlist.removeItemAux(index, x => x.next()))
+          .with("select", () => gplaylist.select(index))
+          .with("x", () => gplaylist.removeItemAux(index, _ => $()))
+          .with("up", () => gplaylist.removeItemAux(index, x => x.prev()))
+          .with("down", () => gplaylist.removeItemAux(index, x => x.next()))
           .exhaustive()
       })
   })
@@ -132,7 +133,7 @@ $(function () {
       position: 'absolute',
     })
 
-    const song = playlist.songs()[playlist.getDisplayedIndex($(this).index())]
+    const song = gplaylist.songs()[gplaylist.getDisplayedIndex($(this).index())]
     contextMenu.one("click", "li", async function (e) {
       switch (e.target.textContent.trim()) {
         case "Score":
