@@ -31,4 +31,3 @@ if (window.history && history.pushState) {
     })
   })
 }
-$exposeGlobally!(getSearchParam)

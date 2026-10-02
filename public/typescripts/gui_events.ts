@@ -89,6 +89,3 @@ $(function () {
     }
   })
 })
-
-$exposeGlobally!(GuiEvents)
-$exposeGlobally!(PlaylistEventTopic)

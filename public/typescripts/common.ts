@@ -266,14 +266,6 @@ Promise.prototype.void = async function () {
   await this
 }
 
-function $exposeGlobally(obj: any): void {
-  (window as any).obj = obj
-}
-
-function $exposeGloballyExplicit(name: string, obj: any): void {
-  (window as any)[name] = obj
-}
-
 // Type checkers
 function isString(e: any): e is string {
   return typeof e == "string"

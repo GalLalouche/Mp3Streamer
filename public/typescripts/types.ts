@@ -226,7 +226,3 @@ export class Volume {
 
   percentage(): Percentage {return this.volume}
 }
-
-$exposeGlobally!(Duration)
-$exposeGlobally!(Percentage)
-$exposeGlobally!(Volume)
