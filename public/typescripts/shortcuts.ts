@@ -1,6 +1,6 @@
 import * as DataApi from "./data_api.js";
 import {gplayer, gplaylist} from "./player_singleton.js";
-import {scanPlus, Search} from "./search.js"
+import * as Search from "./search.js"
 import {Song} from "./types.js"
 
 $(function () {
@@ -47,7 +47,7 @@ $(function () {
         e.preventDefault()
         break
       case 'S':
-        scanPlus()
+        Search.scanPlus()
         e.preventDefault()
         break
     }

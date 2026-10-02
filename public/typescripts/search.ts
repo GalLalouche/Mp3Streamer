@@ -1,17 +1,15 @@
 import * as API from "./api.js";
 import * as DataApi from "./data_api.js";
-import {LastAlbum} from "./last.js"
+import * as LastAlbum from "./last.js"
 import {gplaylist} from "./player_singleton.js";
-import {PlaylistCustomizations} from "./playlist_customizations.js";
+import * as PlaylistCustomizations from "./playlist_customizations.js";
 import {Album, Artist, Song} from "./types.js"
 
-export namespace Search {
-  export async function quickSearch(): Promise<void> {
-    const helper = getHelper()
-    helper.clearResults()
-    helper.searchBox.focus()
-    return scan()
-  }
+export async function quickSearch(): Promise<void> {
+  const helper = getHelper()
+  helper.clearResults()
+  helper.searchBox.focus()
+  return scan()
 }
 
 const getHelper = lazy(() => new Helper())

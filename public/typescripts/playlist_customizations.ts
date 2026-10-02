@@ -2,52 +2,48 @@
 // FIXME merge this and the original playlist, rewrite the whole thing in typescript.
 
 import {match, P} from "ts-pattern";
-import {External} from "./external.js"
+import * as External from "./external.js"
 import {GuiEvents, PlaylistEventTopic} from "./gui_events.js";
 import {ITEM_CLASS} from "./jplayer.playlist.js";
 import {gplaylist} from "./player_singleton.js";
-import {Score} from "./score.js"
+import * as Score from "./score.js"
 import {Song} from "./types.js"
 
-export namespace PlaylistCustomizations {
-  export function formattedMetadata(song: Song): string {
-    const res = additionalData(song)
-    const head = `<span dir="ltr">${res[0]}</span>`
-    res.shift()
-    res.push(song.bitrate + "kbps")
-    return `${head}, <span dir="ltr">${res.join(", ")}</span>`
-  }
+export function formattedMetadata(song: Song): string {
+  const res = additionalData(song)
+  const head = `<span dir="ltr">${res[0]}</span>`
+  res.shift()
+  res.push(song.bitrate + "kbps")
+  return `${head}, <span dir="ltr">${res.join(", ")}</span>`
+}
 
-  export function mediaMetadata(song: Song): string {
-    return [
-      song.title,
-      song.artistName,
-    ].concat(additionalData(song)).concat([
-      song.duration.timeFormat(),
-      song.bitrate + "kbps",
-    ]).join(", ")
-  }
+export function mediaMetadata(song: Song): string {
+  return [
+    song.title,
+    song.artistName,
+  ].concat(additionalData(song)).concat([
+    song.duration.timeFormat(),
+    song.bitrate + "kbps",
+  ]).join(", ")
+}
 
-  // This is meant to be monkey-patched into playlist (hence the use of this.options).
-  export function mediaMetadataHtml(song: Song): string {
-    const metadata =
-      `<span class="jp-artist" dir="ltr">${song.artistName}</span> ` +
-      `(<span class="jp-parens">${PlaylistCustomizations.formattedMetadata(song)}</span>`
+// This is meant to be monkey-patched into playlist (hence the use of this.options).
+export function mediaMetadataHtml(song: Song): string {
+  const metadata =
+    `<span class="jp-artist" dir="ltr">${song.artistName}</span> ` +
+    `(<span class="jp-parens">${formattedMetadata(song)}</span>`
 
-    // Duration is appended manually outside of metadata to ensure that it is always displayed, even
-    // if metadata overflows. That's the reason for the odd parens too.
-    return (
-      `<span class='${ITEM_CLASS}' tabindex='1'>
+  // Duration is appended manually outside of metadata to ensure that it is always displayed, even
+  // if metadata overflows. That's the reason for the odd parens too.
+  return (
+    `<span class='${ITEM_CLASS}' tabindex='1'>
           <span class="width-limited-playlist-span">
             <span class="jp-title">${song.title}</span> <span class="jp-metadata">${metadata}</span>
           </span><!--
           --><span class="jp-list-duration">, ${song.duration.timeFormat()})</span>
         </span>`
-    )
-  }
+  )
 }
-
-$exposeGlobally!(PlaylistCustomizations)
 
 function isClassicalPiece(song: Song): boolean { return !!song.composer}
 
@@ -84,7 +80,7 @@ $(function () {
     if (listItem.find(".width-limited-playlist-span").custom_overflown()) {
       const displayedIndex = gplaylist.getDisplayedIndex(listItem.index())
       const song = gplaylist.songs()[displayedIndex]
-      listItem.custom_tooltip(PlaylistCustomizations.mediaMetadataHtml(song))
+      listItem.custom_tooltip(mediaMetadataHtml(song))
     }
   })
   // Move to song on click.

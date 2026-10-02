@@ -1,6 +1,6 @@
 import {Duration, Percentage, Player, PlayerEvent, PlayerEventListener, Song, TimeUpdate, Volume} from "./types.js";
 
-/** Implements the Player interface using a hidden HTML5 audio element. */
+/** Implements the Player interface using an HTML5 audio element. */
 export class PlayerImpl extends Player {
   listeners: PlayerEventListener[] = []
   private readonly html: HTMLAudioElement
@@ -15,7 +15,7 @@ export class PlayerImpl extends Player {
     return result
   }
 
-  startGuiUpdates(): void {
+  private startGuiUpdates(): void {
     const that = this
     this.html.ontimeupdate = () => that.publish(new TimeUpdate({
       currentDuration: that.currentTime(),

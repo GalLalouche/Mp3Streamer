@@ -18,11 +18,11 @@
 
 /* global jPlayerPlaylist: true, jQuery:false, alert:false */
 
-import {ColorGetter} from "./color-utils.js";
-import {Local} from "./local.js";
+import * as ColorUtils from "./color-utils.js"
+import * as Local from "./local.js";
 import {gplayer} from "./player_singleton.js";
 // FIXME cyclic dependency is only temporary since both files will be merged eventually
-import {PlaylistCustomizations} from "./playlist_customizations.js";
+import * as PlaylistCustomizations from "./playlist_customizations.js";
 import {Player, PlayerEvent, Song} from "./types.js";
 
 const REMOVE_ITEM = "jp-playlist-item-remove"
@@ -126,7 +126,7 @@ export class JPlayerPlaylist {
 
     const result = $(listItem)
     result.prepend(img(song.poster).addClass("playlist-item-poster"))
-    ColorGetter.getColor(song.poster).then(rgb => {
+    ColorUtils.getColor(song.poster).then(rgb => {
       result.css('background-color', rgb.makeLighter(0.1).toString())
     })
     return result

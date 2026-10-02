@@ -1,4 +1,4 @@
-import {Local} from "./local.js";
+import * as Local from "./local.js";
 import {SecondaryPlayer} from "./secondary_player.js";
 
 $(function () {

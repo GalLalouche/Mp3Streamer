@@ -1,3 +1,5 @@
+// Not a module and no namespace so everything here can just be used as is.
+
 function isEmptyObject(obj: object): boolean {
   for (const prop in obj)
     if (Object.prototype.hasOwnProperty.call(obj, prop))

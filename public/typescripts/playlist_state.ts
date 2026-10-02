@@ -1,16 +1,16 @@
 /**
  * Code related to loading and saving the playlist remotely or locally. If you want code related
  * to the actual playlist, you probably want types.ts, playlist_customization.ts, or
- * jplayer.playlist.js.
+ * jplayer.playlist.ts.
  */
 
 import './jquery_common_xhr.js'
 import * as API from "./api.js";
 import {isMuted} from "./initialization.js";
 import {gplayer, gplaylist} from "./player_singleton.js";
-import {PLAYLIST_NAME_KEY, Poster} from "./poster.js"
+import * as Poster from "./poster.js"
 import {Duration, Song, Volume} from "./types.js"
-import {VolumeSetter} from "./volume_setter.js"
+import * as VolumeSetter from "./volume_setter.js"
 
 $(function () {
     class PlaylistJson {
@@ -105,7 +105,7 @@ $(function () {
       localStorage.setItem(backupKey, JSON.stringify(state))
       const playlistName = Poster.playlistName.val() as string
       if (playlistName) {
-        localStorage.setItem(PLAYLIST_NAME_KEY, playlistName)
+        localStorage.setItem(Poster.PLAYLIST_NAME_KEY, playlistName)
         console.log(`Saving playlist ${playlistName} remotely`)
         return putJson(`playlist/${playlistName}`, state)
           .toPromise()

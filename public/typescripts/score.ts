@@ -3,27 +3,25 @@ import * as API from "./api.js"
 import {gplaylist} from "./player_singleton.js";
 import {Song} from "./types.js"
 
-export namespace Score {
-  export function setup(): void {
-    fieldset = $("#score")
-    fieldset.on('change', 'select', async function () {
-      const newScore = $(this).val() as Score
-      const source = $(this).attr('source')!.toLowerCase() as Source
-      return setScore(gplaylist.currentPlayingSong(), source, newScore)
-    })
-    fieldset.on('click', 'button', async function () {
-      $.ajax({url: "score/" + gplaylist.currentPlayingSong().file, type: "PATCH"})
-    })
-  }
+function setup(): void {
+  fieldset = $("#score")
+  fieldset.on('change', 'select', async function () {
+    const newScore = $(this).val() as Score
+    const source = $(this).attr('source')!.toLowerCase() as Source
+    return setScore(gplaylist.currentPlayingSong(), source, newScore)
+  })
+  fieldset.on('click', 'button', async function () {
+    $.ajax({url: "score/" + gplaylist.currentPlayingSong().file, type: "PATCH"})
+  })
+}
 
-  export function show(song: Song): void {
-    clearScores()
-    getScore(song).then(score => updateScore(song, score))
-  }
+export function show(song: Song): void {
+  clearScores()
+  getScore(song).then(score => updateScore(song, score))
+}
 
-  export function popup(song: Song): void {
-    getScore(song).then(scoreResult => scoreSliderDialog(song, scoreResult))
-  }
+export function popup(song: Song): void {
+  getScore(song).then(scoreResult => scoreSliderDialog(song, scoreResult))
 }
 
 async function getScore(song: Song): Promise<ScoreResult> {
@@ -129,7 +127,7 @@ function scoreSliderDialog(song: Song, scoreResult: ScoreResult): void {
     title: "Editing score",
     close: () => {
       if (modified && song === gplaylist.currentPlayingSong())
-        Score.show(song)
+        show(song)
       dialogDiv.remove()
       $('.ui-widget-overlay').off("click", handler)
     },
@@ -256,5 +254,5 @@ function titleFor(source: Source, song: Song): string {
 
 
 $(function () {
-  Score.setup()
+  setup()
 })

@@ -2,32 +2,30 @@ import './jquery_common_xhr.js'
 import {match} from 'ts-pattern'
 import * as API from './api.js'
 import {gplaylist} from "./player_singleton.js";
-import {Poster} from "./poster.js"
+import * as Poster from "./poster.js"
 import {Song} from "./types.js"
 
-export namespace External {
-  export function show(song: Song): void {
-    const helper = getHelper()
-    getExternal(song).then(helper.showLinks(song))
-      .catch(function () {
-        helper.cleanUp()
-        // FIXME A better error message
-        helper.externalDivs.append(span("Error occurred while fetching links"))
-      })
-  }
+export function show(song: Song): void {
+  const helper = getHelper()
+  getExternal(song).then(helper.showLinks(song))
+    .catch(function () {
+      helper.cleanUp()
+      // FIXME A better error message
+      helper.externalDivs.append(span("Error occurred while fetching links"))
+    })
+}
 
-  export async function refreshRemote(song: Song): Promise<void> {
-    const refreshDisplay = song === gplaylist.currentPlayingSong()
-    return Promise.all(
-      externalEntityTypes.map(target =>
-        refreshDisplay
-          ? getHelper().refresh(target as ExternalEntityType)()
-          : refresh(target, song).then(() => {
-            console.log(`Successfully refreshed ${song.file}'s ${target} links`)
-          }),
-      ),
-    ).void()
-  }
+export async function refreshRemote(song: Song): Promise<void> {
+  const refreshDisplay = song === gplaylist.currentPlayingSong()
+  return Promise.all(
+    externalEntityTypes.map(target =>
+      refreshDisplay
+        ? getHelper().refresh(target as ExternalEntityType)()
+        : refresh(target, song).then(() => {
+          console.log(`Successfully refreshed ${song.file}'s ${target} links`)
+        }),
+    ),
+  ).void()
 }
 
 const REMOTE_PATH = "external/"

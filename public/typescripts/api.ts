@@ -1,5 +1,4 @@
-/** `any` by any other name */
-// FIXME could this be unknown instead?
+/** `any` by any other name. It has all fields, but has to be explicit cast other types. */
 export interface RawJSON {
   [key: string]: any;
 }

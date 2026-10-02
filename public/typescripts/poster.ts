@@ -1,18 +1,14 @@
-import {ColorGetter} from "./color-utils.js"
+import * as ColorUtils from "./color-utils.js"
 
 export const PLAYLIST_NAME_KEY = "playlist_name.js"
 
-export namespace Poster {
-  export let rgbListeners: ((rgb: RGB) => void)[] = []
-  // TODO This *really* shouldn't be here, it's just that this button is near the poster :\
-  export let playlistName: JQuery<HTMLElement>
+export let rgbListeners: ((rgb: RGB) => void)[] = []
+// TODO This *really* shouldn't be here, it's just that this button is near the poster :\
+export let playlistName: JQuery<HTMLElement>
 
-  export function setImage(url: string): void {
-    $("#jp_poster_0").attr("src", url)
-  }
+export function setImage(url: string): void {
+  $("#jp_poster_0").attr("src", url)
 }
-
-$exposeGlobally!(Poster)
 
 waitForElem("#jp_poster_0").then(p => $(p)).then(poster => {
   function buttonAux(id: string, text: string): JQuery<HTMLElement> {
@@ -35,13 +31,13 @@ waitForElem("#jp_poster_0").then(p => $(p)).then(poster => {
     ),
   )
   div.prepend(posterAndButtonsDiv)
-  Poster.playlistName = $('#playlist_name')
-  Poster.playlistName.val(localStorage.getItem(PLAYLIST_NAME_KEY)!)
+  playlistName = $('#playlist_name')
+  playlistName.val(localStorage.getItem(PLAYLIST_NAME_KEY)!)
 
   poster[0].addEventListener('load', async function () {
-    const rgb = await ColorGetter.getColor(poster.attr("src")!)
+    const rgb = await ColorUtils.getColor(poster.attr("src")!)
     const color = rgb.makeLighter(0.5)
     document.body.style.backgroundColor = color.toString()
-    Poster.rgbListeners.forEach(l => l(color))
+    rgbListeners.forEach(l => l(color))
   })
 })
