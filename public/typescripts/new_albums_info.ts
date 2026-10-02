@@ -1,29 +1,6 @@
 import * as API from "./api.js"
 import {Album, Song} from "./types.js"
 
-function ignoreAlbum(artist: string, album: string, reconID: string, elementToRemove: JQuery<HTMLElement>): void {
-  confirmDialog(
-    `ignore ${artist} - ${album}`,
-    () => $.put(`/new_albums/album/ignore/${reconID}`, () => elementToRemove.remove()),
-  )
-}
-
-function copyPasteAlbum(artist: string, album: string): void {
-  const text = `${artist} ${album}`;
-  copyTextToClipboard(text)
-  newNotification("Copy-pasted", `'${text}' copied to clipboard`)
-}
-
-function ignoreArtist(song: Song): void {
-  confirmDialog(
-    "ignore " + song.artistName,
-    () => $.put(
-      '/new_albums/artist/ignore/' + song.artistName,
-      () => show(song),
-    ),
-  )
-}
-
 export function show(song: Song): void {
   const fieldSet = $("#new-albums")
 
@@ -92,6 +69,30 @@ export function show(song: Song): void {
     ignoreArtistButton.click(() => ignoreArtist(song))
     fieldSet.append(ignoreArtistButton)
   })
+}
+
+
+function ignoreAlbum(artist: string, album: string, reconID: string, elementToRemove: JQuery<HTMLElement>): void {
+  confirmDialog(
+    `ignore ${artist} - ${album}`,
+    () => $.put(`/new_albums/album/ignore/${reconID}`, () => elementToRemove.remove()),
+  )
+}
+
+function copyPasteAlbum(artist: string, album: string): void {
+  const text = `${artist} ${album}`;
+  copyTextToClipboard(text)
+  newNotification("Copy-pasted", `'${text}' copied to clipboard`)
+}
+
+function ignoreArtist(song: Song): void {
+  confirmDialog(
+    "ignore " + song.artistName,
+    () => $.put(
+      '/new_albums/artist/ignore/' + song.artistName,
+      () => show(song),
+    ),
+  )
 }
 
 function requestUrl(song: Song): string {
