@@ -1,8 +1,9 @@
+import {Duration, Percentage} from "./common_types.js";
 import {GuiEvents, PlayerControls, PlayerControlsTopic} from "./gui_events.js";
+import {HtmlPlayer} from "./html_player";
 import {JPlayerPlaylist} from "./jplayer.playlist.js";
-import {PlayerImpl} from "./player.js";
 import * as PlayerGUI from "./player_gui.js";
-import {Duration, Percentage, Player, PlayerEvent, Playlist, Song, Volume} from "./types.js";
+import {Player, PlayerEvent, Playlist, Song, Volume} from "./types";
 import * as VolumeSetter from "./volume_setter.js";
 
 interface JPlayerElement {
@@ -134,7 +135,7 @@ export let gplaylist!: Playlist
 
 // TODO extract?
 $(function () {
-  gplayer = SingletonPlayer.from(PlayerImpl.create())
+  gplayer = SingletonPlayer.from(HtmlPlayer.create())
   gplaylist = makePlaylist(gplayer)
   gplayer.setVolume(VolumeSetter.getVolumeBaseline())
   playerEvents = document.createElement("div")

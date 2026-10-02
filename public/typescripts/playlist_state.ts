@@ -6,10 +6,11 @@
 
 import './jquery_common_xhr.js'
 import * as API from "./api.js";
+import {Duration} from "./common_types.js";
 import {isMuted} from "./initialization.js";
 import {gplayer, gplaylist} from "./player_singleton.js";
 import * as Poster from "./poster.js"
-import {Duration, Song, Volume} from "./types.js"
+import {Song, Volume} from "./types.js"
 import * as VolumeSetter from "./volume_setter.js"
 
 $(function () {

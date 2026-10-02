@@ -4,8 +4,9 @@
  *
  * Exists to decouple the GUI from the player and playlist logic.
  */
+import {Percentage} from "./common_types.js";
 import {PubSub, topic} from "./pubsub.js";
-import {Percentage, Volume} from "./types.js";
+import {Volume} from "./types.js";
 
 
 export const GuiEvents: PubSub = new PubSub()

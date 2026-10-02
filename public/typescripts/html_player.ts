@@ -1,7 +1,8 @@
-import {Duration, Percentage, Player, PlayerEvent, PlayerEventListener, Song, TimeUpdate, Volume} from "./types.js";
+import {Duration, Percentage} from "./common_types.js";
+import {Player, PlayerEvent, PlayerEventListener, Song, TimeUpdate, Volume} from "./types.js";
 
 /** Implements the Player interface using an HTML5 audio element. */
-export class PlayerImpl extends Player {
+export class HtmlPlayer extends Player {
   listeners: PlayerEventListener[] = []
   private readonly html: HTMLAudioElement
   private constructor() {
@@ -9,35 +10,21 @@ export class PlayerImpl extends Player {
     this.html = document.createElement("audio")
   }
 
-  static create(): PlayerImpl {
-    const result = new PlayerImpl()
-    result.startGuiUpdates()
-    return result
-  }
-
-  private startGuiUpdates(): void {
-    const that = this
-    this.html.ontimeupdate = () => that.publish(new TimeUpdate({
+  static create(): HtmlPlayer {
+    const result = new HtmlPlayer()
+    const that = result
+    result.html.ontimeupdate = () => that.publish(new TimeUpdate({
       currentDuration: that.currentTime(),
       totalDuration: that.duration()
     }))
-    // this.html.onpause = () => that.maybePublish(new PlayerEvent("pause"))
-    // this.html.onplay = () => PlayerGUI.setIsPlaying()
-    // this.html.onvolumechange = () => PlayerGUI.updateVolume(this.getVolume())
-    this.html.onended = () => that.publish("ENDED")
+    result.html.onended = () => that.publish("ENDED")
+    return result
   }
 
   publish(pe: PlayerEvent): void {
     for (const listener of this.listeners)
       listener(pe)
   }
-  //
-  // stopGuiUpdates(): void {
-  //   this.html.ontimeupdate = null
-  //   this.html.onpause = null
-  //   this.html.onplay = null
-  //   this.html.onvolumechange = null
-  // }
 
   override currentTime(): Duration {return Duration.fromSeconds(this.html.currentTime)}
   override duration(): Duration {return Duration.fromSeconds(this.html.duration)}
@@ -65,7 +52,6 @@ export class PlayerImpl extends Player {
   }
   override setVolume(v: Volume): void {
     v.setVolume(this.html)
-    // PlayerGUI.updateVolume(v)
   }
   override skipTo(duration: Duration): void {
     this.html.currentTime = duration.toSeconds()
