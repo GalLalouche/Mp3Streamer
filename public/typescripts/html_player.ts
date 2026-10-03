@@ -1,5 +1,6 @@
 import {Duration, Percentage} from "./common_types.js";
-import {Player, PlayerEvent, PlayerEventListener, Song, TimeUpdate, Volume} from "./types.js";
+import {Song} from "./media.js";
+import {Player, PlayerEvent, PlayerEventListener, TimeUpdate, Volume} from "./types.js";
 
 /** Implements the Player interface using an HTML5 audio element. */
 export class HtmlPlayer extends Player {

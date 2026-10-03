@@ -1,15 +1,19 @@
 import * as API from "./api.js";
 import * as DataApi from "./data_api.js";
 import * as LastAlbum from "./last.js"
+import {Album, Artist, Song} from "./media.js";
 import {gplaylist} from "./player_singleton.js";
 import * as PlaylistCustomizations from "./playlist_customizations.js";
-import {Album, Artist, Song} from "./types.js"
 
 export async function quickSearch(): Promise<void> {
   const helper = getHelper()
   helper.clearResults()
   helper.searchBox.focus()
   return scan()
+}
+
+export async function scanPlus() {
+  return scanAux(true)
 }
 
 const getHelper = lazy(() => new Helper())
@@ -246,10 +250,6 @@ async function scanAux(addNewAlbum: boolean): Promise<void> {
 
 async function scan(): Promise<void> {
   return scanAux(false)
-}
-
-export async function scanPlus() {
-  return scanAux(true)
 }
 
 $(() => {

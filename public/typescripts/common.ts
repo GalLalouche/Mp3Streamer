@@ -114,6 +114,17 @@ Array.prototype.custom_sort_by = function <S, T>(f: (a: T) => S): T[] {
     })
     .map((e: [T, S]) => e[0])
 }
+
+interface Map<K, V> {
+  custom_get_or_throw(key: K): V
+}
+
+Map.prototype.custom_get_or_throw = function <K, V>(key: K): V {
+  const result = this.get(key)
+  if (result === undefined)
+    throw new Error("Key not found in map: " + key)
+  return result
+}
 Array.prototype.custom_group_by = function <S extends string | number | symbol, T>(f: (a: T) => S) {
   let result: ObjectIndex<S, T[]> = {} as unknown as ObjectIndex<S, T[]>
   this.forEach((e: T) => {

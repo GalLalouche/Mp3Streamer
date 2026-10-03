@@ -6,9 +6,6 @@ declare const payloadType: unique symbol
 
 export type Topic<T> = {
   readonly key: symbol
-  // `symbol` is the type of a runtime symbol value.
-  // `Symbol(name)` below creates that value for the bus to use.
-
   readonly [payloadType]: (value: T) => T
   // `[payloadType]` names a property using the special symbol above.
   // This property is a compile-time marker tying this Topic to T.
@@ -18,51 +15,32 @@ export type Topic<T> = {
 
 export function topic<T>(name: string): Topic<T> {
   return {key: Symbol(name)} as Topic<T>
-  // `<T>` lets the caller choose the topic's payload type.
   // `Symbol(name)` creates a unique runtime key; `name` is just a label.
   // `as Topic<T>` tells TypeScript to trust that this object is a Topic<T>,
   // even though it doesn't have the compile-time-only marker property.
 }
 
+interface Unsubscribe {
+  unsubscribe(): void
+}
+
 export class PubSub {
   private readonly listeners = new Map<symbol, Set<(value: any) => void>>()
-  // `Map` looks up listeners by the topic's runtime symbol.
-  // `Set` holds the callbacks for one topic.
-  // `any` lets this one map hold callbacks for different payload types.
-  // The public methods below still check payload types.
 
-  constructor() {}
-
-  listen<T>(
-    topic: Topic<T>,
-    f: (value: T) => void
-  ): () => void {
-    // `<T>` declares a type variable for this method call.
-    // TypeScript infers T from the topic argument.
-
-    let bucket = this.listeners.get(topic.key)
-
-    if (!bucket) {
-      bucket = new Set()
-      this.listeners.set(topic.key, bucket)
-    }
-
+  listen<T>(topic: Topic<T>, f: (t: T) => void): Unsubscribe {
+    if (not(this.listeners.has(topic.key)))
+      this.listeners.set(topic.key, new Set())
+    const bucket = this.listeners.custom_get_or_throw(topic.key)
     bucket.add(f)
-
-    return () => bucket!.delete(f)
-    // `!` tells TypeScript that bucket isn't undefined here.
-    // The returned function removes this listener.
+    return {unsubscribe: () => bucket.delete(f)}
   }
 
-  unlisten<T>(
-    topic: Topic<T>,
-    f: (value: T) => void
-  ): void {this.listeners.get(topic.key)?.delete(f)}
+  unlisten<T>(topic: Topic<T>, f: (t: T) => void): void {
+    this.listeners.get(topic.key)?.delete(f)
+  }
 
   publish<T>(topic: Topic<T>, value: T): void {
-    // This T is inferred from the topic too, so value must match it.
     for (const f of this.listeners.get(topic.key) ?? []) {
-      // `?? []` uses an empty list if this topic has no listeners.
       f(value)
     }
   }

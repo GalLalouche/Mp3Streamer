@@ -20,10 +20,11 @@
 
 import * as ColorUtils from "./color-utils.js"
 import * as Local from "./local.js";
+import {Song} from "./media.js";
 import {gplayer} from "./player_singleton.js";
 // FIXME cyclic dependency is only temporary since both files will be merged eventually
 import * as PlaylistCustomizations from "./playlist_customizations.js";
-import {Player, PlayerEvent, Song} from "./types.js";
+import {Player, PlayerEvent} from "./types.js";
 
 const REMOVE_ITEM = "jp-playlist-item-remove"
 // FIXME this is reused in GuiEvents

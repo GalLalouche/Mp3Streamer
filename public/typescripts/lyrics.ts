@@ -1,6 +1,6 @@
 import * as API from "./api.js"
+import {Song} from "./media.js";
 import {gplayer, gplaylist} from "./player_singleton.js";
-import {Song} from "./types.js"
 
 export function show(song: Song): void {
   const helper = getHelper()

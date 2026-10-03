@@ -1,138 +1,6 @@
 import {RawJSON} from "./api.js"
 import {Duration, Percentage} from "./common_types.js";
-
-export class Song {
-  readonly title: string
-  readonly artistName: string
-  readonly albumName: string
-  readonly track: number
-  readonly year: number
-  readonly bitrate: string
-  readonly duration: Duration
-  readonly size: number
-  readonly discNumber?: string
-  readonly trackGain: number
-
-  // Classical music fields
-  readonly composer?: string
-  readonly conductor?: string
-  readonly opus?: string
-  readonly orchestra?: string
-  readonly performanceYear?: number
-
-  // The below represent URLs
-  readonly file: string
-  readonly poster: string
-  // Either mp3 or flac should be available
-  readonly mp3?: string
-  readonly flac?: string
-  offlineUrl?: string
-
-  static fromJSON(json: RawJSON): Song {
-    return new Song(
-      json.title,
-      json.artistName,
-      json.albumName,
-      json.track,
-      json.year,
-      json.bitrate,
-      Duration.fromJson(json.duration),
-      json.size,
-      json.discNumber,
-      json.trackGain,
-      json.composer,
-      json.conductor,
-      json.opus,
-      json.orchestra,
-      json.performanceYear,
-      json.file,
-      json.poster,
-      json.mp3,
-      json.flac,
-    )
-  }
-
-  private constructor(
-    title: string,
-    artistName: string,
-    albumName: string,
-    track: number,
-    year: number,
-    bitrate: string,
-    duration: Duration,
-    size: number,
-    discNumber: string | undefined,
-    trackGain: number,
-    composer: string | undefined,
-    conductor: string | undefined,
-    opus: string | undefined,
-    orchestra: string | undefined,
-    performanceYear: number | undefined,
-    file: string,
-    poster: string,
-    mp3: string | undefined,
-    flac: string | undefined,
-  ) {
-    this.title = title
-    this.artistName = artistName
-    this.albumName = albumName
-    this.track = track
-    this.year = year
-    this.bitrate = bitrate
-    this.duration = duration
-    this.size = size
-    this.discNumber = discNumber
-    this.trackGain = trackGain
-
-    this.composer = composer
-    this.conductor = conductor
-    this.opus = opus
-    this.orchestra = orchestra
-    this.performanceYear = performanceYear
-
-    this.file = file
-    this.poster = poster
-    this.mp3 = mp3
-    this.flac = flac
-    assert(
-      // It can be neither when it returns as search results, for example.
-      this.mp3 === undefined || this.flac === undefined,
-      "Song can't have both mp3 and flac",
-    )
-    this.offlineUrl = undefined
-  }
-}
-
-export function songPath(song: Song): string {
-  return song.mp3 ? song.mp3 : song.flac!
-}
-
-export type AlbumType = 'Album' | 'Live' | 'EP'
-
-export interface Album {
-  readonly artistName: string
-  readonly title: string
-  readonly year: number
-  readonly dir: string
-  readonly date: Date
-  readonly albumType: AlbumType
-
-  // Relevant for new albums
-  readonly reconID?: string
-
-  // Classical music fields
-  readonly composer?: string
-  readonly conductor?: string
-  readonly opus?: string
-  readonly orchestra?: string
-  readonly performanceYear?: number
-  readonly discNumbers?: string[]
-}
-
-export interface Artist {
-  readonly name: string
-  readonly albums: Album[]
-}
+import {Song} from "./media.js";
 
 export class TimeUpdate {
   readonly currentDuration: Duration
@@ -145,7 +13,6 @@ export class TimeUpdate {
 }
 
 export type PlayerEvent = "ENDED" | TimeUpdate | Song
-
 export type PlayerEventListener = (pe: PlayerEvent) => void
 
 export abstract class Player {
@@ -202,7 +69,6 @@ export abstract class Playlist {
   abstract removeItemAux(index: any, next: (x: JQuery<HTMLElement>) => JQuery<HTMLElement>): void
 }
 
-
 export class Volume {
   private readonly volume: Percentage
 
@@ -210,19 +76,19 @@ export class Volume {
     this.volume = volume
   }
 
-  static fromJSON(json: RawJSON) {return new Volume(Percentage.fromJSON(json))}
+  static fromJSON(json: RawJSON): Volume {return new Volume(Percentage.fromJSON(json))}
   toJSON(): RawJSON {return this.volume.toJSON()}
-  static fromPercentage(p: Percentage) {return new Volume(p)}
+  static fromPercentage(p: Percentage): Volume {return new Volume(p)}
 
   times(number: number): Volume {return new Volume(this.volume.times(number))}
 
-  setWidth(volumeBar: JQuery<HTMLElement>) {
+  setWidth(volumeBar: JQuery<HTMLElement>): void {
     volumeBar.css("width", `${this.volume.zeroToHundred()}%`)
   }
   setVolume(element: HTMLAudioElement): void {
     element.volume = this.volume.zeroToOne()
   }
-  isMuted() {return this.volume.isZero()}
+  isMuted(): boolean {return this.volume.isZero()}
 
   percentage(): Percentage {return this.volume}
 }

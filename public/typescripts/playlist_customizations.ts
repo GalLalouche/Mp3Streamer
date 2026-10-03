@@ -5,29 +5,10 @@ import {match, P} from "ts-pattern";
 import * as External from "./external.js"
 import {GuiEvents, PlaylistEventTopic} from "./gui_events.js";
 import {ITEM_CLASS} from "./jplayer.playlist.js";
+import {Song} from "./media.js";
 import {gplaylist} from "./player_singleton.js";
 import * as Score from "./score.js"
-import {Song} from "./types.js"
 
-export function formattedMetadata(song: Song): string {
-  const res = additionalData(song)
-  const head = `<span dir="ltr">${res[0]}</span>`
-  res.shift()
-  res.push(song.bitrate + "kbps")
-  return `${head}, <span dir="ltr">${res.join(", ")}</span>`
-}
-
-export function mediaMetadata(song: Song): string {
-  return [
-    song.title,
-    song.artistName,
-  ].concat(additionalData(song)).concat([
-    song.duration.timeFormat(),
-    song.bitrate + "kbps",
-  ]).join(", ")
-}
-
-// This is meant to be monkey-patched into playlist (hence the use of this.options).
 export function mediaMetadataHtml(song: Song): string {
   const metadata =
     `<span class="jp-artist" dir="ltr">${song.artistName}</span> ` +
@@ -43,6 +24,15 @@ export function mediaMetadataHtml(song: Song): string {
           --><span class="jp-list-duration">, ${song.duration.timeFormat()})</span>
         </span>`
   )
+}
+
+
+function formattedMetadata(song: Song): string {
+  const res = additionalData(song)
+  const head = `<span dir="ltr">${res[0]}</span>`
+  res.shift()
+  res.push(song.bitrate + "kbps")
+  return `${head}, <span dir="ltr">${res.join(", ")}</span>`
 }
 
 function isClassicalPiece(song: Song): boolean { return !!song.composer}

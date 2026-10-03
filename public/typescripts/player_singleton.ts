@@ -2,8 +2,9 @@ import {Duration, Percentage} from "./common_types.js";
 import {GuiEvents, PlayerControls, PlayerControlsTopic} from "./gui_events.js";
 import {HtmlPlayer} from "./html_player";
 import {JPlayerPlaylist} from "./jplayer.playlist.js";
+import {Song} from "./media.js";
 import * as PlayerGUI from "./player_gui.js";
-import {Player, PlayerEvent, Playlist, Song, TimeUpdate, Volume} from "./types";
+import {Player, PlayerEvent, Playlist, TimeUpdate, Volume} from "./types";
 import * as VolumeSetter from "./volume_setter.js";
 
 class SingletonPlayer extends Player {

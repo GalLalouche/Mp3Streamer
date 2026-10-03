@@ -1,5 +1,5 @@
 import * as API from "./api.js"
-import {Album, Song} from "./types.js"
+import {Album, Song} from "./media.js";
 
 export function show(song: Song): void {
   const fieldSet = $("#new-albums")

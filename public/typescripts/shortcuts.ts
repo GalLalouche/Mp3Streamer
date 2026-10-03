@@ -1,7 +1,7 @@
 import * as DataApi from "./data_api.js";
+import {Song} from "./media.js";
 import {gplayer, gplaylist} from "./player_singleton.js";
 import * as Search from "./search.js"
-import {Song} from "./types.js"
 
 $(function () {
   $(document).keypress(function (e) {
