@@ -3,25 +3,8 @@ import {GuiEvents, PlayerControls, PlayerControlsTopic} from "./gui_events.js";
 import {HtmlPlayer} from "./html_player";
 import {JPlayerPlaylist} from "./jplayer.playlist.js";
 import * as PlayerGUI from "./player_gui.js";
-import {Player, PlayerEvent, Playlist, Song, Volume} from "./types";
+import {Player, PlayerEvent, Playlist, Song, TimeUpdate, Volume} from "./types";
 import * as VolumeSetter from "./volume_setter.js";
-
-interface JPlayerElement {
-  jPlayer(str: String, value?: any): void
-  data(): any
-}
-
-export type EventForPlaylist = "READY" | "ENDED"
-
-
-export const EventsForPlaylist = "#playlist_events"
-export const ElementEventForPlaylist = "event_for_playlist"
-let playerEvents!: HTMLElement
-declare global {
-  export interface HTMLElementEventMap {
-    "event_for_playlist": CustomEvent<EventForPlaylist>
-  }
-}
 
 class SingletonPlayer extends Player {
   private readonly player: Player
@@ -33,19 +16,13 @@ class SingletonPlayer extends Player {
   static from(player: Player): SingletonPlayer {
     const result = new SingletonPlayer(player)
     result.listen((pe: PlayerEvent) => {
-      if (pe == "ENDED")
-        playerEvents.dispatchEvent(
-          new CustomEvent<EventForPlaylist>(ElementEventForPlaylist, {detail: "ENDED"}))
-      else {
+      if (pe instanceof TimeUpdate) {
         PlayerGUI.updatePosition({
           current: result.currentTime(),
           total: result.duration()
         })
         PlayerGUI.setIsPlaying()
       }
-      //   this.html.onpause = () => PlayerGUI.setIsStopped()
-      //   this.html.onplay = () => PlayerGUI.setIsPlaying()
-      //   this.html.onvolumechange = () => PlayerGUI.updateVolume(this.getVolume())
     })
     // TODO these listens should be made elsewhere
     GuiEvents.listen(PlayerControlsTopic, (control: PlayerControls) => {
@@ -107,9 +84,6 @@ class SingletonPlayer extends Player {
   }
 }
 
-// TODO temporary, until this is refactored to use a proper singleton method.
-export let gplayer!: Player
-
 function makePlaylist(player: Player): Playlist {
   const playlist = JPlayerPlaylist.create([], player)
 
@@ -131,14 +105,12 @@ function makePlaylist(player: Player): Playlist {
   }
 }
 
+// TODO temporary, until this is refactored to use a proper singleton method.
+export let gplayer!: Player
 export let gplaylist!: Playlist
 
-// TODO extract?
 $(function () {
   gplayer = SingletonPlayer.from(HtmlPlayer.create())
-  gplaylist = makePlaylist(gplayer)
   gplayer.setVolume(VolumeSetter.getVolumeBaseline())
-  playerEvents = document.createElement("div")
-  playerEvents.id = EventsForPlaylist
-  playerEvents.dispatchEvent(new CustomEvent<EventForPlaylist>(ElementEventForPlaylist, {detail: "READY"}))
+  gplaylist = makePlaylist(gplayer)
 })

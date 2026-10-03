@@ -5,7 +5,7 @@ import {getDebugAlbum, getDebugSong, isMuted} from './initialization.js'
 import * as Local from "./local.js"
 import * as Lyrics from './lyrics.js'
 import * as NewAlbumInfo from './new_albums_info.js'
-import {EventForPlaylist, EventsForPlaylist, gplayer, gplaylist} from "./player_singleton.js";
+import {gplayer, gplaylist} from "./player_singleton.js";
 import * as Poster from "./poster.js";
 import * as Score from "./score.js"
 import {PlayerEvent, Song, TimeUpdate} from "./types.js"
@@ -102,16 +102,8 @@ $(function () {
   const debugStartAlbum = getDebugAlbum()
 
   $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()
-  if (gplayer)
-    setup()
-  else
-    $(document).on(EventsForPlaylist, e => {
-      let event = e as unknown as CustomEvent<EventForPlaylist>
-      if (event.detail != "READY") {
-        return
-      }
-      setup()
-    })
+  assert(gplayer !== undefined, "gplayer is not initialized")
+  setup()
 
   function setup(): void {
     if (debugStartSong) {
