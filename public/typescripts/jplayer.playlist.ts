@@ -1,23 +1,9 @@
 // FIXME merge with the customizations, and remove
 /*
- * Playlist Object for the jPlayer Plugin http://www.jplayer.org Copyright (c)
- * 2009 - 2011 Happyworm Ltd Dual licensed under the MIT and GPL licenses. -
- * http://www.opensource.org/licenses/mit-license.php -
- * http://www.gnu.org/copyleft/gpl.html Author: Mark J Panaghiston Version:
- * 2.1.0 (jPlayer 2.1.0) Date: 1st September 2011
+ * Adapted from http://www.jplayer.org playlist.
  */
 
-/* Code verified using http://www.jshint.com/ */
-/*
- * jshint asi:false, bitwise:false, boss:false, browser:true, curly:true,
- * debug:false, eqeqeq:true, eqnull:false, evil:false, forin:false, immed:false,
- * jquery:true, laxbreak:false, newcap:true, noarg:true, noempty:true,
- * nonew:true, nomem:false, onevar:false, passfail:false, plusplus:false,
- * regexp:false, undef:true, sub:false, strict:false, white:false
- */
-
-/* global jPlayerPlaylist: true, jQuery:false, alert:false */
-
+import {match} from "ts-pattern";
 import * as ColorUtils from "./color-utils.js"
 import * as Local from "./local.js";
 import {Song} from "./media.js";
@@ -38,23 +24,23 @@ const TITLE = ".jp-title"
 const PLAYLIST = ".jp-playlist"
 const DISPLAY_TIME = 'slow'
 
+type RemoveFunction = (e: JQuery<HTMLElement>) => JQuery<HTMLElement>
+
 export class JPlayerPlaylist {
   playlist: Song[]
-  private readonly player: Player
   current: number
   private removing: boolean
 
-  private constructor(playlist: Song[], player: Player) {
-    this.playlist = playlist
-    this.player = player
+  private constructor() {
+    this.playlist = []
     this.current = 0
     this.removing = false
   }
 
-  static create(playlist: Song[], player: Player): JPlayerPlaylist {
-    const result = new JPlayerPlaylist(playlist, player)
+  static create(player: Player): JPlayerPlaylist {
+    const result = new JPlayerPlaylist()
 
-    result._init()
+    result.init(false)
     player.listen((e: PlayerEvent) => {
       if (e === "ENDED")
         result.next()
@@ -62,26 +48,26 @@ export class JPlayerPlaylist {
     return result;
   }
 
-  _getDisplayedIndex(index: number): number {
+  private getDisplayedIndex(index: number): number {
     return this.playlist.length - 1 - index
   }
-  _init(instant: boolean = false) {
+  private init(instant: boolean): void {
     const self = this
     if (instant) {
-      this._refresh(true)
-      self.play(self.current)
+      this.refresh(true)
+      this.play(self.current)
     } else {
-      this._refresh(function () {
+      this.refresh(function () {
         return self.play(self.current)
       })
     }
   }
-  _initPlaylist(playlist: Song[]) {
+  private initPlaylist(playlist: Song[]) {
     this.current = 0
     this.removing = false
     this.playlist = $.extend(true, [], playlist);
   }
-  _refresh(instant: boolean | undefined | (() => unknown)) {
+  private refresh(instant: boolean | undefined | (() => unknown)) {
     /*
      * instant: Can be undefined, true or a function.
      *  undefined -> use animation timings
@@ -94,14 +80,14 @@ export class JPlayerPlaylist {
     if (instant && not(isFunction(instant))) {
       playlistUl.empty()
       this.playlist.forEach(function (v) {
-        playlistUl.append(self._createListItem(v))
+        playlistUl.append(self.createListItem(v))
       })
     } else {
       const $this = $(this)
       $this.empty()
 
       self.playlist.forEach(function (v) {
-        $this.append(self._createListItem(v))
+        $this.append(self.createListItem(v))
       })
       if (isFunction(instant))
         instant()
@@ -111,7 +97,7 @@ export class JPlayerPlaylist {
         $this.show()
     }
   }
-  _createListItem(song: Song): JQuery<HTMLElement> {
+  private createListItem(song: Song): JQuery<HTMLElement> {
     let listItem = "<li><div>"
 
     function appendIcon(clazz: string, char: string) {
@@ -132,8 +118,17 @@ export class JPlayerPlaylist {
     })
     return result
   }
-// Temp hack
-  removeItemAux(index: number, nextFunction: (e: JQuery<HTMLElement>) => JQuery<HTMLElement>) {
+
+  removeItem(index: number, type: "x" | "up" | "down") {
+    this.removeItemAux(index, match(type)
+      .returnType<RemoveFunction>()
+      .with("x", () => () => $())
+      .with("up", () => x => x.prev())
+      .with("down", () => x => x.next())
+      .exhaustive())
+  }
+
+  private removeItemAux(index: number, nextFunction: RemoveFunction) {
     const self = this
 
     function aux(current: JQuery<HTMLElement>) {
@@ -147,51 +142,9 @@ export class JPlayerPlaylist {
       })
     }
 
-    aux($(`${PLAYLIST} li:nth-child(${this._getDisplayedIndex(index) + 1})`))
+    aux($(`${PLAYLIST} li:nth-child(${this.getDisplayedIndex(index) + 1})`))
   }
-//     // Create .live() handlers for the remove controls
-//     GuiEvents.listen(PlaylistEventTopic, event => {
-//           if (typeof event !== "object" || !("index" in event) || event.type === "select")
-//             return // This is already covered elsewhere
-//           function getNextFunction() {
-//             if (trigger.hasClass(options.removeThisClass)) return _ => $()
-//             if (trigger.hasClass(options.removeUpClass)) return x => x.prev()
-//             assert(trigger.hasClass(options.removeDownClass))
-//             return x => x.next()
-//           }
-//
-//           function removeItemAux(nextFunction, who) {
-//             // This has to be calculated before the removal, otherwise the who element is empty
-//             const next = nextFunction(who)
-//             self.remove(who.index(), function () {
-//               // if there is another next element to remove,
-//               // enqueue a removal after this current element is removed
-//               if (next.length > 0)
-//                 removeItemAux(nextFunction, next)
-//             })
-//           }
-//         })
-//         && event.type === "x"
-// )
-//   {
-//     self.remove()
-//   }
-//   $(playlistSelector).on("click", "a." + this.options.playlistOptions.removeItemClass, function () {
-//     const trigger = $(this)
-//
-//
-//     removeItemAux(getNextFunction(), trigger.closest("li"))
-//     return false
-//   })
-// },
-//   _updateControls() {
-//     const controls = $(`${this.cssSelector.playlist} .${this.options.playlistOptions.removeItemClass}`)
-//     if (this.options.playlistOptions.enableRemoveControls)
-//       controls.show()
-//     else
-//       controls.hide()
-//   }
-  _highlight(index: number) {
+  private highlight(index: number) {
     if (this.playlist.length && index !== undefined) {
       $(`${PLAYLIST} .jp-playlist-current`).removeClass("jp-playlist-current")
       $(`${PLAYLIST} li:nth-child(${index + 1})`).addClass("jp-playlist-current")
@@ -202,13 +155,13 @@ export class JPlayerPlaylist {
           + this.playlist[index].artistName + "</span>" : ""))
     }
   }
-  async setPlaylist(playlist: Song[], instant: boolean) {
-    this._initPlaylist(playlist)
-    await this._init(instant)
+  async setPlaylist(playlist: Song[]) {
+    this.initPlaylist(playlist)
+    this.init(true)
   }
   add(song: Song | Song[], playNow: boolean = false) {
     const self = this
-    if ($.isArray(song)) {
+    if (Array.isArray(song)) {
       song.forEach(x => self.add(x))
       return Promise.resolve()
     }
@@ -217,7 +170,7 @@ export class JPlayerPlaylist {
       return Promise.resolve()
     }
     const playlistUl = $(PLAYLIST + " ul")
-    playlistUl.prepend(this._createListItem(song))
+    playlistUl.prepend(this.createListItem(song))
       .find("li:first-child").hide()
       .slideDown(ADD_TIME, function () {
         const regularHeightThreshold = 30
@@ -234,12 +187,12 @@ export class JPlayerPlaylist {
     else
       return Promise.resolve()
   }
-  remove(index: number | undefined, onEnd: () => void) {
+  private remove(index: number | undefined, onEnd: () => void) {
     const self = this
 
     if (index === undefined) {
-      this._initPlaylist([])
-      this._refresh(function () {
+      this.initPlaylist([])
+      this.refresh(function () {
         gplayer.clear()
       })
       return true
@@ -256,7 +209,7 @@ export class JPlayerPlaylist {
       REMOVE_TIME,
       function () {
         $(this).remove()
-        const playlistIndex = self._getDisplayedIndex(index)
+        const playlistIndex = self.getDisplayedIndex(index)
         self.playlist.splice(playlistIndex, 1)
         if (self.playlist.length) {
           if (playlistIndex === self.current) {
@@ -280,10 +233,10 @@ export class JPlayerPlaylist {
     if (index < 0)
       return arguments.callee(this.playlist.length + index)
     // index relates to end of array.
-    const displayIndex = this._getDisplayedIndex(index)
+    const displayIndex = this.getDisplayedIndex(index)
     if (index < this.playlist.length) {
       this.current = index
-      this._highlight(displayIndex)
+      this.highlight(displayIndex)
       return Local.maybePreLoad(this.playlist[this.current]).then(e => gplayer.load(e))
     } else {
       this.current = 0
@@ -309,50 +262,7 @@ export class JPlayerPlaylist {
     if (index < this.playlist.length - 1)
       this.play(index)
   }
-  isLastSongPlaying(): boolean {
+  private isLastSongPlaying(): boolean {
     return this.current === this.playlist.length - 1
   }
-  currentPlayingSong(): Song {
-    return this.playlist [this.current]
-  }
-
-
-// // Flag is true during remove animation, disabling the remove() method until complete.
-//
-// this.cssSelector = $.extend({}, this._cssSelector, cssSelector); // Object:
-// // Containing the css selectors for jPlayer and its cssSelectorAncestor
-// this.options = $.extend(true, {}, this._options, options); // Object:
-// // The jPlayer constructor/ options for this playlist and the playlist options
-//
-// this.playlist = []; // Array of Objects: The current playlist displayed
-// this._initPlaylist(playlist)
-//
-// // Setup the css selectors for the extra interface items used by the playlist.
-// // Note that the text is written to the descendant li node.
-// const append = s => `${this.cssSelector.cssSelectorAncestor} .${s}`
-//
-// // Override the cssSelectorAncestor given in options
-// this.options.cssSelectorAncestor = this.cssSelector.cssSelectorAncestor
-//
-// // FIXME this should be made to work my player implementation. Starting with ready.
-// // Create a ready event handler to initialize the playlist
-//
-// // Remove the empty <li> from the page HTML.
-// // Allows page to be valid HTML, while not interfering with display animations
-// $(this.cssSelector.playlist + " ul").empty()
-// //
-// // Instance jPlayer
-// // $(this.cssSelector.jPlayer).jPlayer(this.options)
-// }
-//
-//
-// JPlayerPlaylist.prototype = {
-//   _cssSelector: { // static object, instanced in constructor
-//     jPlayer: "#jquery_jplayer_1",
-//     cssSelectorAncestor: "#jp_container_1"
-//   },
-//   _options: { // static object, instanced in constructor
-//     playlistOptions: {
-//     }
-//   },
 }

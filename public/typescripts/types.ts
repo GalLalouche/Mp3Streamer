@@ -66,7 +66,7 @@ export abstract class Playlist {
   // The list presentation reversed, so song at index 0 is actually the last song, not the first.
   getDisplayedIndex(index: number): number {return this.length() - 1 - index}
   isLastSongPlaying(): boolean {return this.currentIndex() == this.length() - 1}
-  abstract removeItemAux(index: any, next: (x: JQuery<HTMLElement>) => JQuery<HTMLElement>): void
+  abstract removeItem(index: number, type: "x" | "up" | "down"): void
 }
 
 export class Volume {

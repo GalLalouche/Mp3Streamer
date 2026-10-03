@@ -1,8 +1,15 @@
+/**
+ * GUI updates go *in* here, but not *from* here. In other words, updating the GUI (for example,
+ * the current playing track, duration, toggling play/pause) should be routed to functions defined
+ * here.
+ *
+ * See GuiEvents for the other direction.
+ */
+
 import {Duration} from "./common_types.js";
 import {Song} from "./media.js";
 import {Volume} from "./types.js";
 
-/** GUI updates go *in* here, but not *from* here. See GuiEvents for the other direction. */
 let currentTime: JQuery<HTMLElement>
 let currentlyPlaying: JQuery<HTMLElement>
 let duration: JQuery<HTMLElement>
@@ -48,9 +55,6 @@ export function setCurrentSong(song: Song): void {
   duration.html(song.duration.timeFormat())
   currentlyPlaying.html(songInfo)
   document.title = songInfo
-  // FIXME Finish poster... seems the current implementation is very hacky and rewrites the poster
-  //  element on every change instead of just changing the picture!
-  // notImplemented()
 }
 
 export function updatePosition(input: { current: Duration, total: Duration }): void {

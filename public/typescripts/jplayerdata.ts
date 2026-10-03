@@ -1,3 +1,4 @@
+// FIXME this entire file should be expunged.
 import {Duration} from "./common_types.js";
 import * as DataApi from "./data_api.js";
 import * as External from './external.js'
@@ -16,42 +17,8 @@ import * as VolumeSetter from "./volume_setter.js"
 
 const WAIT_DELAY: Duration = Duration.fromSeconds(25)
 
-// declare class JPlayerPlaylist extends Playlist {
-//   add(song: Song, playNow: boolean): Promise<void>
-//   protected _next(): void
-//   play(index: number): Promise<void>
-//   select(index: number): Promise<void>
-//   prev(): void
-//   currentIndex(): number
-//   songs(): Song[]
-//   removeItemAux(index: any, next: (x: JQuery<HTMLElement>) => JQuery<HTMLElement>): void
-//
-//   constructor(
-//     cssSelector: { jPlayer: string, cssSelectorAncestor: string },
-//     playlist: Song[],
-//     options: {
-//       swfPath: string,
-//       supplied: string,
-//     },
-//   )
-// }
-
-interface PlaylistHacks {
-  oldNext: () => void
-  next: () => void
-}
-
 $(function () {
   const JPLAYER_ID = "#jquery_jplayer_1"
-  // const playlist = new JPlayerPlaylist({
-  //   jPlayer: JPLAYER_ID,
-  //   cssSelectorAncestor: "#jp_container_1",
-  // }, [], {
-  //   swfPath: "../js",
-  //   supplied: "webmv, ogv, m4a, oga, mp3, flac",
-  // })
-  // Globals.playlist = playlist
-  // Modify next to fetch a random song if in shuffle mode and at the last song
   // TODO move to playlist_customization
   let hacks = gplaylist as any
   hacks.oldNext = hacks.next

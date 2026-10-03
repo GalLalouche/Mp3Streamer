@@ -86,23 +86,18 @@ class SingletonPlayer extends Player {
 }
 
 function makePlaylist(player: Player): Playlist {
-  const playlist = JPlayerPlaylist.create([], player)
+  const pl: JPlayerPlaylist = JPlayerPlaylist.create(player)
 
   return new class extends Playlist {
-    override currentIndex() {return playlist.current}
-    override songs() {return playlist.playlist}
-    override add(song: Song | Song[], playNow: boolean): Promise<void> {return playlist.add(song, playNow)}
-    override _next(): void {return playlist.next()}
-    override prev(): void {return playlist.previous()}
-    override async clear(): Promise<void> {
-      const instant = true
-      return playlist.setPlaylist([], instant)
-    }
-    override play(index: number): Promise<void> { return playlist.play(index)}
-    override select(index: number): Promise<void> {return playlist.select(index)}
-    removeItemAux(index: any, next: (x: JQuery<HTMLElement>) => JQuery<HTMLElement>): void {
-      playlist.removeItemAux(index, next)
-    }
+    override currentIndex() {return pl.current}
+    override songs() {return pl.playlist}
+    override add(song: Song | Song[], playNow: boolean): Promise<void> {return pl.add(song, playNow)}
+    override _next() {return pl.next()}
+    override prev() {return pl.previous()}
+    override async clear(): Promise<void> {return pl.setPlaylist([])}
+    override play(index: number): Promise<void> { return pl.play(index)}
+    override select(index: number): Promise<void> {return pl.select(index)}
+    override removeItem(index: number, type: "x" | "up" | "down") {pl.removeItem(index, type)}
   }
 }
 

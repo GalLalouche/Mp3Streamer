@@ -24,6 +24,7 @@ export class Song {
   readonly file: string
   readonly poster: string
   // Either mp3 or flac should be available
+  // TODO represent this as an ADT since this is a proper parsed class.
   readonly mp3?: string
   readonly flac?: string
   offlineUrl?: string

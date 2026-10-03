@@ -82,9 +82,7 @@ $(function () {
       .with({type: P.select("type"), index: P.select("index")}, ({type, index}) => {
         match(type)
           .with("select", () => gplaylist.select(index))
-          .with("x", () => gplaylist.removeItemAux(index, _ => $()))
-          .with("up", () => gplaylist.removeItemAux(index, x => x.prev()))
-          .with("down", () => gplaylist.removeItemAux(index, x => x.next()))
+          .with(P.select(), x => gplaylist.removeItem(index, x))
           .exhaustive()
       })
   })
