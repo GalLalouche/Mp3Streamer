@@ -49,10 +49,10 @@ export class HtmlPlayer extends Player {
     this.html.play()
   }
   override getVolume(): Volume {
-    return Volume.fromPercentage(Percentage.fromMax1(this.html.volume))
+    return new Volume(Percentage.fromMax1(this.html.volume))
   }
   override setVolume(v: Volume): void {
-    v.setVolume(this.html)
+    this.html.volume = v.percentage().zeroToOne()
   }
   override skipTo(duration: Duration): void {
     this.html.currentTime = duration.toSeconds()

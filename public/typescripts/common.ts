@@ -278,6 +278,10 @@ Promise.prototype.void = async function () {
 }
 
 // Type checkers
+interface ArrayConstructor {
+  isArray(arg: ReadonlyArray<any> | any): arg is ReadonlyArray<any>
+}
+
 function isString(e: any): e is string {
   return typeof e == "string"
 }

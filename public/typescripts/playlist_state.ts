@@ -17,7 +17,7 @@ import * as VolumeSetter from "./volume_setter.js"
 $(function () {
     class PlaylistJson {
       constructor(
-        public songs: Song[],
+        public songs: readonly Song[],
         public currentIndex: number,
         public duration: Duration,
         public volume: Volume,

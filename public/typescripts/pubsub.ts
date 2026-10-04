@@ -1,9 +1,10 @@
-/** A generic pubsub system. Uncoupled to any one system or another. */
+/* A generic pubsub system. Uncoupled to any one system or another. */
 // FIXME this was copy pasted from an agent with A LOT of extra explanation. Clean it up.
 declare const payloadType: unique symbol
 // `unique symbol` means this is the type of one specific symbol,
 // so it can identify one specific property in a type.
 
+/** Typesafe marker for a pubsub topic. */
 export type Topic<T> = {
   readonly key: symbol
   readonly [payloadType]: (value: T) => T
@@ -13,6 +14,7 @@ export type Topic<T> = {
   // `(value: T) => T` means “a function from T to T.”
 }
 
+/** Factory method for the above. */
 export function topic<T>(name: string): Topic<T> {
   return {key: Symbol(name)} as Topic<T>
   // `Symbol(name)` creates a unique runtime key; `name` is just a label.
@@ -20,10 +22,11 @@ export function topic<T>(name: string): Topic<T> {
   // even though it doesn't have the compile-time-only marker property.
 }
 
-interface Unsubscribe {
+export interface Unsubscribe {
   unsubscribe(): void
 }
 
+/** A generic PubSub, supporting multiple topics and multiple listeners per topic. */
 export class PubSub {
   private readonly listeners = new Map<symbol, Set<(value: any) => void>>()
 

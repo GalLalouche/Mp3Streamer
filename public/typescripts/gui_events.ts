@@ -37,7 +37,7 @@ $(function () {
 
 
   function publishVolume(p: Percentage): void {
-    GuiEvents.publish(PlayerControlsTopic, Volume.fromPercentage(p))
+    GuiEvents.publish(PlayerControlsTopic, new Volume(p))
   }
 
   $('.jp-mute').on('click', () => publishVolume(Percentage.fromMax100(0)))

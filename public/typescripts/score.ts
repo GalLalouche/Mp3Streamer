@@ -3,18 +3,6 @@ import * as API from "./api.js"
 import {Song} from "./media.js";
 import {gplaylist} from "./player_singleton.js";
 
-function setup(): void {
-  fieldset = $("#score")
-  fieldset.on('change', 'select', async function () {
-    const newScore = $(this).val() as Score
-    const source = $(this).attr('source')!.toLowerCase() as Source
-    return setScore(gplaylist.currentPlayingSong(), source, newScore)
-  })
-  fieldset.on('click', 'button', async function () {
-    return $.ajax({url: "score/" + gplaylist.currentPlayingSong().file, type: "PATCH"})
-  })
-}
-
 export function show(song: Song): void {
   clearScores()
   getScore(song).then(score => updateScore(song, score))
@@ -252,7 +240,14 @@ function titleFor(source: Source, song: Song): string {
   }
 }
 
-
 $(function () {
-  setup()
+  fieldset = $("#score")
+  fieldset.on('change', 'select', async function () {
+    const newScore = $(this).val() as Score
+    const source = $(this).attr('source')!.toLowerCase() as Source
+    return setScore(gplaylist.currentPlayingSong(), source, newScore)
+  })
+  fieldset.on('click', 'button', async function () {
+    return $.ajax({url: "score/" + gplaylist.currentPlayingSong().file, type: "PATCH"})
+  })
 })

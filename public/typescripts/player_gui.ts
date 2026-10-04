@@ -6,6 +6,8 @@
  * See GuiEvents for the other direction.
  */
 
+// FIXME wthere really shouldn't be too different module, since it's the same DOM being manipulated.
+
 import {Duration} from "./common_types.js";
 import {Song} from "./media.js";
 import {Volume} from "./types.js";
@@ -68,7 +70,7 @@ export function updatePosition(input: { current: Duration, total: Duration }): v
 }
 
 export function updateVolume(v: Volume): void {
-  v.setWidth(volumeBar)
+  volumeBar.css("width", `${v.percentage().zeroToHundred()}%`)
   if (v.isMuted()) {
     muteButton.hide()
     unmuteButton.show()

@@ -16,7 +16,7 @@ export function setPeak(song: Song) {
 // VolumeSetter.setManualVolume(VolumeSetter.getVolumeBaseline) should be a no-op.
 export function getVolumeBaseline(): Volume {
   const p = volumeBaseline * calculateVolumeCoefficientFromGain();
-  return Volume.fromPercentage(Percentage.fromMax100(Math.min(p, 100)))
+  return new Volume(Percentage.fromMax100(Math.min(p, 100)))
 }
 
 const DEFAULT_GAIN = -10.0

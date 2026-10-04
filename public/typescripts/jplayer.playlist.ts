@@ -27,14 +27,22 @@ const DISPLAY_TIME = 'slow'
 type RemoveFunction = (e: JQuery<HTMLElement>) => JQuery<HTMLElement>
 
 export class JPlayerPlaylist {
-  playlist: Song[]
-  current: number
+  private playlist: Song[]
+  private current: number
   private removing: boolean
 
   private constructor() {
     this.playlist = []
     this.current = 0
     this.removing = false
+  }
+
+  currentIndex(): number {
+    return this.current
+  }
+
+  songs(): readonly Song[] {
+    return this.playlist
   }
 
   static create(player: Player): JPlayerPlaylist {
@@ -48,118 +56,12 @@ export class JPlayerPlaylist {
     return result;
   }
 
-  private getDisplayedIndex(index: number): number {
-    return this.playlist.length - 1 - index
-  }
-  private init(instant: boolean): void {
-    const self = this
-    if (instant) {
-      this.refresh(true)
-      this.play(self.current)
-    } else {
-      this.refresh(function () {
-        return self.play(self.current)
-      })
-    }
-  }
-  private initPlaylist(playlist: Song[]) {
-    this.current = 0
-    this.removing = false
-    this.playlist = $.extend(true, [], playlist);
-  }
-  private refresh(instant: boolean | undefined | (() => unknown)) {
-    /*
-     * instant: Can be undefined, true or a function.
-     *  undefined -> use animation timings
-     *  true -> no animation
-     *  function -> use animation timings and execute function at half way point.
-     */
-    const self = this
-
-    const playlistUl = $(PLAYLIST + " ul")
-    if (instant && not(isFunction(instant))) {
-      playlistUl.empty()
-      this.playlist.forEach(function (v) {
-        playlistUl.append(self.createListItem(v))
-      })
-    } else {
-      const $this = $(this)
-      $this.empty()
-
-      self.playlist.forEach(function (v) {
-        $this.append(self.createListItem(v))
-      })
-      if (isFunction(instant))
-        instant()
-      if (self.playlist.length)
-        $this.slideDown(DISPLAY_TIME)
-      else
-        $this.show()
-    }
-  }
-  private createListItem(song: Song): JQuery<HTMLElement> {
-    let listItem = "<li><div>"
-
-    function appendIcon(clazz: string, char: string) {
-      listItem += `<a href='javascript:;' class='${REMOVE_ITEM} ${clazz}'>${char}</a>`
-    }
-
-    // The title is given next in the HTML otherwise the float:right on the free media corrupts in IE6/7
-    listItem += PlaylistCustomizations.mediaMetadataHtml(song)
-    appendIcon(REMOVE_THIS, "&times;")
-    appendIcon(REMOVE_UP, "&uparrow;")
-    appendIcon(REMOVE_DOWN, "&downarrow;")
-    listItem += "</div></li>"
-
-    const result = $(listItem)
-    result.prepend(img(song.poster).addClass("playlist-item-poster"))
-    ColorUtils.getColor(song.poster).then(rgb => {
-      result.css('background-color', rgb.makeLighter(0.1).toString())
-    })
-    return result
-  }
-
-  removeItem(index: number, type: "x" | "up" | "down") {
-    this.removeItemAux(index, match(type)
-      .returnType<RemoveFunction>()
-      .with("x", () => () => $())
-      .with("up", () => x => x.prev())
-      .with("down", () => x => x.next())
-      .exhaustive())
-  }
-
-  private removeItemAux(index: number, nextFunction: RemoveFunction) {
-    const self = this
-
-    function aux(current: JQuery<HTMLElement>) {
-      const next = nextFunction(current)
-      // This has to be calculated before the removal, otherwise the who element is empty
-      self.remove(current.index(), function () {
-        // if there is another next element to remove,
-        // enqueue a removal after this current element is removed
-        if (next.length > 0)
-          aux(next)
-      })
-    }
-
-    aux($(`${PLAYLIST} li:nth-child(${this.getDisplayedIndex(index) + 1})`))
-  }
-  private highlight(index: number) {
-    if (this.playlist.length && index !== undefined) {
-      $(`${PLAYLIST} .jp-playlist-current`).removeClass("jp-playlist-current")
-      $(`${PLAYLIST} li:nth-child(${index + 1})`).addClass("jp-playlist-current")
-        .find(".jp-playlist-item").addClass("jp-playlist-current")
-      $(`${TITLE} li`).html(
-        this.playlist[index].title
-        + (this.playlist[index].artistName ? " <span class='jp-artist'>by "
-          + this.playlist[index].artistName + "</span>" : ""))
-    }
-  }
-  async setPlaylist(playlist: Song[]) {
+  async setPlaylist(playlist: readonly Song[]): Promise<void> {
     this.initPlaylist(playlist)
     this.init(true)
   }
-  add(song: Song | Song[], playNow: boolean = false) {
+
+  add(song: Song | readonly Song[], playNow: boolean = false): Promise<void> {
     const self = this
     if (Array.isArray(song)) {
       song.forEach(x => self.add(x))
@@ -187,16 +89,19 @@ export class JPlayerPlaylist {
     else
       return Promise.resolve()
   }
-  private remove(index: number | undefined, onEnd: () => void) {
+
+  removeItem(index: number, type: "x" | "up" | "down"): void {
+    this.removeItemAux(index, match(type)
+      .returnType<RemoveFunction>()
+      .with("x", () => () => $())
+      .with("up", () => x => x.prev())
+      .with("down", () => x => x.next())
+      .exhaustive())
+  }
+
+  private remove(index: number, onEnd: () => void): boolean {
     const self = this
 
-    if (index === undefined) {
-      this.initPlaylist([])
-      this.refresh(function () {
-        gplayer.clear()
-      })
-      return true
-    }
     if (this.removing)
       return false
     if (index < 0)
@@ -229,6 +134,7 @@ export class JPlayerPlaylist {
       })
     return true
   }
+
   async select(index: number): Promise<void> {
     if (index < 0)
       return arguments.callee(this.playlist.length + index)
@@ -243,6 +149,7 @@ export class JPlayerPlaylist {
       return new Promise(f => f())
     }
   }
+
   async play(index: number): Promise<void> {
     if (index < 0)
       return arguments.callee(this.playlist.length + index)
@@ -250,19 +157,116 @@ export class JPlayerPlaylist {
     if (index < this.playlist.length && this.playlist.length)
       return this.select(index).then(() => gplayer.playCurrentSong())
   }
+
   next(): void {
-    if (this.isLastSongPlaying())
+    const isLastSong = this.current === this.playlist.length - 1;
+    if (isLastSong)
       return notImplemented()
     const index = (this.current + 1 < this.playlist.length) ? this.current + 1 : 0
     if (index > 0)
       this.play(index)
   }
+
   previous(): void {
     const index = (this.current - 1 >= 0) ? this.current - 1 : this.playlist.length - 1
     if (index < this.playlist.length - 1)
       this.play(index)
   }
-  private isLastSongPlaying(): boolean {
-    return this.current === this.playlist.length - 1
+
+  private init(instant: boolean): void {
+    const self = this
+    if (instant) {
+      this.refresh()
+      this.play(self.current)
+    } else {
+      this.refresh(function () {
+        return self.play(self.current)
+      })
+    }
+  }
+
+  private initPlaylist(playlist: readonly Song[]): void {
+    this.current = 0
+    this.removing = false
+    this.playlist = $.extend(true, [], playlist);
+  }
+
+  private refresh(animation?: () => void): void {
+    const self = this
+
+    if (animation) {
+      const $this = $(this)
+      $this.empty()
+
+      self.playlist.forEach(function (v) {
+        $this.append(self.createListItem(v))
+      })
+      animation()
+      if (self.playlist.length)
+        $this.slideDown(DISPLAY_TIME)
+      else
+        $this.show()
+    } else {
+      const playlistUl = $(PLAYLIST + " ul")
+      playlistUl.empty()
+      this.playlist.forEach(function (v) {
+        playlistUl.append(self.createListItem(v))
+      })
+    }
+  }
+
+  private createListItem(song: Song): JQuery<HTMLElement> {
+    let listItem = "<li><div>"
+
+    function appendIcon(clazz: string, char: string) {
+      listItem += `<a href='javascript:;' class='${REMOVE_ITEM} ${clazz}'>${char}</a>`
+    }
+
+    // The title is given next in the HTML otherwise the float:right on the free media corrupts in IE6/7
+    listItem += PlaylistCustomizations.mediaMetadataHtml(song)
+    appendIcon(REMOVE_THIS, "&times;")
+    appendIcon(REMOVE_UP, "&uparrow;")
+    appendIcon(REMOVE_DOWN, "&downarrow;")
+    listItem += "</div></li>"
+
+    const result = $(listItem)
+    result.prepend(img(song.poster).addClass("playlist-item-poster"))
+    ColorUtils.getColor(song.poster).then(rgb => {
+      result.css('background-color', rgb.makeLighter(0.1).toString())
+    })
+    return result
+  }
+
+  private removeItemAux(index: number, nextFunction: RemoveFunction): void {
+    const self = this
+
+    function aux(current: JQuery<HTMLElement>): void {
+      const next = nextFunction(current)
+      // This has to be calculated before the removal, otherwise the who element is empty
+      self.remove(current.index(), function () {
+        // if there is another next element to remove,
+        // enqueue a removal after this current element is removed
+        if (next.length > 0)
+          aux(next)
+      })
+    }
+
+    aux($(`${PLAYLIST} li:nth-child(${this.getDisplayedIndex(index) + 1})`))
+  }
+
+  private highlight(index: number): void {
+    if (this.playlist.length) {
+      $(`${PLAYLIST} .jp-playlist-current`).removeClass("jp-playlist-current")
+      $(`${PLAYLIST} li:nth-child(${index + 1})`).addClass("jp-playlist-current")
+        .find(".jp-playlist-item").addClass("jp-playlist-current")
+      $(`${TITLE} li`).html(
+        this.playlist[index].title
+        + (this.playlist[index].artistName ? " <span class='jp-artist'>by "
+          + this.playlist[index].artistName + "</span>" : ""))
+    }
+  }
+
+  private getDisplayedIndex(index: number): number {
+    return this.playlist.length - 1 - index
   }
 }

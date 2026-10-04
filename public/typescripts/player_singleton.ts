@@ -7,6 +7,10 @@ import * as PlayerGUI from "./player_gui.js";
 import {Player, PlayerEvent, Playlist, TimeUpdate, Volume} from "./types";
 import * as VolumeSetter from "./volume_setter.js";
 
+// TODO temporary, until this is refactored to use a proper singleton method.
+export let gplayer!: Player
+export let gplaylist!: Playlist
+
 class SingletonPlayer extends Player {
   private readonly player: Player
 
@@ -89,9 +93,11 @@ function makePlaylist(player: Player): Playlist {
   const pl: JPlayerPlaylist = JPlayerPlaylist.create(player)
 
   return new class extends Playlist {
-    override currentIndex() {return pl.current}
-    override songs() {return pl.playlist}
-    override add(song: Song | Song[], playNow: boolean): Promise<void> {return pl.add(song, playNow)}
+    override currentIndex() {return pl.currentIndex()}
+    override songs() {return pl.songs()}
+    override add(song: Song | readonly Song[], playNow: boolean): Promise<void> {
+      return pl.add(song, playNow)
+    }
     override _next() {return pl.next()}
     override prev() {return pl.previous()}
     override async clear(): Promise<void> {return pl.setPlaylist([])}
@@ -100,10 +106,6 @@ function makePlaylist(player: Player): Playlist {
     override removeItem(index: number, type: "x" | "up" | "down") {pl.removeItem(index, type)}
   }
 }
-
-// TODO temporary, until this is refactored to use a proper singleton method.
-export let gplayer!: Player
-export let gplaylist!: Playlist
 
 $(function () {
   gplayer = SingletonPlayer.from(HtmlPlayer.create())
