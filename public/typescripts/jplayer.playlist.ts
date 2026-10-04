@@ -62,9 +62,8 @@ export class JPlayerPlaylist {
   }
 
   add(song: Song | readonly Song[], playNow: boolean = false): Promise<void> {
-    const self = this
     if (Array.isArray(song)) {
-      song.forEach(x => self.add(x))
+      song.forEach(x => this.add(x))
       return Promise.resolve()
     }
     if (this.playlist.some(e => e.file === song.file)) {
@@ -99,40 +98,37 @@ export class JPlayerPlaylist {
       .exhaustive())
   }
 
-  private remove(index: number, onEnd: () => void): boolean {
-    const self = this
-
+  private remove(index: number, onEnd: () => void): void {
     if (this.removing)
-      return false
+      return
     if (index < 0)
-      return arguments.callee(self.playlist.length + index, onEnd)
+      return this.remove(this.playlist.length + index, onEnd)
     // index relates to end of array.
     if (index < this.playlist.length)
       this.removing = true
 
     $(`${PLAYLIST} li:nth-child(${index + 1})`).slideUp(
       REMOVE_TIME,
-      function () {
+      () => {
         $(this).remove()
-        const playlistIndex = self.getDisplayedIndex(index)
-        self.playlist.splice(playlistIndex, 1)
-        if (self.playlist.length) {
-          if (playlistIndex === self.current) {
+        const playlistIndex = this.getDisplayedIndex(index)
+        this.playlist.splice(playlistIndex, 1)
+        if (this.playlist.length) {
+          if (playlistIndex === this.current) {
             // Update current when last element was deleted.
-            self.current = playlistIndex < self.playlist.length ? self.current : self.playlist.length - 1
-            self.select(self.current)
-          } else if (playlistIndex < self.current)
-            self.current--
+            this.current = playlistIndex < this.playlist.length ? this.current : this.playlist.length - 1
+            this.select(this.current)
+          } else if (playlistIndex < this.current)
+            this.current--
         } else {
           gplayer.clear()
-          self.current = 0
+          this.current = 0
         }
 
-        self.removing = false
+        this.removing = false
         if (onEnd)
           onEnd()
       })
-    return true
   }
 
   async select(index: number): Promise<void> {
@@ -174,13 +170,12 @@ export class JPlayerPlaylist {
   }
 
   private init(instant: boolean): void {
-    const self = this
     if (instant) {
       this.refresh()
-      this.play(self.current)
+      this.play(this.current)
     } else {
-      this.refresh(function () {
-        return self.play(self.current)
+      this.refresh(() => {
+        return this.play(this.current)
       })
     }
   }
@@ -192,26 +187,20 @@ export class JPlayerPlaylist {
   }
 
   private refresh(animation?: () => void): void {
-    const self = this
-
     if (animation) {
       const $this = $(this)
       $this.empty()
 
-      self.playlist.forEach(function (v) {
-        $this.append(self.createListItem(v))
-      })
+      this.playlist.forEach(v => $this.append(this.createListItem(v)))
       animation()
-      if (self.playlist.length)
+      if (this.playlist.length)
         $this.slideDown(DISPLAY_TIME)
       else
         $this.show()
     } else {
       const playlistUl = $(PLAYLIST + " ul")
       playlistUl.empty()
-      this.playlist.forEach(function (v) {
-        playlistUl.append(self.createListItem(v))
-      })
+      this.playlist.forEach(v => playlistUl.append(this.createListItem(v)))
     }
   }
 

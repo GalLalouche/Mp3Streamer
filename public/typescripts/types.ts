@@ -43,9 +43,8 @@ export abstract class Playlist {
   abstract clear(instant: boolean): Promise<void>
   async setPlaylist(playlist: readonly Song[], instant: boolean): Promise<void> {
     await this.clear(instant)
-    const that = this
     for (const s of playlist) {
-      await that.add(s, false)
+      await this.add(s, false)
     }
   }
   abstract add(song: Song | readonly Song[], playNow: boolean): Promise<void>

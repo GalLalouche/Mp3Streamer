@@ -54,7 +54,6 @@ class Helper {
     this.albumReconBox =
       $("<input class='external-recon-id' placeholder='Album ID' type='text'/>")
         .appendTo(this.externalAlbum)
-    const that = this
     this.externalAlbum.appendBr()
     const updateReconButton = button("Update Recon").appendTo(this.externalDivs)
     button("Refresh").appendTo(this.externalArtist).click(this.refresh("Artist").bind(this))
@@ -71,6 +70,7 @@ class Helper {
     })
 
     // TODO this is a hack to also handle all other fieldsets, probably shouldn't be in this file...
+    const that = this
     Poster.rgbListeners.push(rgb => {
       this.currentPosterRgb = rgb
       $("#field-set-group fieldset").each(function () {
@@ -80,11 +80,10 @@ class Helper {
   }
 
   refresh(target: ExternalEntityType): () => Promise<void> {
-    const that = this
-    return function () {
+    return () => {
       const song = gplaylist.currentPlayingSong()
       // TODO showLinks should only fetch the links for the target.
-      return refresh(target, song).then(that.showLinks(song)).void()
+      return refresh(target, song).then(this.showLinks(song)).void()
     }
   }
   cleanUp() {
@@ -103,7 +102,6 @@ class Helper {
     const debugLink = REMOTE_PATH + song.file
     this.cleanUp()
     this.externalDivs.prepend(span("Fetching links..."))
-    const that = this
 
     function reconLink(entity: ExternalEntityType): string {
       function buildResult(query: string, type: string): string {
@@ -117,6 +115,8 @@ class Helper {
           return buildResult(`${song.artistName} ${song.albumName}`, "release_group")
       }
     }
+
+    const that = this
 
     function externalLinks(result: ExternalResult) {
       that.cleanUp()

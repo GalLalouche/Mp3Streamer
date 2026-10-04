@@ -13,12 +13,11 @@ export class HtmlPlayer extends Player {
 
   static create(): HtmlPlayer {
     const result = new HtmlPlayer()
-    const that = result
-    result.html.ontimeupdate = () => that.publish(new TimeUpdate({
-      currentDuration: that.currentTime(),
-      totalDuration: that.duration()
+    result.html.ontimeupdate = () => result.publish(new TimeUpdate({
+      currentDuration: result.currentTime(),
+      totalDuration: result.duration()
     }))
-    result.html.onended = () => that.publish("ENDED")
+    result.html.onended = () => result.publish("ENDED")
     return result
   }
 
