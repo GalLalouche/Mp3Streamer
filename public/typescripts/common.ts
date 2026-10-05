@@ -245,11 +245,7 @@ async function waitForElem(selector: string): Promise<Element> {
   })
 }
 
-function confirmDialog(title: string, action: () => void): void {
-  confirmDialogAsync(title, () => Promise.resolve().then(action))
-}
-
-function confirmDialogAsync(title: string, action: () => Promise<void>): void {
+function confirmDialog(title: string, action: () => void | Promise<void>): void {
   $(`<div title="Really ${title}?">Are you sure?</div>`)
     .dialog({
       resizable: false,
@@ -258,7 +254,9 @@ function confirmDialogAsync(title: string, action: () => Promise<void>): void {
       modal: true,
       buttons: {
         OK: async function () {
-          await action()
+          const result = action()
+          if (result instanceof Promise)
+            await result
           $(this).dialog("close")
         },
         Cancel: function () {
@@ -267,7 +265,6 @@ function confirmDialogAsync(title: string, action: () => Promise<void>): void {
       },
     })
 }
-
 
 interface Promise<T> {
   void(): Promise<void>
