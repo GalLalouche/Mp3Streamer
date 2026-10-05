@@ -1,5 +1,6 @@
+import {match, P} from "ts-pattern";
 import {Duration, Percentage} from "./common_types.js"
-import {GuiEvents, PlayerControls, PlayerControlsTopic} from "./gui_events.js"
+import {GuiEvents, PlayerControls, PlayerControlsTopic, Seek} from "./gui_events.js"
 import {HtmlPlayer} from "./html_player.js"
 import {JPlayerPlaylist} from "./jplayer.playlist.js"
 import {Song} from "./media.js"
@@ -33,14 +34,13 @@ class SingletonPlayer extends Player {
     result.player.setVolume(result.volume.replayGainAdjustedVolume())
     // TODO these listens should be made elsewhere
     GuiEvents.listen(PlayerControlsTopic, (control: PlayerControls) => {
-      if (control == "play")
-        result.playCurrentSong()
-      else if (control == "stop")
-        result.stop()
-      else if (control == "pause")
-        result.pause()
-      else if (control instanceof Volume)
-        result.setVolume(control)
+      match(control)
+        .with("play", () => result.playCurrentSong())
+        .with("stop", () => result.stop())
+        .with("pause", () => result.pause())
+        .with(P.instanceOf(Volume), (v: Volume) => result.setVolume(v))
+        .with(P.instanceOf(Seek), (s: Seek) => result.skipTo(result.duration().times(s.percentage.zeroToOne())))
+        .exhaustive()
     })
     return result
   }

@@ -11,7 +11,15 @@ import {Volume} from "./types.js"
 
 export const GuiEvents: PubSub = new PubSub()
 
-export type PlayerControls = "play" | "pause" | "stop" | Volume
+export class Seek {
+  readonly percentage: Percentage
+
+  constructor(percentage: Percentage) {
+    this.percentage = percentage
+  }
+}
+
+export type PlayerControls = "play" | "pause" | "stop" | Volume | Seek
 export const PlayerControlsTopic = topic<PlayerControls>("player_controls")
 
 export interface PlaylistClicks {
@@ -36,18 +44,19 @@ $(function () {
   playerControlsAux("pause")
 
 
-  function publishVolume(p: Percentage): void {
-    GuiEvents.publish(PlayerControlsTopic, new Volume(p))
+  $('.jp-mute').on('click', () => GuiEvents.publish(PlayerControlsTopic, new Volume(Percentage.ZERO)))
+
+  // TODO handle unmute by maintaining the original volume
+  function barListener(selector: string, f: (p: Percentage) => PlayerControls): void {
+    const target = $(selector)
+    target.on('click', e => {
+      const clickXPosition = e.pageX - target.offset()!.left
+      GuiEvents.publish(PlayerControlsTopic, f(Percentage.fromMax1(clickXPosition / target.width()!)))
+    })
   }
 
-  $('.jp-mute').on('click', () => publishVolume(Percentage.fromMax100(0)))
-  // TODO handle unmute by maintain the original volume
-  const volumeBar = $('.jp-volume-bar')
-  volumeBar.on('click', (e) => {
-    const target = volumeBar
-    const clickXPosition = e.pageX - target.offset()!.left
-    publishVolume(Percentage.fromMax1(clickXPosition / target.width()!))
-  })
+  barListener('.jp-volume-bar', p => new Volume(p))
+  barListener('.jp-seek-bar', p => new Seek(p))
 
   /*********************
    * Playlist controls *

@@ -3,7 +3,8 @@ import {RawJSON} from "./api"
 
 export class Percentage {
   private readonly _zero_to_one: number
-  static MAX: Percentage = Percentage.fromMax1(1)
+  static readonly MAX: Percentage = Percentage.fromMax1(1)
+  static readonly ZERO: Percentage = Percentage.fromMax1(0)
 
   private constructor(percentage: number) {
     require(
@@ -48,5 +49,6 @@ export class Duration {
     return new Duration(Math.max(this.millis - fadeoutDuration.millis, 0))
   }
   min(duration: Duration): Duration { return this.millis < duration.millis ? this : duration }
+  times(number: number): Duration {return Duration.fromMillis(this.millis * number)}
 }
 
