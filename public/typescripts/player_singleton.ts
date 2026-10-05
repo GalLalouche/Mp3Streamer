@@ -4,8 +4,8 @@ import {HtmlPlayer} from "./html_player.js"
 import {JPlayerPlaylist} from "./jplayer.playlist.js"
 import {Song} from "./media.js"
 import * as PlayerGUI from "./player_gui.js"
+import {ReplayGainAwareVolume} from "./replay_gain_volume.js";
 import {Player, PlayerEvent, Playlist, TimeUpdate, Volume} from "./types.js"
-import * as VolumeSetter from "./volume_setter.js"
 
 // TODO temporary, until this is refactored to use a proper singleton method.
 export let gplayer!: Player
@@ -13,6 +13,7 @@ export let gplaylist!: Playlist
 
 class SingletonPlayer extends Player {
   private readonly player: Player
+  private readonly volume: ReplayGainAwareVolume = new ReplayGainAwareVolume()
 
   private constructor(player: Player) {
     super()
@@ -29,6 +30,7 @@ class SingletonPlayer extends Player {
         PlayerGUI.setIsPlaying()
       }
     })
+    result.player.setVolume(result.volume.replayGainAdjustedVolume())
     // TODO these listens should be made elsewhere
     GuiEvents.listen(PlayerControlsTopic, (control: PlayerControls) => {
       if (control == "play")
@@ -38,7 +40,7 @@ class SingletonPlayer extends Player {
       else if (control == "pause")
         result.pause()
       else if (control instanceof Volume)
-        VolumeSetter.setManualVolume(control)
+        result.setVolume(control)
     })
     return result
   }
@@ -49,13 +51,14 @@ class SingletonPlayer extends Player {
     return this.player.currentTime()
   }
   override getVolume(): Volume {
-    return this.player.getVolume()
+    return this.volume.replayGainAdjustedVolume()
   }
   override isPaused(): boolean {
     return this.player.isPaused()
   }
   override load(song: Song): void {
     this.player.load(song)
+    this.player.setVolume(this.volume.setPeak(song))
   }
   override percentageOfSongPlayed(): Percentage {
     return this.player.percentageOfSongPlayed()
@@ -71,7 +74,7 @@ class SingletonPlayer extends Player {
     PlayerGUI.setIsStopped()
   }
   override setVolume(v: Volume): void {
-    this.player.setVolume(v)
+    this.player.setVolume(this.volume.setManualVolume(v))
     PlayerGUI.updateVolume(v)
   }
   override skipTo(duration: Duration): void {
@@ -109,6 +112,5 @@ function makePlaylist(player: Player): Playlist {
 
 $(function () {
   gplayer = SingletonPlayer.from(HtmlPlayer.create())
-  gplayer.setVolume(VolumeSetter.getVolumeBaseline())
   gplaylist = makePlaylist(gplayer)
 })

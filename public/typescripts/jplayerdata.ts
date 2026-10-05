@@ -11,7 +11,6 @@ import {gplayer, gplaylist} from "./player_singleton.js"
 import * as Poster from "./poster.js"
 import * as Score from "./score.js"
 import {PlayerEvent, TimeUpdate} from "./types.js"
-import * as VolumeSetter from "./volume_setter.js"
 
 // TODO this entire file should split into jplayer specific hacks and more general code
 
@@ -52,7 +51,6 @@ $(function () {
       // FIXME leftover of the old architecture.
       Lyrics.show(currentPlayingSong)
       External.show(currentPlayingSong)
-      VolumeSetter.setPeak(currentPlayingSong)
       Score.show(currentPlayingSong)
       Poster.setImage(currentPlayingSong.poster)
       $('head')

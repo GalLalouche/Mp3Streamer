@@ -12,7 +12,6 @@ import {Song} from "./media.js"
 import {gplayer, gplaylist} from "./player_singleton.js"
 import * as Poster from "./poster.js"
 import {Volume} from "./types.js"
-import * as VolumeSetter from "./volume_setter.js"
 
 $(function () {
     class PlaylistJson {
@@ -79,7 +78,7 @@ $(function () {
         gplaylist.songs(),
         gplaylist.currentIndex(),
         gplayer.currentTime(),
-        VolumeSetter.getVolumeBaseline(),
+        gplayer.getVolume(),
       )
     }
 
@@ -89,7 +88,7 @@ $(function () {
       await gplaylist.setPlaylist(state.songs, false)
       await gplaylist.select(state.currentIndex)
       gplayer.skipTo(state.duration)
-      VolumeSetter.setManualVolume(state.volume)
+      gplayer.setVolume(state.volume)
       // gplayer.playCurrentSong()
     }
 
@@ -103,7 +102,7 @@ $(function () {
         console.log(msg)
         return Promise.resolve({heading: 'Warning', text: msg, icon: 'warning'})
       }
-      state.volume = VolumeSetter.getVolumeBaseline()
+      state.volume = gplayer.getVolume()
       localStorage.setItem(backupKey, JSON.stringify(state))
       const playlistName = Poster.playlistName.val() as string
       if (playlistName) {
