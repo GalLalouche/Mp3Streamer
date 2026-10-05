@@ -1,8 +1,9 @@
-import {Percentage} from "./common_types.js";
-import {Song} from "./media.js";
-import {gplayer} from "./player_singleton.js";
+import {Percentage} from "./common_types.js"
+import {Song} from "./media.js"
+import {gplayer} from "./player_singleton.js"
 import {Volume} from "./types.js"
 
+// FIXME this should be a non-global class, that is made "global" via the singleton.
 export function setManualVolume(v: Volume): void {
   volumeBaseline = v.percentage().zeroToHundred() / calculateVolumeCoefficientFromGain()
   updateVolume()
@@ -15,7 +16,7 @@ export function setPeak(song: Song) {
 
 // VolumeSetter.setManualVolume(VolumeSetter.getVolumeBaseline) should be a no-op.
 export function getVolumeBaseline(): Volume {
-  const p = volumeBaseline * calculateVolumeCoefficientFromGain();
+  const p = volumeBaseline * calculateVolumeCoefficientFromGain()
   return new Volume(Percentage.fromMax100(Math.min(p, 100)))
 }
 

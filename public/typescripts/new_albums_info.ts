@@ -1,5 +1,5 @@
 import * as API from "./api.js"
-import {Album, Song} from "./media.js";
+import {Album, Song} from "./media.js"
 
 export function show(song: Song): void {
   const fieldSet = $("#new-albums")
@@ -80,7 +80,7 @@ function ignoreAlbum(artist: string, album: string, reconID: string, elementToRe
 }
 
 function copyPasteAlbum(artist: string, album: string): void {
-  const text = `${artist} ${album}`;
+  const text = `${artist} ${album}`
   copyTextToClipboard(text)
   newNotification("Copy-pasted", `'${text}' copied to clipboard`)
 }

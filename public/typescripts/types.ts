@@ -1,6 +1,6 @@
 import {RawJSON} from "./api.js"
-import {Duration, Percentage} from "./common_types.js";
-import {Song} from "./media.js";
+import {Duration, Percentage} from "./common_types.js"
+import {Song} from "./media.js"
 
 export class TimeUpdate {
   readonly currentDuration: Duration

@@ -1,5 +1,5 @@
-import {get, RawJSON} from "./api.js";
-import {Song} from "./media.js";
+import {get, RawJSON} from "./api.js"
+import {Song} from "./media.js"
 
 
 export async function getSongRawPath(fullPath: string): Promise<Song> {

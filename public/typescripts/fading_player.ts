@@ -1,5 +1,5 @@
-// import {SecondaryPlayer} from "./secondary_player.js";
-// import {Duration, Song, Volume} from "./types.js";
+// import {SecondaryPlayer} from "./secondary_player.js"
+// import {Duration, Song, Volume} from "./types.js"
 //
 // export namespace FadeOut {
 //   let fadingPlayer: FadingPlayer | undefined
@@ -47,8 +47,8 @@
 //     private static readonly INTERVAL = Duration.fromMillis(50)
 //     private readonly song: Song
 //     private intervalID!: number
-//     private readonly fadeoutDuration: Duration;
-//     private readonly startDuration: Duration;
+//     private readonly fadeoutDuration: Duration
+//     private readonly startDuration: Duration
 //     private readonly startTimeInMillis: number = Date.now()
 //
 //     constructor(song: Song) {

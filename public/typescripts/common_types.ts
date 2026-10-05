@@ -1,8 +1,9 @@
 /** Types unrelated to a specific component or feature, but used across the application. */
-import {RawJSON} from "./api";
+import {RawJSON} from "./api"
 
 export class Percentage {
   private readonly _zero_to_one: number
+  static MAX: Percentage = Percentage.fromMax1(1)
 
   private constructor(percentage: number) {
     require(
@@ -12,17 +13,15 @@ export class Percentage {
     this._zero_to_one = percentage
   }
 
-  static fromJSON(json: RawJSON) {return new Percentage(json as unknown as number)}
+  static fromJSON(json: RawJSON): Percentage {return new Percentage(json as unknown as number)}
   toJSON(): RawJSON {return this._zero_to_one as unknown as RawJSON}
-  static fromMax1(number: number) {return new Percentage(number)}
-  static fromMax100(number: number) {return new Percentage(number / 100.0)}
+  static fromMax1(number: number): Percentage {return new Percentage(number)}
+  static fromMax100(number: number): Percentage {return new Percentage(number / 100.0)}
 
   zeroToOne(): number {return this._zero_to_one}
   zeroToHundred(): number {return this._zero_to_one * 100}
-  isZero(): boolean {
-    return this._zero_to_one === 0
-  }
-  times(number: number) {return Percentage.fromMax100(this.zeroToHundred() * number)}
+  isZero(): boolean {return this._zero_to_one === 0}
+  times(number: number): Percentage {return Percentage.fromMax100(this.zeroToHundred() * number)}
 }
 
 export class Duration {

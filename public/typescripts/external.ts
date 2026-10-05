@@ -1,8 +1,8 @@
 import './jquery_common_xhr.js'
 import {match} from 'ts-pattern'
 import * as API from './api.js'
-import {Song} from "./media.js";
-import {gplaylist} from "./player_singleton.js";
+import {Song} from "./media.js"
+import {gplaylist} from "./player_singleton.js"
 import * as Poster from "./poster.js"
 
 export function show(song: Song): void {

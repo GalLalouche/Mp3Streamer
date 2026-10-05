@@ -1,6 +1,6 @@
 import {FileDownloader} from "./file_downloader.js"
 import {isLocalHost} from "./initialization.js"
-import {Song} from "./media.js";
+import {Song} from "./media.js"
 
 const fileDownloader = new FileDownloader()
 

@@ -10,7 +10,7 @@ export default function openConnection(
 ): WebSocket {
   const result = new WebSocket("ws://" + window.location.host + "/ws/" + path) as WebSocket
   result.onopen = function () {
-    // console.log(path + " connection opened");
+    // console.log(path + " connection opened")
   }
   result.onmessage = e => onMessage(e, result)
   result.onclose = function (event) {

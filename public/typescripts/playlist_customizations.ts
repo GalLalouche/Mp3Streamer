@@ -1,12 +1,14 @@
 // Since jplayer.playlist.js is too freaking big, this extracts (some of) my customization.
 // FIXME merge this and the original playlist, rewrite the whole thing in typescript.
+//  Actually, this is only used for the metadata HTML? That's not a half-bad cohesive module. Should
+//  probably be renamed though.
 
-import {match, P} from "ts-pattern";
+import {match, P} from "ts-pattern"
 import * as External from "./external.js"
-import {GuiEvents, PlaylistEventTopic} from "./gui_events.js";
-import {ITEM_CLASS} from "./jplayer.playlist.js";
-import {Song} from "./media.js";
-import {gplaylist} from "./player_singleton.js";
+import {GuiEvents, PlaylistEventTopic} from "./gui_events.js"
+import {ITEM_CLASS} from "./jplayer.playlist.js"
+import {Song} from "./media.js"
+import {gplaylist} from "./player_singleton.js"
 import * as Score from "./score.js"
 
 export function mediaMetadataHtml(song: Song): string {
@@ -93,15 +95,15 @@ $(function () {
         <li><div><span class="menu-icon fa fa-refresh"></span> Refresh</div></li>
         <style>
         .ui-menu {
-            width: 150px;
-            background-color: white;
-            border: 1px solid #ccc;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            width: 150px
+            background-color: white
+            border: 1px solid #ccc
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2)
         }
         .menu-icon {
-            margin-right: 5px;
-            width: 15px;
-            text-align: center;
+            margin-right: 5px
+            width: 15px
+            text-align: center
         }
         </style>
     </ul>

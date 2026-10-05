@@ -1,7 +1,7 @@
 // TODO use enums and use Object.values to get this list for the drop down list.
 import * as API from "./api.js"
-import {Song} from "./media.js";
-import {gplaylist} from "./player_singleton.js";
+import {Song} from "./media.js"
+import {gplaylist} from "./player_singleton.js"
 
 export function show(song: Song): void {
   clearScores()
@@ -27,41 +27,41 @@ function scoreSliderDialog(song: Song, scoreResult: ScoreResult): void {
 
   const style = $('<style>').text(`
      .slider-container {
-        position: relative;
-        margin: 20px 10px;
+        position: relative
+        margin: 20px 10px
     }
     .ui-slider {
         margin: 0 8px;  /* Add margin to match tick mark container */
     }
     .slider-tick-marks {
-        display: flex;
-        justify-content: space-between;
+        display: flex
+        justify-content: space-between
         padding: 0 10px;  /* Match the margin of ui-slider */
-        margin-top: 5px;
+        margin-top: 5px
         width: calc(100% - 20px);  /* Account for padding */
     }
     .slider-tick-marks span {
-        position: relative;
-        display: flex;
-        width: 1px;
-        background: #ccc;
-        height: 5px;
+        position: relative
+        display: flex
+        width: 1px
+        background: #ccc
+        height: 5px
     }
     .slider-tick-marks span::after {
-        position: absolute;
-        top: 6px;
-        content: attr(data-value);
-        font-size: 12px;
-        color: #888;
+        position: absolute
+        top: 6px
+        content: attr(data-value)
+        font-size: 12px
+        color: #888
         transform: translateX(-50%);  /* Center the number under the tick */
     }
     .slider-label {
-        margin-left: 0px;
-        display: block;
-        margin-top: 5px;
+        margin-left: 0px
+        display: block
+        margin-top: 5px
     }
     .ui-dialog .ui-dialog-content {
-        padding-top: 0;
+        padding-top: 0
     }
     `)
   $('head').append(style)

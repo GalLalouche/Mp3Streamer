@@ -3,14 +3,14 @@
  * Adapted from http://www.jplayer.org playlist.
  */
 
-import {match} from "ts-pattern";
+import {match} from "ts-pattern"
 import * as ColorUtils from "./color-utils.js"
-import * as Local from "./local.js";
-import {Song} from "./media.js";
-import {gplayer} from "./player_singleton.js";
+import * as Local from "./local.js"
+import {Song} from "./media.js"
+import {gplayer} from "./player_singleton.js"
 // FIXME cyclic dependency is only temporary since both files will be merged eventually
-import * as PlaylistCustomizations from "./playlist_customizations.js";
-import {Player, PlayerEvent} from "./types.js";
+import * as PlaylistCustomizations from "./playlist_customizations.js"
+import {Player, PlayerEvent} from "./types.js"
 
 const REMOVE_ITEM = "jp-playlist-item-remove"
 // FIXME this is reused in GuiEvents
@@ -53,7 +53,7 @@ export class JPlayerPlaylist {
       if (e === "ENDED")
         result.next()
     })
-    return result;
+    return result
   }
 
   async setPlaylist(playlist: readonly Song[]): Promise<void> {
@@ -155,7 +155,7 @@ export class JPlayerPlaylist {
   }
 
   next(): void {
-    const isLastSong = this.current === this.playlist.length - 1;
+    const isLastSong = this.current === this.playlist.length - 1
     if (isLastSong)
       return notImplemented()
     const index = (this.current + 1 < this.playlist.length) ? this.current + 1 : 0
@@ -183,7 +183,7 @@ export class JPlayerPlaylist {
   private initPlaylist(playlist: readonly Song[]): void {
     this.current = 0
     this.removing = false
-    this.playlist = $.extend(true, [], playlist);
+    this.playlist = $.extend(true, [], playlist)
   }
 
   private refresh(animation?: () => void): void {

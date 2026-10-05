@@ -1,6 +1,6 @@
-import {Duration, Percentage} from "./common_types.js";
-import {Song} from "./media.js";
-import {Player, PlayerEvent, PlayerEventListener, TimeUpdate, Volume} from "./types.js";
+import {Duration, Percentage} from "./common_types.js"
+import {Song} from "./media.js"
+import {Player, PlayerEvent, PlayerEventListener, TimeUpdate, Volume} from "./types.js"
 
 /** Implements the Player interface using an HTML5 audio element. */
 export class HtmlPlayer extends Player {
@@ -21,7 +21,7 @@ export class HtmlPlayer extends Player {
     return result
   }
 
-  publish(pe: PlayerEvent): void {
+  private publish(pe: PlayerEvent): void {
     for (const listener of this.listeners)
       listener(pe)
   }
@@ -35,9 +35,7 @@ export class HtmlPlayer extends Player {
     this.html.src = song.offlineUrl!! // FIXME this just assume the offline URL is already set
     this.publish(song)
   }
-  override pause(): void {
-    this.html.pause()
-  }
+  override pause(): void {this.html.pause()}
   override percentageOfSongPlayed(): Percentage {
     return isNaN(this.html.duration) ?
       Percentage.fromMax100(0) :
@@ -47,15 +45,9 @@ export class HtmlPlayer extends Player {
     // TODO should this return a promise as well?
     this.html.play()
   }
-  override getVolume(): Volume {
-    return new Volume(Percentage.fromMax1(this.html.volume))
-  }
-  override setVolume(v: Volume): void {
-    this.html.volume = v.percentage().zeroToOne()
-  }
-  override skipTo(duration: Duration): void {
-    this.html.currentTime = duration.toSeconds()
-  }
+  override getVolume(): Volume {return new Volume(Percentage.fromMax1(this.html.volume))}
+  override setVolume(v: Volume): void {this.html.volume = v.percentage().zeroToOne()}
+  override skipTo(duration: Duration): void {this.html.currentTime = duration.toSeconds()}
   override stop(): void {
     this.html.pause()
     this.html.currentTime = 0
@@ -64,9 +56,7 @@ export class HtmlPlayer extends Player {
     this.stop()
     this.html.src = ""
   }
-  override listen(callback: PlayerEventListener): void {
-    this.listeners.push(callback)
-  }
+  override listen(callback: PlayerEventListener): void {this.listeners.push(callback)}
   override unlisten(callback: PlayerEventListener): void {
     this.listeners = this.listeners.filter(cb => cb !== callback)
   }

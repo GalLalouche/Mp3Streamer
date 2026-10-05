@@ -89,7 +89,7 @@ function not(b: boolean): boolean {
 
 type ObjectIndex<K extends string | number | symbol, V> = {
   [P in K]: V
-};
+}
 
 interface Array<T> {
   custom_last(): T

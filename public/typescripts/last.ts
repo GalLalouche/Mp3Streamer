@@ -1,9 +1,9 @@
 // A very simple module, showing the latest albums, so it can be easily added to the playlist.
 
-import * as API from "./api.js";
-import * as DataApi from "./data_api.js";
-import {Album} from "./media.js";
-import {gplaylist} from "./player_singleton.js";
+import * as API from "./api.js"
+import * as DataApi from "./data_api.js"
+import {Album} from "./media.js"
+import {gplaylist} from "./player_singleton.js"
 
 export async function addNextNewAlbum(): Promise<void> {
   if (nonEmptyQueue) { // If the queue isn't empty, dequeue first for faster update time.

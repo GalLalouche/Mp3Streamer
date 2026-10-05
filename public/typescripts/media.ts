@@ -1,5 +1,5 @@
-import {RawJSON} from "./api";
-import {Duration} from "./common_types";
+import {RawJSON} from "./api.js"
+import {Duration} from "./common_types.js"
 
 export class Song {
   readonly title: string
@@ -20,7 +20,7 @@ export class Song {
   readonly orchestra?: string
   readonly performanceYear?: number
 
-  // The below represent URLs
+  // The below represent URLs FIXME then why aren't they URLs?!
   readonly file: string
   readonly poster: string
   // Either mp3 or flac should be available

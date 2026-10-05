@@ -1,14 +1,14 @@
 // FIXME this entire file should be expunged.
-import {Duration} from "./common_types.js";
-import * as DataApi from "./data_api.js";
+import {Duration} from "./common_types.js"
+import * as DataApi from "./data_api.js"
 import * as External from './external.js'
 import {getDebugAlbum, getDebugSong, isMuted} from './initialization.js'
 import * as Local from "./local.js"
 import * as Lyrics from './lyrics.js'
-import {Song} from "./media.js";
+import {Song} from "./media.js"
 import * as NewAlbumInfo from './new_albums_info.js'
-import {gplayer, gplaylist} from "./player_singleton.js";
-import * as Poster from "./poster.js";
+import {gplayer, gplaylist} from "./player_singleton.js"
+import * as Poster from "./poster.js"
 import * as Score from "./score.js"
 import {PlayerEvent, TimeUpdate} from "./types.js"
 import * as VolumeSetter from "./volume_setter.js"

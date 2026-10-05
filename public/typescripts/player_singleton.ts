@@ -1,11 +1,11 @@
-import {Duration, Percentage} from "./common_types.js";
-import {GuiEvents, PlayerControls, PlayerControlsTopic} from "./gui_events.js";
-import {HtmlPlayer} from "./html_player";
-import {JPlayerPlaylist} from "./jplayer.playlist.js";
-import {Song} from "./media.js";
-import * as PlayerGUI from "./player_gui.js";
-import {Player, PlayerEvent, Playlist, TimeUpdate, Volume} from "./types";
-import * as VolumeSetter from "./volume_setter.js";
+import {Duration, Percentage} from "./common_types.js"
+import {GuiEvents, PlayerControls, PlayerControlsTopic} from "./gui_events.js"
+import {HtmlPlayer} from "./html_player.js"
+import {JPlayerPlaylist} from "./jplayer.playlist.js"
+import {Song} from "./media.js"
+import * as PlayerGUI from "./player_gui.js"
+import {Player, PlayerEvent, Playlist, TimeUpdate, Volume} from "./types.js"
+import * as VolumeSetter from "./volume_setter.js"
 
 // TODO temporary, until this is refactored to use a proper singleton method.
 export let gplayer!: Player
@@ -43,31 +43,31 @@ class SingletonPlayer extends Player {
     return result
   }
   override clear(): void {
-    this.player.clear();
+    this.player.clear()
   }
   override currentTime(): Duration {
-    return this.player.currentTime();
+    return this.player.currentTime()
   }
   override getVolume(): Volume {
-    return this.player.getVolume();
+    return this.player.getVolume()
   }
   override isPaused(): boolean {
-    return this.player.isPaused();
+    return this.player.isPaused()
   }
   override load(song: Song): void {
-    this.player.load(song);
+    this.player.load(song)
   }
   override percentageOfSongPlayed(): Percentage {
-    return this.player.percentageOfSongPlayed();
+    return this.player.percentageOfSongPlayed()
   }
   override duration(): Duration {
-    return this.player.duration();
+    return this.player.duration()
   }
   override playCurrentSong(): void {
-    this.player.playCurrentSong();
+    this.player.playCurrentSong()
   }
   override pause(): void {
-    this.player.pause();
+    this.player.pause()
     PlayerGUI.setIsStopped()
   }
   override setVolume(v: Volume): void {
@@ -75,17 +75,17 @@ class SingletonPlayer extends Player {
     PlayerGUI.updateVolume(v)
   }
   override skipTo(duration: Duration): void {
-    return this.player.skipTo(duration);
+    return this.player.skipTo(duration)
   }
   override stop(): void {
-    this.player.stop();
+    this.player.stop()
     PlayerGUI.setIsStopped()
   }
   override listen(callback: (pe: PlayerEvent) => void): void {
-    this.player.listen(callback);
+    this.player.listen(callback)
   }
   override unlisten(callback: (pe: PlayerEvent) => void): void {
-    this.player.unlisten(callback);
+    this.player.unlisten(callback)
   }
 }
 

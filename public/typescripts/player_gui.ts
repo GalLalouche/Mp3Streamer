@@ -8,9 +8,9 @@
 
 // FIXME wthere really shouldn't be too different module, since it's the same DOM being manipulated.
 
-import {Duration} from "./common_types.js";
-import {Song} from "./media.js";
-import {Volume} from "./types.js";
+import {Duration, Percentage} from "./common_types.js"
+import {Song} from "./media.js"
+import {Volume} from "./types.js"
 
 let currentTime: JQuery<HTMLElement>
 let currentlyPlaying: JQuery<HTMLElement>
@@ -53,7 +53,7 @@ export function setIsStopped(): void {
 }
 
 export function setCurrentSong(song: Song): void {
-  const songInfo = `${song.artistName} - ${song.title}`;
+  const songInfo = `${song.artistName} - ${song.title}`
   duration.html(song.duration.timeFormat())
   currentlyPlaying.html(songInfo)
   document.title = songInfo
@@ -62,15 +62,15 @@ export function setCurrentSong(song: Song): void {
 export function updatePosition(input: { current: Duration, total: Duration }): void {
   // FIXME take this from the actual seekable value
   //  seekPercent = (this.status.duration > 0) ? 100 * this.html.seekable.end(t.seekable.length - 1) / this.status.duration : 100
-  const current = input.current
-  const total = input.total
-  seekBar.css("width", "100%")
-  playBar.css("width", `${100 * current.toSeconds() / total.toSeconds()}%`)
-  currentTime.html(current.timeFormat())
+  seekBar.setWidth(Percentage.MAX)
+  const totalSeconds = input.total.toSeconds()
+  if (totalSeconds > 0)
+    playBar.setWidth(Percentage.fromMax1(input.current.toSeconds() / totalSeconds))
+  currentTime.html(input.current.timeFormat())
 }
 
 export function updateVolume(v: Volume): void {
-  volumeBar.css("width", `${v.percentage().zeroToHundred()}%`)
+  volumeBar.setWidth(v.percentage())
   if (v.isMuted()) {
     muteButton.hide()
     unmuteButton.show()
