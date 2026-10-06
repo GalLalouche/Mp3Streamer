@@ -6,7 +6,7 @@
  */
 import {Percentage} from "./common_types.js"
 import {PubSub, topic} from "./pubsub.js"
-import {Volume} from "./types.js"
+import {Volume} from "./volume";
 
 
 export const GuiEvents: PubSub = new PubSub()

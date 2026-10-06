@@ -11,7 +11,7 @@ import {isMuted} from "./initialization.js"
 import {Song} from "./media.js"
 import {gplayer, gplaylist} from "./player_singleton.js"
 import * as Poster from "./poster.js"
-import {Volume} from "./types.js"
+import {Volume} from "./volume";
 
 $(function () {
     class PlaylistJson {

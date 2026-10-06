@@ -2,7 +2,7 @@ import {get, RawJSON} from "./api.js"
 import {Song} from "./media.js"
 
 
-export async function getSongRawPath(fullPath: string): Promise<Song> {
+async function getSongRawPath(fullPath: string): Promise<Song> {
   return get(fullPath).then(Song.fromJSON)
 }
 

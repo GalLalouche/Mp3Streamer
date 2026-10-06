@@ -10,7 +10,7 @@
 
 import {Duration, Percentage} from "./common_types.js"
 import {Song} from "./media.js"
-import {Volume} from "./types.js"
+import {Volume} from "./volume";
 
 let currentTime: JQuery<HTMLElement>
 let currentlyPlaying: JQuery<HTMLElement>
