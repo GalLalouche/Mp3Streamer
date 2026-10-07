@@ -51,4 +51,3 @@ export class Duration {
   min(duration: Duration): Duration { return this.millis < duration.millis ? this : duration }
   times(number: number): Duration {return Duration.fromMillis(this.millis * number)}
 }
-

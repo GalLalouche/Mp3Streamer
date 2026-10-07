@@ -56,7 +56,7 @@ function newNotification(title: string, body: string): Notification {
 
 function showDesktopNotification(title: string, body: string, timelimitInSeconds?: number) {
   let notification: Notification | null = null
-  if (!window.Notification)
+  if (isNullable(window.Notification))
     console.log('Browser does not support notifications.')
   if (Notification.permission === 'granted') {
     notification = newNotification(title, body)
@@ -138,11 +138,7 @@ Array.prototype.custom_group_by = function <S extends string | number | symbol, 
 Array.prototype.custom_max = function () {
   let max: number | null = null
   for (const e of this) {
-    if (max === null) {
-      max = e
-    } else {
-      max = max > e ? max : e
-    }
+    max = max === null ? e : (max > e ? max : e)
   }
   return max
 }
@@ -155,7 +151,12 @@ function assert(condition: boolean, message?: string): asserts condition is true
 }
 
 function assertDefined<A>(e: A | undefined): asserts e is A {
-  assert(isDefined(e))
+  assert(isNonNullable(e))
+}
+
+function definedOrThrow<A>(e: A | undefined): A {
+  assertDefined(e)
+  return e
 }
 
 class AssertionError extends Error {
@@ -208,7 +209,7 @@ class IllegalArgumentException extends Error {
 }
 
 function require(cond: boolean, message?: string): void {
-  if (!cond)
+  if (not(cond))
     throw new IllegalArgumentException(message || "requirement failed")
 }
 
@@ -274,6 +275,10 @@ Promise.prototype.void = async function () {
   await this
 }
 
+function notImplemented(): never {
+  throw new Error("Not implemented")
+}
+
 // Type checkers
 interface ArrayConstructor {
   isArray(arg: ReadonlyArray<any> | any): arg is ReadonlyArray<any>
@@ -291,10 +296,10 @@ function isFunction(e: any): e is Function {
   return typeof e == "function"
 }
 
-function isDefined<A>(e: A | undefined): e is A {
-  return e !== undefined
+function isNonNullable<A>(e: A | undefined | null): e is NonNullable<A> {
+  return e !== null && e !== undefined
 }
 
-function notImplemented(): never {
-  throw new Error("Not implemented")
+function isNullable(e: unknown): e is null | undefined {
+  return e === null || e === undefined;
 }

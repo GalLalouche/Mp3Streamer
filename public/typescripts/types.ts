@@ -1,6 +1,6 @@
 import {Duration, Percentage} from "./common_types.js"
 import {Song} from "./media.js"
-import {Volume} from "./volume.js";
+import {Volume} from "./volume.js"
 
 export class TimeUpdate {
   readonly currentDuration: Duration

@@ -31,8 +31,7 @@ export function show(song: Song): void {
            <button class="ignore">Ignore</button>
         </span></li>`,
       )
-      const reconID = album.reconID
-      assertDefined(reconID)
+      const reconID = definedOrThrow(album.reconID)
       li.on('click', 'button.copy', () => copyPasteAlbum(song.artistName, album.title))
       li.on('click', 'button.ignore', () => ignoreAlbum(song.artistName, album.title, reconID, li))
       ul.append(li)

@@ -91,7 +91,7 @@ class Helper {
     this.externalDivs.children('span').remove()
   }
   setLinkColor(e: JQuery<HTMLElement>): void {
-    if (!this.currentPosterRgb)
+    if (isNullable(this.currentPosterRgb))
       return
     const c1 = this.currentPosterRgb.makeLighter(0.5).toString()
     const c2 = this.currentPosterRgb.toString()
@@ -168,7 +168,7 @@ class Helper {
 
     addIfNotEmpty(this.artistReconBox)
     addIfNotEmpty(this.albumReconBox)
-    if (!isEmptyObject(json)) {
+    if (not(isEmptyObject(json))) {
       const song = gplaylist.currentPlayingSong()
       const songPath = song.file
       postJson(REMOTE_PATH + "recons/" + songPath, json, this.showLinks(song))

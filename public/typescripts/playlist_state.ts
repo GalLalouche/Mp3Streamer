@@ -11,7 +11,7 @@ import {isMuted} from "./initialization.js"
 import {Song} from "./media.js"
 import {gplayer, gplaylist} from "./player_singleton.js"
 import * as Poster from "./poster.js"
-import {Volume} from "./volume.js";
+import {Volume} from "./volume.js"
 
 $(function () {
   class PlaylistJson {
@@ -136,7 +136,7 @@ $(function () {
   })
   listenToClick("load_backup", async function () {
     const item = localStorage.getItem(backupKey)
-    if (!item) {
+    if (isNullable(item)) {
       $.toast("No backup to load!")
       return
     }

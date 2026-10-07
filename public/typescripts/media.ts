@@ -1,6 +1,8 @@
 import {RawJSON} from "./api.js"
 import {Duration} from "./common_types.js"
 
+type extension = 'mp3' | 'flac'
+
 export class Song {
   readonly title: string
   readonly artistName: string
@@ -23,10 +25,8 @@ export class Song {
   // The below represent URLs FIXME then why aren't they URLs?!
   readonly file: string
   readonly poster: string
-  // Either mp3 or flac should be available
-  // TODO represent this as an ADT since this is a proper parsed class.
-  readonly mp3?: string
-  readonly flac?: string
+  // Can be undefined in search results FIXME shouldn't be thought...
+  readonly extension?: extension
   offlineUrl?: string
 
   static fromJSON(json: RawJSON): Song {
@@ -93,18 +93,13 @@ export class Song {
 
     this.file = file
     this.poster = poster
-    this.mp3 = mp3
-    this.flac = flac
-    assert(
-      // It can be neither when it returns as search results, for example.
-      this.mp3 === undefined || this.flac === undefined,
-      "Song can't have both mp3 and flac",
-    )
-    this.offlineUrl = undefined
+    require(mp3 === undefined || flac === undefined, "Song can't have both mp3 and flac")
+    if (mp3)
+      this.extension = 'mp3'
+    if (flac)
+      this.extension = 'flac'
   }
-  path(): string {
-    return this.mp3 ? this.mp3 : this.flac!
-  }
+  path(): string | undefined {return this.extension}
 }
 
 export type AlbumType = 'Album' | 'Live' | 'EP'
@@ -116,6 +111,7 @@ export interface Album {
   readonly dir: string
   readonly date: Date
   readonly albumType: AlbumType
+  readonly discNumbers?: readonly string[]
 
   // Relevant for new albums
   readonly reconID?: string
@@ -126,10 +122,9 @@ export interface Album {
   readonly opus?: string
   readonly orchestra?: string
   readonly performanceYear?: number
-  readonly discNumbers?: string[]
 }
 
 export interface Artist {
   readonly name: string
-  readonly albums: Album[]
+  readonly albums: readonly Album[]
 }

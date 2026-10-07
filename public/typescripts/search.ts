@@ -113,7 +113,7 @@ class Helper {
         li.appendTo(ul).data(e)
         li.attr("title", "")
         li.mouseover(function () {
-          if (!li.attr('title') && li.custom_overflown())
+          if (isNullable(li.attr('title')) && li.custom_overflown())
             li.custom_tooltip(`${itemProducer(e).split(">").custom_last().trim()}`)
         })
       })
@@ -125,7 +125,7 @@ class Helper {
 
     specificResults("songs", function (song: Song) {
         function suffix() {
-          if (!song.composer) // Assumes all classical pieces have a composer field.
+          if (isNullable(song.composer)) // Assumes all classical pieces have a composer field.
             return `${song.artistName}: ${song.title} (${song.duration.timeFormat()})`
 
           // TODO handle code duplication of all the toStrings for composers
@@ -146,7 +146,7 @@ class Helper {
 
     specificResults("albums", function (album: Album) {
       function albumText() {
-        if (!album.composer) // Assumes all classical pieces have a composer field.
+        if (isNullable(album.composer)) // Assumes all classical pieces have a composer field.
           return `${album.artistName}: ${album.year || "NO_YEAR"} ${album.title}`
 
         const titleContainsComposer = album.title.toLowerCase().includes(album.composer.toLowerCase())

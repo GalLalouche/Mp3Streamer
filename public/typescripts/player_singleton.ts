@@ -1,4 +1,4 @@
-import {match, P} from "ts-pattern";
+import {match, P} from "ts-pattern"
 import {Duration, Percentage} from "./common_types.js"
 import {GuiEvents, PlayerControls, PlayerControlsTopic, Seek} from "./gui_events.js"
 import {HtmlPlayer} from "./html_player.js"
@@ -6,7 +6,7 @@ import {JPlayerPlaylist} from "./jplayer.playlist.js"
 import {Song} from "./media.js"
 import * as PlayerGUI from "./player_gui.js"
 import {Player, PlayerEvent, Playlist, TimeUpdate} from "./types.js"
-import {Volume} from "./volume.js";
+import {Volume} from "./volume.js"
 
 // TODO temporary, until this is refactored to use a proper singleton method.
 export let gplayer!: Player
