@@ -28,7 +28,6 @@ class SingletonPlayer extends Player {
           current: result.currentTime(),
           total: result.duration(),
         })
-        PlayerGUI.setIsPlaying()
       }
     })
     result.player.setVolume(result.volume.replayGainAdjustedVolume())
@@ -38,7 +37,7 @@ class SingletonPlayer extends Player {
         .with("play", () => result.playCurrentSong())
         .with("stop", () => result.stop())
         .with("pause", () => result.pause())
-        .with(P.instanceOf(Volume), result.setVolume)
+        .with(P.instanceOf(Volume), v => result.setVolume(v))
         .with(P.instanceOf(Seek), s => result.skipTo(result.duration().times(s.percentage.zeroToOne())))
         .exhaustive()
     })
@@ -54,7 +53,10 @@ class SingletonPlayer extends Player {
   }
   override percentageOfSongPlayed(): Percentage {return this.player.percentageOfSongPlayed()}
   override duration(): Duration {return this.player.duration()}
-  override playCurrentSong(): void {this.player.playCurrentSong()}
+  override playCurrentSong(): void {
+    this.player.playCurrentSong()
+    PlayerGUI.setIsPlaying()
+  }
   override pause(): void {
     this.player.pause()
     PlayerGUI.setIsStopped()

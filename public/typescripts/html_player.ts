@@ -33,7 +33,8 @@ export class HtmlPlayer extends Player {
   // TODO should this be async to signify when done?
   override load(song: Song): void {
     // PlayerGUI.setCurrentSong(song)
-    this.html.src = song.offlineUrl!! // FIXME this just assume the offline URL is already set
+    // FIXME this just assume the offline URL is already set (which breaks on loading a playlist state!)
+    this.html.src = song.offlineUrl!!
     this.publish(song)
   }
   override pause(): void {this.html.pause()}

@@ -1,8 +1,6 @@
 import {RawJSON} from "./api.js"
 import {Duration} from "./common_types.js"
 
-type extension = 'mp3' | 'flac'
-
 export class Song {
   readonly title: string
   readonly artistName: string
@@ -26,7 +24,7 @@ export class Song {
   readonly file: string
   readonly poster: string
   // Can be undefined in search results FIXME shouldn't be thought...
-  readonly extension?: extension
+  readonly path?: string
   offlineUrl?: string
 
   static fromJSON(json: RawJSON): Song {
@@ -93,13 +91,14 @@ export class Song {
 
     this.file = file
     this.poster = poster
+    // TODO this is a leftover (I think) of when we cared about mp3/flac. We don't anymore. So we
+    //  should streamline this from server and just take a path.
     require(mp3 === undefined || flac === undefined, "Song can't have both mp3 and flac")
     if (mp3)
-      this.extension = 'mp3'
+      this.path = mp3
     if (flac)
-      this.extension = 'flac'
+      this.path = flac
   }
-  path(): string | undefined {return this.extension}
 }
 
 export type AlbumType = 'Album' | 'Live' | 'EP'

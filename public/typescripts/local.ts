@@ -15,7 +15,7 @@ export async function maybePreLoad(song: Song): Promise<Song> {
 /** Returns the offline blob URL. */
 export async function setOfflineUrl(song: Song): Promise<string> {
   if (song.offlineUrl === undefined) {
-    const blob = await fileDownloader.download(definedOrThrow(song.path()))
+    const blob = await fileDownloader.download(definedOrThrow(song.path))
     console.log(`Blob for ${song.file} set`)
     song.offlineUrl = URL.createObjectURL(blob)
   }
