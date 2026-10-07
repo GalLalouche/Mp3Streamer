@@ -1,6 +1,6 @@
 import * as ColorUtils from "./color-utils.js"
 
-export const PLAYLIST_NAME_KEY = "playlist_name.js"
+export const PLAYLIST_NAME_KEY = "playlist_name"
 
 export let rgbListeners: ((rgb: RGB) => void)[] = []
 // TODO This *really* shouldn't be here, it's just that this button is near the poster :\

@@ -39,7 +39,7 @@ class Results {
     return new Results(
       json.songs.map(Song.fromJSON),
       json.albums as Album[],
-      json.artists as Artist[]
+      json.artists as Artist[],
     )
   }
 }

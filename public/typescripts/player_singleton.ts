@@ -6,7 +6,7 @@ import {JPlayerPlaylist} from "./jplayer.playlist.js"
 import {Song} from "./media.js"
 import * as PlayerGUI from "./player_gui.js"
 import {Player, PlayerEvent, Playlist, TimeUpdate} from "./types.js"
-import {Volume} from "./volume";
+import {Volume} from "./volume.js";
 
 // TODO temporary, until this is refactored to use a proper singleton method.
 export let gplayer!: Player
@@ -26,7 +26,7 @@ class SingletonPlayer extends Player {
       if (pe instanceof TimeUpdate) {
         PlayerGUI.updatePosition({
           current: result.currentTime(),
-          total: result.duration()
+          total: result.duration(),
         })
         PlayerGUI.setIsPlaying()
       }
@@ -38,8 +38,8 @@ class SingletonPlayer extends Player {
         .with("play", () => result.playCurrentSong())
         .with("stop", () => result.stop())
         .with("pause", () => result.pause())
-        .with(P.instanceOf(Volume), (v: Volume) => result.setVolume(v))
-        .with(P.instanceOf(Seek), (s: Seek) => result.skipTo(result.duration().times(s.percentage.zeroToOne())))
+        .with(P.instanceOf(Volume), result.setVolume)
+        .with(P.instanceOf(Seek), s => result.skipTo(result.duration().times(s.percentage.zeroToOne())))
         .exhaustive()
     })
     return result
@@ -108,7 +108,11 @@ function makePlaylist(player: Player): Playlist {
     override prev() {return pl.previous()}
     override async clear(): Promise<void> {return pl.setPlaylist([])}
     override play(index: number): Promise<void> {return pl.play(index)}
-    override select(index: number): Promise<void> {return pl.select(index)}
+    override select(index: number): Promise<void> {
+      // This check is here since the JPlayerPlaylist actually does need to support selecting the
+      // current song (for some reason). FIXME Probably a bug, should be fixed.
+      return pl.currentIndex() === index ? Promise.resolve() : pl.select(index)
+    }
     override removeItem(index: number, type: "x" | "up" | "down") {pl.removeItem(index, type)}
   }
 }

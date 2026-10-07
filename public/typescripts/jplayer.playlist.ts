@@ -1,7 +1,5 @@
 // FIXME merge with the customizations, and remove
-/*
- * Adapted from http://www.jplayer.org playlist.
- */
+/* Adapted from http://www.jplayer.org playlist. */
 
 import {match} from "ts-pattern"
 import * as ColorUtils from "./color-utils.js"
@@ -255,7 +253,5 @@ export class JPlayerPlaylist {
     }
   }
 
-  private getDisplayedIndex(index: number): number {
-    return this.playlist.length - 1 - index
-  }
+  private getDisplayedIndex(index: number): number {return this.playlist.length - 1 - index}
 }

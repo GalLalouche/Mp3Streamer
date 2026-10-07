@@ -1,5 +1,5 @@
 // TODO this should be turned into a proper module probably, or at least add a comment as to why it isn't.
-import jqXHR = JQuery.jqXHR;
+import jqXHR = JQuery.jqXHR
 
 declare interface Percentage {
   zeroToHundred(): number

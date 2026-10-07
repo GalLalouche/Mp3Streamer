@@ -1,7 +1,7 @@
 import {Duration, Percentage} from "./common_types.js"
 import {Song} from "./media.js"
 import {Player, PlayerEvent, PlayerEventListener, TimeUpdate} from "./types.js"
-import {Volume} from "./volume";
+import {Volume} from "./volume.js";
 
 /** Implements the Player interface using an HTML5 audio element. */
 export class HtmlPlayer extends Player {
@@ -16,7 +16,7 @@ export class HtmlPlayer extends Player {
     const result = new HtmlPlayer()
     result.html.ontimeupdate = () => result.publish(new TimeUpdate({
       currentDuration: result.currentTime(),
-      totalDuration: result.duration()
+      totalDuration: result.duration(),
     }))
     result.html.onended = () => result.publish("ENDED")
     return result
