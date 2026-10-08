@@ -54,12 +54,11 @@ $(function () {
   })
 
   function loadNextSong() {
-    const songs = gplaylist.songs()
     // verify that the sequence of queued songs, starting from the current song, are continuous in the same album
     // otherwise, don't queue a new song
     for (let index = gplaylist.currentIndex(); index < gplaylist.length() - 1; index++) {
-      const currentSong = songs[index]
-      const nextSong = songs[index + 1]
+      const currentSong = gplaylist.getSong(index)
+      const nextSong = gplaylist.getSong(index + 1)
 
       function same(field: keyof Song): boolean {return currentSong[field] === nextSong[field]}
 

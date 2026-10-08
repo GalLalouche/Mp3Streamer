@@ -104,6 +104,8 @@ function makePlaylist(player: Player): Playlist {
   return new class extends Playlist {
     override currentIndex() {return pl.currentIndex()}
     override songs() {return pl.songs()}
+    override getSong(index: number) {return pl.getSong(index)}
+    override length() {return pl.length()}
     override add(song: Song | readonly Song[], playNow: boolean): Promise<void> {
       return pl.add(song, playNow)
     }

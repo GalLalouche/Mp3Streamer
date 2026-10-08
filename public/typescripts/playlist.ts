@@ -19,9 +19,11 @@ export abstract class Playlist {
   abstract select(index: number): Promise<void>
   abstract prev(): void
   abstract currentIndex(): number
-  currentPlayingSong(): Song {return this.songs()[this.currentIndex()]}
+  /** Throws on invalid index. */
+  abstract getSong(index: number): Song
+  currentPlayingSong(): Song {return this.getSong(this.currentIndex())}
   abstract songs(): readonly Song[]
-  last(): Song {return this.songs()[this.length() - 1]}
+  last(): Song {return this.getSong(this.length() - 1)}
   length(): number {return this.songs().length}
   // The list presentation reversed, so song at index 0 is actually the last song, not the first.
   getDisplayedIndex(index: number): number {return this.length() - 1 - index}

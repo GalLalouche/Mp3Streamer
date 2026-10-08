@@ -42,6 +42,12 @@ export class JPlayerPlaylist {
   songs(): readonly Song[] {
     return this.playlist
   }
+  length(): number {
+    return this.playlist.length
+  }
+  getSong(index: number) {
+    return this.playlist[index]
+  }
 
   static create(player: Player): JPlayerPlaylist {
     const result = new JPlayerPlaylist()

@@ -71,7 +71,7 @@ $(function () {
     // The listItem can't overflow; what can overflow is the width-limited descendent.
     if (listItem.find(".width-limited-playlist-span").custom_overflown()) {
       const displayedIndex = gplaylist.getDisplayedIndex(listItem.index())
-      const song = gplaylist.songs()[displayedIndex]
+      const song = gplaylist.getSong(displayedIndex)
       listItem.custom_tooltip(mediaMetadataHtml(song))
     }
   })
@@ -118,7 +118,7 @@ $(function () {
       position: 'absolute',
     })
 
-    const song = gplaylist.songs()[gplaylist.getDisplayedIndex($(this).index())]
+    const song = gplaylist.getSong(gplaylist.getDisplayedIndex($(this).index()))
     contextMenu.one("click", "li", async function (e) {
       switch (e.target.textContent.trim()) {
         case "Score":
