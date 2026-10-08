@@ -5,8 +5,9 @@ import {HtmlPlayer} from "./html_player.js"
 import {JPlayerPlaylist} from "./jplayer.playlist.js"
 import {Song} from "./media.js"
 import * as PlayerGUI from "./player_gui.js"
-import {Player, PlayerEvent, Playlist, TimeUpdate} from "./types.js"
+import {Player, PlayerEvent, TimeUpdate} from "./types.js"
 import {Volume} from "./volume.js"
+import {Playlist} from "./playlist.js"
 
 // TODO temporary, until this is refactored to use a proper singleton method.
 export let gplayer!: Player
@@ -106,7 +107,7 @@ function makePlaylist(player: Player): Playlist {
     override add(song: Song | readonly Song[], playNow: boolean): Promise<void> {
       return pl.add(song, playNow)
     }
-    override _next() {return pl.next()}
+    protected override _next() {return pl.next()}
     override prev() {return pl.previous()}
     override async clear(): Promise<void> {return pl.setPlaylist([])}
     override play(index: number): Promise<void> {return pl.play(index)}
