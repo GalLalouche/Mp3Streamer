@@ -9,12 +9,7 @@ export abstract class Playlist {
     }
   }
   abstract add(song: Song | readonly Song[], playNow: boolean): Promise<void>
-  protected abstract _next(): void
-  next(count?: number): void {
-    count = count || 1
-    for (let i = 0; i < count; i++)
-      this._next()
-  }
+  abstract next(): void
   abstract play(index: number): Promise<void>
   abstract select(index: number): Promise<void>
   abstract prev(): void

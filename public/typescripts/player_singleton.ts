@@ -109,7 +109,7 @@ function makePlaylist(player: Player): Playlist {
     override add(song: Song | readonly Song[], playNow: boolean): Promise<void> {
       return pl.add(song, playNow)
     }
-    protected override _next() {return pl.next()}
+    override next() {return pl.next()}
     override prev() {return pl.previous()}
     override async clear(): Promise<void> {return pl.setPlaylist([])}
     override play(index: number): Promise<void> {return pl.play(index)}
