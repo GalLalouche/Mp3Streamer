@@ -9,7 +9,8 @@ import {Song} from "./media.js"
 import {gplayer} from "./player_singleton.js"
 // FIXME cyclic dependency is only temporary since both files will be merged eventually
 import * as PlaylistCustomizations from "./playlist_customizations.js"
-import {Player, PlayerEvent} from "./types.js"
+import {Player, PlayerEvent, TimeUpdate} from "./types.js"
+import {Duration} from "./common_types.js"
 
 const REMOVE_ITEM = "jp-playlist-item-remove"
 // FIXME this is reused in GuiEvents
@@ -25,6 +26,7 @@ const DISPLAY_TIME = 'slow'
 const PLAYLIST_CURRENT = "jp-playlist-current"
 
 type RemoveFunction = (e: JQuery<HTMLElement>) => JQuery<HTMLElement>
+const PRELOAD_GAP = Duration.fromSeconds(20)
 
 export class JPlayerPlaylist {
   private playlist: Song[]
@@ -58,6 +60,9 @@ export class JPlayerPlaylist {
     player.listen((e: PlayerEvent) => {
       if (e === "ENDED")
         result.next()
+      else if (e instanceof TimeUpdate) {
+        result.maybePreloadNextSong(e)
+      }
     })
     return result
   }
@@ -160,10 +165,9 @@ export class JPlayerPlaylist {
   }
 
   async next(): Promise<void> {
-    const isLastSong = this.current === this.playlist.length - 1
     // This can happen when next is invoke manually. In normal operation, the next song pre-loaded
     // when the current song is about to end.
-    return isLastSong
+    return this.isLastSongPlaying()
       ? DataApi.getRandomSong().then(song => this.add(song, true))
       : this.play(this.current + 1)
   }
@@ -244,6 +248,18 @@ export class JPlayerPlaylist {
     }
 
     aux($(`${PLAYLIST} li:nth-child(${this.getDisplayedIndex(index) + 1})`))
+  }
+
+  private isLastSongPlaying(): boolean {
+    return this.current === this.playlist.length - 1
+  }
+
+  maybePreloadNextSong(tu: TimeUpdate): Promise<void> {
+    return (
+      this.isLastSongPlaying() && PRELOAD_GAP.isGreaterThanOrEqual(tu.remainingDuration())
+        ? DataApi.getRandomSong().then(song => this.add(song, false))
+        : Promise.resolve()
+    )
   }
 
   private markCurrent(): void {

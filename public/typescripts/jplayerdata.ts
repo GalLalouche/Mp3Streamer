@@ -1,5 +1,4 @@
 // FIXME this entire file should be expunged.
-import {Duration} from "./common_types.js"
 import * as DataApi from "./data_api.js"
 import * as External from './external.js'
 import {getDebugAlbum, getDebugSong, isMuted} from './initialization.js'
@@ -10,17 +9,12 @@ import * as NewAlbumInfo from './new_albums_info.js'
 import {gplayer, gplaylist} from "./player_singleton.js"
 import * as Poster from "./poster.js"
 import * as Score from "./score.js"
-import {PlayerEvent, TimeUpdate} from "./types.js"
+import {PlayerEvent} from "./types.js"
 
 // TODO this entire file should split into jplayer specific hacks and more general code
 
-const WAIT_DELAY: Duration = Duration.fromSeconds(25)
-
 $(function () {
   const JPLAYER_ID = "#jquery_jplayer_1"
-  // TODO move to playlist_customization
-  const shouldLoadNextSongFromRandom = () => gplaylist.isLastSongPlaying()
-
   // On play event hook
   gplayer.listen(function (event: PlayerEvent) {
     if (event instanceof Song) {
@@ -48,11 +42,6 @@ $(function () {
       $('head')
         .append(`<link href="${($("img.poster")[0] as any).src}" id="favicon" rel="shortcut icon">`)
       NewAlbumInfo.show(currentPlayingSong)
-    } else if (event instanceof TimeUpdate) {
-      // Fetches new songs before current song ends.
-      const isSongNearlyFinished = WAIT_DELAY.isGreaterThanOrEqual(event.totalDuration.minus(event.currentDuration))
-      if (shouldLoadNextSongFromRandom() && isSongNearlyFinished)
-        loadNextRandom(false)
     }
   })
 
@@ -72,10 +61,8 @@ $(function () {
       // No idea why this is reversed in the playlist :|
       DataApi.getAlbum("/data/albums/" + debugStartAlbum).then(data => gplaylist.add(data.reverse(), true))
     } else
-      loadNextRandom(true)
-  }
-
-  function loadNextRandom(playNow: boolean): void {
-    DataApi.getRandomSong().then(song => gplaylist.add(song, playNow))
+      // FIXME this isn't *exactly* next, since the playlist has no song playiong, but it's the
+      // same code running anyway.
+      DataApi.getRandomSong().then(song => gplaylist.add(song, true))
   }
 })

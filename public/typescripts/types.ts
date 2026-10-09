@@ -10,6 +10,10 @@ export class TimeUpdate {
     this.currentDuration = input.currentDuration
     this.totalDuration = input.totalDuration
   }
+
+  remainingDuration(): Duration {
+    return this.totalDuration.minus(this.currentDuration)
+  }
 }
 
 export type PlayerEvent = "ENDED" | TimeUpdate | Song
