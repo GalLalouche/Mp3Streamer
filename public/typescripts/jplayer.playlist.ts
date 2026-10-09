@@ -73,9 +73,10 @@ export class JPlayerPlaylist {
     this.init(true)
   }
 
-  add(song: Song | readonly Song[], playNow: boolean = false): Promise<void> {
+  async add(song: Song | readonly Song[], playNow: boolean = false): Promise<void> {
     if (Array.isArray(song)) {
-      song.forEach(x => this.add(x))
+      for (const s of song)
+        await this.add(s)
       return Promise.resolve()
     }
     if (this.playlist.some(e => e.file === song.file)) {

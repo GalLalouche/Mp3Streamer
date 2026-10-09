@@ -2,18 +2,8 @@ import './jquery_common_xhr.js'
 import {match} from 'ts-pattern'
 import * as API from './api.js'
 import {Song} from "./media.js"
-import {gplaylist} from "./player_singleton.js"
+import {gplayer, gplaylist} from "./player_singleton.js"
 import * as Poster from "./poster.js"
-
-export function show(song: Song): void {
-  const helper = getHelper()
-  getExternal(song).then(helper.showLinks(song))
-    .catch(function () {
-      helper.cleanUp()
-      // FIXME A better error message
-      helper.externalDivs.append(span("Error occurred while fetching links"))
-    })
-}
 
 export async function refreshRemote(song: Song): Promise<void> {
   const refreshDisplay = song === gplaylist.currentPlayingSong()
@@ -26,6 +16,23 @@ export async function refreshRemote(song: Song): Promise<void> {
         }),
     ),
   ).void()
+}
+
+$(function () {
+  gplayer.listen(pe => {
+    if (pe instanceof Song)
+      show(pe)
+  })
+})
+
+function show(song: Song): void {
+  const helper = getHelper()
+  getExternal(song).then(helper.showLinks(song))
+    .catch(function () {
+      helper.cleanUp()
+      // FIXME A better error message
+      helper.externalDivs.append(span("Error occurred while fetching links"))
+    })
 }
 
 const REMOTE_PATH = "external/"

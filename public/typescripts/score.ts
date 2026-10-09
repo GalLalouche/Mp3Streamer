@@ -1,9 +1,25 @@
 // TODO use enums and use Object.values to get this list for the drop down list.
 import * as API from "./api.js"
 import {Song} from "./media.js"
-import {gplaylist} from "./player_singleton.js"
+import {gplayer, gplaylist} from "./player_singleton.js"
 
-export function show(song: Song): void {
+$(function () {
+  fieldset = $("#score")
+  fieldset.on('change', 'select', async function () {
+    const newScore = $(this).val() as Score
+    const source = $(this).attr('source')!.toLowerCase() as Source
+    return setScore(gplaylist.currentPlayingSong(), source, newScore)
+  })
+  fieldset.on('click', 'button', async function () {
+    return $.ajax({url: "score/" + gplaylist.currentPlayingSong().file, type: "PATCH"})
+  })
+  gplayer.listen(pe => {
+    if (pe instanceof Song)
+      show(pe)
+  })
+})
+
+function show(song: Song): void {
   clearScores()
   getScore(song).then(score => updateScore(song, score))
 }
@@ -239,15 +255,3 @@ function titleFor(source: Source, song: Song): string {
       return song.title
   }
 }
-
-$(function () {
-  fieldset = $("#score")
-  fieldset.on('change', 'select', async function () {
-    const newScore = $(this).val() as Score
-    const source = $(this).attr('source')!.toLowerCase() as Source
-    return setScore(gplaylist.currentPlayingSong(), source, newScore)
-  })
-  fieldset.on('click', 'button', async function () {
-    return $.ajax({url: "score/" + gplaylist.currentPlayingSong().file, type: "PATCH"})
-  })
-})

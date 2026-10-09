@@ -1,14 +1,9 @@
 // FIXME this entire file should be expunged.
 import * as DataApi from "./data_api.js"
-import * as External from './external.js'
 import {getDebugAlbum, getDebugSong, isMuted} from './initialization.js'
 import * as Local from "./local.js"
-import * as Lyrics from './lyrics.js'
 import {Song} from "./media.js"
-import * as NewAlbumInfo from './new_albums_info.js'
 import {gplayer, gplaylist} from "./player_singleton.js"
-import * as Poster from "./poster.js"
-import * as Score from "./score.js"
 import {PlayerEvent} from "./player.js"
 
 // TODO this entire file should split into jplayer specific hacks and more general code
@@ -31,17 +26,6 @@ $(function () {
       })
       $(".jp-currently-playing").html(songInfo)
       document.title = songInfo
-      $('#favicon').remove()
-
-      // TODO use plain old observers here
-      // FIXME leftover of the old architecture.
-      Lyrics.show(currentPlayingSong)
-      External.show(currentPlayingSong)
-      Score.show(currentPlayingSong)
-      Poster.setImage(currentPlayingSong.poster)
-      $('head')
-        .append(`<link href="${($("img.poster")[0] as any).src}" id="favicon" rel="shortcut icon">`)
-      NewAlbumInfo.show(currentPlayingSong)
     }
   })
 

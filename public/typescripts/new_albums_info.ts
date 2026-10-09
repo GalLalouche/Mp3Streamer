@@ -1,7 +1,15 @@
 import * as API from "./api.js"
 import {Album, Song} from "./media.js"
+import {gplayer} from "./player_singleton.js"
 
-export function show(song: Song): void {
+$(function () {
+  gplayer.listen(pe => {
+    if (pe instanceof Song)
+      show(pe)
+  })
+})
+
+function show(song: Song): void {
   const fieldSet = $("#new-albums")
 
   function showAlbums(albums: Album[]): void {

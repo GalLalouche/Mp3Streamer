@@ -1,4 +1,6 @@
 import * as ColorUtils from "./color-utils.js"
+import {Song} from "./media.js"
+import {gplayer} from "./player_singleton.js"
 
 export const PLAYLIST_NAME_KEY = "playlist_name"
 
@@ -11,6 +13,7 @@ export function setImage(url: string): void {
   $("#jp_poster_0").attr("src", url)
 }
 
+const FAVICON = "favicon"
 waitForElem("#jp_poster_0").then(p => $(p)).then(poster => {
   function buttonAux(id: string, text: string): JQuery<HTMLElement> {
     return button({"id": id}, text)
@@ -40,5 +43,13 @@ waitForElem("#jp_poster_0").then(p => $(p)).then(poster => {
     const color = rgb.makeLighter(0.5)
     document.body.style.backgroundColor = color.toString()
     rgbListeners.forEach(l => l(color))
+  })
+  gplayer.listen(pe => {
+    if (pe instanceof Song) {
+      setImage(pe.poster)
+      $('#' + FAVICON).remove()
+      $('head')
+        .append(`<link href="${($("img.poster")[0] as any).src}" id="${FAVICON}" rel="shortcut icon">`)
+    }
   })
 })

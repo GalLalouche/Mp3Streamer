@@ -2,7 +2,14 @@ import * as API from "./api.js"
 import {Song} from "./media.js"
 import {gplayer, gplaylist} from "./player_singleton.js"
 
-export function show(song: Song): void {
+$(function () {
+  gplayer.listen(pe => {
+    if (pe instanceof Song)
+      show(pe)
+  })
+})
+
+function show(song: Song): void {
   const helper = getHelper()
   helper.clearButtons()
   helper.autoScroll = true
