@@ -14,7 +14,6 @@ import {PlaylistItem} from "./playlist_item.js"
 
 const ADD_TIME = 'fast'
 const REMOVE_TIME = 'fast'
-export const ITEM_CLASS = "jp-playlist-item"
 const TITLE = ".jp-title"
 const PLAYLIST = ".jp-playlist"
 const DISPLAY_TIME = 'slow'

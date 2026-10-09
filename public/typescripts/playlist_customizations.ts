@@ -3,12 +3,9 @@
 //  Actually, this is only used for the metadata HTML? That's not a half-bad cohesive module. Should
 //  probably be renamed though.
 
-import {match, P} from "ts-pattern"
 import * as External from "./external.js"
-import {GuiEvents, PlaylistEventTopic} from "./gui_events.js"
-import {ITEM_CLASS} from "./jplayer.playlist.js"
+import {ITEM_CLASS} from "./playlist_item.js" // FIXME temporary cyclic
 import {Song} from "./media.js"
-import {gplaylist} from "./player_singleton.js"
 import * as Score from "./score.js"
 
 export function mediaMetadataHtml(song: Song): string {
@@ -66,28 +63,17 @@ $(function () {
   const playlistElement = $(".jp-playlist")
   const playlistItem = "> ul > li"
 
+  // Mouseover tooltip for overflowing playlist items.
   playlistElement.on("mouseover", playlistItem, function () {
     const listItem = $(this)
     // The listItem can't overflow; what can overflow is the width-limited descendent.
     if (listItem.find(".width-limited-playlist-span").custom_overflown()) {
-      const displayedIndex = gplaylist.getDisplayedIndex(listItem.index())
-      const song = gplaylist.getSong(displayedIndex)
+      const song = listItem.data("song") as Song
       listItem.custom_tooltip(mediaMetadataHtml(song))
     }
   })
-  // Move to song on click.
-  GuiEvents.listen(PlaylistEventTopic, async event => {
-    match(event)
-      .with('next', async () => await gplaylist.next())
-      .with('previous', () => gplaylist.prev())
-      .with({type: P.select("type"), index: P.select("index")}, ({type, index}) => {
-        match(type)
-          .with("select", () => gplaylist.select(index))
-          .with(P.select(), x => gplaylist.removeItem(index, x))
-          .exhaustive()
-      })
-  })
 
+  // Context menu for playlist items.
   $("body").append(String.raw`
     <ul id="contextMenu" class="ui-menu" style="display:none;">
         <li><div><span class="menu-icon fa fa-arrows-v"/></span> Score</div></li>
@@ -118,7 +104,7 @@ $(function () {
       position: 'absolute',
     })
 
-    const song = gplaylist.getSong(gplaylist.getDisplayedIndex($(this).index()))
+    const song = $(this).closest('.' + ITEM_CLASS).data("song") as Song
     contextMenu.one("click", "li", async function (e) {
       switch (e.target.textContent.trim()) {
         case "Score":

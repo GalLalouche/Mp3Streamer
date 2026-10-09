@@ -1,6 +1,6 @@
 import {match, P} from "ts-pattern"
 import {Duration, Percentage} from "./common_types.js"
-import {GuiEvents, PlayerControls, PlayerControlsTopic, Seek} from "./gui_events.js"
+import {GuiEvents, PlayerControls, PlayerControlsTopic, PlaylistEventTopic, Seek} from "./gui_events.js"
 import {HtmlPlayer} from "./html_player.js"
 import {JPlayerPlaylist} from "./jplayer.playlist.js"
 import {Song} from "./media.js"
@@ -102,7 +102,7 @@ class ReplayGainAwareVolume {
 function makePlaylist(player: Player): Playlist {
   const pl: JPlayerPlaylist = JPlayerPlaylist.create(player)
 
-  return new class extends Playlist {
+  const result = new class extends Playlist {
     override currentIndex() {return pl.currentIndex()}
     override songs() {return pl.songs()}
     override getSong(index: number) {return pl.getSong(index)}
@@ -120,6 +120,20 @@ function makePlaylist(player: Player): Playlist {
     }
     override removeItem(index: number, type: "x" | "up" | "down") {pl.removeItem(index, type)}
   }
+  // Move to song on click.
+  // FIXME this shouldn't be here.
+  GuiEvents.listen(PlaylistEventTopic, async event => {
+    match(event)
+      .with('next', async () => await result.next())
+      .with('previous', () => result.prev())
+      .with({type: P.select("type"), index: P.select("index")}, ({type, index}) => {
+        match(type)
+          .with("select", () => result.select(index))
+          .with(P.select(), x => result.removeItem(index, x))
+          .exhaustive()
+      })
+  })
+  return result
 }
 
 $(function () {

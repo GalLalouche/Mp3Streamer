@@ -1,7 +1,8 @@
 import {Song} from "./media"
 import {mediaMetadataHtml} from "./playlist_customizations"
-
 import * as ColorUtils from "./color-utils.js"
+
+export const ITEM_CLASS = "jp-playlist-item"
 
 export class PlaylistItem {
   readonly song: Song
@@ -33,6 +34,8 @@ function createElement(song: Song): JQuery<HTMLElement> {
   ColorUtils.getColor(song.poster).then(rgb => {
     result.css('background-color', rgb.makeLighter(0.1).toString())
   })
+  result.data("song", song)
+  result.addClass(ITEM_CLASS)
   return result
 }
 
