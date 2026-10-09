@@ -9,7 +9,7 @@ import * as NewAlbumInfo from './new_albums_info.js'
 import {gplayer, gplaylist} from "./player_singleton.js"
 import * as Poster from "./poster.js"
 import * as Score from "./score.js"
-import {PlayerEvent} from "./types.js"
+import {PlayerEvent} from "./player.js"
 
 // TODO this entire file should split into jplayer specific hacks and more general code
 

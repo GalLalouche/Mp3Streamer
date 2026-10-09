@@ -9,7 +9,8 @@ import {Song} from "./media.js"
 import {gplayer} from "./player_singleton.js"
 // FIXME cyclic dependency is only temporary since both files will be merged eventually
 import * as PlaylistCustomizations from "./playlist_customizations.js"
-import {Player, PlayerEvent, TimeUpdate} from "./types.js"
+import {PlayerEvent, TimeUpdate} from "./player.js"
+import {Player} from "./player.js"
 import {Duration} from "./common_types.js"
 
 const REMOVE_ITEM = "jp-playlist-item-remove"
