@@ -158,7 +158,7 @@ export class JPlayerPlaylist {
       return this.select(index).then(() => gplayer.playCurrentSong())
   }
 
-  next(): void {
+  async next(): Promise<void> {
     const isLastSong = this.current === this.playlist.length - 1
     if (isLastSong)
       return notImplemented()

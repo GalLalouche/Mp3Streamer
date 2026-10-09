@@ -78,7 +78,7 @@ $(function () {
   // Move to song on click.
   GuiEvents.listen(PlaylistEventTopic, async event => {
     match(event)
-      .with('next', () => gplaylist.next())
+      .with('next', async () => await gplaylist.next())
       .with('previous', () => gplaylist.prev())
       .with({type: P.select("type"), index: P.select("index")}, ({type, index}) => {
         match(type)

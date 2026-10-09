@@ -4,7 +4,7 @@ import {gplayer, gplaylist} from "./player_singleton.js"
 import * as Search from "./search.js"
 
 $(function () {
-  $(document).keypress(function (e) {
+  $(document).keypress(async function (e) {
     {
       const tag = (e.target as any).tagName.toLowerCase()
       const isFromInput = tag === 'input' || tag === 'textarea'
@@ -37,10 +37,10 @@ $(function () {
         gplayer.stop()
         break
       case 'b':
-        gplaylist.next()
+        await gplaylist.next()
         break
       case 'n':
-        loadNextSong()
+        await loadNextSong()
         break
       case 's':
         Search.quickSearch()
@@ -53,7 +53,7 @@ $(function () {
     }
   })
 
-  function loadNextSong() {
+  async function loadNextSong(): Promise<void> {
     // verify that the sequence of queued songs, starting from the current song, are continuous in the same album
     // otherwise, don't queue a new song
     for (let index = gplaylist.currentIndex(); index < gplaylist.length() - 1; index++) {
@@ -67,7 +67,7 @@ $(function () {
     }
 
 
-    DataApi.nextSong(gplaylist.last()).then(song => gplaylist.add(song, false))
+    return DataApi.nextSong(gplaylist.last()).then(song => gplaylist.add(song, false))
   }
 
   $(document).on("click", ".poster", () => gplayer.togglePause())
