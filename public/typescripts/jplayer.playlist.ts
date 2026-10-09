@@ -3,6 +3,7 @@
 
 import {match} from "ts-pattern"
 import * as ColorUtils from "./color-utils.js"
+import * as DataApi from "./data_api.js"
 import * as Local from "./local.js"
 import {Song} from "./media.js"
 import {gplayer} from "./player_singleton.js"
@@ -160,11 +161,11 @@ export class JPlayerPlaylist {
 
   async next(): Promise<void> {
     const isLastSong = this.current === this.playlist.length - 1
-    if (isLastSong)
-      return notImplemented()
-    const index = (this.current + 1 < this.playlist.length) ? this.current + 1 : 0
-    if (index > 0)
-      this.play(index)
+    // This can happen when next is invoke manually. In normal operation, the next song pre-loaded
+    // when the current song is about to end.
+    return isLastSong
+      ? DataApi.getRandomSong().then(song => this.add(song, true))
+      : this.play(this.current + 1)
   }
 
   previous(): void {

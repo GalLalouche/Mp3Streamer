@@ -19,15 +19,7 @@ const WAIT_DELAY: Duration = Duration.fromSeconds(25)
 $(function () {
   const JPLAYER_ID = "#jquery_jplayer_1"
   // TODO move to playlist_customization
-  let hacks = gplaylist as any
-  hacks.oldNext = hacks.next
   const shouldLoadNextSongFromRandom = () => gplaylist.isLastSongPlaying()
-  hacks.next = function () {
-    if (shouldLoadNextSongFromRandom())
-      loadNextRandom(true)
-    else
-      hacks.oldNext()
-  }
 
   // On play event hook
   gplayer.listen(function (event: PlayerEvent) {
