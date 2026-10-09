@@ -21,6 +21,7 @@ export const ITEM_CLASS = "jp-playlist-item"
 const TITLE = ".jp-title"
 const PLAYLIST = ".jp-playlist"
 const DISPLAY_TIME = 'slow'
+const PLAYLIST_CURRENT = "jp-playlist-current"
 
 type RemoveFunction = (e: JQuery<HTMLElement>) => JQuery<HTMLElement>
 
@@ -139,10 +140,9 @@ export class JPlayerPlaylist {
     if (index < 0)
       return arguments.callee(this.playlist.length + index)
     // index relates to end of array.
-    const displayIndex = this.getDisplayedIndex(index)
     if (index < this.playlist.length) {
       this.current = index
-      this.highlight(displayIndex)
+      this.markCurrent()
       return Local.maybePreLoad(this.playlist[this.current]).then(e => gplayer.load(e))
     } else {
       this.current = 0
@@ -178,15 +178,14 @@ export class JPlayerPlaylist {
       this.refresh()
       this.play(this.current)
     } else {
-      this.refresh(() => {
-        return this.play(this.current)
-      })
+      this.refresh(() => this.play(this.current))
     }
   }
 
   private initPlaylist(playlist: readonly Song[]): void {
     this.current = 0
     this.removing = false
+    // FIXME is this supposed to be a copy of the playlist? If so, extract it.
     this.playlist = $.extend(true, [], playlist)
   }
 
@@ -215,7 +214,6 @@ export class JPlayerPlaylist {
       listItem += `<a href='javascript:;' class='${REMOVE_ITEM} ${clazz}'>${char}</a>`
     }
 
-    // The title is given next in the HTML otherwise the float:right on the free media corrupts in IE6/7
     listItem += PlaylistCustomizations.mediaMetadataHtml(song)
     appendIcon(REMOVE_THIS, "&times;")
     appendIcon(REMOVE_UP, "&uparrow;")
@@ -224,9 +222,9 @@ export class JPlayerPlaylist {
 
     const result = $(listItem)
     result.prepend(img(song.poster).addClass("playlist-item-poster"))
-    ColorUtils.getColor(song.poster).then(rgb => {
+    ColorUtils.getColor(song.poster).then(rgb =>
       result.css('background-color', rgb.makeLighter(0.1).toString())
-    })
+    )
     return result
   }
 
@@ -247,16 +245,18 @@ export class JPlayerPlaylist {
     aux($(`${PLAYLIST} li:nth-child(${this.getDisplayedIndex(index) + 1})`))
   }
 
-  private highlight(index: number): void {
-    if (this.playlist.length) {
-      $(`${PLAYLIST} .jp-playlist-current`).removeClass("jp-playlist-current")
-      $(`${PLAYLIST} li:nth-child(${index + 1})`).addClass("jp-playlist-current")
-        .find(".jp-playlist-item").addClass("jp-playlist-current")
-      $(`${TITLE} li`).html(
-        this.playlist[index].title
-        + (this.playlist[index].artistName ? " <span class='jp-artist'>by "
-          + this.playlist[index].artistName + "</span>" : ""))
-    }
+  private markCurrent(): void {
+    const displayedIndex = this.getDisplayedIndex(this.current)
+    $(`${PLAYLIST} .${PLAYLIST_CURRENT}`).removeClass(PLAYLIST_CURRENT)
+    // FIXME we probably don't really need to the class to two different elements here.
+    // FIXME Duplication of nth-child selector with above.
+    $(`${PLAYLIST} li:nth-child(${displayedIndex + 1})`).addClass(PLAYLIST_CURRENT)
+      .find(".jp-playlist-item").addClass(PLAYLIST_CURRENT)
+    const song = this.getSong(displayedIndex)
+    $(`${TITLE} li`).html(
+      // FIXME there has to be a nicer way of doing this.
+      song.title + ` <span class='jp-artist'>by ${song.artistName}</span>`
+    )
   }
 
   private getDisplayedIndex(index: number): number {return this.playlist.length - 1 - index}
