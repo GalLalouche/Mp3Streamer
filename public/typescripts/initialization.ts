@@ -1,3 +1,6 @@
+import {gplayer, gplaylist} from "./player_singleton.js"
+import * as DataApi from "./data_api.js"
+
 export const isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) !== null
 
 export function isMuted(): boolean {return window.location.pathname === "/mute"}
@@ -9,15 +12,9 @@ export function isLocalHost(): boolean {
 const EncodedPlus = encodeURIComponent("+")
 
 // Manually decode + to %2B, since otherwise it will be interpreted as a space
-export function getSearchParam(key: string): string | null {
+function getSearchParam(key: string): string | null {
   return new URL(window.location.toString().replace("+", EncodedPlus)).searchParams.get(key)
 }
-
-/** @return The path of a debug song if exists, null otherwise. */
-export function getDebugSong(): string | null {return getSearchParam("addSong")}
-
-/** @return The path of a debug album if exists, null otherwise. */
-export function getDebugAlbum(): string | null {return getSearchParam("addAlbum")}
 
 // Disables back button
 if (window.history && history.pushState) {
@@ -31,3 +28,23 @@ if (window.history && history.pushState) {
     })
   })
 }
+
+$(function () {
+  const debugStartSong = getSearchParam("addSong")
+  const debugStartAlbum = getSearchParam("addAlbum")
+
+  $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()
+  assert(gplayer !== undefined, "gplayer is not initialized")
+
+  if (debugStartSong) {
+    console.log(`Adding debug song <${debugStartSong}>`)
+    DataApi.getSong(debugStartSong).then(data => gplaylist.add(data, true))
+  } else if (debugStartAlbum) {
+    console.log(`Adding debug album <${debugStartAlbum}>`)
+    // No idea why this is reversed in the playlist :|
+    DataApi.getAlbum("/data/albums/" + debugStartAlbum).then(data => gplaylist.add(data.reverse(), true))
+  } else
+    // FIXME this isn't *exactly* next, since the playlist has no song playiong, but it's the
+    //  same code running anyway.
+    DataApi.getRandomSong().then(song => gplaylist.add(song, true))
+})
