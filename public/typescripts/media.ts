@@ -23,7 +23,7 @@ export class Song {
   // The below represent URLs FIXME then why aren't they URLs?!
   readonly file: string
   readonly poster: string
-  // Can be undefined in search results FIXME shouldn't be thought...
+  // Can be undefined in search results FIXME shouldn't be though...
   readonly path?: string
   offlineUrl?: string
 

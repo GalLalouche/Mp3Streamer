@@ -2,22 +2,16 @@
 /* Adapted from http://www.jplayer.org playlist. */
 
 import {match} from "ts-pattern"
-import * as ColorUtils from "./color-utils.js"
 import * as DataApi from "./data_api.js"
 import * as Local from "./local.js"
 import {Song} from "./media.js"
 import {gplayer} from "./player_singleton.js"
-// FIXME cyclic dependency is only temporary since both files will be merged eventually
-import * as PlaylistCustomizations from "./playlist_customizations.js"
 import {PlayerEvent, TimeUpdate} from "./player.js"
 import {Player} from "./player.js"
 import {Duration} from "./common_types.js"
+import {PlaylistItem} from "./playlist_item.js"
 
-const REMOVE_ITEM = "jp-playlist-item-remove"
-// FIXME this is reused in GuiEvents
-const REMOVE_THIS = "jp-playlist-item-remove-this"
-const REMOVE_UP = "jp-playlist-item-remove-up"
-const REMOVE_DOWN = "jp-playlist-item-remove-down"
+
 const ADD_TIME = 'fast'
 const REMOVE_TIME = 'fast'
 export const ITEM_CLASS = "jp-playlist-item"
@@ -30,7 +24,7 @@ type RemoveFunction = (e: JQuery<HTMLElement>) => JQuery<HTMLElement>
 const PRELOAD_GAP = Duration.fromSeconds(20)
 
 export class JPlayerPlaylist {
-  private playlist: Song[]
+  private playlist: PlaylistItem[]
   private current: number
   private removing: boolean
 
@@ -45,13 +39,13 @@ export class JPlayerPlaylist {
   }
 
   songs(): readonly Song[] {
-    return this.playlist
+    return this.playlist.map(e => e.song)
   }
   length(): number {
     return this.playlist.length
   }
-  getSong(index: number) {
-    return this.playlist[index]
+  getSong(index: number): Song {
+    return this.playlist[index].song
   }
 
   static create(player: Player): JPlayerPlaylist {
@@ -79,12 +73,13 @@ export class JPlayerPlaylist {
         await this.add(s)
       return Promise.resolve()
     }
-    if (this.playlist.some(e => e.file === song.file)) {
+    if (this.playlist.some(e => e.song.file === song.file)) {
       console.log(`Entry ${song.file} already exists in playlist; skipping`)
       return Promise.resolve()
     }
     const playlistUl = $(PLAYLIST + " ul")
-    playlistUl.prepend(this.createListItem(song))
+    const item = PlaylistItem.create(song)
+    playlistUl.prepend(item.element)
       .find("li:first-child").hide()
       .slideDown(ADD_TIME, function () {
         const regularHeightThreshold = 30
@@ -92,7 +87,7 @@ export class JPlayerPlaylist {
         if (lastSong.height()! > regularHeightThreshold)
           console.log("too big, need to shorten")
       })
-    this.playlist.push(song)
+    this.playlist.push(item)
 
     if (playNow)
       return this.play(this.playlist.length - 1)
@@ -151,7 +146,7 @@ export class JPlayerPlaylist {
     if (index < this.playlist.length) {
       this.current = index
       this.markCurrent()
-      return Local.maybePreLoad(this.playlist[this.current]).then(e => gplayer.load(e))
+      return Local.maybePreLoad(this.getSong(this.current)).then(e => gplayer.load(e))
     } else {
       this.current = 0
       return new Promise(f => f())
@@ -192,8 +187,7 @@ export class JPlayerPlaylist {
   private initPlaylist(playlist: readonly Song[]): void {
     this.current = 0
     this.removing = false
-    // FIXME is this supposed to be a copy of the playlist? If so, extract it.
-    this.playlist = $.extend(true, [], playlist)
+    this.playlist = playlist.map(PlaylistItem.create)
   }
 
   private refresh(animation?: () => void): void {
@@ -201,7 +195,7 @@ export class JPlayerPlaylist {
       const $this = $(this)
       $this.empty()
 
-      this.playlist.forEach(v => $this.append(this.createListItem(v)))
+      this.playlist.forEach(v => $this.append(v.element))
       animation()
       if (this.playlist.length)
         $this.slideDown(DISPLAY_TIME)
@@ -210,29 +204,8 @@ export class JPlayerPlaylist {
     } else {
       const playlistUl = $(PLAYLIST + " ul")
       playlistUl.empty()
-      this.playlist.forEach(v => playlistUl.append(this.createListItem(v)))
+      this.playlist.forEach(v => playlistUl.append(v.element))
     }
-  }
-
-  private createListItem(song: Song): JQuery<HTMLElement> {
-    let listItem = "<li><div>"
-
-    function appendIcon(clazz: string, char: string) {
-      listItem += `<a href='javascript:;' class='${REMOVE_ITEM} ${clazz}'>${char}</a>`
-    }
-
-    listItem += PlaylistCustomizations.mediaMetadataHtml(song)
-    appendIcon(REMOVE_THIS, "&times;")
-    appendIcon(REMOVE_UP, "&uparrow;")
-    appendIcon(REMOVE_DOWN, "&downarrow;")
-    listItem += "</div></li>"
-
-    const result = $(listItem)
-    result.prepend(img(song.poster).addClass("playlist-item-poster"))
-    ColorUtils.getColor(song.poster).then(rgb =>
-      result.css('background-color', rgb.makeLighter(0.1).toString())
-    )
-    return result
   }
 
   private removeItemAux(index: number, nextFunction: RemoveFunction): void {
@@ -280,3 +253,4 @@ export class JPlayerPlaylist {
 
   private getDisplayedIndex(index: number): number {return this.playlist.length - 1 - index}
 }
+

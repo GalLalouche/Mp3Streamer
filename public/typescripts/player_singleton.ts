@@ -113,7 +113,6 @@ function makePlaylist(player: Player): Playlist {
     override async next() {return pl.next()}
     override prev() {return pl.previous()}
     override async clear(): Promise<void> {return pl.setPlaylist([])}
-    override play(index: number): Promise<void> {return pl.play(index)}
     override select(index: number): Promise<void> {
       // This check is here since the JPlayerPlaylist actually does need to support selecting the
       // current song (for some reason). FIXME Probably a bug, should be fixed.
