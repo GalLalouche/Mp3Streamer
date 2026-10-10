@@ -1,6 +1,7 @@
 import * as ColorUtils from "./color-utils.js"
+import {GuiEvents, PlayerSetup} from "./gui_events.js"
 import {Song} from "./media.js"
-import {gplayer} from "./player_singleton.js"
+import {Player} from "./player.js"
 
 export const PLAYLIST_NAME_KEY = "playlist_name"
 
@@ -44,12 +45,15 @@ waitForElem("#jp_poster_0").then(p => $(p)).then(poster => {
     document.body.style.backgroundColor = color.toString()
     rgbListeners.forEach(l => l(color))
   })
-  gplayer.listen(pe => {
-    if (pe instanceof Song) {
-      setImage(pe.poster)
-      $('#' + FAVICON).remove()
-      $('head')
-        .append(`<link href="${($("img.poster")[0] as any).src}" id="${FAVICON}" rel="shortcut icon">`)
-    }
+  GuiEvents.listen(PlayerSetup, ps => {
+    const player = ps.player
+    player.listen(pe => {
+      if (pe instanceof Song) {
+        setImage(pe.poster)
+        $('#' + FAVICON).remove()
+        $('head')
+          .append(`<link href="${($("img.poster")[0] as any).src}" id="${FAVICON}" rel="shortcut icon">`)
+      }
+    })
   })
 })

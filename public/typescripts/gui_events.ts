@@ -6,11 +6,20 @@
  */
 import {Percentage} from "./common_types.js"
 import {Song} from "./media.js"
+import {Player} from "./player.js"
+import {Playlist} from "./playlist.js"
 import {PubSub, topic} from "./pubsub.js"
 import {Volume} from "./volume.js"
 
 
 export const GuiEvents: PubSub = new PubSub()
+
+// FIXME this isn't a GUI event... perhaps this module should be renamed?
+interface PlayerSetup {
+  player: Player
+  playlist: Playlist
+}
+export const PlayerSetup = topic<PlayerSetup>("player_setup")
 
 export const REMOVE_ITEM = "jp-playlist-item-remove"
 export const REMOVE_THIS = "jp-playlist-item-remove-this"
@@ -45,6 +54,7 @@ interface PlaylistContextMenuEvent {
   readonly song: Song
 }
 export const PlaylistContextMenuEventTopic = topic<PlaylistContextMenuEvent>("playlist_context_menu_event")
+
 
 $(function () {
   /*******************
