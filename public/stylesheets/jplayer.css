@@ -36,7 +36,18 @@ div.jp-playlist li div * {
   color: #666 !important;
   display: inline;
   outline-width: 0;
-  cursor: context-menu;
+}
+
+span.jp-playlist-item-actions {
+  display: flex;
+  flex-direction: row-reverse;
+  float: right;
+  cursor: default;
+}
+
+span.jp-playlist-item-actions a.jp-playlist-item-remove {
+  float: none;
+  cursor: pointer;
 }
 
 .fa {

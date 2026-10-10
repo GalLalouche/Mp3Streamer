@@ -112,10 +112,14 @@ $(function () {
       }
     }
 
-    GuiEvents.publish(PlaylistEventTopic, {
-      type: target.hasClass(REMOVE_ITEM) ? getRemoveType(target) : "select",
-      index: clickedIndex
-    })
+    const publish = (type: PlaylistClickType) =>
+      GuiEvents.publish(PlaylistEventTopic, {type: type, index: clickedIndex})
+    const removeButton = target.closest("a." + REMOVE_ITEM)
+    if (removeButton.length > 0)
+      publish(getRemoveType(removeButton))
+    // ignore clicks between the remove button
+    else if (target.closest("." + REMOVE_ITEM).length === 0)
+      publish("select")
   })
 
   /****************
