@@ -112,15 +112,10 @@ $(function () {
       }
     }
 
-    function publish(type: PlaylistClickType): void {
-      GuiEvents.publish(PlaylistEventTopic, {type: type, index: clickedIndex})
-    }
-
-    if (target.hasClass(REMOVE_ITEM)) {
-      publish(getRemoveType(target))
-    } else if (e.target.localName === "span" || e.target.localName === "img") {
-      publish("select")
-    }
+    GuiEvents.publish(PlaylistEventTopic, {
+      type: target.hasClass(REMOVE_ITEM) ? getRemoveType(target) : "select",
+      index: clickedIndex
+    })
   })
 
   /****************
