@@ -239,7 +239,6 @@ export class JPlayerPlaylist {
     // FIXME we probably don't really need to the class to two different elements here.
     // FIXME Duplication of nth-child selector with above.
     $(`${PLAYLIST} li:nth-child(${displayedIndex + 1})`).addClass(PLAYLIST_CURRENT)
-      .find(".jp-playlist-item").addClass(PLAYLIST_CURRENT)
     const song = this.getSong(displayedIndex)
     $(`${TITLE} li`).html(
       // FIXME there has to be a nicer way of doing this.

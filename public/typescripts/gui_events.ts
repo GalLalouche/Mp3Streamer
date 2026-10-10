@@ -153,6 +153,7 @@ $(function () {
       position: 'absolute',
     })
 
+    // FIXME this is too hacky... perhaps move this to PlaylistItem generation?
     const song = $(this).closest('.' + ITEM_CLASS).data("song") as Song
     contextMenu.one("click", "li", async function (e) {
       switch (e.target.textContent.trim()) {

@@ -14,7 +14,7 @@ body {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  display: inline-block;
+  display: inline-block !important;
   vertical-align: middle;
 }
 
@@ -32,7 +32,7 @@ div.jp-playlist li div * {
   pointer-events: auto;
 }
 
-span.jp-playlist-item {
+.jp-playlist-item span {
   color: #666 !important;
   display: inline;
   outline-width: 0;
@@ -143,12 +143,12 @@ span.jp-playlist-item {
 }
 
 .jp-playlist-current .jp-title {
-  color: #0d88c1;
+  color: #0d88c1 !important;
 }
 
 .jp-playlist-current div a {
-  font-size: 20px;
-  margin-top: -4px;
+  font-size: 20px !important;
+  margin-top: -4px !important;
 }
 
 .jp-artist {
