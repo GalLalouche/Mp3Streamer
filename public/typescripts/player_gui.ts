@@ -53,8 +53,8 @@ export function setIsStopped(): void {
 }
 
 export function setCurrentSong(song: Song): void {
-  const songInfo = `${song.artistName} - ${song.title}`
   duration.html(song.duration.timeFormat())
+  const songInfo = `${song.artistName} - ${song.title}`
   currentlyPlaying.html(songInfo)
   document.title = songInfo
 }

@@ -25,12 +25,13 @@ class SingletonPlayer extends Player {
   static from(player: Player): SingletonPlayer {
     const result = new SingletonPlayer(player)
     result.listen((pe: PlayerEvent) => {
-      if (pe instanceof TimeUpdate) {
+      if (pe instanceof TimeUpdate)
         PlayerGUI.updatePosition({
           current: result.currentTime(),
           total: result.duration(),
         })
-      }
+      if (pe instanceof Song)
+        PlayerGUI.setCurrentSong(pe)
     })
     result.player.setVolume(result.volume.replayGainAdjustedVolume())
     // TODO these listens should be made elsewhere
