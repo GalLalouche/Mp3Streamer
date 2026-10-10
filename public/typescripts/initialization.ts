@@ -3,7 +3,7 @@ import * as DataApi from "./data_api.js"
 
 export const isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) !== null
 
-export function isMuted(): boolean {return window.location.pathname === "/mute"}
+export function isMuted(): boolean {return window.location.pathname.includes("/mute")}
 
 export function isLocalHost(): boolean {
   return window.location.host.toLowerCase().startsWith("localhost")
