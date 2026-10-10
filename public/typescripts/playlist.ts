@@ -1,3 +1,4 @@
+import {RemoveType} from "./gui_events.js"
 import {Song} from "./media.js"
 
 export abstract class Playlist {
@@ -20,6 +21,5 @@ export abstract class Playlist {
   abstract length(): number
   // The list presentation reversed, so song at index 0 is actually the last song, not the first.
   getDisplayedIndex(index: number): number {return this.length() - 1 - index}
-  // FIXME duplication of remove type between here and events
-  abstract removeItem(index: number, type: "x" | "up" | "down"): void
+  abstract removeItem(index: number, type: RemoveType): void
 }

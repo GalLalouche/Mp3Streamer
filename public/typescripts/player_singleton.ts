@@ -1,6 +1,6 @@
 import {match, P} from "ts-pattern"
 import {Duration, Percentage} from "./common_types.js"
-import {GuiEvents, PlayerControls, PlayerControlsTopic, PlaylistEventTopic, Seek} from "./gui_events.js"
+import {GuiEvents, PlayerControls, PlayerControlsTopic, PlaylistEventTopic, RemoveType, Seek} from "./gui_events.js"
 import {HtmlPlayer} from "./html_player.js"
 import {JPlayerPlaylist} from "./jplayer.playlist.js"
 import {Song} from "./media.js"
@@ -119,7 +119,7 @@ function makePlaylist(player: Player): Playlist {
       // current song (for some reason). FIXME Probably a bug, should be fixed.
       return pl.currentIndex() === index ? Promise.resolve() : pl.select(index)
     }
-    override removeItem(index: number, type: "x" | "up" | "down") {pl.removeItem(index, type)}
+    override removeItem(index: number, type: RemoveType) {pl.removeItem(index, type)}
   }
   // Move to song on click.
   // FIXME this shouldn't be here.

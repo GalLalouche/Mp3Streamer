@@ -10,6 +10,7 @@ import {PlayerEvent, TimeUpdate} from "./player.js"
 import {Player} from "./player.js"
 import {Duration} from "./common_types.js"
 import {PlaylistItem} from "./playlist_item.js"
+import {RemoveType} from "./gui_events.js"
 
 
 const ADD_TIME = 'fast'
@@ -96,7 +97,7 @@ export class JPlayerPlaylist {
       return Promise.resolve()
   }
 
-  removeItem(index: number, type: "x" | "up" | "down"): void {
+  removeItem(index: number, type: RemoveType): void {
     this.removeItemAux(index, match(type)
       .returnType<RemoveFunction>()
       .with("x", () => () => $())
