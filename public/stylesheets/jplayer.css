@@ -36,7 +36,6 @@ div.jp-playlist li div * {
   color: #666 !important;
   display: inline;
   outline-width: 0;
-  width: 650px;
   cursor: context-menu;
 }
 
