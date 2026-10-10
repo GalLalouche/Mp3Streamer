@@ -1,4 +1,4 @@
-import {RawJSON} from "./api"
+import {RawJSON} from "./api.js"
 import {Percentage} from "./common_types.js"
 
 export class Volume {

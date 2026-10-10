@@ -1,7 +1,7 @@
-import {Song} from "./media"
-import {mediaMetadataHtml} from "./playlist_customizations"
+import {Song} from "./media.js"
+import {mediaMetadataHtml} from "./playlist_customizations.js"
 import * as ColorUtils from "./color-utils.js"
-import {ITEM_CLASS, REMOVE_DOWN, REMOVE_ITEM, REMOVE_THIS, REMOVE_UP} from "./gui_events"
+import {ITEM_CLASS, REMOVE_DOWN, REMOVE_ITEM, REMOVE_THIS, REMOVE_UP} from "./gui_events.js"
 
 export class PlaylistItem {
   readonly song: Song

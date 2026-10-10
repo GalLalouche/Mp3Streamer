@@ -1,5 +1,5 @@
 /** Types unrelated to a specific component or feature, but used across the application. */
-import {RawJSON} from "./api"
+import {RawJSON} from "./api.js"
 
 export class Percentage {
   private readonly _zero_to_one: number
