@@ -19,6 +19,7 @@ export class PlaylistItem {
 function createElement(song: Song): JQuery<HTMLElement> {
   let listItem = "<li><div>" + mediaMetadataHtml(song)
 
+  listItem += `<span class="${REMOVE_ITEM} jp-playlist-item-actions">`
   function appendIcon(clazz: string, char: string) {
     listItem += `<a href='javascript:;' class='${REMOVE_ITEM} ${clazz}'>${char}</a>`
   }
@@ -26,7 +27,7 @@ function createElement(song: Song): JQuery<HTMLElement> {
   appendIcon(REMOVE_THIS, "&times;")
   appendIcon(REMOVE_UP, "&uparrow;")
   appendIcon(REMOVE_DOWN, "&downarrow;")
-  listItem += "</div></li>"
+  listItem += "</span></div></li>"
 
   const result = $(listItem)
   result.prepend(img(song.poster).addClass("playlist-item-poster"))
