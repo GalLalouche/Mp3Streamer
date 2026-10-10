@@ -5,6 +5,7 @@
  * Exists to decouple the GUI from the player and playlist logic.
  */
 import {Percentage} from "./common_types.js"
+import {Song} from "./media.js"
 import {PubSub, topic} from "./pubsub.js"
 import {Volume} from "./volume.js"
 
@@ -15,6 +16,8 @@ export const REMOVE_ITEM = "jp-playlist-item-remove"
 export const REMOVE_THIS = "jp-playlist-item-remove-this"
 export const REMOVE_UP = "jp-playlist-item-remove-up"
 export const REMOVE_DOWN = "jp-playlist-item-remove-down"
+
+export const ITEM_CLASS = "jp-playlist-item"
 
 export type RemoveType = "x" | "up" | "down"
 export type PlaylistClickType = "select" | RemoveType
@@ -34,10 +37,14 @@ export interface PlaylistClicks {
   readonly type: PlaylistClickType
   readonly index: number
 }
-
 export type PlaylistEvent = PlaylistClicks | "next" | "previous"
-
 export const PlaylistEventTopic = topic<PlaylistEvent>("playlist_event")
+
+interface PlaylistContextMenuEvent {
+  readonly type: "external" | "score"
+  readonly song: Song
+}
+export const PlaylistContextMenuEventTopic = topic<PlaylistContextMenuEvent>("playlist_context_menu_event")
 
 $(function () {
   /*******************
@@ -104,6 +111,56 @@ $(function () {
     } else if (e.target.localName === "span" || e.target.localName === "img") {
       publish("select")
     }
+  })
+
+  /****************
+   * Context menu *
+   ***************/
+  $("body").append(String.raw`
+    <ul id="contextMenu" class="ui-menu" style="display:none;">
+        <li><div><span class="menu-icon fa fa-arrows-v"/></span> Score</div></li>
+        <li><div><span class="menu-icon fa fa-refresh"></span> Refresh</div></li>
+        <style>
+        .ui-menu {
+            width: 150px
+            background-color: white
+            border: 1px solid #ccc
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2)
+        }
+        .menu-icon {
+            margin-right: 5px
+            width: 15px
+            text-align: center
+        }
+        </style>
+    </ul>
+  `)
+  const playlistElement = $(".jp-playlist")
+  const playlistItem = "> ul > li"
+  const contextMenu = $("#contextMenu").menu()
+  playlistElement.on("contextmenu", playlistItem, function (e) {
+    e.preventDefault() // Prevent the default context menu
+
+    contextMenu.css({
+      display: 'block',
+      top: e.pageY + 5,
+      left: e.pageX + 5,
+      position: 'absolute',
+    })
+
+    const song = $(this).closest('.' + ITEM_CLASS).data("song") as Song
+    contextMenu.one("click", "li", async function (e) {
+      switch (e.target.textContent.trim()) {
+        case "Score":
+          GuiEvents.publish(PlaylistContextMenuEventTopic, {type: "score", song: song})
+        case "Refresh":
+          GuiEvents.publish(PlaylistContextMenuEventTopic, {type: "external", song: song})
+        default:
+          throw new AssertionError("Unexpected selection: " + e.target.textContent)
+      }
+    })
+
+    $(document).one("click", () => $("#contextMenu").hide())
   })
 })
 

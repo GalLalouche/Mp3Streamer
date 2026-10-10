@@ -1,11 +1,11 @@
-import './jquery_common_xhr.js'
-import {match} from 'ts-pattern'
 import * as API from './api.js'
 import {Song} from "./media.js"
 import {gplayer, gplaylist} from "./player_singleton.js"
 import * as Poster from "./poster.js"
+import {GuiEvents, PlaylistContextMenuEventTopic} from './gui_events.js'
+import {match} from 'ts-pattern'
 
-export async function refreshRemote(song: Song): Promise<void> {
+async function refreshRemote(song: Song): Promise<void> {
   const refreshDisplay = song === gplaylist.currentPlayingSong()
   return Promise.all(
     externalEntityTypes.map(target =>
@@ -22,6 +22,10 @@ $(function () {
   gplayer.listen(pe => {
     if (pe instanceof Song)
       show(pe)
+  })
+  GuiEvents.listen(PlaylistContextMenuEventTopic, e => {
+    if (e.type === "external")
+      refreshRemote(e.song)
   })
 })
 

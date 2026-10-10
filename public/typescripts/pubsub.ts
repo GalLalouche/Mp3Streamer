@@ -42,7 +42,7 @@ export class PubSub {
     this.listeners.get(topic.key)?.delete(f)
   }
 
-  publish<T>(topic: Topic<T>, value: T): void {
+  publish<T>(topic: Topic<T>, value: NoInfer<T>): void {
     for (const f of this.listeners.get(topic.key) ?? []) {
       f(value)
     }

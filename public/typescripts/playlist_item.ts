@@ -1,9 +1,7 @@
 import {Song} from "./media"
 import {mediaMetadataHtml} from "./playlist_customizations"
 import * as ColorUtils from "./color-utils.js"
-import {REMOVE_DOWN, REMOVE_ITEM, REMOVE_THIS, REMOVE_UP} from "./gui_events"
-
-export const ITEM_CLASS = "jp-playlist-item"
+import {ITEM_CLASS, REMOVE_DOWN, REMOVE_ITEM, REMOVE_THIS, REMOVE_UP} from "./gui_events"
 
 export class PlaylistItem {
   readonly song: Song
@@ -40,3 +38,17 @@ function createElement(song: Song): JQuery<HTMLElement> {
   return result
 }
 
+$(function () {
+  const playlistElement = $(".jp-playlist")
+  const playlistItem = "> ul > li"
+
+  // Mouseover tooltip for overflowing playlist items.
+  playlistElement.on("mouseover", playlistItem, function () {
+    const listItem = $(this)
+    // The listItem can't overflow; what can overflow is the width-limited descendent.
+    if (listItem.find(".width-limited-playlist-span").custom_overflown()) {
+      const song = listItem.data("song") as Song
+      listItem.custom_tooltip(mediaMetadataHtml(song))
+    }
+  })
+})
