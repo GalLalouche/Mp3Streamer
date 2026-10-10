@@ -112,10 +112,10 @@ export class JPlayerPlaylist {
       return this.remove(this.playlist.length + displayedIndex, onEnd)
 
     this.removing = true
-    const child = $(`${PLAYLIST} li:nth-child(${displayedIndex + 1})`)
+    const playlistIndex = this.getDisplayedIndex(displayedIndex)
+    const child = this.playlist[playlistIndex].element
     child.slideUp(REMOVE_TIME, () => {
       child.remove()
-      const playlistIndex = this.getDisplayedIndex(displayedIndex)
       this.playlist.splice(playlistIndex, 1)
       if (this.playlist.length) {
         if (playlistIndex === this.current) {
@@ -217,7 +217,7 @@ export class JPlayerPlaylist {
       })
     }
 
-    aux($(`${PLAYLIST} li:nth-child(${this.getDisplayedIndex(index) + 1})`))
+    aux(this.playlist[index].element)
   }
 
   private isLastSongPlaying(): boolean {
@@ -233,11 +233,8 @@ export class JPlayerPlaylist {
   }
 
   private markCurrent(): void {
-    const displayedIndex = this.getDisplayedIndex(this.current)
     $(`${PLAYLIST} .${PLAYLIST_CURRENT}`).removeClass(PLAYLIST_CURRENT)
-    // FIXME we probably don't really need to the class to two different elements here.
-    // FIXME Duplication of nth-child selector with above.
-    $(`${PLAYLIST} li:nth-child(${displayedIndex + 1})`).addClass(PLAYLIST_CURRENT)
+    this.playlist[this.current].element.addClass(PLAYLIST_CURRENT)
   }
 
   private getDisplayedIndex(index: number): number {return this.playlist.length - 1 - index}
