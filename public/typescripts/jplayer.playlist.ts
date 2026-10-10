@@ -105,17 +105,17 @@ export class JPlayerPlaylist {
       .exhaustive())
   }
 
-  private remove(displayedIndex: number, onEnd: () => void): void {
+  // This works with elements instead of indices, since the indices shift on removal, but going
+  // from an element to its preceeding or succeeding element is easier.
+  private remove(elem: JQuery<HTMLElement>, onEnd: () => void): void {
     if (this.removing)
       return
-    if (displayedIndex < 0)
-      return this.remove(this.playlist.length + displayedIndex, onEnd)
 
     this.removing = true
-    const playlistIndex = this.getDisplayedIndex(displayedIndex)
-    const child = this.playlist[playlistIndex].element
-    child.slideUp(REMOVE_TIME, () => {
-      child.remove()
+    // The list is displayed in reverse order, i.e., the last playlist element is in the top of the <ul>.
+    const playlistIndex = this.playlist.length - 1 - elem.index()
+    elem.slideUp(REMOVE_TIME, () => {
+      elem.remove()
       this.playlist.splice(playlistIndex, 1)
       if (this.playlist.length) {
         if (playlistIndex === this.current) {
@@ -209,7 +209,7 @@ export class JPlayerPlaylist {
     function aux(current: JQuery<HTMLElement>): void {
       const next = nextFunction(current)
       // This has to be calculated before the removal, otherwise the who element is empty
-      self.remove(current.index(), function () {
+      self.remove(current, function () {
         // if there is another next element to remove,
         // enqueue a removal after this current element is removed
         if (next.length > 0)
@@ -236,7 +236,5 @@ export class JPlayerPlaylist {
     $(`${PLAYLIST} .${PLAYLIST_CURRENT}`).removeClass(PLAYLIST_CURRENT)
     this.playlist[this.current].element.addClass(PLAYLIST_CURRENT)
   }
-
-  private getDisplayedIndex(index: number): number {return this.playlist.length - 1 - index}
 }
 
