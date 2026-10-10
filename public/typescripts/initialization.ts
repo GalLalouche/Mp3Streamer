@@ -1,5 +1,5 @@
-import {gplayer, gplaylist} from "./player_singleton.js"
 import * as DataApi from "./data_api.js"
+import {GuiEvents, PlayerSetup} from "./gui_events.js"
 
 export const isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) !== null
 
@@ -29,22 +29,22 @@ if (window.history && history.pushState) {
   })
 }
 
-$(function () {
+GuiEvents.listen(PlayerSetup, ps => {
+  const playlist = ps.playlist
   const debugStartSong = getSearchParam("addSong")
   const debugStartAlbum = getSearchParam("addAlbum")
 
   $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()
-  assert(gplayer !== undefined, "gplayer is not initialized")
 
   if (debugStartSong) {
     console.log(`Adding debug song <${debugStartSong}>`)
-    DataApi.getSong(debugStartSong).then(data => gplaylist.add(data, true))
+    DataApi.getSong(debugStartSong).then(data => playlist.add(data, true))
   } else if (debugStartAlbum) {
     console.log(`Adding debug album <${debugStartAlbum}>`)
     // No idea why this is reversed in the playlist :|
-    DataApi.getAlbum("/data/albums/" + debugStartAlbum).then(data => gplaylist.add(data.reverse(), true))
+    DataApi.getAlbum("/data/albums/" + debugStartAlbum).then(data => playlist.add(data.reverse(), true))
   } else
     // FIXME this isn't *exactly* next, since the playlist has no song playiong, but it's the
     //  same code running anyway.
-    DataApi.getRandomSong().then(song => gplaylist.add(song, true))
+    DataApi.getRandomSong().then(song => playlist.add(song, true))
 })
