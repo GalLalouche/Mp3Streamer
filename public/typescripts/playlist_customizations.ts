@@ -3,7 +3,6 @@
 //  Actually, this is only used for the metadata HTML? That's not a half-bad cohesive module. Should
 //  probably be renamed though.
 
-import {ITEM_CLASS} from "./gui_events.js"
 import {Song} from "./media.js"
 
 export function mediaMetadataHtml(song: Song): string {
@@ -13,9 +12,8 @@ export function mediaMetadataHtml(song: Song): string {
 
   // Duration is appended manually outside of metadata to ensure that it is always displayed, even
   // if metadata overflows. That's the reason for the odd parens too.
-  // FIXME this ITEM_CLASS shouldn't be here. It's enough that it's on the list item.
   return (
-    `<span class='${ITEM_CLASS}' tabindex='1'>
+    `<span tabindex='1'>
        <span class="width-limited-playlist-span">
          <span class="jp-title">${song.title}</span> <span class="jp-metadata">${metadata}</span>
        </span><!-- Avoids the whitespace between the two spans.
