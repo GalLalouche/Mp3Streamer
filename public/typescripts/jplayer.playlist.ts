@@ -106,37 +106,34 @@ export class JPlayerPlaylist {
       .exhaustive())
   }
 
-  private remove(index: number, onEnd: () => void): void {
+  private remove(displayedIndex: number, onEnd: () => void): void {
     if (this.removing)
       return
-    if (index < 0)
-      return this.remove(this.playlist.length + index, onEnd)
-    // index relates to end of array.
-    if (index < this.playlist.length)
-      this.removing = true
+    if (displayedIndex < 0)
+      return this.remove(this.playlist.length + displayedIndex, onEnd)
 
-    $(`${PLAYLIST} li:nth-child(${index + 1})`).slideUp(
-      REMOVE_TIME,
-      () => {
-        $(this).remove()
-        const playlistIndex = this.getDisplayedIndex(index)
-        this.playlist.splice(playlistIndex, 1)
-        if (this.playlist.length) {
-          if (playlistIndex === this.current) {
-            // Update current when last element was deleted.
-            this.current = playlistIndex < this.playlist.length ? this.current : this.playlist.length - 1
-            this.select(this.current)
-          } else if (playlistIndex < this.current)
-            this.current--
-        } else {
-          gplayer.clear()
-          this.current = 0
-        }
+    this.removing = true
+    const child = $(`${PLAYLIST} li:nth-child(${displayedIndex + 1})`)
+    child.slideUp(REMOVE_TIME, () => {
+      child.remove()
+      const playlistIndex = this.getDisplayedIndex(displayedIndex)
+      this.playlist.splice(playlistIndex, 1)
+      if (this.playlist.length) {
+        if (playlistIndex === this.current) {
+          // Update current when last element was deleted.
+          this.current = playlistIndex < this.playlist.length ? this.current : this.playlist.length - 1
+          this.select(this.current)
+        } else if (playlistIndex < this.current)
+          this.current--
+      } else {
+        gplayer.clear()
+        this.current = 0
+      }
 
-        this.removing = false
-        if (onEnd)
-          onEnd()
-      })
+      this.removing = false
+      if (onEnd)
+        onEnd()
+    })
   }
 
   async select(index: number): Promise<void> {
@@ -191,18 +188,17 @@ export class JPlayerPlaylist {
   }
 
   private refresh(animation?: () => void): void {
+    const playlistUl = $(PLAYLIST + " ul")
     if (animation) {
-      const $this = $(this)
-      $this.empty()
+      playlistUl.empty()
 
-      this.playlist.forEach(v => $this.append(v.element))
+      this.playlist.forEach(v => playlistUl.append(v.element))
       animation()
       if (this.playlist.length)
-        $this.slideDown(DISPLAY_TIME)
+        playlistUl.slideDown(DISPLAY_TIME)
       else
-        $this.show()
+        playlistUl.show()
     } else {
-      const playlistUl = $(PLAYLIST + " ul")
       playlistUl.empty()
       this.playlist.forEach(v => playlistUl.append(v.element))
     }
