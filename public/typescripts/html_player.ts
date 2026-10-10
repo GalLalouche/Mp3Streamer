@@ -34,7 +34,9 @@ export class HtmlPlayer extends Player {
   override load(song: Song): void {
     // PlayerGUI.setCurrentSong(song)
     // FIXME this just assume the offline URL is already set (which breaks on loading a playlist state!)
-    this.html.src = song.offlineUrl!!
+    const offlineUrl = song.offlineUrl
+    assertDefined(offlineUrl) // We don't support this non-offline URLs yet
+    this.html.src = offlineUrl
     this.publish(song)
   }
   override pause(): void {this.html.pause()}
