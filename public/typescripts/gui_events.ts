@@ -11,6 +11,14 @@ import {Volume} from "./volume.js"
 
 export const GuiEvents: PubSub = new PubSub()
 
+export const REMOVE_ITEM = "jp-playlist-item-remove"
+export const REMOVE_THIS = "jp-playlist-item-remove-this"
+export const REMOVE_UP = "jp-playlist-item-remove-up"
+export const REMOVE_DOWN = "jp-playlist-item-remove-down"
+
+export type RemoveType = "x" | "up" | "down"
+export type PlaylistClickType = "select" | RemoveType
+
 export class Seek {
   readonly percentage: Percentage
 
@@ -23,7 +31,7 @@ export type PlayerControls = "play" | "pause" | "stop" | Volume | Seek
 export const PlayerControlsTopic = topic<PlayerControls>("player_controls")
 
 export interface PlaylistClicks {
-  readonly type: "select" | "x" | "up" | "down"
+  readonly type: PlaylistClickType
   readonly index: number
 }
 
@@ -75,26 +83,27 @@ $(function () {
     const clickedIndex: number = totalSongs - 1 - listItem.index()
     const target = $(e.target)
 
-    function getRemoveType(target: JQuery<HTMLElement>): "x" | "up" | "down" {
-      if (target.hasClass("jp-playlist-item-remove-this")) {
+    function getRemoveType(target: JQuery<HTMLElement>): RemoveType {
+      if (target.hasClass(REMOVE_THIS)) {
         return "x"
-      } else if (target.hasClass("jp-playlist-item-remove-up")) {
+      } else if (target.hasClass(REMOVE_UP)) {
         return "up"
-      } else if (target.hasClass("jp-playlist-item-remove-down")) {
+      } else if (target.hasClass(REMOVE_DOWN)) {
         return "down"
       } else {
         throw new Error("Unknown remove type: " + target.attr("class"))
       }
     }
 
-    function publish(type: "x" | "up" | "down" | "select") {
+    function publish(type: PlaylistClickType): void {
       GuiEvents.publish(PlaylistEventTopic, {type: type, index: clickedIndex})
     }
 
-    if (target.hasClass("jp-playlist-item-remove")) {
+    if (target.hasClass(REMOVE_ITEM)) {
       publish(getRemoveType(target))
     } else if (e.target.localName === "span" || e.target.localName === "img") {
       publish("select")
     }
   })
 })
+

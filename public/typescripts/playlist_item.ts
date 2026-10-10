@@ -1,6 +1,7 @@
 import {Song} from "./media"
 import {mediaMetadataHtml} from "./playlist_customizations"
 import * as ColorUtils from "./color-utils.js"
+import {REMOVE_DOWN, REMOVE_ITEM, REMOVE_THIS, REMOVE_UP} from "./gui_events"
 
 export const ITEM_CLASS = "jp-playlist-item"
 
@@ -38,9 +39,4 @@ function createElement(song: Song): JQuery<HTMLElement> {
   result.addClass(ITEM_CLASS)
   return result
 }
-
-const REMOVE_ITEM = "jp-playlist-item-remove"
-const REMOVE_THIS = "jp-playlist-item-remove-this"
-const REMOVE_UP = "jp-playlist-item-remove-up"
-const REMOVE_DOWN = "jp-playlist-item-remove-down"
 
