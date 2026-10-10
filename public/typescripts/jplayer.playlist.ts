@@ -15,7 +15,6 @@ import {RemoveType} from "./gui_events.js"
 
 const ADD_TIME = 'fast'
 const REMOVE_TIME = 'fast'
-const TITLE = ".jp-title"
 const PLAYLIST = ".jp-playlist"
 const DISPLAY_TIME = 'slow'
 const PLAYLIST_CURRENT = "jp-playlist-current"
@@ -239,11 +238,6 @@ export class JPlayerPlaylist {
     // FIXME we probably don't really need to the class to two different elements here.
     // FIXME Duplication of nth-child selector with above.
     $(`${PLAYLIST} li:nth-child(${displayedIndex + 1})`).addClass(PLAYLIST_CURRENT)
-    const song = this.getSong(displayedIndex)
-    $(`${TITLE} li`).html(
-      // FIXME there has to be a nicer way of doing this.
-      song.title + ` <span class='jp-artist'>by ${song.artistName}</span>`
-    )
   }
 
   private getDisplayedIndex(index: number): number {return this.playlist.length - 1 - index}

@@ -145,6 +145,12 @@ div.jp-playlist li div * {
 .jp-playlist-current .jp-title {
   color: #0d88c1 !important;
 }
+.jp-artist-by {
+  display: none !important;
+}
+.jp-playlist-current .jp-artist-by {
+  display: inline !important;
+}
 
 .jp-playlist-current div a {
   font-size: 20px !important;
