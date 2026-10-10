@@ -15,13 +15,12 @@ export function mediaMetadataHtml(song: Song): string {
   return (
     `<span tabindex='1'>
        <span class="width-limited-playlist-span">
-         <span class="jp-title">${song.title}</span> <span class="jp-metadata">${metadata}</span>
+         <span class="jp-title">${song.title}</span> <span class="jp-artist-by">by </span><span class="jp-metadata">${metadata}</span>
        </span><!-- Avoids the whitespace between the two spans.
        --><span class="jp-list-duration">, ${song.duration.timeFormat()})</span>
      </span>`
   )
 }
-
 
 function formattedMetadata(song: Song): string {
   const res = additionalData(song)
