@@ -1,6 +1,5 @@
 import {Percentage} from "./common_types.js"
-import {GuiEvents, PlayerControls, PlayerControlsTopic, PlaylistItemClickType, PlaylistContextMenuEventTopic, PlaylistEvent, PlaylistEventTopic, RemoveType, Seek} from "./events.js"
-import {Song} from "./media.js"
+import {GuiEvents, PlayerControls, PlayerControlsTopic, PlaylistEvent, PlaylistEventTopic, Seek} from "./events.js"
 import {Volume} from "./volume.js"
 
 export const REMOVE_ITEM = "jp-playlist-item-remove"
@@ -47,87 +46,4 @@ $(function () {
 
   playlistControlsAux("next")
   playlistControlsAux("previous")
-  $(".jp-playlist").on("click", "> ul > li", function (e) {
-    const listItem = $(this)
-    const totalSongs = $(this).parent().children().length
-    // The list presentation reversed, so song at index 0 is actually the last song, not the first.
-    // FIXME remove the method on the gplaylist
-    const clickedIndex: number = totalSongs - 1 - listItem.index()
-    const target = $(e.target)
-
-    function getRemoveType(target: JQuery<HTMLElement>): RemoveType {
-      if (target.hasClass(REMOVE_THIS)) {
-        return "x"
-      } else if (target.hasClass(REMOVE_UP)) {
-        return "up"
-      } else if (target.hasClass(REMOVE_DOWN)) {
-        return "down"
-      } else {
-        throw new Error("Unknown remove type: " + target.attr("class"))
-      }
-    }
-
-    const publish = (type: PlaylistItemClickType) =>
-      GuiEvents.publish(PlaylistEventTopic, {type: type, index: clickedIndex})
-    const removeButton = target.closest("a." + REMOVE_ITEM)
-    if (removeButton.length > 0)
-      publish(getRemoveType(removeButton))
-    // ignore clicks between the remove button
-    else if (target.closest("." + REMOVE_ITEM).length === 0)
-      publish("select")
-  })
-
-  /****************
-   * Context menu *
-   ***************/
-  $("body").append(String.raw`
-    <ul id="contextMenu" class="ui-menu" style="display:none;">
-        <li><div><span class="menu-icon fa fa-arrows-v"/></span> Score</div></li>
-        <li><div><span class="menu-icon fa fa-refresh"></span> Refresh</div></li>
-        <style>
-        .ui-menu {
-            width: 150px
-            background-color: white
-            border: 1px solid #ccc
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2)
-        }
-        .menu-icon {
-            margin-right: 5px
-            width: 15px
-            text-align: center
-        }
-        </style>
-    </ul>
-  `)
-  const playlistElement = $(".jp-playlist")
-  const playlistItem = "> ul > li"
-  const contextMenu = $("#contextMenu").menu()
-  playlistElement.on("contextmenu", playlistItem, function (e) {
-    e.preventDefault() // Prevent the default context menu
-
-    contextMenu.css({
-      display: 'block',
-      top: e.pageY + 5,
-      left: e.pageX + 5,
-      position: 'absolute',
-    })
-
-    // FIXME this is too hacky... perhaps move this to PlaylistItem generation?
-    const song = $(this).closest('.' + ITEM_CLASS).data("song") as Song
-    contextMenu.one("click", "li", async function (e) {
-      function publish(type: "score" | "external") {
-        GuiEvents.publish(PlaylistContextMenuEventTopic, {type: type, song: song})
-      }
-      switch (e.target.textContent.trim()) {
-        case "Score":
-          publish("score")
-        case "Refresh":
-          publish("external")
-        default:
-          throw new AssertionError("Unexpected selection: " + e.target.textContent)
-      }
-    })
-
-    $(document).one("click", () => $("#contextMenu").hide())
-  })
 })

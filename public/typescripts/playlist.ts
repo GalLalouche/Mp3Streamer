@@ -19,7 +19,5 @@ export abstract class Playlist {
   abstract songs(): readonly Song[]
   last(): Song {return this.getSong(this.length() - 1)}
   abstract length(): number
-  // The list presentation reversed, so song at index 0 is actually the last song, not the first.
-  getDisplayedIndex(index: number): number {return this.length() - 1 - index}
   abstract removeItem(index: number, type: RemoveType): void
 }

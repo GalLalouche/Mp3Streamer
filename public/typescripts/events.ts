@@ -36,14 +36,15 @@ export const PlayerControlsTopic = topic<PlayerControls>("player_controls")
 /***********
 * Playlist *
 ************/
+
+export type PlaylistEvent = "next" | "previous"
+export const PlaylistEventTopic = topic<PlaylistEvent>("playlist_event")
+
+// FIXME these should be published on the playlist item only, and registered when the item is created.
 export type RemoveType = "x" | "up" | "down"
 export type PlaylistItemClickType = "select" | RemoveType
-export interface PlaylistItemClick {
-  readonly type: PlaylistItemClickType
-  readonly index: number
-}
-export type PlaylistEvent = PlaylistItemClick | "next" | "previous"
-export const PlaylistEventTopic = topic<PlaylistEvent>("playlist_event")
+export const PlaylistItemTopic =
+  topic<{type: PlaylistItemClickType, element: JQuery<HTMLElement>}>("playlist_event")
 
 interface PlaylistItemContextMenuEvent {
   readonly type: "external" | "score"

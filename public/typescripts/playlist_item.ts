@@ -2,6 +2,7 @@ import {Song} from "./media.js"
 import {mediaMetadataHtml} from "./media_metadata.js"
 import * as ColorUtils from "./color-utils.js"
 import {ITEM_CLASS, REMOVE_DOWN, REMOVE_ITEM, REMOVE_THIS, REMOVE_UP} from "./event_setup.js"
+import {GuiEvents, PlaylistContextMenuEventTopic, PlaylistItemClickType, PlaylistItemTopic, RemoveType} from "./events.js"
 
 export class PlaylistItem {
   readonly song: Song
@@ -34,22 +35,90 @@ function createElement(song: Song): JQuery<HTMLElement> {
   ColorUtils.getColor(song.poster).then(rgb => {
     result.css('background-color', rgb.makeLighter(0.1).toString())
   })
-  result.data("song", song)
   result.addClass(ITEM_CLASS)
+
+  result.on("click", function (e) {
+    const target = $(e.target)
+
+    function getRemoveType(target: JQuery<HTMLElement>): RemoveType {
+      if (target.hasClass(REMOVE_THIS)) {
+        return "x"
+      } else if (target.hasClass(REMOVE_UP)) {
+        return "up"
+      } else if (target.hasClass(REMOVE_DOWN)) {
+        return "down"
+      } else {
+        throw new Error("Unknown remove type: " + target.attr("class"))
+      }
+    }
+
+    const publish = (type: PlaylistItemClickType) =>
+      GuiEvents.publish(PlaylistItemTopic, {type: type, element: result})
+    const removeButton = target.closest("a." + REMOVE_ITEM)
+    if (removeButton.length > 0)
+      publish(getRemoveType(removeButton))
+    // ignore clicks between the remove button
+    else if (target.closest("." + REMOVE_ITEM).length === 0)
+      publish("select")
+  })
+
+  result.on("mouseover", function () {
+    // The listItem can't overflow; what can overflow is the width-limited descendent.
+    if (result.find(".width-limited-playlist-span").custom_overflown())
+      result.custom_tooltip(mediaMetadataHtml(song))
+  })
+
+  result.on("contextmenu", function (e) {
+    e.preventDefault() // Prevent the default context menu
+
+    contextMenu.css({
+      display: 'block',
+      top: e.pageY + 5,
+      left: e.pageX + 5,
+      position: 'absolute',
+    })
+
+    contextMenu.one("click", "li", async function (e) {
+      function publish(type: "score" | "external") {
+        GuiEvents.publish(PlaylistContextMenuEventTopic, {type: type, song: song})
+      }
+      switch (e.target.textContent.trim()) {
+        case "Score":
+          publish("score")
+        case "Refresh":
+          publish("external")
+        default:
+          throw new AssertionError("Unexpected selection: " + e.target.textContent)
+      }
+    })
+
+    $(document).one("click", () => $("#contextMenu").hide())
+  })
+
   return result
 }
 
-$(function () {
-  const playlistElement = $(".jp-playlist")
-  const playlistItem = "> ul > li"
+let contextMenu!: JQuery<HTMLElement>
 
-  // Mouseover tooltip for overflowing playlist items.
-  playlistElement.on("mouseover", playlistItem, function () {
-    const listItem = $(this)
-    // The listItem can't overflow; what can overflow is the width-limited descendent.
-    if (listItem.find(".width-limited-playlist-span").custom_overflown()) {
-      const song = listItem.data("song") as Song
-      listItem.custom_tooltip(mediaMetadataHtml(song))
-    }
-  })
+$(function() {
+  $("body").append(String.raw`
+    <ul id="contextMenu" class="ui-menu" style="display:none;">
+        <li><div><span class="menu-icon fa fa-arrows-v"/></span> Score</div></li>
+        <li><div><span class="menu-icon fa fa-refresh"></span> Refresh</div></li>
+        <style>
+        .ui-menu {
+            width: 150px
+            background-color: white
+            border: 1px solid #ccc
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2)
+        }
+        .menu-icon {
+            margin-right: 5px
+            width: 15px
+            text-align: center
+        }
+        </style>
+    </ul>
+  `)
+  contextMenu = $("#contextMenu").menu()
 })

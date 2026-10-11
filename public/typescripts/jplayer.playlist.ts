@@ -1,6 +1,6 @@
 /* Adapted from http://www.jplayer.org playlist. */
 
-import {match} from "ts-pattern"
+import {match, P} from "ts-pattern"
 import * as DataApi from "./data_api.js"
 import * as Local from "./local.js"
 import {Song} from "./media.js"
@@ -9,7 +9,7 @@ import {PlayerEvent, TimeUpdate} from "./player.js"
 import {Player} from "./player.js"
 import {Duration} from "./common_types.js"
 import {PlaylistItem} from "./playlist_item.js"
-import {RemoveType} from "./events.js"
+import {GuiEvents, PlaylistItemTopic, RemoveType} from "./events.js"
 
 
 export class JPlayerPlaylist {
@@ -34,6 +34,13 @@ export class JPlayerPlaylist {
         result.maybePreloadNextSong(e)
       }
     })
+    GuiEvents.listen(PlaylistItemTopic, ({type, element}) => {
+      const index = result.getDisplayedIndex(element)
+      match(type)
+        .with("select", () => result.select(index))
+        .with(P.select(), x => result.removeItem(index, x))
+    })
+
     return result
   }
 
@@ -95,7 +102,6 @@ export class JPlayerPlaylist {
     }
 
     this.current = 0
-    return new Promise(f => f())
   }
 
   async play(index: number): Promise<void> {
@@ -128,7 +134,7 @@ export class JPlayerPlaylist {
 
     this.removing = true
     // The list is displayed in reverse order, i.e., the last playlist element is in the top of the <ul>.
-    const playlistIndex = this.playlist.length - 1 - elem.index()
+    const playlistIndex = this.getDisplayedIndex(elem)
     elem.slideUp(REMOVE_TIME, () => {
       elem.remove()
       this.playlist.splice(playlistIndex, 1)
@@ -209,6 +215,10 @@ export class JPlayerPlaylist {
   private markCurrent(): void {
     $(`${PLAYLIST} .${PLAYLIST_CURRENT}`).removeClass(PLAYLIST_CURRENT)
     this.playlist[this.current].element.addClass(PLAYLIST_CURRENT)
+  }
+
+  private getDisplayedIndex(e: JQuery<HTMLElement>): number {
+    return this.playlist.length - 1 - e.index()
   }
 }
 

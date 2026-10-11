@@ -129,18 +129,11 @@ function makePlaylist(player: Player): Playlist {
     }
     override removeItem(index: number, type: RemoveType) {pl.removeItem(index, type)}
   }
-  // Move to song on click.
-  // FIXME this shouldn't be here.
   GuiEvents.listen(PlaylistEventTopic, event => {
     match(event)
       .with('next', () => result.next())
       .with('previous', () => result.prev())
-      .with({type: P.select("type"), index: P.select("index")}, ({type, index}) => {
-        match(type)
-          .with("select", () => result.select(index))
-          .with(P.select(), x => result.removeItem(index, x))
-          .exhaustive()
-      })
+      .exhaustive()
   })
   return result
 }
