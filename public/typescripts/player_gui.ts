@@ -59,7 +59,7 @@ export function setCurrentSong(song: Song): void {
   document.title = songInfo
 }
 
-export function updatePosition(input: { current: Duration, total: Duration }): void {
+export function updatePosition(input: {current: Duration, total: Duration}): void {
   // FIXME take this from the actual seekable value
   //  seekPercent = (this.status.duration > 0) ? 100 * this.html.seekable.end(t.seekable.length - 1) / this.status.duration : 100
   seekBar.setWidth(Percentage.MAX)

@@ -42,7 +42,6 @@ class SingletonPlayer extends Player {
         PlayerGUI.setCurrentSong(pe)
     })
     result.player.setVolume(result.volume.replayGainAdjustedVolume())
-    // TODO these listens should be made elsewhere
     GuiEvents.listen(PlayerControlsTopic, (control: PlayerControls) => {
       match(control)
         .with("play", () => result.playCurrentSong())
@@ -119,9 +118,9 @@ function makePlaylist(player: Player): Playlist {
     override add(song: Song | readonly Song[], playNow: boolean): Promise<void> {
       return pl.add(song, playNow)
     }
-    override async next() {return pl.next()}
+    override next() {return pl.next()}
     override prev() {return pl.previous()}
-    override async clear(): Promise<void> {return pl.setPlaylist([])}
+    override clear(): Promise<void> {return pl.setPlaylist([])}
     override async select(index: number): Promise<void> {
       // This check is here since the JPlayerPlaylist actually does need to support selecting the
       // current song (for some reason). FIXME Probably a bug, should be fixed.
@@ -132,9 +131,9 @@ function makePlaylist(player: Player): Playlist {
   }
   // Move to song on click.
   // FIXME this shouldn't be here.
-  GuiEvents.listen(PlaylistEventTopic, async event => {
+  GuiEvents.listen(PlaylistEventTopic, event => {
     match(event)
-      .with('next', async () => await result.next())
+      .with('next', () => result.next())
       .with('previous', () => result.prev())
       .with({type: P.select("type"), index: P.select("index")}, ({type, index}) => {
         match(type)

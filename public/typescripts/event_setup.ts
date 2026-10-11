@@ -1,0 +1,133 @@
+import {Percentage} from "./common_types.js"
+import {GuiEvents, PlayerControls, PlayerControlsTopic, PlaylistClickType, PlaylistContextMenuEventTopic, PlaylistEvent, PlaylistEventTopic, RemoveType, Seek} from "./gui_events.js"
+import {Song} from "./media.js"
+import {Volume} from "./volume.js"
+
+export const REMOVE_ITEM = "jp-playlist-item-remove"
+export const REMOVE_THIS = "jp-playlist-item-remove-this"
+export const REMOVE_UP = "jp-playlist-item-remove-up"
+export const REMOVE_DOWN = "jp-playlist-item-remove-down"
+
+export const ITEM_CLASS = "jp-playlist-item"
+
+
+$(function () {
+  /*******************
+   * Player controls *
+   ******************/
+  function playerControlsAux(str: PlayerControls): void {
+    $('.jp-' + str).on('click', () => GuiEvents.publish(PlayerControlsTopic, str))
+  }
+
+  playerControlsAux("play")
+  playerControlsAux("stop")
+  playerControlsAux("pause")
+
+
+  $('.jp-mute').on('click', () => GuiEvents.publish(PlayerControlsTopic, new Volume(Percentage.ZERO)))
+
+  // TODO handle unmute by maintaining the original volume
+  function barListener(selector: string, f: (p: Percentage) => PlayerControls): void {
+    const target = $(selector)
+    target.on('click', e => {
+      const clickXPosition = e.pageX - target.offset()!.left
+      GuiEvents.publish(PlayerControlsTopic, f(Percentage.fromMax1(clickXPosition / target.width()!)))
+    })
+  }
+
+  barListener('.jp-volume-bar', p => new Volume(p))
+  barListener('.jp-seek-bar', p => new Seek(p))
+
+  /*********************
+   * Playlist controls *
+   ********************/
+  function playlistControlsAux(str: PlaylistEvent): void {
+    $('.jp-' + str).on('click', () => GuiEvents.publish(PlaylistEventTopic, str))
+  }
+
+  playlistControlsAux("next")
+  playlistControlsAux("previous")
+  $(".jp-playlist").on("click", "> ul > li", function (e) {
+    const listItem = $(this)
+    const totalSongs = $(this).parent().children().length
+    // The list presentation reversed, so song at index 0 is actually the last song, not the first.
+    // FIXME remove the method on the gplaylist
+    const clickedIndex: number = totalSongs - 1 - listItem.index()
+    const target = $(e.target)
+
+    function getRemoveType(target: JQuery<HTMLElement>): RemoveType {
+      if (target.hasClass(REMOVE_THIS)) {
+        return "x"
+      } else if (target.hasClass(REMOVE_UP)) {
+        return "up"
+      } else if (target.hasClass(REMOVE_DOWN)) {
+        return "down"
+      } else {
+        throw new Error("Unknown remove type: " + target.attr("class"))
+      }
+    }
+
+    const publish = (type: PlaylistClickType) =>
+      GuiEvents.publish(PlaylistEventTopic, {type: type, index: clickedIndex})
+    const removeButton = target.closest("a." + REMOVE_ITEM)
+    if (removeButton.length > 0)
+      publish(getRemoveType(removeButton))
+    // ignore clicks between the remove button
+    else if (target.closest("." + REMOVE_ITEM).length === 0)
+      publish("select")
+  })
+
+  /****************
+   * Context menu *
+   ***************/
+  $("body").append(String.raw`
+    <ul id="contextMenu" class="ui-menu" style="display:none;">
+        <li><div><span class="menu-icon fa fa-arrows-v"/></span> Score</div></li>
+        <li><div><span class="menu-icon fa fa-refresh"></span> Refresh</div></li>
+        <style>
+        .ui-menu {
+            width: 150px
+            background-color: white
+            border: 1px solid #ccc
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2)
+        }
+        .menu-icon {
+            margin-right: 5px
+            width: 15px
+            text-align: center
+        }
+        </style>
+    </ul>
+  `)
+  const playlistElement = $(".jp-playlist")
+  const playlistItem = "> ul > li"
+  const contextMenu = $("#contextMenu").menu()
+  playlistElement.on("contextmenu", playlistItem, function (e) {
+    e.preventDefault() // Prevent the default context menu
+
+    contextMenu.css({
+      display: 'block',
+      top: e.pageY + 5,
+      left: e.pageX + 5,
+      position: 'absolute',
+    })
+
+    // FIXME this is too hacky... perhaps move this to PlaylistItem generation?
+    const song = $(this).closest('.' + ITEM_CLASS).data("song") as Song
+    contextMenu.one("click", "li", async function (e) {
+      function publish(type: "score" | "external") {
+        GuiEvents.publish(PlaylistContextMenuEventTopic, {type: type, song: song})
+      }
+      switch (e.target.textContent.trim()) {
+        case "Score":
+          publish("score")
+        case "Refresh":
+          publish("external")
+        default:
+          throw new AssertionError("Unexpected selection: " + e.target.textContent)
+      }
+    })
+
+    $(document).one("click", () => $("#contextMenu").hide())
+  })
+})
