@@ -142,7 +142,7 @@ class Helper {
           match(externalLinksForEntity)
             .returnType<string>()
             .when(isLinks, l => {
-              $.each(l.links, (linkName, link) => {
+              $.each(l.links, (_, link) => {
                 const extensions = getExtensions(link)
                 const links = href(link.main, link.host) + (extensions ? ` (${extensions})` : "")
                 const imageIcon = `"list-style-image: url('assets/images/${link.host.replace(/[*?].*$/g, "")}_icon.png')"`

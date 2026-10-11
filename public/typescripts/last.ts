@@ -77,7 +77,7 @@ async function dequeue(): Promise<void> {
 
 function skip(): void {
   // We don't use async here so skip doesn't wait for dequeue to end.
-  confirmDialog("skip next album", () => dequeueAux(album => Promise.resolve()))
+  confirmDialog("skip next album", () => dequeueAux(async () => { }))
 }
 
 async function dequeueAux(f: (a: Album) => Promise<void>): Promise<void> {

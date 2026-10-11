@@ -20,7 +20,7 @@ $(function () {
       public currentIndex: number,
       public duration: Duration,
       public volume: Volume,
-    ) {}
+    ) { }
 
     static fromJson(json: API.RawJSON): PlaylistJson {
       return new PlaylistJson(
@@ -99,31 +99,30 @@ $(function () {
     if (state.songs.length <= 1) {
       const msg = "Won't save trivial backup"
       console.log(msg)
-      return Promise.resolve({heading: 'Warning', text: msg, icon: 'warning'})
+      return {heading: 'Warning', text: msg, icon: 'warning'}
     }
     state.volume = gplayer.getVolume()
     localStorage.setItem(backupKey, JSON.stringify(state))
-    const playlistName = Poster.playlistName.val() as string
-    if (playlistName) {
-      localStorage.setItem(Poster.PLAYLIST_NAME_KEY, playlistName)
-      console.log(`Saving playlist ${playlistName} remotely`)
-      return putJson(`playlist/${playlistName}`, state)
-        .toPromise()
-        .void()
-        .catch(
-          (error: any) => {
-            const result: toastOptions = {
-              heading: 'Error while saving backup',
-              text: error.statusText,
-              icon: 'error',
-              hideAfter: 10_000,
-            }
-            if (toastErrors)
-              $.toast(result)
-            return Promise.resolve(result)
-          })
-    }
-    return Promise.resolve()
+    const playlistName = Poster.playlistName.val() as string | undefined
+    if (isNullable(playlistName))
+      return
+    localStorage.setItem(Poster.PLAYLIST_NAME_KEY, playlistName)
+    console.log(`Saving playlist ${playlistName} remotely`)
+    putJson(`playlist/${playlistName}`, state)
+      .toPromise()
+      .void()
+      .catch(
+        (error: any) => {
+          const result: toastOptions = {
+            heading: 'Error while saving backup',
+            text: error.statusText,
+            icon: 'error',
+            hideAfter: 10_000,
+          }
+          if (toastErrors)
+            $.toast(result)
+          return result
+        })
   }
 
   listenToClick("update_backup", async function () {

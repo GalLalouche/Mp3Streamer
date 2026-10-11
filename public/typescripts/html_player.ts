@@ -30,10 +30,7 @@ export class HtmlPlayer extends Player {
   override currentTime(): Duration {return Duration.fromSeconds(this.html.currentTime)}
   override duration(): Duration {return Duration.fromSeconds(this.html.duration)}
   override isPaused(): boolean {return this.html.paused}
-  // TODO should this be async to signify when done?
   override load(song: Song): void {
-    // PlayerGUI.setCurrentSong(song)
-    // FIXME this just assume the offline URL is already set (which breaks on loading a playlist state!)
     const path = song.offlineUrl ?? song.path
     assertDefined(path)
     this.html.src = path

@@ -28,7 +28,7 @@ $(function () {
 
 function show(song: Song): void {
   clearScores()
-  getScore(song).then(score => updateScore(song, score))
+  getScore(song).then(updateScore)
 }
 
 function popup(song: Song): void {
@@ -97,7 +97,7 @@ function scoreSliderDialog(song: Song, scoreResult: ScoreResult): void {
       max: MAX_ORDINAL,
       value: toOrdinal(scoreFor(scoreResult, source)),
       step: 1,
-      slide: async function (e, ui) {
+      slide: async function (_, ui) {
         assertOrdinal(ui.value!)
         const newScore = fromOrdinal(ui.value)
         await setScore(song, source, newScore)
@@ -151,7 +151,7 @@ function clearScores(): void {
   fieldset.append($("<div>Waiting for score...<\div>"))
 }
 
-function updateScore(song: Song, score: ScoreResult): void {
+function updateScore(score: ScoreResult): void {
   function scoreMenu(key: keyof ScoreResult): JQuery<HTMLElement> {
     const result = $("<select>")
     for (const s of ["Default", "Crappy", "Meh", "Okay", "Good", "Great", "Amazing"]) {

@@ -1,4 +1,3 @@
-// FIXME merge with the customizations, and remove
 /* Adapted from http://www.jplayer.org playlist. */
 
 import {match} from "ts-pattern"
@@ -13,15 +12,6 @@ import {PlaylistItem} from "./playlist_item.js"
 import {RemoveType} from "./gui_events.js"
 
 
-const ADD_TIME = 'fast'
-const REMOVE_TIME = 'fast'
-const PLAYLIST = ".jp-playlist"
-const DISPLAY_TIME = 'slow'
-const PLAYLIST_CURRENT = "jp-playlist-current"
-
-type RemoveFunction = (e: JQuery<HTMLElement>) => JQuery<HTMLElement>
-const PRELOAD_GAP = Duration.fromSeconds(20)
-
 export class JPlayerPlaylist {
   private playlist: PlaylistItem[]
   private current: number
@@ -31,20 +21,6 @@ export class JPlayerPlaylist {
     this.playlist = []
     this.current = 0
     this.removing = false
-  }
-
-  currentIndex(): number {
-    return this.current
-  }
-
-  songs(): readonly Song[] {
-    return this.playlist.map(e => e.song)
-  }
-  length(): number {
-    return this.playlist.length
-  }
-  getSong(index: number): Song {
-    return this.playlist[index].song
   }
 
   static create(player: Player): JPlayerPlaylist {
@@ -61,6 +37,11 @@ export class JPlayerPlaylist {
     return result
   }
 
+  currentIndex(): number {return this.current}
+  songs(): readonly Song[] {return this.playlist.map(e => e.song)}
+  length(): number {return this.playlist.length}
+  getSong(index: number): Song {return this.playlist[index].song}
+
   async setPlaylist(playlist: readonly Song[]): Promise<void> {
     this.initPlaylist(playlist)
     this.init(true)
@@ -70,11 +51,11 @@ export class JPlayerPlaylist {
     if (Array.isArray(song)) {
       for (const s of song)
         await this.add(s)
-      return Promise.resolve()
+      return
     }
     if (this.playlist.some(e => e.song.file === song.file)) {
       console.log(`Entry ${song.file} already exists in playlist; skipping`)
-      return Promise.resolve()
+      return
     }
     const playlistUl = $(PLAYLIST + " ul")
     const item = PlaylistItem.create(song)
@@ -90,10 +71,8 @@ export class JPlayerPlaylist {
 
     if (playNow)
       return this.play(this.playlist.length - 1)
-    else if (this.playlist.length === 1)
+    if (this.playlist.length === 1)
       return this.select(0)
-    else
-      return Promise.resolve()
   }
 
   removeItem(index: number, type: RemoveType): void {
@@ -103,6 +82,42 @@ export class JPlayerPlaylist {
       .with("up", () => x => x.prev())
       .with("down", () => x => x.next())
       .exhaustive())
+  }
+
+  async select(index: number): Promise<void> {
+    if (index < 0)
+      return arguments.callee(this.playlist.length + index)
+    // index relates to end of array.
+    if (index < this.playlist.length) {
+      this.current = index
+      this.markCurrent()
+      return Local.maybePreLoad(this.getSong(this.current)).then(e => gplayer.load(e))
+    }
+
+    this.current = 0
+    return new Promise(f => f())
+  }
+
+  async play(index: number): Promise<void> {
+    if (index < 0)
+      return arguments.callee(this.playlist.length + index)
+    // index relates to end of array.
+    if (index < this.playlist.length && this.playlist.length)
+      return this.select(index).then(() => gplayer.playCurrentSong())
+  }
+
+  async next(): Promise<void> {
+    // This can happen when next is invoke manually. In normal operation, the next song pre-loaded
+    // when the current song is about to end.
+    return this.isLastSongPlaying()
+      ? DataApi.getRandomSong().then(song => this.add(song, true))
+      : this.play(this.current + 1)
+  }
+
+  previous(): void {
+    const index = (this.current - 1 >= 0) ? this.current - 1 : this.playlist.length - 1
+    if (index < this.playlist.length - 1)
+      this.play(index)
   }
 
   // This works with elements instead of indices, since the indices shift on removal, but going
@@ -133,42 +148,6 @@ export class JPlayerPlaylist {
       if (onEnd)
         onEnd()
     })
-  }
-
-  async select(index: number): Promise<void> {
-    if (index < 0)
-      return arguments.callee(this.playlist.length + index)
-    // index relates to end of array.
-    if (index < this.playlist.length) {
-      this.current = index
-      this.markCurrent()
-      return Local.maybePreLoad(this.getSong(this.current)).then(e => gplayer.load(e))
-    } else {
-      this.current = 0
-      return new Promise(f => f())
-    }
-  }
-
-  async play(index: number): Promise<void> {
-    if (index < 0)
-      return arguments.callee(this.playlist.length + index)
-    // index relates to end of array.
-    if (index < this.playlist.length && this.playlist.length)
-      return this.select(index).then(() => gplayer.playCurrentSong())
-  }
-
-  async next(): Promise<void> {
-    // This can happen when next is invoke manually. In normal operation, the next song pre-loaded
-    // when the current song is about to end.
-    return this.isLastSongPlaying()
-      ? DataApi.getRandomSong().then(song => this.add(song, true))
-      : this.play(this.current + 1)
-  }
-
-  previous(): void {
-    const index = (this.current - 1 >= 0) ? this.current - 1 : this.playlist.length - 1
-    if (index < this.playlist.length - 1)
-      this.play(index)
   }
 
   private init(instant: boolean): void {
@@ -220,16 +199,11 @@ export class JPlayerPlaylist {
     aux(this.playlist[index].element)
   }
 
-  private isLastSongPlaying(): boolean {
-    return this.current === this.playlist.length - 1
-  }
+  private isLastSongPlaying(): boolean {return this.current === this.playlist.length - 1}
 
-  maybePreloadNextSong(tu: TimeUpdate): Promise<void> {
-    return (
-      this.isLastSongPlaying() && PRELOAD_GAP.isGreaterThanOrEqual(tu.remainingDuration())
-        ? DataApi.getRandomSong().then(song => this.add(song, false))
-        : Promise.resolve()
-    )
+  private async maybePreloadNextSong(tu: TimeUpdate): Promise<void> {
+    if (this.isLastSongPlaying() && PRELOAD_GAP.isGreaterThanOrEqual(tu.remainingDuration()))
+      await DataApi.getRandomSong().then(song => this.add(song, false))
   }
 
   private markCurrent(): void {
@@ -237,4 +211,13 @@ export class JPlayerPlaylist {
     this.playlist[this.current].element.addClass(PLAYLIST_CURRENT)
   }
 }
+
+const ADD_TIME = 'fast'
+const REMOVE_TIME = 'fast'
+const PLAYLIST = ".jp-playlist"
+const DISPLAY_TIME = 'slow'
+const PLAYLIST_CURRENT = "jp-playlist-current"
+
+type RemoveFunction = (e: JQuery<HTMLElement>) => JQuery<HTMLElement>
+const PRELOAD_GAP = Duration.fromSeconds(20)
 
