@@ -1,5 +1,5 @@
 import * as ColorUtils from "./color-utils.js"
-import {GuiEvents, PlayerSetup} from "./events.js"
+import {GuiEvents, Startup} from "./events.js"
 import {Song} from "./media.js"
 
 export const PLAYLIST_NAME_KEY = "playlist_name"
@@ -44,7 +44,7 @@ waitForElem("#jp_poster_0").then(p => $(p)).then(poster => {
     document.body.style.backgroundColor = color.toString()
     rgbListeners.forEach(l => l(color))
   })
-  GuiEvents.listen(PlayerSetup, ps =>
+  GuiEvents.listen(Startup, ps =>
     ps.player.listen(pe => {
       if (pe instanceof Song) {
         setImage(pe.poster)

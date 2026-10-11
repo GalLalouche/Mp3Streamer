@@ -1,5 +1,5 @@
 /**
- * Playlist and player events. For the individual components like external, lyrics, etc. look to
+ * Playlist and player PubSub topics. For the individual components (external, lyrics, etc.) look to
  * those modules specifically.
  *
  * Exists to decouple the GUI from the player and playlist logic.
@@ -14,15 +14,14 @@ import {Volume} from "./volume.js"
 
 export const GuiEvents: PubSub = new PubSub()
 
-interface PlayerSetup {
-  player: Player
-  playlist: Playlist
-}
-export const PlayerSetup = topic<PlayerSetup>("player_setup")
+/**********
+* Startup *
+**********/
+export const Startup = topic<{player: Player, playlist: Playlist}>("startup")
 
-export type RemoveType = "x" | "up" | "down"
-export type PlaylistClickType = "select" | RemoveType
-
+/*********
+* Player *
+*********/
 export class Seek {
   readonly percentage: Percentage
 
@@ -34,16 +33,21 @@ export class Seek {
 export type PlayerControls = "play" | "pause" | "stop" | Volume | Seek
 export const PlayerControlsTopic = topic<PlayerControls>("player_controls")
 
-export interface PlaylistClicks {
-  readonly type: PlaylistClickType
+/***********
+* Playlist *
+************/
+export type RemoveType = "x" | "up" | "down"
+export type PlaylistItemClickType = "select" | RemoveType
+export interface PlaylistItemClick {
+  readonly type: PlaylistItemClickType
   readonly index: number
 }
-export type PlaylistEvent = PlaylistClicks | "next" | "previous"
+export type PlaylistEvent = PlaylistItemClick | "next" | "previous"
 export const PlaylistEventTopic = topic<PlaylistEvent>("playlist_event")
 
-interface PlaylistContextMenuEvent {
+interface PlaylistItemContextMenuEvent {
   readonly type: "external" | "score"
   readonly song: Song
 }
-export const PlaylistContextMenuEventTopic = topic<PlaylistContextMenuEvent>("playlist_context_menu_event")
+export const PlaylistContextMenuEventTopic = topic<PlaylistItemContextMenuEvent>("playlist_context_menu_event")
 

@@ -2,7 +2,7 @@ import * as API from './api.js'
 import {Song} from "./media.js"
 import {gplaylist} from "./player_singleton.js"
 import * as Poster from "./poster.js"
-import {GuiEvents, PlayerSetup, PlaylistContextMenuEventTopic} from './events.js'
+import {GuiEvents, Startup, PlaylistContextMenuEventTopic} from './events.js'
 import {match} from 'ts-pattern'
 
 async function refreshRemote(song: Song): Promise<void> {
@@ -19,7 +19,7 @@ async function refreshRemote(song: Song): Promise<void> {
 }
 
 $(function () {
-  GuiEvents.listen(PlayerSetup, ps =>
+  GuiEvents.listen(Startup, ps =>
     ps.player.listen(pe => {
       if (pe instanceof Song)
         show(pe)

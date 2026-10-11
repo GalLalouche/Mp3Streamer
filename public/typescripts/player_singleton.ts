@@ -1,6 +1,6 @@
 import {match, P} from "ts-pattern"
 import {Duration, Percentage} from "./common_types.js"
-import {GuiEvents, PlayerControls, PlayerControlsTopic, PlayerSetup, PlaylistEventTopic, RemoveType, Seek} from "./events.js"
+import {GuiEvents, PlayerControls, PlayerControlsTopic, Startup, PlaylistEventTopic, RemoveType, Seek} from "./events.js"
 import {HtmlPlayer} from "./html_player.js"
 import {JPlayerPlaylist} from "./jplayer.playlist.js"
 import {Song} from "./media.js"
@@ -148,5 +148,5 @@ function makePlaylist(player: Player): Playlist {
 $(function () {
   gplayer = SingletonPlayer.from(HtmlPlayer.create())
   gplaylist = makePlaylist(gplayer)
-  GuiEvents.publish(PlayerSetup, {player: gplayer, playlist: gplaylist})
+  GuiEvents.publish(Startup, {player: gplayer, playlist: gplaylist})
 })

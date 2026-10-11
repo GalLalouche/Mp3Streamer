@@ -1,6 +1,6 @@
 // TODO use enums and use Object.values to get this list for the drop down list.
 import * as API from "./api.js"
-import {GuiEvents, PlayerSetup, PlaylistContextMenuEventTopic} from "./events.js"
+import {GuiEvents, Startup, PlaylistContextMenuEventTopic} from "./events.js"
 import {Song} from "./media.js"
 import {gplaylist} from "./player_singleton.js"
 
@@ -18,7 +18,7 @@ $(function () {
     if (e.type === "score")
       popup(e.song)
   })
-  GuiEvents.listen(PlayerSetup, ps =>
+  GuiEvents.listen(Startup, ps =>
     ps.player.listen(pe => {
       if (pe instanceof Song)
         show(pe)

@@ -1,5 +1,5 @@
 import {Percentage} from "./common_types.js"
-import {GuiEvents, PlayerControls, PlayerControlsTopic, PlaylistClickType, PlaylistContextMenuEventTopic, PlaylistEvent, PlaylistEventTopic, RemoveType, Seek} from "./events.js"
+import {GuiEvents, PlayerControls, PlayerControlsTopic, PlaylistItemClickType, PlaylistContextMenuEventTopic, PlaylistEvent, PlaylistEventTopic, RemoveType, Seek} from "./events.js"
 import {Song} from "./media.js"
 import {Volume} from "./volume.js"
 
@@ -67,7 +67,7 @@ $(function () {
       }
     }
 
-    const publish = (type: PlaylistClickType) =>
+    const publish = (type: PlaylistItemClickType) =>
       GuiEvents.publish(PlaylistEventTopic, {type: type, index: clickedIndex})
     const removeButton = target.closest("a." + REMOVE_ITEM)
     if (removeButton.length > 0)
