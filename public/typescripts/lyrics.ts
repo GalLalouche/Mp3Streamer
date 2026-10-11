@@ -21,7 +21,7 @@ function show(song: Song): void {
   })
 }
 
-const getHelper = lazy(() => new Helper())
+const getHelper = lazy(() => Helper.create())
 
 async function getLyrics(song: Song): Promise<string> {
   return API.get("lyrics/" + song.file).then(e => e as unknown as string)
@@ -30,37 +30,52 @@ async function getLyrics(song: Song): Promise<string> {
 const HEBREW_REGEX = /[\u0590-\u05FF]/
 
 class Helper {
-  readonly lyricsDiv
-  readonly lyricBox
-  readonly lyricsContent
-  readonly lyricsUrlBox
+  readonly lyricsDiv: JQuery<HTMLElement>
+  readonly lyricBox: JQuery<HTMLElement>
+  readonly lyricsContent: JQuery<HTMLElement>
+  readonly lyricsUrlBox: JQuery<HTMLElement>
 
   previousContent = ""
   autoScroll = false
   scrollBaseline = 0
   timeBaseline = 0
 
-  constructor() {
-    this.lyricsDiv = $('#lyrics')
+  constructor(
+    lyricsDiv: JQuery<HTMLElement>,
+    lyricBox: JQuery<HTMLElement>,
+    lyricsContent: JQuery<HTMLElement>,
+    lyricsUrlBox: JQuery<HTMLElement>,
+  ) {
+    this.lyricsDiv = lyricsDiv
+    this.lyricBox = lyricBox
+    this.lyricsContent = lyricsContent
+    this.lyricsUrlBox = lyricsUrlBox
+  }
+
+  static create(): Helper {
+    const lyricsDiv = $('#lyrics')
     // Wraps the actual lyrics with an extra div. Ensures the scroll bar is always on the right regardless of
     // text direction, and that there is a margin between the lyrics with the bar. Also ensures the bar is only
     // on the lyrics, not the buttons and text box.
-    this.lyricBox = div({id: 'lyric-box'}).appendTo(this.lyricsDiv)
-    this.lyricsContent = div({id: 'lyric-contents'}).appendTo(this.lyricBox)
-    this.lyricsDiv.appendBr()
-    const lyricsPusher = div().appendTo(this.lyricsDiv)
-    this.lyricsUrlBox = $("<input id='lyrics-url' placeholder='Lyrics URL' type='text'/>").appendTo(lyricsPusher)
+    const lyricBox = div({id: 'lyric-box'}).appendTo(lyricsDiv)
+    const lyricsContent = div({id: 'lyric-contents'}).appendTo(lyricBox)
+    lyricsDiv.appendBr()
+    const lyricsPusher = div().appendTo(lyricsDiv)
+    const lyricsUrlBox = $("<input id='lyrics-url' placeholder='Lyrics URL' type='text'/>").appendTo(lyricsPusher)
     const updateLyricsButton = button("Update lyrics").appendTo(lyricsPusher)
-    const instrumentalSongButton = button("Instr. Song").appendTo(lyricsPusher)
-    const instrumentalArtistButton = button("Instr. Artist").appendTo(lyricsPusher)
+
+    const result = new Helper(lyricsDiv, lyricBox, lyricsContent, lyricsUrlBox)
+
     validateBoxAndButton(
-      this.lyricsUrlBox,
+      lyricsUrlBox,
       updateLyricsButton,
       isValidUrl,
-      this.updateLyrics.bind(this),
+      () => result.updateLyrics(),
     )
 
-    this.lyricsUrlBox.keyup(function () { // the validateBoxAndButton only applies to updateLyricsButton
+    const instrumentalSongButton = button("Instr. Song").appendTo(lyricsPusher)
+    const instrumentalArtistButton = button("Instr. Artist").appendTo(lyricsPusher)
+    lyricsUrlBox.on('keyup', function () { // the validateBoxAndButton only applies to updateLyricsButton
       const box = $(this)
 
       function disable(b: JQuery<HTMLElement>): void {
@@ -71,31 +86,30 @@ class Helper {
       disable(instrumentalSongButton)
     })
 
-    const that = this
-
     function setInstrumental(type: string): void {
       $.post(
         `lyrics/instrumental/${type}/${gplaylist.currentPlayingSong().file}`,
-        s => that.showLyrics(s as string),
+        s => result.showLyrics(s as string),
       )
     }
 
-    instrumentalSongButton.click(() => setInstrumental("song"))
-    instrumentalArtistButton.click(() => setInstrumental("artist"))
+    instrumentalSongButton.on('click', () => setInstrumental("song"))
+    instrumentalArtistButton.on('click', () => setInstrumental("artist"))
 
 
-    const scrollableElement = this.lyricBox
+    const scrollableElement = result.lyricBox
 
 
-    setInterval(this.scrollLyrics.bind(this), 100)
+    setInterval(() => result.scrollLyrics(), 100)
 
-    scrollableElement.scroll(function () { // When the user scrolls manually, reset the baselines
-      if (that.autoScroll.isFalse()) {
-        that.scrollBaseline = scrollableElement.scrollTop()!
-        that.timeBaseline = that.scrollBaseline && gplayer.percentageOfSongPlayed().zeroToHundred()
+    scrollableElement.on('scroll', function () { // When the user scrolls manually, reset the baselines
+      if (result.autoScroll.isFalse()) {
+        result.scrollBaseline = scrollableElement.scrollTop()!
+        result.timeBaseline = result.scrollBaseline && gplayer.percentageOfSongPlayed().zeroToHundred()
       }
-      that.autoScroll = false
+      result.autoScroll = false
     })
+    return result
   }
   updateLyrics(): void {
     const url = this.lyricsUrlBox.val() as string
