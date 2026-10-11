@@ -9,7 +9,7 @@ import {PlayerEvent, TimeUpdate} from "./player.js"
 import {Player} from "./player.js"
 import {Duration} from "./common_types.js"
 import {PlaylistItem} from "./playlist_item.js"
-import {RemoveType} from "./gui_events.js"
+import {RemoveType} from "./events.js"
 
 
 export class JPlayerPlaylist {

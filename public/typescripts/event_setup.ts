@@ -1,5 +1,5 @@
 import {Percentage} from "./common_types.js"
-import {GuiEvents, PlayerControls, PlayerControlsTopic, PlaylistClickType, PlaylistContextMenuEventTopic, PlaylistEvent, PlaylistEventTopic, RemoveType, Seek} from "./gui_events.js"
+import {GuiEvents, PlayerControls, PlayerControlsTopic, PlaylistClickType, PlaylistContextMenuEventTopic, PlaylistEvent, PlaylistEventTopic, RemoveType, Seek} from "./events.js"
 import {Song} from "./media.js"
 import {Volume} from "./volume.js"
 

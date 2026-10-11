@@ -1,4 +1,4 @@
-import {RemoveType} from "./gui_events.js"
+import {RemoveType} from "./events.js"
 import {Song} from "./media.js"
 
 export abstract class Playlist {

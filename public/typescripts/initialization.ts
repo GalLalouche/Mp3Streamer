@@ -1,5 +1,5 @@
 import * as DataApi from "./data_api.js"
-import {GuiEvents, PlayerSetup} from "./gui_events.js"
+import {GuiEvents, PlayerSetup} from "./events.js"
 
 export const isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) !== null
 

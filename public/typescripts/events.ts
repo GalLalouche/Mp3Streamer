@@ -14,7 +14,6 @@ import {Volume} from "./volume.js"
 
 export const GuiEvents: PubSub = new PubSub()
 
-// FIXME this isn't a GUI event... perhaps this module should be renamed?
 interface PlayerSetup {
   player: Player
   playlist: Playlist

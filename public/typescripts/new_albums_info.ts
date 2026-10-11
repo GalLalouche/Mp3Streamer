@@ -1,5 +1,5 @@
 import * as API from "./api.js"
-import {GuiEvents, PlayerSetup} from "./gui_events.js"
+import {GuiEvents, PlayerSetup} from "./events.js"
 import {Album, Song} from "./media.js"
 
 GuiEvents.listen(PlayerSetup, ps =>

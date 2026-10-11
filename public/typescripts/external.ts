@@ -2,7 +2,7 @@ import * as API from './api.js'
 import {Song} from "./media.js"
 import {gplaylist} from "./player_singleton.js"
 import * as Poster from "./poster.js"
-import {GuiEvents, PlayerSetup, PlaylistContextMenuEventTopic} from './gui_events.js'
+import {GuiEvents, PlayerSetup, PlaylistContextMenuEventTopic} from './events.js'
 import {match} from 'ts-pattern'
 
 async function refreshRemote(song: Song): Promise<void> {

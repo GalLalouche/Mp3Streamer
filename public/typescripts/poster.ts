@@ -1,5 +1,5 @@
 import * as ColorUtils from "./color-utils.js"
-import {GuiEvents, PlayerSetup} from "./gui_events.js"
+import {GuiEvents, PlayerSetup} from "./events.js"
 import {Song} from "./media.js"
 
 export const PLAYLIST_NAME_KEY = "playlist_name"
