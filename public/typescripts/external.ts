@@ -69,8 +69,8 @@ class Helper {
         .appendTo(this.externalAlbum)
     this.externalAlbum.appendBr()
     const updateReconButton = button("Update Recon").appendTo(this.externalDivs)
-    button("Refresh").appendTo(this.externalArtist).click(this.refresh("Artist").bind(this))
-    button("Refresh").appendTo(this.externalAlbum).click(this.refresh("Album").bind(this))
+    button("Refresh").appendTo(this.externalArtist).on('click', this.refresh("Artist").bind(this))
+    button("Refresh").appendTo(this.externalAlbum).on('click', this.refresh("Album").bind(this))
     // Update recon on pressing Enter
     validateBoxAndButton(
       $(".external-recon-id"),

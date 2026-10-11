@@ -24,7 +24,7 @@ function show(song: Song): void {
 
     const ul = $("<ul>")
     const ignoreArtistButton = button("Ignore artist")
-    ignoreArtistButton.click(() => ignoreArtist(song))
+    ignoreArtistButton.on('click', () => ignoreArtist(song))
     ul.append(ignoreArtistButton)
     albums.slice(0, 5).forEach(function (album) {
       const albumDate = new Date(album.date)
@@ -73,7 +73,7 @@ function show(song: Song): void {
       : `<br/>${e.responseText}`
     fieldSet.append(elem("legend", `Fetching new albums FAILED... ${errorMessage}`))
     const ignoreArtistButton = button("Ignore artist")
-    ignoreArtistButton.click(() => ignoreArtist(song))
+    ignoreArtistButton.on('click', () => ignoreArtist(song))
     fieldSet.append(ignoreArtistButton)
   })
 }

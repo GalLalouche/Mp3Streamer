@@ -8,7 +8,7 @@ import * as PlaylistCustomizations from "./media_metadata.js"
 export async function quickSearch(): Promise<void> {
   const helper = getHelper()
   helper.clearResults()
-  helper.searchBox.focus()
+  helper.searchBox.trigger('focus')
   return scan()
 }
 
@@ -78,9 +78,9 @@ class Helper {
     this.clearResults()
     this.searchBox
       .after(button("Scan+")
-        .click(() => scanPlus())
+        .on('click', () => scanPlus())
         .attr("title", "Like Scan, but add the last new album to the playlist"))
-      .after(button("Scan").click(() => scan()))
+      .after(button("Scan").on('click', () => scan()))
   }
 
   updateTimeOfLastInput(): number {
@@ -112,7 +112,7 @@ class Helper {
         const li = $(`<li class="${name}-result search-result">${itemProducer(e)}</li>`)
         li.appendTo(ul).data(e)
         li.attr("title", "")
-        li.mouseover(function () {
+        li.on('mouseover', function () {
           if (isNullable(li.attr('title')) && li.custom_overflown())
             li.custom_tooltip(`${itemProducer(e).split(">").custom_last().trim()}`)
         })
@@ -198,7 +198,7 @@ class Helper {
     const INPUT_TIMEOUT_IN_MILLIS = 10000
     setInterval(function () {
       if (Date.now() - result.timeOfLastInput > INPUT_TIMEOUT_IN_MILLIS)
-        result.searchBox.blur()
+        result.searchBox.trigger('blur')
     }, INPUT_TIMEOUT_IN_MILLIS)
 
     function search() {
@@ -211,7 +211,7 @@ class Helper {
       searchApi(text).then(e => result.setResults(e, searchTime))
     }
 
-    result.searchBox.bind('input change', search)
+    result.searchBox.on('input change', search)
 
     // When Enter is pressed and there is a *single* search result in the active tab, click it.
     result.searchBox.on("keydown", function (e) {
@@ -222,7 +222,7 @@ class Helper {
       if (items.length !== 1)
         return
       // Click the first icon on the item list.
-      items.first().find("i").first().click()
+      items.first().find("i").first().trigger('click')
       result.clearResults()
     })
 

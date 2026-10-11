@@ -117,9 +117,9 @@ function validateBoxAndButton(
       buttonFunction()
   }
 
-  button.click(() => runIfEnabled())
+  button.on('click', () => runIfEnabled())
   button.prop('disabled', true)
-  textBox.keyup(function (event) {
+  textBox.on('keyup', function (event) {
     if (event.keyCode === ENTER_CODE)
       runIfEnabled()
     else

@@ -34,7 +34,7 @@ GuiEvents.listen(Startup, ps => {
   const debugStartSong = getSearchParam("addSong")
   const debugStartAlbum = getSearchParam("addAlbum")
 
-  $(isMuted() ? ".jp-mute" : ".jp-volume-max").click()
+  $(isMuted() ? ".jp-mute" : ".jp-volume-max").trigger('click')
 
   if (debugStartSong) {
     console.log(`Adding debug song <${debugStartSong}>`)

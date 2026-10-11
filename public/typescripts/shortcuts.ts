@@ -4,7 +4,7 @@ import {gplayer, gplaylist} from "./player_singleton.js"
 import * as Search from "./search.js"
 
 $(function () {
-  $(document).keypress(async function (e) {
+  $(document).on('keypress', async function (e) {
     {
       const tag = (e.target as any).tagName.toLowerCase()
       const isFromInput = tag === 'input' || tag === 'textarea'
