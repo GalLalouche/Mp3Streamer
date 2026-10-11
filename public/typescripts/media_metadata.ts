@@ -1,8 +1,3 @@
-// Since jplayer.playlist.js is too freaking big, this extracts (some of) my customization.
-// FIXME merge this and the original playlist, rewrite the whole thing in typescript.
-//  Actually, this is only used for the metadata HTML? That's not a half-bad cohesive module. Should
-//  probably be renamed though.
-
 import {Song} from "./media.js"
 
 export function mediaMetadataHtml(song: Song): string {
@@ -30,10 +25,9 @@ function formattedMetadata(song: Song): string {
   return `${head}, <span dir="ltr">${res.join(", ")}</span>`
 }
 
-function isClassicalPiece(song: Song): boolean {return isNonNullable(song.composer)}
-
 function additionalData(song: Song): string[] {
-  if (isClassicalPiece(song).isFalse())
+  const isClassicalPiece = isNonNullable(song.composer)
+  if (isClassicalPiece.isFalse())
     return [
       `${song.albumName}${song.discNumber ? "[" + song.discNumber + "]" : ""}`,
       song.track.toString(),

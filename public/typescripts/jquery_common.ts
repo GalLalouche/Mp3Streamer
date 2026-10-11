@@ -107,7 +107,8 @@ const tr = elemFactory('tr')
  *                       the 'Enter' (<CR>) key is pressed while modifying the textbox(es)
  */
 function validateBoxAndButton(
-  textBox: JQuery<HTMLElement>, button: JQuery<HTMLElement>,
+  textBox: JQuery<HTMLElement>,
+  button: JQuery<HTMLElement>,
   validationFunction: (s: string) => boolean,
   buttonFunction: () => void,
 ): void {

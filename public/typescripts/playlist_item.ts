@@ -1,5 +1,5 @@
 import {Song} from "./media.js"
-import {mediaMetadataHtml} from "./playlist_customizations.js"
+import {mediaMetadataHtml} from "./media_metadata.js"
 import * as ColorUtils from "./color-utils.js"
 import {ITEM_CLASS, REMOVE_DOWN, REMOVE_ITEM, REMOVE_THIS, REMOVE_UP} from "./gui_events.js"
 

@@ -3,7 +3,7 @@ import * as DataApi from "./data_api.js"
 import * as LastAlbum from "./last.js"
 import {Album, Artist, Song} from "./media.js"
 import {gplaylist} from "./player_singleton.js"
-import * as PlaylistCustomizations from "./playlist_customizations.js"
+import * as PlaylistCustomizations from "./media_metadata.js"
 
 export async function quickSearch(): Promise<void> {
   const helper = getHelper()
