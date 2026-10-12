@@ -5,6 +5,7 @@
  * Exists to decouple the GUI from the player and playlist logic.
  */
 import {Percentage} from "./common_types.js"
+import {Deferred} from "./deferred.js"
 import {Song} from "./media.js"
 import {Player} from "./player.js"
 import {Playlist} from "./playlist.js"
@@ -17,7 +18,7 @@ export const GuiEvents: PubSub = new PubSub()
 /**********
 * Startup *
 **********/
-export const Startup = topic<{player: Player, playlist: Playlist}>("startup")
+export const Startup = new Deferred<{player: Player, playlist: Playlist}>()
 
 /*********
 * Player *

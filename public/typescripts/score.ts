@@ -18,7 +18,7 @@ $(function () {
     if (e.type === "score")
       popup(e.song)
   })
-  GuiEvents.listen(Startup, ps =>
+  Startup.promise.then(ps =>
     ps.player.listen(pe => {
       if (pe instanceof Song)
         show(pe)

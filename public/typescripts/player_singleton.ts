@@ -141,5 +141,5 @@ function makePlaylist(player: Player): Playlist {
 $(function () {
   gplayer = SingletonPlayer.from(HtmlPlayer.create())
   gplaylist = makePlaylist(gplayer)
-  GuiEvents.publish(Startup, {player: gplayer, playlist: gplaylist})
+  Startup.resolve({player: gplayer, playlist: gplaylist})
 })

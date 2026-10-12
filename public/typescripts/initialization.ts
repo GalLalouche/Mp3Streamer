@@ -1,5 +1,5 @@
 import * as DataApi from "./data_api.js"
-import {GuiEvents, Startup} from "./events.js"
+import {Startup} from "./events.js"
 
 export const isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) !== null
 
@@ -29,8 +29,7 @@ if (window.history && history.pushState) {
   })
 }
 
-GuiEvents.listen(Startup, ps => {
-  const playlist = ps.playlist
+Startup.promise.then(({playlist}) => {
   const debugStartSong = getSearchParam("addSong")
   const debugStartAlbum = getSearchParam("addAlbum")
 

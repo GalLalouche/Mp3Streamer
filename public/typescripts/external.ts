@@ -19,7 +19,7 @@ async function refreshRemote(song: Song): Promise<void> {
 }
 
 $(function () {
-  GuiEvents.listen(Startup, ps =>
+  Startup.promise.then(ps =>
     ps.player.listen(pe => {
       if (pe instanceof Song)
         show(pe)

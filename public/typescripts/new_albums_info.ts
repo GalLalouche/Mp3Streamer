@@ -1,8 +1,8 @@
 import * as API from "./api.js"
-import {GuiEvents, Startup} from "./events.js"
+import {Startup} from "./events.js"
 import {Album, Song} from "./media.js"
 
-GuiEvents.listen(Startup, ps =>
+Startup.promise.then(ps =>
   ps.player.listen(pe => {
     if (pe instanceof Song)
       show(pe)
