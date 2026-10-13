@@ -67,7 +67,7 @@ $(function () {
     }
 
 
-    return DataApi.nextSong(gplaylist.last()).then(song => gplaylist.add(song, false))
+    return DataApi.nextSong(gplaylist.last()).then(song => gplaylist.add(song).void())
   }
 
   $(document).on("click", ".poster", () => gplayer.togglePause())

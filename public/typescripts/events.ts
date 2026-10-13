@@ -38,7 +38,7 @@ export const PlayerControlsTopic = topic<PlayerControls>("player_controls")
 * Playlist *
 ************/
 
-export type PlaylistEvent = "next" | "previous"
+export type PlaylistEvent = "next" | "previous" | Song
 export const PlaylistEventTopic = topic<PlaylistEvent>("playlist_event")
 
 interface PlaylistItemContextMenuEvent {

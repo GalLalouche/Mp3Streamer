@@ -1,12 +1,13 @@
 import {match} from "ts-pattern"
 import {Events, PlaylistEventTopic} from "./events.js"
+import {Duration} from "./common_types.js"
 import * as DataApi from "./data_api.js"
+import * as Local from "./local.js"
 import {HtmlPlaylist} from "./html_playlist.js"
 import {Song} from "./media.js"
 import {PlayerEvent, TimeUpdate} from "./player.js"
 import {Player} from "./player.js"
 import {Playlist} from "./playlist.js"
-import {Duration} from "./common_types.js"
 
 export function makePlaylist(player: Player): Playlist {
   const pl: HtmlPlaylist = HtmlPlaylist.create()
@@ -16,8 +17,20 @@ export function makePlaylist(player: Player): Playlist {
     override songs() {return pl.songs()}
     override getSong(index: number) {return pl.getSong(index)}
     override length() {return pl.length()}
-    override add(song: Song | readonly Song[], playNow: boolean): Promise<void> {
-      return pl.add(song, playNow)
+    override async add(song: Song | readonly Song[]): Promise<number> {
+      if (song instanceof Song) {
+        await Local.maybePreLoad(song)
+        pl.add(song)
+        return pl.currentIndex()
+      }
+
+      let current = null
+      for (const s of song) {
+        await this.add(s)
+        if (current === null)
+          current = pl.currentIndex()
+      }
+      return current ?? pl.currentIndex()
     }
     override async next(): Promise<void> {
       if (pl.next().isFalse()) {
@@ -28,28 +41,26 @@ export function makePlaylist(player: Player): Playlist {
     override prev() {return pl.previous()}
     override clear(): Promise<void> {return pl.setPlaylist([])}
     override async select(index: number): Promise<void> {
-      // This check is here since the JPlayerPlaylist actually does need to support selecting the
-      // current song (for some reason). FIXME Probably a bug, should be fixed.
-      if (pl.currentIndex() !== index)
-        await pl.select(index)
+      await Local.maybePreLoad(pl.getSong(index))
+      pl.select(index)
     }
   }
+
   Events.listen(PlaylistEventTopic, event => {
     match(event)
       .with('next', () => result.next())
       .with('previous', () => result.prev())
-      .exhaustive()
   })
-  // Can't use ts-pattern here since Song's constructor is private
+
   async function maybePreloadNextSong(tu: TimeUpdate): Promise<void> {
     if (pl.isLastSongPlaying() && PRELOAD_GAP.isGreaterThanOrEqual(tu.remainingDuration()))
       await addNextRandomSong()
   }
   async function addNextRandomSong(): Promise<void> {
-    return DataApi.getRandomSong().then(song => result.add(song, false))
+    return DataApi.getRandomSong().then(song => result.add(song)).void()
   }
   player.listen((e: PlayerEvent) => {
-
+    // Can't use ts-pattern here since Song's constructor is private
     if (e === "ENDED")
       result.next()
     else if (e instanceof TimeUpdate)

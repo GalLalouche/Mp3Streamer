@@ -2,7 +2,7 @@ import * as API from "./api.js"
 import * as DataApi from "./data_api.js"
 import * as LastAlbum from "./last.js"
 import {Album, Artist, Song} from "./media.js"
-import {gplaylist} from "./globals.js"
+import {addAndPlayNow, gplaylist} from "./globals.js"
 import * as PlaylistCustomizations from "./media_metadata.js"
 
 export async function quickSearch(): Promise<void> {
@@ -53,21 +53,22 @@ class Helper {
   constructor() {
     function getData(e: HTMLElement): any {return $(e).closest("li").data()}
 
-    this.results.on("click", '#song-results .fa', function (e) {
-      const song = getData(this)
+    this.results.on("click", '#song-results .fa', async function (e) {
+      const songData = getData(this)
       const isPlay = e.target.classList.contains("fa-play")
-      DataApi.getSong(song.file).then(e => gplaylist.add(e, isPlay))
+      const song = await DataApi.getSong(songData.file)
+      return isPlay ? addAndPlayNow(song) : gplaylist.add(song)
     })
     this.results.on("click", `.album-result .fa-${ADD_ENTIRE_ALBUM}`, function (e) {
       if (e.target !== this) // Prevents clicks on anything other than that selector.
         return
       const album = getData(this)
-      DataApi.getAlbum(album.dir).then(e => gplaylist.add(e, false))
+      DataApi.getAlbum(album.dir).then(e => gplaylist.add(e))
     })
     this.results.on("click", `.album-result .fa-${ADD_DISC}`, function () {
       const album = getData(this)
       const discNumber = $(this).closest("td").text()
-      dataDisc(album, discNumber).then(e => gplaylist.add(e, false))
+      dataDisc(album, discNumber).then(e => gplaylist.add(e))
     })
     this.results.on("click", `.album-result .fa-${DOWNLOAD_FILE}`, function () {
       download(getData(this))
@@ -124,20 +125,20 @@ class Helper {
     this.setTime(requestTime)
 
     specificResults("songs", function (song: Song) {
-        function suffix() {
-          if (isNullable(song.composer)) // Assumes all classical pieces have a composer field.
-            return `${song.artistName}: ${song.title} (${song.duration.timeFormat()})`
+      function suffix() {
+        if (isNullable(song.composer)) // Assumes all classical pieces have a composer field.
+          return `${song.artistName}: ${song.title} (${song.duration.timeFormat()})`
 
-          // TODO handle code duplication of all the toStrings for composers
-          const albumNameContainsComposer = song.albumName.toLowerCase().includes(song.composer.toLowerCase())
-          const base = `${song.artistName}: ${song.title}`
-          const pieceTitle = albumNameContainsComposer ? song.albumName : `${song.composer}'s ${song.albumName}`
-          const opus = song.opus ? `, ${song.opus}` : ''
-          return `${base}, ${pieceTitle}${opus}`
-        }
+        // TODO handle code duplication of all the toStrings for composers
+        const albumNameContainsComposer = song.albumName.toLowerCase().includes(song.composer.toLowerCase())
+        const base = `${song.artistName}: ${song.title}`
+        const pieceTitle = albumNameContainsComposer ? song.albumName : `${song.composer}'s ${song.albumName}`
+        const opus = song.opus ? `, ${song.opus}` : ''
+        return `${base}, ${pieceTitle}${opus}`
+      }
 
-        return `${icon(ADD)} ${icon(PLAY)} ${suffix()}`
-      },
+      return `${icon(ADD)} ${icon(PLAY)} ${suffix()}`
+    },
     )
     $.each($(".song-result"), function () {
       const song = $(this).data() as Song

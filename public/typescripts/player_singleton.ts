@@ -1,6 +1,6 @@
 import {match, P} from "ts-pattern"
 import {Duration, Percentage} from "./common_types.js"
-import {Events, PlayerControls, PlayerControlsTopic, Seek} from "./events.js"
+import {Events, PlayerControls, PlayerControlsTopic, PlaylistEventTopic, Seek} from "./events.js"
 import {Song} from "./media.js"
 import * as PlayerGUI from "./player_gui.js"
 import {PlayerEvent, TimeUpdate} from "./player.js"
@@ -9,7 +9,7 @@ import {Volume} from "./volume.js"
 import {HtmlPlayer} from "./html_player.js"
 
 export function makePlayer(): Player {
-  const player: Player = HtmlPlayer.create()
+  const player = HtmlPlayer.create()
   const volume: ReplayGainAwareVolume = new ReplayGainAwareVolume()
 
   const result = new class extends Player {
@@ -62,6 +62,14 @@ export function makePlayer(): Player {
       .with(P.instanceOf(Volume), v => result.setVolume(v))
       .with(P.instanceOf(Seek), s => result.skipTo(result.duration().times(s.percentage.zeroToOne())))
       .exhaustive()
+  })
+  Events.listen(PlaylistEventTopic, event => {
+    const wasPlaying = result.isPaused().isFalse()
+    if (event instanceof Song) {
+      result.load(event)
+      if (wasPlaying)
+        result.playCurrentSong()
+    }
   })
   return result
 }
