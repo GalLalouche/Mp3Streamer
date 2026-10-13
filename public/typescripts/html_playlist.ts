@@ -11,7 +11,13 @@ import {Duration} from "./common_types.js"
 import {PlaylistItem, RemoveType} from "./playlist_item.js"
 
 
-export class JPlayerPlaylist {
+/**
+ * Handles the playlist via an HTML list.
+ *
+ * Also handles listening to song changes via clicks on the song elements, item removals, and
+ * pre-loading the next random song when the current song is about to end and it's the last one.
+ */
+export class HtmlPlaylist {
   private playlist: PlaylistItem[]
   private current: number
   private removing: boolean
@@ -22,12 +28,13 @@ export class JPlayerPlaylist {
     this.removing = false
   }
 
-  static create(player: Player): JPlayerPlaylist {
-    const result = new JPlayerPlaylist()
+  static create(player: Player): HtmlPlaylist {
+    const result = new HtmlPlaylist()
 
     result.init(false)
+    // FIXME this shouldn't be here.
     player.listen((e: PlayerEvent) => {
-        // Can't use ts-pattern here since Song's constructor is private
+      // Can't use ts-pattern here since Song's constructor is private
       if (e === "ENDED")
         result.next()
       else if (e instanceof TimeUpdate)
@@ -199,8 +206,8 @@ export class JPlayerPlaylist {
     const self = this
 
     function aux(current: JQuery<HTMLElement>): void {
+      // This has to be calculated before the removal, otherwise the current element is empty
       const next = nextFunction(current)
-      // This has to be calculated before the removal, otherwise the who element is empty
       self.remove(current, function () {
         // if there is another next element to remove,
         // enqueue a removal after this current element is removed

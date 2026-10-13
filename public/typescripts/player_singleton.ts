@@ -2,7 +2,7 @@ import {match, P} from "ts-pattern"
 import {Duration, Percentage} from "./common_types.js"
 import {GuiEvents, PlayerControls, PlayerControlsTopic, Startup, PlaylistEventTopic, Seek} from "./events.js"
 import {HtmlPlayer} from "./html_player.js"
-import {JPlayerPlaylist} from "./jplayer.playlist.js"
+import {HtmlPlaylist} from "./html_playlist.js"
 import {Song} from "./media.js"
 import * as PlayerGUI from "./player_gui.js"
 import {PlayerEvent, TimeUpdate} from "./player.js"
@@ -108,7 +108,7 @@ class ReplayGainAwareVolume {
 }
 
 function makePlaylist(player: Player): Playlist {
-  const pl: JPlayerPlaylist = JPlayerPlaylist.create(player)
+  const pl: HtmlPlaylist = HtmlPlaylist.create(player)
 
   const result = new class extends Playlist {
     override currentIndex() {return pl.currentIndex()}
