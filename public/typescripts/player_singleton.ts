@@ -1,6 +1,7 @@
 import {match, P} from "ts-pattern"
 import {Duration, Percentage} from "./common_types.js"
 import {GuiEvents, PlayerControls, PlayerControlsTopic, Startup, PlaylistEventTopic, Seek} from "./events.js"
+import * as DataApi from "./data_api.js"
 import {HtmlPlayer} from "./html_player.js"
 import {HtmlPlaylist} from "./html_playlist.js"
 import {Song} from "./media.js"
@@ -108,7 +109,7 @@ class ReplayGainAwareVolume {
 }
 
 function makePlaylist(player: Player): Playlist {
-  const pl: HtmlPlaylist = HtmlPlaylist.create(player)
+  const pl: HtmlPlaylist = HtmlPlaylist.create()
 
   const result = new class extends Playlist {
     override currentIndex() {return pl.currentIndex()}
@@ -118,7 +119,12 @@ function makePlaylist(player: Player): Playlist {
     override add(song: Song | readonly Song[], playNow: boolean): Promise<void> {
       return pl.add(song, playNow)
     }
-    override next() {return pl.next()}
+    override async next(): Promise<void> {
+      if (pl.next().isFalse()) {
+        await addNextRandomSong()
+        return this.next()
+      }
+    }
     override prev() {return pl.previous()}
     override clear(): Promise<void> {return pl.setPlaylist([])}
     override async select(index: number): Promise<void> {
@@ -134,8 +140,28 @@ function makePlaylist(player: Player): Playlist {
       .with('previous', () => result.prev())
       .exhaustive()
   })
+  // Can't use ts-pattern here since Song's constructor is private
+  async function maybePreloadNextSong(tu: TimeUpdate): Promise<void> {
+    if (pl.isLastSongPlaying() && PRELOAD_GAP.isGreaterThanOrEqual(tu.remainingDuration()))
+      await addNextRandomSong()
+  }
+  async function addNextRandomSong(): Promise<void> {
+    return DataApi.getRandomSong().then(song => result.add(song, false))
+  }
+  player.listen((e: PlayerEvent) => {
+
+    if (e === "ENDED")
+      result.next()
+    else if (e instanceof TimeUpdate)
+      maybePreloadNextSong(e)
+    else
+      // Songs are changed *via* the playlist
+      assert(result.getSong(result.currentIndex()) === e)
+  })
   return result
 }
+
+const PRELOAD_GAP = Duration.fromSeconds(20)
 
 $(function () {
   gplayer = SingletonPlayer.from(HtmlPlayer.create())

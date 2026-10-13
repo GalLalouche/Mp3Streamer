@@ -1,13 +1,9 @@
 /* Adapted from http://www.jplayer.org playlist. */
 
 import {match, P} from "ts-pattern"
-import * as DataApi from "./data_api.js"
 import * as Local from "./local.js"
 import {Song} from "./media.js"
 import {gplayer} from "./player_singleton.js"
-import {PlayerEvent, TimeUpdate} from "./player.js"
-import {Player} from "./player.js"
-import {Duration} from "./common_types.js"
 import {PlaylistItem, RemoveType} from "./playlist_item.js"
 
 
@@ -28,22 +24,9 @@ export class HtmlPlaylist {
     this.removing = false
   }
 
-  static create(player: Player): HtmlPlaylist {
+  static create(): HtmlPlaylist {
     const result = new HtmlPlaylist()
-
     result.init(false)
-    // FIXME this shouldn't be here.
-    player.listen((e: PlayerEvent) => {
-      // Can't use ts-pattern here since Song's constructor is private
-      if (e === "ENDED")
-        result.next()
-      else if (e instanceof TimeUpdate)
-        result.maybePreloadNextSong(e)
-      else
-        // Songs are changed *via* the playlist
-        assert(result.getSong(result.currentIndex()) === e)
-    })
-
     return result
   }
 
@@ -115,12 +98,15 @@ export class HtmlPlaylist {
       return this.select(index).then(() => gplayer.playCurrentSong())
   }
 
-  async next(): Promise<void> {
+  /** Returns true iff there is a next song to load. */
+  next(): boolean {
     // This can happen when next is invoke manually. In normal operation, the next song pre-loaded
     // when the current song is about to end.
-    return this.isLastSongPlaying()
-      ? DataApi.getRandomSong().then(song => this.add(song, true))
-      : this.play(this.current + 1)
+    if (this.isLastSongPlaying())
+      return false
+
+    this.play(this.current + 1)
+    return true
   }
 
   previous(): void {
@@ -219,12 +205,7 @@ export class HtmlPlaylist {
     aux(this.playlist[index].element)
   }
 
-  private isLastSongPlaying(): boolean {return this.current === this.playlist.length - 1}
-
-  private async maybePreloadNextSong(tu: TimeUpdate): Promise<void> {
-    if (this.isLastSongPlaying() && PRELOAD_GAP.isGreaterThanOrEqual(tu.remainingDuration()))
-      await DataApi.getRandomSong().then(song => this.add(song, false))
-  }
+  isLastSongPlaying(): boolean {return this.current === this.playlist.length - 1}
 
   private markCurrent(): void {
     $(`${PLAYLIST} .${PLAYLIST_CURRENT}`).removeClass(PLAYLIST_CURRENT)
@@ -243,5 +224,4 @@ const DISPLAY_TIME = 'slow'
 const PLAYLIST_CURRENT = "jp-playlist-current"
 
 type RemoveFunction = (e: JQuery<HTMLElement>) => JQuery<HTMLElement>
-const PRELOAD_GAP = Duration.fromSeconds(20)
 
