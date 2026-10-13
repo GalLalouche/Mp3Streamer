@@ -27,10 +27,14 @@ export class JPlayerPlaylist {
 
     result.init(false)
     player.listen((e: PlayerEvent) => {
+        // Can't use ts-pattern here since Song's constructor is private
       if (e === "ENDED")
         result.next()
       else if (e instanceof TimeUpdate)
         result.maybePreloadNextSong(e)
+      else
+        // Songs are changed *via* the playlist
+        assert(result.getSong(result.currentIndex()) === e)
     })
 
     return result
