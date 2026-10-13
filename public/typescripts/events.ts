@@ -13,7 +13,7 @@ import {PubSub, topic} from "./pubsub.js"
 import {Volume} from "./volume.js"
 
 
-export const GuiEvents: PubSub = new PubSub()
+export const Events: PubSub = new PubSub()
 
 /**********
 * Startup *

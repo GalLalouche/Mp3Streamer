@@ -2,7 +2,7 @@ import * as API from './api.js'
 import {Song} from "./media.js"
 import {gplaylist} from "./globals.js"
 import * as Poster from "./poster.js"
-import {GuiEvents, Startup, PlaylistContextMenuEventTopic} from './events.js'
+import {Events, Startup, PlaylistContextMenuEventTopic} from './events.js'
 import {match} from 'ts-pattern'
 
 async function refreshRemote(song: Song): Promise<void> {
@@ -25,7 +25,7 @@ $(function () {
         show(pe)
     })
   )
-  GuiEvents.listen(PlaylistContextMenuEventTopic, e => {
+  Events.listen(PlaylistContextMenuEventTopic, e => {
     if (e.type === "external")
       refreshRemote(e.song)
   })

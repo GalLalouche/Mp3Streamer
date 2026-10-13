@@ -1,5 +1,5 @@
 import {match} from "ts-pattern"
-import {GuiEvents, PlaylistEventTopic} from "./events.js"
+import {Events, PlaylistEventTopic} from "./events.js"
 import * as DataApi from "./data_api.js"
 import {HtmlPlaylist} from "./html_playlist.js"
 import {Song} from "./media.js"
@@ -34,7 +34,7 @@ export function makePlaylist(player: Player): Playlist {
         await pl.select(index)
     }
   }
-  GuiEvents.listen(PlaylistEventTopic, event => {
+  Events.listen(PlaylistEventTopic, event => {
     match(event)
       .with('next', () => result.next())
       .with('previous', () => result.prev())
