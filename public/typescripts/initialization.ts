@@ -1,5 +1,7 @@
 import * as DataApi from "./data_api.js"
 import {Startup} from "./events.js"
+import {addAndPlayNow} from "./globals.js"
+import {Song} from "./media.js"
 
 export const isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) !== null
 
@@ -29,21 +31,22 @@ if (window.history && history.pushState) {
   })
 }
 
-Startup.promise.then(({playlist}) => {
+Startup.promise.then(async _ => {
   const debugStartSong = getSearchParam("addSong")
   const debugStartAlbum = getSearchParam("addAlbum")
 
   $(isMuted() ? ".jp-mute" : ".jp-volume-max").trigger('click')
 
-  if (debugStartSong) {
-    console.log(`Adding debug song <${debugStartSong}>`)
-    DataApi.getSong(debugStartSong).then(data => playlist.add(data, true))
-  } else if (debugStartAlbum) {
-    console.log(`Adding debug album <${debugStartAlbum}>`)
-    // No idea why this is reversed in the playlist :|
-    DataApi.getAlbum("/data/albums/" + debugStartAlbum).then(data => playlist.add(data.reverse(), true))
-  } else
-    // FIXME this isn't *exactly* next, since the playlist has no song playiong, but it's the
-    //  same code running anyway.
-    DataApi.getRandomSong().then(song => playlist.add(song, true))
+  async function initialSongs(): Promise<Song | Song[]> {
+    if (debugStartSong) {
+      console.log(`Adding debug song <${debugStartSong}>`)
+      return DataApi.getSong(debugStartSong)
+    } else if (debugStartAlbum) {
+      console.log(`Adding debug album <${debugStartAlbum}>`)
+      // No idea why this is reversed in the playlist :|
+      return DataApi.getAlbum("/data/albums/" + debugStartAlbum).then(data => data.reverse())
+    } else
+      return DataApi.getRandomSong()
+  }
+  return initialSongs().then(addAndPlayNow)
 })

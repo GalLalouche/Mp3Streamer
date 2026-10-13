@@ -72,7 +72,7 @@ function updateAlbums(albums: Album[]): void {
 
 async function dequeue(): Promise<void> {
   return dequeueAux(album =>
-    DataApi.getAlbum(album.dir).then(e => gplaylist.add(e, true)))
+    DataApi.getAlbum(album.dir).then(e => gplaylist.add(e).void()))
 }
 
 function skip(): void {

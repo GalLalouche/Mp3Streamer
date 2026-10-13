@@ -1,4 +1,5 @@
 import {Startup} from "./events.js"
+import {Song} from "./media.js"
 import {Player} from "./player.js"
 import {makePlayer} from "./player_singleton.js"
 import {Playlist} from "./playlist.js"
@@ -15,6 +16,12 @@ function globalAux(x: any): any {
 
 Object.defineProperty(globalThis, "gplayer", {get: () => globalAux(gplayer)})
 Object.defineProperty(globalThis, "gplaylist", {get: () => globalAux(gplaylist)})
+
+export async function addAndPlayNow(song: Song | Song[]): Promise<void> {
+  const index = await gplaylist.add(song)
+  await gplaylist.select(index)
+  await gplayer.playCurrentSong()
+}
 
 $(function () {
   gplayer = makePlayer()

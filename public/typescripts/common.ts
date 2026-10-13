@@ -150,11 +150,11 @@ function assert(condition: boolean, message?: string): asserts condition is true
   throw typeof Error === "undefined" ? message : new Error(message)
 }
 
-function assertDefined<A>(e: A | undefined): asserts e is A {
+function assertDefined<A>(e: A | undefined | null): asserts e is A {
   assert(isNonNullable(e))
 }
 
-function definedOrThrow<A>(e: A | undefined): A {
+function definedOrThrow<A>(e: A | undefined | null): A {
   assertDefined(e)
   return e
 }

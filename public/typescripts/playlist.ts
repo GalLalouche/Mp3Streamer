@@ -5,9 +5,10 @@ export abstract class Playlist {
   async setPlaylist(playlist: readonly Song[], instant: boolean): Promise<void> {
     await this.clear(instant)
     for (const s of playlist)
-      await this.add(s, false)
+      await this.add(s)
   }
-  abstract add(song: Song | readonly Song[], playNow: boolean): Promise<void>
+  /** Returns the index of the *first* song added. */
+  abstract add(song: Song | readonly Song[]): Promise<number>
   abstract next(): Promise<void>
   abstract select(index: number): Promise<void>
   abstract prev(): void

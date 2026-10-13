@@ -1,51 +1,42 @@
 /* Adapted from http://www.jplayer.org playlist. */
 
 import {match, P} from "ts-pattern"
-import * as Local from "./local.js"
 import {Song} from "./media.js"
-import {gplayer} from "./globals.js"
 import {PlaylistItem, RemoveType} from "./playlist_item.js"
+import {Events, PlaylistEventTopic} from "./events.js"
 
 
 /**
  * Handles the playlist via an HTML list.
  *
- * Also handles listening to song changes via clicks on the song elements, item removals, and
- * pre-loading the next random song when the current song is about to end and it's the last one.
+ * Also handles listening to song changes via clicks on the song elements, item removals. If the selection has changed, will use {@link Events} to publish under the {@link PlaylistEventTopic}.
+ *
+ * Does not handle the actual playing of songs, which is handled by the Player class.
  */
 export class HtmlPlaylist {
-  private playlist: PlaylistItem[]
-  private current: number
-  private removing: boolean
-
-  private constructor() {
-    this.playlist = []
-    this.current = 0
-    this.removing = false
-  }
+  private playlist: PlaylistItem[] = []
+  private current: number | null = null
+  private removing: boolean = false
 
   static create(): HtmlPlaylist {
     const result = new HtmlPlaylist()
-    result.init(false)
+    result.refresh()
     return result
   }
 
-  currentIndex(): number {return this.current}
+  currentIndex(): number {
+    return definedOrThrow(this.current)
+  }
   songs(): readonly Song[] {return this.playlist.map(e => e.song)}
   length(): number {return this.playlist.length}
   getSong(index: number): Song {return this.playlist[index].song}
 
   async setPlaylist(playlist: readonly Song[]): Promise<void> {
     this.initPlaylist(playlist)
-    this.init(true)
+    this.refresh()
   }
 
-  async add(song: Song | readonly Song[], playNow: boolean = false): Promise<void> {
-    if (Array.isArray(song)) {
-      for (const s of song)
-        await this.add(s)
-      return
-    }
+  add(song: Song): void {
     if (this.playlist.some(e => e.song.file === song.file)) {
       console.log(`Entry ${song.file} already exists in playlist; skipping`)
       return
@@ -62,57 +53,48 @@ export class HtmlPlaylist {
       })
     this.playlist.push(item)
 
-    if (playNow)
-      return this.play(this.playlist.length - 1)
-    if (this.playlist.length === 1)
-      return this.select(0)
+    if (this.current === null)
+      this.select(0)
   }
 
-  removeItem(index: number, type: RemoveType): void {
+  /** Returns true iff the *current* song was removed. */
+  removeItem(index: number, type: RemoveType): boolean {
+    const willDeleteCurrent =
+      index === this.currentIndex() ||
+      (index < this.currentIndex() && type === "down") ||
+      (index > this.currentIndex() && type === "up")
     this.removeItemAux(index, match(type)
       .returnType<RemoveFunction>()
       .with("x", () => () => $())
       .with("up", () => x => x.prev())
       .with("down", () => x => x.next())
       .exhaustive())
+    return willDeleteCurrent
   }
 
-  async select(index: number): Promise<void> {
-    if (index < 0)
-      return arguments.callee(this.playlist.length + index)
-    // index relates to end of array.
-    if (index < this.playlist.length) {
-      this.current = index
-      this.markCurrent()
-      return Local.maybePreLoad(this.getSong(this.current)).then(e => gplayer.load(e))
-    }
-
-    this.current = 0
-  }
-
-  async play(index: number): Promise<void> {
-    if (index < 0)
-      return arguments.callee(this.playlist.length + index)
-    // index relates to end of array.
-    if (index < this.playlist.length && this.playlist.length)
-      return this.select(index).then(() => gplayer.playCurrentSong())
+  select(index: number): void {
+    if (this.current !== null && this.current === index)
+      return
+    this.current = index
+    this.markCurrent()
+    const song = this.getSong(this.current)
+    Events.publish(PlaylistEventTopic, song)
   }
 
   /** Returns true iff there is a next song to load. */
   next(): boolean {
-    // This can happen when next is invoke manually. In normal operation, the next song pre-loaded
-    // when the current song is about to end.
-    if (this.isLastSongPlaying())
+    // This can happen when next is invoked manually. In normal operation, the next song is
+    // pre-loaded when the current song is about to end.
+    if (this.current === null || this.isLastSongPlaying())
       return false
 
-    this.play(this.current + 1)
+    this.select(this.current + 1)
     return true
   }
 
   previous(): void {
-    const index = (this.current - 1 >= 0) ? this.current - 1 : this.playlist.length - 1
-    if (index < this.playlist.length - 1)
-      this.play(index)
+    if (this.current !== null && this.current > 0)
+      this.select(this.current - 1)
   }
 
   // This works with elements instead of indices, since the indices shift on removal, but going
@@ -128,14 +110,12 @@ export class HtmlPlaylist {
       elem.remove()
       this.playlist.splice(playlistIndex, 1)
       if (this.playlist.length) {
-        if (playlistIndex === this.current) {
-          // Update current when last element was deleted.
-          this.current = playlistIndex < this.playlist.length ? this.current : this.playlist.length - 1
-          this.select(this.current)
-        } else if (playlistIndex < this.current)
-          this.current--
+        if (playlistIndex === this.current)
+          // Update current when current playing element was deleted.
+          this.select(playlistIndex < this.playlist.length ? this.current : this.playlist.length - 1)
+        else if (playlistIndex < this.currentIndex())
+          this.current!--
       } else {
-        gplayer.clear()
         this.current = 0
       }
 
@@ -143,15 +123,6 @@ export class HtmlPlaylist {
       if (onEnd)
         onEnd()
     })
-  }
-
-  private init(instant: boolean): void {
-    if (instant) {
-      this.refresh()
-      this.play(this.current)
-    } else {
-      this.refresh(() => this.play(this.current))
-    }
   }
 
   private initPlaylist(playlist: readonly Song[]): void {
@@ -171,21 +142,10 @@ export class HtmlPlaylist {
     return result
   }
 
-  private refresh(animation?: () => void): void {
+  private refresh(): void {
     const playlistUl = $(PLAYLIST + " ul")
-    if (animation) {
-      playlistUl.empty()
-
-      this.playlist.forEach(v => playlistUl.append(v.element))
-      animation()
-      if (this.playlist.length)
-        playlistUl.slideDown(DISPLAY_TIME)
-      else
-        playlistUl.show()
-    } else {
-      playlistUl.empty()
-      this.playlist.forEach(v => playlistUl.append(v.element))
-    }
+    playlistUl.empty()
+    this.playlist.forEach(v => playlistUl.append(v.element))
   }
 
   private removeItemAux(index: number, nextFunction: RemoveFunction): void {
@@ -209,7 +169,7 @@ export class HtmlPlaylist {
 
   private markCurrent(): void {
     $(`${PLAYLIST} .${PLAYLIST_CURRENT}`).removeClass(PLAYLIST_CURRENT)
-    this.playlist[this.current].element.addClass(PLAYLIST_CURRENT)
+    this.playlist[this.currentIndex()].element.addClass(PLAYLIST_CURRENT)
   }
 
   private getDisplayedIndex(e: JQuery<HTMLElement>): number {
@@ -220,7 +180,6 @@ export class HtmlPlaylist {
 const ADD_TIME = 'fast'
 const REMOVE_TIME = 'fast'
 const PLAYLIST = ".jp-playlist"
-const DISPLAY_TIME = 'slow'
 const PLAYLIST_CURRENT = "jp-playlist-current"
 
 type RemoveFunction = (e: JQuery<HTMLElement>) => JQuery<HTMLElement>
