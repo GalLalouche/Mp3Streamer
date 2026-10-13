@@ -1,13 +1,11 @@
 import * as API from "./api.js"
-import {Startup} from "./events.js"
+import {Events, PlayerEvents} from "./events.js"
 import {Album, Song} from "./media.js"
 
-Startup.promise.then(ps =>
-  ps.player.listen(pe => {
-    if (pe instanceof Song)
-      show(pe)
-  })
-)
+Events.listen(PlayerEvents, pe => {
+  if (pe instanceof Song)
+    show(pe)
+})
 
 function show(song: Song): void {
   const fieldSet = $("#new-albums")

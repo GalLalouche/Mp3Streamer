@@ -1,15 +1,14 @@
 import {match} from "ts-pattern"
-import {Events, PlaylistEventTopic} from "./events.js"
+import {Events, PlayerEvents, PlaylistEventTopic} from "./events.js"
 import {Duration} from "./common_types.js"
 import * as DataApi from "./data_api.js"
 import * as Local from "./local.js"
 import {HtmlPlaylist} from "./html_playlist.js"
 import {Song} from "./media.js"
-import {PlayerEvent, TimeUpdate} from "./player.js"
-import {Player} from "./player.js"
+import {PlayerEvent, TimeUpdate} from "./events.js"
 import {Playlist} from "./playlist.js"
 
-export function makePlaylist(player: Player): Playlist {
+export function makePlaylist(): Playlist {
   const pl: HtmlPlaylist = HtmlPlaylist.create()
 
   const result = new class extends Playlist {
@@ -60,7 +59,7 @@ export function makePlaylist(player: Player): Playlist {
   async function addNextRandomSong(): Promise<void> {
     return DataApi.getRandomSong().then(song => result.add(song)).void()
   }
-  player.listen((e: PlayerEvent) => {
+  Events.listen(PlayerEvents, (e: PlayerEvent) => {
     // Can't use ts-pattern here since Song's constructor is private
     if (e === "ENDED")
       result.next()

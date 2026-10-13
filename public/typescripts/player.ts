@@ -1,22 +1,8 @@
 import {Duration, Percentage} from "./common_types.js"
+import {PlayerEvent} from "./events.js"
 import {Song} from "./media.js"
 import {Volume} from "./volume.js"
 
-export class TimeUpdate {
-  readonly currentDuration: Duration
-  readonly totalDuration: Duration
-
-  constructor(input: { currentDuration: Duration, totalDuration: Duration }) {
-    this.currentDuration = input.currentDuration
-    this.totalDuration = input.totalDuration
-  }
-
-  remainingDuration(): Duration {
-    return this.totalDuration.minus(this.currentDuration)
-  }
-}
-
-export type PlayerEvent = "ENDED" | TimeUpdate | Song
 export type PlayerEventListener = (pe: PlayerEvent) => void
 
 export abstract class Player {
@@ -39,6 +25,7 @@ export abstract class Player {
   abstract getVolume(): Volume
   abstract skipTo(duration: Duration): void
   abstract clear(): void
+  /** Listen to this player specifically (as opposed to the global Events PubSub. */
   abstract listen(callback: PlayerEventListener): void
   abstract unlisten(callback: PlayerEventListener): void
 }
