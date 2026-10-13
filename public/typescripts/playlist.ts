@@ -1,4 +1,3 @@
-import {RemoveType} from "./events.js"
 import {Song} from "./media.js"
 
 export abstract class Playlist {
@@ -19,5 +18,4 @@ export abstract class Playlist {
   abstract songs(): readonly Song[]
   last(): Song {return this.getSong(this.length() - 1)}
   abstract length(): number
-  abstract removeItem(index: number, type: RemoveType): void
 }

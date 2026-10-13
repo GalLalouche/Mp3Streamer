@@ -8,8 +8,7 @@ import {gplayer} from "./player_singleton.js"
 import {PlayerEvent, TimeUpdate} from "./player.js"
 import {Player} from "./player.js"
 import {Duration} from "./common_types.js"
-import {PlaylistItem} from "./playlist_item.js"
-import {GuiEvents, PlaylistItemTopic, RemoveType} from "./events.js"
+import {PlaylistItem, RemoveType} from "./playlist_item.js"
 
 
 export class JPlayerPlaylist {
@@ -30,15 +29,8 @@ export class JPlayerPlaylist {
     player.listen((e: PlayerEvent) => {
       if (e === "ENDED")
         result.next()
-      else if (e instanceof TimeUpdate) {
+      else if (e instanceof TimeUpdate)
         result.maybePreloadNextSong(e)
-      }
-    })
-    GuiEvents.listen(PlaylistItemTopic, ({type, element}) => {
-      const index = result.getDisplayedIndex(element)
-      match(type)
-        .with("select", () => result.select(index))
-        .with(P.select(), x => result.removeItem(index, x))
     })
 
     return result
@@ -65,7 +57,7 @@ export class JPlayerPlaylist {
       return
     }
     const playlistUl = $(PLAYLIST + " ul")
-    const item = PlaylistItem.create(song)
+    const item = this.createItem(song)
     playlistUl.prepend(item.element)
       .find("li:first-child").hide()
       .slideDown(ADD_TIME, function () {
@@ -168,7 +160,18 @@ export class JPlayerPlaylist {
   private initPlaylist(playlist: readonly Song[]): void {
     this.current = 0
     this.removing = false
-    this.playlist = playlist.map(PlaylistItem.create)
+    this.playlist = playlist.map(e => this.createItem(e))
+  }
+
+  private createItem(song: Song): PlaylistItem {
+    const result = PlaylistItem.create(song)
+    result.listen(type => {
+      const index = this.getDisplayedIndex(result.element)
+      match(type)
+        .with("select", () => this.select(index))
+        .with(P.select(), x => this.removeItem(index, x))
+    })
+    return result
   }
 
   private refresh(animation?: () => void): void {

@@ -1,6 +1,6 @@
 import {match, P} from "ts-pattern"
 import {Duration, Percentage} from "./common_types.js"
-import {GuiEvents, PlayerControls, PlayerControlsTopic, Startup, PlaylistEventTopic, RemoveType, Seek} from "./events.js"
+import {GuiEvents, PlayerControls, PlayerControlsTopic, Startup, PlaylistEventTopic, Seek} from "./events.js"
 import {HtmlPlayer} from "./html_player.js"
 import {JPlayerPlaylist} from "./jplayer.playlist.js"
 import {Song} from "./media.js"
@@ -127,7 +127,6 @@ function makePlaylist(player: Player): Playlist {
       if (pl.currentIndex() !== index)
         await pl.select(index)
     }
-    override removeItem(index: number, type: RemoveType) {pl.removeItem(index, type)}
   }
   GuiEvents.listen(PlaylistEventTopic, event => {
     match(event)

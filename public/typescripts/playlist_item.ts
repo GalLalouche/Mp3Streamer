@@ -2,7 +2,10 @@ import {Song} from "./media.js"
 import {mediaMetadataHtml} from "./media_metadata.js"
 import * as ColorUtils from "./color-utils.js"
 import {ITEM_CLASS, REMOVE_DOWN, REMOVE_ITEM, REMOVE_THIS, REMOVE_UP} from "./event_setup.js"
-import {GuiEvents, PlaylistContextMenuEventTopic, PlaylistItemClickType, PlaylistItemTopic, RemoveType} from "./events.js"
+import {GuiEvents, PlaylistContextMenuEventTopic} from "./events.js"
+
+export type RemoveType = "x" | "up" | "down"
+export type PlaylistItemClickType = "select" | RemoveType
 
 export class PlaylistItem {
   readonly song: Song
@@ -14,6 +17,31 @@ export class PlaylistItem {
   private constructor(song: Song, element: JQuery<HTMLElement>) {
     this.song = song
     this.element = element
+  }
+
+  listen(listener: (arg: PlaylistItemClickType) => void): void {
+    this.element.on("click", function (e) {
+      const target = $(e.target)
+
+      function getRemoveType(target: JQuery<HTMLElement>): RemoveType {
+        if (target.hasClass(REMOVE_THIS)) {
+          return "x"
+        } else if (target.hasClass(REMOVE_UP)) {
+          return "up"
+        } else if (target.hasClass(REMOVE_DOWN)) {
+          return "down"
+        } else {
+          throw new Error("Unknown remove type: " + target.attr("class"))
+        }
+      }
+
+      const removeButton = target.closest("a." + REMOVE_ITEM)
+      if (removeButton.length > 0)
+        listener(getRemoveType(removeButton))
+      // ignore clicks between the remove button
+      else if (target.closest("." + REMOVE_ITEM).length === 0)
+        listener("select")
+    })
   }
 }
 
@@ -36,31 +64,6 @@ function createElement(song: Song): JQuery<HTMLElement> {
     result.css('background-color', rgb.makeLighter(0.1).toString())
   })
   result.addClass(ITEM_CLASS)
-
-  result.on("click", function (e) {
-    const target = $(e.target)
-
-    function getRemoveType(target: JQuery<HTMLElement>): RemoveType {
-      if (target.hasClass(REMOVE_THIS)) {
-        return "x"
-      } else if (target.hasClass(REMOVE_UP)) {
-        return "up"
-      } else if (target.hasClass(REMOVE_DOWN)) {
-        return "down"
-      } else {
-        throw new Error("Unknown remove type: " + target.attr("class"))
-      }
-    }
-
-    const publish = (type: PlaylistItemClickType) =>
-      GuiEvents.publish(PlaylistItemTopic, {type: type, element: result})
-    const removeButton = target.closest("a." + REMOVE_ITEM)
-    if (removeButton.length > 0)
-      publish(getRemoveType(removeButton))
-    // ignore clicks between the remove button
-    else if (target.closest("." + REMOVE_ITEM).length === 0)
-      publish("select")
-  })
 
   result.on("mouseover", function () {
     // The listItem can't overflow; what can overflow is the width-limited descendent.
@@ -100,7 +103,7 @@ function createElement(song: Song): JQuery<HTMLElement> {
 
 let contextMenu!: JQuery<HTMLElement>
 
-$(function() {
+$(function () {
   $("body").append(String.raw`
     <ul id="contextMenu" class="ui-menu" style="display:none;">
         <li><div><span class="menu-icon fa fa-arrows-v"/></span> Score</div></li>
