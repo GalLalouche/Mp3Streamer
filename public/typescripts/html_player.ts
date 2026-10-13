@@ -42,9 +42,8 @@ export class HtmlPlayer extends Player {
       Percentage.fromMax100(0) :
       Percentage.fromMax1(this.currentTime().toSeconds() / this.duration().toSeconds())
   }
-  override playCurrentSong(): void {
-    // TODO should this return a promise as well?
-    this.html.play()
+  override playCurrentSong(): Promise<void> {
+    return this.html.play()
   }
   override getVolume(): Volume {return new Volume(Percentage.fromMax1(this.html.volume))}
   override setVolume(v: Volume): void {this.html.volume = v.percentage().zeroToOne()}

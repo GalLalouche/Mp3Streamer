@@ -21,7 +21,7 @@ export type PlayerEventListener = (pe: PlayerEvent) => void
 
 export abstract class Player {
   abstract load(song: Song): void
-  abstract playCurrentSong(): void
+  abstract playCurrentSong(): Promise<void>
   abstract stop(): void
   /** Does not unpause. */
   abstract pause(): void

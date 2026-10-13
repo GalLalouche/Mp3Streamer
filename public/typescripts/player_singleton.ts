@@ -63,9 +63,9 @@ class SingletonPlayer extends Player {
   }
   override percentageOfSongPlayed(): Percentage {return this.player.percentageOfSongPlayed()}
   override duration(): Duration {return this.player.duration()}
-  override playCurrentSong(): void {
-    this.player.playCurrentSong()
+  override playCurrentSong(): Promise<void> {
     PlayerGUI.setIsPlaying()
+    return this.player.playCurrentSong()
   }
   override pause(): void {
     this.player.pause()
