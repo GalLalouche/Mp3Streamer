@@ -3,7 +3,7 @@
 import {match, P} from "ts-pattern"
 import * as Local from "./local.js"
 import {Song} from "./media.js"
-import {gplayer} from "./player_singleton.js"
+import {gplayer} from "./globals.js"
 import {PlaylistItem, RemoveType} from "./playlist_item.js"
 
 

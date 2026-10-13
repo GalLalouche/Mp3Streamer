@@ -2,7 +2,7 @@
 import * as API from "./api.js"
 import {GuiEvents, Startup, PlaylistContextMenuEventTopic} from "./events.js"
 import {Song} from "./media.js"
-import {gplaylist} from "./player_singleton.js"
+import {gplaylist} from "./globals.js"
 
 $(function () {
   fieldset = $("#score")

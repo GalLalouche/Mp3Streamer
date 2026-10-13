@@ -9,7 +9,7 @@ import * as API from "./api.js"
 import {Duration} from "./common_types.js"
 import {isMuted} from "./initialization.js"
 import {Song} from "./media.js"
-import {gplayer, gplaylist} from "./player_singleton.js"
+import {gplayer, gplaylist} from "./globals.js"
 import * as Poster from "./poster.js"
 import {Volume} from "./volume.js"
 

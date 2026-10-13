@@ -1,7 +1,7 @@
 import * as API from "./api.js"
 import {Startup} from "./events.js"
 import {Song} from "./media.js"
-import {gplayer, gplaylist} from "./player_singleton.js"
+import {gplayer, gplaylist} from "./globals.js"
 
 Startup.promise.then(ps =>
   ps.player.listen(pe => {

@@ -3,7 +3,7 @@
 import * as API from "./api.js"
 import * as DataApi from "./data_api.js"
 import {Album} from "./media.js"
-import {gplaylist} from "./player_singleton.js"
+import {gplaylist} from "./globals.js"
 
 export async function addNextNewAlbum(): Promise<void> {
   if (nonEmptyQueue) { // If the queue isn't empty, dequeue first for faster update time.
