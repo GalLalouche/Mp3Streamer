@@ -4,11 +4,9 @@
  *
  * Exists to decouple the GUI from the player and playlist logic.
  */
-import {Percentage} from "./common_types.js"
+import {Duration, Percentage} from "./common_types.js"
 import {Deferred} from "./deferred.js"
 import {Song} from "./media.js"
-import {Player} from "./player.js"
-import {Playlist} from "./playlist.js"
 import {PubSub, topic} from "./pubsub.js"
 import {Volume} from "./volume.js"
 
@@ -18,7 +16,7 @@ export const Events: PubSub = new PubSub()
 /**********
 * Startup *
 **********/
-export const Startup = new Deferred<{player: Player, playlist: Playlist}>()
+export const Startup = new Deferred<void>()
 
 /*********
 * Player *
@@ -33,6 +31,25 @@ export class Seek {
 
 export type PlayerControls = "play" | "pause" | "stop" | Volume | Seek
 export const PlayerControlsTopic = topic<PlayerControls>("player_controls")
+
+
+export class TimeUpdate {
+  readonly currentDuration: Duration
+  readonly totalDuration: Duration
+
+  constructor(input: { currentDuration: Duration, totalDuration: Duration }) {
+    this.currentDuration = input.currentDuration
+    this.totalDuration = input.totalDuration
+  }
+
+  remainingDuration(): Duration {
+    return this.totalDuration.minus(this.currentDuration)
+  }
+}
+
+export type PlayerEvent = "ENDED" | TimeUpdate | Song
+export type PlayerEventListener = (pe: PlayerEvent) => void
+export const PlayerEvents = topic<PlayerEvent>("player_event")
 
 /***********
 * Playlist *

@@ -48,5 +48,5 @@ Startup.promise.then(async _ => {
     } else
       return DataApi.getRandomSong()
   }
-  return initialSongs().then(addAndPlayNow)
+  initialSongs().then(addAndPlayNow)
 })

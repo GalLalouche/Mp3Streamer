@@ -1,6 +1,6 @@
 // TODO use enums and use Object.values to get this list for the drop down list.
 import * as API from "./api.js"
-import {Events, Startup, PlaylistContextMenuEventTopic} from "./events.js"
+import {Events, PlaylistContextMenuEventTopic, PlayerEvents} from "./events.js"
 import {Song} from "./media.js"
 import {gplaylist} from "./globals.js"
 
@@ -18,12 +18,10 @@ $(function () {
     if (e.type === "score")
       popup(e.song)
   })
-  Startup.promise.then(ps =>
-    ps.player.listen(pe => {
-      if (pe instanceof Song)
-        show(pe)
-    })
-  )
+  Events.listen(PlayerEvents, pe => {
+    if (pe instanceof Song)
+      show(pe)
+  })
 })
 
 function show(song: Song): void {

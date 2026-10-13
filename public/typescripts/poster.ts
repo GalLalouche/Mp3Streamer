@@ -1,5 +1,5 @@
 import * as ColorUtils from "./color-utils.js"
-import {Startup} from "./events.js"
+import {Events, PlayerEvents} from "./events.js"
 import {Song} from "./media.js"
 
 export const PLAYLIST_NAME_KEY = "playlist_name"
@@ -44,14 +44,12 @@ waitForElem("#jp_poster_0").then(p => $(p)).then(poster => {
     document.body.style.backgroundColor = color.toString()
     rgbListeners.forEach(l => l(color))
   })
-  Startup.promise.then(ps =>
-    ps.player.listen(pe => {
-      if (pe instanceof Song) {
-        setImage(pe.poster)
-        $('#' + FAVICON).remove()
-        $('head')
-          .append(`<link href="${($("img.poster")[0] as any).src}" id="${FAVICON}" rel="shortcut icon">`)
-      }
-    })
-  )
+  Events.listen(PlayerEvents, pe => {
+    if (pe instanceof Song) {
+      setImage(pe.poster)
+      $('#' + FAVICON).remove()
+      $('head')
+        .append(`<link href="${($("img.poster")[0] as any).src}" id="${FAVICON}" rel="shortcut icon">`)
+    }
+  })
 })

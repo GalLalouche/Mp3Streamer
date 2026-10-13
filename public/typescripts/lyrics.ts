@@ -1,14 +1,14 @@
 import * as API from "./api.js"
-import {Startup} from "./events.js"
+import {Events, PlayerEvents} from "./events.js"
 import {Song} from "./media.js"
 import {gplayer, gplaylist} from "./globals.js"
 
-Startup.promise.then(ps =>
-  ps.player.listen(pe => {
+$(function () {
+  Events.listen(PlayerEvents, pe => {
     if (pe instanceof Song)
       show(pe)
   })
-)
+})
 
 function show(song: Song): void {
   const helper = getHelper()
