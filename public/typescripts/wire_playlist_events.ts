@@ -1,20 +1,19 @@
 /** Processes events and wires them to the playlist. */
 import * as DataApi from "./data_api.js"
-import {match} from "ts-pattern"
+import {match, P} from "ts-pattern"
 import {Events, PlayerEvent, PlayerEvents, PlaylistEvents, Startup, TimeUpdate} from "./events.js"
 import {Duration} from "./common_types.js"
+import {Song} from "./media.js"
 
 $(function () {
   Startup.promise.then(async ({playlist}) => {
     Events.listen(PlayerEvents, (e: PlayerEvent) => {
-      // Can't use ts-pattern here since Song's constructor is private
-      if (e === "ENDED")
-        playlist.next()
-      else if (e instanceof TimeUpdate)
-        maybePreloadNextSong(e)
-      else
+      match(e)
+        .with("ENDED", () => playlist.next())
+        .with(P.instanceOf(TimeUpdate), tu => maybePreloadNextSong(tu))
         // Songs are changed *via* the playlist
-        assert(playlist.getSong(playlist.currentIndex()) === e)
+        .with(P.instanceOf(Song), s => playlist.getSong(playlist.currentIndex()) === s)
+        .exhaustive()
     })
 
     Events.listen(PlaylistEvents, event => {
@@ -25,6 +24,7 @@ $(function () {
           playlist.next()
         })
         .with('previous', () => playlist.prev())
+        .exhaustive()
     })
 
     async function maybePreloadNextSong(tu: TimeUpdate): Promise<void> {

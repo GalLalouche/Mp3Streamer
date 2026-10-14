@@ -28,9 +28,8 @@ export class Seek {
   constructor(percentage: Percentage) {this.percentage = percentage}
 }
 
-export type PlayerControl = "play" | "pause" | "stop" | Volume | Seek
+export type PlayerControl = "play" | "pause" | "stop" | Volume | Seek | Song
 export const PlayerControls = topic<PlayerControl>("player_controls")
-
 
 export class TimeUpdate {
   readonly currentDuration: Duration
@@ -56,7 +55,7 @@ export const PlayerEvents = topic<PlayerEvent>("player_event")
 /***********
 * Playlist *
 ************/
-export type PlaylistEvent = "next" | "previous" | Song
+export type PlaylistEvent = "next" | "previous"
 export const PlaylistEvents = topic<PlaylistEvent>("playlist_event")
 
 interface PlaylistItemContextMenuEvent {

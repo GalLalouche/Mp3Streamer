@@ -51,7 +51,8 @@ export class Song {
     )
   }
 
-  private constructor(
+  /** Only public for ts-pattern. */
+  constructor(
     title: string,
     artistName: string,
     albumName: string,
