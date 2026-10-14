@@ -4,6 +4,8 @@ import {Player} from "./player.js"
 import {makePlayer} from "./player_singleton.js"
 import {Playlist} from "./playlist.js"
 import {makePlaylist} from "./playlist_singleton.js"
+import * as WirePlayer from "./wire_player_events.js"
+import * as WirePlaylist from "./wire_playlist_events.js"
 
 export let gplayer!: Player
 export let gplaylist!: Playlist
@@ -26,5 +28,10 @@ export async function addAndPlayNow(song: Song | Song[]): Promise<void> {
 $(function () {
   gplayer = makePlayer()
   gplaylist = makePlaylist()
+
+  // Wiring has to finish before we resolve the startup events, since some clients fire off events
+  // On setup (e.g., initialization)
+  WirePlayer.wire(gplayer)
+  WirePlaylist.wire(gplaylist)
   Startup.resolve({player: gplayer, playlist: gplaylist})
 })
