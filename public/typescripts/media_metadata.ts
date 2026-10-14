@@ -17,6 +17,16 @@ export function mediaMetadataHtml(song: Song): string {
   )
 }
 
+export function mediaMetadata(song: Song): string {
+  return [
+    song.title,
+    song.artistName,
+  ].concat(additionalData(song)).concat([
+    song.duration.timeFormat(),
+    song.bitrate + "kbps",
+  ]).join(", ")
+}
+
 function formattedMetadata(song: Song): string {
   const res = additionalData(song)
   const head = `<span dir="ltr">${res[0]}</span>`
