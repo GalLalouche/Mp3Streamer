@@ -1,5 +1,5 @@
 import {Song} from "./media.js"
-import {mediaMetadataHtml} from "./media_metadata.js"
+import {mediaMetadata, mediaMetadataHtml} from "./media_metadata.js"
 import * as ColorUtils from "./color-utils.js"
 import {ITEM_CLASS, REMOVE_DOWN, REMOVE_ITEM, REMOVE_THIS, REMOVE_UP} from "./event_setup.js"
 import {Events, PlaylistContextMenuEvents} from "./events.js"
@@ -68,7 +68,7 @@ function createElement(song: Song): JQuery<HTMLElement> {
   result.on("mouseover", function () {
     // The listItem can't overflow; what can overflow is the width-limited descendent.
     if (result.find(".width-limited-playlist-span").custom_overflown())
-      result.custom_tooltip(mediaMetadataHtml(song))
+      result.custom_tooltip(mediaMetadata(song))
   })
 
   result.on("contextmenu", function (e) {
