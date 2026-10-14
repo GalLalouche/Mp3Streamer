@@ -11,7 +11,6 @@ export function makePlayer(): Player {
   const volume: ReplayGainAwareVolume = new ReplayGainAwareVolume()
 
   const result = new class extends Player {
-    override clear(): void {player.clear()}
     override currentTime(): Duration {return player.currentTime()}
     override getVolume(): Volume {return volume.replayGainAdjustedVolume()}
     override isPaused(): boolean {return player.isPaused()}

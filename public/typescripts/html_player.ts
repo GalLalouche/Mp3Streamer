@@ -53,10 +53,6 @@ export class HtmlPlayer extends Player {
     this.html.pause()
     this.html.currentTime = 0
   }
-  override clear(): void {
-    this.stop()
-    this.html.src = ""
-  }
   override listen(callback: PlayerEventListener): void {this.listeners.push(callback)}
   override unlisten(callback: PlayerEventListener): void {
     this.listeners = this.listeners.filter(cb => cb !== callback)
