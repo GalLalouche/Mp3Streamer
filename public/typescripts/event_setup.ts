@@ -1,5 +1,5 @@
 import {Percentage} from "./common_types.js"
-import {Events, PlayerControls, PlayerControlsTopic, PlaylistEvent, PlaylistEventTopic, Seek} from "./events.js"
+import {mute, Events, PlayerControls, PlayerControlsTopic, PlaylistEvent, PlaylistEventTopic, Seek} from "./events.js"
 import {Volume} from "./volume.js"
 
 export const REMOVE_ITEM = "jp-playlist-item-remove"
@@ -23,7 +23,7 @@ $(function () {
   playerControlsAux("pause")
 
 
-  $('.jp-mute').on('click', () => Events.publish(PlayerControlsTopic, new Volume(Percentage.ZERO)))
+  $('.jp-mute').on('click', () => mute())
 
   // TODO handle unmute by maintaining the original volume
   function barListener(selector: string, f: (p: Percentage) => PlayerControls): void {
@@ -47,3 +47,4 @@ $(function () {
   playlistControlsAux("next")
   playlistControlsAux("previous")
 })
+

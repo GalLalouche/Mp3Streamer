@@ -1,6 +1,5 @@
-import {match, P} from "ts-pattern"
 import {Duration, Percentage} from "./common_types.js"
-import {Events, PlayerControls, PlayerControlsTopic, PlayerEvent, PlayerEvents, PlaylistEventTopic, Seek, TimeUpdate} from "./events.js"
+import {Events, PlayerEvent, PlayerEvents, TimeUpdate} from "./events.js"
 import {Song} from "./media.js"
 import * as PlayerGUI from "./player_gui.js"
 import {Player} from "./player.js"
@@ -53,23 +52,6 @@ export function makePlayer(): Player {
     if (pe instanceof Song)
       PlayerGUI.setCurrentSong(pe)
     Events.publish(PlayerEvents, pe)
-  })
-  Events.listen(PlayerControlsTopic, (control: PlayerControls) => {
-    match(control)
-      .with("play", () => result.playCurrentSong())
-      .with("stop", () => result.stop())
-      .with("pause", () => result.pause())
-      .with(P.instanceOf(Volume), v => result.setVolume(v))
-      .with(P.instanceOf(Seek), s => result.skipTo(result.duration().times(s.percentage.zeroToOne())))
-      .exhaustive()
-  })
-  Events.listen(PlaylistEventTopic, event => {
-    const wasPlaying = result.isPaused().isFalse()
-    if (event instanceof Song) {
-      result.load(event)
-      if (wasPlaying)
-        result.playCurrentSong()
-    }
   })
   return result
 }

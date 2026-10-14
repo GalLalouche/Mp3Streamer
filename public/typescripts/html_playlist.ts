@@ -81,15 +81,11 @@ export class HtmlPlaylist {
     Events.publish(PlaylistEventTopic, song)
   }
 
-  /** Returns true iff there is a next song to load. */
-  next(): boolean {
+  next(): void {
     // This can happen when next is invoked manually. In normal operation, the next song is
     // pre-loaded when the current song is about to end.
-    if (this.current === null || this.isLastSongPlaying())
-      return false
-
+    require(this.current !== null && this.isLastSongPlaying().isFalse())
     this.select(this.current + 1)
-    return true
   }
 
   previous(): void {
