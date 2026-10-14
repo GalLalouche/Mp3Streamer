@@ -24,7 +24,6 @@ export abstract class Player {
   abstract setVolume(v: Volume): void
   abstract getVolume(): Volume
   abstract skipTo(duration: Duration): void
-  abstract clear(): void
   /** Listen to this player specifically (as opposed to the global Events PubSub. */
   abstract listen(callback: PlayerEventListener): void
   abstract unlisten(callback: PlayerEventListener): void
