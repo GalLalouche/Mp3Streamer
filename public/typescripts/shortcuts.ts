@@ -2,6 +2,7 @@ import * as DataApi from "./data_api.js"
 import {Song} from "./media.js"
 import {gplayer, gplaylist} from "./globals.js"
 import * as Search from "./search.js"
+import {Events, PlayerControls, PlaylistEvents} from "./events.js"
 
 $(function () {
   $(document).on('keypress', async function (e) {
@@ -22,22 +23,18 @@ $(function () {
     assert(letter.length == 1)
     switch (letter) {
       case 'z':
-        gplayer.stop()
-        if (gplaylist.currentIndex() > 0) // if not first song, go to previous song; otherwise restart song
-          gplaylist.prev()
-        gplayer.load(gplaylist.currentPlayingSong())
-        gplayer.playCurrentSong()
+        Events.publish(PlaylistEvents, "previous")
         break
       case ' ':
       case 'k': // fucking youtube :\
       case 'c':
-        gplayer.togglePause()
+        Events.publish(PlayerControls, "toggle_pause")
         break
       case 'v':
-        gplayer.stop()
+        Events.publish(PlayerControls, "stop")
         break
       case 'b':
-        await gplaylist.next()
+        Events.publish(PlaylistEvents, "next")
         break
       case 'n':
         await loadNextSong()

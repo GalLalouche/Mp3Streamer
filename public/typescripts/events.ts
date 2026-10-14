@@ -28,7 +28,7 @@ export class Seek {
   constructor(percentage: Percentage) {this.percentage = percentage}
 }
 
-export type PlayerControl = "play" | "pause" | "stop" | Volume | Seek | Song
+export type PlayerControl = "play" | "pause" | "toggle_pause" | "stop" | Volume | Seek | Song
 export const PlayerControls = topic<PlayerControl>("player_controls")
 
 export class TimeUpdate {
