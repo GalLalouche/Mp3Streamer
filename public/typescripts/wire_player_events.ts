@@ -11,6 +11,12 @@ $(function () {
         .with("play", () => player.playCurrentSong())
         .with("stop", () => player.stop())
         .with("pause", () => player.pause())
+        .with("toggle_pause", () => {
+          if (player.isPaused())
+            player.playCurrentSong()
+          else
+            player.pause()
+        })
         .with(P.instanceOf(Volume), v => player.setVolume(v))
         .with(P.instanceOf(Seek), s => player.skipTo(player.duration().times(s.percentage.zeroToOne())))
         .with(P.instanceOf(Song), s => {
