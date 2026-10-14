@@ -1,6 +1,6 @@
 // TODO use enums and use Object.values to get this list for the drop down list.
 import * as API from "./api.js"
-import {Events, PlaylistContextMenuEventTopic, PlayerEvents} from "./events.js"
+import {Events, PlaylistContextMenuEvents, PlayerEvents} from "./events.js"
 import {Song} from "./media.js"
 import {gplaylist} from "./globals.js"
 
@@ -14,7 +14,7 @@ $(function () {
   fieldset.on('click', 'button', async function () {
     return $.ajax({url: "score/" + gplaylist.currentPlayingSong().file, type: "PATCH"})
   })
-  Events.listen(PlaylistContextMenuEventTopic, e => {
+  Events.listen(PlaylistContextMenuEvents, e => {
     if (e.type === "score")
       popup(e.song)
   })

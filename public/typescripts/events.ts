@@ -25,21 +25,18 @@ export const Startup = new Deferred<{player: Player, playlist: Playlist}>()
 *********/
 export class Seek {
   readonly percentage: Percentage
-
-  constructor(percentage: Percentage) {
-    this.percentage = percentage
-  }
+  constructor(percentage: Percentage) {this.percentage = percentage}
 }
 
-export type PlayerControls = "play" | "pause" | "stop" | Volume | Seek
-export const PlayerControlsTopic = topic<PlayerControls>("player_controls")
+export type PlayerControl = "play" | "pause" | "stop" | Volume | Seek
+export const PlayerControls = topic<PlayerControl>("player_controls")
 
 
 export class TimeUpdate {
   readonly currentDuration: Duration
   readonly totalDuration: Duration
 
-  constructor(input: { currentDuration: Duration, totalDuration: Duration }) {
+  constructor(input: {currentDuration: Duration, totalDuration: Duration}) {
     this.currentDuration = input.currentDuration
     this.totalDuration = input.totalDuration
   }
@@ -50,23 +47,21 @@ export class TimeUpdate {
 }
 
 export function mute() {
-  Events.publish(PlayerControlsTopic, new Volume(Percentage.ZERO))
+  Events.publish(PlayerControls, new Volume(Percentage.ZERO))
 }
 
 export type PlayerEvent = "ENDED" | TimeUpdate | Song
-export type PlayerEventListener = (pe: PlayerEvent) => void
 export const PlayerEvents = topic<PlayerEvent>("player_event")
 
 /***********
 * Playlist *
 ************/
-
 export type PlaylistEvent = "next" | "previous" | Song
-export const PlaylistEventTopic = topic<PlaylistEvent>("playlist_event")
+export const PlaylistEvents = topic<PlaylistEvent>("playlist_event")
 
 interface PlaylistItemContextMenuEvent {
   readonly type: "external" | "score"
   readonly song: Song
 }
-export const PlaylistContextMenuEventTopic = topic<PlaylistItemContextMenuEvent>("playlist_context_menu_event")
+export const PlaylistContextMenuEvents = topic<PlaylistItemContextMenuEvent>("playlist_context_menu_event")
 
