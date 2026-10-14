@@ -1,6 +1,6 @@
 /** Processes events and wires them to the playlist. */
 import {match, P} from "ts-pattern"
-import {Events, PlayerControl, PlayerControls, PlaylistEvents, Seek, Startup} from "./events.js"
+import {Events, PlayerControl, PlayerControls, Seek, Startup} from "./events.js"
 import {Volume} from "./volume.js"
 import {Song} from "./media.js"
 
@@ -13,15 +13,13 @@ $(function () {
         .with("pause", () => player.pause())
         .with(P.instanceOf(Volume), v => player.setVolume(v))
         .with(P.instanceOf(Seek), s => player.skipTo(player.duration().times(s.percentage.zeroToOne())))
+        .with(P.instanceOf(Song), s => {
+          const wasPlaying = player.isPaused().isFalse()
+          player.load(s)
+          if (wasPlaying)
+            player.playCurrentSong()
+        })
         .exhaustive()
-    })
-    Events.listen(PlaylistEvents, event => {
-      const wasPlaying = player.isPaused().isFalse()
-      if (event instanceof Song) {
-        player.load(event)
-        if (wasPlaying)
-          player.playCurrentSong()
-      }
     })
   })
 })
