@@ -32,10 +32,7 @@ export function makePlaylist(): Playlist {
       return current ?? pl.currentIndex()
     }
     override async next(): Promise<void> {
-      if (pl.next().isFalse()) {
-        await addNextRandomSong()
-        return this.next()
-      }
+      pl.next()
     }
     override prev() {return pl.previous()}
     override clear(): Promise<void> {return pl.setPlaylist([])}
@@ -45,30 +42,5 @@ export function makePlaylist(): Playlist {
     }
   }
 
-  Events.listen(PlaylistEventTopic, event => {
-    match(event)
-      .with('next', () => result.next())
-      .with('previous', () => result.prev())
-  })
-
-  async function maybePreloadNextSong(tu: TimeUpdate): Promise<void> {
-    if (pl.isLastSongPlaying() && PRELOAD_GAP.isGreaterThanOrEqual(tu.remainingDuration()))
-      await addNextRandomSong()
-  }
-  async function addNextRandomSong(): Promise<void> {
-    return DataApi.getRandomSong().then(song => result.add(song)).void()
-  }
-  Events.listen(PlayerEvents, (e: PlayerEvent) => {
-    // Can't use ts-pattern here since Song's constructor is private
-    if (e === "ENDED")
-      result.next()
-    else if (e instanceof TimeUpdate)
-      maybePreloadNextSong(e)
-    else
-      // Songs are changed *via* the playlist
-      assert(result.getSong(result.currentIndex()) === e)
-  })
   return result
 }
-
-const PRELOAD_GAP = Duration.fromSeconds(20)

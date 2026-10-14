@@ -26,5 +26,5 @@ export async function addAndPlayNow(song: Song | Song[]): Promise<void> {
 $(function () {
   gplayer = makePlayer()
   gplaylist = makePlaylist()
-  Startup.resolve()
+  Startup.resolve({player: gplayer, playlist: gplaylist})
 })

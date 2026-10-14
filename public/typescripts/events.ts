@@ -7,6 +7,8 @@
 import {Duration, Percentage} from "./common_types.js"
 import {Deferred} from "./deferred.js"
 import {Song} from "./media.js"
+import {Player} from "./player.js"
+import {Playlist} from "./playlist.js"
 import {PubSub, topic} from "./pubsub.js"
 import {Volume} from "./volume.js"
 
@@ -16,7 +18,7 @@ export const Events: PubSub = new PubSub()
 /**********
 * Startup *
 **********/
-export const Startup = new Deferred<void>()
+export const Startup = new Deferred<{player: Player, playlist: Playlist}>()
 
 /*********
 * Player *
@@ -45,6 +47,10 @@ export class TimeUpdate {
   remainingDuration(): Duration {
     return this.totalDuration.minus(this.currentDuration)
   }
+}
+
+export function mute() {
+  Events.publish(PlayerControlsTopic, new Volume(Percentage.ZERO))
 }
 
 export type PlayerEvent = "ENDED" | TimeUpdate | Song

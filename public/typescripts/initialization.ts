@@ -1,7 +1,9 @@
+import {Percentage} from "./common_types.js"
 import * as DataApi from "./data_api.js"
-import {Startup} from "./events.js"
+import {Events, mute, PlayerControls, Startup} from "./events.js"
 import {addAndPlayNow} from "./globals.js"
 import {Song} from "./media.js"
+import {Volume} from "./volume.js"
 
 export const isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) !== null
 
@@ -35,7 +37,9 @@ Startup.promise.then(async _ => {
   const debugStartSong = getSearchParam("addSong")
   const debugStartAlbum = getSearchParam("addAlbum")
 
-  $(isMuted() ? ".jp-mute" : ".jp-volume-max").trigger('click')
+  if (isMuted())
+    // No using button trigger here, since the event setup may not have run yet
+    mute()
 
   async function initialSongs(): Promise<Song | Song[]> {
     if (debugStartSong) {

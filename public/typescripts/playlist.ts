@@ -19,4 +19,5 @@ export abstract class Playlist {
   abstract songs(): readonly Song[]
   last(): Song {return this.getSong(this.length() - 1)}
   abstract length(): number
+  isLastSongPlaying() {return this.currentIndex() === this.length() - 1}
 }
