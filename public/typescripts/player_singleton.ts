@@ -48,8 +48,13 @@ export function makePlayer(): Player {
         current: result.currentTime(),
         total: result.duration(),
       })
-    if (pe instanceof Song)
+    if (pe instanceof Song) {
       PlayerGUI.setCurrentSong(pe)
+      PlayerGUI.updatePosition({
+        current: Duration.ZERO,
+        total: pe.duration,
+      })
+    }
     Events.publish(PlayerEvents, pe)
   })
   return result
