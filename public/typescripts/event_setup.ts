@@ -1,5 +1,5 @@
 import {Percentage} from "./common_types.js"
-import {mute, Events, PlayerControls, PlayerControlsTopic, PlaylistEvent, PlaylistEventTopic, Seek} from "./events.js"
+import {mute, Events, PlayerControl, PlayerControls, PlaylistEvent, PlaylistEvents, Seek} from "./events.js"
 import {Volume} from "./volume.js"
 
 export const REMOVE_ITEM = "jp-playlist-item-remove"
@@ -14,8 +14,8 @@ $(function () {
   /*******************
    * Player controls *
    ******************/
-  function playerControlsAux(str: PlayerControls): void {
-    $('.jp-' + str).on('click', () => Events.publish(PlayerControlsTopic, str))
+  function playerControlsAux(str: PlayerControl): void {
+    $('.jp-' + str).on('click', () => Events.publish(PlayerControls, str))
   }
 
   playerControlsAux("play")
@@ -26,11 +26,11 @@ $(function () {
   $('.jp-mute').on('click', () => mute())
 
   // TODO handle unmute by maintaining the original volume
-  function barListener(selector: string, f: (p: Percentage) => PlayerControls): void {
+  function barListener(selector: string, f: (p: Percentage) => PlayerControl): void {
     const target = $(selector)
     target.on('click', e => {
       const clickXPosition = e.pageX - target.offset()!.left
-      Events.publish(PlayerControlsTopic, f(Percentage.fromMax1(clickXPosition / target.width()!)))
+      Events.publish(PlayerControls, f(Percentage.fromMax1(clickXPosition / target.width()!)))
     })
   }
 
@@ -41,7 +41,7 @@ $(function () {
    * Playlist controls *
    ********************/
   function playlistControlsAux(str: PlaylistEvent): void {
-    $('.jp-' + str).on('click', () => Events.publish(PlaylistEventTopic, str))
+    $('.jp-' + str).on('click', () => Events.publish(PlaylistEvents, str))
   }
 
   playlistControlsAux("next")

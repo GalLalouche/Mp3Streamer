@@ -2,7 +2,7 @@ import {Song} from "./media.js"
 import {mediaMetadataHtml} from "./media_metadata.js"
 import * as ColorUtils from "./color-utils.js"
 import {ITEM_CLASS, REMOVE_DOWN, REMOVE_ITEM, REMOVE_THIS, REMOVE_UP} from "./event_setup.js"
-import {Events, PlaylistContextMenuEventTopic} from "./events.js"
+import {Events, PlaylistContextMenuEvents} from "./events.js"
 
 export type RemoveType = "x" | "up" | "down"
 export type PlaylistItemClickType = "select" | RemoveType
@@ -83,7 +83,7 @@ function createElement(song: Song): JQuery<HTMLElement> {
 
     contextMenu.one("click", "li", async function (e) {
       function publish(type: "score" | "external") {
-        Events.publish(PlaylistContextMenuEventTopic, {type: type, song: song})
+        Events.publish(PlaylistContextMenuEvents, {type: type, song: song})
       }
       switch (e.target.textContent.trim()) {
         case "Score":

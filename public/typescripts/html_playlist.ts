@@ -3,13 +3,13 @@
 import {match, P} from "ts-pattern"
 import {Song} from "./media.js"
 import {PlaylistItem, RemoveType} from "./playlist_item.js"
-import {Events, PlaylistEventTopic} from "./events.js"
+import {Events, PlaylistEvents} from "./events.js"
 
 
 /**
  * Handles the playlist via an HTML list.
  *
- * Also handles listening to song changes via clicks on the song elements, item removals. If the selection has changed, will use {@link Events} to publish under the {@link PlaylistEventTopic}.
+ * Also handles listening to song changes via clicks on the song elements, item removals. If the selection has changed, will use {@link Events} to publish under the {@link PlaylistEvents}.
  *
  * Does not handle the actual playing of songs, which is handled by the Player class.
  */
@@ -78,7 +78,7 @@ export class HtmlPlaylist {
     this.current = index
     this.markCurrent()
     const song = this.getSong(this.current)
-    Events.publish(PlaylistEventTopic, song)
+    Events.publish(PlaylistEvents, song)
   }
 
   next(): void {

@@ -1,5 +1,5 @@
 import {match} from "ts-pattern"
-import {Events, PlayerEvents, PlaylistEventTopic} from "./events.js"
+import {Events, PlayerEvents, PlaylistEvents} from "./events.js"
 import {Duration} from "./common_types.js"
 import * as DataApi from "./data_api.js"
 import * as Local from "./local.js"

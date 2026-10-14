@@ -1,7 +1,7 @@
 /** Processes events and wires them to the playlist. */
 import * as DataApi from "./data_api.js"
 import {match} from "ts-pattern"
-import {Events, PlayerEvent, PlayerEvents, PlaylistEventTopic, Startup, TimeUpdate} from "./events.js"
+import {Events, PlayerEvent, PlayerEvents, PlaylistEvents, Startup, TimeUpdate} from "./events.js"
 import {Duration} from "./common_types.js"
 
 $(function () {
@@ -17,7 +17,7 @@ $(function () {
         assert(playlist.getSong(playlist.currentIndex()) === e)
     })
 
-    Events.listen(PlaylistEventTopic, event => {
+    Events.listen(PlaylistEvents, event => {
       match(event)
         .with('next', async () => {
           if (playlist.isLastSongPlaying())
