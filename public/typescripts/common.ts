@@ -98,7 +98,7 @@ interface Array<T> {
   custom_max(): T | null
 }
 
-Array.prototype.custom_last = function () {return this [this.length - 1]}
+Array.prototype.custom_last = function () {return this[this.length - 1]}
 Array.prototype.custom_sort_by = function <S, T>(f: (a: T) => S): T[] {
   return this
     .map((e: T): [T, S] => [e, f(e)])
@@ -143,11 +143,9 @@ Array.prototype.custom_max = function () {
   return max
 }
 
-function assert(condition: boolean, message?: string): asserts condition is true {
-  if (condition)
-    return
-  message = message || "Assertion failed"
-  throw typeof Error === "undefined" ? message : new Error(message)
+function assert(cond: boolean, message?: string): asserts cond {
+  if (cond.isFalse())
+    throw new Error(message || "Assertion failed")
 }
 
 function assertDefined<A>(e: A | undefined | null): asserts e is A {
@@ -208,8 +206,8 @@ class IllegalArgumentException extends Error {
   constructor(message: string) {super(message)}
 }
 
-function require(cond: boolean, message?: string): void {
-  if (not(cond))
+function require(cond: boolean, message?: string): asserts cond {
+  if (cond.isFalse())
     throw new IllegalArgumentException(message || "requirement failed")
 }
 
