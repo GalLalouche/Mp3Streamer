@@ -27,6 +27,7 @@ export class Percentage {
 
 export class Duration {
   private readonly millis: number
+  static readonly ZERO: Duration = new Duration(0)
 
   private constructor(millis: number) {this.millis = millis}
 
