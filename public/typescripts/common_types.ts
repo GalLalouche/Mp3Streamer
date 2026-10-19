@@ -28,7 +28,6 @@ export class Percentage {
 export class Duration {
   private readonly millis: number
   static readonly ZERO: Duration = new Duration(0)
-
   private constructor(millis: number) {this.millis = millis}
 
   static fromSeconds(seconds: number): Duration {return new Duration(seconds * 1000)}
@@ -49,6 +48,7 @@ export class Duration {
   minus(fadeoutDuration: Duration): Duration {
     return new Duration(Math.max(this.millis - fadeoutDuration.millis, 0))
   }
-  min(duration: Duration): Duration { return this.millis < duration.millis ? this : duration }
+  min(duration: Duration): Duration {return this.millis < duration.millis ? this : duration}
   times(number: number): Duration {return Duration.fromMillis(this.millis * number)}
+  percentage(other: Duration): Percentage {return Percentage.fromMax1(this.millis / other.millis)}
 }
