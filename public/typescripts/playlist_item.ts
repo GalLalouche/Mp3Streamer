@@ -36,10 +36,10 @@ export class PlaylistItem {
       }
 
       const removeButton = target.closest("a." + REMOVE_ITEM)
-      if (removeButton.length > 0)
+      if (removeButton.custom_nonEmpty())
         listener(getRemoveType(removeButton))
       // ignore clicks between the remove button
-      else if (target.closest("." + REMOVE_ITEM).length === 0)
+      else if (target.closest("." + REMOVE_ITEM).custom_isEmpty())
         listener("select")
     })
   }

@@ -50,7 +50,7 @@ let nonEmptyQueue: boolean = false
 
 function updateAlbums(albums: Album[]): void {
   $("#last_album").find("span").custom_remove_tooltip()
-  if (albums.length == 0) {
+  if (albums.custom_isEmpty()) {
     write("No new albums")
     return
   }
@@ -63,7 +63,7 @@ function updateAlbums(albums: Album[]): void {
   const albumElement = write(text)
   albumElement.find(".fa-" + ADD).on("click", (() => dequeue())).custom_tooltip("Add to playlist")
   albumElement.find(".fa-" + SKIP).on("click", (() => skip())).custom_tooltip("Drop from queue (do not add to playlist)")
-  if (albumElement.custom_overflown() || extra.length > 0) {
+  if (albumElement.custom_overflown() || extra.custom_nonEmpty()) {
     const formatted = albums.map(formatAlbum)
     const extraOverflowText = albums.length > 1 ? ` (+ ${formatted.slice(1).join(", ")})` : ""
     albumElement.custom_tooltip(`${formatted[0]}${extraOverflowText}`)
@@ -84,7 +84,7 @@ async function dequeueAux(f: (a: Album) => Promise<void>): Promise<void> {
   try {
     const [head, tail] = await $.post(prefix + "/dequeue").toPromise()
     await f(head)
-    nonEmptyQueue = tail.length > 0
+    nonEmptyQueue = tail.custom_nonEmpty()
     return updateLatestAlbum()
   } catch (e) {
     console.log(e)

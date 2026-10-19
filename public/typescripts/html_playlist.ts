@@ -105,7 +105,7 @@ export class HtmlPlaylist {
     elem.slideUp(REMOVE_TIME, () => {
       elem.remove()
       this.playlist.splice(playlistIndex, 1)
-      if (this.playlist.length) {
+      if (this.playlist.custom_nonEmpty()) {
         if (playlistIndex === this.current)
           // Update current when current playing element was deleted.
           this.select(playlistIndex < this.playlist.length ? this.current : this.playlist.length - 1)
@@ -153,7 +153,7 @@ export class HtmlPlaylist {
       self.remove(current, function () {
         // if there is another next element to remove,
         // enqueue a removal after this current element is removed
-        if (next.length > 0)
+        if (next.custom_nonEmpty())
           aux(next)
       })
     }

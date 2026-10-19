@@ -131,6 +131,8 @@ interface JQuery {
   custom_overflown(): boolean
   custom_tooltip(text: string): JQuery
   custom_remove_tooltip(): JQuery
+  custom_nonEmpty(): boolean
+  custom_isEmpty(): boolean
   appendBr(): JQuery
   setWidth(p: Percentage): JQuery
 }
@@ -156,4 +158,10 @@ $.fn.appendBr = function () {
 $.fn.setWidth = function (p: Percentage) {
   this.css('width', p.zeroToHundred() + '%')
   return this
+}
+$.fn.custom_isEmpty = function () {
+  return this.length === 0
+}
+$.fn.custom_nonEmpty = function () {
+  return this.length > 0
 }

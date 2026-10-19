@@ -92,10 +92,12 @@ type ObjectIndex<K extends string | number | symbol, V> = {
 }
 
 interface Array<T> {
-  custom_last(): T
+custom_last(): T
   custom_sort_by<S>(f: (a: T) => S): T[]
   custom_group_by<S extends string | number | symbol>(f: (a: T) => S): ObjectIndex<S, T[]>
   custom_max(): T | null
+  custom_isEmpty(): boolean
+  custom_nonEmpty(): boolean
 }
 
 Array.prototype.custom_last = function () {return this[this.length - 1]}
@@ -114,6 +116,8 @@ Array.prototype.custom_sort_by = function <S, T>(f: (a: T) => S): T[] {
     })
     .map((e: [T, S]) => e[0])
 }
+Array.prototype.custom_isEmpty = function () {return this.length === 0}
+Array.prototype.custom_nonEmpty = function () {return this.length > 0}
 
 interface Map<K, V> {
   custom_get_or_throw(key: K): V
@@ -183,6 +187,8 @@ Number.prototype.timeFormat = function (this: number) {
 interface String {
   takeAfterLast(substring: string): string
   capitalize(): string
+  custom_isEmpty(): boolean
+  custom_nonEmpty(): boolean
 }
 
 String.prototype.takeAfterLast = function (subs) {
@@ -190,6 +196,12 @@ String.prototype.takeAfterLast = function (subs) {
 }
 String.prototype.capitalize = function () {
   return this[0].toUpperCase() + this.slice(1)
+}
+String.prototype.custom_isEmpty = function () {
+  return this.length === 0
+}
+String.prototype.custom_nonEmpty = function () {
+  return this.length > 0
 }
 
 interface Boolean {
