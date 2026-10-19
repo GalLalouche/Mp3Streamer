@@ -6,7 +6,7 @@ import {Volume} from "./volume.js"
 
 /** Implements the Player interface using an HTML5 audio element. */
 export class HtmlPlayer extends Player {
-  listeners: PlayerEventListener[] = []
+  listeners: Set<PlayerEventListener> = new Set()
   private readonly html: HTMLAudioElement
   private constructor() {
     super()
@@ -43,9 +43,7 @@ export class HtmlPlayer extends Player {
       Percentage.fromMax100(0) :
       Percentage.fromMax1(this.currentTime().toSeconds() / this.duration().toSeconds())
   }
-  override playCurrentSong(): Promise<void> {
-    return this.html.play()
-  }
+  override playCurrentSong(): Promise<void> {return this.html.play()}
   override getVolume(): Volume {return new Volume(Percentage.fromMax1(this.html.volume))}
   override setVolume(v: Volume): void {this.html.volume = v.percentage().zeroToOne()}
   override skipTo(duration: Duration): void {this.html.currentTime = duration.toSeconds()}
@@ -53,8 +51,6 @@ export class HtmlPlayer extends Player {
     this.html.pause()
     this.html.currentTime = 0
   }
-  override listen(callback: PlayerEventListener): void {this.listeners.push(callback)}
-  override unlisten(callback: PlayerEventListener): void {
-    this.listeners = this.listeners.filter(cb => cb !== callback)
-  }
+  override listen(callback: PlayerEventListener): void {this.listeners.add(callback)}
+  override unlisten(callback: PlayerEventListener): void {this.listeners.delete(callback)}
 }
