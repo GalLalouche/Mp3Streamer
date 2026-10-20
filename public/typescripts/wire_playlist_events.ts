@@ -5,6 +5,7 @@ import {Events, PlayerEvent, PlayerEvents, PlaylistEvents, TimeUpdate} from "./e
 import {Duration} from "./common_types.js"
 import {Song} from "./media.js"
 import {Playlist} from "./playlist.js"
+import {addAndFade} from "./globals.js"
 
 export function wire(playlist: Playlist) {
   Events.listen(PlayerEvents, (e: PlayerEvent) => {
@@ -20,7 +21,7 @@ export function wire(playlist: Playlist) {
     match(event)
       .with('next', async () => {
         if (playlist.isLastSongPlaying())
-          await addNextRandomSong()
+          await addNextRandomSong({fade: false})
         playlist.next()
       })
       .with('previous', () => playlist.prev())
@@ -29,10 +30,11 @@ export function wire(playlist: Playlist) {
 
   async function maybePreloadNextSong(tu: TimeUpdate): Promise<void> {
     if (playlist.isLastSongPlaying() && PRELOAD_GAP.isGreaterThanOrEqual(tu.remainingDuration()))
-      await addNextRandomSong()
+      // FIXME should only fade if the current song isn't the last one in a chain too.
+      await addNextRandomSong({fade: true})
   }
-  async function addNextRandomSong(): Promise<void> {
-    return DataApi.getRandomSong().then(song => playlist.add(song)).void()
+  async function addNextRandomSong(arg: {fade: boolean}): Promise<void> {
+    return DataApi.getRandomSong().then(song => arg.fade ? addAndFade(song) : playlist.add(song).void())
   }
 }
 

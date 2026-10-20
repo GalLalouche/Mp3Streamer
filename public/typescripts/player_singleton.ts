@@ -2,15 +2,14 @@ import {Duration, Percentage} from "./common_types.js"
 import {Events, PlayerEvent, PlayerEvents, TimeUpdate} from "./events.js"
 import {Song} from "./media.js"
 import * as PlayerGUI from "./player_gui.js"
-import {Player} from "./player.js"
 import {Volume} from "./volume.js"
-import {HtmlPlayer} from "./html_player.js"
+import {FadePlayer, HtmlFadePlayer} from "./fade_player.js"
 
-export function makePlayer(): Player {
-  const player = HtmlPlayer.create()
+export function makePlayer(): FadePlayer {
+  const player = HtmlFadePlayer.create()
   const volume: ReplayGainAwareVolume = new ReplayGainAwareVolume()
 
-  const result = new class extends Player {
+  const result = new class extends FadePlayer {
     override currentTime(): Duration {return player.currentTime()}
     override getVolume(): Volume {return volume.replayGainAdjustedVolume()}
     override isPaused(): boolean {return player.isPaused()}
@@ -39,6 +38,7 @@ export function makePlayer(): Player {
     }
     override listen(callback: (pe: PlayerEvent) => void): void {player.listen(callback)}
     override unlisten(callback: (pe: PlayerEvent) => void): void {player.unlisten(callback)}
+    override fadeOnNextLoad(): void {player.fadeOnNextLoad()}
   }
   result.setVolume(volume.replayGainAdjustedVolume())
 

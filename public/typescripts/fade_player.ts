@@ -6,11 +6,15 @@ import {HtmlPlayer} from "./html_player.js"
 import {match, P} from "ts-pattern"
 import {TimeUpdate} from "./events.js"
 
+export abstract class FadePlayer extends Player {
+  abstract fadeOnNextLoad(): void
+}
+
 /**
  * Gist of the algorithm: When loading with fade-in, we make the inactive player active and fade
  * it in, while fading out (previous) the active player.
  */
-export class FadePlayer extends Player {
+export class HtmlFadePlayer extends FadePlayer {
   private activePlayer: Player
   private inactivePlayer: Player
   private readonly players: [Player, Player]
@@ -30,7 +34,7 @@ export class FadePlayer extends Player {
   static create(): FadePlayer {
     const active = HtmlPlayer.create()
     const inactive = HtmlPlayer.create()
-    return new FadePlayer(active, inactive, active.getVolume())
+    return new HtmlFadePlayer(active, inactive, active.getVolume())
   }
   unlisten(callback: PlayerEventListener): void {this.listeners.delete(callback)}
   listen(callback: PlayerEventListener): void {this.listeners.add(callback)}
@@ -77,9 +81,7 @@ export class FadePlayer extends Player {
     }
   }
 
-  fadeOnNextLoad() {
-    this._fadeOnNextLoad = true
-  }
+  override fadeOnNextLoad() {this._fadeOnNextLoad = true}
 
   private loadFade(song: Song): void {
     // * Swap the active and inactive players.

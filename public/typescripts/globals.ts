@@ -20,13 +20,16 @@ Object.defineProperty(globalThis, "gplayer", {get: () => globalAux(gplayer)})
 Object.defineProperty(globalThis, "gplaylist", {get: () => globalAux(gplaylist)})
 
 export async function addAndPlayNow(song: Song | Song[]): Promise<void> {
-  const index = await gplaylist.add(song)
-  gplayer.fadeOnNextLoad()
-  await gplaylist.select(index)
+  await addAndSelect(song)
   await gplayer.playCurrentSong()
 }
 
 export async function addAndFade(song: Song): Promise<void> {
+  gplayer.fadeOnNextLoad()
+  await addAndSelect(song)
+}
+
+async function addAndSelect(song: Song | Song[]): Promise<void> {
   const index = await gplaylist.add(song)
   await gplaylist.select(index)
 }
