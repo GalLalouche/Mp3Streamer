@@ -8,10 +8,11 @@ import {TimeUpdate} from "./events.js"
 
 export abstract class FadePlayer extends Player {
   abstract fadeOnNextLoad(): void
+  abstract isFading(): boolean // FIXME temp hack
 }
 
 /**
- * Gist of the algorithm: When loading with fade-in, we make the inactive player active and fade
+ * Gist of the algorithm: When loading with fade-in, we make the inactive player aturn ctive and fade
  * it in, while fading out (previous) the active player.
  */
 export class HtmlFadePlayer extends FadePlayer {
@@ -58,7 +59,7 @@ export class HtmlFadePlayer extends FadePlayer {
       this.activePlayer.setVolume(v)
   }
 
-  private isFading(): boolean {return this.faders.some(f => f.isWorking)}
+  override isFading(): boolean {return this.faders.some(f => f.isWorking)}
   currentTime(): Duration {return this.activePlayer.currentTime()}
   duration(): Duration {return this.activePlayer.duration()}
   percentageOfSongPlayed(): Percentage {return this.activePlayer.percentageOfSongPlayed()}

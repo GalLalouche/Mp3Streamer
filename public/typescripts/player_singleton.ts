@@ -39,6 +39,7 @@ export function makePlayer(): FadePlayer {
     override listen(callback: (pe: PlayerEvent) => void): void {player.listen(callback)}
     override unlisten(callback: (pe: PlayerEvent) => void): void {player.unlisten(callback)}
     override fadeOnNextLoad(): void {player.fadeOnNextLoad()}
+    override isFading(): boolean {return player.isFading()}
   }
   result.setVolume(volume.replayGainAdjustedVolume())
 

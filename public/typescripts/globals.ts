@@ -25,8 +25,12 @@ export async function addAndPlayNow(song: Song | Song[]): Promise<void> {
 }
 
 export async function addAndFade(song: Song): Promise<void> {
-  gplayer.fadeOnNextLoad()
-  await addAndSelect(song)
+  if (gplayer.isFading().isFalse()) {
+    gplayer.fadeOnNextLoad()
+    return addAndSelect(song)
+  } else {
+    return gplaylist.add(song).void()
+  }
 }
 
 async function addAndSelect(song: Song | Song[]): Promise<void> {
