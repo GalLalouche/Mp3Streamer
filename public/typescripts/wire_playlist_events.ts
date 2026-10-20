@@ -38,4 +38,4 @@ export function wire(playlist: Playlist) {
   }
 }
 
-const PRELOAD_GAP = Duration.fromSeconds(20)
+const PRELOAD_GAP = Duration.fromSeconds(400)

@@ -36,8 +36,14 @@ export class HtmlFadePlayer extends FadePlayer {
     const inactive = HtmlPlayer.create()
     return new HtmlFadePlayer(active, inactive, active.getVolume())
   }
-  unlisten(callback: PlayerEventListener): void {this.listeners.delete(callback)}
-  listen(callback: PlayerEventListener): void {this.listeners.add(callback)}
+  unlisten(callback: PlayerEventListener): void {
+    this.listeners.delete(callback)
+    this.activePlayer.unlisten(callback)
+  }
+  listen(callback: PlayerEventListener): void {
+    this.listeners.add(callback)
+    this.activePlayer.listen(callback)
+  }
   skipTo(duration: Duration): void {
     this.stopFaders()
     this.activePlayer.skipTo(duration)
