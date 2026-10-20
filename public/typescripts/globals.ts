@@ -1,13 +1,13 @@
 import {Startup} from "./events.js"
+import {FadePlayer} from "./fade_player.js"
 import {Song} from "./media.js"
-import {Player} from "./player.js"
 import {makePlayer} from "./player_singleton.js"
 import {Playlist} from "./playlist.js"
 import {makePlaylist} from "./playlist_singleton.js"
 import * as WirePlayer from "./wire_player_events.js"
 import * as WirePlaylist from "./wire_playlist_events.js"
 
-export let gplayer!: Player
+export let gplayer!: FadePlayer
 export let gplaylist!: Playlist
 
 function globalAux(x: any): any {
@@ -21,8 +21,14 @@ Object.defineProperty(globalThis, "gplaylist", {get: () => globalAux(gplaylist)}
 
 export async function addAndPlayNow(song: Song | Song[]): Promise<void> {
   const index = await gplaylist.add(song)
+  gplayer.fadeOnNextLoad()
   await gplaylist.select(index)
   await gplayer.playCurrentSong()
+}
+
+export async function addAndFade(song: Song): Promise<void> {
+  const index = await gplaylist.add(song)
+  await gplaylist.select(index)
 }
 
 $(function () {

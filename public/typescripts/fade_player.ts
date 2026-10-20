@@ -14,6 +14,7 @@ export class FadePlayer extends Player {
   private activePlayer: Player
   private inactivePlayer: Player
   private readonly players: [Player, Player]
+  private _fadeOnNextLoad: boolean = false
 
   private targetVolume: Volume
   private faders: Fader[] = []
@@ -31,8 +32,8 @@ export class FadePlayer extends Player {
     const inactive = HtmlPlayer.create()
     return new FadePlayer(active, inactive, active.getVolume())
   }
-  unlisten(callback: PlayerEventListener): void { this.listeners.delete(callback) }
-  listen(callback: PlayerEventListener): void { this.listeners.add(callback) }
+  unlisten(callback: PlayerEventListener): void {this.listeners.delete(callback)}
+  listen(callback: PlayerEventListener): void {this.listeners.add(callback)}
   skipTo(duration: Duration): void {
     this.stopFaders()
     this.activePlayer.skipTo(duration)
@@ -67,11 +68,20 @@ export class FadePlayer extends Player {
       this.inactivePlayer.playCurrentSong()
   }
   load(song: Song): void {
-    this.stop()
-    this.activePlayer.load(song)
+    if (this._fadeOnNextLoad) {
+      this._fadeOnNextLoad = false
+      this.loadFade(song)
+    } else {
+      this.stop()
+      this.activePlayer.load(song)
+    }
   }
 
-  loadFade(song: Song): void {
+  fadeOnNextLoad() {
+    this._fadeOnNextLoad = true
+  }
+
+  private loadFade(song: Song): void {
     // * Swap the active and inactive players.
     [this.inactivePlayer, this.activePlayer] = [this.activePlayer, this.inactivePlayer]
     this.stopFaders()
