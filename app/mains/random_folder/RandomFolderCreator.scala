@@ -43,8 +43,10 @@ private class RandomFolderCreator @Inject() (
     playlistFile
   }
 
-  private def createSongSet(numberOfSongsToCreate: Int)(pb: ProgressBar): Set[File] = {
-    val result = new mutable.HashSet[IOFile]
+  private def createSongSet(numberOfSongsToCreate: Int, removedSongs: Iterable[File])(
+      pb: ProgressBar,
+  ): Set[File] = {
+    val result = mutable.HashSet.from(removedSongs)
     val uniqifier = songSelector
       .withAdditionalFileFilter(f => result.doesNotContain(f.asInstanceOf[IOFile]))
     while (result.size < numberOfSongsToCreate) {
@@ -106,26 +108,37 @@ private class RandomFolderCreator @Inject() (
   }
 
   /** Returns the original files. */
-  def dumpAll(n: Int): Iterable[FileRef] = dumpAll(
+  def dumpAll(n: Int, drop: Int): Iterable[FileRef] = dumpAll(
     numberOfSongsToCreate = n,
+    drop = drop,
     outputFolder = "RandomSongsOutput",
     playlistName = "random",
   )
 
   /** Returns the original files. */
-  def dumpFiltered(n: Int): Iterable[FileRef] = dumpAll(
+  def dumpFiltered(n: Int, drop: Int): Iterable[FileRef] = dumpAll(
     numberOfSongsToCreate = n,
+    drop = drop,
     outputFolder = FilteredSongsDirName,
     playlistName = "running",
   )
 
   private def dumpAll(
       numberOfSongsToCreate: Int,
+      drop: Int,
       outputFolder: String,
       playlistName: String,
   ): Iterable[FileRef] = {
-    val songs = managed(new ProgressBar("Choosing songs", numberOfSongsToCreate))
-      .acquireAndGet(createSongSet(numberOfSongsToCreate))
+    val initialSet =
+      // FIXME is this if-check really needed?
+      if (drop > 0) generateSet("Choosing dropped songs", drop, removedSongs = Nil) else Set()
+    assert(initialSet.size == drop)
+    if (initialSet.nonEmpty) {
+      val sorted = initialSet.toVector.sortBy(_.getPath).mkString("\n")
+      scribe.info(s"The following songs will be not appear in the playlist:\n$sorted")
+    }
+    val songs =
+      generateSet("Choosing songs", numberOfSongsToCreate + drop, initialSet).removedAll(initialSet)
     assert(songs.size == numberOfSongsToCreate)
     copy(
       songs,
@@ -134,6 +147,9 @@ private class RandomFolderCreator @Inject() (
     )
     songs.map(IOFile(_))
   }
+
+  private def generateSet(taskName: String, count: Int, removedSongs: Iterable[File]): Set[File] =
+    managed(new ProgressBar(taskName, count)).acquireAndGet(createSongSet(count, removedSongs))
 
   def moveFilteredSongs(outputName: String): IODirectory = {
     val outputDir = IODirectory.makeDir(s"$tempDirectoryName/$outputName").clear()

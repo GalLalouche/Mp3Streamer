@@ -17,6 +17,7 @@ private class RandomFolderRunner @Inject() (
   def go(
       numberOfFolders: Int,
       songsPerFolder: Int,
+      drop: Int = 0,
   )(
       playlistName: String,
       ss: ConfigurableSongSelector,
@@ -24,16 +25,17 @@ private class RandomFolderRunner @Inject() (
     scribe.info(s"Scanning for files for $playlistName folder")
     val creator = rfcf.create(ss)
     scribe.info("Choosing songs")
-    val songs = creator.dumpFiltered(numberOfFolders * songsPerFolder)
+    val songs = creator.dumpFiltered(numberOfFolders * songsPerFolder, drop)
     val outputDir = creator.moveFilteredSongs(playlistName)
     scoreSummarizer.summary(songs)
+    val offset = Math.ceilDiv(drop, songsPerFolder)
     for {
       (group, i) <- outputDir.files.grouped(songsPerFolder).zipWithIndex
-      outputDirForGroup = outputDir.addSubDir(s"$playlistName ${i.padLeftZeros(2)}")
+      outputDirForGroup = outputDir.addSubDir(s"$playlistName ${(i + offset).padLeftZeros(2)}")
       song <- group
     } PathUtils.move(song, outputDirForGroup)
     // The last folder will contain the m3u file, seed, etc.
-    val lastDir = outputDir.addSubDir(s"$playlistName $numberOfFolders")
+    val lastDir = outputDir.addSubDir(s"$playlistName ${numberOfFolders + offset}")
     val songsInLastDir = songFileFinder.getSongFilesInDir(lastDir).toVector
     assert(songsInLastDir.isEmpty, s"Found songs in last dir: $songsInLastDir")
     PathUtils.rename(lastDir, "misc.")
