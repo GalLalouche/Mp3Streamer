@@ -20,11 +20,10 @@ export class Song {
   readonly orchestra?: string
   readonly performanceYear?: number
 
-  // The below represent URLs FIXME then why aren't they URLs?!
   readonly file: string
+  // The below represent URLs FIXME then why aren't they URLs?!
   readonly poster: string
-  // Can be undefined in search results FIXME shouldn't be though...
-  readonly path?: string
+  readonly path: string
   offlineUrl?: string
 
   static fromJSON(json: RawJSON): Song {
@@ -46,8 +45,6 @@ export class Song {
       json.performanceYear,
       json.file,
       json.poster,
-      json.mp3,
-      json.flac,
     )
   }
 
@@ -70,8 +67,6 @@ export class Song {
     performanceYear: number | undefined,
     file: string,
     poster: string,
-    mp3: string | undefined,
-    flac: string | undefined,
   ) {
     this.title = title
     this.artistName = artistName
@@ -92,15 +87,7 @@ export class Song {
 
     this.file = file
     this.poster = poster
-    // TODO this is a leftover (I think) of when we cared about mp3/flac. We don't anymore. So we
-    //  should streamline this from server and just take a path.
-    require(mp3 === undefined || flac === undefined, "Song can't have both mp3 and flac")
-    if (mp3)
-      this.path = mp3
-    if (flac)
-      this.path = flac
-    else
-      this.path = "/stream/download/" + file
+    this.path = "/stream/download/" + file
   }
 }
 

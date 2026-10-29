@@ -2,7 +2,6 @@ package server
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-
 import backend.score.model.ModelScore
 import com.google.inject.Module
 import models.{FakeModelFactory, MemorySong}
@@ -13,7 +12,6 @@ import org.scalatest.Assertion
 import play.api.libs.json.{JsArray, JsObject, JsValue}
 import sttp.client3.UriContext
 import sttp.model.Uri
-
 import common.json.RichJson._
 import common.test.memory_ref.MemoryRoot
 
@@ -107,13 +105,13 @@ private class SongTest(serverModule: Module) extends HttpServerSpecs(serverModul
 
   "randomSong/mp3 returns an mp3 song" in {
     getJson(uri"data/randomSong/mp3").map { json =>
-      json.as[JsObject].keys should contain("mp3")
+      json.as[JsObject].str("file") should endWith(".mp3")
     }
   }
 
   "randomSong/flac returns a flac song" in {
     getJson(uri"data/randomSong/flac").map { json =>
-      json.as[JsObject].keys should contain("flac")
+      json.as[JsObject].str("file") should endWith(".flac")
     }
   }
 
