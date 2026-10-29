@@ -12,6 +12,8 @@ trait ConfigurableSongSelector extends SongSelector {
   def randomFlacSong(): Song = randomSongWithExtension("flac")
   def withAdditionalFileFilter(filter: Filter[FileRef]): ConfigurableSongSelector
 
+  def hash: String
+
   private def randomSongWithExtension(ext: String): Song =
     withAdditionalFileFilter(_.hasExtension(ext)).randomSong()
 }

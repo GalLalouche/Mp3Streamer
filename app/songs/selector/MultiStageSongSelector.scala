@@ -1,5 +1,7 @@
 package songs.selector
 
+import java.util.UUID
+
 import backend.recon.Reconcilable.SongExtractor
 import backend.recon.ReconcilableFactory
 import models.{Song, SongTagParser}
@@ -63,4 +65,7 @@ private class MultiStageSongSelector[Sys <: RefSystem] private[selector] (
     additionalFileFilter && filter,
     additionalSongFilter,
   )
+
+  override def hash: String =
+    UUID.nameUUIDFromBytes(songs.mkString("").getBytes).toString
 }

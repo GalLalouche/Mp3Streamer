@@ -104,6 +104,7 @@ private class RandomFolderCreator @Inject() (
       )
     createPlaylistFile(outputDir, playlistName)
     outputDir.addFile("random_seed.txt").write(seed.toString)
+    outputDir.addFile("song_selector_hash.txt").write(songSelector.hash)
     outputDir
   }
 
