@@ -10,7 +10,7 @@ export function wire(playlist: Playlist) {
   Events.listen(PlayerEvents, (e: PlayerEvent) => {
     match(e)
       .with("ENDED", () => playlist.next())
-      .with(P.instanceOf(TimeUpdate), tu => maybePreloadNextSong(tu))
+      .with(P.instanceOf(TimeUpdate), async tu => await maybePreloadNextSong(tu))
       // Songs are changed *via* the playlist
       .with(P.instanceOf(Song), s => playlist.getSong(playlist.currentIndex()) === s)
       .exhaustive()
@@ -28,8 +28,19 @@ export function wire(playlist: Playlist) {
   })
 
   async function maybePreloadNextSong(tu: TimeUpdate): Promise<void> {
-    if (playlist.isLastSongPlaying() && PRELOAD_GAP.isGreaterThanOrEqual(tu.remainingDuration()))
-      await addNextRandomSong()
+    const shouldPreload =
+      () => playlist.isLastSongPlaying() && PRELOAD_GAP.isGreaterThanOrEqual(tu.remainingDuration())
+    if (shouldPreload()) {
+      return navigator.locks.request("preloader", async () => {
+        if (shouldPreload()) {
+          await addNextRandomSong()
+          assert(
+            playlist.currentIndex() === playlist.length() - 2,
+            "Looks like multiple songs were added, since the current index should be the penultimate",
+          )
+        }
+      })
+    }
   }
 
   async function addNextRandomSong(): Promise<void> {

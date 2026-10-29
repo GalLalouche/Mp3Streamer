@@ -44,6 +44,7 @@ export class HtmlPlaylist {
     const playlistUl = $(PLAYLIST + " ul")
     const item = this.createItem(song)
     const duration = match(mode).with("animate", () => 'fast').with("instant", () => 0).exhaustive()
+    this.playlist.push(item)
     playlistUl.prepend(item.element)
       .find("li:first-child").hide()
       .slideDown(duration, function () {
@@ -52,7 +53,6 @@ export class HtmlPlaylist {
         if (lastSong.height()! > regularHeightThreshold)
           console.log("too big, need to shorten")
       })
-    this.playlist.push(item)
 
     if (this.current === null)
       this.select(0)
