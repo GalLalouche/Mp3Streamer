@@ -27,5 +27,6 @@ export abstract class Player {
   /** Listen to this player specifically (as opposed to the global Events PubSub. */
   abstract listen(callback: PlayerEventListener): void
   abstract unlisten(callback: PlayerEventListener): void
+  hasEnded(): boolean {return this.currentTime().equals(this.duration())}
 }
 

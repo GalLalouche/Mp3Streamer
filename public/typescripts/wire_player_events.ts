@@ -20,7 +20,7 @@ export function wire(player: Player) {
       .with(P.instanceOf(Volume), v => player.setVolume(v))
       .with(P.instanceOf(Seek), s => player.skipTo(player.duration().times(s.percentage.zeroToOne())))
       .with(P.instanceOf(Song), s => {
-        const wasPlaying = player.isPaused().isFalse()
+        const wasPlaying = player.isPaused().isFalse() || player.hasEnded()
         player.load(s)
         if (wasPlaying)
           player.playCurrentSong()
