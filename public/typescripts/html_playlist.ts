@@ -1,9 +1,9 @@
 /* Adapted from http://www.jplayer.org playlist. */
 
 import {match, P} from "ts-pattern"
+import {Events, PlayerControls} from "./events.js"
 import {Song} from "./media.js"
 import {PlaylistItem, RemoveType} from "./playlist_item.js"
-import {Events, PlayerControls} from "./events.js"
 
 
 /**

@@ -15,14 +15,14 @@ import {Volume} from "./volume.js"
 
 export const Events: PubSub = new PubSub()
 
-/**********
-* Startup *
-**********/
+/***********
+ * Startup *
+ **********/
 export const Startup = new Deferred<{player: Player, playlist: Playlist}>()
 
-/*********
-* Player *
-*********/
+/**********
+ * Player *
+ *********/
 export class Seek {
   readonly percentage: Percentage
   constructor(percentage: Percentage) {this.percentage = percentage}
@@ -53,9 +53,9 @@ export function mute() {
 export type PlayerEvent = "ENDED" | TimeUpdate | Song
 export const PlayerEvents = topic<PlayerEvent>("player_event")
 
-/***********
-* Playlist *
-************/
+/************
+ * Playlist *
+ ************/
 export type PlaylistEvent = "next" | "previous"
 export const PlaylistEvents = topic<PlaylistEvent>("playlist_event")
 
@@ -63,5 +63,6 @@ interface PlaylistItemContextMenuEvent {
   readonly type: "external" | "score"
   readonly song: Song
 }
+
 export const PlaylistContextMenuEvents = topic<PlaylistItemContextMenuEvent>("playlist_context_menu_event")
 

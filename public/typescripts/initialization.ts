@@ -1,9 +1,7 @@
-import {Percentage} from "./common_types.js"
 import * as DataApi from "./data_api.js"
-import {Events, mute, PlayerControls, Startup} from "./events.js"
+import {mute, Startup} from "./events.js"
 import {addAndPlayNow} from "./globals.js"
 import {Song} from "./media.js"
-import {Volume} from "./volume.js"
 
 export const isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/) !== null
 
@@ -52,5 +50,6 @@ Startup.promise.then(async _ => {
     } else
       return DataApi.getRandomSong()
   }
+
   initialSongs().then(addAndPlayNow)
 })

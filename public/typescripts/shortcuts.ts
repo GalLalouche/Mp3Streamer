@@ -1,8 +1,8 @@
 import * as DataApi from "./data_api.js"
-import {Song} from "./media.js"
-import {gplayer, gplaylist} from "./globals.js"
-import * as Search from "./search.js"
 import {Events, PlayerControls, PlaylistEvents} from "./events.js"
+import {gplayer, gplaylist} from "./globals.js"
+import {Song} from "./media.js"
+import * as Search from "./search.js"
 
 $(function () {
   $(document).on('keypress', async function (e) {

@@ -1,8 +1,8 @@
-import {Song} from "./media.js"
-import {mediaMetadata, mediaMetadataHtml} from "./media_metadata.js"
 import * as ColorUtils from "./color-utils.js"
 import {ITEM_CLASS, REMOVE_DOWN, REMOVE_ITEM, REMOVE_THIS, REMOVE_UP} from "./event_setup.js"
 import {Events, PlaylistContextMenuEvents} from "./events.js"
+import {Song} from "./media.js"
+import {mediaMetadata, mediaMetadataHtml} from "./media_metadata.js"
 
 export type RemoveType = "x" | "up" | "down"
 export type PlaylistItemClickType = "select" | RemoveType
@@ -49,6 +49,7 @@ function createElement(song: Song): JQuery<HTMLElement> {
   let listItem = "<li><div>" + mediaMetadataHtml(song)
 
   listItem += `<span class="${REMOVE_ITEM} jp-playlist-item-actions">`
+
   function appendIcon(clazz: string, char: string) {
     listItem += `<a href='javascript:;' class='${REMOVE_ITEM} ${clazz}'>${char}</a>`
   }
@@ -85,6 +86,7 @@ function createElement(song: Song): JQuery<HTMLElement> {
       function publish(type: "score" | "external") {
         Events.publish(PlaylistContextMenuEvents, {type: type, song: song})
       }
+
       switch (e.target.textContent.trim()) {
         case "Score":
           publish("score")

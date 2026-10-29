@@ -1,10 +1,10 @@
 import {Duration, Percentage} from "./common_types.js"
 import {Events, PlayerEvent, PlayerEvents, TimeUpdate} from "./events.js"
-import {Song} from "./media.js"
-import * as PlayerGUI from "./player_gui.js"
-import {Player} from "./player.js"
-import {Volume} from "./volume.js"
 import {HtmlPlayer} from "./html_player.js"
+import {Song} from "./media.js"
+import {Player} from "./player.js"
+import * as PlayerGUI from "./player_gui.js"
+import {Volume} from "./volume.js"
 
 export function makePlayer(): Player {
   const player = HtmlPlayer.create()

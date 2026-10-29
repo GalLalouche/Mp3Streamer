@@ -1,8 +1,8 @@
 /** Processes events and wires them to the playlist. */
-import * as DataApi from "./data_api.js"
 import {match, P} from "ts-pattern"
-import {Events, PlayerEvent, PlayerEvents, PlaylistEvents, TimeUpdate} from "./events.js"
 import {Duration} from "./common_types.js"
+import * as DataApi from "./data_api.js"
+import {Events, PlayerEvent, PlayerEvents, PlaylistEvents, TimeUpdate} from "./events.js"
 import {Song} from "./media.js"
 import {Playlist} from "./playlist.js"
 
@@ -31,6 +31,7 @@ export function wire(playlist: Playlist) {
     if (playlist.isLastSongPlaying() && PRELOAD_GAP.isGreaterThanOrEqual(tu.remainingDuration()))
       await addNextRandomSong()
   }
+
   async function addNextRandomSong(): Promise<void> {
     return DataApi.getRandomSong().then(song => playlist.add(song)).void()
   }

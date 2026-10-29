@@ -6,9 +6,9 @@
  * See {@link event_setup.ts} for the other direction.
  */
 import {Duration, Percentage} from "./common_types.js"
+import * as Dom from "./dom.js"
 import {Song} from "./media.js"
 import {Volume} from "./volume.js"
-import * as Dom from "./dom.js"
 
 
 /**

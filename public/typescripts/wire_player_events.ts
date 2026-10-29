@@ -1,9 +1,9 @@
 /** Processes events and wires them to the playlist. */
 import {match, P} from "ts-pattern"
 import {Events, PlayerControl, PlayerControls, Seek} from "./events.js"
-import {Volume} from "./volume.js"
 import {Song} from "./media.js"
 import {Player} from "./player.js"
+import {Volume} from "./volume.js"
 
 export function wire(player: Player) {
   Events.listen(PlayerControls, (control: PlayerControl) => {

@@ -92,7 +92,7 @@ type ObjectIndex<K extends string | number | symbol, V> = {
 }
 
 interface Array<T> {
-custom_last(): T
+  custom_last(): T
   custom_sort_by<S>(f: (a: T) => S): T[]
   custom_group_by<S extends string | number | symbol>(f: (a: T) => S): ObjectIndex<S, T[]>
   custom_max(): T | null

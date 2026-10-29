@@ -1,7 +1,7 @@
 import {Percentage} from "./common_types.js"
-import {mute, Events, PlayerControl, PlayerControlButton, PlayerControls, PlaylistEvent, PlaylistEvents, Seek} from "./events.js"
-import {Volume} from "./volume.js"
 import * as Dom from "./dom.js"
+import {Events, mute, PlayerControl, PlayerControlButton, PlayerControls, PlaylistEvent, PlaylistEvents, Seek} from "./events.js"
+import {Volume} from "./volume.js"
 
 export const REMOVE_ITEM = "jp-playlist-item-remove"
 export const REMOVE_THIS = "jp-playlist-item-remove-this"

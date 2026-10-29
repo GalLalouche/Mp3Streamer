@@ -1,9 +1,9 @@
-import * as API from './api.js'
-import {Song} from "./media.js"
-import {gplaylist} from "./globals.js"
-import * as Poster from "./poster.js"
-import {Events, PlaylistContextMenuEvents, PlayerEvents} from './events.js'
 import {match} from 'ts-pattern'
+import * as API from './api.js'
+import {Events, PlayerEvents, PlaylistContextMenuEvents} from './events.js'
+import {gplaylist} from "./globals.js"
+import {Song} from "./media.js"
+import * as Poster from "./poster.js"
 
 async function refreshRemote(song: Song): Promise<void> {
   const refreshDisplay = song === gplaylist.currentPlayingSong()

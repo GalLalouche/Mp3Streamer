@@ -1,7 +1,7 @@
 import * as API from "./api.js"
 import {Events, PlayerEvents} from "./events.js"
-import {Song} from "./media.js"
 import {gplayer, gplaylist} from "./globals.js"
+import {Song} from "./media.js"
 
 $(function () {
   Events.listen(PlayerEvents, pe => {

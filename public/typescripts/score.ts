@@ -1,8 +1,8 @@
 // TODO use enums and use Object.values to get this list for the drop down list.
 import * as API from "./api.js"
-import {Events, PlaylistContextMenuEvents, PlayerEvents} from "./events.js"
-import {Song} from "./media.js"
+import {Events, PlayerEvents, PlaylistContextMenuEvents} from "./events.js"
 import {gplaylist} from "./globals.js"
+import {Song} from "./media.js"
 
 $(function () {
   fieldset = $("#score")

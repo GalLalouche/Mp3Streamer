@@ -1,5 +1,5 @@
-import * as Local from "./local.js"
 import {HtmlPlaylist} from "./html_playlist.js"
+import * as Local from "./local.js"
 import {Song} from "./media.js"
 import {Playlist} from "./playlist.js"
 

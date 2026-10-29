@@ -1,9 +1,9 @@
 import * as API from "./api.js"
 import * as DataApi from "./data_api.js"
+import {addAndPlayNow, gplaylist} from "./globals.js"
 import * as LastAlbum from "./last.js"
 import {Album, Artist, Song} from "./media.js"
 import {mediaMetadata} from "./media_metadata.js"
-import {addAndPlayNow, gplaylist} from "./globals.js"
 
 export async function quickSearch(): Promise<void> {
   const helper = getHelper()
@@ -138,8 +138,7 @@ class Helper {
       }
 
       return `${icon(ADD)} ${icon(PLAY)} ${suffix()}`
-    },
-    )
+    })
     $.each($(".song-result"), function () {
       const song = $(this).data() as Song
       $(this).custom_tooltip(mediaMetadata(song))
