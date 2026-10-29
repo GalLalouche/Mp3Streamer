@@ -235,8 +235,8 @@ async function dataDisc(album: Album, discNumber: string): Promise<Song[]> {
   return DataApi.getSongsRawPath(`data/disc/${discNumber}/${album.dir}`)
 }
 
-function download(album: Album): void {
-  $.get("download/" + album.dir)
+async function download(album: Album): Promise<void> {
+  await API.get("download/" + album.dir)
 }
 
 async function searchApi(text: string): Promise<Results> {

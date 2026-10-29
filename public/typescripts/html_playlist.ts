@@ -24,9 +24,7 @@ export class HtmlPlaylist {
     return result
   }
 
-  currentIndex(): number {
-    return definedOrThrow(this.current)
-  }
+  currentIndex(): number {return definedOrThrow(this.current)}
   songs(): readonly Song[] {return this.playlist.map(e => e.song)}
   length(): number {return this.playlist.length}
   getSong(index: number): Song {return this.playlist[index].song}

@@ -12,9 +12,9 @@ export function wire(player: Player) {
       .with("play", () => player.playCurrentSong())
       .with("stop", () => player.stop())
       .with("pause", () => player.pause())
-      .with("toggle_pause", () => {
+      .with("toggle_pause", async () => {
         if (player.isPaused())
-          player.playCurrentSong()
+          await player.playCurrentSong()
         else
           player.pause()
       })

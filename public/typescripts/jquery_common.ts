@@ -103,7 +103,7 @@ const tr = elemFactory('tr')
  *               will also be bound to the button function, and will be disabled by default
  * @param validationFunction A function that accepts a string (the new contents of the modified text box) and returns
  *                           true if the content is valid
- * @param buttonFunction A function to invoke when the button is clicked (assuming is is enabled, of course), or when
+ * @param buttonFunction A function to invoke when the button is clicked (assuming is enabled, of course), or when
  *                       the 'Enter' (<CR>) key is pressed while modifying the textbox(es)
  */
 function validateBoxAndButton(

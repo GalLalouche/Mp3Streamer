@@ -1,6 +1,6 @@
 import * as DataApi from "./data_api.js"
 import {Events, PlayerControls, PlaylistEvents} from "./events.js"
-import {gplayer, gplaylist} from "./globals.js"
+import {gplaylist} from "./globals.js"
 import {Song} from "./media.js"
 import * as Search from "./search.js"
 
@@ -67,5 +67,5 @@ $(function () {
     return DataApi.nextSong(gplaylist.last()).then(song => gplaylist.add(song).void())
   }
 
-  $(document).on("click", ".poster", () => gplayer.togglePause())
+  $(document).on("click", ".poster", () => Events.publish(PlayerControls, "toggle_pause"))
 })

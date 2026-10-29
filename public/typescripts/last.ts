@@ -6,7 +6,7 @@ import {gplaylist} from "./globals.js"
 import {Album} from "./media.js"
 
 export async function addNextNewAlbum(): Promise<void> {
-  if (nonEmptyQueue) { // If the queue isn't empty, dequeue first for faster update time.
+  if (isQueueNonEmpty) { // If the queue isn't empty, dequeue first for faster update time.
     await dequeue()
     await updateLatestAlbum()
   } else {
@@ -46,7 +46,7 @@ function write(text: string): JQuery<HTMLElement> {
   return $("#last_album").empty().append(span(text))
 }
 
-let nonEmptyQueue: boolean = false
+let isQueueNonEmpty: boolean = false
 
 function updateAlbums(albums: Album[]): void {
   $("#last_album").find("span").custom_remove_tooltip()
@@ -55,7 +55,7 @@ function updateAlbums(albums: Album[]): void {
     return
   }
   const firstAlbum = albums[0]
-  nonEmptyQueue = true
+  isQueueNonEmpty = true
   const extra = albums.length > 1 ? ` (+ ${albums.length - 1} more)` : ""
   const formatAlbum = (album: Album) => `${album.artistName}: ${album.title}`
   const text = `${icon(ADD)} ${icon(SKIP)} ${formatAlbum(firstAlbum)}${extra}`
@@ -84,7 +84,7 @@ async function dequeueAux(f: (a: Album) => Promise<void>): Promise<void> {
   try {
     const [head, tail] = await $.post(prefix + "/dequeue").toPromise()
     await f(head)
-    nonEmptyQueue = tail.custom_nonEmpty()
+    isQueueNonEmpty = tail.custom_nonEmpty()
     return updateLatestAlbum()
   } catch (e) {
     console.log(e)

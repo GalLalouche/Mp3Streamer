@@ -19,17 +19,16 @@ export function makePlaylist(): Playlist {
         return lastIndex()
       }
 
-      let current = null
+      let current: number | null = null
       for (const s of song) {
         pl.add(s, 'instant')
-        if (current === null)
-          current = lastIndex()
+        current = current ?? lastIndex()
       }
       return current ?? lastIndex()
     }
     override next() {pl.next()}
     override prev() {pl.previous()}
-    override clear(): void {pl.setPlaylist([])}
+    override clear() {pl.setPlaylist([])}
     override async select(index: number): Promise<void> {
       await Local.maybeDownloadLocally(pl.getSong(index))
       pl.select(index)

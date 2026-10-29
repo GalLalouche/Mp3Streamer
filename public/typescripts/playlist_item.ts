@@ -90,8 +90,10 @@ function createElement(song: Song): JQuery<HTMLElement> {
       switch (e.target.textContent.trim()) {
         case "Score":
           publish("score")
+          break
         case "Refresh":
           publish("external")
+          break
         default:
           throw new AssertionError("Unexpected selection: " + e.target.textContent)
       }

@@ -22,7 +22,6 @@ async function download(url: string): Promise<Blob> {
     const existing_request = requests.get(url)
     if (existing_request !== undefined)
       return existing_request
-    console.log(`Downloading ${url}`)
     const blob_promise = fetch(url).then(e => e.blob())
     requests.set(url, blob_promise)
     const blob = await blob_promise
@@ -35,10 +34,7 @@ async function download(url: string): Promise<Blob> {
 
 /** Returns the offline blob URL. */
 async function setOfflineUrl(song: Song): Promise<string> {
-  if (song.offlineUrl === undefined) {
-    const blob = await download(song.path)
-    console.log(`Blob for ${song.file} set`)
-    song.offlineUrl = URL.createObjectURL(blob)
-  }
+  if (song.offlineUrl === undefined)
+    song.offlineUrl = URL.createObjectURL(await download(song.path))
   return song.offlineUrl
 }

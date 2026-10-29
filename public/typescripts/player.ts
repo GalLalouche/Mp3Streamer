@@ -12,12 +12,6 @@ export abstract class Player {
   /** Does not unpause. */
   abstract pause(): void
   abstract isPaused(): boolean
-  togglePause(): void {
-    if (this.isPaused())
-      this.playCurrentSong()
-    else
-      this.pause()
-  }
   abstract percentageOfSongPlayed(): Percentage
   abstract duration(): Duration
   abstract currentTime(): Duration
