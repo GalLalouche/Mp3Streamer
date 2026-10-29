@@ -6,7 +6,7 @@ import {Playlist} from "./playlist.js"
 export function makePlaylist(): Playlist {
   const pl: HtmlPlaylist = HtmlPlaylist.create()
 
-  const result = new class extends Playlist {
+  return new class extends Playlist {
     override currentIndex() {return pl.currentIndex()}
     override songs() {return pl.songs()}
     override getSong(index: number) {return pl.getSong(index)}
@@ -15,13 +15,13 @@ export function makePlaylist(): Playlist {
       const lastIndex = () => pl.length() - 1
       if (song instanceof Song) {
         await Local.maybePreLoad(song)
-        pl.add(song)
+        pl.add(song, 'animate')
         return lastIndex()
       }
 
       let current = null
       for (const s of song) {
-        await this.add(s)
+        pl.add(s, 'instant')
         if (current === null)
           current = lastIndex()
       }
@@ -37,6 +37,4 @@ export function makePlaylist(): Playlist {
       pl.select(index)
     }
   }
-
-  return result
 }

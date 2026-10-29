@@ -36,16 +36,17 @@ export class HtmlPlaylist {
     this.refresh()
   }
 
-  add(song: Song): void {
+  add(song: Song, mode: 'animate' | 'instant'): void {
     if (this.playlist.some(e => e.song.file === song.file)) {
       console.log(`Entry ${song.file} already exists in playlist; skipping`)
       return
     }
     const playlistUl = $(PLAYLIST + " ul")
     const item = this.createItem(song)
+    const duration = match(mode).with("animate", () => 'fast').with("instant", () => 0).exhaustive()
     playlistUl.prepend(item.element)
       .find("li:first-child").hide()
-      .slideDown(ADD_TIME, function () {
+      .slideDown(duration, function () {
         const regularHeightThreshold = 30
         const lastSong = playlistUl.find("li:first-child")
         if (lastSong.height()! > regularHeightThreshold)
@@ -173,10 +174,8 @@ export class HtmlPlaylist {
   }
 }
 
-const ADD_TIME = 'fast'
 const REMOVE_TIME = 'fast'
 const PLAYLIST = ".jp-playlist"
 const PLAYLIST_CURRENT = "jp-playlist-current"
 
 type RemoveFunction = (e: JQuery<HTMLElement>) => JQuery<HTMLElement>
-

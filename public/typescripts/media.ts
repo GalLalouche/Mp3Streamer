@@ -99,6 +99,8 @@ export class Song {
       this.path = mp3
     if (flac)
       this.path = flac
+    else
+      this.path = "/stream/download/" + file
   }
 }
 
