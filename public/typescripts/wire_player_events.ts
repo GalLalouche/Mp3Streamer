@@ -1,7 +1,7 @@
 /** Processes events and wires them to the playlist. */
 import {match, P} from "ts-pattern"
 import {Events, PlayerControl, PlayerControls, Seek} from "./events.js"
-import {maybePreLoad} from "./local.js"
+import * as Local from "./local.js"
 import {Song} from "./media.js"
 import {Player} from "./player.js"
 import {Volume} from "./volume.js"
@@ -22,7 +22,7 @@ export function wire(player: Player) {
       .with(P.instanceOf(Seek), s => player.skipTo(player.duration().times(s.percentage.zeroToOne())))
       .with(P.instanceOf(Song), async s => {
         const wasPlaying = player.isPaused().isFalse() || player.hasEnded()
-        await maybePreLoad(s)
+        await Local.maybeDownloadLocally(s)
         player.load(s)
         if (wasPlaying)
           await player.playCurrentSong()

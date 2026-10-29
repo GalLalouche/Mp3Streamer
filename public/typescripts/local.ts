@@ -1,21 +1,42 @@
-import {FileDownloader} from "./file_downloader.js"
+import {LRUCache} from "lru-cache"
 import {isLocalHost} from "./initialization.js"
 import {Song} from "./media.js"
 
-const fileDownloader = new FileDownloader()
-
-// Returns the input song. Future proofing, in case we would ever want to make song immutable, or
-// return a different song object.
-export async function maybePreLoad(song: Song): Promise<Song> {
+export async function maybeDownloadLocally(song: Song): Promise<void> {
   if (isLocalHost())
     await setOfflineUrl(song)
-  return song
+}
+
+const requests: Map<string, Promise<Blob>> = new Map()
+const cache = new LRUCache<string, Blob>({
+  max: 10,
+  maxSize: 1_000_000_000,
+  sizeCalculation: (value, key) => value.size,
+})
+
+async function download(url: string): Promise<Blob> {
+  try {
+    const existing_blob = cache.get(url)
+    if (existing_blob !== undefined)
+      return existing_blob
+    const existing_request = requests.get(url)
+    if (existing_request !== undefined)
+      return existing_request
+    console.log(`Downloading ${url}`)
+    const blob_promise = fetch(url).then(e => e.blob())
+    requests.set(url, blob_promise)
+    const blob = await blob_promise
+    cache.set(url, blob)
+    return blob
+  } finally {
+    requests.delete(url)
+  }
 }
 
 /** Returns the offline blob URL. */
-export async function setOfflineUrl(song: Song): Promise<string> {
+async function setOfflineUrl(song: Song): Promise<string> {
   if (song.offlineUrl === undefined) {
-    const blob = await fileDownloader.download(song.path)
+    const blob = await download(song.path)
     console.log(`Blob for ${song.file} set`)
     song.offlineUrl = URL.createObjectURL(blob)
   }

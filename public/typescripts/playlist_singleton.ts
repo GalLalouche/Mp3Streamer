@@ -14,7 +14,7 @@ export function makePlaylist(): Playlist {
     override async add(song: Song | readonly Song[]): Promise<number> {
       const lastIndex = () => pl.length() - 1
       if (song instanceof Song) {
-        await Local.maybePreLoad(song)
+        await Local.maybeDownloadLocally(song)
         pl.add(song, 'animate')
         return lastIndex()
       }
@@ -33,7 +33,7 @@ export function makePlaylist(): Playlist {
     override prev() {return pl.previous()}
     override clear(): Promise<void> {return pl.setPlaylist([])}
     override async select(index: number): Promise<void> {
-      await Local.maybePreLoad(pl.getSong(index))
+      await Local.maybeDownloadLocally(pl.getSong(index))
       pl.select(index)
     }
   }
