@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import models.{ModelJsonable, Song}
 import musicfinder.PosterLookup
 import play.api.libs.json.{JsObject, JsString}
-
 import common.json.{JsonableOverrider, OJsonable, OJsonableOverrider}
 import common.json.RichJson._
 import common.rich.RichT._
@@ -26,9 +25,7 @@ class ControllerSongJsonifier @Inject() (
         encoder(posterLookup.getCoverArt(s))
           // It's possible the playlist contains files which have already been deleted.
           .onlyIf(s.file.exists)
-      val $ = original +
-        ("file" -> JsString(encoder(s))) +
-        (s.file.extension -> JsString("/stream/download/" + encoder(s)))
+      val $ = original + ("file" -> JsString(encoder(s)))
       $.joinOption(posterPath)((j, p) => j + ("poster" -> JsString("/posters/" + p)))
         .append("composer" -> s.composer)
         .append("conductor" -> s.conductor)
