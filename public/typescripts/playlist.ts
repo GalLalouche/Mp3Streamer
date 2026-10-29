@@ -1,14 +1,14 @@
 import {Song} from "./media.js"
 
 export abstract class Playlist {
-  abstract clear(instant: boolean): Promise<void>
+  abstract clear(instant: boolean): void
   async setPlaylist(playlist: readonly Song[], instant: boolean): Promise<void> {
-    await this.clear(instant)
+    this.clear(instant)
     await this.add(playlist)
   }
   /** Returns the index of the *first* song added. */
   abstract add(song: Song | readonly Song[]): Promise<number>
-  abstract next(): Promise<void>
+  abstract next(): void
   abstract select(index: number): Promise<void>
   abstract prev(): void
   abstract currentIndex(): number

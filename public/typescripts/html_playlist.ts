@@ -31,7 +31,7 @@ export class HtmlPlaylist {
   length(): number {return this.playlist.length}
   getSong(index: number): Song {return this.playlist[index].song}
 
-  async setPlaylist(playlist: readonly Song[]): Promise<void> {
+  setPlaylist(playlist: readonly Song[]): void {
     this.initPlaylist(playlist)
     this.refresh()
   }

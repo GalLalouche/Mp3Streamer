@@ -27,11 +27,9 @@ export function makePlaylist(): Playlist {
       }
       return current ?? lastIndex()
     }
-    override async next(): Promise<void> {
-      pl.next()
-    }
-    override prev() {return pl.previous()}
-    override clear(): Promise<void> {return pl.setPlaylist([])}
+    override next() {pl.next()}
+    override prev() {pl.previous()}
+    override clear(): void {pl.setPlaylist([])}
     override async select(index: number): Promise<void> {
       await Local.maybeDownloadLocally(pl.getSong(index))
       pl.select(index)
