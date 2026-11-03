@@ -132,7 +132,7 @@ object Iterant {
       f: ExplicitRetriever[A, B],
       prefetchSize: Int,
       parallelism: Int,
-  ): FutureIterant[B] = ParallelIterantMapper($, f, prefetchSize, parallelism)
+  ): StoppableFutureIterant[B] = ParallelIterantMapper($, f, prefetchSize, parallelism)
   def forever[F[_]: Monad, A](f: => F[A]): Iterant[F, A] = new Iterant[F, A] {
     override lazy val step: Step[A] = OptionT.liftF(f.tupleRight(forever(f)))
   }
@@ -154,4 +154,5 @@ object Iterant {
   }
 
   type FutureIterant[A] = Iterant[Future, A]
+  type StoppableFutureIterant[A] = Iterant[Future, A] with AutoCloseable
 }

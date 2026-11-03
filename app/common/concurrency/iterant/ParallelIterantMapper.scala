@@ -2,6 +2,7 @@ package common.concurrency.iterant
 
 import java.util
 import java.util.concurrent.Semaphore
+import java.util.concurrent.atomic.AtomicBoolean
 
 import alleycats.Pure.pureFlatMapIsMonad
 import backend.{FutureOption, Retriever}
@@ -15,7 +16,7 @@ import cats.implicits.{catsSyntaxFlatMapOps, toFunctorOps}
 
 import common.concurrency.{DaemonExecutionContext, ExplicitRetriever, SingleLatch}
 import common.concurrency.actor.Actor
-import common.concurrency.iterant.Iterant.FutureIterant
+import common.concurrency.iterant.Iterant.{FutureIterant, StoppableFutureIterant}
 import common.concurrency.iterant.ParallelIterantMapper.BlockingMap
 import common.rich.RichT.richT
 
@@ -56,25 +57,30 @@ private class ParallelIterantMapper[A, B] private (
     results.get(i)
   }
 
+  private[this] val stopped = new AtomicBoolean(false)
   private[this] val blockingMapFiller =
     Actor[FutureIterant[A], Unit]("ParallelIterantMapper").self((self, iterant) =>
-      // We block here to avoid taking up a thread for foreach. This will just block up the current
-      // actor thread, which is what we want.
-      Await.result(iterant.step.value, Duration.Inf) match {
-        case None => blockingMap.setMaxIndex()
-        case Some((head, tail)) =>
-          // While fetching the next value is done sequentially, mapping is done in parallel up to
-          // the capacity of the blocking map and the parallelism parameter.
-          blockingMap.put(f(head))
-          self ! tail
-      },
+      if (stopped.get())
+        blockingMap.setMaxIndex()
+      else
+        // We block here to avoid taking up a thread for foreach. This will just block up the current
+        // actor thread, which is what we want.
+        Await.result(iterant.step.value, Duration.Inf) match {
+          case None => blockingMap.setMaxIndex()
+          case Some((head, tail)) =>
+            // While fetching the next value is done sequentially, mapping is done in parallel up to
+            // the capacity of the blocking map and the parallelism parameter.
+            blockingMap.put(f(head))
+            self ! tail
+        },
     )
 
-  private[this] class Stepper(index: Int) extends FutureIterant[B] {
+  private[this] class Stepper(index: Int) extends FutureIterant[B] with AutoCloseable {
     override def step: Step[B] = get(index).tupleRight(new Stepper(index + 1))
+    override def close(): Unit = stopped.set(true)
   }
   private def start(): Unit = blockingMapFiller ! iterant
-  private def stepper: Iterant[Future, B] = new Stepper(0)
+  private def stepper: StoppableFutureIterant[B] = new Stepper(0)
 }
 
 private object ParallelIterantMapper {
@@ -83,7 +89,7 @@ private object ParallelIterantMapper {
       f: ExplicitRetriever[A, B],
       n: Int,
       parallelism: Int,
-  ): FutureIterant[B] = {
+  ): StoppableFutureIterant[B] = {
     val ec: ExecutionContext =
       DaemonExecutionContext("ParallelIterantMapper", parallelism)
     new ParallelIterantMapper(iterant, f.withExecutionContext(ec), n, ec).<|(_.start()).stepper

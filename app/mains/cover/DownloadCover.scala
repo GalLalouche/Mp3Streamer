@@ -16,6 +16,7 @@ import common.concurrency.iterant.Iterant
 import common.concurrency.iterant.Iterant.FutureIterant
 import common.path.PathUtils
 import common.path.ref.io.{IODirectory, IOFile, TempDirectory}
+import common.rich.RichFuture.richFuture
 
 private[mains] class DownloadCover @Inject() (
     ec: ExecutionContext,
@@ -59,8 +60,8 @@ private[mains] class DownloadCover @Inject() (
     }
   }
 
-  private def selectImage(imageURLs: FutureIterant[ImageSource]): Future[ImageChoice] =
-    imageSelector.select(
+  private def selectImage(imageURLs: FutureIterant[ImageSource]): Future[ImageChoice] = {
+    val iterant =
       Iterant
         .parallelPrefetching[ImageSource, Try[FolderImage]](
           imageURLs.filter(i => i.isSquare && i.width >= 500),
@@ -68,8 +69,8 @@ private[mains] class DownloadCover @Inject() (
           prefetchSize = imageFinder.resultsPerQuery - ImageSelector.ImagesPerPage,
           parallelism = ImageSelector.ImagesPerPage,
         )
-        .oMap(_.toOption),
-    )
+    imageSelector.select(iterant.oMap(_.toOption)) |< iterant.close()
+  }
 }
 
 private object DownloadCover {
