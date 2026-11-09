@@ -1,30 +1,22 @@
 package backend.module
 
-import com.google.inject.{Module, Provides}
-import com.typesafe.config.{Config, ConfigFactory, ConfigValueFactory}
+import com.google.inject.Provides
 import net.codingwell.scalaguice.ScalaModule
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.stream.Materializer
-import play.api.libs.ws.ahc.StandaloneAhcWSClient
+
+import cats.effect.unsafe.{IORuntime, IORuntimeConfig}
 
 import common.io.WSAliases.WSClient
 
-private class RealInternetTalkerModule private (am: Materializer) extends ScalaModule {
-  @Provides private def provideWSClient(): WSClient = StandaloneAhcWSClient()(am)
-}
+object RealInternetTalkerModule extends ScalaModule {
+  @Provides private def provideWSClient(): WSClient = Http4sWSClient(runtime)
 
-object RealInternetTalkerModule {
-  private val warningOnlyConfig: Config = ConfigFactory
-    .load()
-    .withValue("pekko.loglevel", ConfigValueFactory.fromAnyRef("WARNING"))
-    .withValue("pekko.stdout-loglevel", ConfigValueFactory.fromAnyRef("WARNING"))
-  private val warningOnlyDaemonicConfig: Config =
-    warningOnlyConfig.withValue("pekko.daemonic", ConfigValueFactory.fromAnyRef(true))
-  def daemonic: Module = new RealInternetTalkerModule(
-    Materializer(ActorSystem.create("Standalone-Config-WS-System", warningOnlyDaemonicConfig)),
-  )
-
-  def nonDaemonic: Module = new RealInternetTalkerModule(
-    Materializer(ActorSystem.create("RealConfigWS-System", warningOnlyConfig)),
-  )
+  private lazy val runtime: IORuntime = {
+    val (compute, shutdownCompute) =
+      IORuntime.createWorkStealingComputeThreadPool(threadPrefix = "ember-ws-compute")
+    val (blocking, shutdownBlocking) =
+      IORuntime.createDefaultBlockingExecutionContext("ember-ws-blocking")
+    val (scheduler, shutdownScheduler) = IORuntime.createDefaultScheduler("ember-ws-scheduler")
+    val shutdown = () => { shutdownCompute(); shutdownBlocking(); shutdownScheduler() }
+    IORuntime(compute, blocking, scheduler, shutdown, IORuntimeConfig())
+  }
 }

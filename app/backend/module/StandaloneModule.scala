@@ -11,7 +11,7 @@ class StandaloneModule(random: Random) extends ScalaModule {
     bind[ExecutionContext].toInstance(ExecutionContext.Implicits.global)
     bind[Random].toInstance(random)
 
-    install(RealInternetTalkerModule.daemonic)
+    install(RealInternetTalkerModule)
     install(RealModule)
 
     ScribeUtils.makePretty()

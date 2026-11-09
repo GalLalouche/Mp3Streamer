@@ -26,7 +26,7 @@ object NonPersistentModule extends ScalaModule {
     bind[ExecutionContext].toInstance(ExecutionContext.Implicits.global)
     bind[PropertiesHelper].toInstance(ProductionPropertiesHelper)
 
-    install(RealInternetTalkerModule.daemonic)
+    install(RealInternetTalkerModule)
     install(AllModules)
     install(IOSongsModule)
   }

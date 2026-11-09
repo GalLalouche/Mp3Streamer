@@ -19,7 +19,7 @@ class FormatterModule @VisibleForTesting() (level: Option[Level]) extends ScalaM
   def this() = this(FormatterModule.defaultLogLevel)
   override def configure(): Unit = {
     install(Modules.`override`(RealModule).`with`(ExistingAlbumsModules.lazyAlbums))
-    install(RealInternetTalkerModule.nonDaemonic)
+    install(RealInternetTalkerModule)
     setScribeLogging()
     requireBinding(classOf[ExecutionContext])
   }
