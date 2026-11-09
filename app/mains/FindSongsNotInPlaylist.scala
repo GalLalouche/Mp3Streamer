@@ -8,7 +8,7 @@ import com.google.inject.Guice
 import musicfinder.IOMusicFiles
 import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
-import common.rich.func.kats.ToMoreMonoidOps._
+import common.rich.func.kats.ToMoreEmptyOps.emptyFilter
 import common.rich.func.kats.ToMoreTraverseFilterOps.toMoreTraverseFilterOps
 
 import common.rich.RichFile._
@@ -48,7 +48,7 @@ object FindSongsNotInPlaylist {
     val serverMissing = playlistSongs.diff(realSongs).toList.sorted
     println(
       s"Server is missing ${serverMissing.size} songs.${(" It's possible that these songs are in the playlist but the files themselves have been deleted, " +
-          "or were added from a different folder, e.g., bittorrent.").monoidFilter(serverMissing.nonEmpty)}",
+          "or were added from a different folder, e.g., bittorrent.").emptyFilter(serverMissing.nonEmpty)}",
     )
     println(serverMissing.mkString("\n"))
     println(s"Playlist is missing ${playlistMissing.size} songs")

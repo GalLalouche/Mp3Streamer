@@ -6,7 +6,7 @@ import mains.vimtag.Initializer.{InitialLines, UnsupportedExtensions}
 import models.TypeAliases.TrackNumber
 import musicfinder.SongFileFinder
 
-import common.rich.func.kats.ToMoreMonoidOps.monoidFilter
+import common.rich.func.kats.ToMoreEmptyOps.emptyFilter
 
 import common.path.ref.DirectoryRef
 import common.rich.RichT._
@@ -24,7 +24,7 @@ private class Initializer @Inject() (
     private def unsupportedFilesMsg = {
       val unsupportedFiles = dir.deepFiles.filter(_.extensionIsAnyOf(UnsupportedExtensions))
       s"; However, it did contain unsupported files with extensions: $unsupportedFiles"
-        .monoidFilter(unsupportedFiles.nonEmpty)
+        .emptyFilter(unsupportedFiles.nonEmpty)
     }
 
     private lazy val songFiles =

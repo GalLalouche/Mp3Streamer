@@ -14,8 +14,8 @@ import scala.util.Try
 
 import cats.instances.future.catsStdInstancesForFuture
 import common.rich.func.kats.RichOptionT.richOptionT
+import common.rich.func.kats.ToMoreEmptyOps.emptyFilter
 import common.rich.func.kats.ToMoreMonadErrorOps.toMoreApplicativeErrorOps
-import common.rich.func.kats.ToMoreMonoidOps._
 
 import common.concurrency.iterant.Iterant.FutureIterant
 import common.rich.RichFuture.richFutureBlocking
@@ -86,7 +86,7 @@ private object AsyncFolderImagePanel {
 
   private def createImageLabel(fi: FolderImage): Try[JLabel] = Try {
     val fileSize = s"${fi.file.size / 1024}KB"
-    val text = s"${fi.width}x${fi.height} $fileSize${" LOCAL".monoidFilter(fi.isLocal)}"
+    val text = s"${fi.width}x${fi.height} $fileSize${" LOCAL".emptyFilter(fi.isLocal)}"
     new JLabel(fi.toIcon(Width, Height))
       .<|(_.setLayout(new SpringLayout()))
       .<|(_.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY)))
