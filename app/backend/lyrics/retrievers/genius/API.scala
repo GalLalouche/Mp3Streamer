@@ -28,7 +28,7 @@ private class API @Inject() (
 
   def getLyricUrl(song: Song): FutureOption[Url] = OptionT {
     val query = (split(song.artistName) ++ split(song.title)).mkString("+")
-    it.get(Url(s"https://api.genius.com/search?access_token=$accessToken&q=$query"))
+    it.get(Url.parse(s"https://api.genius.com/search?access_token=$accessToken&q=$query"))
       .map(e =>
         if (e.status != HttpURLConnection.HTTP_OK) {
           scribe.info(s"Got status code <${e.status}> from genius\nMessage body\n: ${e.body}")

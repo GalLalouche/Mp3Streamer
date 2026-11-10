@@ -10,5 +10,5 @@ private class SingleHostUrlHelper(
     f: (Url, Song) => Future[RetrievedLyricsResult],
 ) {
   def doesUrlMatchHost: Url => Boolean = _.toStringPunycode.startsWith(singleHostUrl.hostPrefix)
-  def get: Song => Future[RetrievedLyricsResult] = s => f(Url(singleHostUrl.urlFor(s)), s)
+  def get: Song => Future[RetrievedLyricsResult] = s => f(Url.parse(singleHostUrl.urlFor(s)), s)
 }
