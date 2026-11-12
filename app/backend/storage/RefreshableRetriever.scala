@@ -13,17 +13,19 @@ import common.rich.func.kats.ToMoreMonadErrorOps._
 import common.rich.RichT._
 import common.rich.RichTime.RichLocalDateTime
 
+// TODO This class isn't used in production (well, it is, but maxAge is None). It should either be
+//  removed or used in NewAlbumFiller.
 class RefreshableRetriever[Key, Value](
     freshnessStorage: FreshnessStorage[Key, Value],
     onlineRetriever: Retriever[Key, Value],
-    maxAge: Duration,
+    maxAge: Option[Duration],
     clock: Clock,
 )(implicit ec: ExecutionContext)
     extends Retriever[Key, Value] {
-  def needsRefresh(k: Key): Future[Boolean] = freshnessStorage.freshness(k).map {
+  def needsRefresh(k: Key): Future[Boolean] = freshnessStorage.freshness(k).forall {
     case AlwaysFresh => false
-    case DatedFreshness(dt) => dt.isOlderThan(maxAge, clock)
-  } | true
+    case DatedFreshness(dt) => maxAge.exists(dt.isOlderThan(_, clock))
+  }
 
   private def refresh(k: Key): Future[Value] =
     onlineRetriever(k).flatTap(freshnessStorage.update(k, _).value)

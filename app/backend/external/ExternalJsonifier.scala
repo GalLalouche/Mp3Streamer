@@ -1,5 +1,6 @@
 package backend.external
 
+import java.time.{Clock, LocalDateTime}
 import java.time.format.DateTimeFormatter
 
 import backend.external.ExternalJsonifier._
@@ -14,9 +15,10 @@ import scala.concurrent.{ExecutionContext, Future}
 import cats.syntax.applicativeError.catsSyntaxApplicativeError
 
 import common.rich.RichT._
+import common.rich.RichTime.RichClock
 import common.rich.collections.RichTraversableOnce._
 
-private class ExternalJsonifier @Inject() (implicit ec: ExecutionContext) {
+private class ExternalJsonifier @Inject() (clock: Clock)(implicit ec: ExecutionContext) {
   private type KVPair = (String, JsValueWrapper)
   private def formatHost(e: ExtendedLink[_]): String = e.host.name + (e.mark match {
     case LinkMark.None => ""
@@ -43,8 +45,13 @@ private class ExternalJsonifier @Inject() (implicit ec: ExecutionContext) {
       .map(toJson) |> Json.obj
   private def toJson(e: TimestampedExtendedLinks[_]): JsObject = Json.obj(
     "links" -> toJson(e.links),
-    "timestamp" -> JsString(e.timestamp |> DateStringPattern.format),
+    "timestamp" -> JsString(formatDate(e.timestamp)),
   )
+
+  private def formatDate(d: LocalDateTime): String = {
+    val formatter = if (d.isBefore(clock.getLocalDateTime.minusYears(1))) DayMonthYear else DayMonth
+    formatter.format(d)
+  }
 
   def toJsonOrError(links: Future[TimestampedExtendedLinks[_]]): Future[JsObject] =
     links.map(toJson).handleError { e =>
@@ -57,7 +64,9 @@ private class ExternalJsonifier @Inject() (implicit ec: ExecutionContext) {
 }
 
 private object ExternalJsonifier {
-  private val DateStringPattern = DateTimeFormatter.ofPattern("dd/MM")
+  private val DayMonth = DateTimeFormatter.ofPattern("dd/MM")
+  private val DayMonthYear = DateTimeFormatter.ofPattern("dd/MM/yy")
+
   val Hosts: Seq[Host] = Vector(
     Host.MusicBrainz,
     Host.Wikipedia,

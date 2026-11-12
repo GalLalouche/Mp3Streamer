@@ -1,6 +1,6 @@
 package backend.external
 
-import java.time.{LocalDate, Month}
+import java.time.{LocalDate, LocalDateTime, Month}
 
 import backend.external.extensions.{ExtendedLink, SearchExtension}
 import backend.logging.ScribeUtils
@@ -11,15 +11,17 @@ import play.api.libs.json.Json
 
 import scala.concurrent.Future
 
+import common.FakeClock
 import common.test.AuxSpecs
 
 class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
   ScribeUtils.noLogs()
-  private val $ = new ExternalJsonifier()
+  private def withClockSetTo(time: LocalDateTime) = new ExternalJsonifier(new FakeClock(time))
   private val time = LocalDate.of(1980, Month.OCTOBER, 17).atStartOfDay
 
   "toJsonOrError" - {
     "new wikipedia links are unmarked" in {
+      val $ = withClockSetTo(time.plusDays(100))
       val links = Future.successful(
         TimestampedExtendedLinks[Album](
           Vector(
@@ -67,6 +69,7 @@ class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
       }
     }
     "missing wikipedia links are marked" in {
+      val $ = withClockSetTo(time.plusDays(400))
       val links = Future.successful(
         TimestampedExtendedLinks[Album](
           Vector(
@@ -87,11 +90,12 @@ class ExternalJsonifierTest extends AsyncFreeSpec with AuxSpecs {
               ),
             ),
           ),
-          "timestamp" -> "17/10",
+          "timestamp" -> "17/10/80",
         )
       }
     }
     "error" in {
+      val $ = withClockSetTo(LocalDateTime.now())
       $.toJsonOrError(Future.failed(new Exception("foobar"))).map {
         _ shouldReturn Json.obj("error" -> "foobar")
       }

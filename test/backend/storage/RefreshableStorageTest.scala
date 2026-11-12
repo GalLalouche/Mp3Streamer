@@ -10,7 +10,7 @@ import org.scalatest.freespec.AsyncFreeSpec
 
 import scala.concurrent.Future
 
-import cats.implicits.catsSyntaxFlatMapOps
+import cats.implicits.{catsSyntaxFlatMapOps, catsSyntaxOptionId}
 import common.rich.func.kats.ToMoreFunctorOps.toMoreFunctorOps
 
 import common.FakeClock
@@ -31,7 +31,7 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
       i += 1
       Future.successful(e.reverse + i)
     },
-    Duration.ofMillis(50),
+    Duration.ofMillis(50).some,
     c.injector.instance[Clock],
   )
   "apply" - {
@@ -63,7 +63,7 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
         val $ = new RefreshableRetriever[String, String](
           freshnessStorage,
           Future.failed(new RuntimeException()).const,
-          Duration.ofMillis(50),
+          Duration.ofMillis(50).some,
           c.injector.instance[Clock],
         )
         for {
@@ -82,7 +82,7 @@ class RefreshableStorageTest extends AsyncFreeSpec with AsyncAuxSpecs with OneIn
         val $ = new RefreshableRetriever[String, String](
           freshnessStorage,
           Future.failed(exception).const,
-          Duration.ofMillis(50),
+          Duration.ofMillis(50).some,
           c.injector.instance[Clock],
         )
         $("foo").failureShouldEventuallyReturn(exception)

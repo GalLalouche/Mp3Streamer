@@ -1,6 +1,6 @@
 package backend.external
 
-import java.time.{Clock, Duration}
+import java.time.Clock
 
 import backend.Retriever
 import backend.external.expansions.ExternalLinkExpander
@@ -56,7 +56,7 @@ private class ExternalPipeWrapper[R <: Reconcilable] @Inject() (
       expanders,
       markers,
     ),
-    maxAge = Duration.ofDays(365),
+    maxAge = None,
     clock = clock,
   ).|>(new ExternalPipeWrapper.TimeStamper(_))
 }
